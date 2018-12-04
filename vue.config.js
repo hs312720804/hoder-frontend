@@ -12,32 +12,11 @@ module.exports = {
     public: '127.0.0.1:8080',
     headers: {
       "Access-Control-Allow-Origin": "*"
-    }
-  },
-  chainWebpack: config => {
-    if(config.plugins.has('extract-css')) {
-      const extractCSSPlugin = config.plugin('extract-css')
-      extractCSSPlugin && extractCSSPlugin.tap(() => [{
-        filename: 'css/[name].css',
-        chunkFilename: 'css/[name].css'
-      }])
-    }
-    config.plugins.delete('prefetch')
-  },
-  configureWebpack: {
-    output: {
-      filename: 'js/[name].js',
-      chunkFilename: 'js/[name].js'
     },
-    optimization: {
-      splitChunks: {
-        cacheGroups: {
-          commons: {
-            test: /[\\/]node_modules[\\/]/,
-            name: 'vendors',
-            chunks: 'all'
-          }
-        }
+    proxy: {
+      '/api': {
+        target: 'http://127.0.0.1:8009',
+        pathRewrite: {'^/api': '/'},
       }
     }
   }

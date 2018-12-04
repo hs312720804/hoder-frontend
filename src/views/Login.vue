@@ -18,7 +18,7 @@
 import _ from 'gateschema'
 const schema = _
     .map({
-        name: _
+        loginName: _
             .required
             .$msg('请输入登录名')
             .string
@@ -44,8 +44,8 @@ export default {
     data() {
         return {
             user: {
-                name: 'coocaa',
-                password: 'coocaa'
+                loginName: '',
+                password: ''
             }
         }
     },
