@@ -5,7 +5,7 @@
                 <div
                     class="logo__img"
                 >
-                    {{ isCollapseMenu ? 'pp' : 'policy platform'}}
+                    {{ isCollapseMenu ? 'SP' : '策略平台'}}
                 </div>
             </div>
             <Menu class="main_menu"
