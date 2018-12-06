@@ -11,11 +11,12 @@ import 'admin-toolkit/dist/admin-toolkit.css'
 import { GateSchemaForm } from 'admin-toolkit'
 
 import '@/assets/icon/iconfont.css'
-
 import './auth'
+import pagination from './../components/pagination.vue'
 
 Vue.prototype.$ELEMENT = { size: "small", zIndex: 3000 };
 
 Vue.use(ElementUI)
 Vue.use(AppState)
 Vue.component('GateSchemaForm', GateSchemaForm)
+Vue.component('pagination', pagination)

@@ -10,9 +10,9 @@ export default function fetch({ method = "get", url, data, params, isJSON = fals
       url,
       data: isJSON ? data : qs.stringify(data),
       params,
-      headers: {
-        Authorization: this.state.token
-      }
+      // headers: {
+      //   Authorization: this.state.token
+      // }
     }).then(function({ data }) {
       NProgress.done()
       if (data.code === 0) {
