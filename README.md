@@ -1,20 +1,18 @@
-Admin Template  
-----  
-基于 vue, vue-router, [admin-toolkit](http://gitlab.skysri.com/liangweiliang/admin-toolkit) 的管理后台代码模板  
+人群策略平台前端  
+--- 
 
-## 使用  
-
-```
-git clone  
-cd admin-template  
+## 开发
+安装依赖  
+```bash  
 npm install  
 ```
+
+使用本地搭建的后端服务  
 ```
-// 开发  
-npm run serve  
+npm run serve
 ```
 
+使用前端测试服务器的后端服务  
 ```
-// 构建  
-npm run build
+BACKEND=172.20.155.102:8009 npm run serve
 ```

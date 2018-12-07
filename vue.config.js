@@ -1,4 +1,5 @@
 const ENV = process.env.NODE_ENV
+const BACKEND = process.env.BACKEND || '127.0.0.1:8009'
 const devHost = '127.0.0.1'
 const path = require('path')
 const dist = path.resolve('./dist')
@@ -15,7 +16,7 @@ module.exports = {
     },
     proxy: {
       '/api': {
-        target: 'http://127.0.0.1:8009',
+        target: 'http://' + BACKEND,
         pathRewrite: {'^/api': '/'},
       }
     }
