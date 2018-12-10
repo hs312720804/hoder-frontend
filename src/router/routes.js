@@ -73,7 +73,7 @@ const children = [
                 path: 'validate',
                 component: validate,
                 meta: {
-                    title: '策略投放',
+                    title: '投放验证',
                   //  hideInMenu: true,
                     isCache: false,
                     icon: 'el-icon-cc-file',
