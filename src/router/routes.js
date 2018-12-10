@@ -15,7 +15,7 @@ import organManage from '@/views/setting/organManage'
 import password from '@/views/setting/password'
 import personalInformation from '@/views/setting/personalInformation'
 import personManage from '@/views/setting/personManage'
-import ruleManage from '@/views/setting/ruleManage'
+import roleManage from '@/views/setting/roleManage'
 const children = [
     {
         name: 'dashboard',
@@ -169,9 +169,9 @@ const children = [
             }
             ,
             {
-                name: 'ruleManage',
-                path: 'ruleManage',
-                component: ruleManage,
+                name: 'roleManage',
+                path: 'roleManage',
+                component: roleManage,
                 meta: {
                     title: '角色管理',
                     icon: 'el-icon-cc-file'

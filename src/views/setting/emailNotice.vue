@@ -44,7 +44,7 @@
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border
                   @selection-change="handleSelectionChange">
             <el-table-column type="selection"></el-table-column>
-            <el-table-column type="index" width="30"></el-table-column>
+            <el-table-column type="index" width="50"></el-table-column>
             <el-table-column prop="id" label="ID" width="50"></el-table-column>
             <el-table-column prop="emailName" label="邮箱" width="230">
                 <template scope="scope">
@@ -344,6 +344,7 @@ export default {
                         emailForm.typeFlags=emailForm.typeFlags.join(",")
                         this.$service.addEmail(emailForm).then((data)=>{
                           this.callback(data,"添加成功");
+                          this.addFormVisible=false;
                         })
                     } else {
                         console.log('error submit!!');
@@ -377,6 +378,7 @@ export default {
                         emailForm.typeFlags=emailForm.typeFlags.join(",")
                         this.$service.updateEmail(emailForm).then((data)=>{
                           this.callback(data,"更新成功");
+                          this.editFormVisible=false;
                         })
                     } else {
                         console.log('error submit!!');

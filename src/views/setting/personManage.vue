@@ -57,7 +57,7 @@
       @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection"></el-table-column>
-      <el-table-column type="index" width="30"></el-table-column>
+      <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="id" label="ID" width="50"></el-table-column>
       <el-table-column prop="officeName" label="归属机构" width="100"></el-table-column>
       <el-table-column prop="loginName" label="账号" width="200"></el-table-column>
@@ -185,7 +185,9 @@
      <el-dialog
         title="选择机构"
         :visible.sync="companyVisible"
-        width="30%">
+        width="30%"
+        class="organSelect"
+        >
         <el-tree
             :data="companys"
             :props="companyProps"
@@ -208,7 +210,7 @@
       <el-form :model="userForm" :rules="userFormRules" ref="userForm" label-width="100px">
         <el-form-item label="真实姓名" prop="name">
           <el-input size="small" v-model="userForm.name" placeholder="请输入真实姓名"></el-input>
-          <el-input class="hidden" v-model="userForm.id"></el-input>
+          <el-input style="display:none;" v-model="userForm.id"></el-input>
         </el-form-item>
         <el-form-item label="登录账号" prop="loginName">
           <el-input size="small" v-model="userForm.loginName" placeholder="请输入登录账号"></el-input>
@@ -262,15 +264,12 @@ export default {
       multipleSelection: [],
       //搜索条件
       criteria: {},
-
       // 列表页
       searchForm: {
         userMsg: ""
       },
-
       // 新增页
       addFormVisible: false, // 新增界面是否显示
-     
       // 新增界面数据
       userForm: {
         id: "",
@@ -284,7 +283,6 @@ export default {
         mailNotice: false,
         roleIds: [], // 该用户所拥有的角色id
         // 以上为表单提交的参数
-
         officeName: "", // 机构名称
         roleList: null // 角色列表
       },
@@ -312,10 +310,8 @@ export default {
           { required: true, message: "请输入备注信息", trigger: "blur" }
         ]
       },
-
       // 编辑页
       editFormVisible: false, // 编辑界面是否显示
-
       // 默认每页数据量:pageSize
       pageSize: 10,
       // 当前页码:pageNum
@@ -469,6 +465,7 @@ export default {
           delete userForm.roleList
           this.$service.addUser(userForm).then(data => {
             this.callback(data, "添加成功");
+            this.addFormVisible=false;
           });
         } else {
           console.log("error submit!!");
@@ -498,13 +495,14 @@ export default {
       var _this = this;
       this.$refs.userForm.validate(valid => {
         if (valid) {
-          let emailForm = JSON.stringify(_this.emailForm);
-          emailForm = JSON.parse(emailForm);
-          emailForm.typeFlags = emailForm.typeFlags.join(",");
+          let userForm = JSON.stringify(_this.userForm);
+          userForm = JSON.parse(userForm);
+          userForm.roleIds = userForm.roleIds.join(",");
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.updateUser(emailForm).then(data => {
+          this.$service.updateUser(userForm).then(data => {
             this.callback(data, "更新成功");
+            this.editFormVisible=false;
           });
         } else {
           console.log("error submit!!");
@@ -598,11 +596,11 @@ export default {
   //  })
 };
 </script>
-<style scoped>
-.el-checkbox-group label {
-  width: 160px;
-}
-.el-checkbox + .el-checkbox {
-  margin-left: 0px;
-}
+<style scoped lang="stylus">
+    .el-checkbox-group label
+       width 160px
+    .el-checkbox+.el-checkbox
+       margin-left: 0px;
+    .organSelect >>>.is-current
+        color:#3980e2;
 </style>
