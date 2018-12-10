@@ -40,6 +40,20 @@ export function get_users_json(params){
         params 
       })
 }
+export function get_loginLogs_json(params){
+    return fetch({
+        method: 'get',
+        url: '/api/manage/loginLog/get_loginLogs_json',
+        params 
+      })
+}
+export function get_operateLogs_json(params){
+    return fetch({
+        method: 'get',
+        url: '/api/manage/operateLog/get_operateLogs_json',
+        params 
+      })
+}
 export function get_office_tree_json(params){
     return fetch({
         method: 'get',

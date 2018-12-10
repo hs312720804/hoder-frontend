@@ -39,19 +39,17 @@
         </el-form>
     
         <!-- talbe -->
-        <el-table
-            ref="myTable"
-            :data="tableData"
-            style="width: 100%;"
-            stripe
-            border
-        >
-        <el-table-column prop="id" label="ID" width="80"></el-table-column>
-        <el-table-column prop="loginName" label="帐号" ></el-table-column>
-        <el-table-column prop="loginDate" label="登录时间"></el-table-column>
-        <el-table-column prop="loginIp" label="登录IP"></el-table-column>
-        <el-table-column prop="status" label="状态"></el-table-column>
-            
+        <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
+            <el-table-column prop="id" label="ID"></el-table-column>
+            <el-table-column prop="loginName" label="账号"></el-table-column>
+            <el-table-column prop="loginTime" label="登录时间">
+                <template scope="scope">
+                    <el-icon name="time"></el-icon>
+                    <span style="margin-left: 10px">{{ scope.row.loginTime }}</span>
+                </template>
+            </el-table-column>
+            <el-table-column prop="loginIp" label="登录Ip"></el-table-column>
+            <el-table-column prop="status" label="状态"></el-table-column>
         </el-table>
         <!-- pagination -->
         <div align="right" v-if="pageVisible" >
@@ -92,7 +90,7 @@ export default {
         loadData:function() {
             this.criteria["currentPage"] = this.currentPage;
             this.criteria["pageSize"] = this.pageSize;
-            this.$service.get_users_json(this.criteria).then(data => {
+            this.$service.get_loginLogs_json(this.criteria).then(data => {
                 this.tableData = data.lists;
                 this.totalCount = data.count;
                 let arr = Object.keys(data.lists)
