@@ -25,19 +25,6 @@
             <div v-if="!searchUsedCrowdResult">暂未找到人群和标签</div>
             <div v-else>
                 <el-tree :data="searchUsedCrowdList" :props="defaultProps"></el-tree>
-                    <!-- <div v-for="item in searchUsedCrowdList" :key="item.crowdName">
-                        {{item.crowdName}}
-                        <div v-if="typeof(item.tags)!='string'">
-                            <ul>
-                                <li v-for="v in item.tags" :key="v.id">
-                                    {{v.id}}
-                                </li>
-                            </ul>
-                        </div>
-                        <div v-else>
-                           <span>{{item.crowdName}}</span>
-                        </div>
-                    </div> -->
             </div>
         </el-main>
    </el-container>

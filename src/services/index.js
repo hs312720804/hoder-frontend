@@ -9,6 +9,7 @@ import * as personManage from './administration/person'
 import * as organ from './administration/organ'
 import * as role from './administration/role'
 import * as validate from './launch/validate'
+import * as crowd from './launch/crowd'
 const service = {
     state: {},
     fetch,
@@ -18,6 +19,7 @@ const service = {
     ...personManage,
     ...organ,
     ...role,
-    ...validate
+    ...validate,
+    ...crowd
 }
 Vue.prototype.$service = utils.wrapService(service)
