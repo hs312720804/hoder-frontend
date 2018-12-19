@@ -43,7 +43,7 @@
                     </el-dropdown>
                 </div>
             </el-header>
-            <TagNav />
+             <TagNav ref="tag" :init-tags="initTags" />
             <el-main>
                 <keep-alive>
                     <router-view v-if="isKeepAlive" />
@@ -100,6 +100,9 @@ export default {
             const items = gen(mainRoute).children 
             return items
 
+        },
+         initTags() {
+            return this.$appState.$get('tags') || []
         }
     },
     methods: {
@@ -114,6 +117,10 @@ export default {
             const isCollapseMenu = !this.isCollapseMenu
             this.$appState.$set('isCollapseMenu', isCollapseMenu)
             this.isCollapseMenu = isCollapseMenu
+        },
+         saveTags() {
+            const tags = this.$refs.tag.tags
+            this.$appState.$set('tags', tags)
         }
     },
     created() {
@@ -122,6 +129,12 @@ export default {
             this.breadcrumb = breadcrumb
         })
     },
+     mounted() {
+        window.addEventListener('beforeunload', this.saveTags)
+    },
+    destroyed() {
+        window.removeEventListener('beforeunload', this.saveTags)
+    }
 }
 </script>
 

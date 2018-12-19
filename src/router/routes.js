@@ -31,6 +31,7 @@ const children = [
                 path: 'labelList',
                 component: labelList,
                 meta: {
+                    tagId:"labelList",
                     title: '标签列表',
                     icon: 'el-icon-cc-file'
                 }
@@ -51,6 +52,7 @@ const children = [
                 path: 'crowd',
                 component: crowd,
                 meta: {
+                    tagId:"crowd",
                     title: '人群投放',
                     icon: 'el-icon-cc-file'
                 },
@@ -62,6 +64,7 @@ const children = [
                 component: strategy,
                 meta: {
                     title: '策略投放',
+                    tagId:"strategy",
                   //  hideInMenu: true,
                     isCache: false,
                     icon: 'el-icon-cc-file',
@@ -74,6 +77,7 @@ const children = [
                 component: validate,
                 meta: {
                     title: '投放验证',
+                    tagId:"validate",
                   //  hideInMenu: true,
                     isCache: false,
                     icon: 'el-icon-cc-file',
@@ -95,6 +99,7 @@ const children = [
                 path: 'strategyList',
                 component: strategyList,
                 meta: {
+                    tagId:"strategyList",
                     title: '策略列表',
                     icon: 'el-icon-cc-file'
                 }
@@ -115,6 +120,7 @@ const children = [
                 path: 'menuSetting',
                 component: menuSetting,
                 meta: {
+                    tagId:"menuSetting",
                     title: '菜单设置',
                     icon: 'el-icon-cc-file'
                 }
@@ -125,15 +131,7 @@ const children = [
                 component: emailNotice,
                 meta: {
                     title: '邮件通知',
-                    icon: 'el-icon-cc-file'
-                }
-            },
-            {
-                name: 'dictionaryManage',
-                path: 'dictionaryManage',
-                component: dictionaryManage,
-                meta: {
-                    title: '字典管理',
+                    tagId:"emailNotice",
                     icon: 'el-icon-cc-file'
                 }
             }
@@ -153,6 +151,7 @@ const children = [
                 path: 'personManage',
                 component: personManage,
                 meta: {
+                    tagId:"personManage",
                     title: '人员管理',
                     icon: 'el-icon-cc-file'
                 }
@@ -163,6 +162,7 @@ const children = [
                 path: 'organManage',
                 component: organManage,
                 meta: {
+                    tagId:"organManage",
                     title: '机构管理',
                     icon: 'el-icon-cc-file'
                 }
@@ -173,6 +173,7 @@ const children = [
                 path: 'roleManage',
                 component: roleManage,
                 meta: {
+                    tagId:"roleManage",
                     title: '角色管理',
                     icon: 'el-icon-cc-file'
                 }
@@ -193,6 +194,7 @@ const children = [
                 path: 'personalInformation',
                 component: personalInformation,
                 meta: {
+                    tagId:"personalInformation",
                     title: '个人信息',
                     icon: 'el-icon-cc-file'
                 }
@@ -203,6 +205,7 @@ const children = [
                 path: 'password',
                 component: password,
                 meta: {
+                    tagId:"password",
                     title: '密码修改',
                     icon: 'el-icon-cc-file'
                 }
@@ -223,6 +226,7 @@ const children = [
                 path: 'loginLog',
                 component: loginLog,
                 meta: {
+                    tagId:"loginLog",
                     title: '登录日志',
                     icon: 'el-icon-cc-file'
                 }
@@ -233,12 +237,13 @@ const children = [
                 path: 'operateLog',
                 component: operateLog,
                 meta: {
+                    tagId:"operateLog",
                     title: '操作日志',
                     icon: 'el-icon-cc-file'
                 }
             }
         ]
-    },
+    }
 ]
 
 const routes = [

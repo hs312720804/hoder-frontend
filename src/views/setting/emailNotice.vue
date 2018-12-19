@@ -11,8 +11,8 @@
             </el-form-item>
             <el-form-item label="邮件类型" prop="type">
                 <el-select v-model="searchForm.type" clearable filterable placeholder="请选择类型">
-                    <el-option v-for="item in typeList" :key="item.typeFlag" :label="item.typeName"
-                               :value="item.typeFlag">
+                    <el-option v-for="item in emailTypeList" :key="item.value" :label="item.label"
+                               :value="item.value">
                     </el-option>
                 </el-select>
             </el-form-item>
@@ -110,8 +110,8 @@
                 </el-form-item>
                 <el-form-item label="邮件类型" prop="typeFlags">
                     <el-checkbox-group v-model="emailForm.typeFlags">
-                        <el-checkbox v-for="item in typeList" :label="item.typeFlag" name="typeNames" :key="item.typeFlag">
-                            {{ item.typeName }}
+                        <el-checkbox v-for="item in emailTypeList" :value="item.value" :label="item.label" name="typeNames" :key="item.value">
+                            {{ item.label }}
                         </el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
@@ -141,8 +141,8 @@
 
                 <el-form-item label="邮件类型" prop="typeFlags">
                     <el-checkbox-group v-model="emailForm.typeFlags">
-                        <el-checkbox v-for="item in typeList" :label="item.typeFlag" name="typeNames" :key="item.typeFlag">
-                            {{ item.typeName }}
+                        <el-checkbox v-for="item in emailTypeList" :value="item.value" :label="item.label" name="typeNames" :key="item.value">
+                            {{ item.label }}
                         </el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
@@ -193,11 +193,10 @@ export default {
                 // 列表页
                 searchForm: {
                     emailName: '',
-                    type: '',
-                    typeList: ""
+                    type: ''
                 },
                emailTypeList: null,
-               typeList: null,
+             //  typeList: null,
                 // 新增页
                 addFormVisible: false,// 新增界面是否显示
                 // 新增界面数据
@@ -465,9 +464,9 @@ export default {
             this.$service.emailTypeList().then((data)=>{
               this.emailTypeList=data.data;
             })
-             this.$service.typeList().then((data)=>{
-              this.typeList=data.data;
-            })
+            //  this.$service.typeList().then((data)=>{
+            //   this.typeList=data.data;
+            // })
             this.loadData()
         }
 }

@@ -13,7 +13,7 @@ export default function fetch({ method = "get", url, data, params, isJSON = fals
       // headers: {
       //   Authorization: this.state.token
       // }
-    }).then(function({ data }) {
+    }).then(function({data}) {
       NProgress.done()
       if (data.code === 0) {
         return data.data;

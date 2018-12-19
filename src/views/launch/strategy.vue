@@ -1,14 +1,75 @@
 <template>
-    <div>
-        策略列表
-    </div>
+  <div>
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tab-pane
+        v-for="item in launchPlatformData"
+        :label="item.biName"
+        :value="item.biId"
+        :key="item.biId"
+        :name="'name'+item.biId"
+      ></el-tab-pane>
+    </el-tabs>
+    <el-transfer
+      v-model="selectedValue"
+      :data="strategyPlatformData"
+      @change="handleChange"
+      :titles="['未选中策略', '已选中策略']"
+    ></el-transfer>
+  </div>
 </template>
 <script>
 export default {
-    data(){
-        return{
-            
+  data() {
+    return {
+      activeName: null,
+      biId: null,
+      launchPlatformData: [],
+      strategyPlatformData: [],
+      selectedValue: []
+    };
+  },
+  methods: {
+    handleChange(all, direction, selectedValue) {
+      this.$service
+        .modifyLaunchPolicy({ biId: this.biId, launchPolicyIds: all.join(",") })
+        .then(data => {
+          this.$message(data.msg);
+        });
+    },
+    handleClick(tab, event) {
+      this.biId = parseInt(tab.name.replace("name", ""));
+      let selectData = this.launchPlatformData.find((val, index) => {
+        if (val.biId == this.biId) return val;
+      });
+      this.selectedValue = selectData.launchPolicyIds.split(",").map(val => {
+        {
+          return parseInt(val);
         }
+      });
     }
-}
+  },
+  created() {
+    this.$service.launchPolicyIndex().then(data => {
+      this.launchPlatformData = data.biLists;
+      if (this.launchPlatformData.length > 0) {
+        this.biId = this.launchPlatformData[0].biId;
+        this.activeName = "name" + this.biId;
+        let selectData = this.launchPlatformData.find((val, index) => {
+          if (val.biId == this.biId) return val;
+        });
+        this.selectedValue = selectData.launchPolicyIds.split(",").map(val => {
+          {
+            return parseInt(val);
+          }
+        });
+      }
+      this.strategyPlatformData = data.policies.map(function(v, i) {
+        return {
+          key: v.policyId,
+          label: v.policyName
+        };
+      });
+    });
+  }
+};
 </script>

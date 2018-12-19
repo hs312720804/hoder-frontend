@@ -1,9 +1,7 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
-
 Vue.use(Router)
-
 function beforeEach(to, from, next) {
     const app = this.app
     app.$isLoggedIn().then(() => {
@@ -12,7 +10,7 @@ function beforeEach(to, from, next) {
             : {name: 'home'}
         )
     }).catch(() => {
-        next(to.name === 'login'
+        next(to.name == 'login'
             ? undefined
             : {name: 'login', query: {redirect: to.fullPath}}
         )

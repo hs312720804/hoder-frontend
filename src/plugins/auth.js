@@ -1,11 +1,9 @@
 import Vue from 'vue'
-
 function getInitData(app) {
     return app.$service.service.getConstants().then((constants) => {
         app.$appState.constants = constants
     })
 }
-
 Vue.prototype.$isLoggedIn = async function() {
     const $appState = this.$appState
     // memory
@@ -21,10 +19,8 @@ Vue.prototype.$isLoggedIn = async function() {
             this.$appState.user = user
         })
     }
-    
     throw {}
 }
-
 Vue.prototype.$login = async function(data) {
     return this.$service.login(data).then((res) => {
         const user = {
