@@ -10,7 +10,7 @@
             @click="handleAdd"
             shiro:hasPermission="sysAdministrative:role:add"
           >
-            <a class="fa fa-plus" style="color: white;"></a>新增
+            <a class="fa fa-plus" style="color: white;"></a>新增投放
           </el-button>
         </el-button-group>
       </div>

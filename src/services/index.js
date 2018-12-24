@@ -10,6 +10,7 @@ import * as organ from './administration/organ'
 import * as role from './administration/role'
 import * as validate from './launch/validate'
 import * as crowd from './launch/crowd'
+import * as crowdStrategy from "./crowdStrategy/index"
 const service = {
     state: {},
     fetch,
@@ -20,6 +21,7 @@ const service = {
     ...organ,
     ...role,
     ...validate,
-    ...crowd
+    ...crowd,
+    ...crowdStrategy
 }
 Vue.prototype.$service = utils.wrapService(service)

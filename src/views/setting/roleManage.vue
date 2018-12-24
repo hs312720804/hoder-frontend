@@ -201,10 +201,6 @@ export default {
                 name: [
                     {required: true, message: '请输入角色名称', trigger: 'blur'}
                 ]
-                // ,
-                // remarks: [
-                //     {required: true, message: '请输入备注', trigger: 'blur'}
-                // ]
             },
             filterText: '',
             data2: null,
@@ -276,7 +272,6 @@ export default {
             //json :最初的权限列表
             //keys :用户点击获取Vue获取到的最底层权限id数组
              getKeys(json, keys) {
-                 debugger;
                 var final = [];
                 for (var i = 0; i < keys.length; i++) {
                     var final = this.searchTree(json, keys[i]).concat(final);

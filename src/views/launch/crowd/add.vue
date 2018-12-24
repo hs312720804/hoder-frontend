@@ -146,7 +146,7 @@ export default {
     },
     getCrowd() {
       this.$service
-        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
+        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds })
         .then(data => {
           this.crowdData = data;
         })
@@ -177,7 +177,6 @@ export default {
     // 取消
     cancelAdd: function() {
       this.$emit("changeStatus",true)
-      
     }
   }
 };
@@ -195,11 +194,7 @@ export default {
    margin-bottom 30px
 .footer
    display flex
-   justify-content flex-end
-// .add >>> 
-//         .el-form-item--mini.el-form-item, .el-form-item--small.el-form-item 
-//            margin-bottom 0px
-          
+   justify-content flex-end    
 </style>
 
 
