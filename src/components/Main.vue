@@ -1,6 +1,6 @@
 <template>
     <el-container class="layout">
-        <div>
+        <div class="leftMenu">
             <div class="logo">
                 <div
                     class="logo__img"
@@ -43,7 +43,7 @@
                     </el-dropdown>
                 </div>
             </el-header>
-             <TagNav ref="tag" :init-tags="initTags" />
+             <TagNav ref="tag" :init-tags="initTags" class="tagNav" />
             <el-main>
                 <keep-alive>
                     <router-view v-if="isKeepAlive" />
@@ -170,9 +170,20 @@ export default {
     background-color #092035
 .menu:not(.el-menu--collapse)
     width 220px
+.leftMenu
+    height 100%
+    width 220px
+    background-color #092035
+.leftMenu >>> .menu
+    min-height 300px
+.tagNav
+   overflow visible
+.layout
+     height 100%
 .main_menu
    border-right none
-   color red
+   max-height 100%
+   overflow auto
    >>> .el-menu
          background #17090930 
    >>> span 

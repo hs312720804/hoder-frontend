@@ -26,15 +26,6 @@
                     shiro:hasPermission="sysAdministrative:user:batchDel"
                 ><i class="el-icon-delete"></i><span>重置</span>
                 </el-button>
-                <el-button
-                    type="primary"
-                    size="small"
-                    @click="pageRefresh"
-                    :disabled='isDisabl'
-                    shiro:hasPermission="sysAdministrative:user:add"
-                >
-                    <i class="el-icon-refresh" style="color: white;"></i><span>刷新</span>
-                </el-button>
             </el-form-item>
         </el-form>
     
@@ -64,8 +55,8 @@
             <el-table-column prop="id" label="ID" width="100"></el-table-column>
             <el-table-column prop="loginName" label="账号" width="200"></el-table-column>
             <el-table-column prop="operation" label="操作" width="300"></el-table-column>
-            <el-table-column prop="operateBefore" label="操作前" show-overflow-tooltip="true" width="300"></el-table-column>
-            <el-table-column prop="operateAfter" label="操作后" show-overflow-tooltip="true" width="300"></el-table-column>
+            <el-table-column prop="operateBefore" label="操作前" :show-overflow-tooltip="true" width="300"></el-table-column>
+            <el-table-column prop="operateAfter" label="操作后" :show-overflow-tooltip="true" width="300"></el-table-column>
             <el-table-column prop="operateIp" label="操作IP" width="200"></el-table-column>
             <el-table-column prop="status" label="状态" width="100"></el-table-column>
             <el-table-column prop="operateTime" fixed="right" label="操作时间" width="200">
@@ -76,7 +67,7 @@
             </el-table-column>
         </el-table>
         <!-- pagination -->
-        <div align="right" v-if="pageVisible" >
+        <div align="right"  >
             <pagination v-bind:currentpage="currentPage"
                         v-bind:pagesize="pageSize"
                         v-bind:totalcount="totalCount"
@@ -102,32 +93,17 @@ export default {
             start: 1,
             // 默认数据总数
             totalCount: 6,
-
             //查询条件
-            criteria: {},
-
-            isDisabl:true,
-            pageVisible:false
+            criteria: {}
         }
     },
     methods:{
         loadData:function() {
-            this.criteria["currentPage"] = this.currentPage;
+            this.criteria["pageNum"] = this.currentPage;
             this.criteria["pageSize"] = this.pageSize;
             this.$service.get_operateLogs_json(this.criteria).then(data => {
-                this.tableData = data.lists;
-                this.totalCount = data.count;
-                let arr = Object.keys(data.lists)
-                if(arr.length != 0){
-                    this.isDisabl = false;
-                }else{
-                    this.isDisabl = true;
-                }
-                if(this.totalCount > this.pageSize){
-                    this.pageVisible = true
-                }else{
-                    this.pageVisible = false
-                }
+                this.tableData = data.pageInfo.list;
+                this.totalCount = data.pageInfo.total;
             });
         },
         // 查询,提交表单
@@ -177,6 +153,9 @@ export default {
             this.currentPage = val;
             this.loadData();
         },
+    },
+    created () {
+        this.loadData();
     }
 }
 </script>

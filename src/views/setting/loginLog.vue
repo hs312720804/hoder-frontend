@@ -26,18 +26,8 @@
                     shiro:hasPermission="sysAdministrative:user:batchDel"
                 ><i class="el-icon-delete"></i><span>重置</span>
                 </el-button>
-                <el-button
-                    type="primary"
-                    size="small"
-                    @click="pageRefresh"
-                    :disabled='isDisabl'
-                    shiro:hasPermission="sysAdministrative:user:add"
-                >
-                    <i class="el-icon-refresh" style="color: white;"></i><span>刷新</span>
-                </el-button>
             </el-form-item>
         </el-form>
-    
         <!-- talbe -->
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column prop="id" label="ID"></el-table-column>
@@ -52,7 +42,7 @@
             <el-table-column prop="status" label="状态"></el-table-column>
         </el-table>
         <!-- pagination -->
-        <div align="right" v-if="pageVisible" >
+        <div align="right" >
             <pagination v-bind:currentpage="currentPage"
                         v-bind:pagesize="pageSize"
                         v-bind:totalcount="totalCount"
@@ -88,22 +78,11 @@ export default {
     },
     methods:{
         loadData:function() {
-            this.criteria["currentPage"] = this.currentPage;
+            this.criteria["pageNum"] = this.currentPage;
             this.criteria["pageSize"] = this.pageSize;
             this.$service.get_loginLogs_json(this.criteria).then(data => {
-                this.tableData = data.lists;
-                this.totalCount = data.count;
-                let arr = Object.keys(data.lists)
-                if(arr.length != 0){
-                    this.isDisabl = false;
-                }else{
-                    this.isDisabl = true;
-                }
-                if(this.totalCount > this.pageSize){
-                    this.pageVisible = true
-                }else{
-                    this.pageVisible = false
-                }
+                this.tableData = data.pageInfo.list;
+                this.totalCount = data.pageInfo.total;
             });
         },
         // 查询,提交表单
@@ -153,6 +132,9 @@ export default {
             this.currentPage = val;
             this.loadData();
         },
+    },
+    created () {
+        this.loadData();
     }
 }
 </script>

@@ -195,19 +195,12 @@ export default {
     },
     methods: {
             callback(data,successMsg){
-                if(data.msg)
-                {
                     this.$message({
                         message: data.msg,
-                        type: 'error'
-                    });
-                }else{
-                    this.$message({
-                        message: successMsg,
                         type: 'success'
                     });
                     this.loadData();
-                }
+
             },
             // 从服务器读取数据
             loadData: function () {
@@ -248,7 +241,7 @@ export default {
             selectOffice(){
                 this.organVisible=true;
                 this.$service.get_office_tree_json().then((data)=>{
-                    this.organs=data
+                    this.organs=data.officeTree
                 })
             },
             handleNodeClick(data){

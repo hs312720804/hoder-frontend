@@ -1,29 +1,11 @@
 <template>
   <div>
-    <!-- form search -->
-    <el-form
-      :inline="true"
-      :model="searchForm"
-      ref="searchForm"
-      @submit.native.prevent="submitForm"
-      shiro:hasPermission="sysAdministrative:user:search"
-    >
-      <el-form-item label="账号/真实姓名/邮箱" prop="userMsg">
-        <el-input
-          v-model="searchForm.userMsg"
-          style="width: 200px"
-          size="small"
-          placeholder="请输入账号/真实姓名/邮箱"
-        ></el-input>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-        <el-button type="primary" size="small" @click="handleReset">
-          <a class="fa fa-refresh" style="color: white;"></a> 重置
-        </el-button>
-      </el-form-item>
-    </el-form>
-    <!-- authority -->
+
+
+
+        <!-- authority -->
+    <div class="TopNav">
+      <div class="left">
     <el-button-group>
       <el-button
         type="primary"
@@ -45,8 +27,32 @@
         <a class="fa fa-trash" style="color: white;"></a> 批量删除
       </el-button>
     </el-button-group>
-    <br>
-    <br>
+      </div>
+      <div class="right">
+          <el-form
+      :inline="true"
+      :model="searchForm"
+      ref="searchForm"
+      @submit.native.prevent="submitForm"
+      shiro:hasPermission="sysAdministrative:user:search"
+    >
+      <el-form-item label="" prop="userMsg">
+        <el-input
+          v-model="searchForm.userMsg"
+          style="width: 200px"
+          size="small"
+          placeholder="请输入账号/真实姓名/邮箱"
+        ></el-input>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
+        <el-button type="primary" size="small" @click="handleReset">
+          <a class="fa fa-refresh" style="color: white;"></a> 重置
+        </el-button>
+      </el-form-item>
+    </el-form>
+      </div>
+    </div>
     <!-- talbe -->
     <el-table
       ref="myTable"
@@ -128,7 +134,6 @@
                         @handle-current-change="handleCurrentChange">
             </pagination>
     </div>
-
     <!--新增界面-->
     <el-dialog
       title="新增"
@@ -151,6 +156,7 @@
           <el-input type="password" size="small" v-model="userForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
+          <div style="height:100px;overflow:auto;">
           <el-checkbox-group v-model="userForm.roleIds">
             <el-checkbox
               v-for="item in userForm.roleList"
@@ -159,6 +165,7 @@
               :key="item.id"
             >{{ item.name }}</el-checkbox>
           </el-checkbox-group>
+          </div>
         </el-form-item>
         <el-form-item label="所属机构" prop="officeId">
           <el-input style="display:none;" v-model="userForm.officeId" placeholder="请选择所属机构"></el-input>
@@ -222,6 +229,7 @@
           <el-input type="password" size="small" v-model="userForm.password" placeholder="请输入密码"></el-input>
         </el-form-item>
         <el-form-item label="角色" prop="roleIds">
+          <div style="height:100px;overflow:auto;">
           <el-checkbox-group v-model="userForm.roleIds">
             <el-checkbox
               v-for="item in userForm.roleList"
@@ -230,6 +238,7 @@
               :key="item.id"
             >{{ item.name }}</el-checkbox>
           </el-checkbox-group>
+          </div>
         </el-form-item>
         <el-form-item label="所属机构" prop="officeId">
           <el-input style="display:none;" v-model="userForm.officeId"></el-input>
@@ -330,26 +339,20 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      if (data.msg) {
         this.$message({
           message: data.msg,
-          type: "error"
-        });
-      } else {
-        this.$message({
-          message: successMsg,
           type: "success"
         });
         this.loadData();
-      }
     },
     // 从服务器读取数据
     loadData: function() {
-      this.criteria["currentPage"] = this.currentPage;
+      this.criteria["pageNum"] = this.currentPage;
       this.criteria["pageSize"] = this.pageSize;
       this.$service.get_users_json(this.criteria).then(data => {
-        this.tableData = data.lists;
-        this.totalCount = data.count;
+        this.tableData = data.pageInfo.list;
+        this.totalCount = data.pageInfo.total;
+        this.userForm.roleList=data.roleList
       });
     },
 
@@ -421,7 +424,7 @@ export default {
    selectOffice(){
      this.companyVisible=true;
      this.$service.get_office_tree_json().then((data)=>{
-         this.companys=data
+         this.companys=data.officeTree
      })
    },
    handleNodeClick(data){
@@ -569,7 +572,7 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchDelUsers(ids).then(data => {
+            this.$service.batchDelUsers({ids:ids.join(",")}).then(data => {
               this.callback(data, "删除成功");
             });
           })
@@ -588,9 +591,6 @@ export default {
     }
   },
   created() {
-    this.$service.roleList().then(data => {
-      this.userForm.roleList = data.data;
-    });
     this.loadData();
   }
   //  })
