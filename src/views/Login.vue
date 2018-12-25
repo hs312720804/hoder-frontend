@@ -2,6 +2,7 @@
 <div id="login">  
   <el-row>
     <el-col :span="6" :offset="9" class="login-form">
+      <div class="login-logo"></div>
       <p class="title">人群策略平台</p>
       <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
 
@@ -59,6 +60,8 @@ export default {
 <style lang="stylus" scoped>
 .login-form
   margin-top: 200px
+  background-color rgba(0,0,0,.6)
+  padding 30px
 .login-form__btn
   width: 100%
 #login
@@ -67,15 +70,17 @@ export default {
   background-size cover
 .title
    font-family 'Niconne'
-   font-size 30px
-   color #578ae0
+   font-size 24px
+   color #fff
    text-align center
+   margin-top 10px
 .login-form >>> .el-input--small .el-input__inner 
     height 40px
     line-height 32px
-.login-form
-  background-color #ffffff9c
-  padding 30px
-  box-shadow 0px 0px 30px #757884
+.login-logo
+  background url(../assets/img/coocaa_logo.png) no-repeat center
+  background-size 60%
+  height 40px
+  
 
 </style>
