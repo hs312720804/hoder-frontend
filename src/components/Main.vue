@@ -137,9 +137,7 @@ export default {
     }
 }
 </script>
-
 <style lang="stylus" scoped>
-
 .header
     display flex
     align-items center
@@ -155,12 +153,16 @@ export default {
     border-right 1px solid #092035
     border-bottom 1px solid #092035
 .logo__img
-    color #9dc2e8
+    color #277dd6
+.collpase-btn
+   color: #ebf0fb
+.collpase-btn i 
+    color #ebf0fb
 .collpase-btn
     &,
     &:hover,
     &:focus
-        color #606266
+        color #ebf0fb
 .breadcrumb 
     margin-left 10px
 .user-info
@@ -172,7 +174,6 @@ export default {
     width 220px
 .leftMenu
     height 100%
-    width 220px
     background-color #092035
 .leftMenu >>> .menu
     min-height 300px
@@ -180,6 +181,10 @@ export default {
    overflow visible
 .layout
      height 100%
+.breadcrumb >>> .el-breadcrumb__inner
+    color #c0c4cc
+.user-info
+    cursor pointer
 .main_menu
    border-right none
    max-height 100%

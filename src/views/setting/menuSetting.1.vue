@@ -5,9 +5,9 @@
             <el-button type="primary" size="small" @click="handleAdd" permission> <!--TODO: permission -->
                 <a class="fa fa-plus" style="color: white;"></a>新增
             </el-button>
-            <el-button type="primary" size="small" @click="handleRefresh">
+            <!-- <el-button type="primary" size="small" @click="handleRefresh">
                 <a class="fa fa-refresh" style="color: white;"></a> 刷新
-            </el-button>
+            </el-button> -->
         </el-button-group>
         <br>
         <br>
@@ -197,26 +197,10 @@ export default {
      methods: {
             // 从服务器读取数据
             loadData: function () {
-                axios.get("/api/manage/menu/get_menus_json", {}).then(
-                //     function (res) {
-                //     this.tableData = res.data.menuTreeTable;
-                // }, 
-                res=>{
-                    this.tableData = res.data.menuTreeTable;
-                }
-                ,
-                function () {
-                    console.log('failed');
-                }
-                );
+                this.$service.get_menus_json().then((data)=>{
+                    this.tableData = data.menuTreeTable;
+                })
             },
-
-            // 刷新
-            handleRefresh: function () {
-                this.loadData();
-              //  window.location.href = localStorage.getItem("adminPath") + "/manage/menu/index";
-            },
-
             // 修改状态
             handleChangetStatus: function (index, row) {
                 var id = row.id;
@@ -226,7 +210,13 @@ export default {
                     cancelButtonText: '取消',
                     type: 'warning'
                 }).then(() => {
-                    changeStatus(this, id, isShow);
+                    this.$service.changeMenuStatus({id:id,isShow:isShow}).then((data)=>{
+                       this.$message({
+                           type:"success",
+                           message:data.msg
+                       })
+                       this.loadData();
+                    })
                 }).catch(() => {
                     this.$message({
                         showClose: true,
@@ -368,12 +358,18 @@ export default {
                     cancelButtonText: '取消',
                     type: 'error'
                 }).then(() => {
-                    del(this, id);
+                    this.$service.delMenu({id:id}).then((data)=>{
+                       this.$message({
+                           type:"success",
+                           message:data.msg
+                       })
+                       this.loadData();
+                    })
                 }).catch(() => {
-                    this.$message({
-                        showClose: true,
-                        message: '已取消删除操作'
-                    });
+                     this.$message({
+                           type:"error",
+                           message:data.msg
+                       })
                 });
             }
         }

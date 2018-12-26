@@ -5,8 +5,8 @@
     </div>
 </template>
 <script>
-import strategyList from './strategyList'
-import crowdIndex from './crowdIndex'
+import StrategyList from './strategyList'
+import CrowdIndex from './crowdIndex'
 export default {
     data(){
         return{
@@ -24,8 +24,8 @@ export default {
         }
     },
     components: {
-        strategyList,
-        crowdIndex
+        StrategyList,
+        CrowdIndex
     }
 }
 </script>

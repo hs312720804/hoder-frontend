@@ -22,7 +22,7 @@ export default function fetch({
   })
     .then(function({ data }) {
       NProgress.done();
-      if (data.code === 0) {
+      if ( parseInt(data.code) === 0) {
         if (typeof data.data != undefined){
           if(data.data!=null)
           return data.data;

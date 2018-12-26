@@ -17,8 +17,8 @@
   </div>
 </template> 
 <script>
-import crowdAdd from "./crowdAdd";
-import crowdList from "./crowdList";
+import CrowdAdd from "./crowdAdd";
+import CrowdList from "./crowdList";
 export default {
   data() {
     return {
@@ -47,8 +47,8 @@ export default {
     }
   },
   components: {
-    crowdAdd,
-    crowdList
+    CrowdAdd,
+    CrowdList
   }
 };
 </script>

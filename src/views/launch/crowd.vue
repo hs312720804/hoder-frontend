@@ -5,8 +5,8 @@
   </div>
 </template>
 <script>
-import list from "./crowd/list";
-import add from "./crowd/add";
+import List from "./crowd/list";
+import Add from "./crowd/add";
 export default {
   data() {
     return {
@@ -15,8 +15,8 @@ export default {
     };
   },
   components: {
-    list,
-    add
+    List,
+    Add
   },
   methods: {
     changeStatus(state,launchCrowdId){
