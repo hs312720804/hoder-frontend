@@ -12,6 +12,9 @@ import * as validate from './launch/validate'
 import * as crowd from './launch/crowd'
 import * as crowdStrategy from "./crowdStrategy/index"
 import * as menu from "./systemSetting/menu"
+import * as tagGroup from "./tagGroup"
+import * as tagCategory from "./tagCategory.js"
+import * as tag from "./tag.js"
 const service = {
     state: {},
     fetch,
@@ -24,6 +27,9 @@ const service = {
     ...validate,
     ...crowd,
     ...crowdStrategy,
-    ...menu
+    ...menu,
+    ...tagGroup,
+    ...tagCategory,
+    ...tag,
 }
 Vue.prototype.$service = utils.wrapService(service)

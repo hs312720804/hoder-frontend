@@ -1,7 +1,7 @@
 import Main from '@/components/Main'
 import Wrapper from '@/components/Wrapper.vue'
 import Login from '@/views/Login'
-import labelList from '@/views/labelList'
+import TagGroup from '@/views/TagGroup/Index.vue'
 import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
 import strategy from '@/views/launch/strategy'
@@ -27,13 +27,30 @@ const children = [
         },
         children:[
             {
-                name: 'labelList',
-                path: 'labelList',
-                component: labelList,
+                name: 'tag',
+                path: 'tag',
+                component: TagGroup,
+                props: {
+                    mode: 'list-tag-group'
+                },
                 meta: {
-                    tagId:"labelList",
+                    tagId: "tag",
                     title: '标签列表',
                     icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'tag-category-read',
+                path: 'tag-category/:id',
+                component: TagGroup,
+                props: {
+                    mode: 'read-tag-category'
+                },
+                meta: {
+                    tagId: "tag",
+                    title: '查看标签',
+                    icon: 'el-icon-cc-file',
+                    hideInMenu: true
                 }
             }
         ]
