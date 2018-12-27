@@ -1,6 +1,7 @@
-export default function() {
-    return Promise.resolve({
-        code: 0,
-        data: {}
-    })
+export default function(data) {
+    return this.fetch({
+        method: 'POST',
+        url: '/api/getRoleMenus',
+        data 
+      })
 }

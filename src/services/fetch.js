@@ -11,26 +11,21 @@ export default function fetch({
   isJSON = false
 }) {
   NProgress.start();
-  return axios({
+  let option = {
     method,
     url,
     data: isJSON ? data : qs.stringify(data),
     params
-    // headers: {
-    //   Authorization: this.state.token
-    // }
-  })
+  };
+  if (url != "/api/login") option.headers = { Authorization: this.state.token };
+  return axios(option)
     .then(function({ data }) {
       NProgress.done();
-      if ( parseInt(data.code) === 0) {
-        if (typeof data.data != undefined){
-          if(data.data!=null)
-          return data.data;
-          else
-          return data;
-        } 
-        else 
-          return data;
+      if (parseInt(data.code) === 0) {
+        if (typeof data.data != undefined) {
+          if (data.data != null) return data.data;
+          else return data;
+        } else return data;
       } else {
         throw {
           code: data.code,

@@ -1,12 +1,12 @@
 import Vue from 'vue'
 function getInitData(app) {
-    return app.$service.service.getConstants().then((constants) => {
-        app.$appState.constants = constants
+    return app.$service.getConstants({token:app.$service.service.state.token}).then((res) => {
+      return res;
     })
 }
 Vue.prototype.$isLoggedIn = async function() {
     const $appState = this.$appState
-    // memory
+    //memory
     if($appState.user) {
         return
     }
@@ -15,8 +15,10 @@ Vue.prototype.$isLoggedIn = async function() {
     if (user) {
         // try login
         this.$service.service.state = user
-        return getInitData(this).then(() => {
+        return getInitData(this).then((res) => {
             this.$appState.user = user
+            this.$appState.permissions=res.permissions
+            this.$appState.menus=res.menus;
         })
     }
     throw {}
@@ -24,14 +26,14 @@ Vue.prototype.$isLoggedIn = async function() {
 Vue.prototype.$login = async function(data) {
     return this.$service.login(data).then((res) => {
         const user = {
-            name: data.userName,
-            token: res.token
+            name: data.username,
+            token: res.jwtToken
         }
         this.$service.service.state = user
-        return getInitData(this).then(() => {
-            this.$appState.user = user
-            this.$appState.$set('user', user)
-        })
+        this.$appState.user = user
+        this.$appState.$set('user', user)
+        this.$appState.menus=res.menus;
+        this.$appState.permissions=res.permissions
     })
 }
 
