@@ -9,6 +9,8 @@ import * as personManage from './administration/person'
 import * as organ from './administration/organ'
 import * as role from './administration/role'
 import * as validate from './launch/validate'
+import {get_user_json,updateUserInformation} from './personalManage/personalInformation'
+import {modifyPwd} from './personalManage/modifyPassword'
 import * as crowd from './launch/crowd'
 import * as crowdStrategy from "./crowdStrategy/index"
 import * as menu from "./systemSetting/menu"
@@ -20,6 +22,9 @@ const service = {
     fetch,
     login,
     getConstants,
+    modifyPwd,
+    get_user_json,
+    updateUserInformation,
     ...email,
     ...personManage,
     ...organ,

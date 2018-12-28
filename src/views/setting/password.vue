@@ -1,14 +1,14 @@
 <template>
     <div class="modifyPassword">
         <el-form :label-position="labelPosition" label-width="200px" :model="passwordModify" ref="passwordModify" :rules="rulesPwd">
-            <el-form-item label="原密码" prop="oldPassword">
-                <el-input v-model="passwordModify.oldPassword"></el-input>
+            <el-form-item label="原密码" prop="pwd">
+                <el-input v-model="passwordModify.pwd" type="password"></el-input>
             </el-form-item>
-            <el-form-item label="新密码" prop="newPassword">
-                <el-input v-model="passwordModify.newPassword"></el-input>
+            <el-form-item label="新密码" prop="newPwd">
+                <el-input v-model="passwordModify.newPwd" type="password"></el-input>
             </el-form-item>
-            <el-form-item label="确认新密码" prop="confirmPassword">
-                <el-input v-model="passwordModify.confirmPassword"></el-input>
+            <el-form-item label="确认新密码" prop="reNewPwd">
+                <el-input v-model="passwordModify.reNewPwd" type="password"></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="savePassword">保存</el-button>
@@ -23,43 +23,42 @@ export default {
             if (value === ''){
                 callback(new Error('请输入原始密码'));
             }else {
-                callback();
+               callback();
             }
         };
         var validatePass = (rule, value, callback) => {
             if (value === ''){
                 callback(new Error('请输入密码'));
             }else {
-                if (this.passwordModify.newPassword !== ''){
-                    this.$refs.passwordModify.validateField('newPassword')
+                if (this.passwordModify.reNewPwd !== ''){
+                    this.$refs.passwordModify.validateField('reNewPwd')
                 }
-                callback();
             }
         };
         var validatePass2 = (rule, value, callback) => {
             if (value === ''){
                 callback(new Error('请再次输入密码'));
-            }else if (value != this.passwordModify.newPassword) {
+            }else if (value != this.passwordModify.newPwd) {
                 callback(new Error('两次输入密码不一致！'));
-            }else{
+            }else {
                 callback();
             }
         };
         return{
             labelPosition: 'right',
             passwordModify: {
-                oldPassword: '',
-                newPassword: '',
-                confirmPassword: ''
+                pwd: '',
+                newPwd: '',
+                reNewPwd: ''
             },
             rulesPwd: {
-                oldPassword: [
+                pwd: [
                     { validator :validateOldPass, trigger: 'blur'}
                 ],
-                newPassword: [
+                newPwd: [
                     { validator :validatePass, trigger: 'blur'}
                 ],
-                confirmPassword: [
+                reNewPwd: [
                     { validator :validatePass2, trigger: 'blur'}
                 ]
             }
@@ -68,13 +67,17 @@ export default {
     },
     methods: {
         savePassword: function () {
-            this.$message('保存')
+            const pwd = this.passwordModify.pwd;
+            const newPwd = this.passwordModify.newPwd;
+            const reNewPwd = this.passwordModify.reNewPwd;
+            this.$service.modifyPwd({pwd : pwd, newPwd: newPwd,reNewPwd: reNewPwd})
+                .then((data) => {
+                console.log(data)
+                this.$message('密码保存成功')
+            })
         }
 
     },
-    created: {
-
-    }
 }
 </script>
 <style scoped>

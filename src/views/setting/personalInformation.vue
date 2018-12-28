@@ -1,14 +1,14 @@
 <template>
     <div class="personalInformation">
         <el-form :label-position="labelPosition" label-width="200px" :model="personalInformation">
-            <el-form-item label="账号" prop="id">
-                {{personalInformation.id}}
+            <el-form-item label="账号" prop="loginName">
+                {{personalInformation.loginName}}
             </el-form-item>
             <el-form-item label="归属机构" prop="officeName">
                 {{personalInformation.officeName}}
             </el-form-item>
-            <el-form-item label="真实姓名" prop="username">
-                <el-input v-model="personalInformation.username" placeholder="如若修改请填写"></el-input>
+            <el-form-item label="真实姓名" prop="name">
+                <el-input v-model="personalInformation.name" placeholder="如若修改请填写"></el-input>
             </el-form-item>
             <el-form-item label="手机" prop="mobile">
                 <el-input v-model="personalInformation.mobile" placeholder="如若修改请填写"></el-input>
@@ -28,11 +28,12 @@ export default {
         return{
             labelPosition: 'right',
             personalInformation: {
-                id: 'liqi@coocaa.com',
-                officeName: '研发部',
-                username: '',
+                loginName: '',
+                officeName: '',
+                name: '',
                 mobile: '',
                 email: '',
+                id:''
 
             }
             
@@ -40,8 +41,24 @@ export default {
     },
     methods: {
         saveInformation: function () {
-            alert("保存")
+            const loginName = this.personalInformation.loginName;
+            const officeName = this.personalInformation.officeName;
+            const name = this.personalInformation.name;
+            const mobile = this.personalInformation.mobile;
+            const email = this.personalInformation.email;
+            const id = this.personalInformation.id
+            this.$service.updateUserInformation({id:id,loginName:loginName,officeName:officeName,name:name,mobile:mobile,email:email}).then((data)=>{
+                this.$message("保存成功");
+            })
         }
+    },
+    created () {
+        this.$service.get_user_json().then((data)=>{
+            console.log("yonghuxinxi=====");
+            console.log(data);
+            this.personalInformation=data.user;
+            this.personalInformation.id = data.user.id;
+        })
     }
 }
 </script>
