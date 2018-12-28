@@ -73,7 +73,10 @@ export default {
             this.$service.modifyPwd({pwd : pwd, newPwd: newPwd,reNewPwd: reNewPwd})
                 .then((data) => {
                 console.log(data)
-                this.$message('密码保存成功')
+                this.$message('密码保存成功，请重新登录')
+                this.$logout().then(() => {
+                    this.$router.push({ name: "login" });
+                });
             })
         }
 
