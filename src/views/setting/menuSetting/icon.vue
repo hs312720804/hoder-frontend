@@ -3193,6 +3193,138 @@
         <div class="name">zoom in</div>
         <div class="fontclass">.el-icon-cc-zoomin</div>
       </li>
+      <li>
+                <i class="icon iconfont el-icon-cc-denglu"></i>
+                    <div class="name">登录</div>
+                    <div class="fontclass">.el-icon-cc-denglu</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-iconset0225"></i>
+                    <div class="name">投放仪</div>
+                    <div class="fontclass">.el-icon-cc-iconset0225</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-iconset0329"></i>
+                    <div class="name">标签</div>
+                    <div class="fontclass">.el-icon-cc-iconset0329</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-renqun"></i>
+                    <div class="name">人群</div>
+                    <div class="fontclass">.el-icon-cc-renqun</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-prize-copy"></i>
+                    <div class="name">prize</div>
+                    <div class="fontclass">.el-icon-cc-prize-copy</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-caozuo"></i>
+                    <div class="name">操作</div>
+                    <div class="fontclass">.el-icon-cc-caozuo</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-xitong"></i>
+                    <div class="name">系统</div>
+                    <div class="fontclass">.el-icon-cc-xitong</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-jiaose"></i>
+                    <div class="name">角色</div>
+                    <div class="fontclass">.el-icon-cc-jiaose</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-yanzheng"></i>
+                    <div class="name">验证</div>
+                    <div class="fontclass">.el-icon-cc-yanzheng</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-tab_activity"></i>
+                    <div class="name">tab_activity</div>
+                    <div class="fontclass">.el-icon-cc-tab_activity</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-tubiaozhizuomoban"></i>
+                    <div class="name">个人</div>
+                    <div class="fontclass">.el-icon-cc-tubiaozhizuomoban</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-email"></i>
+                    <div class="name">邮件</div>
+                    <div class="fontclass">.el-icon-cc-email</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-institute"></i>
+                    <div class="name">机构</div>
+                    <div class="fontclass">.el-icon-cc-institute</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-menu1"></i>
+                    <div class="name">菜单</div>
+                    <div class="fontclass">.el-icon-cc-menu1</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-rizhi"></i>
+                    <div class="name">日志</div>
+                    <div class="fontclass">.el-icon-cc-rizhi</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-renyuanguanli"></i>
+                    <div class="name">人员管理</div>
+                    <div class="fontclass">.el-icon-cc-renyuanguanli</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-rizhiguanli"></i>
+                    <div class="name">日志管理</div>
+                    <div class="fontclass">.el-icon-cc-rizhiguanli</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-yanjizhushou-shangchuan_xitong"></i>
+                    <div class="name">系统</div>
+                    <div class="fontclass">.el-icon-cc-yanjizhushou-shangchuan_xitong</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-celveguanli"></i>
+                    <div class="name">策略管理</div>
+                    <div class="fontclass">.el-icon-cc-celveguanli</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-celve"></i>
+                    <div class="name">策略</div>
+                    <div class="fontclass">.el-icon-cc-celve</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-xinxi"></i>
+                    <div class="name">信息</div>
+                    <div class="fontclass">.el-icon-cc-xinxi</div>
+                </li>
+            
+                <li>
+                <i class="icon iconfont el-icon-cc-mima"></i>
+                    <div class="name">密码</div>
+                    <div class="fontclass">.el-icon-cc-mima</div>
+                </li>
+            
     </ul>
   </div>
 </template>

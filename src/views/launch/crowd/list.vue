@@ -8,7 +8,7 @@
             type="primary"
             size="small"
             @click="handleAdd"
-            shiro:hasPermission="sysAdministrative:role:add"
+            v-permission="'hoder:launch:crowd:modify'"
           >
             <a class="fa fa-plus" style="color: white;"></a>新增投放
           </el-button>
@@ -21,7 +21,6 @@
           :model="searchForm"
           ref="searchForm"
           @submit.native.prevent="submitForm"
-          shiro:hasPermission="sysAdministrative:role:search"
         >
           <el-form-item label prop="launchName">
             <el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称"></el-input>
@@ -60,20 +59,27 @@
           <el-button-group>
             <el-button
               v-if="scope.row.status==1"
+              v-permission="'hoder:launch:crowd:launch'"
               size="small"
               type="warning"
               @click="lanuch(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:role:changeStatus"
             >投放</el-button>
             <el-button
               v-if="scope.row.status==3"
+              v-permission="'hoder:launch:crowd:cancel'"
               size="small"
               type="warning"
               @click="cancelLanuch(scope.row)"
             >取消投放</el-button>
-            <el-button size="small" type="success" @click="condition(scope.row)">人群条件</el-button>
+            <el-button
+              size="small"
+              type="success"
+              v-permission="'hoder:launch:crowd:detail'"
+              @click="condition(scope.row) "
+            >人群条件</el-button>
             <el-button
               v-if="scope.row.status==1"
+              v-permission="'hoder:launch:crowd:modify'"
               size="small"
               type="primary"
               @click="handleEdit(scope.row.launchCrowdId)"
@@ -81,10 +87,10 @@
             >编辑</el-button>
             <el-button
               v-if="scope.row.status==1"
+              v-permission="'hoder:launch:crowd:del'"
               size="small"
               type="info"
               @click="del(scope.row)"
-              shiro:hasPermission="sysAdministrative:role:edit"
             >删除</el-button>
           </el-button-group>
         </template>
@@ -163,11 +169,12 @@ export default {
         this.loadData();
       }
     },
-    handleAdd(){
-        this.$emit("changeStatus",false)
+    handleAdd() {
+      debugger;
+      this.$emit("changeStatus", false);
     },
-    handleEdit(launchCrowdId){
-       this.$emit("changeStatus",false,launchCrowdId)
+    handleEdit(launchCrowdId) {
+      this.$emit("changeStatus", false, launchCrowdId);
     },
     condition(row) {
       this.isShowCondition = true;

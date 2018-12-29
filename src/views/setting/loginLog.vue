@@ -6,7 +6,6 @@
         :model="queryForm"
         ref="queryForm"
         @submit.native.prevent="submitForm"
-        shiro:hasPermission="sysAdministrative:user:query"
         >
             <el-form-item label="登录用户" prop="loginName">
                 <el-input

@@ -26,7 +26,7 @@
             type="primary"
             size="small"
             @click="handleAdd"
-            shiro:hasPermission="sysAdministrative:role:add"
+            v-permission="'hoder:crowd:add'"
           >
             <a class="fa fa-plus" style="color: white;"></a>新增人群
           </el-button>
@@ -57,17 +57,25 @@
     <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
       <el-table-column type="expand">
         <template slot-scope="props">
-          <el-form label-position="left"  class="demo-table-expand">
+          <el-form label-position="left" class="demo-table-expand">
             <el-form-item label="人群名称:">
               <span>{{ props.row.crowdName }}</span>
             </el-form-item>
             <el-form-item label="标签:">
-              <div v-for="(item, index) in JSON.parse(props.row.rulesJson).rules" :key="index" class="detail">
+              <div
+                v-for="(item, index) in JSON.parse(props.row.rulesJson).rules"
+                :key="index"
+                class="detail"
+              >
                 <div v-if="index>0" class="label-or-space">或</div>
-                
-                <div class="label-ground">
-                  (<div v-for="(childItem,childItemIndex) in item.rules" :key="childItem.tagId" class="label-item">
-                     <div v-if="childItemIndex>0" class="label-or-space">且</div> 
+
+                <div class="label-ground">(
+                  <div
+                    v-for="(childItem,childItemIndex) in item.rules"
+                    :key="childItem.tagId"
+                    class="label-item"
+                  >
+                    <div v-if="childItemIndex>0" class="label-or-space">且</div>
                     <span class="txt">{{ childItem.categoryName }}</span>
                     <span class="sel">{{ childItem.operator }}</span>
                     <span class="in">
@@ -81,9 +89,7 @@
                       ></el-date-picker>
                       <span v-else>{{ childItem.tagName }}</span>
                     </span>
-                   
-                  </div>
-                  )
+                  </div>)
                 </div>
               </div>
             </el-form-item>
@@ -104,8 +110,18 @@
       <el-table-column label="操作" fixed="right" width="280">
         <template scope="scope">
           <el-button-group>
-            <el-button size="small" type="success" @click="edit(scope.row)">编辑</el-button>
-            <el-button size="small" type="warning" @click="del(scope.row)">删除</el-button>
+            <el-button
+              size="small"
+              type="success"
+              v-permission="'hoder:crowd:edit'"
+              @click="edit(scope.row)"
+            >编辑</el-button>
+            <el-button
+              size="small"
+              type="warning"
+              v-permission="'hoder:crowd:del'"
+              @click="del(scope.row)"
+            >删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -252,11 +268,11 @@ fieldset
 fieldset>div
   display: flex
   justify-content: space-between
-.label-ground,.label-item,.detail
-  display flex
- .demo-table-expand >>> .el-form-item__content
-    display flex
+.label-ground, .label-item, .detail
+  display: flex
+.demo-table-expand >>> .el-form-item__content
+  display: flex
 .label-or-space
-  color #1ac71c
-  margin 0 5px
+  color: #1ac71c
+  margin: 0 5px
 </style>

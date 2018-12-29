@@ -7,10 +7,17 @@ export function crowdList(params) {
       })
 }
 //修改新增人群策略
-export function modifyLaunchCrowd(params){
+export function addLaunchCrowd(params){
     return this.fetch({
         method: 'GET',
-        url: '/api/launchCrowd/modifyLaunchCrowd/',
+        url: '/api/launchCrowd/saveLaunchCrowd/',
+        params 
+      })
+}
+export function updateLaunchCrowd(params){
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchCrowd/update/',
         params 
       })
 }

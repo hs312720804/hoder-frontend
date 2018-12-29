@@ -8,7 +8,7 @@
             type="primary"
             size="small"
             @click="handleAdd"
-            shiro:hasPermission="sysAdministrative:role:add"
+            v-permission="'hoder:policy:add'"
           >
             <a class="fa fa-plus" style="color: white;"></a>新增
           </el-button>
@@ -21,7 +21,6 @@
           :model="searchForm"
           ref="searchForm"
           @submit.native.prevent="submitForm"
-          shiro:hasPermission="sysAdministrative:role:search"
         >
           <el-form-item label prop="policyName">
             <el-input v-model="searchForm.policyName" style="width: 200px" placeholder="请输入策略名称"></el-input>
@@ -56,17 +55,27 @@
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.updateTime }}</span>
         </template>
-      </el-table-column> -->
+      </el-table-column>-->
       <el-table-column prop="tagsList" label="策略纬度">
-        <template scope="scope"> 
-          <el-tag size="mini" v-for="item in scope.row.tagsList" :key="item.tagId"  type="success">{{item.tagName}}</el-tag>
+        <template scope="scope">
+          <el-tag
+            size="mini"
+            v-for="item in scope.row.tagsList"
+            :key="item.tagId"
+            type="success"
+          >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="200">
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
-            <el-button size="small" type="warning" @click="del(scope.row)">删除</el-button>
+            <el-button
+              size="small"
+              type="warning"
+              v-permission="'hoder:policy:del'"
+              @click="del(scope.row)"
+            >删除</el-button>
           </el-button-group>
         </template>
       </el-table-column>

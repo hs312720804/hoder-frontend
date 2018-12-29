@@ -1,6 +1,6 @@
 <template>
 <div id="login">  
-  <el-row>
+  <el-row class="login-content">
     <el-col :span="6" :offset="9" class="login-form">
       <div class="login-logo"></div>
       <p class="title">人群策略平台</p>
@@ -58,8 +58,11 @@ export default {
 };
 </script>
 <style lang="stylus" scoped>
+.login-content
+  height 100%
+  display flex
+  align-items center
 .login-form
-  margin-top: 200px
   background-color rgba(0,0,0,.6)
   padding 30px
 .login-form__btn
@@ -73,14 +76,14 @@ export default {
    font-size 24px
    color #fff
    text-align center
-   margin-top 10px
+   margin 10px
 .login-form >>> .el-input--small .el-input__inner 
     height 40px
     line-height 32px
 .login-logo
   background url(../assets/img/coocaa_logo.png) no-repeat center
   background-size 60%
-  height 40px
+  height 30px
   
 
 </style>
