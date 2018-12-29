@@ -17,3 +17,8 @@ Vue.use(ElementUI,{ size: 'small', zIndex: 3000 })
 Vue.use(AppState)
 Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('pagination', pagination)
+Vue.directive('permission', function (el, binding,vNode) {
+    if(vNode.context.$appState.permissions[binding.value]===undefined) {
+        el.style.display = 'none'
+    }
+  })

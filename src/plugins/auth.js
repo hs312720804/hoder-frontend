@@ -17,7 +17,10 @@ Vue.prototype.$isLoggedIn = async function() {
         this.$service.service.state = user
         return getInitData(this).then((res) => {
             this.$appState.user = user
-            this.$appState.permissions=res.permissions
+            this.$appState.permissions={};
+            res.permissions.forEach((item)=>{
+                this.$appState.permissions[item]=item;
+            })
             this.$appState.menus=res.menus;
         })
     }
@@ -34,7 +37,10 @@ Vue.prototype.$login = async function(data) {
         this.$appState.user = user
         this.$appState.$set('user', user)
         this.$appState.menus=res.menus;
-        this.$appState.permissions=res.permissions
+        this.$appState.permissions={};
+        res.permissions.forEach((item)=>{
+            this.$appState.permissions[item]=item;
+        })
     })
 }
 

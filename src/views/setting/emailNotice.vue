@@ -4,16 +4,16 @@
     <div class="TopNav">
       <div class="left">
         <el-button-group>
-          <el-button type="primary" size="small" @click="handleAdd" permission>
+          <el-button type="primary" size="small" @click="handleAdd" v-permission="'sysSetup:email:add'">
             <a class="fa fa-plus" style="color: white;"></a>新增
           </el-button>
-          <el-button type="primary" size="small" @click="handleBatchDel" permission>
+          <el-button type="primary" size="small" @click="handleBatchDel" v-permission="'sysSetup:email:batchDel'">
             <a class="fa fa-trash" style="color: white;"></a> 批量删除
           </el-button>
         </el-button-group>
       </div>
       <div class="right">
-        <el-form :inline="true" :model="searchForm" ref="searchForm" permission>
+        <el-form :inline="true" :model="searchForm" ref="searchForm" >
           <!-- TODO: permission -->
           <el-form-item label prop="emailName">
             <el-input
@@ -87,7 +87,7 @@
               size="small"
               type="warning"
               @click="handleChangetStatus(scope.$index, scope.row)"
-              permission
+              v-permission="'sysSetup:email:changeStatus'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 修改状态
             </el-button>
@@ -95,7 +95,7 @@
               size="small"
               type="primary"
               @click="handleEdit(scope.$index, scope.row)"
-              permission
+              v-permission="'sysSetup:email:edit'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 编辑
             </el-button>
@@ -103,7 +103,7 @@
               size="small"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              permission
+              v-permission="'sysSetup:email:del'"
             >
               <a class="fa fa-trash" style="color: white;"></a> 删除
             </el-button>

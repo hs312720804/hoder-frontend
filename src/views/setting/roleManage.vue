@@ -9,7 +9,7 @@
             type="primary"
             size="small"
             @click="handleAdd"
-            shiro:hasPermission="sysAdministrative:role:add"
+            v-permission="'sysAdministrative:role:add'"
           >
             <a class="fa fa-plus" style="color: white;"></a>新增
           </el-button>
@@ -20,7 +20,7 @@
             type="primary"
             size="small"
             @click="handleBatchDel"
-            shiro:hasPermission="sysAdministrative:role:batchDel"
+            v-permission="'sysAdministrative:role:batchDel'"
           >
             <a class="fa fa-trash" style="color: white;"></a> 批量删除
           </el-button>
@@ -33,9 +33,8 @@
           :model="searchForm"
           ref="searchForm"
           @submit.native.prevent="submitForm"
-          shiro:hasPermission="sysAdministrative:role:search"
         >
-          <el-form-item label="" prop="name">
+          <el-form-item label prop="name">
             <el-input
               v-model="searchForm.name"
               style="width: 200px"
@@ -94,7 +93,7 @@
               size="small"
               type="warning"
               @click="handleChangetStatus(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:role:changeStatus"
+              v-permission="'sysAdministrative:role:changeStatus'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 修改状态
             </el-button>
@@ -102,7 +101,7 @@
               size="small"
               type="primary"
               @click="handleEdit(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:role:edit"
+              v-permission="'sysAdministrative:role:edit'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 编辑
             </el-button>
@@ -110,7 +109,7 @@
               size="small"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:role:del"
+              v-permission="'sysAdministrative:role:del'"
             >
               <a class="fa fa-trash" style="color: white;"></a> 删除
             </el-button>
@@ -292,11 +291,11 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-        this.$message({
-          message: data.msg,
-          type: "success"
-        });
-        this.loadData();
+      this.$message({
+        message: data.msg,
+        type: "success"
+      });
+      this.loadData();
     },
     // 从服务器读取数据
     loadData: function() {
@@ -306,7 +305,7 @@ export default {
         this.tableData = data.pageInfo.list;
         this.totalCount = data.pageInfo.total;
         this.initTree = this.searchInit(data.menuTree);
-        this.data2=data.menuTree
+        this.data2 = data.menuTree;
       });
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -567,7 +566,7 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchRoles({ids:ids.join(",")}).then(data => {
+            this.$service.batchRoles({ ids: ids.join(",") }).then(data => {
               this.callback(data, "删除成功");
             });
           })

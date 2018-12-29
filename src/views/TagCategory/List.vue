@@ -8,7 +8,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
-                    <el-button type="primary" @click="handleAddTagCategory">新建种类</el-button>
+                    <el-button type="primary" @click="handleAddTagCategory"  v-permission="'hoder:label:add'">新建种类</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -43,6 +43,7 @@
                         <el-button
                             size="small"
                             type="text"
+                            v-permission="'hoder:label:modify'"
                             @click="handleEditTagCategory(scope.row)"
                         >
                             编辑
@@ -50,6 +51,7 @@
                         <el-button
                             size="small"
                             type="text"
+                             v-permission="'hoder:label:del'"
                             @click="handleDeleteTagCategory(scope.row)"
                         >
                             删除

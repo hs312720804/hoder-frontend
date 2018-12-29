@@ -1,9 +1,9 @@
 <template>
-    <el-aside width="230" style="background-color: rgb(238, 241, 246)">
+    <el-aside width="230" style="background-color: rgb(238, 241, 246)" v-permission="'hoder:label:group:index'">
         <div class="tag-category-list">
             <el-header class="tag-category-list__header">
                 分组
-                <el-button class="btn-add-category" type="text" @click="$refs.tagGroupCreate.showCreateDialog = true">新建</el-button>
+                <el-button class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="$refs.tagGroupCreate.showCreateDialog = true">新建</el-button>
             </el-header>
             <div class="filter">
                 <el-input

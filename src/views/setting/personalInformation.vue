@@ -48,7 +48,10 @@ export default {
             const email = this.personalInformation.email;
             const id = this.personalInformation.id
             this.$service.updateUserInformation({id:id,loginName:loginName,officeName:officeName,name:name,mobile:mobile,email:email}).then((data)=>{
-                this.$message("保存成功");
+                this.$message({
+                    type: "success",
+                    message: "修改成功"
+                });
             })
         }
     },

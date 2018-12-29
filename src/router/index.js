@@ -16,7 +16,6 @@ function beforeEach(to, from, next) {
         )
     })
 }
-
 function afterEach(to) {
     const app = this.app
     const breadcrumb = to.matched.slice(1).map(({name, meta}) => {

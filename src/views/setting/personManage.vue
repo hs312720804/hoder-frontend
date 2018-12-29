@@ -1,8 +1,5 @@
 <template>
   <div>
-
-
-
         <!-- authority -->
     <div class="TopNav">
       <div class="left">
@@ -11,7 +8,7 @@
         type="primary"
         size="small"
         @click="handleAdd"
-        shiro:hasPermission="sysAdministrative:user:add"
+        v-permission="'sysAdministrative:user:add'"
       >
         <a class="fa fa-plus" style="color: white;"></a>新增
       </el-button>
@@ -22,7 +19,7 @@
         type="primary"
         size="small"
         @click="handleBatchDel"
-        shiro:hasPermission="sysAdministrative:user:batchDel"
+        v-permission="'sysAdministrative:user:batchDel'"
       >
         <a class="fa fa-trash" style="color: white;"></a> 批量删除
       </el-button>
@@ -34,7 +31,6 @@
       :model="searchForm"
       ref="searchForm"
       @submit.native.prevent="submitForm"
-      shiro:hasPermission="sysAdministrative:user:search"
     >
       <el-form-item label="" prop="userMsg">
         <el-input
@@ -101,7 +97,7 @@
               size="small"
               type="warning"
               @click="handleChangetStatus(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:user:changeStatus"
+               v-permission="'sysAdministrative:user:changeStatus'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 修改状态
             </el-button>
@@ -109,7 +105,7 @@
               size="small"
               type="primary"
               @click="handleEdit(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:user:edit"
+               v-permission="'sysAdministrative:user:edit'"
             >
               <a class="fa fa-edit" style="color: white;"></a> 编辑
             </el-button>
@@ -117,7 +113,7 @@
               size="small"
               type="danger"
               @click="handleDelete(scope.$index, scope.row)"
-              shiro:hasPermission="sysAdministrative:user:del"
+               v-permission="'sysAdministrative:user:del'"
             >
               <a class="fa fa-trash" style="color: white;"></a> 删除
             </el-button>

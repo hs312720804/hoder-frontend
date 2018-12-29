@@ -107,25 +107,32 @@ export default {
   },
   props: ["isShowAddOrEdit","editLaunchCrowdId"],
   watch: {
-      isShowAddOrEdit: function(val,oldVal){
-         if(val){
-            this.$service.addCrowdLanuch({launchCrowdId:this.editLaunchCrowdId}).then(data => {
-                this.launchPlatform = data.biLists;
-                this.strategyPlatform = data.policies;
-                if(data.launchCrowd){
-                    let row=data.launchCrowd
-                    this.crowdForm.launchCrowdId = row.launchCrowdId;
-                    this.crowdForm.dmpCrowdId = row.dmpCrowdId;
-                    this.crowdForm.launchName = row.launchName;
-                    this.crowdForm.biIds =data.launchCrowdBiIds;
-                    this.crowdForm.remark = row.remark;
-                    this.crowdForm.dataSource = row.dataSource;
-                    this.crowdForm.policyIds = row.policyIds;
-                    this.getCrowd();
-                   this.crowdForm.policyCrowdIds =row.policyCrowdIds;
-                }
+      // isShowAddOrEdit: function(val,oldVal){
+      //    if(val){
+      //       this.$service.addCrowdLanuch({launchCrowdId:this.editLaunchCrowdId}).then(data => {
+      //           this.launchPlatform = data.biLists;
+      //           this.strategyPlatform = data.policies;
+      //           if(data.launchCrowd){
+      //               let row=data.launchCrowd
+      //               this.crowdForm.launchCrowdId = row.launchCrowdId;
+      //               this.crowdForm.dmpCrowdId = row.dmpCrowdId;
+      //               this.crowdForm.launchName = row.launchName;
+      //               this.crowdForm.biIds =data.launchCrowdBiIds;
+      //               this.crowdForm.remark = row.remark;
+      //               this.crowdForm.dataSource = row.dataSource;
+      //               this.crowdForm.policyIds = row.policyIds;
+      //               this.getCrowd();
+      //              this.crowdForm.policyCrowdIds =row.policyCrowdIds;
+      //           }
 
-            });
+      //       });
+      //    }
+      // }
+      //,
+      editLaunchCrowdId:function(val){
+        debugger;
+         if(val!=null&&val!=undefined){
+           
          }
       }
   },
@@ -146,7 +153,7 @@ export default {
     },
     getCrowd() {
       this.$service
-        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds })
+        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
         .then(data => {
           this.crowdData = data;
         })
@@ -162,12 +169,16 @@ export default {
           crowdForm.biIds = crowdForm.biIds.join(",");
           crowdForm.policyIds = crowdForm.policyIds.join(",");
           crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.join(",");
-          this.$service.modifyLaunchCrowd(crowdForm).then(data => {
-            if(this.editLaunchCrowdId!=null&&this.editLaunchCrowdId!=undefined)
-              this.callback(data, "编辑成功");
-            else
-              this.callback(data, "添加成功");
-          });
+           if(this.editLaunchCrowdId!=null&&this.editLaunchCrowdId!=undefined){
+            this.$service.modifyLaunchCrowd(crowdForm).then(data => {
+                this.callback(data, "编辑成功");
+            });
+           }else{
+            this.$service.addLaunchCrowd(crowdForm).then(data => {
+                this.callback(data, "添加成功");
+            });
+           }
+
         } else {
           console.log("error submit!!");
           return false;

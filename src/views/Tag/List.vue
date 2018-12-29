@@ -8,7 +8,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
-                    <el-button type="primary" @click="handleAddTag">新建标签</el-button>
+                    <el-button type="primary" @click="handleAddTag" v-permission="'hoder:label:attr:add'">新建标签</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -24,13 +24,15 @@
                     <el-button
                         size="small"
                         type="text"
-                        @click="handleEditTag(scope.row)"
+                        @click="handleEditTag(scope.row)" 
+                        v-permission="'hoder:label:attr:edit'"
                     >
                         编辑
                     </el-button>
                     <el-button
                         size="small"
                         type="text"
+                         v-permission="'hoder:label:attr:del'"
                         @click="handleDeleteTag(scope.row)"
                     >
                         删除
