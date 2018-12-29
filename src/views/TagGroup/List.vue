@@ -13,15 +13,18 @@
                 </el-input>
             </div>
 
-            <el-tree 
-                ref="tag-category-list"
-                :data="tagGroupList" 
-                :props="{label: 'name'}"
-                default-expand-all 
-                :filter-node-method="handleFilterTagGroupList" 
-                @node-click="handleReadTagGroup"
-                >
-            </el-tree>
+            <div class="tag-category-list">
+                <ul>
+                    <li 
+                        v-for="(tagGroup, index) in tagGroupListFiltered" 
+                        :key="tagGroup.id"
+                        :class="activeId === tagGroup.id ? 'active' : ''"
+                        @click="handleReadTagGroup(tagGroup)"
+                    > 
+                        {{ tagGroup.name }}
+                    </li>
+                </ul>
+            </div>
 
             <TagGroupCreate ref="tagGroupCreate" @create-end="fetchData" />
         </div>
@@ -36,12 +39,18 @@ export default {
     data() {
         return {
             filterText: undefined,
+            activeId: undefined,
             tagGroupList: [],
         }
     },
-    watch: {
-        filterText(val) {
-            this.$refs['tag-category-list'].filter(val)
+    computed: {
+        tagGroupListFiltered() {
+            const filterText = this.filterText
+            if (!filterText) {
+                return this.tagGroupList
+            } else {
+                return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
+            }
         }
     },
     methods: {
@@ -50,17 +59,16 @@ export default {
                 this.tagGroupList = data
             })
         },
-        handleFilterTagGroupList(value, data) {
-            if (value) {
-                return data.name.indexOf(value) !== -1;
-            }
-            return true
-        },
         handleReadTagGroup(item) {
-            this.$emit('list-category', item)
+            this.activeId = item.id
+            this.$emit('read-tag-group', item)
         }
     },
     created() {
+        const activeId = this.$route.params.id
+        if (activeId) {
+            this.activeId = +activeId
+        }
         this.fetchData()
     }
 }
@@ -84,4 +92,19 @@ export default {
     text-decoration none
     cursor pointer
     color #333
+
+.tag-category-list
+    li 
+        height 35px
+        line-height 35px
+        color #606266
+        font-size 14px
+        text-indent 20px
+        cursor pointer
+        &:hover
+            background-color #f5f7fa
+    li.active
+        background #409eff
+        color #fff
+
 </style>

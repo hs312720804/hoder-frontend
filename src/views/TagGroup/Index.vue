@@ -1,15 +1,13 @@
 <template>
     <el-container>
         <TagGroupList 
-            v-show="mode === MODE.listTagGroup" 
-            @list-category="handleListCategory" 
+            v-show="mode === MODE.listTagGroup || mode === MODE.readTagGroup" 
+            @read-tag-group="handleReadTagGroup" 
         />                
-        <TagCategoryList
-            v-if="tagGroup" 
-            v-show="mode === MODE.listTagGroup"  
-            :tag-group="tagGroup" 
-            @read-tag-category="handleReadTagCategory" 
-        /> 
+        <TagGroupRead
+            v-show="mode === MODE.listTagGroup || mode === MODE.readTagGroup"
+            @read-tag-category="handleReadTagCategory"
+        />
         <TagCategoryRead 
             v-if="mode === MODE.readTagCategory" 
             @read-cancel="handleReadTagCategoryCancel"
@@ -19,14 +17,17 @@
 
 <script>
 import TagGroupList from './List.vue'
+import TagGroupRead from './Read.vue'
 import TagCategoryList from '../TagCategory/List.vue'
 import TagCategoryRead from '../TagCategory/Read.vue'
 const MODE = {
    listTagGroup: 'list-tag-group',
+   readTagGroup: 'read-tag-group',
    readTagCategory: 'read-tag-category'
 }
 export default {
     components: {
+        TagGroupRead,
         TagGroupList,
         TagCategoryList,
         TagCategoryRead,
@@ -36,20 +37,26 @@ export default {
             MODE,
             tag: null,
             filterText: '',
-            tagGroup: null
+            tagGroupId: undefined,
+            readTagCategoryBack: null
         }
     },
     props: ['mode'],
     methods:{
-        handleListCategory(tagGroup) {
-            this.tagGroup = tagGroup
-        },
-        handleReadTagCategoryCancel() {
+        handleReadTagGroup(tagGroup) {
             this.$router.push({
-                name: 'tag'
+                name: 'tag-group-read',
+                params: {
+                    id: tagGroup.id
+                }
             })
         },
+        handleReadTagCategoryCancel() {
+            const route = this.readTagCategoryBack || {name: 'tag'}
+            this.$router.push(route)
+        },
         handleReadTagCategory(tag) {
+            this.readTagCategoryBack = this.$route.fullPath
             this.$router.push({
                 name: 'tag-category-read',
                 params: {

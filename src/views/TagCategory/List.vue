@@ -103,21 +103,34 @@ export default {
             }
         }
     },
-    props: ['tagGroup'],
+    computed: {
+        tagGroupId() {
+            return this.$route.params.id
+        }
+    },
     watch: {
-        tagGroup: 'fetchData'
+        '$route.params.id': 'handleTagGroupIdChange'
     },
     methods: {
         getFilter() {
             return {
-                groupId: this.tagGroup.id,
+                groupId: this.tagGroupId,
                 ...this.filter,
                 ...this.pagination
             }
         },
+        resetFilter() {
+            this.filter = {
+                name: undefined
+            }
+        },
+        handleTagGroupIdChange() {
+            this.resetFilter()
+            this.fetchData()
+        },
         handleAddTagCategory() {
             this.tagCategory = {
-                groupId: this.tagGroup.id
+                groupId: this.tagGroupId
             }
             this.$refs.tagCategoryUpsert.showCreateDialog = true
         },

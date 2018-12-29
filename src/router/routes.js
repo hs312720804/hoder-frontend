@@ -40,6 +40,19 @@ const children = [
                 }
             },
             {
+                name: 'tag-group-read',
+                path: 'tag-group/:id',
+                component: TagGroup,
+                props: {
+                    mode: 'read-tag-group'
+                },
+                meta: {
+                    tagId: "tag",
+                    title: '标签列表',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
                 name: 'tag-category-read',
                 path: 'tag-category/:id',
                 component: TagGroup,
