@@ -1,8 +1,6 @@
 import Vue from 'vue'
 function getInitData(app) {
-    return app.$service.getConstants({token:app.$service.service.state.token}).then((res) => {
-      return res;
-    })
+    return app.$service.service.getConstants({token:app.$service.service.state.token})
 }
 Vue.prototype.$isLoggedIn = async function() {
     const $appState = this.$appState
