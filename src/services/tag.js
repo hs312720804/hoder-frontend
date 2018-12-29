@@ -19,7 +19,7 @@ export function getTagList({tagCategoryId, name}) {
 }
 
 export function upsertTag(input) {
-    const url = input.attrId ? 'api/labelAttr/modify' : 'api/labelAttr/add'
+    const url = input.attrId ? 'api/labelAttr/update' : 'api/labelAttr/save'
     return this.fetch({
         method: 'post',
         url,

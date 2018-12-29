@@ -4,9 +4,7 @@
             <el-card shadow="never">
                 <div slot="header">
                     <span>{{ tagCategory.tagName }}</span>
-                    <div style="float: right">
-                        <el-button @click="$emit('read-cancel')" type="primary">返回</el-button>
-                    </div>
+                    <el-button style="float:right; margin-top: -7px;" @click="$emit('read-cancel')" type="primary">返回</el-button>
                 </div>
 
                 <el-form label-position="left" label-width="80px">

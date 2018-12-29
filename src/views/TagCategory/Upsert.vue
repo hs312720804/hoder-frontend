@@ -23,6 +23,7 @@
     </el-dialog>
 </template>
 <script>
+import { cloneDeep } from 'lodash'
 import _ from '@/gateschema'
 export default {
    data() {
@@ -84,7 +85,7 @@ export default {
             if (form) {
                 form.activePaths = {}
             }
-            this.tagCategory = val || {} 
+            this.tagCategory = val ? cloneDeep(val) : {}
             this.fetchTagCategoryList()
        }
    },
@@ -94,11 +95,17 @@ export default {
        },
        handleSubmit(errors) {
            if (errors.length === 0) {
-               this.$service.upsertTagCategory(this.tagCategory, '提交成功').then(() => {
+               this.$service.upsertTagCategory(this.getFormData(), '提交成功').then(() => {
                    this.$emit('upsert-end')
                    this.showCreateDialog = false
                })
            }
+       },
+       getFormData(){
+           const data = JSON.parse(JSON.stringify(this.tagCategory))
+           delete data.createTime
+           delete data.updateTime
+           return data
        },
        fetchTagCategoryList() {
            this.$service.getTagGroupList().then((data) => {

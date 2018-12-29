@@ -25,7 +25,7 @@ export function getTagCategoryList(input) {
 }
 
 export function upsertTagCategory(input) {
-    const url = input.tagId ? 'api/label/modify' : 'api/label/save'
+    const url = input.tagId ? 'api/label/update' : 'api/label/save'
     return this.fetch({
         method: 'post',
         url,

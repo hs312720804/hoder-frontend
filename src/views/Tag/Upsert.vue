@@ -16,8 +16,8 @@ export default {
            },
            schema: _
             .map({
-                attrName: _.str.other('form', {label: '名称'}),
-                attrValue: _.str.other('form', {label: '值'})
+                attrName: _.r.str.other('form', {label: '名称', placeholder: '请输入名称'}),
+                attrValue: _.r.str.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值', placeholder: '16位以内字母数字组合'})
             })
             .other('form', {
                 footer: {
@@ -40,11 +40,17 @@ export default {
    methods: {
        handleSubmit(errors) {
            if (errors.length === 0) {
-               this.$service.upsertTag(this.tag, '提交成功').then(() => {
+               this.$service.upsertTag(this.getFormData(), '提交成功').then(() => {
                    this.$emit('upsert-end')
                    this.showCreateDialog = false
                })
            }
+       },
+       getFormData(){
+           const data = JSON.parse(JSON.stringify(this.tag))
+           delete data.createTime
+           delete data.updateTime
+           return data
        }
    }
 }

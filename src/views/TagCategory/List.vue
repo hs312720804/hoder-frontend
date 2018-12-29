@@ -126,8 +126,7 @@ export default {
         handleDeleteTagCategory(row) {
             this.$confirm('确认删除？')
             .then(() => {
-                this.$service.deleteTagCategory({tagId: row.tagId}, '删除成功')
-                this.fetchData()
+                this.$service.deleteTagCategory({tagId: row.tagId}, '删除成功').then(this.fetchData)
             })
             .catch(() => {
                 //
