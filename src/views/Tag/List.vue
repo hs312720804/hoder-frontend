@@ -25,7 +25,7 @@
                         size="small"
                         type="text"
                         @click="handleEditTag(scope.row)" 
-                        v-permission="'hoder:label:attr:edit'"
+                        v-permission="'hoder:label:attr:modify'"
                     >
                         编辑
                     </el-button>
