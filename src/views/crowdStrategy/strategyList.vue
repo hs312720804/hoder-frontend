@@ -189,13 +189,6 @@ export default {
     this.loadData();
   },
   methods: {
-    callback(data, successMsg) {
-        this.$message({
-          message: data.msg,
-          type: "success"
-        });
-        this.loadData();
-    },
     getTags() {
       this.addForm.conditionTagIds= [];
       this.$service
@@ -212,7 +205,7 @@ export default {
     },
     handleEdit(row) {
       this.addFormVisible = true;
-      this.addForm.policyId= row.policeId;
+      this.addForm.policyId= row.policyId;
       this.addForm.policyName = row.policyName;
       this.addForm.dataSource=row.dataSource.toString();
       this.getTags();
@@ -230,15 +223,12 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.policyDel({ policyId: id }).then(data => {
-            this.callback(data, "删除成功");
+          this.$service.policyDel({ policyId: id },"删除成功").then(data => {
+            this.loadData()
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "出错了"
-          });
+          
         });
     },
     // 从服务器读取数据
@@ -290,12 +280,12 @@ export default {
           addForm = JSON.parse(addForm);
           addForm.conditionTagIds = addForm.conditionTagIds.join(",")
           if(this.addForm.policyId!=""){
-          this.$service.policyUpate(addForm).then(data => {
-            this.callback(data, "编辑成功");
+          this.$service.policyUpate(addForm,"编辑成功").then(data => {
+            this.loadData();
           });
           }else{
-          this.$service.policyAddSave(addForm).then(data => {
-            this.callback(data, "添加成功");
+          this.$service.policyAddSave(addForm,"添加成功").then(data => {
+            this.loadData();
           });
           }
         } else {

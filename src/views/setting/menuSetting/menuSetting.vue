@@ -212,12 +212,8 @@ export default {
       })
         .then(() => {
           this.$service
-            .changeMenuStatus({ id: id, isShow: isShow })
+            .changeMenuStatus({ id: id, isShow: isShow },"修改成功")
             .then(data => {
-              this.$message({
-                type: "success",
-                message: data.msg
-              });
               this.loadData();
             });
         })
@@ -275,20 +271,12 @@ export default {
       this.$refs.menuForm.validate(valid => {
         if (valid) {
           if (this.menuForm.id != "") {
-            this.$service.MenuUpdate(this.menuForm).then(data => {
-              this.$message({
-                type: "success",
-                message: data.msg
-              });
+            this.$service.MenuUpdate(this.menuForm,"更新成功").then(data => {
               this.loadData();
               this.addFormVisible = false;
             });
           } else {
-            this.$service.MenuAdd(this.menuForm).then(data => {
-              this.$message({
-                type: "success",
-                message: data.msg
-              });
+            this.$service.MenuAdd(this.menuForm,"添加成功").then(data => {
               this.loadData();
               this.addFormVisible = false;
             });
@@ -336,19 +324,12 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delMenu({ id: id }).then(data => {
-            this.$message({
-              type: "success",
-              message: data.msg
-            });
+          this.$service.delMenu({ id: id },"删除成功").then(data => {
             this.loadData();
           });
         })
         .catch(() => {
-          this.$message({
-            type: "error",
-            message: data.msg
-          });
+
         });
     }
   }

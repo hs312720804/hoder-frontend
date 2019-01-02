@@ -58,16 +58,14 @@ export default {
         reNewPwd: ""
       },
       rulesPwd: {
-       // pwd: [{ validator: validateOldPass, trigger: "blur" }],
-        pwd: [{ required: true, message: '请输入原始密码', trigger: 'blur' }],
-        newPwd: [
-           { required: true, message: '请输入新密码',trigger: 'blur' }
-        ],
-         reNewPwd: [
-           { required: true, validator: validatePass2, trigger: 'blur' }
+        // pwd: [{ validator: validateOldPass, trigger: "blur" }],
+        pwd: [{ required: true, message: "请输入原始密码", trigger: "blur" }],
+        newPwd: [{ required: true, message: "请输入新密码", trigger: "blur" }],
+        reNewPwd: [
+          { required: true, validator: validatePass2, trigger: "blur" }
         ]
-      //  newPwd: [{ validator: validatePass, trigger: "blur" }],
-      //  reNewPwd: [{ validator: validatePass2, trigger: "blur" }]
+        //  newPwd: [{ validator: validatePass, trigger: "blur" }],
+        //  reNewPwd: [{ validator: validatePass2, trigger: "blur" }]
       }
     };
   },
@@ -79,10 +77,8 @@ export default {
       this.$refs.passwordModify.validate(valid => {
         if (valid) {
           this.$service
-            .modifyPwd({ pwd: pwd, newPwd: newPwd, reNewPwd: reNewPwd })
+            .modifyPwd({ pwd: pwd, newPwd: newPwd, reNewPwd: reNewPwd },"密码保存成功，请重新登录")
             .then(data => {
-              console.log(data);
-              this.$message("密码保存成功，请重新登录");
               this.$logout().then(() => {
                 this.$router.push({ name: "login" });
               });

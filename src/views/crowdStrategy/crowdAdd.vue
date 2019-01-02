@@ -240,11 +240,11 @@ export default {
       };
       if(this.crowdId!=null){
          data.crowdId=this.crowdId
-         this.$service.crowdUpdate(data).then(data => {
+         this.$service.crowdUpdate(data,"编辑成功").then(data => {
           this.$emit("goBackCrowdListPage",true);
         });
       }else{
-        this.$service.crowdSave(data).then(data => {
+        this.$service.crowdSave(data,"新增成功").then(data => {
           this.$emit("goBackCrowdListPage",true);
         });
       }

@@ -284,12 +284,8 @@ export default {
       })
         .then(() => {
           this.$service
-            .changeEmailStatus({ id: id, status: status })
+            .changeEmailStatus({ id: id, status: status },"修改成功")
             .then(data => {
-              this.$message({
-                type: "success",
-                message: data.msg
-              });
               this.loadData();
             });
         })
@@ -327,20 +323,12 @@ export default {
           emailForm = JSON.parse(emailForm);
           emailForm.typeFlags = emailForm.typeFlags.join(",");
           if(this.emailForm.id!=""){
-          this.$service.updateEmail(emailForm).then(data => {
-            this.$message({
-              type: "success",
-              message: data.msg
-            });
+          this.$service.updateEmail(emailForm,"更新成功").then(data => {
             this.loadData();
             this.addFormVisible = false;
           });
           }else{
-          this.$service.addEmail(emailForm).then(data => {
-            this.$message({
-              type: "success",
-              message: data.msg
-            });
+          this.$service.addEmail(emailForm,"添加成功").then(data => {
             this.loadData();
             this.addFormVisible = false;
           });
@@ -388,19 +376,11 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delEmail({ id: id }).then(data => {
-            this.$message({
-              type: "success",
-              message: data.msg
-            });
+          this.$service.delEmail({ id: id },"删除成功").then(data => {
             this.loadData();
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消删除操作"
-          });
         });
     },
 
@@ -425,19 +405,11 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchDelEmail({ ids: ids.join(",") }).then(data => {
-              this.message({
-                type: "success",
-                message: data.msg
-              });
+            this.$service.batchDelEmail({ ids: ids.join(",") },"删除成功").then(data => {
               this.loadData();
             });
           })
           .catch(() => {
-            this.$message({
-              showClose: true,
-              message: "已取消删除操作"
-            });
           });
       } else {
         this.$alert("请至少勾选一条记录", "提示", {

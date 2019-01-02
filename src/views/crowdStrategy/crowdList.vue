@@ -175,18 +175,7 @@ export default {
     },
     tagsList(row) {},
     callback(data, successMsg) {
-      if (data.msg) {
-        this.$message({
-          message: data.msg,
-          type: "error"
-        });
-      } else {
-        this.$message({
-          message: successMsg,
-          type: "success"
-        });
         this.loadData();
-      }
     },
     handleAdd() {
       this.$emit("addCrowd");
@@ -195,23 +184,19 @@ export default {
       this.$emit("addCrowd", row.crowdId);
     },
     del(row) {
-      var id = row.policyId;
+      var id = row.crowdId;
       this.$confirm("确定要删除吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
         type: "warning"
       })
         .then(() => {
-          this.$service.policyDel({ policyId: id }).then(data => {
-            this.callback(data, "删除成功");
-          });
+          this.$service.strategyCrowdDel({ crowdId: id},"删除成功").then(()=>{
+            this.loadData();
+          })
+        }).catch(function(){
+
         })
-        .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "出错了"
-          });
-        });
     },
     // 从服务器读取数据
     loadData: function() {

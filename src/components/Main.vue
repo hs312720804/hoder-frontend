@@ -120,32 +120,32 @@ export default {
       const meta = this.$route.meta;
       return meta && meta.isCache !== false;
     },
-    defaultMenu() {
-      const mainRoute = this.$router.options.routes.find(item => {
-        return item.path === "/";
-      });
-      function gen({ name, meta = {}, children }) {
-        if (!meta.hideInMenu) {
-          const currentMenuItem = {
-            title: meta.title,
-            icon: meta.icon,
-            route: name
-          };
-          if (children) {
-            currentMenuItem.children = children.reduce((result, item) => {
-              const menuItem = gen(item);
-              if (menuItem) {
-                result.push(menuItem);
-              }
-              return result;
-            }, []);
-          }
-          return currentMenuItem;
-        }
-      }
-      const items = gen(mainRoute).children;
-      return items;
-    },
+    // defaultMenu() {
+    //   const mainRoute = this.$router.options.routes.find(item => {
+    //     return item.path === "/";
+    //   });
+    //   function gen({ name, meta = {}, children }) {
+    //     if (!meta.hideInMenu) {
+    //       const currentMenuItem = {
+    //         title: meta.title,
+    //         icon: meta.icon,
+    //         route: name
+    //       };
+    //       if (children) {
+    //         currentMenuItem.children = children.reduce((result, item) => {
+    //           const menuItem = gen(item);
+    //           if (menuItem) {
+    //             result.push(menuItem);
+    //           }
+    //           return result;
+    //         }, []);
+    //       }
+    //       return currentMenuItem;
+    //     }
+    //   }
+    //   const items = gen(mainRoute).children;
+    //   return items;
+    // },
     initTags() {
       return this.$appState.$get("tags") || [];
     }

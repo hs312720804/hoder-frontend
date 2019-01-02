@@ -86,4 +86,12 @@ export function crowdUpdate(data){
         data 
       })
 }
+//人群删除
+export function strategyCrowdDel(data){
+    return this.fetch({
+        method: 'POST',
+        url: '/api/crowd/del',
+        data 
+      })
+}
 

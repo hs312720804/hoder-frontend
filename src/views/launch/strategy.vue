@@ -31,12 +31,8 @@ export default {
   methods: {
     handleChange(all, direction, selectedValue) {
       this.$service
-        .modifyLaunchPolicy({ biId: this.biId, launchPolicyIds: all.join(",") })
+        .modifyLaunchPolicy({ biId: this.biId, launchPolicyIds: all.join(",") },"修改成功")
         .then(data => {
-          this.$message({
-            type: "success",
-            message: data.msg
-          });
         });
     },
     handleClick(tab, event) {

@@ -209,10 +209,6 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      this.$message({
-        message: data.msg,
-        type: "success"
-      });
       this.loadData();
     },
     // 从服务器读取数据
@@ -237,16 +233,12 @@ export default {
       })
         .then(() => {
           this.$service
-            .changeOrganStatus({ id: id, useable: useable })
+            .changeOrganStatus({ id: id, useable: useable },"状态修改成功")
             .then(data => {
               this.callback(data, "状态修改成功");
             });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消修改该条记录的状态"
-          });
         });
     },
 
@@ -291,7 +283,7 @@ export default {
       var _this = this;
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.addOrgan(_this.officeForm).then(data => {
+          this.$service.addOrgan(_this.officeForm,"添加成功").then(data => {
             this.callback(data, "添加成功");
             this.addFormVisible = false;
           });
@@ -323,7 +315,7 @@ export default {
       var _this = this;
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.updateOrgan(_this.officeForm).then(data => {
+          this.$service.updateOrgan(_this.officeForm,"编辑成功").then(data => {
             this.callback(data, "编辑成功");
             this.editFormVisible = false;
           });
@@ -357,7 +349,7 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delOrgan({ id: id }).then(data => {
+          this.$service.delOrgan({ id: id },"删除成功").then(data => {
             this.callback(data, "删除成功");
           });
         })

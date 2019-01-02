@@ -335,10 +335,6 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-        this.$message({
-          message: data.msg,
-          type: "success"
-        });
         this.loadData();
     },
     // 从服务器读取数据
@@ -399,16 +395,13 @@ export default {
       })
         .then(() => {
           this.$service
-            .changeloginFlag({ id: id, loginFlag: loginFlag })
+            .changeloginFlag({ id: id, loginFlag: loginFlag },"状态修改成功")
             .then(data => {
               this.callback(data, "状态修改成功");
             });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消修改该条记录的状态"
-          });
+
         });
     },
 
@@ -462,7 +455,7 @@ export default {
           userForm.roleIds = userForm.roleIds.join(",");
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.addUser(userForm).then(data => {
+          this.$service.addUser(userForm,"添加成功").then(data => {
             this.callback(data, "添加成功");
             this.addFormVisible=false;
           });
@@ -499,7 +492,7 @@ export default {
           userForm.roleIds = userForm.roleIds.join(",");
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.updateUser(userForm).then(data => {
+          this.$service.updateUser(userForm,"更新成功").then(data => {
             this.callback(data, "更新成功");
             this.editFormVisible=false;
           });
@@ -535,15 +528,11 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delUser({ id: id }).then(data => {
+          this.$service.delUser({ id: id },"删除成功").then(data => {
             this.callback(data, "删除成功");
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消删除操作"
-          });
         });
     },
 
@@ -568,15 +557,12 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchDelUsers({ids:ids.join(",")}).then(data => {
+            this.$service.batchDelUsers({ids:ids.join(",")},"删除成功").then(data => {
               this.callback(data, "删除成功");
             });
           })
           .catch(() => {
-            this.$message({
-              showClose: true,
-              message: "已取消删除操作"
-            });
+
           });
       } else {
         this.$alert("请至少勾选一条记录", "提示", {

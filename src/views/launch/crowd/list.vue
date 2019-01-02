@@ -154,11 +154,7 @@ export default {
     this.loadData();
   },
   methods: {
-    callback(data, successMsg) {
-        this.$message({
-          message: successMsg,
-          type: "success"
-        });
+    callback() {
         this.loadData();
     },
     handleAdd() {
@@ -185,15 +181,11 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.launchCrowdDel({ launchCrowdId: id }).then(data => {
-            this.callback(data, "删除成功");
+          this.$service.launchCrowdDel({ launchCrowdId: id },"删除成功").then(data => {
+            this.callback();
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "出错了"
-          });
         });
     },
     // 从服务器读取数据
@@ -242,8 +234,8 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.launchCrowd({ launchCrowdId: id }).then(data => {
-            this.callback(data, "投放成功");
+          this.$service.launchCrowd({ launchCrowdId: id },"投放成功").then(data => {
+            this.callback();
           });
         })
         .catch(() => {
@@ -261,8 +253,8 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.cancelLaunchCrowd({ launchCrowdId: id }).then(data => {
-            this.callback(data, "取消投放成功");
+          this.$service.cancelLaunchCrowd({ launchCrowdId: id },"取消投放成功").then(data => {
+            this.callback();
           });
         })
         .catch(() => {

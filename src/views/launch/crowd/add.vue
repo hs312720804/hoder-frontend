@@ -132,10 +132,6 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      this.$message({
-        message: data.msg,
-        type: "success"
-      });
       this.$emit("changeStatus", true);
     },
     getCrowd() {
@@ -159,11 +155,11 @@ export default {
             this.editLaunchCrowdId != null &&
             this.editLaunchCrowdId != undefined
           ) {
-            this.$service.CrowdLanuchEditBtn(crowdForm).then(data => {
+            this.$service.CrowdLanuchEditBtn(crowdForm,"编辑成功").then(data => {
               this.callback(data);
             });
           } else {
-            this.$service.CrowdLanuchAddBtn(crowdForm).then(data => {
+            this.$service.CrowdLanuchAddBtn(crowdForm,"新增成功").then(data => {
               this.callback(data);
             });
           }

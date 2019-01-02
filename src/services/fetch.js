@@ -2,7 +2,6 @@ import qs from "qs";
 import axios from "axios";
 import NProgress from "nprogress";
 import "nprogress/nprogress.css";
-
 export default function fetch({
   method = "get",
   url,
@@ -22,10 +21,7 @@ export default function fetch({
     .then(function({ data }) {
       NProgress.done();
       if (parseInt(data.code) === 0) {
-        if (typeof data.data != undefined) {
-          if (data.data != null) return data.data;
-          else return data;
-        } else return data;
+          return data.data;
       } else {
         throw {
           code: data.code,

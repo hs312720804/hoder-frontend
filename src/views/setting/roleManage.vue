@@ -291,10 +291,6 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      this.$message({
-        message: data.msg,
-        type: "success"
-      });
       this.loadData();
     },
     // 从服务器读取数据
@@ -411,16 +407,13 @@ export default {
       })
         .then(() => {
           this.$service
-            .changeRoleStatus({ id: id, useable: useable })
+            .changeRoleStatus({ id: id, useable: useable },"状态修改成功")
             .then(data => {
               this.callback(data, "状态修改成功");
             });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消修改该条记录的状态"
-          });
+
         });
     },
 
@@ -456,7 +449,7 @@ export default {
           roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
           roleForm.menuIds = roleForm.menuIds.join(",");
           roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.addRole(roleForm).then(data => {
+          this.$service.addRole(roleForm,"添加成功").then(data => {
             this.callback(data, "添加成功");
             this.addFormVisible = false;
           });
@@ -496,7 +489,7 @@ export default {
           roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
           roleForm.menuIds = roleForm.menuIds.join(",");
           roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.updateRole(roleForm).then(data => {
+          this.$service.updateRole(roleForm,"编辑成功").then(data => {
             this.callback(data, "编辑成功");
             this.editFormVisible = false;
           });
@@ -535,15 +528,12 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delRole({ id: id }).then(data => {
+          this.$service.delRole({ id: id },"删除成功").then(data => {
             this.callback(data, "删除成功");
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消删除操作"
-          });
+
         });
     },
     // 多选响应
@@ -566,7 +556,7 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchRoles({ ids: ids.join(",") }).then(data => {
+            this.$service.batchRoles({ ids: ids.join(",") },"删除成功").then(data => {
               this.callback(data, "删除成功");
             });
           })
