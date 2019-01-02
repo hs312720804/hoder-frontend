@@ -19,10 +19,19 @@ export function policyTagSeach(params){
         params 
       })
 }
+/*新建策略*/
 export function policyAddSave(data){
     return this.fetch({
         method: 'POST',
         url: '/api/policy/save',
+        data 
+      })
+}
+/** 策略编辑*/
+export function policyUpate(data){
+    return this.fetch({
+        method: 'POST',
+        url: '/api/policy/update',
         data 
       })
 }

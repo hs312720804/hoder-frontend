@@ -54,7 +54,7 @@
           <span style="margin-left: 10px">{{ scope.row.expiryTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
             <el-button
@@ -107,16 +107,16 @@
         @handle-current-change="handleCurrentChange"
       ></pagination>
     </div>
-    <el-dialog title="查询条件" :visible.sync="isShowCondition" width="30%">
+    <el-dialog title="选择的策略" :visible.sync="isShowCondition" width="30%">
       <el-form>
-        <el-form-item label="选择的策略">{{selectStrategy}}</el-form-item>
-        <el-form-item label="选择的人群">
+        <el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">
           <el-checkbox
-            v-model="item.choosed"
-            v-for="item in crowdArr"
-            :key="item.crowdId"
+            v-model="v.choosed"
+            v-for="v in item.childs"
+            :key="v.crowdId"
             disabled
-          >{{item.crowdName}}</el-checkbox>
+          >{{v.crowdName}}
+          </el-checkbox>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -147,8 +147,7 @@ export default {
       // 默认数据总数
       totalCount: 1,
       isShowCondition: false,
-      selectStrategy: null, //人群条件的选择策略
-      crowdArr: []
+      selectStrategy: null//人群条件的选择策略
     };
   },
   created() {
@@ -156,21 +155,13 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      if (data.msg) {
-        this.$message({
-          message: data.msg,
-          type: "error"
-        });
-      } else {
         this.$message({
           message: successMsg,
           type: "success"
         });
         this.loadData();
-      }
     },
     handleAdd() {
-      debugger;
       this.$emit("changeStatus", false);
     },
     handleEdit(launchCrowdId) {
@@ -181,10 +172,9 @@ export default {
       this.$service
         .ruleDetail({ launchCrowdId: row.launchCrowdId })
         .then(({ respcl }) => {
-          if (respcl.length > 0) {
-            this.selectStrategy = respcl[0].policyName;
-            this.crowdArr = respcl[0].childs;
-          }
+         // if (respcl.length > 0) {
+            this.selectStrategy = respcl
+          //}
         });
     },
     del(row) {

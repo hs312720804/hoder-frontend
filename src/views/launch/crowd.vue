@@ -1,7 +1,7 @@
 <template>
   <div>
     <list v-show="isShowList" @changeStatus="changeStatus" ref="list"></list>
-    <add v-show="!isShowList" @changeStatus="changeStatus" :isShowAddOrEdit="!isShowList" :editLaunchCrowdId="editLaunchCrowdId"></add>
+    <add v-if="!isShowList" @changeStatus="changeStatus"  @goBack="goBack" :isShowAddOrEdit="!isShowList" :editLaunchCrowdId="editLaunchCrowdId"></add>
   </div>
 </template>
 <script>
@@ -23,7 +23,11 @@ export default {
       this.isShowList=state;
       if(state)
         this.$refs.list.loadData();
+      if(launchCrowdId)
       this.editLaunchCrowdId=launchCrowdId
+    },
+    goBack(){
+      this.isShowList=true;
     }
   }
 };

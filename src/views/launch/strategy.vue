@@ -33,18 +33,24 @@ export default {
       this.$service
         .modifyLaunchPolicy({ biId: this.biId, launchPolicyIds: all.join(",") })
         .then(data => {
-          this.$message(data.msg);
+          this.$message({
+            type: "success",
+            message: data.msg
+          });
         });
     },
     handleClick(tab, event) {
-      this.biId = parseInt(tab.name.replace("name", ""));
-      let selectData = this.launchPlatformData.find((val, index) => {
-        if (val.biId == this.biId) return val;
-      });
-      this.selectedValue = selectData.launchPolicyIds.split(",").map(val => {
-        {
-          return parseInt(val);
-        }
+      this.$service.launchPolicyIndex().then(data => {
+        this.launchPlatformData = data.biLists;
+        this.biId = parseInt(tab.name.replace("name", ""));
+        let selectData = this.launchPlatformData.find((val, index) => {
+          if (val.biId == this.biId) return val;
+        });
+        this.selectedValue = selectData.launchPolicyIds.split(",").map(val => {
+          {
+            return parseInt(val);
+          }
+        });
       });
     }
   },

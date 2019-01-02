@@ -36,9 +36,9 @@ export default {
       if (value === "") {
         callback(new Error("请输入密码"));
       } else {
-        if (this.passwordModify.reNewPwd !== "") {
-          this.$refs.passwordModify.validateField("reNewPwd");
-        }
+        // if (this.passwordModify.reNewPwd !== "") {
+        //   this.$refs.passwordModify.validateField("reNewPwd");
+        // }
       }
     };
     var validatePass2 = (rule, value, callback) => {
@@ -58,9 +58,16 @@ export default {
         reNewPwd: ""
       },
       rulesPwd: {
-        pwd: [{ validator: validateOldPass, trigger: "blur" }],
-        newPwd: [{ validator: validatePass, trigger: "blur" }],
-        reNewPwd: [{ validator: validatePass2, trigger: "blur" }]
+       // pwd: [{ validator: validateOldPass, trigger: "blur" }],
+        pwd: [{ required: true, message: '请输入原始密码', trigger: 'blur' }],
+        newPwd: [
+           { required: true, message: '请输入新密码',trigger: 'blur' }
+        ],
+         reNewPwd: [
+           { required: true, validator: validatePass2, trigger: 'blur' }
+        ]
+      //  newPwd: [{ validator: validatePass, trigger: "blur" }],
+      //  reNewPwd: [{ validator: validatePass2, trigger: "blur" }]
       }
     };
   },
