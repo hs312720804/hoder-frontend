@@ -55,7 +55,7 @@ export default {
     },
     methods: {
         fetchData() {
-            this.$service.getTagGroupList().then((data) => {
+            return this.$service.getTagGroupList().then((data) => {
                 this.tagGroupList = data
             })
         },
@@ -68,8 +68,12 @@ export default {
         const activeId = this.$route.params.id
         if (activeId) {
             this.activeId = +activeId
+            this.fetchData()
+        } else {
+            this.fetchData().then(() => {
+                this.handleReadTagGroup(this.tagGroupList[0])
+            })
         }
-        this.fetchData()
     }
 }
 </script>
