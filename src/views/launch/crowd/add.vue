@@ -2,7 +2,7 @@
   <div class="add">
     <el-row>
       <el-col :span="24">
-        <div class="title">新增</div>
+        <div class="title">{{title}}</div>
       </el-col>
     </el-row>
     <!--新增编辑界面-->
@@ -29,7 +29,7 @@
             <el-input size="small" readonly value="大数据"></el-input>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
-            <el-input size="small" v-model="crowdForm.remark" readonly></el-input>
+            <el-input size="small" v-model="crowdForm.remark"></el-input>
           </el-form-item>
           <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
             <el-select
@@ -43,16 +43,12 @@
                 :key="item.policyId+''"
                 :label="item.policyName"
                 :value="item.policyId+''"
-              >
-               {{item.policyName}} 
-              </el-option>
+              >{{item.policyName}}</el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="选择人群" prop="policyCrowdIds">
             <el-form-item v-for="v in crowdData" :label="v.policyName" :key="v.policyId">
-              <el-checkbox-group
-                v-model="crowdForm.policyCrowdIds"
-              >
+              <el-checkbox-group v-model="crowdForm.policyCrowdIds">
                 <el-checkbox
                   v-for="item in v.childs"
                   :label="item.crowdId+''"
@@ -79,13 +75,14 @@ export default {
       strategyPlatform: [],
       launchPlatform: [],
       getStrategyCrowds: [],
+      title: "",
       // 新增界面数据
       crowdForm: {
         launchCrowdId: "", //投放ID
         launchName: "", //投放名称
         biIds: "", //投放平台ID
         remark: "",
-  //      dataSource: 2,
+        //      dataSource: 2,
         policyIds: "",
         policyCrowdIds: []
       },
@@ -105,51 +102,41 @@ export default {
       crowdData: null
     };
   },
-  props: ["isShowAddOrEdit","editLaunchCrowdId"],
-  watch: {
-      // isShowAddOrEdit: function(val,oldVal){
-      //    if(val){
-      //       this.$service.addCrowdLanuch({launchCrowdId:this.editLaunchCrowdId}).then(data => {
-      //           this.launchPlatform = data.biLists;
-      //           this.strategyPlatform = data.policies;
-      //           if(data.launchCrowd){
-      //               let row=data.launchCrowd
-      //               this.crowdForm.launchCrowdId = row.launchCrowdId;
-      //               this.crowdForm.dmpCrowdId = row.dmpCrowdId;
-      //               this.crowdForm.launchName = row.launchName;
-      //               this.crowdForm.biIds =data.launchCrowdBiIds;
-      //               this.crowdForm.remark = row.remark;
-      //               this.crowdForm.dataSource = row.dataSource;
-      //               this.crowdForm.policyIds = row.policyIds;
-      //               this.getCrowd();
-      //              this.crowdForm.policyCrowdIds =row.policyCrowdIds;
-      //           }
-
-      //       });
-      //    }
-      // }
-      //,
-      editLaunchCrowdId:function(val){
-        debugger;
-         if(val!=null&&val!=undefined){
-           
-         }
-      }
+  props: ["editLaunchCrowdId"],
+  created() {
+    if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
+      this.title = "编辑";
+      this.$service.modifyCrowdLanuch({ launchCrowdId: this.editLaunchCrowdId }).then(data => {
+        this.launchPlatform = data.biLists;
+        this.strategyPlatform = data.policies;
+        if (data.launchCrowd) {
+          let row = data.launchCrowd;
+          this.crowdForm.launchCrowdId = row.launchCrowdId;
+          this.crowdForm.dmpCrowdId = row.dmpCrowdId;
+          this.crowdForm.launchName = row.launchName;
+          this.crowdForm.biIds = data.launchCrowdBiIds;
+          this.crowdForm.remark = row.remark;
+          this.crowdForm.dataSource = row.dataSource;
+          this.crowdForm.policyIds = row.policyIds.split(",");
+          this.getCrowd();
+          this.crowdForm.policyCrowdIds = row.policyCrowdIds.split(",");
+        }
+      });
+    } else {
+      this.title = "新增";
+      this.$service.addCrowdLanuch().then(data => {
+        this.launchPlatform = data.biLists;
+        this.strategyPlatform = data.policies;
+      });
+    }
   },
   methods: {
     callback(data, successMsg) {
-      if (data.msg) {
-        this.$message({
-          message: data.msg,
-          type: "error"
-        });
-      } else {
-        this.$message({
-          message: successMsg,
-          type: "success"
-        });
-        this.loadData();
-      }
+      this.$message({
+        message: data.msg,
+        type: "success"
+      });
+      this.$emit("changeStatus", true);
     },
     getCrowd() {
       this.$service
@@ -157,8 +144,7 @@ export default {
         .then(data => {
           this.crowdData = data;
         })
-        .catch(err => {
-        });
+        .catch(err => {});
     },
     // 新增
     addSubmit: function() {
@@ -169,16 +155,18 @@ export default {
           crowdForm.biIds = crowdForm.biIds.join(",");
           crowdForm.policyIds = crowdForm.policyIds.join(",");
           crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.join(",");
-           if(this.editLaunchCrowdId!=null&&this.editLaunchCrowdId!=undefined){
-            this.$service.modifyLaunchCrowd(crowdForm).then(data => {
-                this.callback(data, "编辑成功");
+          if (
+            this.editLaunchCrowdId != null &&
+            this.editLaunchCrowdId != undefined
+          ) {
+            this.$service.CrowdLanuchEditBtn(crowdForm).then(data => {
+              this.callback(data);
             });
-           }else{
-            this.$service.addLaunchCrowd(crowdForm).then(data => {
-                this.callback(data, "添加成功");
+          } else {
+            this.$service.CrowdLanuchAddBtn(crowdForm).then(data => {
+              this.callback(data);
             });
-           }
-
+          }
         } else {
           console.log("error submit!!");
           return false;
@@ -187,7 +175,7 @@ export default {
     },
     // 取消
     cancelAdd: function() {
-      this.$emit("changeStatus",true)
+      this.$emit("goBack");
     }
   }
 };
@@ -197,15 +185,15 @@ export default {
   >>>.el-select
     width: 100%
 .add
-   border 1px solid #ebeef5
-   padding 20px
-   border-radius: 4px;
+  border: 1px solid #ebeef5
+  padding: 20px
+  border-radius: 4px
 .title
-   font-size 18px
-   margin-bottom 30px
+  font-size: 18px
+  margin-bottom: 30px
 .footer
-   display flex
-   justify-content flex-end    
+  display: flex
+  justify-content: flex-end
 </style>
 
 

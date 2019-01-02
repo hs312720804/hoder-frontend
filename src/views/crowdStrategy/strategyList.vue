@@ -50,12 +50,6 @@
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <!-- <el-table-column prop="createTime" label="更新时间" width="180">
-        <template scope="scope">
-          <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.updateTime }}</span>
-        </template>
-      </el-table-column>-->
       <el-table-column prop="tagsList" label="策略纬度">
         <template scope="scope">
           <el-tag
@@ -66,13 +60,19 @@
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="200">
+      <el-table-column label="操作" fixed="right" width="250">
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
+             <el-button
+              size="small"
+              type="primary"
+              v-permission="'hoder:policy:edit'"
+              @click="handleEdit(scope.row)"
+            >编辑</el-button>
             <el-button
               size="small"
-              type="warning"
+              type="info"
               v-permission="'hoder:policy:del'"
               @click="del(scope.row)"
             >删除</el-button>
@@ -117,7 +117,7 @@
           </el-select>
         </el-form-item>
         <el-form-item label="策略纬度" prop="conditionTagIds">
-          <el-tabs tab-position="left" style="height: 200px;">
+          <el-tabs tab-position="top" style="height: 200px;">
             <el-tab-pane
               v-for="item in conditionTagIdsData"
               :label="item.groupName"
@@ -172,6 +172,7 @@ export default {
       },
       // 默认数据总数
       addForm: {
+        policyId: "",
         policyName: "",
         dataSource: "2",
         conditionTagIds: []
@@ -189,20 +190,14 @@ export default {
   },
   methods: {
     callback(data, successMsg) {
-      if (data.msg) {
         this.$message({
           message: data.msg,
-          type: "error"
-        });
-      } else {
-        this.$message({
-          message: successMsg,
           type: "success"
         });
         this.loadData();
-      }
     },
     getTags() {
+      this.addForm.conditionTagIds= [];
       this.$service
         .policyTagSeach({ dataSource: this.addForm.dataSource, s: "" })
         .then(data => {
@@ -212,10 +207,17 @@ export default {
     handleAdd() {
       this.addFormVisible = true;
       this.addForm.policyName = "";
+      this.addForm.policyId= "";
       this.getTags();
     },
-    handleEdit(launchCrowdId) {
-      this.$emit("changeStatus", false, launchCrowdId);
+    handleEdit(row) {
+      this.addFormVisible = true;
+      this.addForm.policyId= row.policeId;
+      this.addForm.policyName = row.policyName;
+      this.addForm.dataSource=row.dataSource.toString();
+      this.getTags();
+      this.addForm.conditionTagIds=row.conditionTagIds.split(",").map(function(v,i){return parseInt(v)});
+      //row.conditionTagIds.split(",");
     },
     crowdList(row) {
       this.$emit("openCrowdPage", row);
@@ -286,13 +288,16 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm);
           addForm = JSON.parse(addForm);
-          addForm.conditionTagIds = addForm.conditionTagIds.join(",");
+          addForm.conditionTagIds = addForm.conditionTagIds.join(",")
+          if(this.addForm.policyId!=""){
+          this.$service.policyUpate(addForm).then(data => {
+            this.callback(data, "编辑成功");
+          });
+          }else{
           this.$service.policyAddSave(addForm).then(data => {
-            // if(this.editLaunchCrowdId!=null&&this.editLaunchCrowdId!=undefined)
-            //   this.callback(data, "编辑成功");
-            // else
             this.callback(data, "添加成功");
           });
+          }
         } else {
           console.log("error submit!!");
           return false;

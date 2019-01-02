@@ -82,10 +82,35 @@ export function ruleDetail(params){
         params 
       })
 }
+/*打开人群策略新增页面*/
 export function addCrowdLanuch(params){
     return this.fetch({
         method: 'GET',
+        url: '/api/launchCrowd/add',
+        params 
+      })
+}
+/** 打开人群策略编辑页面*/
+export function modifyCrowdLanuch(params){
+    return this.fetch({
+        method: 'get',
         url: '/api/launchCrowd/modify',
+        params 
+      })
+}
+/*人群策略增加*/
+export function CrowdLanuchAddBtn(params){
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchCrowd/saveLaunchCrowd',
+        params 
+      })
+}
+/*人群策略编辑*/
+export function CrowdLanuchEditBtn(params){
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchCrowd/update',
         params 
       })
 }

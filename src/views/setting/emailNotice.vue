@@ -77,7 +77,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
@@ -85,7 +85,7 @@
             </el-button>-->
             <el-button
               size="small"
-              type="warning"
+              type="success"
               @click="handleChangetStatus(scope.$index, scope.row)"
               v-permission="'sysSetup:email:changeStatus'"
             >
@@ -101,7 +101,7 @@
             </el-button>
             <el-button
               size="small"
-              type="danger"
+              type="info"
               @click="handleDelete(scope.$index, scope.row)"
               v-permission="'sysSetup:email:del'"
             >
@@ -121,7 +121,6 @@
         @handle-current-change="handleCurrentChange"
       ></pagination>
     </div>
-
     <!--新增界面-->
     <el-dialog
       :title="dialogTitle"
@@ -168,20 +167,17 @@
 </template>
 <script>
 import axios from "axios";
-// import {pagination} from 'ele'
 export default {
   data() {
     var validatePass = (rule, value, callback) => {
       var c = value.indexOf("@coocaa.com");
       var s = value.indexOf("@skyworth.com");
-
       if (c <= 0 && s <= 0) {
         callback(new Error("邮箱后缀必须是coocaa.com或者skyworth.com"));
       } else {
         callback();
       }
     };
-
     return {
       // 表格当前页数据
       tableData: [],
@@ -190,7 +186,6 @@ export default {
       multipleSelection: [],
       //搜索条件
       criteria: {},
-
       // 列表页
       searchForm: {
         emailName: "",
@@ -331,6 +326,16 @@ export default {
           let emailForm = JSON.stringify(_this.emailForm);
           emailForm = JSON.parse(emailForm);
           emailForm.typeFlags = emailForm.typeFlags.join(",");
+          if(this.emailForm.id!=""){
+          this.$service.updateEmail(emailForm).then(data => {
+            this.$message({
+              type: "success",
+              message: data.msg
+            });
+            this.loadData();
+            this.addFormVisible = false;
+          });
+          }else{
           this.$service.addEmail(emailForm).then(data => {
             this.$message({
               type: "success",
@@ -339,6 +344,7 @@ export default {
             this.loadData();
             this.addFormVisible = false;
           });
+          }
         } else {
           console.log("error submit!!");
           return false;
@@ -357,30 +363,6 @@ export default {
       this.emailForm.remarks = row.remarks;
       this.emailForm.status = row.status;
     },
-
-    // editSubmit
-    editSubmit: function() {
-      var _this = this;
-      this.$refs.emailForm.validate(valid => {
-        if (valid) {
-          let emailForm = JSON.stringify(_this.emailForm);
-          emailForm = JSON.parse(emailForm);
-          emailForm.typeFlags = emailForm.typeFlags.join(",");
-          this.$service.updateEmail(emailForm).then(data => {
-            this.$message({
-              type: "success",
-              message: data.msg
-            });
-            this.loadData();
-            this.addFormVisible = false;
-          });
-        } else {
-          console.log("error submit!!");
-          return false;
-        }
-      });
-    },
-
     // 取消
     cancelAdd: function() {
       this.addFormVisible = false;
