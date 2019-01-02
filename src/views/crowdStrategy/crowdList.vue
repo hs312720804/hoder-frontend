@@ -107,18 +107,18 @@
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
             <el-button
               size="small"
-              type="success"
+              type="primary"
               v-permission="'hoder:crowd:edit'"
               @click="edit(scope.row)"
             >编辑</el-button>
             <el-button
               size="small"
-              type="warning"
+              type="info"
               v-permission="'hoder:crowd:del'"
               @click="del(scope.row)"
             >删除</el-button>
