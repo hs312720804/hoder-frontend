@@ -33,16 +33,17 @@
                 </el-table-column>
                 <el-table-column prop="operation" label="操作" width="220">
                     <template slot-scope="scope">
+                         <el-button-group>
                         <el-button
                             size="small"
-                            type="text"
+                            type="success"
                             @click="$emit('read-tag-category', scope.row)"
                         >
                             查看
                         </el-button>
                         <el-button
                             size="small"
-                            type="text"
+                            type="primary"
                             v-permission="'hoder:label:modify'"
                             @click="handleEditTagCategory(scope.row)"
                         >
@@ -50,12 +51,13 @@
                         </el-button>
                         <el-button
                             size="small"
-                            type="text"
+                            type="info"
                              v-permission="'hoder:label:del'"
                             @click="handleDeleteTagCategory(scope.row)"
                         >
                             删除
                         </el-button>
+                         </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>

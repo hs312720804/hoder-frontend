@@ -21,9 +21,10 @@
             </el-table-column>
             <el-table-column prop="operation" label="操作" width="220">
                 <template slot-scope="scope">
+                    <el-button-group>
                     <el-button
                         size="small"
-                        type="text"
+                        type="success"
                         @click="handleEditTag(scope.row)" 
                         v-permission="'hoder:label:attr:modify'"
                     >
@@ -31,12 +32,13 @@
                     </el-button>
                     <el-button
                         size="small"
-                        type="text"
+                        type="info"
                          v-permission="'hoder:label:attr:del'"
                         @click="handleDeleteTag(scope.row)"
                     >
                         删除
                     </el-button>
+                    </el-button-group>
                 </template>
             </el-table-column>
         </el-table>
