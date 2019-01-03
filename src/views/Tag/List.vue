@@ -86,9 +86,7 @@ export default {
         },
         fetchData() {
             const filter = this.getFilter()
-            console.log(filter)
             this.$service.getTagList(filter).then(({itemList, pagination}) => {
-                console.log(itemList)
                 this.itemList = itemList
                 this.pagination = pagination
             })

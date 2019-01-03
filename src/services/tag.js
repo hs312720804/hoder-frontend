@@ -1,9 +1,17 @@
-export function getTagList({tagCategoryId, name}) {
+export function getTagList(input) {
+    const {
+        pageSize, 
+        currentPage: pageNum, 
+        name: attrName,
+        tagCategoryId: tagId
+    } = input
     return this.fetch({
         url: 'api/label/detail',
         params: {
-            tagId: tagCategoryId,
-            attrName: name
+            tagId,
+            attrName,
+            pageSize,
+            pageNum
         }
     }).then((data) => {
         const {list: itemList, pageSize, pageNum: currentPage, total } = data.pageInfo
