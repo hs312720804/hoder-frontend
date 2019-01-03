@@ -11,18 +11,18 @@
             >
       </Menu>-->
       <el-menu
-        :default-active="$route.path"
+        :default-active="$route.name"
         class="main_menu menu"
         :collapse="isCollapseMenu" 
       >
         <template v-for="(item, index) in $appState.menus">
-          <el-submenu v-if="item.child" :key="index" :index="index + ''">
+          <el-submenu v-if="item.child" :key="index" :index="index+''">
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
               <span>{{ item.name }}</span>
             </template>
             <template v-for="(child, idx) in item.child">
-              <el-menu-item v-if="!child.child.length>0" :key="idx" :index="index+'-'+idx" @click.native="getRouter(child.url)">
+              <el-menu-item v-if="!child.child.length>0" :key="idx" :index="routerMap[child.url]" @click.native="getRouter(child.url)">
                 <i v-if="child.icons" :class="child.icons"></i>
                 <span slot="title">{{ child.name }} </span>
               </el-menu-item>
@@ -33,7 +33,7 @@
                 </template>
                 <template v-for="(c,n) in child.child">
                   <!-- <el-menu-item :key="n" index="/launch/crowd"> -->
-                       <el-menu-item :key="n" :index="index+'-'+idx+'-'+n" @click.native="getRouter(c.url)">
+                       <el-menu-item :key="n" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
                     <i v-if="c.icons" :class="c.icons"></i>
                     <span slot="title">{{c.name}}</span>
                   </el-menu-item>
@@ -98,7 +98,7 @@ export default {
       breadcrumb: [],
       isCollapseMenu: false,
       routerMap: {
-          "label/index": "tag",
+          "label/index": "tag-group-read",
           "launchHelp/index": "validate",
           "launchCrowd/index": "crowd",
           "launchPolicy/index": "strategy",

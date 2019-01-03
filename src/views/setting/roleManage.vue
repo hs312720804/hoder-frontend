@@ -63,10 +63,10 @@
       <el-table-column type="selection"></el-table-column>
       <el-table-column type="index" width="80"></el-table-column>
       <el-table-column prop="id" label="ID" width="60"></el-table-column>
-      <el-table-column prop="name" label="角色名称" width="100"></el-table-column>
+      <el-table-column prop="name" label="角色名称" width="200"></el-table-column>
       <el-table-column prop="enname" label="角色英文名称" width="120"></el-table-column>
       <!--<el-table-column prop="menuIds" label="权限" width="200"></el-table-column>-->
-      <el-table-column prop="remarks" label="备注" width="100"></el-table-column>
+      <el-table-column prop="remarks" label="备注" width="200"></el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="200">
         <template scope="scope">
           <el-icon name="time"></el-icon>
@@ -83,7 +83,7 @@
           </el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="280">
+      <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">

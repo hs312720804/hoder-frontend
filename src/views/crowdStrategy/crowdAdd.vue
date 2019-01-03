@@ -116,6 +116,9 @@
           <el-form-item label="备注" prop="remark">
             <el-input size="small" v-model="form.remark" ></el-input>
           </el-form-item>
+            <el-form-item label="优先级" prop="priority" v-if="crowdId!=null">
+            <el-input size="small" v-model="priority" ></el-input>
+          </el-form-item>
         </el-form>
       </el-col>
     </el-row>
@@ -134,6 +137,7 @@ export default {
       // usedTags: [[${usedTags}]] || {},
       rulesJson: { condition: "OR", rules: [] },
       suggestions: {},
+      priority: "",
       form: {
         name: "",
         policyId: null,
@@ -240,6 +244,7 @@ export default {
       };
       if(this.crowdId!=null){
          data.crowdId=this.crowdId
+         data.priority=this.priority
          this.$service.crowdUpdate(data,"编辑成功").then(data => {
           this.$emit("goBackCrowdListPage",true);
         });
@@ -265,6 +270,7 @@ export default {
     this.$service.crowdEdit({crowdId:this.crowdId}).then((data)=>{
         this.form.name=data.policyCrowds.crowdName
         this.form.remark=data.policyCrowds.remark
+        this.priority=data.policyCrowds.priority
         this.rulesJson=JSON.parse(data.policyCrowds.rulesJson)
     })
   }
@@ -299,7 +305,7 @@ export default {
   width 40px
   height 40px
 .label-item .txt,.label-item .sel
-  width 80px
+  width 100px
 .label-item .txt
   text-align right
 .label-item .in
