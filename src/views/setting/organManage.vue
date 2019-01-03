@@ -55,7 +55,7 @@
             </el-button>-->
             <el-button
               size="small"
-              type="warning"
+              type="success"
               @click="handleChangetStatus(scope.$index, scope.row)"
               v-permission="'sysAdministrative:office:changeStatus'"
             >
@@ -71,7 +71,7 @@
             </el-button>
             <el-button
               size="small"
-              type="danger"
+              type="info"
               @click="handleDelete(scope.$index, scope.row)"
               v-permission="'sysAdministrative:office:del'"
             >

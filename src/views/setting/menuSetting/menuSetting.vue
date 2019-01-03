@@ -218,10 +218,7 @@ export default {
             });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "已取消修改该条记录的状态"
-          });
+
         });
     },
 
@@ -310,10 +307,6 @@ export default {
     // 取消
     cancelAdd: function() {
       this.addFormVisible = false;
-      this.$message({
-        showClose: true,
-        message: "已取消"
-      });
     },
     // 单行删除
     handleDelete: function(index, row) {
