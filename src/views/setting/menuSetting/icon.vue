@@ -3324,6 +3324,21 @@
                     <div class="name">密码</div>
                     <div class="fontclass">.el-icon-cc-mima</div>
                 </li>
+                 <li>
+                <i class="icon iconfont el-icon-cc-celve1"></i>
+                    <div class="name">策略</div>
+                    <div class="fontclass">.el-icon-cc-celve1</div>
+                </li>
+                  <li>
+                <i class="icon iconfont el-icon-cc-toufangfangan"></i>
+                    <div class="name">投放方案</div>
+                    <div class="fontclass">.el-icon-cc-toufangfangan</div>
+                </li>
+                 <li>
+                <i class="icon iconfont el-icon-cc-iconset0226"></i>
+                    <div class="name">投放仪</div>
+                    <div class="fontclass">.el-icon-cc-iconset0226</div>
+                </li>
             
     </ul>
   </div>

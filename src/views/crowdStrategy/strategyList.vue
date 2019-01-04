@@ -282,10 +282,12 @@ export default {
           if(this.addForm.policyId!=""){
           this.$service.policyUpate(addForm,"编辑成功").then(data => {
             this.loadData();
+            this.addFormVisible=false;
           });
           }else{
           this.$service.policyAddSave(addForm,"添加成功").then(data => {
             this.loadData();
+             this.addFormVisible=false;
           });
           }
         } else {
@@ -306,7 +308,8 @@ export default {
   >>> .el-checkbox+.el-checkbox
     margin-left: 0px
   >>> .el-checkbox
-    width: 130px
+    min-width 130px
+    margin-right 5px
 .checkList
   height: 200px
   overflow: auto
