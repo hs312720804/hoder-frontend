@@ -1,16 +1,16 @@
 const ENV = process.env.NODE_ENV
-const BACKEND = process.env.BACKEND || '172.20.139.182:8009'
-const devHost = '172.20.139.182'
+const BACKEND = process.env.BACKEND || '127.0.0.1:8009'
+const devHost = '127.0.0.1'
 const path = require('path')
 const dist = path.resolve('./dist')
 const baseUrl = ENV === 'production' 
   ? ''
-  : 'http://172.20.139.182:8083'
+  : 'http://127.0.0.1:8083'
 
 module.exports = {
   baseUrl: baseUrl,
   devServer: {
-    public: 'http://172.20.139.182:8083',
+    public: '127.0.0.1:8083',
     port:"8083",
     headers: {
       "Access-Control-Allow-Origin": "*"
