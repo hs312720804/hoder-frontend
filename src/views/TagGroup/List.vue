@@ -18,7 +18,7 @@
                     <li 
                         v-for="(tagGroup, index) in tagGroupListFiltered" 
                         :key="tagGroup.id"
-                        :class="activeId === tagGroup.id ? 'active' : ''"
+                        :class="activeId == tagGroup.id ? 'active' : ''"
                         @click="handleReadTagGroup(tagGroup)"
                     > 
                         {{ tagGroup.name }}
@@ -39,7 +39,6 @@ export default {
     data() {
         return {
             filterText: undefined,
-            activeId: undefined,
             tagGroupList: [],
         }
     },
@@ -51,6 +50,9 @@ export default {
             } else {
                 return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
             }
+        },
+        activeId() {
+            return this.$route.params.id 
         }
     },
     methods: {
@@ -60,14 +62,12 @@ export default {
             })
         },
         handleReadTagGroup(item) {
-            this.activeId = item.id
             this.$emit('read-tag-group', item)
         }
     },
     created() {
-        const activeId = this.$route.params.id
+        const activeId = this.activeId
         if (activeId) {
-            this.activeId = +activeId
             this.fetchData()
         } else {
             this.fetchData().then(() => {

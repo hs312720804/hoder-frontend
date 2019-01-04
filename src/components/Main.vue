@@ -214,15 +214,17 @@ export default {
 .user-info
   margin-left: auto
 .menu
-  min-height: 100vh
   background-color: #092035
 .menu:not(.el-menu--collapse)
   width: 220px
 .leftMenu
-  height: 100%
-  background-color: #092035
+  height 100vh
+  display flex
+  flex-direction column
+  background-color #092035
 .leftMenu >>> .menu
-  min-height: 300px
+  flex-grow 1
+  overflow-y auto
 .tagNav
   overflow: visible
 .layout
@@ -233,7 +235,6 @@ export default {
   cursor: pointer
 .main_menu
   border-right: none
-  max-height: 100%
   overflow: auto
   >>> .el-menu
     background: #17090930
