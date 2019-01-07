@@ -249,7 +249,7 @@
             <el-radio class="radio" :label="1">正常</el-radio>
             <el-radio class="radio" :label="0">锁定</el-radio>
           </el-radio-group>&nbsp;&nbsp;
-          <el-checkbox label="发邮件通知请勾选" v-model="userForm.mailNotice"></el-checkbox>
+          <!-- <el-checkbox label="发邮件通知请勾选" v-model="userForm.mailNotice"></el-checkbox> -->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
