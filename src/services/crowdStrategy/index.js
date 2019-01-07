@@ -94,4 +94,18 @@ export function strategyCrowdDel(data){
         data 
       })
 }
+export function freshService(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/api/webServers/reload',
+        params 
+      })
+}
+export function freshCache(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/api/policyGen/lua',
+        params 
+      })
+}
 
