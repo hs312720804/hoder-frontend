@@ -2,7 +2,12 @@
   <el-container class="layout">
     <div class="leftMenu">
       <div class="logo">
-        <div class="logo__img">{{ isCollapseMenu ? 'SP' : '策略平台'}}</div>
+        <div class="logo__img">
+
+          {{ isCollapseMenu ? 'SP' : '策略平台'}}
+          <!-- <i class="el-icon-cc-celve1"></i>
+          <span>人群策略</span> -->
+          </div>
       </div>
       <!-- <Menu class="main_menu"
                 :default-active="$route.name" 
@@ -201,7 +206,7 @@ export default {
   border-right: 1px solid #092035
   border-bottom: 1px solid #092035
 .logo__img
-  color: #277dd6
+  color: white
 .collpase-btn
   color: #ebf0fb
 .collpase-btn i
@@ -249,4 +254,6 @@ export default {
   >>> .el-submenu__title:hover
     background: transparent
     color: hsla(0, 0%, 100%, 0.9)
+.tagNav >>>.el-button-group .el-button:first-child
+   display none
 </style>

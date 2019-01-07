@@ -239,10 +239,7 @@ export default {
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "出错了"
-          });
+         
         });
     },
     cancelLanuch(row) {
@@ -258,10 +255,7 @@ export default {
           });
         })
         .catch(() => {
-          this.$message({
-            showClose: true,
-            message: "出错了"
-          });
+         
         });
     },
     // 查看详情

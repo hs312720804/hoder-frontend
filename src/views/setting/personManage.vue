@@ -443,6 +443,7 @@ export default {
       this.userForm.loginFlag = 0;
       this.userForm.officeName = "";
       this.userForm.roleIds = [];
+      this.userForm.mailNotice=false;
     },
 
     // 新增
@@ -480,6 +481,7 @@ export default {
       this.userForm.loginFlag = row.loginFlag;
       this.userForm.officeName = row.officeName;
       this.userForm.roleIds = row.roleIds;
+      this.userForm.mailNotice=false;
     },
 
     // editSubmit

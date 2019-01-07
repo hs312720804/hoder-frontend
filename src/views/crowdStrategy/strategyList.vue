@@ -12,6 +12,14 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>新增
           </el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="freshService"
+            v-permission="'hoder:policy:add'"
+          >
+            <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
+          </el-button>
         </el-button-group>
       </div>
       <div class="right">
@@ -60,22 +68,30 @@
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="250">
+      <el-table-column label="操作" fixed="right" width="350">
         <template scope="scope">
           <el-button-group>
-            <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
+             <el-button size="small" type="success" @click="crowdList(scope.row)">
+              人群列表
+              </el-button>
              <el-button
               size="small"
               type="primary"
               v-permission="'hoder:policy:edit'"
               @click="handleEdit(scope.row)"
             >编辑</el-button>
-            <el-button
+             <el-button
               size="small"
               type="info"
               v-permission="'hoder:policy:del'"
               @click="del(scope.row)"
             >删除</el-button>
+            <el-button
+              size="small"
+              type="info"
+              v-permission="'hoder:policy:add'"
+              @click="freshCache(scope.row)"
+            >刷新策略缓存</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -107,7 +123,6 @@
         <el-form-item label="数据来源" prop="dataSource">
           <el-select
             v-model="addForm.dataSource"
-            clearable
             filterable
             placeholder="请选择类型"
             @change="getTags"
@@ -189,6 +204,22 @@ export default {
     this.loadData();
   },
   methods: {
+    freshService(){
+      this.$service.freshService().then((data)=>{
+        this.$message({
+          type:"info",
+          message:data
+        })
+      })
+    },
+    freshCache(row){
+      this.$service.freshCache({policyId:row.policyId}).then((data)=>{
+       this.$message({
+          type:"info",
+          message:data
+        })
+      })
+    },
     getTags() {
       this.addForm.conditionTagIds= [];
       this.$service
@@ -313,4 +344,5 @@ export default {
 .checkList
   height: 200px
   overflow: auto
+
 </style>
