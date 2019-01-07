@@ -107,7 +107,7 @@ export default {
     },
     computed: {
         tagGroupId() {
-            return this.$route.params.id
+            return +this.$route.params.id
         }
     },
     watch: {
