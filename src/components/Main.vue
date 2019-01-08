@@ -195,7 +195,7 @@ export default {
   font-size 22px
   font-weight bolder
 .logo__img i 
-  font-size 22px
+  font-size 28px
   font-weight bolder
 .collpase-btn
   color: #ebf0fb
