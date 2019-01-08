@@ -37,6 +37,7 @@
               multiple
               placeholder="请选择策略"
               @change="getCrowd"
+              @remove-tag="removeTag"
             >
               <el-option
                 v-for="item in strategyPlatform"
@@ -51,9 +52,10 @@
               <el-checkbox-group v-model="crowdForm.policyCrowdIds">
                 <el-checkbox
                   v-for="item in v.childs"
-                  :label="item.crowdId+''"
+                  :label="v.policyId+'_'+item.crowdId"
                   :key="item.crowdId+''"
-                >{{item.crowdName}}</el-checkbox>
+                >{{item.crowdName}}
+                </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-form-item>
@@ -134,6 +136,12 @@ export default {
     callback(data, successMsg) {
       this.$emit("changeStatus", true);
     },
+    removeTag(policyId){
+      this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v,index)=>{
+        if(v.split("_")[0]!=policyId)
+          return v
+      })
+    },
     getCrowd() {
       this.$service
         .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
@@ -150,7 +158,9 @@ export default {
           crowdForm = JSON.parse(crowdForm);
           crowdForm.biIds = crowdForm.biIds.join(",");
           crowdForm.policyIds = crowdForm.policyIds.join(",");
-          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.join(",");
+          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v,i)=>{
+            return v.split("_")[1]
+          }).join(",")
           if (
             this.editLaunchCrowdId != null &&
             this.editLaunchCrowdId != undefined

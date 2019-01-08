@@ -4,17 +4,11 @@
       <div class="logo">
         <div class="logo__img">
 
-          {{ isCollapseMenu ? 'SP' : '策略平台'}}
-          <!-- <i class="el-icon-cc-celve1"></i>
-          <span>人群策略</span> -->
+          <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
+           <i class="el-icon-cc-celve2"></i>
+          <span v-show="!isCollapseMenu">人群策略平台</span>
           </div>
       </div>
-      <!-- <Menu class="main_menu"
-                :default-active="$route.name" 
-                :items="menu || defaultMenu" 
-                :isCollapse="isCollapseMenu" 
-            >
-      </Menu>-->
       <el-menu
         :default-active="$route.name"
         class="main_menu menu"
@@ -37,7 +31,6 @@
                   <span>{{ child.name }}</span>
                 </template>
                 <template v-for="(c,n) in child.child">
-                  <!-- <el-menu-item :key="n" index="/launch/crowd"> -->
                        <el-menu-item :key="n" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
                     <i v-if="c.icons" :class="c.icons"></i>
                     <span slot="title">{{c.name}}</span>
@@ -46,14 +39,6 @@
               </el-submenu>
             </template>
           </el-submenu>
-          <!-- <el-menu-item 
-                v-else 
-                :key="index"
-                :index="item.route"
-            >
-                <i v-if="item.icon" :class="item.icon"></i>
-                <span slot="title">{{ item.name }}</span>
-          </el-menu-item>-->
         </template>
       </el-menu>
     </div>
@@ -206,7 +191,12 @@ export default {
   border-right: 1px solid #092035
   border-bottom: 1px solid #092035
 .logo__img
-  color: white
+  color: #409eff
+  font-size 22px
+  font-weight bolder
+.logo__img i 
+  font-size 22px
+  font-weight bolder
 .collpase-btn
   color: #ebf0fb
 .collpase-btn i
@@ -256,4 +246,6 @@ export default {
     color: hsla(0, 0%, 100%, 0.9)
 .tagNav >>>.el-button-group .el-button:first-child
    display none
+.user-info >>> .el-dropdown
+   color #c4c8d0
 </style>
