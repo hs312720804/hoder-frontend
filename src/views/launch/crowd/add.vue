@@ -121,7 +121,12 @@ export default {
           this.crowdForm.dataSource = row.dataSource;
           this.crowdForm.policyIds = row.policyIds.split(",");
           this.getCrowd();
-          this.crowdForm.policyCrowdIds = row.policyCrowdIds.split(",");
+          data.respcl.forEach(element => {
+             element.childs.forEach(v=>{
+               if(v.choosed)
+               this.crowdForm.policyCrowdIds.push(element.policyId+"_"+v.crowdId)
+             })
+          });
         }
       });
     } else {

@@ -110,7 +110,7 @@
 
     <!--新增界面-->
     <el-dialog
-      title="新增策略"
+      :title="title"
       :visible.sync="addFormVisible"
       v-if="addFormVisible"
       v-model="addFormVisible"
@@ -169,6 +169,7 @@ export default {
       searchForm: {
         policyName: ""
       },
+      title: "",
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
       // 默认每页数据量:pageSize
@@ -232,10 +233,12 @@ export default {
       this.addFormVisible = true;
       this.addForm.policyName = "";
       this.addForm.policyId= "";
+      this.title="新增"
       this.getTags();
     },
     handleEdit(row) {
       this.addFormVisible = true;
+       this.title="编辑"
       this.addForm.policyId= row.policyId;
       this.addForm.policyName = row.policyName;
       this.addForm.dataSource=row.dataSource.toString();

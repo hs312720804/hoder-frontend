@@ -25,6 +25,8 @@ export default {
         this.$refs.list.loadData();
       if(launchCrowdId)
       this.editLaunchCrowdId=launchCrowdId
+      else
+      this.editLaunchCrowdId=null
     },
     goBack(){
       this.isShowList=true;
