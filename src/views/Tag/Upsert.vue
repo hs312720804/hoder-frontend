@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="tag.attrId ? '编辑标签' : '编辑标签'" :visible.sync="showCreateDialog">
+    <el-dialog :title="tag.attrId ? '编辑标签' : '新建标签'" :visible.sync="showCreateDialog">
         <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
         </GateSchemaForm>
     </el-dialog>
@@ -13,11 +13,28 @@ export default {
        return {
            showCreateDialog: false,
            tag: {
+               tagId: undefined,
+               tagType: undefined,
+               attrName: undefined,
+               attrValue: undefined
            },
            schema: _
             .map({
                 attrName: _.r.str.other('form', {label: '名称', placeholder: '请输入名称'}),
-                attrValue: _.r.str.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值', placeholder: '16位以内字母数字组合'})
+                attrValue: _.r.str
+                    .switch('/tagType', [
+                        {
+                            case: _.value('bool'),
+                            schema: _.string.enum({
+                                'true': 'true',
+                                'false': 'false'
+                            }).other('form', {label: '值', placeholder: '16位以内字母数字组合'})
+                        },
+                        {
+                            case: _.any,
+                            schema: _.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值', placeholder: '16位以内字母数字组合'})
+                        }
+                    ])
             })
             .other('form', {
                 footer: {
@@ -48,6 +65,7 @@ export default {
        },
        getFormData(){
            const data = JSON.parse(JSON.stringify(this.tag))
+           delete data.tagType
            delete data.createTime
            delete data.updateTime
            return data

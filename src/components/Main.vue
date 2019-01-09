@@ -244,8 +244,12 @@ export default {
   >>> .el-submenu__title:hover
     background: transparent
     color: hsla(0, 0%, 100%, 0.9)
-.tagNav >>>.el-button-group .el-button:first-child
-   display none
+.tagNav 
+  padding-right 50px
+  >>> .tag-nav__right
+    right 25px
+  >>> .tag-nav__back
+    display none
 .user-info >>> .el-dropdown
    color #c4c8d0
 </style>

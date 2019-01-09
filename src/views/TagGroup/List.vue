@@ -98,6 +98,9 @@ export default {
     color #333
 
 .tag-category-list
+    ul 
+        padding 0
+        list-style none
     li 
         height 35px
         line-height 35px

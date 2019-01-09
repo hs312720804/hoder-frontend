@@ -93,12 +93,14 @@ export default {
         },
         handleAddTag() {
             this.tag = {
-                tagId: this.tagCategory.tagId
+                tagId: this.tagCategory.tagId,
             }
+            this.tag.tagType = this.tagCategory.tagType
             this.$refs.tagUpsert.showCreateDialog = true
         },
         handleEditTag(row) {
             this.tag = row
+            this.tag.tagType = this.tagCategory.tagType
             this.$refs.tagUpsert.showCreateDialog = true
         },
         handleDeleteTag(row) {
