@@ -181,7 +181,7 @@ export default {
   align-items: center
   padding: 10px
   border-left: none
-  background-color: #092035
+  background-color white
 .logo
   text-align: center
   height: 60px
@@ -197,13 +197,14 @@ export default {
 .logo__img i 
   font-size 28px
   font-weight bolder
+  margin-right 5px
 .collpase-btn
-  color: #ebf0fb
+  color: #191414
 .collpase-btn i
-  color: #ebf0fb
+  color: #191414
 .collpase-btn
   &, &:hover, &:focus
-    color: #ebf0fb
+    color: #191414
 .breadcrumb
   margin-left: 10px
 .user-info
@@ -225,7 +226,7 @@ export default {
 .layout
   height: 100%
 .breadcrumb >>> .el-breadcrumb__inner
-  color: #c0c4cc
+  color: #191414
 .user-info
   cursor: pointer
 .main_menu
@@ -247,5 +248,5 @@ export default {
 .tagNav >>>.el-button-group .el-button:first-child
    display none
 .user-info >>> .el-dropdown
-   color #c4c8d0
+   color #191414
 </style>
