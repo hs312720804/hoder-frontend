@@ -16,3 +16,26 @@ npm run serve
 ```
 BACKEND=172.20.155.102:8009 npm run serve
 ```
+
+## 构建  
+```
+npm run build
+
+```
+## 部署
+本项目是纯静态项目，需要使用 nginx 等来代理静态文件和转发后端请求，下面是一个示例  
+```
+server {
+    listen       8010 default_server;
+    listen       [::]:8010 default_server;
+    server_name  _;
+    root         /path/to/hoder-frontend/dist;
+
+
+    location /api/ {
+        # 转发后端请求
+        proxy_pass http://172.20.135.123:8011/;
+    }
+}
+
+```
