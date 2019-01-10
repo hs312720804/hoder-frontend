@@ -253,4 +253,6 @@ export default {
     display none
 .user-info >>> .el-dropdown
    color #191414
+.el-icon-cc-iconset0225,.el-icon-cc-menu1,.el-icon-cc-team,.el-icon-cc-jiaose,.el-icon-cc-xitong
+  font-size 21px
 </style>
