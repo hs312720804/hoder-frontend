@@ -7,13 +7,15 @@ function beforeEach(to, from, next) {
     app.$isLoggedIn().then(() => {
         next(to.name !== 'login'
             ? undefined
-            : {name: 'home'}
+            : {name: 'dashboard'}
         )
+        
     }).catch(() => {
-        next(to.name == 'login'
-            ? undefined
-            : {name: 'login', query: {redirect: to.fullPath}}
-        )
+        if(to.name==='login'){
+            next()
+        }else{
+            next({name: 'login', query: {redirect: to.fullPath}})
+        }
     })
 }
 function afterEach(to) {
