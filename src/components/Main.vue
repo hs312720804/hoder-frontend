@@ -21,8 +21,9 @@
               <span>{{ item.name }}</span>
             </template>
             <template v-for="(child, idx) in item.child">
-              <el-menu-item v-if="!child.child.length>0" :key="idx" :index="routerMap[child.url]" @click.native="getRouter(child.url)">
+              <el-menu-item v-if="!child.child.length>0" :key="idx" :index="idx + ''" @click.native="getRouter(child.url)">
                 <i v-if="child.icons" :class="child.icons"></i>
+                <!-- {{routerMap[child.url]}} aa -->
                 <span slot="title">{{ child.name }} </span>
               </el-menu-item>
               <el-submenu v-else :key="idx" :index="index+'-'+idx">
