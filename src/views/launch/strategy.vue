@@ -23,17 +23,20 @@ export default {
     return {
       activeName: null,
       biId: null,
-      launchPlatformData: [],
+      launchPlatformData: [], //投放策略平台
       strategyPlatformData: [],
       selectedValue: []
     };
   },
   methods: {
     handleChange(all, direction, selectedValue) {
+      all = all.length > 0 && isNaN(all[0]) ? all.slice(1) : all; //去掉NaN vuejs  el-transfer的BUG
       this.$service
-        .modifyLaunchPolicy({ biId: this.biId, launchPolicyIds: all.join(",") },"修改成功")
-        .then(data => {
-        });
+        .modifyLaunchPolicy(
+          { biId: this.biId, launchPolicyIds: all.join(",") },
+          "修改成功"
+        )
+        .then(data => {});
     },
     handleClick(tab, event) {
       this.$service.launchPolicyIndex().then(data => {

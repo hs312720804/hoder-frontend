@@ -79,15 +79,14 @@
                     <span class="txt">{{ childItem.categoryName }}</span>
                     <span class="sel">{{ childItem.operator }}</span>
                     <span class="in">
-                      <el-date-picker
+                      <!-- <el-date-picker
                         v-if="childItem.tagType === 'time'"
                         class="datetime-format"
                         v-model="childItem.tagCode"
-                        disabled
-                        type="datetime"
+                        type="date"
                         placeholder="选择日期"
-                      ></el-date-picker>
-                      <span v-else>{{ childItem.tagName }}</span>
+                      ></el-date-picker> -->
+                      <span >{{ childItem.value }}</span>
                     </span>
                   </div>)
                 </div>

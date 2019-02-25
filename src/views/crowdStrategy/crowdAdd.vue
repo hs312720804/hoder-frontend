@@ -3,7 +3,7 @@
     <el-row>
       <el-col :span="24">
         <div class="title" v-if="crowdId==null">新增人群</div>
-         <div class="title" v-if="crowdId!=null">编辑人群</div>
+        <div class="title" v-if="crowdId!=null">编辑人群</div>
       </el-col>
     </el-row>
     <!--新增编辑界面-->
@@ -14,110 +14,119 @@
             <el-input size="small" v-model="form.name" placeholder="投放名称"></el-input>
           </el-form-item>
           <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
-                <div class="label-container">
-                  <template v-for="(item, index) in rulesJson.rules">
-                    <div v-show="index > 0" class="label-or-space" :key="index">或者</div>
-                    <div class="label-ground" :key="index">
-                      <div
-                        v-for="(childItem,n) in item.rules"
-                        :key="childItem.tagId"
-                        :class="{'label-item':true,'paddingTop':n>0}"
+            <div class="label-container">
+              <template v-for="(item, index) in rulesJson.rules">
+                <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
+                <div class="label-ground" :key="index">
+                  <div
+                    v-for="(childItem,n) in item.rules"
+                    :key="index+'tagId'+n"
+                    :class="{'label-item':true,'paddingTop':n>0}"
+                  >
+                    <span class="txt">{{ childItem.categoryName }}</span>
+                    <span class="sel">
+                      <el-select
+                        style="width: 80px"
+                        name="oxve"
+                        v-model="childItem.operator"
+                        class="input-inline"
                       >
-                        <span class="txt">{{ childItem.categoryName }}</span>
-                        <span class="sel">
-                          <el-select
-                            style="width: 80px"
-                            name="oxve"
-                            v-model="childItem.operator"
-                            class="input-inline"
-                          >
-                            <template
-                              v-if="childItem.tagType === 'number' || childItem.tagType === 'time'"
-                            >
-                              <el-option value="="></el-option>
-                              <el-option value=">="></el-option>
-                              <el-option value="<="></el-option>
-                              <el-option value=">"></el-option>
-                              <el-option value="<"></el-option>
-                            </template>
-                            <template v-if="childItem.tagType === 'string'">
-                              <el-option value="=" label="是"></el-option>
-                              <el-option value="!=" label="不是"></el-option>
-                              <el-option value="like" label="包含"></el-option>
-                            </template>
-                            <template v-if="childItem.tagType === 'boolean'">
-                              <el-option value="=" label="="></el-option>
-                            </template>
-                          </el-select>
-                        </span>
-                        <span class="in">
-                          <el-date-picker
-                            v-if="childItem.tagType === 'time'"
-                            v-model="childItem.tagCode"
-                            type="datetime"
-                            placeholder="选择日期"
-                          ></el-date-picker>
-                          <el-select
-                            v-else
-                            v-model="childItem.tagCode"
-                            class="inline-input"
-                            filterable
-                            @change="handleSelectTag(childItem, $event)"
-                            default-first-option
-                            :remote-method="fetchTagSuggestions(childItem)"
-                            placeholder="请输入或选择"
-                          >
-                            <el-option
-                              v-for="item in suggestions[childItem.tagId]"
-                              :key="item.attrValue"
-                              :label="item.attrName"
-                              :value="item.attrValue"
-                            ></el-option>
-                          </el-select>
-                        </span>
-                        <span class="i" @click="handleRemoveRule(item, childItem)">
-                            <i class="icon iconfont el-icon-cc-delete"></i>
-                        </span>
-                        <el-button type="success" v-if="n>0" round class="and">且</el-button>
-                      </div>
-                      <div class="label-add">
-                        <div class="optional-condition">
-                          <el-tag type="success"
-                            class="oc-item"
-                            v-for="tagItem in tags"
-                            :key="tagItem.tagItem"
-                            @click.native="handleAddChildRule(item, tagItem)"
-                          >{{ tagItem.tagName }}</el-tag>
-                        </div>
-                      </div>
-                    </div>
-                  </template>
-                  <div class="label-or">
-                    <div
-                      class="optional-condition"
-                      v-if="tags.length"
-                      :style="{'padding-top': rulesJson.rules.length > 0 ? '10px' : 0}"
-                    >
-                      <span
-                        v-show="rulesJson.rules.length"
-                        class="label-and-txt"
-                        style="display: inline"
-                      >或者&nbsp;</span>
+                        <template
+                          v-if="childItem.tagType === 'number' || childItem.tagType === 'time'"
+                        >
+                          <el-option value="="></el-option>
+                          <el-option value=">="></el-option>
+                          <el-option value="<="></el-option>
+                          <el-option value=">"></el-option>
+                          <el-option value="<"></el-option>
+                        </template>
+                        <template v-if="childItem.tagType === 'string'">
+                          <el-option value="=" label="是"></el-option>
+                          <el-option value="!=" label="不是"></el-option>
+                          <el-option value="like" label="包含"></el-option>
+                        </template>
+                        <template v-if="childItem.tagType === 'boolean'">
+                          <el-option value="=" label="="></el-option>
+                        </template>
+                      </el-select>
+                    </span>
+                    <span class="in">
+                      <el-date-picker
+                        v-if="childItem.tagType === 'time'"
+                        v-model="childItem.value"
+                        type="date"
+                        placeholder="选择日期"
+                        format="yyyy-MM-dd"
+                        value-format="yyyy-MM-dd"
+                        :key="index+'key'"
+                      ></el-date-picker>
+                      <el-select
+                        v-else-if="childItem.tagType==='string'"
+                        v-model="childItem.value"
+                        class="inline-input"
+                        filterable
+                        :key="index+'select'"
+                        default-first-option
+                        :remote-method="fetchTagSuggestions(childItem)"
+                        placeholder="请输入或选择"
+                      >
+                        <el-option
+                          v-for="item in suggestions[childItem.tagId]"
+                          :key="index+item.attrValue"
+                          :label="item.attrName"
+                          :value="item.attrValue"
+                        ></el-option>
+                      </el-select>
+                      <el-input v-else-if="childItem.tagType==='number'" :key="index+'input'" v-model="childItem.value" placeholder="请输入内容"></el-input>
+                      <el-select v-else v-model="childItem.value">
+                        <el-option value="true">是</el-option>
+                        <el-option value="false">否</el-option>
+                      </el-select>
+                    </span>
+                    <span class="i" @click="handleRemoveRule(item, childItem)">
+                      <i class="icon iconfont el-icon-cc-delete"></i>
+                    </span>
+                    <el-button type="success" v-if="n>0" round class="and">且</el-button>
+                  </div>
+                  <div class="label-add">
+                    <div class="optional-condition">
                       <el-tag
+                        type="success"
                         class="oc-item"
-                        v-for="(item) in tags"
-                        :key="item.tagName"
-                        @click.native="handleAddRule(item)"
-                      >{{ item.tagName }}</el-tag>
+                        v-for="tagItem in tags"
+                        :key="tagItem.tagItem"
+                        @click.native="handleAddChildRule(item, tagItem)"
+                      >{{ tagItem.tagName }}</el-tag>
                     </div>
                   </div>
                 </div>
+              </template>
+              <div class="label-or">
+                <div
+                  class="optional-condition"
+                  v-if="tags.length"
+                  :style="{'padding-top': rulesJson.rules.length > 0 ? '10px' : 0}"
+                >
+                  <span
+                    v-show="rulesJson.rules.length"
+                    class="label-and-txt"
+                    style="display: inline"
+                  >或者&nbsp;</span>
+                  <el-tag
+                    class="oc-item"
+                    v-for="(item) in tags"
+                    :key="item.tagName"
+                    @click.native="handleAddRule(item)"
+                  >{{ item.tagName }}</el-tag>
+                </div>
+              </div>
+            </div>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
-            <el-input size="small" v-model="form.remark" ></el-input>
+            <el-input size="small" v-model="form.remark"></el-input>
           </el-form-item>
-            <el-form-item label="优先级" prop="priority" v-if="crowdId!=null">
-            <el-input size="small" v-model="priority" ></el-input>
+          <el-form-item label="优先级" prop="priority" v-if="crowdId!=null">
+            <el-input size="small" v-model="priority"></el-input>
           </el-form-item>
         </el-form>
       </el-col>
@@ -148,7 +157,7 @@ export default {
       }
     };
   },
-  props: ["policyId","crowdId"],
+  props: ["policyId", "crowdId"],
   methods: {
     handleRemoveRule(rule, childRule) {
       const rulesJson = this.rulesJson;
@@ -159,7 +168,9 @@ export default {
         });
       }
     },
+    /*添加一级标签 */
     handleAddRule(tag) {
+      // debugger
       if (this.rulesJson.rules.length > 9) {
         layer.msg("已达最大数量");
         return;
@@ -169,9 +180,9 @@ export default {
         rules: [
           {
             operator: this.getDefaultOperator("="),
-            tagCode: undefined,
-            tagName: undefined,
-            dataSource: undefined,
+            tagCode: tag.tagKey,
+            tagName: tag.tagName,
+            dataSource: tag.dataSource,
             value: "",
             tagId: tag.tagId,
             tagType: tag.tagType,
@@ -182,15 +193,16 @@ export default {
       });
     },
     handleAddChildRule(rule, tag) {
+      //debugger;
       if (rule.rules.length > 9) {
         layer.msg("已达最大数量");
         return;
       }
       rule.rules.push({
         operator: this.getDefaultOperator(tag),
-        tagCode: undefined,
-        tagName: undefined,
-        dataSource: undefined,
+        tagCode: tag.tagKey,
+        tagName: tag.tagName,
+        dataSource: tag.dataSource,
         value: "",
         tagId: tag.tagId,
         tagType: tag.tagType,
@@ -209,15 +221,16 @@ export default {
         });
       }
     },
-    handleSelectTag(rule, tagCode) {
-      const suggestions = this.suggestions[rule.tagId];
-      const tag = suggestions.find(function(item) {
-        return item.attrValue === tagCode;
-      });
-      rule.tagCode = tag.attrValue;
-      rule.tagName = tag.attrName;
-      rule.dataSource = tag.dataSource;
-    },
+    // handleSelectTag(rule, tagCode) {
+    //   const suggestions = this.suggestions[rule.tagId];
+    //   const tag = suggestions.find(function(item) {
+    //     return item.attrValue === tagCode;
+    //   });
+    //   rule.tagCode = tag.attrValue;
+    //   rule.value = tag.attrValue; //谭文亮要求添加测试
+    //   rule.tagName = tag.attrName;
+    //   rule.dataSource = tag.dataSource;
+    // },
     getDefaultOperator(tag) {
       return "=";
     },
@@ -242,21 +255,21 @@ export default {
         remark: form.remark,
         policyId: form.policyId
       };
-      if(this.crowdId!=null){
-         data.crowdId=this.crowdId
-         data.priority=this.priority
-         this.$service.crowdUpdate(data,"编辑成功").then(data => {
-          this.$emit("goBackCrowdListPage",true);
+      if (this.crowdId != null) {
+        data.crowdId = this.crowdId;
+        data.priority = this.priority;
+        this.$service.crowdUpdate(data, "编辑成功").then(data => {
+          this.$emit("goBackCrowdListPage", true);
         });
-      }else{
-        this.$service.crowdSave(data,"新增成功").then(data => {
-          this.$emit("goBackCrowdListPage",true);
+      } else {
+        this.$service.crowdSave(data, "新增成功").then(data => {
+          this.$emit("goBackCrowdListPage", true);
         });
       }
     },
-        // 取消
+    // 取消
     cancelAdd: function() {
-       this.$emit("goBackCrowdListPage");
+      this.$emit("goBackCrowdListPage");
     }
   },
   created() {
@@ -266,13 +279,14 @@ export default {
       .then(data => {
         this.tags = data;
       });
-    if(this.crowdId!=null)//编辑
-    this.$service.crowdEdit({crowdId:this.crowdId}).then((data)=>{
-        this.form.name=data.policyCrowds.crowdName
-        this.form.remark=data.policyCrowds.remark
-        this.priority=data.policyCrowds.priority
-        this.rulesJson=JSON.parse(data.policyCrowds.rulesJson)
-    })
+    if (this.crowdId != null)
+      //编辑
+      this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
+        this.form.name = data.policyCrowds.crowdName;
+        this.form.remark = data.policyCrowds.remark;
+        this.priority = data.policyCrowds.priority;
+        this.rulesJson = JSON.parse(data.policyCrowds.rulesJson);
+      });
   }
 };
 </script>
@@ -291,35 +305,35 @@ export default {
   display: flex
   justify-content: flex-end
 .label-ground
-  border 1px dashed #ccc
-  padding 10px
+  border: 1px dashed #ccc
+  padding: 10px
 .label-item
-  display flex
-  position relative
+  display: flex
+  position: relative
 .paddingTop
-  padding-top 50px
+  padding-top: 50px
 .label-item .and
-  position absolute
-  top 5px
-  left 140px
-  width 40px
-  height 40px
-.label-item .txt,.label-item .sel
-  width 100px
+  position: absolute
+  top: 5px
+  left: 140px
+  width: 40px
+  height: 40px
+.label-item .txt, .label-item .sel
+  width: 100px
 .label-item .txt
-  text-align right
+  text-align: right
 .label-item .in
-  width 150px
-.label-item span,.oc-item
-  margin-right 10px
+  width: 150px
+.label-item span, .oc-item
+  margin-right: 10px
 .label-add
-  margin-top 10px
+  margin-top: 10px
 .label-add >>> span
-   cursor pointer
+  cursor: pointer
 .label-or >>> span
-   cursor pointer
+  cursor: pointer
 i
- cursor pointer
+  cursor: pointer
 </style>
 
 
