@@ -77,7 +77,7 @@
                           :value="item.attrValue"
                         ></el-option>
                       </el-select>
-                      <el-input v-else-if="childItem.tagType==='number'" :key="index+'input'" v-model="childItem.value" placeholder="请输入内容"></el-input>
+                      <el-input-number v-else-if="childItem.tagType==='number'" :key="index+'input'" v-model="childItem.value" placeholder="请输入内容"></el-input-number>
                       <el-select v-else v-model="childItem.value">
                         <el-option value="true">是</el-option>
                         <el-option value="false">否</el-option>
