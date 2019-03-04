@@ -77,10 +77,15 @@
                           :value="item.attrValue"
                         ></el-option>
                       </el-select>
-                      <el-input-number v-else-if="childItem.tagType==='number'" :key="index+'input'" v-model="childItem.value" placeholder="请输入内容"></el-input-number>
+                      <el-input-number
+                        v-else-if="childItem.tagType==='number'"
+                        :key="index+'input'"
+                        v-model="childItem.value"
+                        placeholder="请输入内容"
+                      ></el-input-number>
                       <el-select v-else v-model="childItem.value">
-                        <el-option value="true">是</el-option>
-                        <el-option value="false">否</el-option>
+                        <el-option value="true" label="是"></el-option>
+                        <el-option value="false" label="否"></el-option>
                       </el-select>
                     </span>
                     <span class="i" @click="handleRemoveRule(item, childItem)">
@@ -169,6 +174,9 @@ export default {
       }
     },
     /*添加一级标签 */
+    /**
+     * tag 为标签
+     */
     handleAddRule(tag) {
       // debugger
       if (this.rulesJson.rules.length > 9) {
@@ -315,11 +323,11 @@ export default {
 .label-item .and
   position: absolute
   top: 5px
-  left: 140px
+  left: 260px
   width: 40px
   height: 40px
 .label-item .txt, .label-item .sel
-  width: 100px
+  width: 150px
 .label-item .txt
   text-align: right
 .label-item .in
@@ -334,6 +342,8 @@ export default {
   cursor: pointer
 i
   cursor: pointer
+.el-date-editor.el-input, .el-date-editor.el-input__inner
+  width: 100%
 </style>
 
 
