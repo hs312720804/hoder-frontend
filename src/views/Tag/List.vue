@@ -25,7 +25,7 @@
                     <el-button
                         size="small"
                         type="success"
-                        @click="handleEditTag(scope.row)" 
+                        @click="handleEditTag(scope.row)"
                         v-permission="'hoder:label:attr:modify'"
                     >
                         编辑
@@ -42,7 +42,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination 
+        <el-pagination
             class="pagination"
             :current-page.sync="pagination.currentPage"
             :page-size.sync="pagination.pageSize"
@@ -99,7 +99,7 @@ export default {
             this.$refs.tagUpsert.showCreateDialog = true
         },
         handleEditTag(row) {
-            this.tag = row
+            this.tag = JSON.parse(JSON.stringify(row))
             this.tag.tagType = this.tagCategory.tagType
             this.$refs.tagUpsert.showCreateDialog = true
         },
