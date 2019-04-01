@@ -48,6 +48,10 @@
                         <template v-if="childItem.tagType === 'boolean'">
                           <el-option value="=" label="="></el-option>
                         </template>
+                        <template v-if="childItem.tagType === 'collect'">
+                          <el-option value="=" label="是"></el-option>
+                          <el-option value="!=" label="不是"></el-option>
+                        </template>
                       </el-select>
                     </span>
                     <span class="in">
@@ -61,7 +65,7 @@
                         :key="index+'key'"
                       ></el-date-picker>
                       <el-select
-                        v-else-if="childItem.tagType==='string'"
+                        v-else-if="childItem.tagType==='string' || childItem.tagType === 'collect'"
                         v-model="childItem.value"
                         class="inline-input"
                         filterable
