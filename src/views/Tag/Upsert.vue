@@ -80,7 +80,6 @@ export default {
            }
        },
        getFormData(){
-           debugger
            const data = JSON.parse(JSON.stringify(this.tag))
            if (typeof data.attrValue === 'object') {
                data.attrValue = JSON.stringify(data.attrValue)
@@ -96,7 +95,6 @@ export default {
                    JSON.parse(str);
                    return true;
                } catch(e) {
-                   console.log(e);
                    return false;
                }
            }
