@@ -35,7 +35,7 @@ export default {
                             schema: _.map({
                                 ip: _.str,
                                 port:_.str,
-                                password:_.str,
+                                password:_.optional.str,
                                 timeout:_.str,
                                 database:_.str,
                                 cid:_.str,
