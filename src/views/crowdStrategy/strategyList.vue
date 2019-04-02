@@ -71,16 +71,14 @@
       <el-table-column label="操作" fixed="right" width="350">
         <template scope="scope">
           <el-button-group>
-             <el-button size="small" type="success" @click="crowdList(scope.row)">
-              人群列表
-              </el-button>
-             <el-button
+            <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
+            <el-button
               size="small"
               type="primary"
               v-permission="'hoder:policy:edit'"
               @click="handleEdit(scope.row)"
             >编辑</el-button>
-             <el-button
+            <el-button
               size="small"
               type="info"
               v-permission="'hoder:policy:del'"
@@ -121,12 +119,7 @@
           <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
         </el-form-item>
         <el-form-item label="数据来源" prop="dataSource">
-          <el-select
-            v-model="addForm.dataSource"
-            filterable
-            placeholder="请选择类型"
-            @change="getTags"
-          >
+          <el-select v-model="addForm.dataSource" filterable placeholder="请选择类型" @change="getTags">
             <el-option label="数据平台" value="2"></el-option>
             <el-option label="自定义" value="1"></el-option>
           </el-select>
@@ -205,24 +198,24 @@ export default {
     this.loadData();
   },
   methods: {
-    freshService(){
-      this.$service.freshService().then((data)=>{
+    freshService() {
+      this.$service.freshService().then(data => {
         this.$message({
-          type:"info",
-          message:data
-        })
-      })
+          type: "info",
+          message: data
+        });
+      });
     },
-    freshCache(row){
-      this.$service.freshCache({policyId:row.policyId}).then((data)=>{
-       this.$message({
-          type:"info",
-          message:data
-        })
-      })
+    freshCache(row) {
+      this.$service.freshCache({ policyId: row.policyId }).then(data => {
+        this.$message({
+          type: "info",
+          message: data
+        });
+      });
     },
     getTags() {
-      this.addForm.conditionTagIds= [];
+      this.addForm.conditionTagIds = [];
       this.$service
         .policyTagSeach({ dataSource: this.addForm.dataSource, s: "" })
         .then(data => {
@@ -232,18 +225,22 @@ export default {
     handleAdd() {
       this.addFormVisible = true;
       this.addForm.policyName = "";
-      this.addForm.policyId= "";
-      this.title="新增"
+      this.addForm.policyId = "";
+      this.title = "新增";
       this.getTags();
     },
     handleEdit(row) {
       this.addFormVisible = true;
-       this.title="编辑"
-      this.addForm.policyId= row.policyId;
+      this.title = "编辑";
+      this.addForm.policyId = row.policyId;
       this.addForm.policyName = row.policyName;
-      this.addForm.dataSource=row.dataSource.toString();
+      this.addForm.dataSource = row.dataSource.toString();
       this.getTags();
-      this.addForm.conditionTagIds=row.conditionTagIds.split(",").map(function(v,i){return parseInt(v)});
+      this.addForm.conditionTagIds = row.conditionTagIds
+        .split(",")
+        .map(function(v, i) {
+          return parseInt(v);
+        });
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
@@ -257,13 +254,11 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.policyDel({ policyId: id },"删除成功").then(data => {
-            this.loadData()
+          this.$service.policyDel({ policyId: id }, "删除成功").then(data => {
+            this.loadData();
           });
         })
-        .catch(() => {
-          
-        });
+        .catch(() => {});
     },
     // 从服务器读取数据
     loadData: function() {
@@ -312,17 +307,17 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm);
           addForm = JSON.parse(addForm);
-          addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-          if(this.addForm.policyId!=""){
-          this.$service.policyUpate(addForm,"编辑成功").then(data => {
-            this.loadData();
-            this.addFormVisible=false;
-          });
-          }else{
-          this.$service.policyAddSave(addForm,"添加成功").then(data => {
-            this.loadData();
-             this.addFormVisible=false;
-          });
+          addForm.conditionTagIds = addForm.conditionTagIds.join(",");
+          if (this.addForm.policyId != "") {
+            this.$service.policyUpate(addForm, "编辑成功").then(data => {
+              this.loadData();
+              this.addFormVisible = false;
+            });
+          } else {
+            this.$service.policyAddSave(addForm, "添加成功").then(data => {
+              this.loadData();
+              this.addFormVisible = false;
+            });
           }
         } else {
           console.log("error submit!!");
@@ -342,10 +337,9 @@ export default {
   >>> .el-checkbox+.el-checkbox
     margin-left: 0px
   >>> .el-checkbox
-    min-width 130px
-    margin-right 5px
+    min-width: 130px
+    margin-right: 5px
 .checkList
   height: 200px
   overflow: auto
-
 </style>

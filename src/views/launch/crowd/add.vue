@@ -44,7 +44,8 @@
                 :key="item.policyId+''"
                 :label="item.policyName"
                 :value="item.policyId+''"
-              >{{item.policyName}}</el-option>
+              >{{item.policyName}}
+              </el-option>
             </el-select>
           </el-form-item>
           <el-form-item label="选择人群" prop="policyCrowdIds">

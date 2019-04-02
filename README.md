@@ -44,3 +44,5 @@ server {
 备注：ip地址为后端代码访问地址 172.20.135.123:8011 测试环境IP
 二、修改vue.config.js配置
 把127.0.0.0改成本机Ip
+三、测试环境
+http://172.20.155.102:8010/?tdsourcetag=s_pctim_aiomsg#/strategy/strategyList

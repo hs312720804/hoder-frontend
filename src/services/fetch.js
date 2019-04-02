@@ -16,6 +16,7 @@ export default function fetch({
     data: isJSON ? data : qs.stringify(data),
     params
   };
+  
   if (url != "/api/login") option.headers = { Authorization: this.state.token };
   return axios(option)
     .then(function({ data }) {
