@@ -45,7 +45,7 @@ export default {
                         },
                         {
                             case: _.any,
-                            schema: _.string.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值111', placeholder: '16位以内字母数字组合'})
+                            schema: _.string.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值', placeholder: '16位以内字母数字组合'})
                         }
                     ])
             })
