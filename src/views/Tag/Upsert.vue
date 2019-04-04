@@ -40,7 +40,7 @@ export default {
                                 database:_.str.pattern(/^[0-9]{1,16}$/).$msg('该值为数字').other('form',{placeholder: '请输入数字'}),
                                 cid:_.str.pattern(/^[0-9]{1,16}$/).$msg('该值为数字').other('form',{placeholder: '请输入数字'}),
                                 ext1:_.optional.str,
-                                ext2:_.optional.str
+                                version:_.optional.str
                             }).other('form', {label: '值'})
                         },
                         {
