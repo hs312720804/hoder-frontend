@@ -183,7 +183,7 @@ export default {
      */
     handleAddRule(tag) {
       // debugger
-      if (this.rulesJson.rules.length > 9) {
+      if (this.rulesJson.rules.length > 50) {
         layer.msg("已达最大数量");
         return;
       }
@@ -206,7 +206,7 @@ export default {
     },
     handleAddChildRule(rule, tag) {
       //debugger;
-      if (rule.rules.length > 9) {
+      if (rule.rules.length > 50) {
         layer.msg("已达最大数量");
         return;
       }

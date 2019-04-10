@@ -9,6 +9,7 @@
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
                     <el-button type="primary" @click="handleAddTag" v-permission="'hoder:label:attr:add'">新建标签</el-button>
+                    <el-button type="primary" @click="handleAddBatchTag" v-permission="'hoder:label:attr:add'">批量上传</el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -54,14 +55,17 @@
         >
         </el-pagination>
         <TagUpsert ref="tagUpsert" @upsert-end="fetchData" :current-tag="tag" />
+        <BatchUpload ref="BatchUpload" @upsert-end="fetchData" :current-tag="tag" />
     </el-card>
 
 </template>
 <script>
 import TagUpsert from './Upsert.vue'
+import BatchUpload from './batchUpload.vue'
 export default {
     components: {
-        TagUpsert
+        TagUpsert,
+        BatchUpload
     },
     data() {
         return {
@@ -97,6 +101,13 @@ export default {
             }
             this.tag.tagType = this.tagCategory.tagType
             this.$refs.tagUpsert.showCreateDialog = true
+        },
+        handleAddBatchTag () {
+            this.tag = {
+                tagId: this.tagCategory.tagId,
+            }
+            this.tag.tagType = this.tagCategory.tagType
+            this.$refs.BatchUpload.showBatchDialog = true
         },
         handleEditTag(row) {
             this.tag = JSON.parse(JSON.stringify(row))

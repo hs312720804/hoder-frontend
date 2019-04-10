@@ -89,7 +89,9 @@
               type="info"
               v-permission="'hoder:policy:add'"
               @click="freshCache(scope.row)"
-            >刷新策略缓存</el-button>
+            ><span v-if="scope.row.status === 1">点击生效</span>
+              <span v-else="scope.row.status === 2">已生效</span>
+            </el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -191,11 +193,21 @@ export default {
         policyName: [
           { required: true, message: "请填写策略名称", trigger: "blur" }
         ]
-      }
+      },
+      statusTip: undefined
     };
   },
+  props: ["refresh"],
   created() {
     this.loadData();
+  },
+  watch: {
+      refresh: function (val) {
+          debugger
+          if(val === true) {
+              this.loadData()
+          }
+      }
   },
   methods: {
     freshService() {
@@ -207,12 +219,21 @@ export default {
       });
     },
     freshCache(row) {
-      this.$service.freshCache({ policyId: row.policyId }).then(data => {
-        this.$message({
-          type: "info",
-          message: data
-        });
-      });
+        this.$confirm("确定要立即生效吗?", "提示", {
+            confirmButtonText: "确定",
+            cancelButtonText: "取消",
+            type: "warning"
+        })
+            .then(() => {
+                this.$service.freshCache({ policyId: row.policyId }).then(data => {
+                    this.loadData();
+                    this.$message({
+                        type: "info",
+                        message: data
+                    });
+                });
+            })
+            .catch(() => {});
     },
     getTags() {
       this.addForm.conditionTagIds = [];
@@ -267,6 +288,12 @@ export default {
       this.$service.policyList(this.criteria).then(data => {
         this.tableData = data.pageInfo.list;
         this.totalCount = data.pageInfo.total;
+        // const statusData = data.pageInfo.list;
+        // statusData.forEach((item) => {
+        //     console.log(item.status)
+        //     if(item.status === 1) {this.statusTip = '点击生效'}
+        //     else if(item.status === 2) {this.statusTip = '已生效'}}
+        //     )
       });
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20

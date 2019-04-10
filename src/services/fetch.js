@@ -13,10 +13,14 @@ export default function fetch({
   let option = {
     method,
     url,
-    data: isJSON ? data : qs.stringify(data),
+    data: data instanceof FormData
+        ? data
+        : isJSON
+            ? data
+            : qs.stringify(data),
     params
   };
-  
+
   if (url != "/api/login") option.headers = { Authorization: this.state.token };
   return axios(option)
     .then(function({ data }) {
