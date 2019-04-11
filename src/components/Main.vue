@@ -168,7 +168,6 @@ export default {
     this.$bus.$on("breadcrumb-change", breadcrumb => {
       this.breadcrumb = breadcrumb;
     });
-    console.log(this.$appState)
   },
   mounted() {
     window.addEventListener("beforeunload", this.saveTags);
