@@ -89,8 +89,9 @@
               :type= "scope.row.status === 1 ? 'success' : 'danger'"
               v-permission="'hoder:policy:add'"
               @click="freshCache(scope.row)"
-            ><span v-if="scope.row.status === 1">未生效</span>
-              <span v-else="scope.row.status === 2">已生效</span>
+            >
+              <span v-if="scope.row.status === 1">未生效</span>
+              <span v-if="scope.row.status === 2">已生效</span>
             </el-button>
           </el-button-group>
         </template>
@@ -148,7 +149,6 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
 export default {
   data() {
     return {
@@ -203,7 +203,6 @@ export default {
   },
   watch: {
       refresh: function (val) {
-          debugger
           if(val === true) {
               this.loadData()
           }
@@ -259,7 +258,7 @@ export default {
       this.getTags();
       this.addForm.conditionTagIds = row.conditionTagIds
         .split(",")
-        .map(function(v, i) {
+        .map(function(v) {
           return parseInt(v);
         });
       //row.conditionTagIds.split(",");
@@ -275,7 +274,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.policyDel({ policyId: id }, "删除成功").then(data => {
+          this.$service.policyDel({ policyId: id }, "删除成功").then(() => {
             this.loadData();
           });
         })
@@ -314,7 +313,6 @@ export default {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -324,10 +322,10 @@ export default {
       this.$refs.searchForm.resetFields();
     },
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail: function(index, row) {
+    //   // var id = row.id;
+    //   // todo: 以后再做
+    // },
     // 新增
     addSubmit: function() {
       this.$refs.addForm.validate(valid => {
@@ -336,18 +334,17 @@ export default {
           addForm = JSON.parse(addForm);
           addForm.conditionTagIds = addForm.conditionTagIds.join(",");
           if (this.addForm.policyId != "") {
-            this.$service.policyUpate(addForm, "编辑成功").then(data => {
+            this.$service.policyUpate(addForm, "编辑成功").then(() => {
               this.loadData();
               this.addFormVisible = false;
             });
           } else {
-            this.$service.policyAddSave(addForm, "添加成功").then(data => {
+            this.$service.policyAddSave(addForm, "添加成功").then(() => {
               this.loadData();
               this.addFormVisible = false;
             });
           }
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
