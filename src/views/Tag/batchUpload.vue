@@ -6,6 +6,8 @@
               <el-form-item label="选择文件">
                   <input @change="handleSelectFile" type="file"></input>
                   <div class="error-tips">{{message}}</div>
+                  <a v-if="tag.tagType === 'collect'" download :href="`${publicPath}dataCollect.xls`">下载示例文件</a>
+                  <a v-else download :href="`${publicPath}notdataCollect.xls`">下载示例文件</a>
               </el-form-item>
               <div v-if="tag.tagType === 'collect'">
                       <el-form-item label="ip" prop="ip">
@@ -48,6 +50,7 @@
         name: "batchUpload",
         data () {
             return {
+                publicPath: process.env.BASE_URL,
                 showBatchDialog: false,
                 tag: {
                     tagId: undefined,

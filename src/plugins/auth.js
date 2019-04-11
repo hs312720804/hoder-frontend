@@ -12,7 +12,6 @@ Vue.prototype.$isLoggedIn = async function() {
     const user = $appState.$get('user')
     if (user) {
         // try login
-        debugger
         this.$service.service.state = user
         return getInitData(this).then((res) => {
             this.$appState.user = user

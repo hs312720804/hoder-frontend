@@ -7,8 +7,8 @@
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
            <i class="el-icon-cc-celve2"></i>
           <span v-show="!isCollapseMenu">人群策略平台</span>
-          <span>{{$appState.user.version}}</span>
-          </div>
+        </div>
+        <div class="version">version:{{$appState.user.version}}</div>
       </div>
       <el-menu
         :default-active="$route.name"
@@ -186,9 +186,8 @@ export default {
   background-color white
 .logo
   text-align: center
-  height: 60px
-  line-height: 60px
   font-size: 28px
+  margin 15px
   background-color: #092035
   border-right: 1px solid #092035
   border-bottom: 1px solid #092035
@@ -257,4 +256,7 @@ export default {
    color #191414
 .el-icon-cc-iconset0225,.el-icon-cc-menu1,.el-icon-cc-team,.el-icon-cc-jiaose,.el-icon-cc-xitong
   font-size 21px
+.version
+  color #ccc
+  font-size 14px
 </style>

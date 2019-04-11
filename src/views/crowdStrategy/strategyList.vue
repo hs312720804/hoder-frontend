@@ -90,8 +90,8 @@
               v-permission="'hoder:policy:add'"
               @click="freshCache(scope.row)"
             >
-              <span v-if="scope.row.status === 1">未生效</span>
-              <span v-if="scope.row.status === 2">已生效</span>
+              <span v-if="scope.row.status === 1">未同步</span>
+              <span v-if="scope.row.status === 2">已同步</span>
             </el-button>
           </el-button-group>
         </template>
@@ -218,21 +218,22 @@ export default {
       });
     },
     freshCache(row) {
-        this.$confirm("确定要立即生效吗?", "提示", {
-            confirmButtonText: "确定",
-            cancelButtonText: "取消",
-            type: "warning"
-        })
-            .then(() => {
-                this.$service.freshCache({ policyId: row.policyId }).then(data => {
-                    this.loadData();
-                    this.$message({
-                        type: "info",
-                        message: data
-                    });
-                });
+            this.$confirm("确定要同步生效吗?", "提示", {
+                confirmButtonText: "确定",
+                cancelButtonText: "取消",
+                type: "warning"
             })
-            .catch(() => {});
+                .then(() => {
+                    this.$service.freshCache({policyId: row.policyId}).then(data => {
+                        this.loadData();
+                        this.$message({
+                            type: "info",
+                            message: data
+                        });
+                    });
+                })
+                .catch(() => {
+                });
     },
     getTags() {
       this.addForm.conditionTagIds = [];
