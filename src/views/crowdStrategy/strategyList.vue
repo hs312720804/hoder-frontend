@@ -86,10 +86,10 @@
             >删除</el-button>
             <el-button
               size="small"
-              type="info"
+              :type= "scope.row.status === 1 ? 'success' : 'danger'"
               v-permission="'hoder:policy:add'"
               @click="freshCache(scope.row)"
-            ><span v-if="scope.row.status === 1">点击生效</span>
+            ><span v-if="scope.row.status === 1">未生效</span>
               <span v-else="scope.row.status === 2">已生效</span>
             </el-button>
           </el-button-group>
