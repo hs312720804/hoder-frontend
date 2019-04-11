@@ -7,12 +7,13 @@
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
            <i class="el-icon-cc-celve2"></i>
           <span v-show="!isCollapseMenu">人群策略平台</span>
+          <span>{{$appState.user.version}}</span>
           </div>
       </div>
       <el-menu
         :default-active="$route.name"
         class="main_menu menu"
-        :collapse="isCollapseMenu" 
+        :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
           <el-submenu v-if="item.child" :key="index" :index="index+''">
@@ -167,6 +168,7 @@ export default {
     this.$bus.$on("breadcrumb-change", breadcrumb => {
       this.breadcrumb = breadcrumb;
     });
+    console.log(this.$appState)
   },
   mounted() {
     window.addEventListener("beforeunload", this.saveTags);
@@ -195,7 +197,7 @@ export default {
   color: #409eff
   font-size 22px
   font-weight bolder
-.logo__img i 
+.logo__img i
   font-size 28px
   font-weight bolder
   margin-right 5px
@@ -246,7 +248,7 @@ export default {
   >>> .el-submenu__title:hover
     background: transparent
     color: hsla(0, 0%, 100%, 0.9)
-.tagNav 
+.tagNav
   padding-right 50px
   >>> .tag-nav__right
     right 25px

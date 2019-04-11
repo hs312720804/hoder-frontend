@@ -12,6 +12,7 @@ Vue.prototype.$isLoggedIn = async function() {
     const user = $appState.$get('user')
     if (user) {
         // try login
+        debugger
         this.$service.service.state = user
         return getInitData(this).then((res) => {
             this.$appState.user = user
@@ -29,7 +30,8 @@ Vue.prototype.$login = async function(data) {
         const user = {
             name: data.username,
             token: res.jwtToken,
-            password: data.password
+            password: data.password,
+            version: res.version
         }
         this.$service.service.state = user
         this.$appState.user = user
