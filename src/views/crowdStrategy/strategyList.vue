@@ -299,8 +299,6 @@ export default {
                         currentTagsId.forEach((tagItem) => {if(tagItem === checkboxItem.tagId) checkboxData.push(checkboxItem)})}
                 )
                 })
-                console.log('1111')
-                console.log(checkboxData.length)
             })
 
         let p2 = this.$service
@@ -313,8 +311,6 @@ export default {
                             }
                         )
                 })
-                console.log('222')
-                    console.log(currentTagsDada)
             }
             )
         Promise.all([p1 ,p2 ]).then(() => {
@@ -336,7 +332,6 @@ export default {
       this.getTags();
     },
     handleEdit(row) {
-        debugger
       this.addFormVisible = true;
       this.title = "编辑";
       this.addForm.policyId = row.policyId;
