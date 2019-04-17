@@ -100,11 +100,11 @@
                   <div class="label-add">
                     <div class="optional-condition">
                       <el-tag
-                        type="success"
                         class="oc-item"
                         v-for="tagItem in tags"
                         :key="tagItem.tagItem"
                         @click.native="handleAddChildRule(item, tagItem)"
+                        :type= "tagItem.dataSource === 2 ? 'danger' : 'success'"
                       >{{ tagItem.tagName }}</el-tag>
                     </div>
                   </div>
@@ -126,6 +126,7 @@
                     v-for="(item) in tags"
                     :key="item.tagName"
                     @click.native="handleAddRule(item)"
+                    :type= "item.dataSource === 2 ? 'danger' : 'success'"
                   >{{ item.tagName }}</el-tag>
                 </div>
               </div>
@@ -205,7 +206,7 @@ export default {
       });
     },
     handleAddChildRule(rule, tag) {
-      //debugger;
+
       if (rule.rules.length > 50) {
         layer.msg("已达最大数量");
         return;
@@ -223,7 +224,7 @@ export default {
       });
     },
     fetchTagSuggestions(tag) {
-      const tagType = tag.tagType;
+      // const tagType = tag.tagType;
       const tagId = tag.tagId;
       if (!this.suggestions[tagId]) {
         const self = this;
@@ -270,11 +271,11 @@ export default {
       if (this.crowdId != null) {
         data.crowdId = this.crowdId;
         data.priority = this.priority;
-        this.$service.crowdUpdate(data, "编辑成功").then(data => {
+        this.$service.crowdUpdate(data, "编辑成功").then(() => {
           this.$emit("goBackCrowdListPage", true);
         });
       } else {
-        this.$service.crowdSave(data, "新增成功").then(data => {
+        this.$service.crowdSave(data, "新增成功").then(() => {
           this.$emit("goBackCrowdListPage", true);
         });
       }

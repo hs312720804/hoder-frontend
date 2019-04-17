@@ -10,7 +10,11 @@
       <el-col :span="24">
         <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="100px">
           <el-form-item label="投放名称" prop="launchName">
-            <el-input size="small" v-model="crowdForm.launchName" placeholder="投放名称"></el-input>
+            <el-input size="small"
+                      v-model="crowdForm.launchName"
+                      placeholder="投放名称"
+                      :disabled="status!==undefined && status!==1"
+                      ></el-input>
           </el-form-item>
           <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
             <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
@@ -38,6 +42,7 @@
               placeholder="请选择策略"
               @change="getCrowd"
               @remove-tag="removeTag"
+              :disabled="status!==undefined && status!==1"
             >
               <el-option
                 v-for="item in strategyPlatform"
@@ -50,7 +55,7 @@
           </el-form-item>
           <el-form-item label="选择人群" prop="policyCrowdIds">
             <el-form-item v-for="v in crowdData" :label="v.policyName" :key="v.policyId">
-              <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+              <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
                 <el-checkbox
                   v-for="item in v.childs"
                   :label="v.policyId+'_'+item.crowdId"
@@ -89,6 +94,7 @@ export default {
         policyIds: "",
         policyCrowdIds: []
       },
+      status: undefined,
       crowdFormRules: {
         launchName: [
           { required: true, message: "请输入投放名称", trigger: "blur" }
@@ -120,6 +126,7 @@ export default {
           this.crowdForm.biIds = data.launchCrowdBiIds;
           this.crowdForm.remark = row.remark;
           this.crowdForm.dataSource = row.dataSource;
+          this.status = row.status
           this.crowdForm.policyIds = row.policyIds.split(",");
           this.getCrowd();
           data.respcl.forEach(element => {

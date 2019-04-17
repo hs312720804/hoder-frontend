@@ -47,24 +47,24 @@
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="policyId" label="ID" width="50"></el-table-column>
       <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
-      <el-table-column prop="dataSource" label="数据来源" width="90">
-        <template scope="scope">
-          <span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column prop="dataSource" label="数据来源" width="90">-->
+        <!--<template scope="scope">-->
+          <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column prop="createTime" label="创建时间" width="180">
         <template scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="tagsList" label="策略纬度">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签）">
         <template scope="scope">
           <el-tag
             size="mini"
             v-for="item in scope.row.tagsList"
             :key="item.tagId"
-            type="success"
+            :type= "item.dataSource === 2 ? 'danger' : 'success'"
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
@@ -121,23 +121,49 @@
         <el-form-item label="策略名称" prop="policyName">
           <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
         </el-form-item>
-        <el-form-item label="数据来源" prop="dataSource">
-          <el-select v-model="addForm.dataSource" filterable placeholder="请选择类型" @change="getTags">
-            <el-option label="数据平台" value="2"></el-option>
-            <el-option label="自定义" value="1"></el-option>
-          </el-select>
-        </el-form-item>
-        <el-form-item label="策略纬度" prop="conditionTagIds">
+        <!--<el-form-item label="数据来源" prop="dataSource">-->
+          <!--<el-select v-model="addForm.dataSource" filterable placeholder="请选择类型" @change="getTags">-->
+            <!--<el-option label="数据平台" value="2"></el-option>-->
+            <!--<el-option label="自定义" value="1"></el-option>-->
+          <!--</el-select>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="策略纬度" prop="conditionTagIds">-->
+          <!--<el-tabs tab-position="top" style="height: 200px;">-->
+            <!--<el-tab-pane-->
+              <!--v-for="item in conditionTagIdsData"-->
+              <!--:label="item.groupName"-->
+              <!--:key="item.groupId"-->
+            <!--&gt;-->
+              <!--<el-checkbox-group v-model="addForm.conditionTagIds" class="checkList">-->
+                <!--<el-checkbox v-for="v in item.child" :label="v.tagId" :key="v.tagId">{{v.tagName}}</el-checkbox>-->
+              <!--</el-checkbox-group>-->
+            <!--</el-tab-pane>-->
+          <!--</el-tabs>-->
+        <!--</el-form-item>-->
+        <div class="tags-tips">注：红色为大数据标签，黑色为自定义标签</div>
+        <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
-            <el-tab-pane
-              v-for="item in conditionTagIdsData"
-              :label="item.groupName"
-              :key="item.groupId"
-            >
-              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList">
-                <el-checkbox v-for="v in item.child" :label="v.tagId" :key="v.tagId">{{v.tagName}}</el-checkbox>
+            <!--<el-tab-pane-->
+                    <!--v-for="item in conditionTagIdsData"-->
+                    <!--:label="item.groupName"-->
+                    <!--:key="item.groupId"-->
+            <!--&gt;-->
+            <div class="strategy-search">
+            <el-input aria-placeholder="请输入标签关键字进行搜索" v-model="searchValue" class="strategy-search--input"></el-input>
+            <el-button @click="searchTag">查询</el-button>
+            <el-button @click="resetSearch">重置</el-button>
+            </div>
+              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagIdsData != '' ">
+                <el-checkbox v-for="item in conditionTagIdsData"
+                             :class="item.tDataSource === 2 ? 'checkbox--red' : ''"
+                             :label="item.tagId"
+                             :key="item.tagId"
+                >
+                  {{item.tagName}}
+                </el-checkbox>
               </el-checkbox-group>
-            </el-tab-pane>
+            <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+            <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
       </el-form>
@@ -154,10 +180,10 @@ export default {
     return {
       // 表格当前页数据
       tableData: [],
-      lableDataSourceEnum: {
-        1: "自定义",
-        2: "数据平台"
-      },
+      // lableDataSourceEnum: {
+      //   1: "自定义",
+      //   2: "数据平台"
+      // },
       //搜索条件
       criteria: {},
       // 列表页
@@ -185,7 +211,7 @@ export default {
       addForm: {
         policyId: "",
         policyName: "",
-        dataSource: "2",
+        // dataSource: "2",
         conditionTagIds: []
         // 以上为表单提交的参数
       },
@@ -194,7 +220,8 @@ export default {
           { required: true, message: "请填写策略名称", trigger: "blur" }
         ]
       },
-      statusTip: undefined
+      statusTip: undefined,
+      searchValue: ''
     };
   },
   props: ["refresh"],
@@ -235,19 +262,30 @@ export default {
                 .catch(() => {
                 });
     },
-    getTags() {
+    getTags(val) {
       this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ dataSource: this.addForm.dataSource, s: "" })
+        .policyTagSeach({ s: val })
         .then(data => {
-          this.conditionTagIdsData = data;
+           let checkboxData = []
+          data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})});
+           this.conditionTagIdsData = checkboxData
         });
+    },
+    searchTag() {
+        let searchValue = this.searchValue
+        this.getTags(searchValue)
+    },
+    resetSearch () {
+        this.searchValue = ''
+        this.getTags()
     },
     handleAdd() {
       this.addFormVisible = true;
       this.addForm.policyName = "";
       this.addForm.policyId = "";
       this.title = "新增";
+      this.searchValue = ''
       this.getTags();
     },
     handleEdit(row) {
@@ -255,7 +293,8 @@ export default {
       this.title = "编辑";
       this.addForm.policyId = row.policyId;
       this.addForm.policyName = row.policyName;
-      this.addForm.dataSource = row.dataSource.toString();
+      // this.addForm.dataSource = row.dataSource.toString();
+      this.searchValue = ''
       this.getTags();
       this.addForm.conditionTagIds = row.conditionTagIds
         .split(",")
@@ -367,4 +406,17 @@ export default {
 .checkList
   height: 200px
   overflow: auto
+.checkbox--red
+  color red
+.strategy-search
+  display flex
+  margin-bottom 10px
+.strategy-search--input
+  width 70%
+  margin-right 20px
+.tags-tips
+  position absolute
+  right 20px
+  color red
+  font-size 12px
 </style>

@@ -78,7 +78,6 @@
               @click="condition(scope.row) "
             >人群条件</el-button>
             <el-button
-              v-if="scope.row.status==1"
               v-permission="'hoder:launch:crowd:modify'"
               size="small"
               type="primary"
@@ -239,7 +238,7 @@ export default {
           });
         })
         .catch(() => {
-         
+
         });
     },
     cancelLanuch(row) {
@@ -255,7 +254,7 @@ export default {
           });
         })
         .catch(() => {
-         
+
         });
     },
     // 查看详情
