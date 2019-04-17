@@ -140,7 +140,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签，黑色为自定义标签</div>
+        <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -155,7 +155,7 @@
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagIdsData != '' ">
                 <el-checkbox v-for="item in conditionTagIdsData"
-                             :class="item.tDataSource === 2 ? 'checkbox--red' : ''"
+                             :class="item.tDataSource === 2 ? 'checkbox--red' : 'checkbox--green'"
                              :label="item.tagId"
                              :key="item.tagId"
                 >
@@ -165,6 +165,19 @@
             <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
             <!--</el-tab-pane>-->
           </el-tabs>
+        </el-form-item>
+        <el-form-item label="已选标签" style="margin-top: 60px">
+          <span v-for="tag in addForm.conditionTagIds" :key="tag">
+            <el-tag v-for="item in conditionTagIdsData"
+                    v-if="item.tagId === tag"
+                    :key="item.tagId"
+                    :type= "item.tDataSource === 1 ? 'success' : 'danger'"
+                    closable
+                    @close="removeTag(item.tagId)"
+            >
+              {{item.tagName}}
+            </el-tag>
+          </span>
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -263,22 +276,56 @@ export default {
                 });
     },
     getTags(val) {
-      this.addForm.conditionTagIds = [];
+      // this.addForm.conditionTagIds = [];
       this.$service
         .policyTagSeach({ s: val })
         .then(data => {
+            console.log(data)
            let checkboxData = []
-          data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})});
+          data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
            this.conditionTagIdsData = checkboxData
         });
     },
     searchTag() {
         let searchValue = this.searchValue
-        this.getTags(searchValue)
+        let currentTagsId = this.addForm.conditionTagIds
+        let checkboxData = []
+        let currentTagsDada = []
+        let p1 = this.$service
+            .policyTagSeach({ s: "" })
+            .then(data => {
+                data.forEach((item) => {
+                    item.child.forEach((checkboxItem) => {
+                        currentTagsId.forEach((tagItem) => {if(tagItem === checkboxItem.tagId) checkboxData.push(checkboxItem)})}
+                )
+                })
+                console.log('1111')
+                console.log(checkboxData.length)
+            })
+
+        let p2 = this.$service
+            .policyTagSeach({ s: searchValue })
+            .then(data => {
+                data.forEach((item) => {
+                    item.child.forEach((checkboxItem2,index) => {
+                        currentTagsDada.push(checkboxItem2)
+                        currentTagsId.forEach((tagItem) => {if(tagItem === checkboxItem2.tagId) currentTagsDada.splice(index)})
+                            }
+                        )
+                })
+                console.log('222')
+                    console.log(currentTagsDada)
+            }
+            )
+        Promise.all([p1 ,p2 ]).then(() => {
+            this.conditionTagIdsData = checkboxData.concat(currentTagsDada)
+        })
     },
     resetSearch () {
         this.searchValue = ''
+        let currentTagsId = this.addForm.conditionTagIds
         this.getTags()
+        this.addForm.conditionTagIds = currentTagsId
     },
     handleAdd() {
       this.addFormVisible = true;
@@ -289,6 +336,7 @@ export default {
       this.getTags();
     },
     handleEdit(row) {
+        debugger
       this.addFormVisible = true;
       this.title = "编辑";
       this.addForm.policyId = row.policyId;
@@ -296,6 +344,7 @@ export default {
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
       this.getTags();
+      this.tagList = row.tagsList
       this.addForm.conditionTagIds = row.conditionTagIds
         .split(",")
         .map(function(v) {
@@ -408,6 +457,8 @@ export default {
   overflow: auto
 .checkbox--red
   color red
+.checkbox--green
+  color green
 .strategy-search
   display flex
   margin-bottom 10px
