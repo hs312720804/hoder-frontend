@@ -153,8 +153,8 @@
             <el-button @click="searchTag">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
-              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagIdsData != '' ">
-                <el-checkbox v-for="item in conditionTagIdsData"
+              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
+                <el-checkbox v-for="item in conditionTagsFiltered"
                              :class="item.tDataSource === 2 ? 'checkbox--red' : 'checkbox--green'"
                              :label="item.tagId"
                              :key="item.tagId"
@@ -215,6 +215,7 @@ export default {
       start: 1,
       addFormVisible: false,
       conditionTagIdsData: [], //策略纬度
+      conditionTagsFiltered: [],
       tagList: [],
       defaultProps: {
         children: "child",
@@ -276,46 +277,32 @@ export default {
                 });
     },
     getTags(val) {
-      // this.addForm.conditionTagIds = [];
+      this.addForm.conditionTagIds = [];
       this.$service
         .policyTagSeach({ s: val })
         .then(data => {
-            console.log(data)
            let checkboxData = []
           data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
            this.conditionTagIdsData = checkboxData
+           this.conditionTagsFiltered = checkboxData
         });
     },
     searchTag() {
         let searchValue = this.searchValue
-        let currentTagsId = this.addForm.conditionTagIds
-        let checkboxData = []
-        let currentTagsDada = []
-        let p1 = this.$service
-            .policyTagSeach({ s: "" })
-            .then(data => {
-                data.forEach((item) => {
-                    item.child.forEach((checkboxItem) => {
-                        currentTagsId.forEach((tagItem) => {if(tagItem === checkboxItem.tagId) checkboxData.push(checkboxItem)})}
-                )
-                })
-            })
-
-        let p2 = this.$service
+        let selectTagsIndexed = this.addForm.conditionTagIds.reduce((result, tagId) => {
+            result[tagId] = true
+            return result
+        }, {})
+        this.$service
             .policyTagSeach({ s: searchValue })
             .then(data => {
-                data.forEach((item) => {
-                    item.child.forEach((checkboxItem2,index) => {
-                        currentTagsDada.push(checkboxItem2)
-                        currentTagsId.forEach((tagItem) => {if(tagItem === checkboxItem2.tagId) currentTagsDada.splice(index)})
-                            }
-                        )
-                })
-            }
-            )
-        Promise.all([p1 ,p2 ]).then(() => {
-            this.conditionTagIdsData = checkboxData.concat(currentTagsDada)
-        })
+                this.conditionTagsFiltered = data.reduce((result, item) => result
+                    .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
+            })
+    },
+    removeTag(id) {
+        const addForm = this.addForm
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== id)
     },
     resetSearch () {
         this.searchValue = ''
