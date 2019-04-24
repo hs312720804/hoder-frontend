@@ -28,7 +28,7 @@ export default {
                             schema: _.string.enum({
                                 'true': 'true',
                                 'false': 'false'
-                            }).other('form', {label: '值', placeholder: '16位以内字母数字组合'})
+                            }).other('form', {label: '值', placeholder: '100位以内字符串'})
                         },
                         {
                             case: _.value('collect'),
@@ -44,8 +44,12 @@ export default {
                             }).other('form', {label: '值'})
                         },
                         {
+                            case: _.value('number'),
+                            schema: _.string.pattern(/^\d+(\.\d+){1,100}$/).$msg('100位以内的数字').other('form',{label: '值', placeholder: '100位以内的数字'})
+                        },
+                        {
                             case: _.any,
-                            schema: _.string.pattern(/^[0-9A-Za-z]{1,16}$/).$msg('16位以内字母数字组合').other('form', {label: '值', placeholder: '16位以内字母数字组合'})
+                            schema: _.string.pattern(/^.{1,100}$/).$msg('100位以内字符串').other('form', {label: '值', placeholder: '100位以内字符串'})
                         }
                     ])
             })
