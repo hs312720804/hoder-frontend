@@ -16,6 +16,7 @@ import password from '@/views/setting/password'
 import personalInformation from '@/views/setting/personalInformation'
 import personManage from '@/views/setting/personManage'
 import roleManage from '@/views/setting/roleManage'
+import dataMange from '@/views/DataManage/peoplePositionIndex'
 const children = [
     {
         name: 'dashboard',
@@ -131,6 +132,27 @@ const children = [
                 meta: {
                     tagId:"strategyList",
                     title: '策略列表',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+        ]
+    },
+    {
+        name: 'dataManage',
+        path: 'dataManage',
+        component: Wrapper,
+        meta: {
+            title: '数据管理',
+            icon: 'el-icon-cc-institute'
+        },
+        children:[
+            {
+                name: 'dataManage',
+                path: 'dataManage',
+                component: dataMange,
+                meta: {
+                    tagId:"dataManage",
+                    title: '人群位置信息管理',
                     icon: 'el-icon-cc-file'
                 }
             }

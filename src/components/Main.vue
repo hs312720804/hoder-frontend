@@ -103,7 +103,8 @@ export default {
           "/manage/user/personalInformation": "personalInformation",
           "/manage/user/modifyPassword": "password",
           "/manage/loginLog/index": "loginLog",
-           "/manage/operateLog/index": "operateLog"
+           "/manage/operateLog/index": "operateLog",
+          "/crowdDataPos/index": "dataManage"
       }
     };
   },
@@ -144,6 +145,7 @@ export default {
   },
   methods: {
     getRouter(url){
+        debugger
        this.$router.push({name:this.routerMap[url]});
     },
     handleDropdownCommand(command) {
