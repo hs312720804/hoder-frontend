@@ -5,24 +5,45 @@ export function peoplePositonList(params){
         params
     })
 }
-export function peoplePositonAdd(params){
+export function peoplePositonAdd(data){
     return this.fetch({
         method: 'post',
         url: '/api/crowdDataPos/add',
-        params
+        data
     })
 }
-export function peoplePositonEdit(params){
+export function peoplePositonEdit(data){
     return this.fetch({
-        method: 'get',
+        method: 'post',
         url: '/api/crowdDataPos/edit',
-        params
+        data
     })
 }
 export function peoplePositonDel(params){
     return this.fetch({
         method: 'get',
         url: '/api/crowdDataPos/del',
+        params
+    })
+}
+export function getPositonDetail(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowdDataPos/findCrowdDataPosById',
+        params
+    })
+}
+export function protocolList(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowdDataPos/getProtocol',
+        params
+    })
+}
+export function crowdIdList(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowdDataPos/getLaunchCrowdId',
         params
     })
 }
