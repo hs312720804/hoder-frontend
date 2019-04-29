@@ -104,7 +104,11 @@
                         {
                             label: '状态',
                             prop: 'status',
-                            width: '50'
+                            width: '60',
+                            render:(h, {row}) => {
+                                if(row.status === 1) {return '可用'}
+                                else {return '不可用'}
+                            }
                         },
                         // {
                         //     label: '创建者',
@@ -190,9 +194,9 @@
             },
             updateTableSelected() {
                 const table = this.table
-                const newSelectedIndex = this.selected.map(item => item.id)
+                const newSelectedIndex = this.selected.map(item => item)
                 table.selected = table.data.reduce((result, item, index)=> {
-                    if (newSelectedIndex.indexOf(item.d) > -1) {
+                    if (newSelectedIndex.indexOf(item.id) > -1) {
                         result.push(index)
                     }
                     return result
