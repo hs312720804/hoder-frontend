@@ -267,6 +267,7 @@ export default {
     handleEstimate () {
         let calIdType = this.estimateValue.map((item) => item).join(',')
         this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+            this.showEstimate = false
             this.callback();
         });
     },
@@ -297,4 +298,5 @@ export default {
 <style lang="stylus" scoped>
   .choose-tip
     margin 20px 0
+    color red
 </style>
