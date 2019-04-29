@@ -38,7 +38,7 @@
                 filterSchema: _.map({
                     id: _.o
                         .number.other('form', {
-                            label: 'ID',
+                            label: ' ',
                             placeholder: '请输入ID',
                             cols: {
                                 item: 6,
@@ -168,8 +168,15 @@
                     )
                 })
             },
-            handleFilterChange () {},
-            handleFilterReset () {},
+            handleFilterChange () {
+                this.fetchData()
+            },
+            handleFilterReset () {
+                this.filter = {
+                    id: undefined
+                }
+                this.fetchData()
+            },
             handleRowSelectionAdd (targetItem) {
                 this.selected.push(targetItem.id)
                 this.updateTableSelected()
@@ -203,7 +210,7 @@
                 }, [])
             },
             fetchData () {
-                this.$service.peoplePositonList().then((data) => {
+                this.$service.peoplePositonList(this.filter).then((data) => {
                     console.log(data)
                     this.table.data = data.pageInfo.list
                     this.pagination.total = data.pageInfo.total

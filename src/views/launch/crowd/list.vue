@@ -40,7 +40,6 @@
       <el-table-column prop="launchCrowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
       <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
-      <el-table-column prop="dmpEstimate" label="人群数量" width="100"></el-table-column>
       <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
       <el-table-column prop="status" label="人群状态" width="70">
         <template scope="scope">
@@ -54,7 +53,11 @@
           <span style="margin-left: 10px">{{ scope.row.expiryTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right">
+      <el-table-column prop="dmpEstimate" label="设备数量"></el-table-column>
+      <el-table-column prop="total1" label="手机号数量"></el-table-column>
+      <el-table-column prop="total2" label="微信openId数量" width="120"></el-table-column>
+      <el-table-column prop="total3" label="酷开openId数量" width="120"></el-table-column>
+      <el-table-column label="操作" fixed="right" width="300px">
         <template scope="scope">
           <el-button-group>
             <el-button
@@ -193,6 +196,7 @@ export default {
       this.criteria["pageSize"] = this.pageSize;
       console.log(JSON.stringify(this.criteria));
       this.$service.crowdList(this.criteria).then(data => {
+          console.log(data.list)
         this.tableData = data.list;
         this.totalCount = data.total;
       });

@@ -2,21 +2,21 @@ export function policyList(params){
     return this.fetch({
         method: 'get',
         url: '/api/policy/index',
-        params 
+        params
       })
 }
 export function policyAdd(params){
     return this.fetch({
         method: 'get',
         url: '/api/policy/add',
-        params 
+        params
       })
 }
 export function policyTagSeach(params){
     return this.fetch({
         method: 'get',
         url: '/api/policy/tagSeach',
-        params 
+        params
       })
 }
 /*新建策略*/
@@ -24,7 +24,7 @@ export function policyAddSave(data){
     return this.fetch({
         method: 'POST',
         url: '/api/policy/save',
-        data 
+        data
       })
 }
 /** 策略编辑*/
@@ -32,42 +32,42 @@ export function policyUpate(data){
     return this.fetch({
         method: 'POST',
         url: '/api/policy/update',
-        data 
+        data
       })
 }
 export function policyDel(data){
     return this.fetch({
         method: 'POST',
         url: '/api/policy/del',
-        data 
+        data
       })
 }
 export function viewCrowd(params){
     return this.fetch({
         method: 'get',
         url: '/api/policy/viewpolicy',
-        params 
+        params
       })
 }
 export function getTagsByPoliceId(params){
     return this.fetch({
         method: 'get',
         url: '/api/policy/getTagsByPolicyId',
-        params 
+        params
       })
 }
 export function getTagAttr(params){
     return this.fetch({
         method: 'get',
         url: '/api/crowd/getTagAttr',
-        params 
+        params
       })
 }
 export function crowdSave(data){
     return this.fetch({
         method: 'POST',
         url: '/api/crowd/save',
-        data 
+        data
       })
 }
 //人群编辑
@@ -75,7 +75,7 @@ export function crowdEdit(params){
     return this.fetch({
         method: 'get',
         url: '/api/crowd/edit',
-        params 
+        params
       })
 }
 //人群编辑保存
@@ -83,7 +83,7 @@ export function crowdUpdate(data){
     return this.fetch({
         method: 'POST',
         url: '/api/crowd/update',
-        data 
+        data
       })
 }
 //人群删除
@@ -91,21 +91,46 @@ export function strategyCrowdDel(data){
     return this.fetch({
         method: 'POST',
         url: '/api/crowd/del',
-        data 
+        data
       })
 }
 export function freshService(params){
     return this.fetch({
         method: 'get',
         url: '/api/api/webServers/reload',
-        params 
+        params
       })
 }
 export function freshCache(params){
     return this.fetch({
         method: 'get',
         url: '/api/api/policyGen/lua',
-        params 
+        params
       })
 }
+//人群估算获取类型
+export function getEstimateType(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/getCalIdType',
+        params
+    })
+}
+// 人群估算
+export function estimatePeople(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/crowdForcast',
+        params
+    })
 
+}
+// 获取估算结果
+export function estimateResult(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/crowdForcastLastOnceResult',
+        params
+    })
+
+}

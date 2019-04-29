@@ -1,5 +1,6 @@
 <template>
   <div>
+  <div>
     <fieldset>
       <legend>{{selectRow.policyName}}</legend>
       <div>
@@ -100,6 +101,13 @@
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
       <el-table-column prop="priority" label="优先级" width="90"></el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column prop="forcastStatus" label="估算状态" width="80">
+          <template scope="scope">
+              <span type="text" v-if="scope.row.forcastStatus == 1">未估算</span>
+              <span type="text" v-if="scope.row.forcastStatus == 2">估算中</span>
+              <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+          </template>
+      </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="180">
         <template scope="scope">
           <el-icon name="time"></el-icon>
@@ -121,6 +129,12 @@
               v-permission="'hoder:crowd:del'"
               @click="del(scope.row)"
             >删除</el-button>
+            <el-button
+              size="small"
+              type="warning"
+              @click="estimateType(scope.row)"
+              :disabled="scope.row.forcastStatus != 1"
+            >估算</el-button>
           </el-button-group>
         </template>
       </el-table-column>
@@ -136,6 +150,24 @@
         @handle-current-change="handleCurrentChange"
       ></pagination>
     </div>
+  </div>
+  <!-- 估算弹窗 -->
+  <el-dialog :visible.sync="showEstimate">
+    <el-checkbox-group v-model="estimateValue">
+      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :disabled="index==0">{{item}}</el-checkbox>
+    </el-checkbox-group>
+    <span slot="footer" class="dialog-footer">
+    <el-button @click="showEstimate = false">取 消</el-button>
+    <el-button type="primary" @click="handleEstimate">提交估算</el-button>
+  </span>
+  </el-dialog>
+  <!-- 估算结果弹窗 -->
+   <el-dialog :visible.sync="showResult" title="估算结果">
+       <div>设备：{{totalUser}}</div>
+       <div>手机号：{{total1}}</div>
+       <div>酷开openId：{{total2}}</div>
+       <div>微信openId：{{total3}}</div>
+   </el-dialog>
   </div>
 </template>
 <script>
@@ -161,7 +193,17 @@ export default {
       currentPage: 1,
       totalCount: 1,
       // 查询的页码
-      start: 1
+      start: 1,
+      estimateItems: [],
+      showEstimate: false,
+      estimateValue: ['0'],
+      estimateId: '',
+        showResult: false,
+        total1: '',
+        total2: '',
+        total3: '',
+        totalUser: '',
+        total4: ''
     };
   },
   props: ["selectRow"],
@@ -197,6 +239,35 @@ export default {
 
         })
     },
+      // 点击估算按钮
+    estimateType(row) {
+        this.estimateId = row.crowdId
+        this.showEstimate = true
+        this.$service.getEstimateType().then((data) => {
+            this.estimateItems = data
+        })
+    },
+      // 提交估算
+    handleEstimate () {
+        let calIdType = this.estimateValue.map((item) => item).join(',')
+        this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
+            (data) => {
+                this.showEstimate = false
+                this. loadData()
+            }
+        )
+    },
+      // 显示估算结果
+    showCountResult (id) {
+        const crowdId = id
+        this.showResult = true
+        this.$service.estimateResult({crowdId: crowdId}).then((data) => {
+            this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+            this.total2 = data[0].total2 === null ? '暂无数据': data[0].total2
+            this.total3 = data[0].total3 === null ? '暂无数据': data[0].total3
+            this.totalUser = data[0].totalUser === null ? '暂无数据': data[0].totalUser
+        })
+    },
     // 从服务器读取数据
     loadData: function() {
       this.criteria["pageNum"] = this.currentPage;
@@ -225,7 +296,6 @@ export default {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
