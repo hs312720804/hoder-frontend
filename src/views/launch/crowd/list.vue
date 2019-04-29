@@ -53,11 +53,11 @@
           <span style="margin-left: 10px">{{ scope.row.expiryTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="dmpEstimate" label="设备数量"></el-table-column>
-      <el-table-column prop="total1" label="手机号数量"></el-table-column>
-      <el-table-column prop="total2" label="微信openId数量" width="120"></el-table-column>
-      <el-table-column prop="total3" label="酷开openId数量" width="120"></el-table-column>
-      <el-table-column label="操作" fixed="right" width="300px">
+      <el-table-column prop="dmpEstimate" label="设备数量" width="80"></el-table-column>
+      <el-table-column prop="total1" label="手机号数量" width="90"></el-table-column>
+      <el-table-column prop="total2" label="微信openId数量" width="110"></el-table-column>
+      <el-table-column prop="total3" label="酷开openId数量" width="110"></el-table-column>
+      <el-table-column label="操作" fixed="right" min-width="200">
         <template scope="scope">
           <el-button-group>
             <el-button
@@ -122,6 +122,17 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <!-- 投放提示估算弹窗 -->
+    <el-dialog :visible.sync="showEstimate">
+      <div class="choose-tip">请选择下面要投放的人群，勾选保存即可投放到相应人群设备</div>
+      <el-checkbox-group v-model="estimateValue">
+        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index">{{item}}</el-checkbox>
+      </el-checkbox-group>
+      <span slot="footer" class="dialog-footer">
+    <el-button @click="showEstimate = false">取 消</el-button>
+    <el-button type="primary" @click="handleEstimate">投放</el-button>
+  </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -149,7 +160,11 @@ export default {
       // 默认数据总数
       totalCount: 1,
       isShowCondition: false,
-      selectStrategy: null//人群条件的选择策略
+      selectStrategy: null,//人群条件的选择策略
+        showEstimate: false,
+        estimateValue: ['0'],
+        estimateItems: [],
+        currentLaunchId: ''
     };
   },
   created() {
@@ -230,19 +245,29 @@ export default {
     },
     // 修改状态
     lanuch: function(index, row) {
-      var id = row.launchCrowdId;
-      this.$confirm("确定要投放吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
-      })
-        .then(() => {
-          this.$service.launchCrowd({ launchCrowdId: id },"投放成功").then(data => {
-            this.callback();
-          });
+      this.currentLaunchId = row.launchCrowdId;
+        this.showEstimate = true
+        this.$service.getEstimateType().then((data) => {
+            this.estimateItems = data
         })
-        .catch(() => {
-
+      // this.$confirm("确定要投放吗?", "提示", {
+      //   confirmButtonText: "确定",
+      //   cancelButtonText: "取消",
+      //   type: "warning"
+      // })
+      //   .then(() => {
+      //     this.$service.launchCrowd({ launchCrowdId: id },"投放成功").then(data => {
+      //       this.callback();
+      //     });
+      //   })
+      //   .catch(() => {
+      //
+      //   });
+    },
+    handleEstimate () {
+        let calIdType = this.estimateValue.map((item) => item).join(',')
+        this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+            this.callback();
         });
     },
     cancelLanuch(row) {
@@ -269,3 +294,7 @@ export default {
   }
 };
 </script>
+<style lang="stylus" scoped>
+  .choose-tip
+    margin 20px 0
+</style>
