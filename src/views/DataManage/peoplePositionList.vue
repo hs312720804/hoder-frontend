@@ -70,6 +70,11 @@
                             width: '50'
                         },
                         {
+                            label: '投放id',
+                            prop: 'launchCrowdId',
+                            width: '70'
+                        },
+                        {
                             label: '名称',
                             prop: 'name',
                             render: (h, params) => {

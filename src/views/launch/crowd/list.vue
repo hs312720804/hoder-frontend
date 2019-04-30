@@ -125,7 +125,7 @@
     <el-dialog :visible.sync="showEstimate">
       <div class="choose-tip">请选择下面要投放的人群，勾选保存即可投放到相应人群设备</div>
       <el-checkbox-group v-model="estimateValue">
-        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index">{{item}}</el-checkbox>
+        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
       </el-checkbox-group>
       <span slot="footer" class="dialog-footer">
     <el-button @click="showEstimate = false">取 消</el-button>
@@ -135,7 +135,7 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
+// import _ from "lodash";
 export default {
   data() {
     return {
@@ -197,7 +197,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.launchCrowdDel({ launchCrowdId: id },"删除成功").then(data => {
+          this.$service.launchCrowdDel({ launchCrowdId: id },"删除成功").then(() => {
             this.callback();
           });
         })
@@ -208,9 +208,7 @@ export default {
     loadData: function() {
       this.criteria["pageNum"] = this.currentPage;
       this.criteria["pageSize"] = this.pageSize;
-      console.log(JSON.stringify(this.criteria));
       this.$service.crowdList(this.criteria).then(data => {
-          console.log(data.list)
         this.tableData = data.list;
         this.totalCount = data.total;
       });
@@ -233,7 +231,6 @@ export default {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -278,7 +275,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.cancelLaunchCrowd({ launchCrowdId: id },"取消投放成功").then(data => {
+          this.$service.cancelLaunchCrowd({ launchCrowdId: id },"取消投放成功").then(() => {
             this.callback();
           });
         })
@@ -287,10 +284,10 @@ export default {
         });
     },
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    }
+    // handleDetail: function(index, row) {
+    //   var id = row.id;
+    //   // todo: 以后再做
+    // }
   }
 };
 </script>
