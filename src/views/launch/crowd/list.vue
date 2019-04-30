@@ -299,5 +299,5 @@ export default {
     margin 20px 0
     color red
   .launch-list >>> .button-group-position .el-button
-    margin 10px
+    margin 3px
 </style>
