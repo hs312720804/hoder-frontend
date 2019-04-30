@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="launch-list">
     <!-- authority -->
     <div class="TopNav">
       <div class="left">
@@ -40,7 +40,6 @@
       <el-table-column prop="launchCrowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
       <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
-      <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
       <el-table-column prop="status" label="人群状态" width="70">
         <template scope="scope">
           <span style="margin-left: 10px">{{launchStatusEnum[scope.row.status]}}</span>
@@ -59,7 +58,7 @@
       <el-table-column prop="total3" label="酷开openId数量" width="110"></el-table-column>
       <el-table-column label="操作" fixed="right" min-width="200">
         <template scope="scope">
-          <el-button-group>
+          <el-button-group  class="button-group-position">
             <el-button
               v-if="scope.row.status==1"
               v-permission="'hoder:launch:crowd:launch'"
@@ -299,4 +298,6 @@ export default {
   .choose-tip
     margin 20px 0
     color red
+  .launch-list >>> .button-group-position .el-button
+    margin 10px
 </style>

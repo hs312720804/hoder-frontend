@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="people-position-list">
         <ContentWrapper
                 :filter="filter"
                 :filterSchema="filterSchema"
@@ -7,7 +7,7 @@
                 @filter-change="handleFilterChange"
                 @filter-reset="handleFilterReset"
         >
-            <div><el-button @click="handleAdd">新增</el-button></div>
+            <div><el-button @click="handleAdd" type="primary">新增</el-button></div>
             <Table
                     :props="table.props"
                     :header="table.header"
@@ -41,8 +41,8 @@
                             label: ' ',
                             placeholder: '请输入ID',
                             cols: {
-                                item: 6,
-                                label: 0,
+                                item: 14,
+                                // label: 0,
                                 wrapper: 18
                             }
                         })
@@ -224,6 +224,10 @@
 
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+.add-button
+    margin 10px 0
+.people-position-list >>> .filter-form
+    float right
+    margin-bottom 20px
 </style>
