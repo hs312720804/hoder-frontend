@@ -124,9 +124,10 @@
     <!-- 投放提示估算弹窗 -->
     <el-dialog :visible.sync="showEstimate">
       <div class="choose-tip">请选择下面要投放的人群，勾选保存即可投放到相应人群设备</div>
-      <el-checkbox-group v-model="estimateValue">
+      <el-checkbox-group v-model="estimateValue" aria-required="true">
         <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
       </el-checkbox-group>
+      <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
       <span slot="footer" class="dialog-footer">
     <el-button @click="showEstimate = false">取 消</el-button>
     <el-button type="primary" @click="handleEstimate">投放</el-button>
@@ -163,7 +164,8 @@ export default {
         showEstimate: false,
         estimateValue: ['0'],
         estimateItems: [],
-        currentLaunchId: ''
+        currentLaunchId: '',
+        showError: false
     };
   },
   created() {
@@ -261,6 +263,11 @@ export default {
       //   });
     },
     handleEstimate () {
+        debugger
+        if (this.estimateValue.length === 0) {
+            this.showError = true
+            return
+        } else {this.showError = false}
         let calIdType = this.estimateValue.map((item) => item).join(',')
         this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
             this.showEstimate = false
@@ -297,4 +304,8 @@ export default {
     color red
   .launch-list >>> .button-group-position .el-button
     margin 3px
+  .error-msg
+    color red
+    font-size 14px
+    margin-top 10px
 </style>

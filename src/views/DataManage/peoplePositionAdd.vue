@@ -127,8 +127,8 @@
                                 launchCrowdId: this.form.launchCrowdId,
                                 name: this.form.name,
                                 protocol: this.form.protocol,
-                                url: JSON.stringify(this.form.url),
-                                param: JSON.stringify(this.form.param),
+                                url: this.form.url,
+                                param: this.form.param,
                                 remark: this.form.remark
                             }
                             this.$service.peoplePositonEdit(submitData, '修改成功').then( () => {
