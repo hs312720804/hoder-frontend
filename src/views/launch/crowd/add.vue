@@ -60,6 +60,7 @@
                   v-for="item in v.childs"
                   :label="v.policyId+'_'+item.crowdId"
                   :key="item.crowdId+''"
+                  :disabled="item.canLaunch === false"
                 >{{item.crowdName}}
                 </el-checkbox>
               </el-checkbox-group>
@@ -159,6 +160,7 @@ export default {
       this.$service
         .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
         .then(data => {
+            console.log(data)
           this.crowdData = data;
         })
         .catch(err => {});
