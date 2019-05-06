@@ -4,7 +4,7 @@
         <el-form :model="form" :rules="rules" ref="form" label-width="100px">
             <el-form-item label="人群投放Id" prop="launchCrowdId">
                 <el-select v-model="form.launchCrowdId" :disabled="disableValue">
-                    <el-option v-for="(item,index) in crowdIds" :label="item.label" :key="index" :value="item.value"></el-option>
+                    <el-option v-for="(item,index) in crowdIds" :label="item.value+'_'+item.label" :key="index" :value="item.value"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="人群名称" prop="name">
