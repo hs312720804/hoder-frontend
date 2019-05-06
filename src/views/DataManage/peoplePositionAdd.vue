@@ -1,7 +1,7 @@
 <template>
     <div class="addPeoplePosition">
         <div class="title">{{title}}</div>
-        <el-form :model="form" :rules="rules" ref="form" label-width="100px">
+        <el-form :model="form" :rules="rules" ref="form" label-width="120px">
             <el-form-item label="人群投放Id" prop="launchCrowdId">
                 <el-select v-model="form.launchCrowdId" :disabled="disableValue">
                     <el-option v-for="(item,index) in crowdIds" :label="item.value+'_'+item.label" :key="index" :value="item.value"></el-option>
@@ -15,8 +15,21 @@
                     <el-option v-for="(item,index) in protocols" :label="item" :key="index" :value="item"></el-option>
                 </el-select>
             </el-form-item>
+            <el-form-item label="redis地址示例" class="example" v-if="form.protocol === 'redis'">
+                <span>{"ip":"172.16.33.12","port":"5459","password":"abc.123","timeout":"3000","database":"0","cid":"693","version":"20190422"}
+                </span>
+            </el-form-item>
+            <el-form-item label="kafka地址示例" class="example" v-if="form.protocol === 'kafka'">
+                <div>{"ip":"172.16.33.12","port":"5459"}</div>
+            </el-form-item>
             <el-form-item label="位置存放地址" prop="url">
                 <el-input v-model="form.url" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="redis参数示例" class="example" v-if="form.protocol === 'redis'">
+                <div>{"mac_key":"crowd_534_mac_20190402","all_key":"crowd_534_20190402","sid_key":"crowd_534_sid_20190402","1_key":"crowd_543_1_20190402","2_key":"crowd_543_2_20190402","3_key":"crowd_543_3_20190402"} </div>
+            </el-form-item>
+            <el-form-item label="kafka" class="example" v-if="form.protocol === 'kafka'">
+                <div>{"mac_topic":"topic1xx","all_topic":"topic2xx","sid_topic":"topic3xx","1_topic":"topic3x11x","2_topic":"topic4xx","3_topic":"topic4xx"}</div>
             </el-form-item>
             <el-form-item label="参数" prop="param">
                 <el-input v-model="form.param" :disabled="disableValue"></el-input>
@@ -141,6 +154,7 @@
             this.getProtocolList()
             if(this.editId === undefined){
                 this.title = '新增'
+                this.form.protocol = 'redis'
             }else {
                 if(this.mode === 'edit') {
                     this.title = '编辑'
@@ -163,4 +177,9 @@
     .title
         margin 20px
         font-size 30px
+    .example
+        font-size 12px
+        color #ccc
+    .example div
+        overflow auto
 </style>
