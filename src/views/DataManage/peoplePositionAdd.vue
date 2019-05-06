@@ -28,7 +28,7 @@
             <el-form-item label="redis参数示例" class="example" v-if="form.protocol === 'redis'">
                 <div>{"mac_key":"crowd_534_mac_20190402","all_key":"crowd_534_20190402","sid_key":"crowd_534_sid_20190402","1_key":"crowd_543_1_20190402","2_key":"crowd_543_2_20190402","3_key":"crowd_543_3_20190402"} </div>
             </el-form-item>
-            <el-form-item label="kafka" class="example" v-if="form.protocol === 'kafka'">
+            <el-form-item label="kafka参数示例" class="example" v-if="form.protocol === 'kafka'">
                 <div>{"mac_topic":"topic1xx","all_topic":"topic2xx","sid_topic":"topic3xx","1_topic":"topic3x11x","2_topic":"topic4xx","3_topic":"topic4xx"}</div>
             </el-form-item>
             <el-form-item label="参数" prop="param">
