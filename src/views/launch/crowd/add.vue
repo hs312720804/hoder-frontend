@@ -160,7 +160,6 @@ export default {
       this.$service
         .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
         .then(data => {
-            console.log(data)
           this.crowdData = data;
         })
         .catch(err => {});
