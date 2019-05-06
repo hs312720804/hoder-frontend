@@ -123,7 +123,7 @@
     </el-dialog>
     <!-- 投放提示估算弹窗 -->
     <el-dialog :visible.sync="showEstimate">
-      <div class="choose-tip">请选择下面要投放的人群，勾选保存即可投放到相应人群设备</div>
+      <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
       <el-checkbox-group v-model="estimateValue" aria-required="true">
         <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
       </el-checkbox-group>
