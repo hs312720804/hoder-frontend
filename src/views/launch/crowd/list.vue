@@ -39,6 +39,7 @@
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="launchCrowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
+      <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
       <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
       <el-table-column prop="status" label="人群状态" width="70">
         <template scope="scope">
@@ -54,8 +55,8 @@
       </el-table-column>
       <el-table-column prop="dmpEstimate" label="设备数量" width="80"></el-table-column>
       <el-table-column prop="total1" label="手机号数量" width="90"></el-table-column>
-      <el-table-column prop="total2" label="微信openId数量" width="110"></el-table-column>
-      <el-table-column prop="total3" label="酷开openId数量" width="110"></el-table-column>
+      <el-table-column prop="total3" label="微信openId数量" width="110"></el-table-column>
+      <el-table-column prop="total2" label="酷开openId数量" width="110"></el-table-column>
       <el-table-column label="操作" fixed="right" min-width="200">
         <template scope="scope">
           <el-button-group  class="button-group-position">
@@ -263,7 +264,6 @@ export default {
       //   });
     },
     handleEstimate () {
-        debugger
         if (this.estimateValue.length === 0) {
             this.showError = true
             return

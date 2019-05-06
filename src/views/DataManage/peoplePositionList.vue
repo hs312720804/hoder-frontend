@@ -166,14 +166,18 @@
                 }).then( () => {
                     this.$service.peoplePositonDel({id: row.id}, '删除成功').then(
                         (data) => {
-                            console.log(data)
                             this.handleAllRowSelectionRemove()
                             this.fetchData()
                         }
                     )
                 })
             },
-            handleFilterChange () {
+            handleFilterChange (type) {
+                if (type === 'query') {
+                    if(this.pagination) {
+                        this.pagination.currentPage = 1
+                    }
+                }
                 this.fetchData()
             },
             handleFilterReset () {
@@ -214,9 +218,17 @@
                     return result
                 }, [])
             },
+            parseFilter () {
+                const {filter, pagination} = this
+                if(pagination) {
+                    filter.page = pagination.currentPage
+                    filter.rows = pagination.pageSize
+                }
+                return filter
+            },
             fetchData () {
-                this.$service.peoplePositonList(this.filter).then((data) => {
-                    console.log(data)
+                const filter = this.parseFilter()
+                this.$service.peoplePositonList(filter).then((data) => {
                     this.table.data = data.pageInfo.list
                     this.pagination.total = data.pageInfo.total
                 })

@@ -74,9 +74,7 @@
             getCrowdIdList () {
                 this.$service.crowdIdList().then(
                     (data) => {
-                        console.log(data)
                         this.crowdIds = this._arrayingOption(data,'launchName','launchCrowdId')
-                        console.log(this.crowdIds)
                     }
                 )
             },
@@ -90,7 +88,6 @@
             getDetail () {
                 this.$service.getPositonDetail({id: this.editId}).then(
                     (data) => {
-                        console.log(data)
                         this.form = data
                         // if(this.mode === 'edit') {this.form.id = this.editId}
                     }
@@ -155,8 +152,6 @@
                     this.disableValue = true
                 }
             }
-            console.log(this.editId)
-            console.log(this.mode)
         }
     }
 </script>
