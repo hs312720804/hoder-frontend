@@ -1,7 +1,7 @@
 <template>
     <div class="addPeoplePosition">
         <div class="title">{{title}}</div>
-        <el-form :model="form" :rules="rules" ref="form" label-width="120px">
+        <el-form :model="form" :rules="rules" ref="form" label-width="130px">
             <el-form-item label="人群投放Id" prop="launchCrowdId">
                 <el-select v-model="form.launchCrowdId" :disabled="disableValue">
                     <el-option v-for="(item,index) in crowdIds" :label="item.value+'_'+item.label" :key="index" :value="item.value"></el-option>
@@ -15,21 +15,40 @@
                     <el-option v-for="(item,index) in protocols" :label="item" :key="index" :value="item"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="redis地址示例" class="example" v-if="form.protocol === 'redis'">
+            <el-form-item label="redis访问地址示例" class="example" v-if="form.protocol === 'redis'">
                 <span>{"ip":"172.16.33.12","port":"5459","password":"abc.123","timeout":"3000","database":"0","cid":"693","version":"20190422"}
                 </span>
             </el-form-item>
-            <el-form-item label="kafka地址示例" class="example" v-if="form.protocol === 'kafka'">
+            <el-form-item label="kafka访问地址示例" class="example" v-if="form.protocol === 'kafka'">
                 <div>{"ip":"172.16.33.12","port":"5459"}</div>
             </el-form-item>
-            <el-form-item label="位置存放地址" prop="url">
+            <el-form-item label="http访问地址示例" class="example" v-if="form.protocol === 'http'">
+                <div>{"uri":"http://www.xxx.com/launch/crowd/getCrowdDataByHttp","method":"GET"}</div>
+            </el-form-item>
+            <el-form-item label="访问地址" prop="url">
                 <el-input v-model="form.url" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="redis存放地址示例" class="example" v-if="form.protocol === 'redis'">
+                <span>{"ip":"172.16.33.12","port":"5459","password":"abc.123","timeout":"3000","database":"0","cid":"693","version":"20190422"}
+                </span>
+            </el-form-item>
+            <el-form-item label="kafka存放地址示例" class="example" v-if="form.protocol === 'kafka'">
+                <div>{"ip":"172.16.33.12","port":"5459"}</div>
+            </el-form-item>
+            <el-form-item label="http存放地址示例" class="example" v-if="form.protocol === 'http'">
+                <div>{"ip":"172.16.33.12","port":"5459","password":"abc.123","timeout":"3000","database":"0","cid":"693","version":"20190422"}</div>
+            </el-form-item>
+            <el-form-item label="存放地址" prop="saveAddr">
+                <el-input v-model="form.saveAddr" :disabled="disableValue"></el-input>
             </el-form-item>
             <el-form-item label="redis参数示例" class="example" v-if="form.protocol === 'redis'">
                 <div>{"mac_key":"crowd_534_mac_20190402","all_key":"crowd_534_20190402","sid_key":"crowd_534_sid_20190402","1_key":"crowd_543_1_20190402","2_key":"crowd_543_2_20190402","3_key":"crowd_543_3_20190402"} </div>
             </el-form-item>
             <el-form-item label="kafka参数示例" class="example" v-if="form.protocol === 'kafka'">
                 <div>{"mac_topic":"topic1xx","all_topic":"topic2xx","sid_topic":"topic3xx","1_topic":"topic3x11x","2_topic":"topic4xx","3_topic":"topic4xx"}</div>
+            </el-form-item>
+            <el-form-item label="http参数示例" class="example" v-if="form.protocol === 'http'">
+                <div>{"pageNum":"1","pageSize":"10","biId":"8","type":"3","launchCrowdId":"12"}</div>
             </el-form-item>
             <el-form-item label="参数" prop="param">
                 <el-input v-model="form.param" :disabled="disableValue"></el-input>
@@ -59,6 +78,7 @@
                     name: '',
                     protocol: '',
                     url: '',
+                    saveAddr: '',
                     param: '',
                     remark: '',
                     id: ''
@@ -79,6 +99,9 @@
                     ],
                     url: [
                         {required:true, message:'请输入位置存放地址', trigger: 'blur'}
+                    ],
+                    saveAddr: [
+                        {required:true,message:'请输入存放地址',trigger: 'blur'}
                     ]
                 }
             }

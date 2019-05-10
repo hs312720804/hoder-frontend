@@ -95,8 +95,12 @@
                             prop: 'protocol'
                         },
                         {
-                            label: '地址',
+                            label: '访问地址',
                             prop: 'url'
+                        },
+                        {
+                            label: '存放地址',
+                            prop: 'saveAddr'
                         },
                         {
                             label: '参数',
