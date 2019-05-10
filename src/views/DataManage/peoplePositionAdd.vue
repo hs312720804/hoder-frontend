@@ -177,7 +177,7 @@
             this.getProtocolList()
             if(this.editId === undefined){
                 this.title = '新增'
-                this.form.protocol = 'redis'
+                this.form.protocol = 'http'
             }else {
                 if(this.mode === 'edit') {
                     this.title = '编辑'
