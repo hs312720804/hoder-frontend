@@ -17,6 +17,7 @@ import personalInformation from '@/views/setting/personalInformation'
 import personManage from '@/views/setting/personManage'
 import roleManage from '@/views/setting/roleManage'
 import dataMange from '@/views/DataManage/peoplePositionIndex'
+import tagDictDatabase from '@/views/Tag/tagDictDatabase'
 const children = [
     {
         name: 'dashboard',
@@ -65,6 +66,19 @@ const children = [
                     title: '查看标签',
                     icon: 'el-icon-cc-file',
                     hideInMenu: true
+                }
+            },
+            {
+                name: 'tagDictDatabase',
+                path: 'tagDictDatabase',
+                component: tagDictDatabase,
+                props: {
+                    mode: 'list-tag-dict-database'
+                },
+                meta: {
+                    tagId: "tag",
+                    title: '标签字典库',
+                    icon: 'el-icon-cc-file'
                 }
             }
         ]

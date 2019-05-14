@@ -6,9 +6,9 @@
 
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
            <i class="el-icon-cc-celve2"></i>
-          <span v-show="!isCollapseMenu">人群策略平台</span>
+          <span v-show="!isCollapseMenu">人群平台</span>
         </div>
-        <div class="version">version:{{$appState.user.version}}</div>
+        <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
         :default-active="$route.name"
@@ -103,8 +103,9 @@ export default {
           "/manage/user/personalInformation": "personalInformation",
           "/manage/user/modifyPassword": "password",
           "/manage/loginLog/index": "loginLog",
-           "/manage/operateLog/index": "operateLog",
-          "/crowdDataPos/index": "dataManage"
+          "/manage/operateLog/index": "operateLog",
+          "/crowdDataPos/index": "dataManage",
+          "/tagDict/index": "tagDictDatabase",
       }
     };
   },
@@ -145,7 +146,6 @@ export default {
   },
   methods: {
     getRouter(url){
-        debugger
        this.$router.push({name:this.routerMap[url]});
     },
     handleDropdownCommand(command) {
