@@ -51,3 +51,13 @@ export function tagBatchsave(input) {
         data: input
     })
 }
+
+// 标签字典库
+export function getTagDictDatabaseList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'api/tagDict/index',
+        data: params
+    })
+}
+

@@ -12,19 +12,39 @@
                 >
                 </el-input>
             </div>
-
-            <div class="tag-category-list">
-                <ul>
-                    <li 
-                        v-for="(tagGroup, index) in tagGroupListFiltered" 
-                        :key="tagGroup.id"
-                        :class="activeId == tagGroup.id ? 'active' : ''"
-                        @click="handleReadTagGroup(tagGroup)"
-                    > 
-                        {{ tagGroup.name }}
-                    </li>
-                </ul>
+            <div>
+                <el-tree
+                  :data="treeData"
+                  node-key="id"
+                  default-expand-all
+                  expand-on-click-node
+                  @node-click="handleNodeClick"
+                >
+                    <span slot-scope="{ node, data }">
+                        <span class="tree-data tree-data--big-size">{{ data.groupName }}</span>
+                        <!--<span-->
+                                <!--v-for="(dataItem,index) in data.children"-->
+                                <!--class="tree-data"-->
+                                <!--:key="index"-->
+                                <!--@click.stop="()=>{}"-->
+                        <!--&gt;{{dataItem.groupName}}-->
+                        <!--</span>-->
+                    </span>
+                </el-tree>
             </div>
+
+            <!--<div class="tag-category-list">-->
+                <!--<ul>-->
+                    <!--<li-->
+                        <!--v-for="(tagGroup, index) in tagGroupListFiltered"-->
+                        <!--:key="tagGroup.id"-->
+                        <!--:class="activeId == tagGroup.id ? 'active' : ''"-->
+                        <!--@click="handleReadTagGroup(tagGroup)"-->
+                    <!--&gt;-->
+                        <!--{{ tagGroup.name }}-->
+                    <!--</li>-->
+                <!--</ul>-->
+            <!--</div>-->
 
             <TagGroupCreate ref="tagGroupCreate" @create-end="fetchData" />
         </div>
@@ -40,6 +60,7 @@ export default {
         return {
             filterText: undefined,
             tagGroupList: [],
+            treeData: []
         }
     },
     computed: {
@@ -52,7 +73,7 @@ export default {
             }
         },
         activeId() {
-            return this.$route.params.id 
+            return this.$route.params.id
         }
     },
     methods: {
@@ -62,18 +83,38 @@ export default {
             })
         },
         handleReadTagGroup(item) {
+            debugger
             this.$emit('read-tag-group', item)
+        },
+        fetchTreeData() {
+            return this.$service.getTagGroupTreeList().then((data) => {
+                console.log(data)
+                this.treeData = data.groupList
+            })
+        },
+        handleNodeClick(data) {
+            debugger
+            console.log('=====')
+            console.log(data)
+            // const item = { id:data.groupId,name: data.groupName }
+            // this.handleReadTagGroup(item)
+            // this.$emit('read-tag-group', item)
+            this.$service.getTagGroupTreeList({groupId: data.groupId}).then((data) => {
+                console.log(data)
+                this.tagGroupList = data
+            })
         }
     },
     created() {
         const activeId = this.activeId
-        if (activeId) {
-            this.fetchData()
-        } else {
-            this.fetchData().then(() => {
-                this.handleReadTagGroup(this.tagGroupList[0])
-            })
-        }
+        // if (activeId) {
+        //     this.fetchData()
+        // } else {
+        //     this.fetchData().then(() => {
+        //         this.handleReadTagGroup(this.tagGroupList[0])
+        //     })
+        // }
+        this.fetchTreeData()
     }
 }
 </script>
@@ -98,10 +139,10 @@ export default {
     color #333
 
 .tag-category-list
-    ul 
+    ul
         padding 0
         list-style none
-    li 
+    li
         height 35px
         line-height 35px
         color #606266
