@@ -131,9 +131,9 @@ export default {
             this.fetchData()
         },
         handleAddTagCategory() {
-            this.tagCategory = {
-                groupId: this.tagGroupId
-            }
+            // this.tagCategory = {
+            //     groupId: this.tagGroupId
+            // }
             this.$refs.tagCategoryUpsert.showCreateDialog = true
         },
         handleEditTagCategory(row) {
