@@ -63,7 +63,7 @@
             </el-table>
             <el-pagination
                 class="pagination"
-                :current-page.sync="pagination.currentPage"
+                :current-page.sync="pagination.pageNum"
                 :page-size.sync="pagination.pageSize"
                 :total="pagination.total"
                 @size-change="fetchData"
@@ -99,7 +99,7 @@ export default {
                 name: undefined
             },
             pagination: {
-                currentPage: undefined,
+                pageNum: undefined,
                 pageSize: undefined,
                 total: undefined
             }
@@ -156,7 +156,7 @@ export default {
                 this.dataSourceEnum = data.lableDataSourceEnum
                 this.typeEnum = data.tagsTypeEnum
                 this.pagination.total = data.pageInfo.total
-                this.pagination.currentPage = data.pageInfo.pageNum
+                this.pagination.pageNum = data.pageInfo.pageNum
                 this.pagination.pageSize = data.pageInfo.pageSize
             })
             // this.$service.getTagCategoryList(filter).then(({itemList, pagination, dataSourceEnum, typeEnum}) => {
