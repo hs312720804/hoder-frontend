@@ -57,7 +57,7 @@ export function getTagDictDatabaseList(params) {
     return this.fetch({
         method: 'get',
         url:'api/tagDict/index',
-        data: params
+        params
     })
 }
 

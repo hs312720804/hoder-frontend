@@ -47,6 +47,6 @@ export function getTagGroupTreeList(params) {
     return this.fetch({
         method: 'get',
         url:'api/label/indexTree',
-        data: params
+        params
     })
 }

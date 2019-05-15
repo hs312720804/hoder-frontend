@@ -96,13 +96,8 @@ export default {
             debugger
             console.log('=====')
             console.log(data)
-            // const item = { id:data.groupId,name: data.groupName }
-            // this.handleReadTagGroup(item)
-            // this.$emit('read-tag-group', item)
-            this.$service.getTagGroupTreeList({groupId: data.groupId}).then((data) => {
-                console.log(data)
-                this.tagGroupList = data
-            })
+            const item = { id:data.groupId,name: data.groupName }
+            this.$emit('read-tag-group', item)
         }
     },
     created() {
