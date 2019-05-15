@@ -92,14 +92,14 @@ export default {
         },
         handleNodeClick(data) {
             console.log(data)
-            // const item = { id:data.groupId,name: data.groupName }
-            let item = undefined
-            if( data.groupId === undefined ) {
-                // item = { id:data.id,name: data.groupName }
-                item = {}
-            }else{
-                item = { id:data.groupId,name: data.groupName }
-            }
+            const item = { id:data.groupId,name: data.groupName }
+            // let item = undefined
+            // if( data.groupId === undefined ) {
+            //     // item = { id:data.id,name: data.groupName }
+            //     item = {}
+            // }else{
+            //     item = { id:data.groupId,name: data.groupName }
+            // }
             console.log(item)
             this.$emit('read-tag-group', item)
         }
