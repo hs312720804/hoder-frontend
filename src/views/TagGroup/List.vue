@@ -77,26 +77,30 @@ export default {
         }
     },
     methods: {
+        // fetchData() {
+        //     return this.$service.getTagGroupList().then((data) => {
+        //         this.tagGroupList = data
+        //     })
+        // },
         fetchData() {
-            return this.$service.getTagGroupList().then((data) => {
-                this.tagGroupList = data
-            })
-        },
-        handleReadTagGroup(item) {
-            debugger
-            this.$emit('read-tag-group', item)
-        },
-        fetchTreeData() {
             return this.$service.getTagGroupTreeList().then((data) => {
-                console.log(data)
                 this.treeData = data.groupList
             })
         },
+        handleReadTagGroup(item) {
+            this.$emit('read-tag-group', item)
+        },
         handleNodeClick(data) {
-            debugger
-            console.log('=====')
             console.log(data)
-            const item = { id:data.groupId,name: data.groupName }
+            // const item = { id:data.groupId,name: data.groupName }
+            let item = undefined
+            if( data.groupId === undefined ) {
+                // item = { id:data.id,name: data.groupName }
+                item = {}
+            }else{
+                item = { id:data.groupId,name: data.groupName }
+            }
+            console.log(item)
             this.$emit('read-tag-group', item)
         }
     },
@@ -109,7 +113,7 @@ export default {
         //         this.handleReadTagGroup(this.tagGroupList[0])
         //     })
         // }
-        this.fetchTreeData()
+        this.fetchData()
     }
 }
 </script>

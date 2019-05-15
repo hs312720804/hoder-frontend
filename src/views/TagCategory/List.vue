@@ -12,7 +12,7 @@
                 </el-form-item>
             </el-form>
         </el-header>
-        
+
         <el-main>
             <el-table border :data="tagCategoryList" >
                 <el-table-column prop="tagId" label="ID" width="140">
@@ -61,7 +61,7 @@
                     </template>
                 </el-table-column>
             </el-table>
-            <el-pagination 
+            <el-pagination
                 class="pagination"
                 :current-page.sync="pagination.currentPage"
                 :page-size.sync="pagination.pageSize"
@@ -73,12 +73,12 @@
             >
             </el-pagination>
         </el-main>
-        <TagCategoryUpsert 
-            ref="tagCategoryUpsert" 
+        <TagCategoryUpsert
+            ref="tagCategoryUpsert"
             :current-tag-category="tagCategory"
             :type-enum="typeEnum"
             :data-source-enum="dataSourceEnum"
-            @upsert-end="fetchData" 
+            @upsert-end="fetchData"
         />
     </el-container>
 </template>
@@ -150,18 +150,27 @@ export default {
             })
         },
         fetchData() {
+            debugger
             const filter = this.getFilter()
-            this.$service.getTagCategoryList(filter).then(({itemList, pagination, dataSourceEnum, typeEnum}) => {
-                this.tagCategoryList = itemList
-                this.dataSourceEnum = dataSourceEnum
-                this.typeEnum = typeEnum
-                this.pagination = pagination
+            this.$service.getTagGroupTreeList(filter).then((data) => {
+                this.tagCategoryList = data.pageInfo.list
+                this.dataSourceEnum = data.lableDataSourceEnum
+                this.typeEnum = data.tagsTypeEnum
+                this.pagination.total = data.pageInfo.total
+                this.pagination.currentPage = data.pageInfo.pageNum
+                this.pagination.pageSize = data.pageInfo.pageSize
             })
+            // this.$service.getTagCategoryList(filter).then(({itemList, pagination, dataSourceEnum, typeEnum}) => {
+            //     this.tagCategoryList = itemList
+            //     this.dataSourceEnum = dataSourceEnum
+            //     this.typeEnum = typeEnum
+            //     this.pagination = pagination
+            // })
         },
     },
     created() {
         this.fetchData()
-    } 
+    }
 }
 </script>
 <style lang="stylus" scoped>

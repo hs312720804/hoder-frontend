@@ -50,3 +50,12 @@ export function getTagGroupTreeList(params) {
         params
     })
 }
+
+//获取父级id列表
+export function getParentIdList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'api/labelGroup/getGroupsParent',
+        params
+    })
+}
