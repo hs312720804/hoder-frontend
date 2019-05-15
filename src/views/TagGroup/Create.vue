@@ -6,7 +6,7 @@
         <el-form :model="form" ref="form" :rules="rules" label-width="100px">
             <el-form-item label="父类" prop="pid">
                 <el-select v-model="form.pid">
-                    <el-option v-for="item in items" :label="item.groupName" :value="item.id"></el-option>
+                    <el-option v-for="item in items" :label="item.groupName" :value="item.groupId" :key="item.groupId"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="分组名" prop="groupName">
@@ -63,7 +63,6 @@ export default {
             this.$refs[form].validate((valid) => {
                     if (valid) {
                         this.$service.createTagGroup(this.form, '新建分组成功').then(() => {
-                            console.log(this.form)
                             this.showCreateDialog = false
                             this.$emit('create-end')
                         })
@@ -80,7 +79,6 @@ export default {
         },
         getPidList () {
             this.$service.getParentIdList().then((data) => {
-                console.log(data)
                 this.items = data
             })
         }

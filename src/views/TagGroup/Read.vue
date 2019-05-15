@@ -1,5 +1,5 @@
 <template>
-    <TagCategoryList v-if="$route.params.id" @read-tag-category="$emit('read-tag-category', $event)" />
+    <TagCategoryList v-if="$route.params.id || $route.params.id == 0" @read-tag-category="$emit('read-tag-category', $event)" />
 </template>
 
 <script>
@@ -15,7 +15,7 @@ export default {
     methods: {
     },
     created() {
-    } 
+    }
 }
 </script>
 <style lang="stylus" scoped>

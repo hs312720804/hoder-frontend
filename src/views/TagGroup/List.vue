@@ -12,10 +12,13 @@
                 >
                 </el-input>
             </div>
+            <div><el-button @click="handleReadAllTagGroup()" type="text" class="show-all-style">显示全部</el-button></div>
             <div>
                 <el-tree
                   :data="treeData"
                   node-key="id"
+                  :filter-node-method="filterNode"
+                  ref="tree"
                   expand-on-click-node
                   @node-click="handleNodeClick"
                 >
@@ -57,19 +60,20 @@ export default {
     },
     data() {
         return {
-            filterText: undefined,
+            filterText: '',
             tagGroupList: [],
             treeData: []
         }
     },
-    computed: {
-        tagGroupListFiltered() {
-            const filterText = this.filterText
-            if (!filterText) {
-                return this.tagGroupList
-            } else {
-                return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
-            }
+    watch: {
+        filterText(val) {
+            this.$refs.tree.filter(val)
+            // const filterText = this.filterText
+            // if (!filterText) {
+            //     return this.tagGroupList
+            // } else {
+            //     return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
+            // }
         },
         activeId() {
             return this.$route.params.id
@@ -89,8 +93,11 @@ export default {
         handleReadTagGroup(item) {
             this.$emit('read-tag-group', item)
         },
+        handleReadAllTagGroup() {
+            const item = {id:0,name: '全部'}
+            this.$emit('read-tag-group', item)
+        },
         handleNodeClick(data) {
-            console.log(data)
             const item = { id:data.groupId,name: data.groupName }
             // let item = undefined
             // if( data.groupId === undefined ) {
@@ -99,12 +106,15 @@ export default {
             // }else{
             //     item = { id:data.groupId,name: data.groupName }
             // }
-            console.log(item)
             this.$emit('read-tag-group', item)
+        },
+        filterNode(value,data) {
+            if(!value) return true
+            return data.groupName.indexOf(value) !== -1
         }
     },
     created() {
-        const activeId = this.activeId
+        // const activeId = this.activeId
         // if (activeId) {
         //     this.fetchData()
         // } else {
@@ -135,7 +145,17 @@ export default {
     text-decoration none
     cursor pointer
     color #333
-
+.show-all-style
+    width 100%
+    font-size 16px
+    font-weight normal
+    color #606266
+    text-align left
+    text-indent 24px
+    &:focus
+        background #fff
+    &:hover
+        background #fff
 .tag-category-list
     ul
         padding 0

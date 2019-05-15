@@ -4,12 +4,12 @@
             <el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">
                 <el-option
                     v-for="item in tagGroupList"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id"
+                    :key="item.groupId"
+                    :label="item.groupName"
+                    :value="item.groupId"
                 >
                 </el-option>
-            </el-select> 
+            </el-select>
             <el-select key="/tagType" :value="tagCategory.tagType" @input="handleInput('/tagType', $event)" placeholder="请选择">
                 <el-option
                     v-for="item in typeList"
@@ -18,7 +18,7 @@
                     :value="item.value"
                 >
                 </el-option>
-            </el-select> 
+            </el-select>
         </GateSchemaForm>
     </el-dialog>
 </template>
@@ -58,7 +58,7 @@ export default {
                     ])
                     .string.other('form', {label: '单位'}),
                 remark: _.o.string.other('form', {label: '备注', type: 'textarea'})
-            }) 
+            })
             .other('form', {
                 footer: {
                     showSubmit: true,
@@ -108,13 +108,17 @@ export default {
            return data
        },
        fetchTagCategoryList() {
-           this.$service.getTagGroupList().then((data) => {
+           // debugger
+           // this.$service.getTagGroupList().then((data) => {
+           //     this.tagGroupList = data
+           // })
+           this.$service.getParentIdList().then((data) => {
                this.tagGroupList = data
            })
-       },
+       }
    },
    created() {
-        this.tagCategory = this.currentTagCategory || {} 
+        this.tagCategory = this.currentTagCategory || {}
         this.fetchTagCategoryList()
    }
 }

@@ -150,7 +150,6 @@ export default {
             })
         },
         fetchData() {
-            debugger
             const filter = this.getFilter()
             this.$service.getTagGroupTreeList(filter).then((data) => {
                 this.tagCategoryList = data.pageInfo.list
