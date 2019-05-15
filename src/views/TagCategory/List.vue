@@ -4,7 +4,7 @@
             标签种类
             <el-form :inline="true">
                 <el-form-item>
-                    <el-input clearable @keyup.enter.native="fetchData" v-model="filter.name" placeholder="种类名称"></el-input>
+                    <el-input clearable @keyup.enter.native="fetchData" v-model="filter.tagName" placeholder="种类名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
@@ -96,7 +96,7 @@ export default {
             dataSourceEnum: {},
             typeEnum: {},
             filter: {
-                name: undefined
+                tagName: undefined
             },
             pagination: {
                 pageNum: undefined,
@@ -123,7 +123,7 @@ export default {
         },
         resetFilter() {
             this.filter = {
-                name: undefined
+                tagName: undefined
             }
         },
         handleTagGroupIdChange() {
