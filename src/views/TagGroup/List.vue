@@ -16,7 +16,6 @@
                 <el-tree
                   :data="treeData"
                   node-key="id"
-                  default-expand-all
                   expand-on-click-node
                   @node-click="handleNodeClick"
                 >
