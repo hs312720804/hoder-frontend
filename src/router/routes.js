@@ -87,7 +87,7 @@ const children = [
         path: 'launch',
         name:"launch",
         meta: {
-            title: '投放助手',
+            title: '人群管理',
             icon: 'el-icon-cc-file',
         },
         component: Wrapper,
@@ -98,7 +98,7 @@ const children = [
                 component: crowd,
                 meta: {
                     tagId:"crowd",
-                    title: '人群投放',
+                    title: '人群圈定',
                     icon: 'el-icon-cc-file'
                 },
             }
@@ -108,7 +108,7 @@ const children = [
                 path: 'strategy',
                 component: strategy,
                 meta: {
-                    title: '策略投放',
+                    title: '人群分割 投放',
                     tagId:"strategy",
                   //  hideInMenu: true,
                     isCache: false,
@@ -116,18 +116,30 @@ const children = [
                 }
             }
             ,
+
             {
-                name: 'validate',
-                path: 'validate',
-                component: validate,
+                name: 'strategyList',
+                path: 'strategyList',
+                component: strategyList,
                 meta: {
-                    title: '投放验证',
-                    tagId:"validate",
-                  //  hideInMenu: true,
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    tagId:"strategyList",
+                    title: '人群分隔 管理',
+                    icon: 'el-icon-cc-file'
                 }
             }
+
+            // {
+            //     name: 'validate',
+            //     path: 'validate',
+            //     component: validate,
+            //     meta: {
+            //         title: '投放验证',
+            //         tagId:"validate",
+            //       //  hideInMenu: true,
+            //         isCache: false,
+            //         icon: 'el-icon-cc-file',
+            //     }
+            // }
         ],
     },
     {
@@ -135,18 +147,20 @@ const children = [
         path: 'strategy',
         component: Wrapper,
         meta: {
-            title: '人群策略管理',
+            title: '工具助手',
             icon: 'el-icon-cc-home'
         },
         children:[
             {
-                name: 'strategyList',
-                path: 'strategyList',
-                component: strategyList,
+                name: 'validate',
+                path: 'validate',
+                component: validate,
                 meta: {
-                    tagId:"strategyList",
-                    title: '策略列表',
-                    icon: 'el-icon-cc-file'
+                    title: '投放验证',
+                    tagId:"validate",
+                    //  hideInMenu: true,
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
                 }
             }
         ]
