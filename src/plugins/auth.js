@@ -19,7 +19,7 @@ Vue.prototype.$isLoggedIn = async function() {
             res.permissions.forEach((item)=>{
                 this.$appState.permissions[item]=item;
             })
-            this.$appState.menus=res.menus;
+            this.$appState.menus=res.menus
         })
     }
     throw {}

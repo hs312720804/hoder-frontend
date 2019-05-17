@@ -90,7 +90,8 @@ export default {
       breadcrumb: [],
       isCollapseMenu: false,
       routerMap: {
-          "label/index": "tag-group-read",
+          // "label/index": "tag-group-read",
+          "label/index": "tag",
           "launchHelp/index": "validate",
           "launchCrowd/index": "crowd",
           "launchPolicy/index": "strategy",
@@ -163,6 +164,54 @@ export default {
     saveTags() {
       const tags = this.$refs.tag.tags;
       this.$appState.$set("tags", tags);
+    },
+    setMetaTitle() {
+        const routes = this.$router.options.routes
+        const findRouteByName = (name, route) => {
+            if (Array.isArray(route)) {
+                let length = route.length
+                while(--length >= 0) {
+                    const found = findRouteByName(name, route[length])
+                    if (found) {
+                        return found
+                    }
+                }
+            } else {
+                if (route.name === name) {
+                    return route
+                } else if (route.children) {
+                    return findRouteByName(name, route.children)
+                }
+            }
+        }
+        const menus = this.$appState.menus
+        console.log(menus)
+        const findMenuByUrl = (url, menu) => {
+            if (Array.isArray(menu)) {
+                let length =  menu.length
+                while(--length >= 0) {
+                    const found = findMenuByUrl(url, menu[length])
+                    if (found) {
+                        return found
+                    }
+                }
+            } else {
+                if (menu.url === url) {
+                    return menu
+                } else if (menu.child) {
+                    return findMenuByUrl(url, menu.child)
+                }
+            }
+        }
+        const routerMap = this.routerMap
+        Object.keys(routerMap).forEach((url) => {
+            const menu = findMenuByUrl(url, menus)
+            const route = findRouteByName(routerMap[url], routes)
+            if (route && route.meta && menu) {
+                route.meta.title = menu.name
+            }
+
+        })
     }
   },
   created() {
@@ -170,6 +219,7 @@ export default {
     this.$bus.$on("breadcrumb-change", breadcrumb => {
       this.breadcrumb = breadcrumb;
     });
+    this.setMetaTitle()
   },
   mounted() {
     window.addEventListener("beforeunload", this.saveTags);

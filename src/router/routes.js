@@ -76,7 +76,7 @@ const children = [
                     mode: 'list-tag-dict-database'
                 },
                 meta: {
-                    tagId: "tag",
+                    tagId: "tagDictDatabase",
                     title: '标签字典库',
                     icon: 'el-icon-cc-file'
                 }
