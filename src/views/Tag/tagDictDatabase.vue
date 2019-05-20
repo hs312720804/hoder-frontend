@@ -25,7 +25,7 @@
 
 <script>
     import _ from 'gateschema'
-    import { ContentWrapper, Table, utils} from 'admin-toolkit'
+    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "tagDictDatabase",
         components: {
@@ -161,9 +161,7 @@
             },
             fetchData () {
                 const filter = this.parseFilter()
-                console.log(filter)
                 this.$service.getTagDictDatabaseList(filter).then((data) => {
-                    console.log(data)
                     this.table.data = data.pageInfo.list
                     this.pagination.total = data.pageInfo.total
                     this.pagination.pageSize = data.pageInfo.pageSize

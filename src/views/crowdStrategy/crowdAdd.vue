@@ -55,15 +55,25 @@
                       </el-select>
                     </span>
                     <span class="in">
-                      <el-date-picker
-                        v-if="childItem.tagType === 'time'"
-                        v-model="childItem.value"
-                        type="date"
-                        placeholder="选择日期"
-                        format="yyyy-MM-dd"
-                        value-format="yyyy-MM-dd"
-                        :key="index+'key'"
-                      ></el-date-picker>
+                      <span v-if="childItem.tagType === 'time'">
+                        <template v-if="childItem.isDynamicTime === 2">
+                          <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dynamicTimeType">
+                              <el-option value="1" label="在当日之前"></el-option>
+                              <el-option value="2" label="在当日之后"></el-option>
+                          </el-select>
+                          <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
+                        </template>
+                        <template v-else>
+                          <el-date-picker
+                                  v-model="childItem.value"
+                                  type="date"
+                                  placeholder="选择日期"
+                                  format="yyyy-MM-dd"
+                                  value-format="yyyy-MM-dd"
+                                  :key="index+'key'"
+                          ></el-date-picker>
+                        </template>
+                    </span>
                       <el-select
                         v-else-if="childItem.tagType==='string' || childItem.tagType === 'collect'"
                         v-model="childItem.value"
@@ -91,6 +101,12 @@
                         <el-option value="true" label="是"></el-option>
                         <el-option value="false" label="否"></el-option>
                       </el-select>
+                    </span>
+                    <span v-if="childItem.tagType === 'time'&& childItem.isDynamicTime!== undefined">
+                      <el-button :key="childItem.tagId + n" @click="changeTimeWays(childItem)">
+                        <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
+                        <span v-else>切换至时间天数</span>
+                      </el-button>
                     </span>
                     <span class="i" @click="handleRemoveRule(item, childItem)">
                       <i class="icon iconfont el-icon-cc-delete"></i>
@@ -169,6 +185,11 @@ export default {
   },
   props: ["policyId", "crowdId"],
   methods: {
+    changeTimeWays(childItem) {
+        childItem.value = ''
+        if(childItem.isDynamicTime) {
+        childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2 }
+    },
     handleRemoveRule(rule, childRule) {
       const rulesJson = this.rulesJson;
       rule.rules.splice(rule.rules.indexOf(childRule), 1);
@@ -183,7 +204,6 @@ export default {
      * tag 为标签
      */
     handleAddRule(tag) {
-      // debugger
       if (this.rulesJson.rules.length > 50) {
         layer.msg("已达最大数量");
         return;
@@ -200,13 +220,14 @@ export default {
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
-            categoryCode: tag.tagKey
+            categoryCode: tag.tagKey,
+            dynamicTimeType: tag.dynamicTimeType,
+            isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
           }
         ]
       });
     },
     handleAddChildRule(rule, tag) {
-
       if (rule.rules.length > 50) {
         layer.msg("已达最大数量");
         return;
@@ -220,7 +241,9 @@ export default {
         tagId: tag.tagId,
         tagType: tag.tagType,
         categoryName: tag.tagName,
-        categoryCode: tag.tagKey
+        categoryCode: tag.tagKey,
+        dynamicTimeType: tag.dynamicTimeType,
+        isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
       });
     },
     fetchTagSuggestions(tag) {
@@ -336,7 +359,7 @@ export default {
 .label-item .txt
   text-align: right
 .label-item .in
-  width: 150px
+  width: 250px
 .label-item span, .oc-item
   margin-right: 10px
 .label-add
@@ -347,6 +370,12 @@ export default {
   cursor: pointer
 i
   cursor: pointer
+.label-item .time-dot-select
+  width 120px
+.label-item .time-dot-input
+  display inline-block
+  width 80px
+  margin 0 7px
 .el-date-editor.el-input, .el-date-editor.el-input__inner
   width: 100%
 </style>
