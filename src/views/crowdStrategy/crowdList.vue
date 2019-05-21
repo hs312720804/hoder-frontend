@@ -79,6 +79,8 @@
                     <div v-if="childItemIndex>0" class="label-or-space">且</div>
                     <span class="txt">{{ childItem.categoryName }}</span>
                     <span class="sel">{{ childItem.operator }}</span>
+                    <span v-if="childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                    <span v-if="childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
                     <span class="in">
                       <!-- <el-date-picker
                         v-if="childItem.tagType === 'time'"

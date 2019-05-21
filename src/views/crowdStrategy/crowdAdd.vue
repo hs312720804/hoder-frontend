@@ -102,7 +102,7 @@
                         <el-option value="false" label="否"></el-option>
                       </el-select>
                     </span>
-                    <span v-if="childItem.tagType === 'time'&& childItem.isDynamicTime!== undefined">
+                    <span v-if="childItem.tagType === 'time'">
                       <el-button :key="childItem.tagId + n" @click="changeTimeWays(childItem)">
                         <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
                         <span v-else>切换至时间天数</span>
@@ -189,6 +189,9 @@ export default {
         childItem.value = ''
         if(childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2 }
+        else {
+            this.$set(childItem,'isDynamicTime',2)
+        }
     },
     handleRemoveRule(rule, childRule) {
       const rulesJson = this.rulesJson;
@@ -222,7 +225,7 @@ export default {
             categoryName: tag.tagName,
             categoryCode: tag.tagKey,
             dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-            isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
+            isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
           }
         ]
       });
@@ -243,7 +246,7 @@ export default {
         categoryName: tag.tagName,
         categoryCode: tag.tagKey,
         dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-        isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
+        isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
       });
     },
     fetchTagSuggestions(tag) {
