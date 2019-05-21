@@ -58,8 +58,8 @@
                       <span v-if="childItem.tagType === 'time'">
                         <template v-if="childItem.isDynamicTime === 2">
                           <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dynamicTimeType">
-                              <el-option value="1" label="在当日之前"></el-option>
-                              <el-option value="2" label="在当日之后"></el-option>
+                              <el-option value='1' label="在当日之前"></el-option>
+                              <el-option value='2' label="在当日之后"></el-option>
                           </el-select>
                           <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
                         </template>
@@ -221,7 +221,7 @@ export default {
             tagType: tag.tagType,
             categoryName: tag.tagName,
             categoryCode: tag.tagKey,
-            dynamicTimeType: tag.dynamicTimeType,
+            dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
             isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
           }
         ]
@@ -242,7 +242,7 @@ export default {
         tagType: tag.tagType,
         categoryName: tag.tagName,
         categoryCode: tag.tagKey,
-        dynamicTimeType: tag.dynamicTimeType,
+        dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
         isDynamicTime: this.crowdId ? tag.isDynamicTime : 2,
       });
     },
