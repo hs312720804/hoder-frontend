@@ -91,6 +91,7 @@
                       ></el-date-picker> -->
                       <span >{{ childItem.value }}</span>
                     </span>
+                    <span v-if="childItem.isDynamicTime === 2">天</span>
                   </div>)
                 </div>
               </div>
@@ -156,7 +157,7 @@
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
     <el-checkbox-group v-model="estimateValue">
-      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :disabled="index==0">{{item}}</el-checkbox>
+      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
     <span slot="footer" class="dialog-footer">
     <el-button @click="showEstimate = false">取 消</el-button>
@@ -173,7 +174,6 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
 export default {
   data() {
     return {
@@ -216,8 +216,8 @@ export default {
     goBack() {
       this.$emit("goBack");
     },
-    tagsList(row) {},
-    callback(data, successMsg) {
+    // tagsList(row) {},
+    callback() {
         this.loadData();
     },
     handleAdd() {
@@ -253,7 +253,7 @@ export default {
     handleEstimate () {
         let calIdType = this.estimateValue.map((item) => item).join(',')
         this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
-            (data) => {
+            () => {
                 this.showEstimate = false
                 this. loadData()
             }
@@ -307,10 +307,10 @@ export default {
       this.$refs.searchForm.resetFields();
     },
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    }
+    // handleDetail: function(index, row) {
+    //   var id = row.id;
+    //   // todo: 以后再做
+    // }
   }
 };
 </script>
