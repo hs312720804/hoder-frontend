@@ -91,7 +91,7 @@
                       ></el-date-picker> -->
                       <span >{{ childItem.value }}</span>
                     </span>
-                    <span v-if="childItem.isDynamicTime === 2">天</span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
                   </div>)
                 </div>
               </div>
