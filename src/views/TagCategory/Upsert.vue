@@ -150,7 +150,7 @@ export default {
        },
        getParentInfo() {
            this.$service.getParentIdList().then((data) => {
-               this.parentTree = data.filter(function (item,index,array) {
+               this.parentTree = data.filter(function (item) {
                    return ( item.groupId != 79)
                })
            })

@@ -86,8 +86,8 @@ export default {
         //     })
         // },
         fetchData() {
-            return this.$service.getTagGroupTreeList().then((data) => {
-                this.treeData = data.groupList
+            return this.$service.getParentIdList().then((data) => {
+                this.treeData = data
             })
         },
         handleReadTagGroup(item) {
