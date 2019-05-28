@@ -161,10 +161,9 @@ export default {
                if (parentId) {
                    this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
                        this.parentGroupName = detail.groupName
-                       console.log(this.parentGroupName)
                    })
 
-               }
+               }else {this.parentGroupName = ''}
            })
        },
        handleSelectNodeClick (node) {
