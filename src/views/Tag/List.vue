@@ -8,8 +8,22 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
-                    <el-button type="primary" @click="handleAddTag" v-permission="'hoder:label:attr:add'">新建标签</el-button>
-                    <el-button type="primary" @click="handleAddBatchTag" v-permission="'hoder:label:attr:add'">批量上传</el-button>
+                    <el-button
+                            type="primary"
+                            @click="handleAddTag"
+                            v-if="tagCategory.dataSource !== 2"
+                            v-permission="'hoder:label:attr:add'"
+                    >
+                        新建标签
+                    </el-button>
+                    <el-button
+                            type="primary"
+                            @click="handleAddBatchTag"
+                            v-if="tagCategory.dataSource !== 2"
+                            v-permission="'hoder:label:attr:add'"
+                    >
+                        批量上传
+                    </el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -20,7 +34,9 @@
             </el-table-column>
             <el-table-column prop="attrValue" label="值">
             </el-table-column>
-            <el-table-column prop="operation" label="操作" width="220">
+            <el-table-column prop="operation" label="操作" width="220"
+                             v-if="tagCategory.dataSource !== 2"
+            >
                 <template slot-scope="scope">
                     <el-button-group>
                     <el-button
@@ -128,6 +144,7 @@ export default {
     },
     created() {
         this.fetchData()
+        console.log(this.tagCategory)
     }
 }
 </script>

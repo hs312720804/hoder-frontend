@@ -7,6 +7,7 @@
                     :key="item.groupId"
                     :label="item.groupName"
                     :value="item.groupId"
+                    :disabled="item.groupId === 79"
                 >
                 </el-option>
             </el-select>

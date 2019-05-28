@@ -45,7 +45,8 @@ export default {
                         },
                         {
                             case: _.value('number'),
-                            schema: _.string.pattern(/^\d+(\.\d+){1,100}$/).$msg('100位以内的数字').other('form',{label: '值', placeholder: '100位以内的数字'})
+                            // schema: _.string.pattern(/^\d+(\.\d+){1,100}$/).$msg('100位以内的数字').other('form',{label: '值', placeholder: '100位以内的数字'})
+                            schema: _.number.pattern(/^.{1,100}$/).$msg('100位以内的数字').other('form',{label: '值', placeholder: '100位以内的数字'})
                         },
                         {
                             case: _.any,

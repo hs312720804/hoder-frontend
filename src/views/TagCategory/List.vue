@@ -15,7 +15,7 @@
 
         <el-main>
             <el-table border :data="tagCategoryList" >
-                <el-table-column prop="tagId" label="ID" width="140">
+                <el-table-column prop="tagId" label="ID" width="100">
                 </el-table-column>
                 <el-table-column prop="tagName" label="名称" width="140">
                 </el-table-column>
@@ -23,6 +23,12 @@
                     <template slot-scope="scope">
                         {{ dataSourceEnum[scope.row.dataSource] }}
                     </template>
+                </el-table-column>
+                <el-table-column prop="defineRemark" label="标签定义">
+                </el-table-column>
+                <el-table-column prop="tagValues" label="示例值">
+                </el-table-column>
+                <el-table-column prop="tagKey" label="标签code">
                 </el-table-column>
                 <el-table-column prop="tagType" label="类型" width="140">
                     <template slot-scope="scope">
@@ -42,6 +48,7 @@
                             查看
                         </el-button>
                         <el-button
+                            v-if="scope.row.dataSource !== 2"
                             size="small"
                             type="primary"
                             v-permission="'hoder:label:modify'"
@@ -50,6 +57,7 @@
                             编辑
                         </el-button>
                         <el-button
+                            v-if="scope.row.dataSource !== 2"
                             size="small"
                             type="info"
                              v-permission="'hoder:label:del'"
