@@ -144,7 +144,6 @@ export default {
     },
     created() {
         this.fetchData()
-        console.log(this.tagCategory)
     }
 }
 </script>
