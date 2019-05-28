@@ -1,27 +1,52 @@
 <template>
-    <el-dialog :title="tagCategory.tagId ? '编辑种类' : '新建种类'" :visible.sync="showCreateDialog">
-        <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
-            <el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">
-                <el-option
-                    v-for="item in tagGroupList"
-                    :key="item.groupId"
-                    :label="item.groupName"
-                    :value="item.groupId"
-                    :disabled="item.groupId === 79"
-                >
-                </el-option>
-            </el-select>
-            <el-select key="/tagType" :value="tagCategory.tagType" @input="handleInput('/tagType', $event)" placeholder="请选择">
-                <el-option
-                    v-for="item in typeList"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                >
-                </el-option>
-            </el-select>
-        </GateSchemaForm>
-    </el-dialog>
+    <div>
+        <el-dialog :title="tagCategory.tagId ? '编辑种类' : '新建种类'" :visible.sync="showCreateDialog">
+            <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
+                <div key="/groupId">
+                    <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
+                    <el-input   size="small" readonly v-model="tagCategory.groupName" placeholder="请选择父类"></el-input>
+                    <el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>
+                </div>
+                <!--<el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">-->
+                    <!--<el-option-->
+                        <!--v-for="item in tagGroupList"-->
+                        <!--:key="item.groupId"-->
+                        <!--:label="item.groupName"-->
+                        <!--:value="item.groupId"-->
+                        <!--:disabled="item.groupId === 79"-->
+                    <!--&gt;-->
+                    <!--</el-option>-->
+                <!--</el-select>-->
+                <el-select key="/tagType" :value="tagCategory.tagType" @input="handleInput('/tagType', $event)" placeholder="请选择">
+                    <el-option
+                        v-for="item in typeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </GateSchemaForm>
+        </el-dialog>
+        <!--选择父类弹窗-->
+        <el-dialog
+                title="选择父类"
+                :visible.sync="showSelectDialog"
+                width="30%"
+                class="organSelect"
+        >
+            <el-tree
+                    :data="parentTree"
+                    :props="parentProps"
+                    accordion
+                    @node-click="handleSelectNodeClick">
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="parentSelectCancel">取 消</el-button>
+            <el-button type="primary" @click="parentSelectOk">确 定</el-button>
+        </span>
+        </el-dialog>
+    </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash'
@@ -30,9 +55,16 @@ export default {
    data() {
        return {
             showCreateDialog: false,
+            showSelectDialog: false,
             tagCategory: {},
-            tagGroupList: [],
+            // tagGroupList: [],
             tagTypeList: [],
+            parentTree: [],
+            currentSelectDada: '',
+            parentProps:{
+               chilidren:"children",
+               label:"groupName"
+            },
             schema: _
             .map({
                 tagName: _.r.string.other('form', {label: '名称'}),
@@ -87,7 +119,7 @@ export default {
                 form.activePaths = {}
             }
             this.tagCategory = val ? cloneDeep(val) : {}
-            this.fetchTagCategoryList()
+            this.getParentInfo()
        }
    },
    methods: {
@@ -108,20 +140,43 @@ export default {
            delete data.updateTime
            return data
        },
-       fetchTagCategoryList() {
-           // debugger
-           // this.$service.getTagGroupList().then((data) => {
-           //     this.tagGroupList = data
-           // })
+       // fetchTagCategoryList() {
+       //     this.$service.getParentIdList().then((data) => {
+       //         this.tagGroupList = data
+       //     })
+       // },
+       selectParent() {
+           this.showSelectDialog = true
+       },
+       getParentInfo() {
            this.$service.getParentIdList().then((data) => {
-               this.tagGroupList = data
+               this.parentTree = data.filter(function (item,index,array) {
+                   return ( item.groupId != 79)
+               })
            })
+       },
+       handleSelectNodeClick (node) {
+           this.currentSelectDada = node
+       },
+       parentSelectCancel () {
+           this.showSelectDialog = false
+       },
+       parentSelectOk () {
+          this.tagCategory.groupId = this.currentSelectDada.groupId
+          this.tagCategory.groupName = this.currentSelectDada.groupName
+          this.showSelectDialog = false
        }
    },
    created() {
-        this.tagCategory = this.currentTagCategory || {}
-        this.fetchTagCategoryList()
+       this.tagCategory = this.currentTagCategory || {}
+       // console.log(this.tagCategory)
+       // const parentId = this.tagCategory.groupId
+       this.getParentInfo()
    }
 }
 </script>
+<style scoped lang="stylus">
+ .organSelect >>> .is-current
+    color:#3980e2
+</style>
 

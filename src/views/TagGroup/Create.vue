@@ -1,30 +1,46 @@
 <template>
-    <el-dialog
-        title="新建分组"
-        :visible.sync="showCreateDialog"
-    >
-        <el-form :model="form" ref="form" :rules="rules" label-width="100px">
-            <el-form-item label="父类" prop="pid">
-                <el-select v-model="form.pid">
-                    <el-option v-for="item in items" :label="item.groupName" :value="item.groupId" :key="item.groupId"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="分组名" prop="groupName">
-                <el-input v-model="form.groupName"></el-input>
-            </el-form-item>
-            <el-form-item>
-                <el-button type="primary" @click="handleSubmit('form')">提交</el-button>
-                <!--<el-button @click="resetForm('ruleForm')">重置</el-button>-->
-            </el-form-item>
-        </el-form>
-        <!--<GateSchemaForm-->
-            <!--ref="create-form"-->
-            <!--:schema="schema"-->
-            <!--v-model="tagGroup"-->
-            <!--@submit="handleSubmit"-->
-        <!--&gt;-->
-        <!--</GateSchemaForm>-->
-    </el-dialog>
+    <div>
+        <el-dialog
+            title="新建分组"
+            :visible.sync="showCreateDialog"
+        >
+            <el-form :model="form" ref="form" :rules="rules" label-width="100px">
+                <el-form-item label="父类" prop="pid">
+                    <el-input style="display:none;" v-model="form.pid" placeholder="请选择父类目录"></el-input>
+                    <el-input size="small" readonly v-model="parentGroupName" placeholder="请选择父类目录"></el-input>
+                    <el-button size="small" type="primary" icon="search" @click="showPidList">选择</el-button>
+                    <!--<el-select v-model="form.pid">-->
+                        <!--<el-option v-for="item in items" :label="item.groupName" :value="item.groupId" :key="item.groupId"></el-option>-->
+                    <!--</el-select>-->
+                </el-form-item>
+                <el-form-item label="分组名" prop="groupName">
+                    <el-input v-model="form.groupName"></el-input>
+                </el-form-item>
+                <el-form-item>
+                    <el-button type="primary" @click="handleSubmit('form')">提交</el-button>
+                    <!--<el-button @click="resetForm('ruleForm')">重置</el-button>-->
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+        <!--选择父类弹窗-->
+        <el-dialog
+                title="选择父类"
+                :visible.sync="showSelectDialog"
+                width="30%"
+                class="organSelect"
+        >
+            <el-tree
+                    :data="parentTree"
+                    :props="parentProps"
+                    accordion
+                    @node-click="handleSelectNodeClick">
+            </el-tree>
+            <span slot="footer" class="dialog-footer">
+            <el-button @click="parentSelectCancel">取 消</el-button>
+            <el-button type="primary" @click="parentSelectOk">确 定</el-button>
+        </span>
+        </el-dialog>
+    </div>
 </template>
 <script>
 // import _ from '@/gateschema'
@@ -32,6 +48,14 @@ export default {
     data() {
         return {
             showCreateDialog: false,
+            showSelectDialog: false,
+            parentTree: [],
+            parentProps:{
+                chilidren:"children",
+                label:"groupName"
+            },
+            parentGroupName: '',
+            currentSelectDada: '',
             tagGroup: {},
             items: [],
             form: {
@@ -79,12 +103,33 @@ export default {
         },
         getPidList () {
             this.$service.getParentIdList().then((data) => {
-                this.items = data
+                this.parentTree = data
             })
+        },
+        showPidList () {
+            this.showSelectDialog = true
+        },
+        handleSelectNodeClick (node) {
+            this.currentSelectDada = node
+        },
+        parentSelectCancel () {
+            this.showSelectDialog = false
+        },
+        parentSelectOk () {
+            this.form.pid = this.currentSelectDada.groupId
+            this.parentGroupName = this.currentSelectDada.groupName
+            this.showSelectDialog = false
         }
     },
     created() {
         this.getPidList()
+        this.form.pid = null
+        this.form.groupName = null
+        this.parentGroupName = null
     }
 }
 </script>
+<style scoped lang="stylus">
+    .organSelect >>> .is-current
+        color:#3980e2
+</style>
