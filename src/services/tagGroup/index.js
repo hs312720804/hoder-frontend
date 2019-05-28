@@ -59,3 +59,21 @@ export function getParentIdList(params) {
         params
     })
 }
+
+//编辑标签列表分组
+export function editLabelGroup(params) {
+    return this.fetch({
+        method: 'get',
+        url:'api/labelGroup/edit',
+        params
+    })
+}
+
+//通过id查找标签详情
+export function findLabelGroupById(params) {
+    return this.fetch({
+        method: 'get',
+        url:'api/labelGroup/findByGroupId',
+        params
+    })
+}

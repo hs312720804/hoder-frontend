@@ -92,6 +92,7 @@
 </template>
 
 <script>
+import { cloneDeep } from 'lodash'
 import TagCategoryUpsert from '../TagCategory/Upsert.vue'
 export default {
     components: {
@@ -143,8 +144,10 @@ export default {
             this.$refs.tagCategoryUpsert.showCreateDialog = true
         },
         handleEditTagCategory(row) {
-            this.tagCategory = row
-            this.$refs.tagCategoryUpsert.showCreateDialog = true
+            this.tagCategory = cloneDeep(row)
+            this.$nextTick(()=> {
+                this.$refs.tagCategoryUpsert.showCreateDialog = true
+            })
         },
         handleDeleteTagCategory(row) {
             this.$confirm('确认删除？')

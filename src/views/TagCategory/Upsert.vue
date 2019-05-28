@@ -1,10 +1,13 @@
 <template>
     <div>
-        <el-dialog :title="tagCategory.tagId ? '编辑种类' : '新建种类'" :visible.sync="showCreateDialog">
+        <el-dialog
+                :title="tagCategory.tagId ? '编辑种类' : '新建种类'"
+                :visible.sync="showCreateDialog"
+        >
             <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
                 <div key="/groupId">
                     <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
-                    <el-input   size="small" readonly v-model="tagCategory.groupName" placeholder="请选择父类"></el-input>
+                    <el-input   size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
                     <el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>
                 </div>
                 <!--<el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">-->
@@ -54,6 +57,7 @@ import _ from '@/gateschema'
 export default {
    data() {
        return {
+            parentGroupName: '',
             showCreateDialog: false,
             showSelectDialog: false,
             tagCategory: {},
@@ -153,6 +157,14 @@ export default {
                this.parentTree = data.filter(function (item) {
                    return ( item.groupId != 79)
                })
+               const parentId = this.tagCategory.groupId
+               if (parentId) {
+                   this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
+                       this.parentGroupName = detail.groupName
+                       console.log(this.parentGroupName)
+                   })
+
+               }
            })
        },
        handleSelectNodeClick (node) {
@@ -163,14 +175,12 @@ export default {
        },
        parentSelectOk () {
           this.tagCategory.groupId = this.currentSelectDada.groupId
-          this.tagCategory.groupName = this.currentSelectDada.groupName
+          this.parentGroupName = this.currentSelectDada.groupName
           this.showSelectDialog = false
        }
    },
    created() {
        this.tagCategory = this.currentTagCategory || {}
-       // console.log(this.tagCategory)
-       // const parentId = this.tagCategory.groupId
        this.getParentInfo()
    }
 }
