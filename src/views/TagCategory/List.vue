@@ -48,7 +48,6 @@
                             查看
                         </el-button>
                         <el-button
-                            v-if="scope.row.dataSource !== 2"
                             size="small"
                             type="primary"
                             v-permission="'hoder:label:modify'"
@@ -57,7 +56,6 @@
                             编辑
                         </el-button>
                         <el-button
-                            v-if="scope.row.dataSource !== 2"
                             size="small"
                             type="info"
                              v-permission="'hoder:label:del'"

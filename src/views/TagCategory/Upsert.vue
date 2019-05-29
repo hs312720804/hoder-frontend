@@ -20,7 +20,12 @@
                     <!--&gt;-->
                     <!--</el-option>-->
                 <!--</el-select>-->
-                <el-select key="/tagType" :value="tagCategory.tagType" @input="handleInput('/tagType', $event)" placeholder="请选择">
+                <el-select
+                        key="/tagType"
+                        :value="tagCategory.tagType"
+                        :disabled="tagCategory.dataSource === 2"
+                        @input="handleInput('/tagType', $event)" placeholder="请选择"
+                >
                     <el-option
                         v-for="item in typeList"
                         :key="item.value"
@@ -68,40 +73,7 @@ export default {
             parentProps:{
                chilidren:"children",
                label:"groupName"
-            },
-            schema: _
-            .map({
-                tagName: _.r.string.other('form', {label: '名称'}),
-                tagKey: _.r
-                    .string
-                    .pattern(/^[A-Za-z][0-9a-zA-Z]{0,15}$/)
-                    .$msg('字母开头，16位以内字母数字组合')
-                    .other('form', {
-                        label: '英文名',
-                        placeholder: '字母开头，16位以内字母数字组合'
-                    }),
-                groupId: _.r.number.other('form', {label: '所属分组'}),
-                tagType: _.r.string.other('form', {label: '类型'}),
-                tagUnit: _.
-                    switch('/tagType', [
-                        {
-                            case: _.value('number'),
-                            schema: _.r
-                        },
-                        {
-                            case: _.any,
-                            schema: _.o.other('form', {hidden: true})
-                        }
-                    ])
-                    .string.other('form', {label: '单位'}),
-                remark: _.o.string.other('form', {label: '备注', type: 'textarea'})
-            })
-            .other('form', {
-                footer: {
-                    showSubmit: true,
-                    submitText: '提交'
-                }
-            })
+            }
        }
    },
    props: ['typeEnum', 'currentTagCategory'],
@@ -114,6 +86,41 @@ export default {
                     value: key
                 }
             })
+       },
+       schema() {
+           const isDisabled = this.tagCategory.dataSource === 2 ? true : false
+           return  _.map({
+                   tagName: _.r.string.other('form', {label: '名称',disabled:isDisabled}),
+                   tagKey: _.r
+                       .string
+                       .pattern(/^[A-Za-z][0-9a-zA-Z]{0,15}$/)
+                       .$msg('字母开头，16位以内字母数字组合')
+                       .other('form', {
+                           label: '英文名',
+                           placeholder: '字母开头，16位以内字母数字组合',
+                           disabled:isDisabled
+                       }),
+                   groupId: _.r.number.other('form', {label: '所属分组'}),
+                   tagType: _.r.string.other('form', {label: '类型'}),
+                   tagUnit: _.
+                   switch('/tagType', [
+                       {
+                           case: _.value('number')
+                       },
+                       {
+                           case: _.any,
+                           schema: _.o.other('form', {hidden: true})
+                       }
+                   ])
+                       .string.other('form', {label: '单位',disabled:isDisabled}),
+                   remark: _.o.string.other('form', {label: '备注', type: 'textarea'})
+               })
+               .other('form', {
+                   footer: {
+                       showSubmit: true,
+                       submitText: '提交'
+                   }
+               })
        }
    },
    watch: {
