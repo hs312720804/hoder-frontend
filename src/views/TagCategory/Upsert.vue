@@ -105,14 +105,15 @@ export default {
                    tagUnit: _.
                    switch('/tagType', [
                        {
-                           case: _.value('number')
+                           case: _.value('number'),
+                           schema:_.optional.string.pattern(/^[A-Za-z][0-9a-zA-Z]{0,15}$/)
                        },
                        {
                            case: _.any,
                            schema: _.o.other('form', {hidden: true})
                        }
                    ])
-                       .string.other('form', {label: '单位',disabled:isDisabled}),
+                       .other('form', {label: '单位',disabled:isDisabled}),
                    remark: _.o.string.other('form', {label: '备注', type: 'textarea'})
                })
                .other('form', {
@@ -161,9 +162,15 @@ export default {
        },
        getParentInfo() {
            this.$service.getParentIdList().then((data) => {
-               this.parentTree = data.filter(function (item) {
-                   return ( item.groupId != 79)
-               })
+               const id = this.tagCategory.tagId
+               const source = this.tagCategory.dataSource
+               if (id && source === 2) {
+                   this.parentTree = data
+               }else {
+                   this.parentTree = data.filter(function (item) {
+                       return (item.groupId != 79)
+                   })
+               }
                const parentId = this.tagCategory.groupId
                if (parentId) {
                    this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
