@@ -18,7 +18,86 @@ import personManage from '@/views/setting/personManage'
 import roleManage from '@/views/setting/roleManage'
 import dataMange from '@/views/DataManage/peoplePositionIndex'
 import tagDictDatabase from '@/views/Tag/tagDictDatabase'
+import statisticsHomePage from '@/views/DeliveryStatistics/StatisticsHomePage'
+import OverallDeliveryStatistics from '@/views/HomePage/OverallDeliveryStatistics'
+import CurrentPopulationClassification from '@/views/HomePage/CurrentPopulationClassification'
+import OTTBigscreenIndex from '@/views/HomePage/OTTBigscreenIndex'
+import tabStructure from '@/views/HomePage/tabStructure'
+import indexBI from '@/views/HomePage/indexBI'
+import crowdPortrayal from '@/views/HomePage/crowdPortrayal'
+import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
 const children = [
+    {
+        name: 'homePage',
+        path: 'homePage',
+        component: Wrapper,
+        meta: {
+            title: '首页',
+            icon: 'el-icon-cc-home'
+        },
+        children: [
+            {
+                name: 'OverallDeliveryStatistics',
+                path: 'OverallDeliveryStatistics',
+                component: OverallDeliveryStatistics,
+                meta: {
+                    tagId: 'OverallDeliveryStatistics',
+                    title: '整体指标统计',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'indexBI',
+                path: 'indexBI',
+                component: indexBI,
+                meta: {
+                    tagId: 'indexBI',
+                    title: '已有的BI指数',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'CurrentPopulationClassification',
+                path: 'CurrentPopulationClassification',
+                component: CurrentPopulationClassification,
+                meta: {
+                    tagId: 'CurrentPopulationClassification',
+                    title: '现有人群分类',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'OTTBigscreenIndex',
+                path: 'OTTBigscreenIndex',
+                component: OTTBigscreenIndex,
+                meta: {
+                    tagId: 'OTTBigscreenIndex',
+                    title: 'OTT大屏指数',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'tabStructure',
+                path: 'tabStructure',
+                component: tabStructure,
+                meta: {
+                    tagId: 'tabStructure',
+                    title: '标签结构',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'crowdPortrayal',
+                path: 'crowdPortrayal',
+                component: crowdPortrayal,
+                meta: {
+                    tagId: 'crowdPortrayal',
+                    title: '投前人群画像',
+                    icon: 'el-icon-cc-home'
+                }
+            }
+        ]
+    },
     {
         name: 'dashboard',
         path: '/',
@@ -143,11 +222,11 @@ const children = [
         ],
     },
     {
-        name: 'strategy',
-        path: 'strategy',
+        name: 'launchHelper',
+        path: 'launchHelper',
         component: Wrapper,
         meta: {
-            title: '工具助手',
+            title: '投放助手',
             icon: 'el-icon-cc-home'
         },
         children:[
@@ -159,6 +238,17 @@ const children = [
                     title: '投放验证',
                     tagId:"validate",
                     //  hideInMenu: true,
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'statisticsHomePage',
+                path: 'statisticsHomePage',
+                component: statisticsHomePage,
+                meta: {
+                    title: '投放统计',
+                    tagId:"statisticsHomePage",
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
@@ -181,6 +271,38 @@ const children = [
                 meta: {
                     tagId:"dataManage",
                     title: '人群位置信息管理',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+        ]
+    },
+    {
+        name: 'thirdParty',
+        path: 'thirdParty',
+        component: Wrapper,
+        meta: {
+            title: '第三方管理',
+            icon: 'el-icon-cc-home'
+        },
+        children:[
+            {
+                name: 'thirdPartyDMP',
+                path: 'thirdPartyDMP',
+                component: thirdPartyDMP,
+                meta: {
+                    tagId:"thirdPartyDMP",
+                    title: '第三方DMP',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+            ,
+            {
+                name: 'operateLog',
+                path: 'operateLog',
+                component: operateLog,
+                meta: {
+                    tagId:"operateLog",
+                    title: '操作日志',
                     icon: 'el-icon-cc-file'
                 }
             }

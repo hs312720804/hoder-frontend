@@ -107,6 +107,15 @@ export default {
           "/manage/operateLog/index": "operateLog",
           "/crowdDataPos/index": "dataManage",
           "/tagDict/index": "tagDictDatabase",
+          "/total/index": "statisticsHomePage",
+          "/indexTotal/index": "OverallDeliveryStatistics",
+          "/crowdTotal/index": "OverallDeliveryStatistics",
+          "/tagStructure/index": "tabStructure",
+          "/crowdCategory/index": "CurrentPopulationClassification",
+          "/crowdPortrayal/index": "crowdPortrayal",
+          "/biIndex/index": "indexBI",
+          "/ottIndex/index": "OTTBigscreenIndex",
+          "/thirdDMP/index": "thirdPartyDMP"
       }
     };
   },
