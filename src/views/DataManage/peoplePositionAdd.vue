@@ -162,7 +162,8 @@
                                 protocol: this.form.protocol,
                                 url: this.form.url,
                                 param: this.form.param,
-                                remark: this.form.remark
+                                remark: this.form.remark,
+                                saveAddr: this.form.saveAddr
                             }
                             this.$service.peoplePositonEdit(submitData, '修改成功').then( () => {
                                 this.$emit('open-list-page')
