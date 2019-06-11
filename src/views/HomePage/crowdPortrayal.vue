@@ -1,8 +1,7 @@
 <template>
     <!-- 投前人群画像-->
     <div class="ifame-outer">
-        <div>页面为给出</div>
-        <iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>
+        <a href="http://192.168.2.226/#/explore" target="_blank">点击跳转到投前人群画像页面</a>
     </div>
 </template>
 
@@ -10,7 +9,6 @@
     export default {
         data () {
             return {
-                pageSrc: 'http://192.168.2.226/#/explore'
             }
         }
     }

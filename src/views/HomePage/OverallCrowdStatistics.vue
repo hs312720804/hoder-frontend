@@ -1,5 +1,5 @@
 <template>
-    <!-- 整体指标统计-->
+    <!-- 整体人群统计-->
     <div class="ifame-outer">
         <iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>
     </div>

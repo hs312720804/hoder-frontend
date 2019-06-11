@@ -109,7 +109,7 @@ export default {
           "/tagDict/index": "tagDictDatabase",
           "/total/index": "statisticsHomePage",
           "/indexTotal/index": "OverallDeliveryStatistics",
-          "/crowdTotal/index": "OverallDeliveryStatistics",
+          "/crowTotal/index": "OverallCrowdStatistics",
           "/tagStructure/index": "tabStructure",
           "/crowdCategory/index": "CurrentPopulationClassification",
           "/crowdPortrayal/index": "crowdPortrayal",

@@ -1,7 +1,8 @@
 <template>
     <!-- 第三方DMP-->
     <div class="ifame-outer">
-        <iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>
+        <a href="https://www.getui.com/cn/" target="_blank">点击跳转到第三方页面</a>
+        <!--<iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>-->
     </div>
 </template>
 
@@ -9,7 +10,7 @@
     export default {
         data () {
             return {
-                pageSrc: 'https://www.getui.com/cn/'
+                // pageSrc: 'https://www.getui.com/cn/'
             }
         }
     }

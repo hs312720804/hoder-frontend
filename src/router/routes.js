@@ -26,6 +26,7 @@ import tabStructure from '@/views/HomePage/tabStructure'
 import indexBI from '@/views/HomePage/indexBI'
 import crowdPortrayal from '@/views/HomePage/crowdPortrayal'
 import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
+import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
 const children = [
     {
         name: 'homePage',
@@ -43,6 +44,16 @@ const children = [
                 meta: {
                     tagId: 'OverallDeliveryStatistics',
                     title: '整体指标统计',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'OverallCrowdStatistics',
+                path: 'OverallCrowdStatistics',
+                component: OverallCrowdStatistics,
+                meta: {
+                    tagId: 'OverallCrowdStatistics',
+                    title: '整体人群统计',
                     icon: 'el-icon-cc-home'
                 }
             },

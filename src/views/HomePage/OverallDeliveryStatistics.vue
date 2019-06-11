@@ -1,7 +1,8 @@
 <template>
     <!-- 整体指标统计-->
     <div class="ifame-outer">
-        <iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>
+        <a href="http://bi.skysrt.com" target="_blank">点击跳转到整体指标统计页面</a>
+        <!--<iframe :src="pageSrc" referrerpolicy="no-referrer" class="iframe" ></iframe>-->
     </div>
 </template>
 
@@ -9,7 +10,7 @@
     export default {
         data () {
             return {
-                pageSrc: 'http://bi.skysrt.com'
+                // pageSrc: 'http://bi.skysrt.com'
             }
         }
     }
