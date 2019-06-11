@@ -19,6 +19,9 @@ import roleManage from '@/views/setting/roleManage'
 import dataMange from '@/views/DataManage/peoplePositionIndex'
 import tagDictDatabase from '@/views/Tag/tagDictDatabase'
 import statisticsHomePage from '@/views/DeliveryStatistics/StatisticsHomePage'
+import DeliveryDataAnalyse from '@/views/DeliveryStatistics/DeliveryDataAnalyse'
+import DeliveryMonitor from '@/views/DeliveryStatistics/DeliveryMonitor'
+import DeliveryAfterPeopleDraw from '@/views/DeliveryStatistics/DeliveryAfterPeopleDraw'
 import OverallDeliveryStatistics from '@/views/HomePage/OverallDeliveryStatistics'
 import CurrentPopulationClassification from '@/views/HomePage/CurrentPopulationClassification'
 import OTTBigscreenIndex from '@/views/HomePage/OTTBigscreenIndex'
@@ -263,6 +266,17 @@ const children = [
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
+            },
+            {
+                name: 'DeliveryMonitor',
+                path: 'DeliveryMonitor',
+                component: DeliveryMonitor,
+                meta: {
+                    title: '投放中的投放监控',
+                    tagId:"DeliveryMonitor",
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
             }
         ]
     },
@@ -282,6 +296,37 @@ const children = [
                 meta: {
                     tagId:"dataManage",
                     title: '人群位置信息管理',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+        ]
+    },
+    {
+        name: 'analyse',
+        path: 'analyse',
+        component: Wrapper,
+        meta: {
+            title: '洞察分析',
+            icon: 'el-icon-cc-institute'
+        },
+        children:[
+            {
+                name: 'DeliveryAfterPeopleDraw',
+                path: 'DeliveryAfterPeopleDraw',
+                component: DeliveryAfterPeopleDraw,
+                meta: {
+                    tagId:"DeliveryAfterPeopleDraw",
+                    title: '投后人群画像',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'DeliveryDataAnalyse',
+                path: 'DeliveryDataAnalyse',
+                component: DeliveryDataAnalyse,
+                meta: {
+                    tagId:"DeliveryDataAnalyse",
+                    title: '数据分析报告',
                     icon: 'el-icon-cc-file'
                 }
             }

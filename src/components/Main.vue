@@ -115,7 +115,10 @@ export default {
           "/crowdPortrayal/index": "crowdPortrayal",
           "/biIndex/index": "indexBI",
           "/ottIndex/index": "OTTBigscreenIndex",
-          "/thirdDMP/index": "thirdPartyDMP"
+          "/thirdDMP/index": "thirdPartyDMP",
+          "/monitor/index": "DeliveryMonitor",
+          "/portrayal/index": "DeliveryAfterPeopleDraw",
+          "/dataAnalyze/index": "DeliveryDataAnalyse"
       }
     };
   },
