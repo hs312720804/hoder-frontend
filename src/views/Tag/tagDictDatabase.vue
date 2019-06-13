@@ -103,7 +103,10 @@
             exportData () {
                 this.$message('此功能待开发')
             },
-            handleFilterChange (type) {
+            handleFilterChange (type, filter) {
+                if (filter) {
+                    this.filter = filter
+                }
                 if (type === 'query') {
                     if(this.pagination) {
                         this.pagination.currentPage = 1

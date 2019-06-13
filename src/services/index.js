@@ -17,6 +17,7 @@ import * as tagGroup from "./tagGroup"
 import * as tagCategory from "./tagCategory.js"
 import * as tag from "./tag.js"
 import * as dataManage from "./dataManage/peoplePosition"
+import * as thirdInterface from "./dataManage/thirdInterface"
 import * as statisticCrowd from "./statisticCrowd/crowdPolicy"
 const service = {
     state: {},
@@ -38,6 +39,7 @@ const service = {
     ...tagCategory,
     ...tag,
     ...dataManage,
-    ...statisticCrowd
+    ...statisticCrowd,
+    ...thirdInterface
 }
 Vue.prototype.$service = utils.wrapService(service)

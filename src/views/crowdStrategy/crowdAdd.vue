@@ -120,7 +120,7 @@
                         v-for="tagItem in tags"
                         :key="tagItem.tagItem"
                         @click.native="handleAddChildRule(item, tagItem)"
-                        :type= "tagItem.dataSource === 2 ? 'danger' : 'success'"
+                        :type= "tagItem.dataSource === 2 ? 'danger' : (tagItem.dataSource === 1 ? 'success' : '')"
                       >{{ tagItem.tagName }}</el-tag>
                     </div>
                   </div>
@@ -142,7 +142,7 @@
                     v-for="(item) in tags"
                     :key="item.tagName"
                     @click.native="handleAddRule(item)"
-                    :type= "item.dataSource === 2 ? 'danger' : 'success'"
+                    :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
                   >{{ item.tagName }}</el-tag>
                 </div>
               </div>
@@ -226,6 +226,8 @@ export default {
             categoryCode: tag.tagKey,
             dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
             isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+            thirdPartyCode: tag.thirdPartyCode,
+            thirdPartyField: tag.thirdPartyField
           }
         ]
       });
@@ -247,6 +249,8 @@ export default {
         categoryCode: tag.tagKey,
         dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
         isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+        thirdPartyCode: tag.thirdPartyCode,
+        thirdPartyField: tag.thirdPartyField
       });
     },
     fetchTagSuggestions(tag) {

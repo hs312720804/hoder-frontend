@@ -118,7 +118,8 @@ export default {
           "/thirdDMP/index": "thirdPartyDMP",
           "/monitor/index": "DeliveryMonitor",
           "/portrayal/index": "DeliveryAfterPeopleDraw",
-          "/dataAnalyze/index": "DeliveryDataAnalyse"
+          "/dataAnalyze/index": "DeliveryDataAnalyse",
+          "/thirdInterfaceConf/index": "thirdInterface"
       }
     };
   },

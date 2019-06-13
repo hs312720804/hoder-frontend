@@ -11,7 +11,7 @@
             size="mini"
             v-for="item in selectRow.tagsList"
             :key="item.tagId"
-            :type= "item.dataSource === 2 ? 'danger' : 'success'"
+            :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
           >{{item.tagName}}</el-tag>
         </div>
         <div class="right">

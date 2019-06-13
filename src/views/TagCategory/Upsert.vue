@@ -21,6 +21,33 @@
                     <!--</el-option>-->
                 <!--</el-select>-->
                 <el-select
+                        key="/dataSource"
+                        :value="tagCategory.dataSource"
+                        @input="handleInput('/dataSource', $event)" placeholder="请选择"
+                >
+                    <el-option
+                            v-for="item in dataSourceList"
+                            :key="item.value"
+                            :label="item.label"
+                            :value="item.value"
+                            :disabled="item.value == 2"
+                    >
+                    </el-option>
+                </el-select>
+                <el-select
+                        key="/mapThirdPartyApiField"
+                        :value="tagCategory.mapThirdPartyApiField"
+                        @input="handleInput('/mapThirdPartyApiField', $event)" placeholder="请选择"
+                >
+                    <el-option
+                            v-for="item in thirdInterfaces"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id"
+                    >
+                    </el-option>
+                </el-select>
+                <el-select
                         key="/tagType"
                         :value="tagCategory.tagType"
                         :disabled="tagCategory.dataSource === 2"
@@ -67,13 +94,16 @@ export default {
             showSelectDialog: false,
             tagCategory: {},
             // tagGroupList: [],
+            dataSourceList: [],
             tagTypeList: [],
             parentTree: [],
             currentSelectDada: '',
             parentProps:{
                chilidren:"children",
                label:"groupName"
-            }
+            },
+            hideThirdparam: true,
+            thirdInterfaces: []
        }
    },
    props: ['typeEnum', 'currentTagCategory'],
@@ -89,12 +119,13 @@ export default {
        },
        schema() {
            const isDisabled = this.tagCategory.dataSource === 2 ? true : false
+           // const hideThirdparam = this.tagCategory.dataSource === 3 ? false : true
            return  _.map({
                    tagName: _.r.string.other('form', {label: '名称',disabled:isDisabled}),
                    tagKey: _.r
                        .string
-                       .pattern(/^[A-Za-z][0-9a-zA-Z]{0,15}$/)
-                       .$msg('字母开头，16位以内字母数字组合')
+                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,15}$/)
+                       .$msg('字母开头，16位以内字母数字下划线组合')
                        .other('form', {
                            label: '英文名',
                            placeholder: '字母开头，16位以内字母数字组合',
@@ -114,7 +145,13 @@ export default {
                        }
                    ])
                        .other('form', {label: '单位',disabled:isDisabled}),
-                   remark: _.o.string.other('form', {label: '备注', type: 'textarea'})
+                   remark: _.o.string.other('form', {label: '备注', type: 'textarea'}),
+                   dataSource: _.r.number.other('form', {label: '数据来源'}),
+                   mapThirdPartyApiField: _.r.number.other('form', {label: '第三方接口',hidden:this.hideThirdparam}),
+                   thirdPartyApiId: _.r.string
+                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,15}$/)
+                       .$msg('字母开头，16位以内字母数字下划线组合')
+                       .other('form', {label: '映射字段',hidden:this.hideThirdparam}),
                })
                .other('form', {
                    footer: {
@@ -125,6 +162,11 @@ export default {
        }
    },
    watch: {
+       'tagCategory.dataSource':
+           function (newVal, oldVal) {
+               if(newVal === 3) {this.hideThirdparam = false}
+               else {this.hideThirdparam = true}
+           },
        currentTagCategory(val) {
             const form = this.$refs.gForm
             if (form) {
@@ -151,6 +193,20 @@ export default {
            delete data.createTime
            delete data.updateTime
            return data
+       },
+       getDataSourceList () {
+           this.$service.getDatasource().then((data) => {
+               let arr = Object.keys(data).map(value => ({value: parseInt(value), label:data[value]}))
+               this.dataSourceList = arr
+           })
+       },
+       getThirdInterfaces () {
+           this.$service.getthirdInterfaceSelectList().then((data) => {
+               console.log(data)
+               this.thirdInterfaces = data
+               // let arr = Object.keys(data).map(value => ({value: parseInt(value), label:data[value]}))
+               // this.thirdInterfaces = arr
+           })
        },
        // fetchTagCategoryList() {
        //     this.$service.getParentIdList().then((data) => {
@@ -193,6 +249,8 @@ export default {
        }
    },
    created() {
+       this.getDataSourceList()
+       this.getThirdInterfaces()
        this.tagCategory = this.currentTagCategory || {}
        this.getParentInfo()
    }

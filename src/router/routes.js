@@ -30,6 +30,7 @@ import indexBI from '@/views/HomePage/indexBI'
 import crowdPortrayal from '@/views/HomePage/crowdPortrayal'
 import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
 import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
+import thirdInterface from '@/views/thirdInterface/index'
 const children = [
     {
         name: 'homePage',
@@ -285,7 +286,7 @@ const children = [
         path: 'dataManage',
         component: Wrapper,
         meta: {
-            title: '数据管理',
+            title: '开发工具',
             icon: 'el-icon-cc-institute'
         },
         children:[
@@ -296,6 +297,16 @@ const children = [
                 meta: {
                     tagId:"dataManage",
                     title: '人群位置信息管理',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'thirdInterface',
+                path: 'thirdInterface',
+                component: thirdInterface,
+                meta: {
+                    tagId:"thirdInterface",
+                    title: '第三方接口',
                     icon: 'el-icon-cc-file'
                 }
             }

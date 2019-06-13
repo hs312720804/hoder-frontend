@@ -1,5 +1,5 @@
 <template>
-    <div class="people-position-list">
+    <div class="third-interface-list">
         <ContentWrapper
                 :filter="filter"
                 :filterSchema="filterSchema"
@@ -7,7 +7,9 @@
                 @filter-change="handleFilterChange"
                 @filter-reset="handleFilterReset"
         >
-            <div><el-button @click="handleAdd" type="primary">新增</el-button></div>
+            <div class="add-button">
+                <el-button @click="handleAdd" type="primary">新增</el-button>
+            </div>
             <Table
                     :props="table.props"
                     :header="table.header"
@@ -24,10 +26,10 @@
 </template>
 
 <script>
-    import _ from 'gateschema'
+    // import _ from 'gateschema'
     import { ContentWrapper, Table, utils} from 'admin-toolkit'
     export default {
-        name: "peoplePositionList",
+        name: "thirdInterfaceList",
         components: {
             ContentWrapper,
             Table
@@ -35,30 +37,31 @@
         data () {
             return {
                 filter: {},
-                filterSchema: _.map({
-                    id: _.o
-                        .number.other('form', {
-                            label: ' ',
-                            placeholder: '请输入ID',
-                            cols: {
-                                item: 14,
-                                // label: 0,
-                                wrapper: 18
-                            }
-                        })
-                }).other('form', {
-                    layout: 'inline',
-                    footer: {
-                        cols: {
-                            label: 0,
-                            wrapper: 24
-                        },
-                        showSubmit: true,
-                        submitText: '查询',
-                        showReset: true,
-                        resetText: '重置'
-                    }
-                }),
+                filterSchema: {},
+                // filterSchema: _.map({
+                //     id: _.o
+                //         .number.other('form', {
+                //             label: ' ',
+                //             placeholder: '请输入ID',
+                //             cols: {
+                //                 item: 14,
+                //                 // label: 0,
+                //                 wrapper: 18
+                //             }
+                //         })
+                // }).other('form', {
+                //     layout: 'inline',
+                //     footer: {
+                //         cols: {
+                //             label: 0,
+                //             wrapper: 24
+                //         },
+                //         showSubmit: true,
+                //         submitText: '查询',
+                //         showReset: true,
+                //         resetText: '重置'
+                //     }
+                // }),
                 pagination: {},
                 selected: [],
                 table: {
@@ -70,70 +73,89 @@
                             width: '50'
                         },
                         {
-                            label: '投放id',
-                            prop: 'launchCrowdId',
-                            width: '70'
-                        },
-                        {
-                            label: '名称',
-                            prop: 'name',
-                            render: (h, params) => {
-                                return h('el-button', {
-                                    props: {
-                                        type: 'text'
-                                    },
-                                    on: {
-                                        click: () => {
-                                            this.handleRead(params)
-                                        }
-                                    }
-                                }, params.row.name)
-                            }
-                        },
-                        {
-                            label: '协议',
-                            prop: 'protocol'
-                        },
-                        {
-                            label: '访问地址',
-                            prop: 'url'
-                        },
-                        {
-                            label: '存放地址',
-                            prop: 'saveAddr'
-                        },
-                        {
-                            label: '参数',
-                            prop: 'param'
-                        },
-                        {
-                            label: '备注',
-                            prop: 'remark'
-                        },
-                        {
-                            label: '状态',
-                            prop: 'status',
-                            width: '60',
-                            render:(h, {row}) => {
-                                if(row.status === 1) {return '可用'}
-                                else {return '不可用'}
-                            }
+                            label: '接口名称',
+                            prop: 'name'
                         },
                         // {
-                        //     label: '创建者',
-                        //     prop: 'creator'
+                        //     label: '名称',
+                        //     prop: 'name',
+                        //     render: (h, params) => {
+                        //         return h('el-button', {
+                        //             props: {
+                        //                 type: 'text'
+                        //             },
+                        //             on: {
+                        //                 click: () => {
+                        //                     this.handleRead(params)
+                        //                 }
+                        //             }
+                        //         }, params.row.name)
+                        //     }
                         // },
+                        {
+                            label: '代码',
+                            prop: 'code'
+                        },
+                        {
+                            label: '接口地址',
+                            prop: 'reqUri'
+                        },
+                        {
+                            label: '请求方法',
+                            prop: 'reqMethod'
+                        },
+                        {
+                            label: '接口参数',
+                            prop: 'reqParam'
+                        },
+                        {
+                            label: '接口固定参数',
+                            prop: 'reqDefaultParamValue'
+                        },
+                        {
+                            label: '请求之后处理',
+                            prop: 'resExplain'
+                        },
+                        {
+                            label: '请求之前处理',
+                            prop: 'reqBefore'
+                        },
+                        {
+                            label: '接口固定参数',
+                            prop: 'reqDefaultParamValue'
+                        },
+                        {
+                            label: '请求之后处理',
+                            prop: 'resExplain'
+                        },
+                        {
+                            label: '请求之前处理',
+                            prop: 'reqBefore'
+                        },
+                        {
+                            label: '是否保持长连接',
+                            prop: 'reqKeepalive'
+                        },
+                        {
+                            label: '超时',
+                            prop: 'reqKeepaliveTimeout'
+                        },
+                        {
+                            label: '连接池',
+                            prop: 'reqKeepalivePool'
+                        },
+                        {
+                            label: '请求头',
+                            prop: 'reqHeaders'
+                        },
                         // {
-                        //     label: '更新者',
-                        //     prop: 'updator'
-                        // },
-                        // {
-                        //     label: '创建时间',
-                        //     prop: 'createTime'
-                        // },
-                        // {
-                        //     label: '最后更新时间',
-                        //     prop: 'updateTime'
+                        //     label: '状态',
+                        //     prop: 'status',
+                        //     width: '60',
+                        //     render:(h, {row}) => {
+                        //         if(row.status === 1) {return '可用'}
+                        //         else {return '不可用'}
+                        //     }
                         // },
                         {
                             label: '操作',
@@ -168,7 +190,7 @@
                     cancelButtonText: '取消',
                     type:'warning'
                 }).then( () => {
-                    this.$service.peoplePositonDel({id: row.id}, '删除成功').then(
+                    this.$service.thirdInterfaceDel({id: row.id}, '删除成功').then(
                         (data) => {
                             this.handleAllRowSelectionRemove()
                             this.fetchData()
@@ -235,7 +257,7 @@
             },
             fetchData () {
                 const filter = this.parseFilter()
-                this.$service.peoplePositonList(filter).then((data) => {
+                this.$service.getthirdInterfaceList(filter).then((data) => {
                     this.table.data = data.pageInfo.list
                     this.pagination.total = data.pageInfo.total
                 })
@@ -249,9 +271,9 @@
 </script>
 
 <style lang="stylus" scoped>
-.add-button
-    margin 10px 0
-.people-position-list >>> .filter-form
-    float right
-    margin-bottom 20px
+    .add-button
+        margin 10px 0
+    .third-interface-list >>> .filter-form
+        float right
+        margin-bottom 20px
 </style>

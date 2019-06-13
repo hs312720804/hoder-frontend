@@ -58,13 +58,13 @@
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签）">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）">
         <template scope="scope">
           <el-tag
             size="mini"
             v-for="item in scope.row.tagsList"
             :key="item.tagId"
-            :type= "item.dataSource === 2 ? 'danger' : 'success'"
+            :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
@@ -140,7 +140,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签</div>
+        <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签,蓝色为账号标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -155,7 +155,7 @@
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
                 <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="item.tDataSource === 2 ? 'checkbox--red' : 'checkbox--green'"
+                             :class="item.tDataSource === 2 ? 'checkbox--red' : (item.tDataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
                              :label="item.tagId"
                              :key="item.tagId"
                 >
@@ -171,7 +171,7 @@
             <el-tag v-for="item in conditionTagIdsData"
                     v-if="item.tagId === tag"
                     :key="item.tagId"
-                    :type= "item.tDataSource === 1 ? 'success' : 'danger'"
+                    :type= "item.tDataSource === 1 ? 'success' : (item.tDataSource === 2 ? 'danger' : '')"
                     closable
                     @close="removeTag(item.tagId)"
             >
@@ -441,6 +441,8 @@ export default {
   color red
 .checkbox--green
   color green
+.checkbox--blue
+  color blue
 .strategy-search
   display flex
   margin-bottom 10px

@@ -11,7 +11,10 @@
         </div>
         <div>
             <div class="title">人群数据统计</div>
-            <div class="main" ref="peopleStatistic"></div>
+            <div class="echarts-container">
+                <div class="time-select">时间选择器</div>
+                <div class="main" ref="peopleStatistic"></div>
+            </div>
             <div class="main" ref="peopleStatisticLine"></div>
         </div>
         <div>
@@ -43,6 +46,9 @@
 
                 // 单折线图
                 myChart4.setOption({
+                    title: {
+                                text: '该时间段累计人数数据总量'
+                            },
                     xAxis: {
                         type: 'category',
                         data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
@@ -75,6 +81,9 @@
 
                 // 圆饼图
                 myChart2.setOption({
+                    title: {
+                        text: '该时间段累计人数数据总量'
+                    },
                     tooltip: {
                         trigger: 'item',
                         formatter: "{a} <br/>{b}: {c} ({d}%)"
@@ -294,6 +303,13 @@
             text-align center
             .crowd-statistic-item--number
                 color red
+    .echarts-container
+        position relative
+        width 50%
+        /*height auto*/
+    .time-select
+        position absolute
+        right 0
     .main
         width 50%
         height 300px
