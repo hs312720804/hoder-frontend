@@ -35,9 +35,9 @@
                     </el-option>
                 </el-select>
                 <el-select
-                        key="/mapThirdPartyApiField"
-                        :value="tagCategory.mapThirdPartyApiField"
-                        @input="handleInput('/mapThirdPartyApiField', $event)" placeholder="请选择"
+                        key="/thirdPartyApiId"
+                        :value="tagCategory.thirdPartyApiId"
+                        @input="handleInput('/thirdPartyApiId', $event)" placeholder="请选择"
                 >
                     <el-option
                             v-for="item in thirdInterfaces"
@@ -147,8 +147,8 @@ export default {
                        .other('form', {label: '单位',disabled:isDisabled}),
                    remark: _.o.string.other('form', {label: '备注', type: 'textarea'}),
                    dataSource: _.r.number.other('form', {label: '数据来源'}),
-                   mapThirdPartyApiField: _.r.number.other('form', {label: '第三方接口',hidden:this.hideThirdparam}),
-                   thirdPartyApiId: _.r.string
+                    thirdPartyApiId: _.r.number.other('form', {label: '第三方接口',hidden:this.hideThirdparam}),
+                    mapThirdPartyApiField: _.r.string
                        .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,15}$/)
                        .$msg('字母开头，16位以内字母数字下划线组合')
                        .other('form', {label: '映射字段',hidden:this.hideThirdparam}),
