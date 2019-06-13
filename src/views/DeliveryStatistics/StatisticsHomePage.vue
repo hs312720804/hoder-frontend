@@ -12,7 +12,17 @@
         <div>
             <div class="title">人群数据统计</div>
             <div class="echarts-container">
-                <div class="time-select">时间选择器</div>
+                <div class="date-picker">
+                    <el-date-picker
+                            v-model="time1"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
                 <div class="main" ref="peopleStatistic"></div>
             </div>
             <div class="main" ref="peopleStatisticLine"></div>
@@ -29,7 +39,20 @@
         name: "StatisticsHomePage",
         data () {
             return {
-                crowdData: []
+                crowdData: [],
+                // 默认时间
+                startDate: '2019-06-01',
+                endDate: '2019-06-11',
+                time1: ['2019-06-01', '2019-06-11'],
+            }
+        },
+        watch: {
+            time1(val) {
+                // debugger
+                // console.log(val)
+                // this.startDate = val[0]
+                // this.endDate = val[1]
+                this.getCrowdtotal(val[0],val[1])
             }
         },
         methods: {
@@ -38,10 +61,38 @@
                     this.crowdData = data
                 })
             },
+            getCrowdtotal (startTime, endTime) {
+                this.$service.get_crowd_pv_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    console.log(data)
+                    let echarts = require('echarts')
+                    let myChart = echarts.init(this.$refs.peopleStatistic)
+                    myChart.setOption({
+                        title: {
+                            text: data.series[0].name
+                        },
+                        xAxis: {
+                            type: 'category',
+                            data: data.date,
+                            axisLabel: {
+                                interval: 0,
+                                rotate: -45
+                            }
+                        },
+                        yAxis: {
+                            type: 'category',
+                            // inverse: true
+                        },
+                        series: [{
+                            data: data.series[0].data,
+                            type: 'line'
+                        }]
+                    })
+                })
+            },
             getData () {
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs.main)
-                let myChart2 = echarts.init(this.$refs.peopleStatistic)
+                // let myChart2 = echarts.init(this.$refs.peopleStatistic)
                 let myChart4 = echarts.init(this.$refs.peopleStatisticLine)
 
                 // 单折线图
@@ -80,53 +131,53 @@
                 // });
 
                 // 圆饼图
-                myChart2.setOption({
-                    title: {
-                        text: '该时间段累计人数数据总量'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)"
-                    },
-                    legend: {
-                        orient: 'vertical',
-                        x: 'left',
-                        data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
-                    },
-                    series: [
-                        {
-                            name:'访问来源',
-                            type:'pie',
-                            radius: ['50%', '70%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: false,
-                                    position: 'center'
-                                },
-                                emphasis: {
-                                    show: true,
-                                    textStyle: {
-                                        fontSize: '30',
-                                        fontWeight: 'bold'
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data:[
-                                {value:335, name:'直接访问'},
-                                {value:310, name:'邮件营销'},
-                                {value:234, name:'联盟广告'},
-                                {value:135, name:'视频广告'},
-                                {value:1548, name:'搜索引擎'}
-                            ]
-                        }
-                    ]
-                });
+                // myChart2.setOption({
+                //     title: {
+                //         text: '该时间段累计人数数据总量'
+                //     },
+                //     tooltip: {
+                //         trigger: 'item',
+                //         formatter: "{a} <br/>{b}: {c} ({d}%)"
+                //     },
+                //     legend: {
+                //         orient: 'vertical',
+                //         x: 'left',
+                //         data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
+                //     },
+                //     series: [
+                //         {
+                //             name:'访问来源',
+                //             type:'pie',
+                //             radius: ['50%', '70%'],
+                //             avoidLabelOverlap: false,
+                //             label: {
+                //                 normal: {
+                //                     show: false,
+                //                     position: 'center'
+                //                 },
+                //                 emphasis: {
+                //                     show: true,
+                //                     textStyle: {
+                //                         fontSize: '30',
+                //                         fontWeight: 'bold'
+                //                     }
+                //                 }
+                //             },
+                //             labelLine: {
+                //                 normal: {
+                //                     show: false
+                //                 }
+                //             },
+                //             data:[
+                //                 {value:335, name:'直接访问'},
+                //                 {value:310, name:'邮件营销'},
+                //                 {value:234, name:'联盟广告'},
+                //                 {value:135, name:'视频广告'},
+                //                 {value:1548, name:'搜索引擎'}
+                //             ]
+                //         }
+                //     ]
+                // });
 
                 // 中国地图
                 myChart.setOption({
@@ -277,6 +328,7 @@
         mounted () {
             this.getCrowdData()
             this.getData()
+            this.getCrowdtotal(this.startDate,this.endDate)
         }
     }
 </script>
@@ -305,12 +357,17 @@
                 color red
     .echarts-container
         position relative
-        width 50%
-        /*height auto*/
+        display flex
+        height auto
     .time-select
         position absolute
         right 0
     .main
         width 50%
         height 300px
+        padding 30px
+    .date-picker
+        position absolute
+        right 0
+        top 0
 </style>
