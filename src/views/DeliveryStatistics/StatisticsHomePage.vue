@@ -3,7 +3,7 @@
         <div>
             <div class="title">策略数据统计</div>
             <div class="crowd-statistic">
-                <div class="crowd-statistic-item" v-for="item in crowdData">
+                <div class="crowd-statistic-item" v-for="(item,index) in crowdData" :key="index">
                     <div>{{item.name}}</div>
                     <div class="crowd-statistic-item--number">{{item.count}}</div>
                 </div>
@@ -11,6 +11,7 @@
         </div>
         <div>
             <div class="title">人群数据统计</div>
+            <div class="crowd-statistic">
             <div class="echarts-container">
                 <div class="date-picker">
                     <el-date-picker
@@ -25,18 +26,116 @@
                 </div>
                 <div class="main" ref="peopleStatistic"></div>
             </div>
-            <div class="main" ref="peopleStatisticLine"></div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
+                            v-model="time2"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="main" ref="crowdForcas"></div>
+            </div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
+                            v-model="time3"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="main" ref="crowdUv"></div>
+            </div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
+                            v-model="time4"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="main" ref="crowdSend"></div>
+            </div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
+                            v-model="time5"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="main" ref="crowdClick"></div>
+            </div>
+            </div>
         </div>
         <div>
             <div class="title">累计曝光人群画像</div>
-            <div class="main" ref="main"></div>
+            <div class="click-date-picker">
+                <el-date-picker
+                        v-model="time6"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                >
+                </el-date-picker>
+            </div>
+            <div class="crowd-statistic border-bottom">
+                <div ref="circleSex" class="circle-echarts border-right"></div>
+                <div ref="circleAge" class="circle-echarts border-right"></div>
+                <div ref="circleDevice" class="circle-echarts"></div>
+            </div>
+            <div class="crowd-statistic">
+                <div class="left-map-container border-right">
+                    <div class="map-echarts" ref="main"></div>
+                    <div class="user-text">
+                        <div>城市活跃比例</div>
+                        <div>{{cityData}}</div>
+                    </div>
+                </div>
+                <div class="table-over">
+                    <!--<ContentWrapper-->
+                            <!--:filter="filter"-->
+                            <!--:pagination="pagination"-->
+                    <!--&gt;-->
+                        <Table
+                                :props="table.props"
+                                :header="table.header"
+                                :data="table.data"
+                        >
+                        </Table>
+                    <!--</ContentWrapper>-->
+                </div>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
+    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "StatisticsHomePage",
+        components: {
+            ContentWrapper,
+            Table
+        },
         data () {
             return {
                 crowdData: [],
@@ -44,15 +143,60 @@
                 startDate: '2019-06-01',
                 endDate: '2019-06-11',
                 time1: ['2019-06-01', '2019-06-11'],
+                time2: ['2019-06-01', '2019-06-11'],
+                time3: ['2019-06-01', '2019-06-11'],
+                time4: ['2019-06-01', '2019-06-11'],
+                time5: ['2019-06-01', '2019-06-11'],
+                time6: ['2019-06-01', '2019-06-11'],
+                cityData: '',
+                filter: {},
+                pagination: {},
+                table: {
+                    props: {},
+                    header: [
+                        {
+                            label: '排名',
+                            width: '50',
+                            prop: 'seq'
+                        },
+                        {
+                            label: '省份',
+                            prop: 'name'
+                        },
+                        {
+                            label: '活跃数量',
+                            prop: 'value'
+                        },
+                        {
+                            label: '占比',
+                            prop: 'percent'
+                        }
+                    ],
+                    data: []
+                }
             }
         },
         watch: {
             time1(val) {
-                // debugger
-                // console.log(val)
-                // this.startDate = val[0]
-                // this.endDate = val[1]
                 this.getCrowdtotal(val[0],val[1])
+            },
+            time2(val) {
+                this.getForcastotal(val[0],val[1])
+            },
+            time3(val) {
+                this.getCrowdUvtotal(val[0],val[1])
+            },
+            time4(val) {
+                this.getCrowdSendtotal(val[0],val[1])
+            },
+            time5(val) {
+                this.getCrowdClicktotal(val[0],val[1])
+            },
+            time6(val) {
+                this.getCrowdSextotal(val[0],val[1])
+                this.getCrowdAgetotal(val[0],val[1])
+                this.getCrowdDevicetotal(val[0],val[1])
+                this.getCrowdProvincetotal(val[0],val[1])
             }
         },
         methods: {
@@ -61,162 +205,254 @@
                     this.crowdData = data
                 })
             },
-            getCrowdtotal (startTime, endTime) {
-                this.$service.get_crowd_pv_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    console.log(data)
-                    let echarts = require('echarts')
-                    let myChart = echarts.init(this.$refs.peopleStatistic)
-                    myChart.setOption({
-                        title: {
-                            text: data.series[0].name
-                        },
-                        xAxis: {
-                            type: 'category',
-                            data: data.date,
-                            axisLabel: {
-                                interval: 0,
-                                rotate: -45
-                            }
-                        },
-                        yAxis: {
-                            type: 'category',
-                            // inverse: true
-                        },
-                        series: [{
-                            data: data.series[0].data,
-                            type: 'line'
-                        }]
-                    })
-                })
-            },
-            getData () {
+            // 通用单线性参数设置
+            setLineEchart (element,title,xData,yData) {
                 let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs.main)
-                // let myChart2 = echarts.init(this.$refs.peopleStatistic)
-                let myChart4 = echarts.init(this.$refs.peopleStatisticLine)
-
-                // 单折线图
-                myChart4.setOption({
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
                     title: {
-                                text: '该时间段累计人数数据总量'
-                            },
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
                     xAxis: {
                         type: 'category',
-                        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+                        data: xData,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45
+                        }
                     },
                     yAxis: {
-                        type: 'value'
+                        type: 'value',
+                        axisTick: {
+                            inside: true
+                        },
+                        scale: true,
+                        axisLabel: {
+                            margin: 2,
+                            formatter: function (value) {
+                                if (value >= 10000 && value < 10000000) {
+                                value = value / 10000 + "万";
+                                }
+                                else if (value >= 10000000) {
+                                    value = value / 10000000 + "千万";
+                                } return value;
+                            }
+                                },
                     },
                     series: [{
-                        data: [820, 932, 901, 934, 1290, 1330, 1320],
+                        data: yData,
                         type: 'line'
                     }]
                 })
-
-                // 圆柱图
-                // myChart3.setOption({
-                //     title: {
-                //         text: 'ECharts 入门示例'
-                //     },
-                //     tooltip: {},
-                //     xAxis: {
-                //         data: ['衬衫', '羊毛衫', '雪纺衫', '裤子', '高跟鞋', '袜子']
-                //     },
-                //     yAxis: {},
-                //     series: [{
-                //         name: '销量',
-                //         type: 'bar',
-                //         data: [5, 20, 36, 10, 10, 20]
-                //     }]
-                // });
-
-                // 圆饼图
-                // myChart2.setOption({
-                //     title: {
-                //         text: '该时间段累计人数数据总量'
-                //     },
-                //     tooltip: {
-                //         trigger: 'item',
-                //         formatter: "{a} <br/>{b}: {c} ({d}%)"
-                //     },
-                //     legend: {
-                //         orient: 'vertical',
-                //         x: 'left',
-                //         data:['直接访问','邮件营销','联盟广告','视频广告','搜索引擎']
-                //     },
-                //     series: [
-                //         {
-                //             name:'访问来源',
-                //             type:'pie',
-                //             radius: ['50%', '70%'],
-                //             avoidLabelOverlap: false,
-                //             label: {
-                //                 normal: {
-                //                     show: false,
-                //                     position: 'center'
-                //                 },
-                //                 emphasis: {
-                //                     show: true,
-                //                     textStyle: {
-                //                         fontSize: '30',
-                //                         fontWeight: 'bold'
-                //                     }
-                //                 }
-                //             },
-                //             labelLine: {
-                //                 normal: {
-                //                     show: false
-                //                 }
-                //             },
-                //             data:[
-                //                 {value:335, name:'直接访问'},
-                //                 {value:310, name:'邮件营销'},
-                //                 {value:234, name:'联盟广告'},
-                //                 {value:135, name:'视频广告'},
-                //                 {value:1548, name:'搜索引擎'}
-                //             ]
-                //         }
-                //     ]
-                // });
-
+            },
+            // 通用多线性参数设置
+            setLinesEchart (element,title,xData,yData,legend) {
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: legend
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xData,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisTick: {
+                            inside: true
+                        },
+                        scale: true,
+                        axisLabel: {
+                            margin: 2,
+                            formatter: function (value) {
+                                if (value >= 10000 && value < 10000000) {
+                                    value = value / 10000 + "万";
+                                }
+                                else if (value >= 10000000) {
+                                    value = value / 10000000 + "千万";
+                                } return value;
+                            }
+                        },
+                    },
+                    series: yData
+                })
+            },
+            // 通用圆饼图
+            setCircleEcharts(element,title,legend,data){
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'right',
+                        data: legend
+                    },
+                    series: [
+                        {
+                            name:'',
+                            type:'pie',
+                            radius: ['50%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                normal: {
+                                    show: false,
+                                    position: 'center'
+                                },
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    show: false
+                                }
+                            },
+                            data: data
+                        }
+                    ]
+                });
+            },
+            // 人群调用总量PV
+            getCrowdtotal (startTime, endTime) {
+                this.$service.get_crowd_pv_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    this.setLineEchart('peopleStatistic',data.series[0].name,data.date,data.series[0].data)
+                })
+            },
+            // 人群计算总量
+            getForcastotal (startTime, endTime) {
+                this.$service.get_crowd_forcas_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    this.setLineEchart('crowdForcas',data.series[0].name,data.date,data.series[0].data)
+                })
+            },
+            // 人群命中总量
+            getCrowdUvtotal (startTime, endTime) {
+                this.$service.get_crowd_uv_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    this.setLineEchart('crowdUv',data.series[0].name,data.date,data.series[0].data)
+                })
+            },
+            // 人群下发总量
+            getCrowdSendtotal (startTime, endTime) {
+                this.$service.get_crowd_send_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    this.setLineEchart('crowdSend',data.series[0].name,data.date,data.series[0].data)
+                })
+            },
+            // 人群曝光总量
+            getCrowdClicktotal (startTime, endTime) {
+                this.$service.get_crowd_click_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    const legendData = data.series.map((key) => {
+                        return key.name
+                    })
+                    const linesData = data.series.map((key) => {
+                        return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                    })
+                    this.setLinesEchart('crowdClick','曝光量',data.date,linesData,legendData)
+                })
+            },
+            // 人群画像性别
+            getCrowdSextotal (startTime, endTime) {
+                this.$service.get_crowd_sex_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    const dataObject = data.data.map((key,index) => {
+                        return {value: key.count, name: data.names[index]}
+                    })
+                    this.setCircleEcharts('circleSex','性别分析',data.names,dataObject)
+                })
+            },
+            // 人群年龄分布
+            getCrowdAgetotal (startTime, endTime) {
+                this.$service.get_crowd_age_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    const dataObject = data.data.map((key,index) => {
+                        return {value: key.count, name: data.names[index]}
+                    })
+                    this.setCircleEcharts('circleAge','年龄分布',data.names,dataObject)
+                })
+            },
+            // 产品等级分布
+            getCrowdDevicetotal (startTime, endTime) {
+                this.$service.get_device_level_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    const dataObject = data.data.map((key,index) => {
+                        return {value: key.count, name: data.names[index]}
+                    })
+                    this.setCircleEcharts('circleDevice','产品等级分类',data.names,dataObject)
+                })
+            },
+            // 省份分布
+            getCrowdProvincetotal (startTime, endTime) {
+                this.$service.get_crowd_province_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    const newData = data.data.map((key,index) => {
+                        return {value: key.value, name: key.name,seq: index+1,percent:key.percent}
+                    })
+                    this.setMapEcharts('main','省份分布',data.data)
+                    this.cityData = data.cityPercent
+                    this.table.data = newData
+                    this.pagination.total = data.data.length
+                })
+            },
+            setMapEcharts (element,title,data) {
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
                 // 中国地图
                 myChart.setOption({
                     title : {
-                        text: '电视销量',
-                        subtext: '纯属虚构',
+                        text: title,
+                        // subtext: '纯属虚构',
                         left: 'center'
                     },
                     tooltip : {
                         trigger: 'item'
                     },
-                    legend: {
-                        orient: 'vertical',
-                        left: 'left',
-                        data:['创维','酷开']
-                    },
+                    // legend: {
+                    //     orient: 'vertical',
+                    //     left: 'left',
+                    //     data:['创维','酷开']
+                    // },
                     visualMap: {
                         min: 0,
-                        max: 2500,
+                        max: 2000000,
                         left: 'left',
                         top: 'bottom',
                         text:['高','低'],           // 文本，默认为数值文本
                         calculable : true
                     },
-                    toolbox: {
-                        show: true,
-                        orient : 'vertical',
-                        left: 'right',
-                        top: 'center',
-                        feature : {
-                            mark : {show: true},
-                            dataView : {show: true, readOnly: false},
-                            restore : {show: true},
-                            saveAsImage : {show: true}
-                        }
-                    },
+                    // toolbox: {
+                    //     show: true,
+                    //     orient : 'vertical',
+                    //     left: 'right',
+                    //     top: 'center',
+                    //     feature : {
+                    //         mark : {show: true},
+                    //         dataView : {show: true, readOnly: false},
+                    //         restore : {show: true},
+                    //         saveAsImage : {show: true}
+                    //     }
+                    // },
                     series : [
                         {
-                            name: '创维',
+                            name: '省份分布',
                             type: 'map',
                             mapType: 'china',
                             roam: false,
@@ -228,107 +464,23 @@
                                     show: true
                                 }
                             },
-                            data:[
-                                {name: '北京',value: Math.round(Math.random()*1000)},
-                                {name: '天津',value: Math.round(Math.random()*1000)},
-                                {name: '上海',value: Math.round(Math.random()*1000)},
-                                {name: '重庆',value: Math.round(Math.random()*1000)},
-                                {name: '河北',value: Math.round(Math.random()*1000)},
-                                {name: '河南',value: Math.round(Math.random()*1000)},
-                                {name: '云南',value: Math.round(Math.random()*1000)},
-                                {name: '辽宁',value: Math.round(Math.random()*1000)},
-                                {name: '黑龙江',value: Math.round(Math.random()*1000)},
-                                {name: '湖南',value: Math.round(Math.random()*1000)},
-                                {name: '安徽',value: Math.round(Math.random()*1000)},
-                                {name: '山东',value: Math.round(Math.random()*1000)},
-                                {name: '新疆',value: Math.round(Math.random()*1000)},
-                                {name: '江苏',value: Math.round(Math.random()*1000)},
-                                {name: '浙江',value: Math.round(Math.random()*1000)},
-                                {name: '江西',value: Math.round(Math.random()*1000)},
-                                {name: '湖北',value: Math.round(Math.random()*1000)},
-                                {name: '广西',value: Math.round(Math.random()*1000)},
-                                {name: '甘肃',value: Math.round(Math.random()*1000)},
-                                {name: '山西',value: Math.round(Math.random()*1000)},
-                                {name: '内蒙古',value: Math.round(Math.random()*1000)},
-                                {name: '陕西',value: Math.round(Math.random()*1000)},
-                                {name: '吉林',value: Math.round(Math.random()*1000)},
-                                {name: '福建',value: Math.round(Math.random()*1000)},
-                                {name: '贵州',value: Math.round(Math.random()*1000)},
-                                {name: '广东',value: Math.round(Math.random()*1000)},
-                                {name: '青海',value: Math.round(Math.random()*1000)},
-                                {name: '西藏',value: Math.round(Math.random()*1000)},
-                                {name: '四川',value: Math.round(Math.random()*1000)},
-                                {name: '宁夏',value: Math.round(Math.random()*1000)},
-                                {name: '海南',value: Math.round(Math.random()*1000)},
-                                {name: '台湾',value: Math.round(Math.random()*1000)},
-                                {name: '香港',value: Math.round(Math.random()*1000)},
-                                {name: '澳门',value: Math.round(Math.random()*1000)}
-                            ]
+                            data:data
                         },
-                        {
-                            name: '酷开',
-                            type: 'map',
-                            mapType: 'china',
-                            label: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: true
-                                }
-                            },
-                            data:[
-                                {name: '北京',value: Math.round(Math.random()*1000)},
-                                {name: '天津',value: Math.round(Math.random()*1000)},
-                                {name: '上海',value: Math.round(Math.random()*1000)},
-                                {name: '重庆',value: Math.round(Math.random()*1000)},
-                                {name: '河北',value: Math.round(Math.random()*1000)},
-                                {name: '安徽',value: Math.round(Math.random()*1000)},
-                                {name: '新疆',value: Math.round(Math.random()*1000)},
-                                {name: '浙江',value: Math.round(Math.random()*1000)},
-                                {name: '江西',value: Math.round(Math.random()*1000)},
-                                {name: '山西',value: Math.round(Math.random()*1000)},
-                                {name: '内蒙古',value: Math.round(Math.random()*1000)},
-                                {name: '吉林',value: Math.round(Math.random()*1000)},
-                                {name: '福建',value: Math.round(Math.random()*1000)},
-                                {name: '广东',value: Math.round(Math.random()*1000)},
-                                {name: '西藏',value: Math.round(Math.random()*1000)},
-                                {name: '四川',value: Math.round(Math.random()*1000)},
-                                {name: '宁夏',value: Math.round(Math.random()*1000)},
-                                {name: '香港',value: Math.round(Math.random()*1000)},
-                                {name: '澳门',value: Math.round(Math.random()*1000)}
-                            ]
-                        }
-                        // {
-                        //     name: 'iphone5',
-                        //     type: 'map',
-                        //     mapType: 'china',
-                        //     label: {
-                        //         normal: {
-                        //             show: false
-                        //         },
-                        //         emphasis: {
-                        //             show: true
-                        //         }
-                        //     },
-                        //     data:[
-                        //         {name: '北京',value: Math.round(Math.random()*1000)},
-                        //         {name: '天津',value: Math.round(Math.random()*1000)},
-                        //         {name: '上海',value: Math.round(Math.random()*1000)},
-                        //         {name: '广东',value: Math.round(Math.random()*1000)},
-                        //         {name: '台湾',value: Math.round(Math.random()*1000)},
-                        //         {name: '香港',value: Math.round(Math.random()*1000)},
-                        //         {name: '澳门',value: Math.round(Math.random()*1000)}
-                        //     ]
-                        // }
                     ]
                 });
             }
         },
         mounted () {
             this.getCrowdData()
-            this.getData()
             this.getCrowdtotal(this.startDate,this.endDate)
+            this.getForcastotal(this.startDate,this.endDate)
+            this.getCrowdUvtotal(this.startDate,this.endDate)
+            this.getCrowdSendtotal(this.startDate,this.endDate)
+            this.getCrowdClicktotal(this.startDate,this.endDate)
+            this.getCrowdSextotal(this.startDate,this.endDate)
+            this.getCrowdAgetotal(this.startDate,this.endDate)
+            this.getCrowdDevicetotal(this.startDate,this.endDate)
+            this.getCrowdProvincetotal(this.startDate,this.endDate)
         }
     }
 </script>
@@ -348,6 +500,7 @@
             content ""
         &:after
             clear: both
+        margin 30px 0
         .crowd-statistic-item
             width 25%
             float: left
@@ -357,17 +510,41 @@
                 color red
     .echarts-container
         position relative
-        display flex
-        height auto
-    .time-select
-        position absolute
-        right 0
-    .main
         width 50%
-        height 300px
-        padding 30px
+        height auto
+        float left
+        .main
+            width 100%
+            height 300px
+            padding 30px
     .date-picker
-        position absolute
-        right 0
-        top 0
+        text-align center
+    .circle-echarts
+        float left
+        width 33%
+        height 200px
+        margin-bottom 20px
+    .border-right
+        border-right 1px dashed #000
+    .border-bottom
+        border-bottom 1px dashed #000
+    .click-date-picker
+        text-align center
+        margin 20px 0
+    .left-map-container
+        width 50%
+        float left
+        height 400px
+    .map-echarts
+        width 100%
+        height 300px
+        /*padding 30px*/
+    .table-over
+        margin-left 20px
+        width 40%
+        height 400px
+        overflow auto
+        float left
+    .user-text
+        margin-top 20px
 </style>

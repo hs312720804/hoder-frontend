@@ -28,13 +28,13 @@ export function get_crowd_forcas_total(params){
 }
 
 // 人群命中总量
-// export function get_crowd_forcas_total(params){
-//     return this.fetch({
-//         method: 'get',
-//         url: '/api/statistic/crowdForcasTotal',
-//         params
-//     })
-// }
+export function get_crowd_uv_total(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/statistic/crowdUVTotal',
+        params
+    })
+}
 
 // 人群下发总量
 export function get_crowd_send_total(params){
@@ -76,7 +76,7 @@ export function get_crowd_bi_uv_total(params){
 export function get_crowd_sex_total(params){
     return this.fetch({
         method: 'get',
-        url: '/api/statistic/crowdSexTotal',
+        url: '/api/total/crowdSexTotal',
         params
     })
 }
@@ -85,7 +85,7 @@ export function get_crowd_sex_total(params){
 export function get_crowd_age_total(params){
     return this.fetch({
         method: 'get',
-        url: '/api/statistic/crowdAgeTotal',
+        url: '/api/total/crowdAgeTotal',
         params
     })
 }
@@ -94,7 +94,7 @@ export function get_crowd_age_total(params){
 export function get_device_level_total(params){
     return this.fetch({
         method: 'get',
-        url: '/api/statistic/deviceLevelTotal',
+        url: '/api/total/deviceLevelTotal',
         params
     })
 }
@@ -103,7 +103,7 @@ export function get_device_level_total(params){
 export function get_crowd_province_total(params){
     return this.fetch({
         method: 'get',
-        url: '/api/statistic/crowdProvinceTotal',
+        url: '/api/total/crowdProvinceTotal',
         params
     })
 }
