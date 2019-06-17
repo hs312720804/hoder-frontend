@@ -107,3 +107,11 @@ export function get_crowd_province_total(params){
         params
     })
 }
+// 人群城市分布
+export function get_crowd_all_total(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/statistic/getCrowdAllTotal',
+        params
+    })
+}

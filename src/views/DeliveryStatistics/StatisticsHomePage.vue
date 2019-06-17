@@ -15,6 +15,25 @@
             <div class="echarts-container">
                 <div class="date-picker">
                     <el-date-picker
+                            v-model="time0"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="crowd-all-item-container">
+                <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
+                    <div>{{item.name}}</div>
+                    <div class="crowd-all-item--number">{{item.count}}</div>
+                </div>
+                </div>
+            </div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
                             v-model="time1"
                             type="daterange"
                             range-separator="至"
@@ -105,12 +124,15 @@
             <div class="crowd-statistic">
                 <div class="left-map-container border-right">
                     <div class="map-echarts" ref="main"></div>
-                    <div class="user-text">
-                        <div>城市活跃比例</div>
-                        <div>{{cityData}}</div>
+                    <div class="city-active-proportion">
+                        <div class="city-active-proportion--title">{{cityData.name}}</div>
+                        <div v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
+                            {{item.name}}:{{item.percent}}
+                        </div>
                     </div>
                 </div>
                 <div class="table-over">
+                    <div class="table-title">城市活跃排名</div>
                     <!--<ContentWrapper-->
                             <!--:filter="filter"-->
                             <!--:pagination="pagination"-->
@@ -119,6 +141,7 @@
                                 :props="table.props"
                                 :header="table.header"
                                 :data="table.data"
+                                class="table-overflow"
                         >
                         </Table>
                     <!--</ContentWrapper>-->
@@ -139,9 +162,11 @@
         data () {
             return {
                 crowdData: [],
+                crowdAllData: [],
                 // 默认时间
                 startDate: '2019-06-01',
                 endDate: '2019-06-11',
+                time0: ['2019-06-01', '2019-06-11'],
                 time1: ['2019-06-01', '2019-06-11'],
                 time2: ['2019-06-01', '2019-06-11'],
                 time3: ['2019-06-01', '2019-06-11'],
@@ -177,6 +202,9 @@
             }
         },
         watch: {
+            time0(val) {
+                this.getAllCrowdTotal(val[0],val[1])
+            },
             time1(val) {
                 this.getCrowdtotal(val[0],val[1])
             },
@@ -203,6 +231,11 @@
             getCrowdData () {
                 this.$service.get_total_policy().then((data)=>{
                     this.crowdData = data
+                })
+            },
+            getAllCrowdTotal (startTime, endTime) {
+                this.$service.get_crowd_all_total({startDate:startTime,endDate:endTime}).then((data)=>{
+                    this.crowdAllData = data
                 })
             },
             // 通用单线性参数设置
@@ -408,6 +441,8 @@
                     })
                     this.setMapEcharts('main','省份分布',data.data)
                     this.cityData = data.cityPercent
+                    let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
+                    console.log(arr)
                     this.table.data = newData
                     this.pagination.total = data.data.length
                 })
@@ -481,6 +516,7 @@
             this.getCrowdAgetotal(this.startDate,this.endDate)
             this.getCrowdDevicetotal(this.startDate,this.endDate)
             this.getCrowdProvincetotal(this.startDate,this.endDate)
+            this.getAllCrowdTotal(this.startDate,this.endDate)
         }
     }
 </script>
@@ -508,6 +544,15 @@
             text-align center
             .crowd-statistic-item--number
                 color red
+    .crowd-all-item-container
+        margin-top 70px
+    .crowd-all-item
+        float left
+        width 33%
+        text-align center
+        margin 30px 0
+        .crowd-all-item--number
+            color blue
     .echarts-container
         position relative
         width 50%
@@ -539,12 +584,22 @@
         width 100%
         height 300px
         /*padding 30px*/
+    .table-title
+        font-size 18px
+        margin 0 0 20px 0
     .table-over
-        margin-left 20px
+        margin-left 40px
         width 40%
-        height 400px
-        overflow auto
         float left
-    .user-text
-        margin-top 20px
+    .table-overflow
+        height 360px
+        overflow auto
+    .city-active-proportion
+        margin 20px 0 0 20px
+    .city-active-proportion--title
+        font-size 18px
+    .city-active-proportion--name
+         width 50%
+         float left
+         margin 10px 0
 </style>
