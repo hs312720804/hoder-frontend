@@ -530,6 +530,7 @@
             businessClick (type) {
                 this.dialogVisible = true
                 if(type === 1) {
+                    this.dialogVisibleType = false
                     this.businessTitle = '各业务的人群调用总量'
                     this.$service.get_crowd_bi_pv_total({startDate:this.time1[0],endDate:this.time1[1]}).then((data) => {
                         const legendData = data.series.map((key) => {
@@ -541,6 +542,7 @@
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
                 }else if(type === 2){
+                    this.dialogVisibleType = false
                     this.businessTitle = '各业务的人群命中总量'
                     this.$service.get_crowd_bi_uv_total({startDate:this.time3[0],endDate:this.time3[1]}).then((data) => {
                         const legendData = data.series.map((key) => {
@@ -552,6 +554,7 @@
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
                 }else if(type === 3){
+                    this.dialogVisibleType = false
                     this.businessTitle = '各业务的人群下发总量'
                     this.$service.get_crowd_send_bi_total({startDate:this.time4[0],endDate:this.time4[1]}).then((data) => {
                         const legendData = data.series.map((key) => {
