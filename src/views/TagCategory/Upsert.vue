@@ -128,7 +128,7 @@ export default {
                        .$msg('字母开头，99位以内字母数字下划线组合')
                        .other('form', {
                            label: '英文名',
-                           placeholder: '字母开头，16位以内字母数字组合',
+                           placeholder: '字母开头，99位以内字母数字组合',
                            disabled:isDisabled
                        }),
                    groupId: _.r.number.other('form', {label: '所属分组'}),
