@@ -72,6 +72,24 @@ export function get_crowd_bi_uv_total(params){
     })
 }
 
+// 人群下发总量按业务下钻
+export function get_crowd_send_bi_total(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/statistic/crowdSendBiTotal',
+        params
+    })
+}
+
+// 人群点击曝光总量按业务下钻
+export function get_crowd_click_bi_total(params){
+    return this.fetch({
+        method: 'get',
+        url: '/api/statistic/crowdClickBiTotal',
+        params
+    })
+}
+
 // 人群画像性别
 export function get_crowd_sex_total(params){
     return this.fetch({

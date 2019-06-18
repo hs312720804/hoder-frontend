@@ -34,20 +34,6 @@
             <div class="echarts-container">
                 <div class="date-picker">
                     <el-date-picker
-                            v-model="time1"
-                            type="daterange"
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            value-format="yyyy-MM-dd"
-                    >
-                    </el-date-picker>
-                </div>
-                <div class="main" ref="peopleStatistic"></div>
-            </div>
-            <div class="echarts-container">
-                <div class="date-picker">
-                    <el-date-picker
                             v-model="time2"
                             type="daterange"
                             range-separator="至"
@@ -62,6 +48,21 @@
             <div class="echarts-container">
                 <div class="date-picker">
                     <el-date-picker
+                            v-model="time1"
+                            type="daterange"
+                            range-separator="至"
+                            start-placeholder="开始日期"
+                            end-placeholder="结束日期"
+                            value-format="yyyy-MM-dd"
+                    >
+                    </el-date-picker>
+                </div>
+                <div class="business-text" @click="businessClick(1)">按业务下钻-></div>
+                <div class="main" ref="peopleStatistic"></div>
+            </div>
+            <div class="echarts-container">
+                <div class="date-picker">
+                    <el-date-picker
                             v-model="time3"
                             type="daterange"
                             range-separator="至"
@@ -71,6 +72,7 @@
                     >
                     </el-date-picker>
                 </div>
+                <div class="business-text" @click="businessClick(2)">按业务下钻-></div>
                 <div class="main" ref="crowdUv"></div>
             </div>
             <div class="echarts-container">
@@ -85,6 +87,7 @@
                     >
                     </el-date-picker>
                 </div>
+                <div class="business-text" @click="businessClick(3)">按业务下钻-></div>
                 <div class="main" ref="crowdSend"></div>
             </div>
             <div class="echarts-container">
@@ -99,6 +102,7 @@
                     >
                     </el-date-picker>
                 </div>
+                <div class="business-text" @click="businessClick(4)">按业务下钻-></div>
                 <div class="main" ref="crowdClick"></div>
             </div>
             </div>
@@ -148,6 +152,17 @@
                 </div>
             </div>
         </div>
+        <el-dialog
+                :title="businessTitle"
+                :visible.sync="dialogVisible">
+            <div v-if=" dialogVisibleType === true">
+                <el-select v-model="businessType">
+                    <el-option value="1" label="人群曝光总量"></el-option>
+                    <el-option value="2" label="人群点击总量"></el-option>
+                </el-select>
+            </div>
+            <div class="main" ref="business" v-if=" dialogVisible=== true"></div>
+        </el-dialog>
     </div>
 </template>
 
@@ -173,7 +188,11 @@
                 time4: ['2019-06-01', '2019-06-11'],
                 time5: ['2019-06-01', '2019-06-11'],
                 time6: ['2019-06-01', '2019-06-11'],
+                businessType: '1',
                 cityData: '',
+                dialogVisible: false,
+                dialogVisibleType: false,
+                businessTitle: '',
                 filter: {},
                 pagination: {},
                 table: {
@@ -225,6 +244,10 @@
                 this.getCrowdAgetotal(val[0],val[1])
                 this.getCrowdDevicetotal(val[0],val[1])
                 this.getCrowdProvincetotal(val[0],val[1])
+            },
+            businessType(val) {
+                console.log(val)
+                this.handleLinesBusiness(val)
             }
         },
         methods: {
@@ -442,7 +465,6 @@
                     this.setMapEcharts('main','省份分布',data.data)
                     this.cityData = data.cityPercent
                     let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
-                    console.log(arr)
                     this.table.data = newData
                     this.pagination.total = data.data.length
                 })
@@ -503,6 +525,72 @@
                         },
                     ]
                 });
+            },
+            // 按业务下钻
+            businessClick (type) {
+                this.dialogVisible = true
+                if(type === 1) {
+                    this.businessTitle = '各业务的人群调用总量'
+                    this.$service.get_crowd_bi_pv_total({startDate:this.time1[0],endDate:this.time1[1]}).then((data) => {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        })
+                        this.setLinesEchart('business','',data.date,linesData,legendData)
+                    })
+                }else if(type === 2){
+                    this.businessTitle = '各业务的人群命中总量'
+                    this.$service.get_crowd_bi_uv_total({startDate:this.time3[0],endDate:this.time3[1]}).then((data) => {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        })
+                        this.setLinesEchart('business','',data.date,linesData,legendData)
+                    })
+                }else if(type === 3){
+                    this.businessTitle = '各业务的人群下发总量'
+                    this.$service.get_crowd_send_bi_total({startDate:this.time4[0],endDate:this.time4[1]}).then((data) => {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        })
+                        this.setLinesEchart('business','',data.date,linesData,legendData)
+                    })
+                }else if(type === 4){
+                    this.dialogVisibleType = true
+                    this.handleLinesBusiness(this.businessType)
+                }
+            },
+            handleLinesBusiness(type) {
+                if(type === '1') {
+                    this.businessTitle = '各业务的人群曝光总量'
+                    this.$service.get_crowd_click_bi_total({startDate:this.time5[0],endDate:this.time5[1],type: 1}).then((data) => {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        })
+                        this.setLinesEchart('business','',data.date,linesData,legendData)
+                    })
+                }else {
+                    this.businessTitle = '各业务的人群点击总量'
+                    this.$service.get_crowd_click_bi_total({startDate:this.time5[0],endDate:this.time5[1],type: 2}).then((data) => {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        })
+                        this.setLinesEchart('business','',data.date,linesData,legendData)
+                    })
+                }
             }
         },
         mounted () {
@@ -522,6 +610,8 @@
 </script>
 
 <style lang="stylus" scoped>
+    .launch-statistics
+        overflow hidden
     .title
         width 100%
         line-height 40px
@@ -558,10 +648,10 @@
         width 50%
         height auto
         float left
-        .main
-            width 100%
-            height 300px
-            padding 30px
+    .main
+        width 100%
+        height 300px
+        padding 30px
     .date-picker
         text-align center
     .circle-echarts
@@ -602,4 +692,12 @@
          width 50%
          float left
          margin 10px 0
+    .business-text
+        text-decoration underline
+        color #0077aa
+        position absolute
+        z-index 9
+        top 80px
+        right 80px
+        cursor pointer
 </style>
