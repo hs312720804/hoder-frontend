@@ -124,8 +124,8 @@ export default {
                    tagName: _.r.string.other('form', {label: '名称',disabled:isDisabled}),
                    tagKey: _.r
                        .string
-                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,15}$/)
-                       .$msg('字母开头，16位以内字母数字下划线组合')
+                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,99}$/)
+                       .$msg('字母开头，99位以内字母数字下划线组合')
                        .other('form', {
                            label: '英文名',
                            placeholder: '字母开头，16位以内字母数字组合',
@@ -149,8 +149,8 @@ export default {
                    dataSource: _.r.number.other('form', {label: '数据来源'}),
                     thirdPartyApiId: _.r.number.other('form', {label: '第三方接口',hidden:this.hideThirdparam}),
                     mapThirdPartyApiField: _.r.string
-                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,15}$/)
-                       .$msg('字母开头，16位以内字母数字下划线组合')
+                       .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,99}$/)
+                       .$msg('字母开头，100位以内字母数字下划线组合')
                        .other('form', {label: '映射字段',hidden:this.hideThirdparam}),
                })
                .other('form', {
