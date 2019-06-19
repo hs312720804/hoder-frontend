@@ -125,10 +125,10 @@ export default {
                    tagKey: _.r
                        .string
                        .pattern(/^[A-Za-z][0-9a-zA-Z_]{0,99}$/)
-                       .$msg('字母开头，99位以内字母数字下划线组合')
+                       .$msg('字母开头，100位以内字母数字下划线组合')
                        .other('form', {
                            label: '英文名',
-                           placeholder: '字母开头，99位以内字母数字组合',
+                           placeholder: '字母开头，100位以内字母数字组合',
                            disabled:isDisabled
                        }),
                    groupId: _.r.number.other('form', {label: '所属分组'}),
