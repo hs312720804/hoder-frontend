@@ -257,17 +257,17 @@ const children = [
                     icon: 'el-icon-cc-file',
                 }
             },
-            {
-                name: 'statisticsHomePage',
-                path: 'statisticsHomePage',
-                component: statisticsHomePage,
-                meta: {
-                    title: '投放统计',
-                    tagId:"statisticsHomePage",
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
-                }
-            },
+            // {
+            //     name: 'statisticsHomePage',
+            //     path: 'statisticsHomePage',
+            //     component: statisticsHomePage,
+            //     meta: {
+            //         title: '投放统计',
+            //         tagId:"statisticsHomePage",
+            //         isCache: false,
+            //         icon: 'el-icon-cc-file',
+            //     }
+            // },
             {
                 name: 'DeliveryMonitor',
                 path: 'DeliveryMonitor',
@@ -512,6 +512,15 @@ const children = [
                 }
             }
         ]
+    },
+    {
+        name: 'statisticsHomePage',
+        path: 'statisticsHomePage',
+        component: statisticsHomePage,
+        meta: {
+            title: '投放统计',
+            tagId:"statisticsHomePage",
+        }
     }
 ]
 

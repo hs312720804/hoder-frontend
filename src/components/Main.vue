@@ -155,7 +155,8 @@ export default {
     //   return items;
     // },
     initTags() {
-      return this.$appState.$get("tags") || [];
+      // return this.$appState.$get("tags") || [];
+        return this.$appState.$get('tags'+ '_' + this.$appState.user.name ) || []
     }
   },
   methods: {
@@ -176,7 +177,32 @@ export default {
     },
     saveTags() {
       const tags = this.$refs.tag.tags;
-      this.$appState.$set("tags", tags);
+        if( tags.length === 0) {
+            tags.unshift({
+                fullPath: '/statisticsHomePage',
+                meta: {
+                    title: '投放统计',
+                    tagId: 'statisticsHomePage'
+                },
+                name: 'statisticsHomePage',
+                isCloseable: false
+            })
+        } else {
+            if(tags[0].name !=='statisticsHomePage') {
+                tags.unshift({
+                    fullPath: '/statisticsHomePage',
+                    meta: {
+                        title: '投放统计',
+                        tagId: 'statisticsHomePage'
+                    },
+                    name: 'statisticsHomePage',
+                    isCloseable: false
+                })
+            }
+        }
+        // this.initTags = tags
+        this.$appState.$set('tags'+ '_' + this.$appState.user.name , tags)
+      // this.$appState.$set("tags", tags);
     },
     setMetaTitle() {
         const routes = this.$router.options.routes

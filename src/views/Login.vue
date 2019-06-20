@@ -49,7 +49,7 @@ export default {
         if (err.length === 0) {
             this.$login(this.user).then(() => {
                 this.$router.push({
-                    path: this.$route.query.redirect || '/'
+                    path: this.$route.query.redirect || '/statisticsHomePage'
                 })
             })
         }
