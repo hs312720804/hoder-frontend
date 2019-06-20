@@ -149,7 +149,12 @@
                     <!--:key="item.groupId"-->
             <!--&gt;-->
             <div class="strategy-search">
-            <el-input aria-placeholder="请输入标签关键字进行搜索" v-model="searchValue" class="strategy-search--input"></el-input>
+            <el-input aria-placeholder="请输入标签关键字进行搜索"
+                      v-model="searchValue"
+                      class="strategy-search--input"
+                      @keyup.enter.native="searchTag"
+            >
+            </el-input>
             <el-button @click="searchTag">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
@@ -296,8 +301,10 @@ export default {
         this.$service
             .policyTagSeach({ s: searchValue })
             .then(data => {
+                console.log(data)
                 this.conditionTagsFiltered = data.reduce((result, item) => result
                     .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
+                console.log(this.conditionTagsFiltered)
             })
     },
     removeTag(id) {

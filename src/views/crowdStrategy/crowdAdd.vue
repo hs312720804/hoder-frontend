@@ -259,8 +259,10 @@ export default {
       if (!this.suggestions[tagId]) {
         const self = this;
         self.$set(self.suggestions, tagId, []);
-        this.$service.getTagAttr({ tagId: tagId }).then(data => {
-          self.$set(self.suggestions, tagId, data);
+        this.$service.getTagAttr({ tagId: tagId, pageSize: 10, pageNum:1}).then(data => {
+            debugger
+            console.log(data)
+          self.$set(self.suggestions, tagId, data.pageInfo.list);
         });
       }
     },
