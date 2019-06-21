@@ -208,7 +208,7 @@ export default {
       //搜索条件
       criteria: {},
       tagPages: [],
-      initPageSize: 500,
+      initPageSize: 1000,
       showPageNum: false,
       // 列表页
       searchForm: {
