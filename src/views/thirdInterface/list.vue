@@ -74,7 +74,19 @@
                         },
                         {
                             label: '接口名称',
-                            prop: 'name'
+                            prop: 'name',
+                            render: (h, params) => {
+                                        return h('el-button', {
+                                            props: {
+                                                type: 'text'
+                                            },
+                                            on: {
+                                                click: () => {
+                                                    this.handleRead(params)
+                                                }
+                                            }
+                                        }, params.row.name)
+                                    }
                         },
                         // {
                         //     label: '名称',
@@ -112,42 +124,42 @@
                             label: '接口固定参数',
                             prop: 'reqDefaultParamValue'
                         },
-                        {
-                            label: '请求之后处理',
-                            prop: 'resExplain'
-                        },
-                        {
-                            label: '请求之前处理',
-                            prop: 'reqBefore'
-                        },
-                        {
-                            label: '接口固定参数',
-                            prop: 'reqDefaultParamValue'
-                        },
-                        {
-                            label: '请求之后处理',
-                            prop: 'resExplain'
-                        },
-                        {
-                            label: '请求之前处理',
-                            prop: 'reqBefore'
-                        },
-                        {
-                            label: '是否保持长连接',
-                            prop: 'reqKeepalive'
-                        },
-                        {
-                            label: '超时',
-                            prop: 'reqKeepaliveTimeout'
-                        },
-                        {
-                            label: '连接池',
-                            prop: 'reqKeepalivePool'
-                        },
-                        {
-                            label: '请求头',
-                            prop: 'reqHeaders'
-                        },
+                        // {
+                        //     label: '请求之后处理',
+                        //     prop: 'resExplain'
+                        // },
+                        // {
+                        //     label: '请求之前处理',
+                        //     prop: 'reqBefore'
+                        // },
+                        // {
+                        //     label: '接口固定参数',
+                        //     prop: 'reqDefaultParamValue'
+                        // },
+                        // {
+                        //     label: '请求之后处理',
+                        //     prop: 'resExplain'
+                        // },
+                        // {
+                        //     label: '请求之前处理',
+                        //     prop: 'reqBefore'
+                        // },
+                        // {
+                        //     label: '是否保持长连接',
+                        //     prop: 'reqKeepalive'
+                        // },
+                        // {
+                        //     label: '超时',
+                        //     prop: 'reqKeepaliveTimeout'
+                        // },
+                        // {
+                        //     label: '连接池',
+                        //     prop: 'reqKeepalivePool'
+                        // },
+                        // {
+                        //     label: '请求头',
+                        //     prop: 'reqHeaders'
+                        // },
                         // {
                         //     label: '状态',
                         //     prop: 'status',

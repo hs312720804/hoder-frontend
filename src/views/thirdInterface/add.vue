@@ -3,7 +3,7 @@
         <div class="title">{{title}}</div>
         <el-form :model="form" :rules="rules" ref="form" label-width="130px">
             <el-form-item label="接口名称" prop="name">
-                <el-input v-model="form.name"></el-input>
+                <el-input v-model="form.name" :disabled="disableValue"></el-input>
             </el-form-item>
             <el-form-item label="代码" prop="code">
                 <el-input v-model="form.code" :disabled="disableValue"></el-input>
@@ -27,8 +27,8 @@
                 <el-input type="textarea" v-model="form.resExplain" :disabled="disableValue"></el-input>
             </el-form-item>
             <el-form-item label="是否保持长连接" prop="reqKeepalive">
-                <el-radio v-model="form.reqKeepalive" label="true">是</el-radio>
-                <el-radio v-model="form.reqKeepalive" label="false">否</el-radio>
+                <el-radio v-model="form.reqKeepalive" label="true" :disabled="disableValue">是</el-radio>
+                <el-radio v-model="form.reqKeepalive" label="false" :disabled="disableValue">否</el-radio>
             </el-form-item>
             <el-form-item label="超时" prop="reqKeepaliveTimeout">
                 <el-input v-model="form.reqKeepaliveTimeout" :disabled="disableValue"></el-input>
