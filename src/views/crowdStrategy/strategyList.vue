@@ -171,6 +171,9 @@
             <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
+        <div v-if="showPageNum">
+          <el-button v-for="item in tagPages" @click="handlePages(item)">{{item}}</el-button>
+        </div>
         <el-form-item label="已选标签" style="margin-top: 60px">
           <span v-for="tag in addForm.conditionTagIds" :key="tag">
             <el-tag v-for="item in conditionTagIdsData"
@@ -204,6 +207,9 @@ export default {
       // },
       //搜索条件
       criteria: {},
+      tagPages: [],
+      initPageSize: 500,
+      showPageNum: false,
       // 列表页
       searchForm: {
         policyName: ""
@@ -281,15 +287,27 @@ export default {
                 .catch(() => {
                 });
     },
-    getTags(val) {
+    getTags(pageNum) {
       this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ s: val })
+        .policyTagSeach({ pageNum: pageNum ,pageSize: this.initPageSize})
         .then(data => {
-           let checkboxData = []
-          data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
-           this.conditionTagIdsData = checkboxData
-           this.conditionTagsFiltered = checkboxData
+          // const total = data.pageInfo.total
+          // const initSize = this.initPageSize
+          // if(total > initSize) {
+          //     this.showPageNum = true
+          //     let totalPages = Math.ceil(total/initSize)
+          //     let pages = []
+          //     let i = 1
+          //     while(i <= totalPages) {pages.push(i); i++}
+          //     this.tagPages = pages
+          // }
+          //  let checkboxData = []
+          // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
+          //  this.conditionTagIdsData = checkboxData
+          //  this.conditionTagsFiltered = checkboxData
+            this.conditionTagIdsData = data.pageInfo.list
+            this.conditionTagsFiltered = data.pageInfo.list
         });
     },
     searchTag() {
@@ -302,10 +320,14 @@ export default {
             .policyTagSeach({ s: searchValue })
             .then(data => {
                 console.log(data)
-                this.conditionTagsFiltered = data.reduce((result, item) => result
-                    .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
+                // this.conditionTagsFiltered = data.reduce((result, item) => result
+                //     .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
+                this.conditionTagsFiltered = data.pageInfo.list
                 console.log(this.conditionTagsFiltered)
             })
+    },
+    handlePages(pages) {
+        this.getTags(pages)
     },
     removeTag(id) {
         const addForm = this.addForm
