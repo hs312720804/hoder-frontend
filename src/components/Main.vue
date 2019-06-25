@@ -161,8 +161,6 @@
         },
         methods: {
             getRouter(url){
-                console.log(url)
-                console.log(this.routerMap[url])
                 this.$router.push({name:this.routerMap[url]});
             },
             handleDropdownCommand(command) {

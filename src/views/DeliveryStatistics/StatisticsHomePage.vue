@@ -425,7 +425,7 @@
                     const linesData = data.series.map((key) => {
                         return {name:key.name, data:key.data, type: 'line',stack: '总量'}
                     })
-                    this.setLinesEchart('crowdClick','曝光量',data.date,linesData,legendData)
+                    this.setLinesEchart('crowdClick','曝光、点击量',data.date,linesData,legendData)
                 })
             },
             // 人群画像性别
