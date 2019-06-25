@@ -246,7 +246,6 @@
                 this.getCrowdProvincetotal(val[0],val[1])
             },
             businessType(val) {
-                console.log(val)
                 this.handleLinesBusiness(val)
             }
         },
@@ -464,7 +463,7 @@
                     })
                     this.setMapEcharts('main','省份分布',data.data)
                     this.cityData = data.cityPercent
-                    let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
+                    // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
                     this.table.data = newData
                     this.pagination.total = data.data.length
                 })

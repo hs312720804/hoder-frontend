@@ -152,10 +152,10 @@
             <el-input aria-placeholder="请输入标签关键字进行搜索"
                       v-model="searchValue"
                       class="strategy-search--input"
-                      @keyup.enter.native="searchTag"
+                      @keyup.enter.native="getTags(1)"
             >
             </el-input>
-            <el-button @click="searchTag">查询</el-button>
+            <el-button @click="getTags(1)">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
@@ -163,29 +163,45 @@
                              :class="item.tDataSource === 2 ? 'checkbox--red' : (item.tDataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
                              :label="item.tagId"
                              :key="item.tagId"
+                             @change="handleTagChange($event,item)"
                 >
                   {{item.tagName}}
                 </el-checkbox>
               </el-checkbox-group>
             <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+            <div v-if="showPageNum" class="page-button">
+              <el-button
+                      v-for="item in tagPages"
+                      @click="handlePages(item)"
+                      class="page-num"
+                      :class="[item === tagCurrentPage? 'active' : '', 'page-num']"
+              >
+                {{item}}
+              </el-button>
+            </div>
             <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
-        <div v-if="showPageNum">
-          <el-button v-for="item in tagPages" @click="handlePages(item)">{{item}}</el-button>
-        </div>
-        <el-form-item label="已选标签" style="margin-top: 60px">
-          <span v-for="tag in addForm.conditionTagIds" :key="tag">
-            <el-tag v-for="item in conditionTagIdsData"
-                    v-if="item.tagId === tag"
+        <el-form-item label="已选标签" style="margin-top: 90px">
+          <!--<span v-for="tag in addForm.conditionTagIds" :key="tag">-->
+            <!--<el-tag v-for="item in conditionTagIdsData"-->
+                    <!--v-if="item.tagId === tag"-->
+                    <!--:key="item.tagId"-->
+                    <!--:type= "item.tDataSource === 1 ? 'success' : (item.tDataSource === 2 ? 'danger' : '')"-->
+                    <!--closable-->
+                    <!--@close="removeTag(item.tagId)"-->
+            <!--&gt;-->
+              <!--{{item.tagName}}-->
+            <!--</el-tag>-->
+            <el-tag v-for="item in tagList"
                     :key="item.tagId"
-                    :type= "item.tDataSource === 1 ? 'success' : (item.tDataSource === 2 ? 'danger' : '')"
+                    :type= "(item.dataSource||item.tDataSource) === 1 ? 'success' : ((item.dataSource||item.tDataSource) === 2 ? 'danger' : '')"
                     closable
-                    @close="removeTag(item.tagId)"
+                    @close="removeTag(item)"
             >
               {{item.tagName}}
             </el-tag>
-          </span>
+          <!--</span>-->
         </el-form-item>
       </el-form>
       <div slot="footer" class="dialog-footer">
@@ -196,6 +212,7 @@
   </div>
 </template>
 <script>
+import { cloneDeep } from 'lodash'
 export default {
   data() {
     return {
@@ -208,8 +225,9 @@ export default {
       //搜索条件
       criteria: {},
       tagPages: [],
-      initPageSize: 1000,
+      initPageSize: 500,
       showPageNum: false,
+      tagCurrentPage: 1,
       // 列表页
       searchForm: {
         policyName: ""
@@ -288,25 +306,24 @@ export default {
                 });
     },
     getTags(pageNum) {
-      this.addForm.conditionTagIds = [];
+      // this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ pageNum: pageNum ,pageSize: this.initPageSize})
+        .policyTagSeach({ pageNum: pageNum ,pageSize: this.initPageSize,s: this.searchValue})
         .then(data => {
-          // const total = data.pageInfo.total
-          // const initSize = this.initPageSize
-          // if(total > initSize) {
-          //     this.showPageNum = true
-          //     let totalPages = Math.ceil(total/initSize)
-          //     let pages = []
-          //     let i = 1
-          //     while(i <= totalPages) {pages.push(i); i++}
-          //     this.tagPages = pages
-          // }
+          const total = data.pageInfo.total
+          const initSize = this.initPageSize
+          if(total > initSize) {
+              this.showPageNum = true
+              let totalPages = Math.ceil(total/initSize)
+              let pages = []
+              let i = 1
+              while(i <= totalPages) {pages.push(i); i++}
+              this.tagPages = pages
+          }else {this.showPageNum = false}
           //  let checkboxData = []
           // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
           //  this.conditionTagIdsData = checkboxData
           //  this.conditionTagsFiltered = checkboxData
-            this.conditionTagIdsData = data.pageInfo.list
             this.conditionTagsFiltered = data.pageInfo.list
         });
     },
@@ -319,19 +336,31 @@ export default {
         this.$service
             .policyTagSeach({ s: searchValue })
             .then(data => {
-                console.log(data)
                 // this.conditionTagsFiltered = data.reduce((result, item) => result
                 //     .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
                 this.conditionTagsFiltered = data.pageInfo.list
-                console.log(this.conditionTagsFiltered)
+                if(data.pageInfo.total < this.initPageSize) {this.showPageNum = false}
             })
     },
     handlePages(pages) {
+        this.tagCurrentPage = pages
         this.getTags(pages)
     },
-    removeTag(id) {
+    removeTag(tag) {
         const addForm = this.addForm
-        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== id)
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+        this.tagList.splice(this.tagList.indexOf(tag),1)
+        // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
+    },
+    handleTagChange(flag,item) {
+      var arr = []
+      if(flag) {this.tagList.push(item)}
+      else {
+          arr = this.tagList
+          for(var i=arr.length-1;i>=0;i--) {
+              if(arr[i].tagId == item.tagId) {arr.splice(i,1)}
+          }
+      }
     },
     resetSearch () {
         this.searchValue = ''
@@ -346,17 +375,20 @@ export default {
       this.title = "新增";
       this.searchValue = ''
       this.getTags();
+      this.tagList = []
+      this.addForm.conditionTagIds = [];
     },
     handleEdit(row) {
+      const Row = cloneDeep(row)
       this.addFormVisible = true;
       this.title = "编辑";
-      this.addForm.policyId = row.policyId;
-      this.addForm.policyName = row.policyName;
+      this.addForm.policyId = Row.policyId;
+      this.addForm.policyName = Row.policyName;
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
       this.getTags();
-      this.tagList = row.tagsList
-      this.addForm.conditionTagIds = row.conditionTagIds
+      this.tagList = Row.tagsList
+      this.addForm.conditionTagIds = Row.conditionTagIds
         .split(",")
         .map(function(v) {
           return parseInt(v);
@@ -389,7 +421,6 @@ export default {
         this.totalCount = data.pageInfo.total;
         // const statusData = data.pageInfo.list;
         // statusData.forEach((item) => {
-        //     console.log(item.status)
         //     if(item.status === 1) {this.statusTip = '点击生效'}
         //     else if(item.status === 2) {this.statusTip = '已生效'}}
         //     )
@@ -483,4 +514,15 @@ export default {
   right 20px
   color red
   font-size 12px
+.page-num
+  width 30px
+  height 30px
+  border-radius 100px
+  padding 0
+.active
+  border-color #0086b3
+  color #0086b3
+.page-button
+  float right
+  margin-right 20px
 </style>
