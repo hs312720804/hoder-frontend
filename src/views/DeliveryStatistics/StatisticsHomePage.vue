@@ -423,7 +423,7 @@
                         return key.name
                     })
                     const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                        return {name:key.name, data:key.data, type: 'line'}
                     })
                     this.setLinesEchart('crowdClick','曝光、点击量',data.date,linesData,legendData)
                 })
@@ -536,7 +536,7 @@
                             return key.name
                         })
                         const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                            return {name:key.name, data:key.data, type: 'line'}
                         })
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
@@ -548,7 +548,7 @@
                             return key.name
                         })
                         const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                            return {name:key.name, data:key.data, type: 'line'}
                         })
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
@@ -560,7 +560,7 @@
                             return key.name
                         })
                         const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                            return {name:key.name, data:key.data, type: 'line'}
                         })
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
@@ -577,7 +577,7 @@
                             return key.name
                         })
                         const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                            return {name:key.name, data:key.data, type: 'line'}
                         })
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
@@ -588,7 +588,7 @@
                             return key.name
                         })
                         const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line',stack: '总量'}
+                            return {name:key.name, data:key.data, type: 'line'}
                         })
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
