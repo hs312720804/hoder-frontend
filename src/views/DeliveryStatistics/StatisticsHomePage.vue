@@ -179,15 +179,15 @@
                 crowdData: [],
                 crowdAllData: [],
                 // 默认时间
-                startDate: '2019-06-01',
-                endDate: '2019-06-11',
-                time0: ['2019-06-01', '2019-06-11'],
-                time1: ['2019-06-01', '2019-06-11'],
-                time2: ['2019-06-01', '2019-06-11'],
-                time3: ['2019-06-01', '2019-06-11'],
-                time4: ['2019-06-01', '2019-06-11'],
-                time5: ['2019-06-01', '2019-06-11'],
-                time6: ['2019-06-01', '2019-06-11'],
+                startDate: '',
+                endDate: '',
+                time0: [],
+                time1: [],
+                time2: [],
+                time3: [],
+                time4: [],
+                time5: [],
+                time6: [],
                 businessType: '1',
                 cityData: '',
                 dialogVisible: false,
@@ -593,6 +593,13 @@
                         this.setLinesEchart('business','',data.date,linesData,legendData)
                     })
                 }
+            },
+            formatDate (d) {
+                const time = new Date(d)
+                let y = time.getFullYear(); // 年份
+                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+                let r = time.getDate().toString().padStart(2,'0'); // 日子
+                return `${y}-${m}-${r}`
             }
         },
         mounted () {
@@ -607,6 +614,20 @@
             this.getCrowdDevicetotal(this.startDate,this.endDate)
             this.getCrowdProvincetotal(this.startDate,this.endDate)
             this.getAllCrowdTotal(this.startDate,this.endDate)
+        },
+        created() {
+            // 设置默认时间为昨天的前一周
+            const start = new Date()
+            const end = new Date()
+            this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+            this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+            this.time0 = [this.startDate,this.endDate]
+            this.time1 = [this.startDate,this.endDate]
+            this.time2 = [this.startDate,this.endDate]
+            this.time3 = [this.startDate,this.endDate]
+            this.time4 = [this.startDate,this.endDate]
+            this.time5 = [this.startDate,this.endDate]
+            this.time6 = [this.startDate,this.endDate]
         }
     }
 </script>
