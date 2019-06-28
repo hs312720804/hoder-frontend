@@ -152,10 +152,10 @@
             <el-input aria-placeholder="请输入标签关键字进行搜索"
                       v-model="searchValue"
                       class="strategy-search--input"
-                      @keyup.enter.native="getTags(1)"
+                      @keyup.enter.native="getTags()"
             >
             </el-input>
-            <el-button @click="getTags(1)">查询</el-button>
+            <el-button @click="getTags()">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
@@ -169,16 +169,18 @@
                 </el-checkbox>
               </el-checkbox-group>
             <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
-            <div v-if="showPageNum" class="page-button">
-              <el-button
-                      v-for="item in tagPages"
-                      @click="handlePages(item)"
-                      class="page-num"
-                      :class="[item === tagCurrentPage? 'active' : '', 'page-num']"
-              >
-                {{item}}
-              </el-button>
-            </div>
+            <el-pagination
+                    small
+                    class="pagination"
+                    layout="prev,pager,next"
+                    :total="tagsListTotal"
+                    :page-size="initPageSize"
+                    :current-page="initCurrentPage"
+                    @current-change="handleTagCurrentChange"
+                    @prev-click="handleTagCurrentChange"
+                    @next-click="handleTagCurrentChange"
+            >
+            </el-pagination>
             <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
@@ -224,10 +226,9 @@ export default {
       // },
       //搜索条件
       criteria: {},
-      tagPages: [],
       initPageSize: 500,
-      showPageNum: false,
-      tagCurrentPage: 1,
+      tagsListTotal: 0,
+      initCurrentPage: 1,
       // 列表页
       searchForm: {
         policyName: ""
@@ -305,46 +306,36 @@ export default {
                 .catch(() => {
                 });
     },
-    getTags(pageNum) {
+    getTags() {
       // this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ pageNum: pageNum ,pageSize: this.initPageSize,s: this.searchValue})
+        .policyTagSeach({ pageNum: this.initCurrentPage ,pageSize: this.initPageSize,s: this.searchValue})
         .then(data => {
-          const total = data.pageInfo.total
-          const initSize = this.initPageSize
-          if(total > initSize) {
-              this.showPageNum = true
-              let totalPages = Math.ceil(total/initSize)
-              let pages = []
-              let i = 1
-              while(i <= totalPages) {pages.push(i); i++}
-              this.tagPages = pages
-          }else {this.showPageNum = false}
           //  let checkboxData = []
           // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
           //  this.conditionTagIdsData = checkboxData
           //  this.conditionTagsFiltered = checkboxData
             this.conditionTagsFiltered = data.pageInfo.list
+            this.tagsListTotal = data.pageInfo.total
         });
     },
-    searchTag() {
-        let searchValue = this.searchValue
-        let selectTagsIndexed = this.addForm.conditionTagIds.reduce((result, tagId) => {
-            result[tagId] = true
-            return result
-        }, {})
-        this.$service
-            .policyTagSeach({ s: searchValue })
-            .then(data => {
-                // this.conditionTagsFiltered = data.reduce((result, item) => result
-                //     .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
-                this.conditionTagsFiltered = data.pageInfo.list
-                if(data.pageInfo.total < this.initPageSize) {this.showPageNum = false}
-            })
-    },
-    handlePages(pages) {
-        this.tagCurrentPage = pages
-        this.getTags(pages)
+    // searchTag() {
+    //     let searchValue = this.searchValue
+    //     let selectTagsIndexed = this.addForm.conditionTagIds.reduce((result, tagId) => {
+    //         result[tagId] = true
+    //         return result
+    //     }, {})
+    //     this.$service
+    //         .policyTagSeach({ s: searchValue })
+    //         .then(data => {
+    //             // this.conditionTagsFiltered = data.reduce((result, item) => result
+    //             //     .concat(item.child.filter(tag => !selectTagsIndexed[tag.tagId])), [])
+    //             this.conditionTagsFiltered = data.pageInfo.list
+    //         })
+    // },
+    handleTagCurrentChange(pages) {
+        this.initCurrentPage = pages
+        this.getTags()
     },
     removeTag(tag) {
         const addForm = this.addForm
@@ -522,7 +513,6 @@ export default {
 .active
   border-color #0086b3
   color #0086b3
-.page-button
+.pagination
   float right
-  margin-right 20px
 </style>
