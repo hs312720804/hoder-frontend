@@ -128,6 +128,7 @@ export default {
         handleEditTag(row) {
             this.tag = JSON.parse(JSON.stringify(row))
             this.tag.tagType = this.tagCategory.tagType
+            this.tag.tagId = this.tagCategory.tagId
             this.$refs.tagUpsert.showCreateDialog = true
         },
         handleDeleteTag(row) {
