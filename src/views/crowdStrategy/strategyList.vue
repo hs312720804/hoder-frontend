@@ -5,18 +5,18 @@
       <div class="left">
         <el-button-group>
           <el-button
-            type="primary"
-            size="small"
-            @click="handleAdd"
-            v-permission="'hoder:policy:add'"
+                  type="primary"
+                  size="small"
+                  @click="handleAdd"
+                  v-permission="'hoder:policy:add'"
           >
             <a class="fa fa-plus" style="color: white;"></a>新增
           </el-button>
           <el-button
-            type="primary"
-            size="small"
-            @click="freshService"
-            v-permission="'hoder:policy:add'"
+                  type="primary"
+                  size="small"
+                  @click="freshService"
+                  v-permission="'hoder:policy:add'"
           >
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
@@ -25,10 +25,10 @@
       <div class="right">
         <!-- form search -->
         <el-form
-          :inline="true"
-          :model="searchForm"
-          ref="searchForm"
-          @submit.native.prevent="submitForm"
+                :inline="true"
+                :model="searchForm"
+                ref="searchForm"
+                @submit.native.prevent="submitForm"
         >
           <el-form-item label prop="policyName">
             <el-input v-model="searchForm.policyName" style="width: 200px" placeholder="请输入策略名称"></el-input>
@@ -61,10 +61,10 @@
       <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）">
         <template scope="scope">
           <el-tag
-            size="mini"
-            v-for="item in scope.row.tagsList"
-            :key="item.tagId"
-            :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
+                  size="mini"
+                  v-for="item in scope.row.tagsList"
+                  :key="item.tagId"
+                  :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
@@ -73,22 +73,22 @@
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
             <el-button
-              size="small"
-              type="primary"
-              v-permission="'hoder:policy:edit'"
-              @click="handleEdit(scope.row)"
+                    size="small"
+                    type="primary"
+                    v-permission="'hoder:policy:edit'"
+                    @click="handleEdit(scope.row)"
             >编辑</el-button>
             <el-button
-              size="small"
-              type="info"
-              v-permission="'hoder:policy:del'"
-              @click="del(scope.row)"
+                    size="small"
+                    type="info"
+                    v-permission="'hoder:policy:del'"
+                    @click="del(scope.row)"
             >删除</el-button>
             <el-button
-              size="small"
-              :type= "scope.row.status === 1 ? 'success' : 'danger'"
-              v-permission="'hoder:policy:add'"
-              @click="freshCache(scope.row)"
+                    size="small"
+                    :type= "scope.row.status === 1 ? 'success' : 'danger'"
+                    v-permission="'hoder:policy:add'"
+                    @click="freshCache(scope.row)"
             >
               <span v-if="scope.row.status === 1">未同步</span>
               <span v-if="scope.row.status === 2">已同步</span>
@@ -101,21 +101,21 @@
     <!-- pagination -->
     <div align="right">
       <pagination
-        v-bind:currentpage="currentPage"
-        v-bind:pagesize="pageSize"
-        v-bind:totalcount="totalCount"
-        @handle-size-change="handleSizeChange"
-        @handle-current-change="handleCurrentChange"
+              v-bind:currentpage="currentPage"
+              v-bind:pagesize="pageSize"
+              v-bind:totalcount="totalCount"
+              @handle-size-change="handleSizeChange"
+              @handle-current-change="handleCurrentChange"
       ></pagination>
     </div>
 
     <!--新增界面-->
     <el-dialog
-      :title="title"
-      :visible.sync="addFormVisible"
-      v-if="addFormVisible"
-      v-model="addFormVisible"
-      :close-on-click-modal="false"
+            :title="title"
+            :visible.sync="addFormVisible"
+            v-if="addFormVisible"
+            v-model="addFormVisible"
+            :close-on-click-modal="false"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
