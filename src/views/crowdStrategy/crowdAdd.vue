@@ -116,7 +116,7 @@
                     <el-dialog title="显示更多标签" :visible.sync="showMoreTags" class="showMoreTags">
                       <el-form :inline="true" :model="formInline" class="demo-form-inline">
                         <el-form-item label="标签名称">
-                          <el-input v-model="formInline.tagName" placeholder="标签名称" @keyup.enter.native="onSubmit"></el-input>
+                          <el-input v-model="formInline.attrName" placeholder="标签名称" @keyup.enter.native="onSubmit"></el-input>
                         </el-form-item>
                         <el-form-item>
                           <el-button type="primary" @click="onSubmit">查询</el-button>
@@ -218,7 +218,7 @@
                 tagsListTotal: 0,
                 // tag 查询模块
                 formInline: {
-                    tagName: ''
+                    attrName: ''
                 },
                 // usedTags: [[${usedTags}]] || {},
                 rulesJson: { condition: "OR", rules: [] },
@@ -406,6 +406,7 @@
             },
             handleSelectMore (child) {
                 this.checkboxValue = ''
+                this.formInline.attrName = ''
                 this.currentChildItem = child
                 this.showMoreTags = true
                 this.$service.getTagAttr({ tagId: child.tagId, pageSize: this.initPageSize, pageNum:this.initCurrentPage}).then(data => {
@@ -424,7 +425,7 @@
                     tagId: this.currentChildItem.tagId,
                     pageSize: this.initPageSize,
                     pageNum:1,
-                    tagName: this.formInline.tagName
+                    attrName: this.formInline.attrName
                 }).then(data => {
                     this.tagList = data.pageInfo.list
                     this.tagsListTotal = data.pageInfo.total
