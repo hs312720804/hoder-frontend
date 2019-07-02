@@ -81,7 +81,7 @@
                     ],
                     code: [
                         {required:true, message:'请输入接口代码', trigger: 'blur'},
-                        {pattern: /^[a-zA-Z][a-zA-Z_0-9_]{0,15}$/, message: '16位以内以字母开头的数字和字母下划线组合', trigger: 'blur'}
+                        {pattern: /^[a-zA-Z][a-zA-Z_0-9_]{0,99}$/, message: '100位以内以字母开头的数字和字母下划线组合', trigger: 'blur'}
                     ],
                     reqUri: [
                         {required:true, message:'请输入接口地址', trigger: 'blur'},
@@ -100,12 +100,12 @@
                         {min: 0, max: 1000, message: '长度小于1000个字符', trigger: 'blur'}
                     ],
                     reqBefore: [
-                        {required:false,message:'请输入请求之前处理',trigger: 'blur'},
-                        {min: 0, max: 2000, message: '长度小于2000个字符', trigger: 'blur'}
+                        {required:false,message:'请输入请求之前处理',trigger: 'blur'}
+                        // {min: 0, max: 2000, message: '长度小于2000个字符', trigger: 'blur'}
                     ],
                     resExplain: [
-                        {required:true,message:'请输入请求之后处理',trigger: 'blur'},
-                        {min: 1, max: 2000, message: '长度小于2000个字符', trigger: 'blur'}
+                        {required:true,message:'请输入请求之后处理',trigger: 'blur'}
+                        // {min: 1, max: 2000, message: '长度小于2000个字符', trigger: 'blur'}
                     ],
                     reqKeepaliveTimeout: [
                         {pattern:/^\d+$/,message:'必须输入不小于0的整数',trigger: 'blur'}
