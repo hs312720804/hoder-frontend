@@ -30,8 +30,13 @@
                 ref="searchForm"
                 @submit.native.prevent="submitForm"
         >
-          <el-form-item label prop="policyName">
-            <el-input v-model="searchForm.policyName" style="width: 200px" placeholder="请输入策略名称"></el-input>
+          <el-select v-model="searchForm.constType">
+            <el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>
+            <el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>
+            <el-option label="策略维度方式查询" value="TAG_NAME"></el-option>
+          </el-select>
+          <el-form-item>
+            <el-input v-model="searchForm.policyName" style="width: 200px" :placeholder="policyNameHolder" :clearable='true'></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
@@ -72,18 +77,40 @@
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
-            <el-button
-                    size="small"
-                    type="primary"
-                    v-permission="'hoder:policy:edit'"
-                    @click="handleEdit(scope.row)"
-            >编辑</el-button>
-            <el-button
-                    size="small"
-                    type="info"
-                    v-permission="'hoder:policy:del'"
-                    @click="del(scope.row)"
-            >删除</el-button>
+            <el-dropdown @command="handleCommand">
+              <el-button>
+                操作
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['edit',scope.row]"
+                        v-permission="'hoder:policy:edit'"
+                >编辑</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['del',scope.row]"
+                        v-permission="'hoder:policy:del'"
+                >删除</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
+                <!--<div>操作</div>-->
+                <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:edit'"-->
+                     <!--@click="handleEdit(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--编辑-->
+                  <!--</li>-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:del'"-->
+                     <!--@click="del(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--删除-->
+                  <!--</li>-->
+                <!--</ul>-->
+            <!--</el-button>-->
             <el-button
                     size="small"
                     :type= "scope.row.status === 1 ? 'success' : 'danger'"
@@ -231,8 +258,10 @@ export default {
       initCurrentPage: 1,
       // 列表页
       searchForm: {
-        policyName: ""
+        policyName: "",
+        constType: 'POLICY_NAME'
       },
+      policyNameHolder: '请输入策略名称',
       title: "",
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
@@ -277,6 +306,11 @@ export default {
           if(val === true) {
               this.loadData()
           }
+      },
+      'searchForm.constType': function (val) {
+          if (val === 'POLICY_NAME') {this.policyNameHolder = '请输入策略名称'}
+          else if (val === 'POLICY_ID') {this.policyNameHolder = '请输入策略id'}
+          else if (val === 'TAG_NAME'){this.policyNameHolder = '请输入策略维度'}
       }
   },
   methods: {
@@ -441,7 +475,10 @@ export default {
     },
     // 重置
     handleReset: function() {
-      this.$refs.searchForm.resetFields();
+        this.searchForm.policyName = ''
+        this.searchForm.constType = 'POLICY_NAME'
+        this.loadData()
+      // this.$refs.searchForm.resetFields();
     },
     // 查看详情
     // handleDetail: function(index, row) {
@@ -474,6 +511,12 @@ export default {
     // 取消
     cancelAdd: function() {
       this.addFormVisible = false;
+    },
+    handleCommand(scope) {
+        const type = scope[0]
+        const params = scope[1]
+        if (type === 'edit') {this.handleEdit(params)}
+        else if (type === 'del') {this.del(params)}
     }
   }
 };
@@ -515,4 +558,16 @@ export default {
   color #0086b3
 .pagination
   float right
+.operate
+  position relative
+  z-index 0
+.more-operate
+  position absolute
+  z-index 999
+.operate-item
+  background #9a6e3a
+ul > li
+  list-style none
+  padding 0
+  margin 0
 </style>
