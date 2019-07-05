@@ -143,23 +143,39 @@ export function seeDevFile(params) {
     })
 
 }
-// 策略业务调用统计接口
-export function policyWithBiTotal(params) {
+// 策略业务调用统计接口圆饼图
+export function policyWithBiTotalPie(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/crowdAndPolicyStatistics/policyWithBiTotal',
+        url: 'api/crowdAndPolicyStatistics/policyTotalWithBiPie',
         params
     })
 }
-// 人群业务命中统计接口
-export function hitAndBiToTal(params) {
+// 策略业务调用统计接口多折线图
+export function policyWithBiTotalLine(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/crowdAndPolicyStatistics/hitAndBiToTal',
+        url: 'api/crowdAndPolicyStatistics/policyTotalWithBiLine',
         params
     })
 }
-// 点击投放中调用接口
+// 人群业务命中统计饼图
+export function hitAndBiToTalPie(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/hitAndBiToTalPie',
+        params
+    })
+}
+// 人群业务命中统计多折线图
+export function hitAndBiToTalLine(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/hitAndBiToTalLine',
+        params
+    })
+}
+// 点击投放中调用
 export function policyUseInBi(params) {
     return this.fetch({
         method: 'get',

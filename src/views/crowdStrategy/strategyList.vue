@@ -61,7 +61,7 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="300px">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="270px">
         <template scope="scope">
           <el-tag
                   size="mini"
@@ -71,21 +71,21 @@
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180">
+      <el-table-column prop="createTime" label="创建时间" width="170">
         <template scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="creatorName" label="创建人"></el-table-column>
-      <el-table-column prop="department" label="业务部门"></el-table-column>
-      <el-table-column prop="useStatus" label="状态">
+      <el-table-column prop="creatorName" label="创建人" width="60"></el-table-column>
+      <el-table-column prop="department" label="业务部门" width="70"></el-table-column>
+      <el-table-column prop="useStatus" label="状态" width="60">
         <template scope="scope">
           <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
           <span v-else>未投放</span>
         </template>
       </el-table-column>
-      <el-table-column label="操作" fixed="right" width="350">
+      <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
@@ -107,7 +107,7 @@
                 >查看配置</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown @command="handleCommandStastic">
+            <el-dropdown @command="handleCommandStastic" >
               <el-button size="small" type="primary">
                 统计
               </el-button>
@@ -269,22 +269,41 @@
     </el-dialog>
     <!-- 查看统计弹窗-->
     <el-dialog
-            :visible.sync="showStatistics">
-      <div class="click-date-picker">
-        <el-date-picker
-                v-model="time"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-        >
-        </el-date-picker>
+            :visible.sync="showStatistics"
+            width="90%"
+    >
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{linesTitle}}</div>
+          <div class="main" ref="main" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time1"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{pieTitle}}</div>
+          <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+        </div>
       </div>
-      <div class="lines-title">{{linesTitle}}</div>
-      <div class="main" ref="main" v-if=" showStatistics === true"></div>
-      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
-      <!--<div v-if=" showStatistics === true && !showPieData">该日期期间暂无无数据，请试着切换上面的日期得到数据~</div>-->
     </el-dialog>
     <!-- 投放中弹窗-->
     <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
@@ -319,7 +338,9 @@ export default {
       showConfiguration: false,
       showStatistics: false,
       linesTitle: '',
+      pieTitle:'',
       time: [],
+      time1: [],
       startDate: '',
       endDate: '',
       currentPid: undefined,
@@ -382,7 +403,12 @@ export default {
       },
       time(val) {
           if(this.currentPid){
-              this.drawLinesAndPie(this.currentPid,val[0],val[1])
+              this.drawLines(this.currentPid,val[0],val[1])
+          }
+      },
+      time1(val) {
+          if(this.currentPid){
+              this.drawPie(this.currentPid,val[0],val[1])
           }
       }
   },
@@ -711,24 +737,34 @@ export default {
       // 策略使用以及各业务使用次数统计
       handleCommandStastic(scope) {
           this.time = [this.startDate,this.endDate]
+          this.time1 = [this.startDate,this.endDate]
           const type = scope[0]
           this.currentPid = scope[1].policyId
           this.showStatistics = true
-          if(type === 'detail') {this.drawLinesAndPie(this.currentPid,this.startDate,this.endDate)}
+          if(type === 'detail') {
+              this.drawPie(this.currentPid,this.startDate,this.endDate)
+              this.drawLines(this.currentPid,this.startDate,this.endDate)
+          }
       },
-      drawLinesAndPie(id,startTime,endTime){
-        this.$service.policyWithBiTotal({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
-          const legendData = data.lineChar.series.map((key) => {
-              return key.name
+      drawPie(id,startTime,endTime){
+        this.$service.policyWithBiTotalPie({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
+          if(data.data.length === 0){this.pieTitle = '累计命中次数按业务分部暂无数据'}
+          else{this.pieTitle = '累计命中次数按业务分部'}
+          this.setCircleEcharts('hitBiTotal','',data.name,data.data)
+        })
+      },
+      drawLines(id,startTime,endTime){
+          this.$service.policyWithBiTotalLine({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
+              const legendData = data.series.map((key) => {
+                  return key.name
+              })
+              const linesData = data.series.map((key) => {
+                  return {name:key.name, data:key.data, type: 'line'}
+              })
+              this.linesTitle = '策略使用以及各业务使用次数统计'
+              this.setLinesEchart('main','',data.date,linesData,legendData)
           })
-          const linesData = data.lineChar.series.map((key) => {
-              return {name:key.name, data:key.data, type: 'line'}
-          })
-          this.linesTitle = '策略使用以及各业务使用次数统计'
-          this.setLinesEchart('main','',data.lineChar.date,linesData,legendData)
-          this.setCircleEcharts('hitBiTotal','累计命中次数按业务分部',data.PieChar.name,data.PieChar.data)
-      })
-    },
+      },
     formatDate (d) {
         const time = new Date(d)
         let y = time.getFullYear(); // 年份
@@ -792,8 +828,18 @@ export default {
   background #9a6e3a
 ul > li
   list-style none
-  padding 0
-  margin 0
+.echarts-container
+  position relative
+  width 50%
+  height auto
+  float left
+.crowd-statistic
+  &:before
+  &:after
+    display table
+    content ""
+  &:after
+    clear: both
 .main
   width 100%
   height 300px
@@ -802,6 +848,7 @@ ul > li
   text-align center
   margin 20px 0
 .lines-title
+  position absolute
   font-size 18px
   font-weight bold
   color #000

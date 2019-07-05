@@ -140,6 +140,16 @@
               @click="estimateType(scope.row)"
               :disabled="scope.row.forcastStatus != 1"
             >估算</el-button>
+            <el-dropdown @command="handleCommandStastic" v-permission="'hoder:statistics:index'">
+              <el-button size="small" type="danger">
+                统计
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >使用情况</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
           </el-button-group>
         </template>
       </el-table-column>
@@ -173,6 +183,24 @@
        <div>酷开openId：{{total2}}</div>
        <div>微信openId：{{total3}}</div>
    </el-dialog>
+    <!-- 查看统计弹窗-->
+    <el-dialog
+            :visible.sync="showStatistics">
+      <div class="click-date-picker">
+        <el-date-picker
+                v-model="time"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"
+        >
+        </el-date-picker>
+      </div>
+      <div class="lines-title">{{linesTitle}}</div>
+      <div class="main" ref="main" v-if=" showStatistics === true"></div>
+      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -207,7 +235,13 @@ export default {
         total2: '',
         total3: '',
         totalUser: '',
-        total4: ''
+        total4: '',
+        time: [],
+        showStatistics: false,
+        linesTitle: '',
+        startDate: '2019-05-28',
+        endDate: '2019-06-05',
+        currentCid: undefined
     };
   },
   props: ["selectRow"],
@@ -308,6 +342,19 @@ export default {
     handleReset: function() {
       this.$refs.searchForm.resetFields();
     },
+      // 策略使用以及各业务使用次数统计
+      handleCommandStastic(scope) {
+          this.time = [this.startDate,this.endDate]
+          const type = scope[0]
+          this.currentCid = scope[1].crowdId
+          this.showStatistics = true
+          if(type === 'detail') {this.drawCrowdData(this.currentCid,this.startDate,this.endDate)}
+      },
+      drawCrowdData(id,startTime,endTime){
+        this.$service.hitAndBiToTal({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+            console.log(data)
+        })
+      }
     // 查看详情
     // handleDetail: function(index, row) {
     //   var id = row.id;
