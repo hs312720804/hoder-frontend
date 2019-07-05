@@ -283,8 +283,13 @@
       </div>
       <div class="lines-title">{{linesTitle}}</div>
       <div class="main" ref="main" v-if=" showStatistics === true"></div>
-      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true && showPieData"></div>
-      <div v-if=" showStatistics === true && !showPieData">该日期期间暂无无数据，请试着切换上面的日期得到数据~</div>
+      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+      <!--<div v-if=" showStatistics === true && !showPieData">该日期期间暂无无数据，请试着切换上面的日期得到数据~</div>-->
+    </el-dialog>
+    <!-- 投放中弹窗-->
+    <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
+      <!--<div>该策略正在使用情况</div>-->
+      <div>正在投放：<span v-for="item in launchItems" class="launch-item">{{item}}</span></div>
     </el-dialog>
   </div>
 </template>
@@ -319,7 +324,8 @@ export default {
       endDate: '',
       currentPid: undefined,
       configTextarea: '',
-      showPieData: true,
+      showLaunch: false,
+      launchItems:[],
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
       // 默认每页数据量:pageSize
@@ -731,9 +737,9 @@ export default {
         return `${y}-${m}-${r}`
     },
     launchDetail(pid) {
-        debugger
+        this.showLaunch = true
         this.$service.policyUseInBi({policyId : pid}).then((data)=> {
-            console.log(data)
+            this.launchItems = data
         })
     }
   }
@@ -804,4 +810,6 @@ ul > li
   text-decoration underline
   color blue
   cursor pointer
+.launch-item + .launch-item
+  margin-left 20px
 </style>
