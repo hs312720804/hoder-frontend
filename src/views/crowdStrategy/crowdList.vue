@@ -117,6 +117,8 @@
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
+      <el-table-column prop="creatorName" label="创建人"></el-table-column>
+      <el-table-column prop="department" label="业务部门"></el-table-column>
       <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>

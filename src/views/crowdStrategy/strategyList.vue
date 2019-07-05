@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- authority -->
     <div class="TopNav">
       <div class="left">
         <el-button-group>
@@ -30,8 +29,18 @@
                 ref="searchForm"
                 @submit.native.prevent="submitForm"
         >
-          <el-form-item label prop="policyName">
-            <el-input v-model="searchForm.policyName" style="width: 200px" placeholder="请输入策略名称"></el-input>
+          <el-select v-model="searchForm.constType">
+            <el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>
+            <el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>
+            <el-option label="策略维度方式查询" value="TAG_NAME"></el-option>
+          </el-select>
+          <el-form-item>
+            <el-input
+                    v-model="searchForm.policyName"
+                    style="width: 200px" :placeholder="policyNameHolder"
+                    :clearable='true'
+                    @keyup.enter.native="submitForm"
+            ></el-input>
           </el-form-item>
           <el-form-item>
             <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
@@ -52,13 +61,7 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="createTime" label="创建时间" width="180">
-        <template scope="scope">
-          <el-icon name="time"></el-icon>
-          <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
-        </template>
-      </el-table-column>
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="300px">
         <template scope="scope">
           <el-tag
                   size="mini"
@@ -68,22 +71,71 @@
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
+      <el-table-column prop="createTime" label="创建时间" width="180">
+        <template scope="scope">
+          <el-icon name="time"></el-icon>
+          <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="creatorName" label="创建人"></el-table-column>
+      <el-table-column prop="department" label="业务部门"></el-table-column>
+      <el-table-column prop="useStatus" label="状态">
+        <template scope="scope">
+          <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
+          <span v-else>未投放</span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right" width="350">
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
-            <el-button
-                    size="small"
-                    type="primary"
-                    v-permission="'hoder:policy:edit'"
-                    @click="handleEdit(scope.row)"
-            >编辑</el-button>
-            <el-button
-                    size="small"
-                    type="info"
-                    v-permission="'hoder:policy:del'"
-                    @click="del(scope.row)"
-            >删除</el-button>
+            <el-dropdown @command="handleCommand">
+              <el-button size="small" type="primary">
+                操作
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['edit',scope.row]"
+                        v-permission="'hoder:policy:edit'"
+                >编辑</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['del',scope.row]"
+                        v-permission="'hoder:policy:del'"
+                >删除</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >查看配置</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-dropdown @command="handleCommandStastic">
+              <el-button size="small" type="primary">
+                统计
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >使用情况</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
+                <!--<div>操作</div>-->
+                <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:edit'"-->
+                     <!--@click="handleEdit(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--编辑-->
+                  <!--</li>-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:del'"-->
+                     <!--@click="del(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--删除-->
+                  <!--</li>-->
+                <!--</ul>-->
+            <!--</el-button>-->
             <el-button
                     size="small"
                     :type= "scope.row.status === 1 ? 'success' : 'danger'"
@@ -211,6 +263,34 @@
         <el-button type="primary" @click="addSubmit">保存</el-button>
       </div>
     </el-dialog>
+    <!-- 查看配置弹窗-->
+    <el-dialog title="查看配置" :visible.sync="showConfiguration">
+      <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
+    </el-dialog>
+    <!-- 查看统计弹窗-->
+    <el-dialog
+            :visible.sync="showStatistics">
+      <div class="click-date-picker">
+        <el-date-picker
+                v-model="time"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"
+        >
+        </el-date-picker>
+      </div>
+      <div class="lines-title">{{linesTitle}}</div>
+      <div class="main" ref="main" v-if=" showStatistics === true"></div>
+      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+      <!--<div v-if=" showStatistics === true && !showPieData">该日期期间暂无无数据，请试着切换上面的日期得到数据~</div>-->
+    </el-dialog>
+    <!-- 投放中弹窗-->
+    <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
+      <!--<div>该策略正在使用情况</div>-->
+      <div>正在投放：<span v-for="item in launchItems" class="launch-item">{{item}}</span></div>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -231,9 +311,21 @@ export default {
       initCurrentPage: 1,
       // 列表页
       searchForm: {
-        policyName: ""
+        policyName: "",
+        constType: 'POLICY_NAME'
       },
+      policyNameHolder: '请输入策略名称',
       title: "",
+      showConfiguration: false,
+      showStatistics: false,
+      linesTitle: '',
+      time: [],
+      startDate: '',
+      endDate: '',
+      currentPid: undefined,
+      configTextarea: '',
+      showLaunch: false,
+      launchItems:[],
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
       // 默认每页数据量:pageSize
@@ -271,11 +363,26 @@ export default {
   props: ["refresh"],
   created() {
     this.loadData();
+    const start = new Date()
+    const end = new Date()
+    this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+    this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+    this.time = [this.startDate,this.endDate]
   },
   watch: {
       refresh: function (val) {
           if(val === true) {
               this.loadData()
+          }
+      },
+      'searchForm.constType': function (val) {
+          if (val === 'POLICY_NAME') {this.policyNameHolder = '请输入策略名称'}
+          else if (val === 'POLICY_ID') {this.policyNameHolder = '请输入策略id'}
+          else if (val === 'TAG_NAME'){this.policyNameHolder = '请输入策略维度'}
+      },
+      time(val) {
+          if(this.currentPid){
+              this.drawLinesAndPie(this.currentPid,val[0],val[1])
           }
       }
   },
@@ -441,7 +548,10 @@ export default {
     },
     // 重置
     handleReset: function() {
-      this.$refs.searchForm.resetFields();
+        this.searchForm.policyName = ''
+        this.searchForm.constType = 'POLICY_NAME'
+        this.loadData()
+      // this.$refs.searchForm.resetFields();
     },
     // 查看详情
     // handleDetail: function(index, row) {
@@ -474,9 +584,166 @@ export default {
     // 取消
     cancelAdd: function() {
       this.addFormVisible = false;
+    },
+    seeDevDetail(row) {
+        this.$service.seeDevFile({policyId:row.policyId}).then((data) => {
+            this.showConfiguration = true
+            this.configTextarea = data.content
+        }).
+        catch(() => {
+            // this.showConfiguration = true
+            // this.configTextarea = '该策略没有配置文件'
+        })
+    },
+    handleCommand(scope) {
+        const type = scope[0]
+        const params = scope[1]
+        if (type === 'edit') {this.handleEdit(params)}
+        else if (type === 'del') {this.del(params)}
+        else if (type === 'detail') {this.seeDevDetail(params)}
+    },
+      // 通用多线性参数设置
+      setLinesEchart (element,title,xData,yData,legend) {
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              legend: {
+                  data: legend
+              },
+              xAxis: {
+                  type: 'category',
+                  data: xData,
+                  axisLabel: {
+                      interval: 0,
+                      rotate: -45
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  axisTick: {
+                      inside: true
+                  },
+                  scale: true,
+                  axisLabel: {
+                      margin: 2,
+                      formatter: function (value) {
+                          if (value >= 10000 && value < 10000000) {
+                              value = value / 10000 + "万";
+                          }
+                          else if (value >= 10000000) {
+                              value = value / 10000000 + "千万";
+                          } return value;
+                      }
+                  },
+              },
+              series: yData
+          })
+      },
+      setCircleEcharts(element,title,legend,data){
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+              },
+              legend: {
+                  orient: 'vertical',
+                  x: 'right',
+                  data: legend
+              },
+              series: [
+                  {
+                      name:'',
+                      type:'pie',
+                      radius: ['50%', '70%'],
+                      avoidLabelOverlap: false,
+                      itemStyle: {
+                          normal: {label:{
+                                  show:true,
+                                  formatter:'{b} : {c} ({d}%)'
+                              },
+                              labelLine:{show:true}},
+                          emphasis: {
+                              label: {
+                                  show: true,
+                                  formatter: "{b}\n{c} ({d}%)",
+                                  position: 'center',
+                                  textStyle: {
+                                      fontSize: '20',
+                                      fontWeight: 'bold'
+                                  }
+                              }
+                          }
+                      },
+                      // label: {
+                      //     normal: {
+                      //         show: true,
+                      //         formatter: "{a}{b}: {c} ({d}%)"
+                      //     },
+                      //     emphasis: {
+                      //         show: true,
+                      //         textStyle: {
+                      //             fontSize: '30',
+                      //             fontWeight: 'bold'
+                      //         }
+                      //     }
+                      // },
+                      // labelLine: {
+                      //     normal: {
+                      //         show: false
+                      //     }
+                      // },
+                      data: data
+                  }
+              ]
+          });
+      },
+      // 策略使用以及各业务使用次数统计
+      handleCommandStastic(scope) {
+          this.time = [this.startDate,this.endDate]
+          const type = scope[0]
+          this.currentPid = scope[1].policyId
+          this.showStatistics = true
+          if(type === 'detail') {this.drawLinesAndPie(this.currentPid,this.startDate,this.endDate)}
+      },
+      drawLinesAndPie(id,startTime,endTime){
+        this.$service.policyWithBiTotal({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
+          const legendData = data.lineChar.series.map((key) => {
+              return key.name
+          })
+          const linesData = data.lineChar.series.map((key) => {
+              return {name:key.name, data:key.data, type: 'line'}
+          })
+          this.linesTitle = '策略使用以及各业务使用次数统计'
+          this.setLinesEchart('main','',data.lineChar.date,linesData,legendData)
+          this.setCircleEcharts('hitBiTotal','累计命中次数按业务分部',data.PieChar.name,data.PieChar.data)
+      })
+    },
+    formatDate (d) {
+        const time = new Date(d)
+        let y = time.getFullYear(); // 年份
+        let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+        let r = time.getDate().toString().padStart(2,'0'); // 日子
+        return `${y}-${m}-${r}`
+    },
+    launchDetail(pid) {
+        this.showLaunch = true
+        this.$service.policyUseInBi({policyId : pid}).then((data)=> {
+            this.launchItems = data
+        })
     }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 .checkList
@@ -515,4 +782,34 @@ export default {
   color #0086b3
 .pagination
   float right
+.operate
+  position relative
+  z-index 0
+.more-operate
+  position absolute
+  z-index 999
+.operate-item
+  background #9a6e3a
+ul > li
+  list-style none
+  padding 0
+  margin 0
+.main
+  width 100%
+  height 300px
+  padding 30px
+.click-date-picker
+  text-align center
+  margin 20px 0
+.lines-title
+  font-size 18px
+  font-weight bold
+  color #000
+  margin-left 25px
+.under_line
+  text-decoration underline
+  color blue
+  cursor pointer
+.launch-item + .launch-item
+  margin-left 20px
 </style>

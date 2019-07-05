@@ -134,3 +134,36 @@ export function estimateResult(params) {
     })
 
 }
+// 查看配置文件
+export function seeDevFile(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/devTool/loadFile',
+        params
+    })
+
+}
+// 策略业务调用统计接口
+export function policyWithBiTotal(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/policyWithBiTotal',
+        params
+    })
+}
+// 人群业务命中统计接口
+export function hitAndBiToTal(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/hitAndBiToTal',
+        params
+    })
+}
+// 点击投放中调用接口
+export function policyUseInBi(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/policy/policyUseInBi',
+        params
+    })
+}
