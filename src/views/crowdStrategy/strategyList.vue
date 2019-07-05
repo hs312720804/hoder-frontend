@@ -107,7 +107,7 @@
                 >查看配置</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-dropdown @command="handleCommandStastic" v-permission="'hoder:statistics:index'">
+            <el-dropdown @command="handleCommandStastic" >
               <el-button size="small" type="primary">
                 统计
               </el-button>
@@ -270,26 +270,36 @@
     <!-- 查看统计弹窗-->
     <el-dialog
             :visible.sync="showStatistics"
-            width="80%"
+            width="90%"
     >
-      <div class="click-date-picker">
-        <el-date-picker
-                v-model="time"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-        >
-        </el-date-picker>
-      </div>
-      <!--<div class="lines-title">{{linesTitle}}</div>-->
       <div class="crowd-statistic">
         <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
           <div class="lines-title">{{linesTitle}}</div>
           <div class="main" ref="main" v-if=" showStatistics === true"></div>
         </div>
         <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time1"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
           <div class="lines-title">{{pieTitle}}</div>
           <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
         </div>
@@ -330,6 +340,7 @@ export default {
       linesTitle: '',
       pieTitle:'',
       time: [],
+      time1: [],
       startDate: '',
       endDate: '',
       currentPid: undefined,
@@ -392,7 +403,12 @@ export default {
       },
       time(val) {
           if(this.currentPid){
-              this.drawLinesAndPie(this.currentPid,val[0],val[1])
+              this.drawLines(this.currentPid,val[0],val[1])
+          }
+      },
+      time1(val) {
+          if(this.currentPid){
+              this.drawPie(this.currentPid,val[0],val[1])
           }
       }
   },
@@ -721,26 +737,34 @@ export default {
       // 策略使用以及各业务使用次数统计
       handleCommandStastic(scope) {
           this.time = [this.startDate,this.endDate]
+          this.time1 = [this.startDate,this.endDate]
           const type = scope[0]
           this.currentPid = scope[1].policyId
           this.showStatistics = true
-          if(type === 'detail') {this.drawLinesAndPie(this.currentPid,this.startDate,this.endDate)}
+          if(type === 'detail') {
+              this.drawPie(this.currentPid,this.startDate,this.endDate)
+              this.drawLines(this.currentPid,this.startDate,this.endDate)
+          }
       },
-      drawLinesAndPie(id,startTime,endTime){
-        this.$service.policyWithBiTotal({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
-          const legendData = data.lineChar.series.map((key) => {
-              return key.name
-          })
-          const linesData = data.lineChar.series.map((key) => {
-              return {name:key.name, data:key.data, type: 'line'}
-          })
-          this.linesTitle = '策略使用以及各业务使用次数统计'
-          this.setLinesEchart('main','',data.lineChar.date,linesData,legendData)
-          if(data.PieChar.data.length === 0){this.pieTitle = '累计命中次数按业务分部暂无数据'}
+      drawPie(id,startTime,endTime){
+        this.$service.policyWithBiTotalPie({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
+          if(data.data.length === 0){this.pieTitle = '累计命中次数按业务分部暂无数据'}
           else{this.pieTitle = '累计命中次数按业务分部'}
-          this.setCircleEcharts('hitBiTotal','',data.PieChar.name,data.PieChar.data)
-      })
-    },
+          this.setCircleEcharts('hitBiTotal','',data.name,data.data)
+        })
+      },
+      drawLines(id,startTime,endTime){
+          this.$service.policyWithBiTotalLine({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
+              const legendData = data.series.map((key) => {
+                  return key.name
+              })
+              const linesData = data.series.map((key) => {
+                  return {name:key.name, data:key.data, type: 'line'}
+              })
+              this.linesTitle = '策略使用以及各业务使用次数统计'
+              this.setLinesEchart('main','',data.date,linesData,legendData)
+          })
+      },
     formatDate (d) {
         const time = new Date(d)
         let y = time.getFullYear(); // 年份
@@ -804,8 +828,6 @@ export default {
   background #9a6e3a
 ul > li
   list-style none
-  padding 0
-  margin 0
 .echarts-container
   position relative
   width 50%
