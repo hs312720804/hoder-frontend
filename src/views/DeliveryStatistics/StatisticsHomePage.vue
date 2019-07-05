@@ -221,29 +221,44 @@
             }
         },
         watch: {
-            time0(val) {
-                this.getAllCrowdTotal(val[0],val[1])
+            time0(val,oldVal) {
+                // 防止第一次加载页面重复调用接口
+                if(oldVal.length !== 0) {
+                     this.getAllCrowdTotal(val[0],val[1])
+                }
             },
-            time1(val) {
-                this.getCrowdtotal(val[0],val[1])
+            time1(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getCrowdtotal(val[0], val[1])
+                }
             },
-            time2(val) {
-                this.getForcastotal(val[0],val[1])
+            time2(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getForcastotal(val[0], val[1])
+                }
             },
-            time3(val) {
-                this.getCrowdUvtotal(val[0],val[1])
+            time3(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getCrowdUvtotal(val[0], val[1])
+                }
             },
-            time4(val) {
-                this.getCrowdSendtotal(val[0],val[1])
+            time4(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getCrowdSendtotal(val[0], val[1])
+                }
             },
-            time5(val) {
-                this.getCrowdClicktotal(val[0],val[1])
+            time5(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getCrowdClicktotal(val[0], val[1])
+                }
             },
-            time6(val) {
-                this.getCrowdSextotal(val[0],val[1])
-                this.getCrowdAgetotal(val[0],val[1])
-                this.getCrowdDevicetotal(val[0],val[1])
-                this.getCrowdProvincetotal(val[0],val[1])
+            time6(val,oldVal) {
+                if(oldVal.length !== 0) {
+                    this.getCrowdSextotal(val[0], val[1])
+                    this.getCrowdAgetotal(val[0], val[1])
+                    this.getCrowdDevicetotal(val[0], val[1])
+                    this.getCrowdProvincetotal(val[0], val[1])
+                }
             },
             businessType(val) {
                 this.handleLinesBusiness(val)
@@ -603,6 +618,7 @@
             }
         },
         mounted () {
+            console.log('woshimounted')
             this.getCrowdData()
             this.getCrowdtotal(this.startDate,this.endDate)
             this.getForcastotal(this.startDate,this.endDate)

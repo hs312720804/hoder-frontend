@@ -2,7 +2,7 @@
   <el-container class="layout">
     <div class="leftMenu">
       <div class="logo">
-        <div class="logo__img">
+        <div class="logo__img" @click="handleLogoClick">
 
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
           <i class="el-icon-cc-celve2"></i>
@@ -226,6 +226,11 @@
                     }
 
                 })
+            },
+            handleLogoClick() {
+                this.$router.push({
+                    path: '/statisticsHomePage'
+                })
             }
         },
         created() {
@@ -257,6 +262,7 @@
     background-color: #092035
     border-right: 1px solid #092035
     border-bottom: 1px solid #092035
+    cursor pointer
   .logo__img
     color: #409eff
     font-size 22px
