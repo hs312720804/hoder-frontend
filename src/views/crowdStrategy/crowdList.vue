@@ -741,9 +741,9 @@ export default {
       },
       drawExposePie(id,startTime,endTime){
           this.$service.exposeCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              if(data.data.length === 0){this.hitPieTitle = '累计曝光数按业务分布暂无数据'}
-              else{this.hitPieTitle = '累计曝光数按业务分布'}
-              this.setCircleEcharts('hitPie','',data.name,data.data)
+              if(data.data.length === 0){this.exposePieTitle = '累计曝光数按业务分布暂无数据'}
+              else{this.exposePieTitle = '累计曝光数按业务分布'}
+              this.setCircleEcharts('exposePie','',data.name,data.data)
           })
       },
       drawExposeLine(id,startTime,endTime){
