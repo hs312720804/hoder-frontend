@@ -710,14 +710,14 @@ export default {
           this.currentCid = scope[1].crowdId
           this.showStatistics = true
           if(type === 'detail') {
-              this.drawCrowdPie(this.currentCid,this.startDate,this.endDate)
-              this.drawCrowdLine(this.currentCid,this.startDate,this.endDate)
-              this.drawExposePie(this.currentCid,this.startDate,this.endDate)
-              this.drawExposeLine(this.currentCid,this.startDate,this.endDate)
-              this.drawClickPie(this.currentCid,this.startDate,this.endDate)
-              this.drawClickLine(this.currentCid,this.startDate,this.endDate)
-              this.crowdLaunchDetail(this.currentCid,this.startDate,this.endDate)
-              this.setProvinceData(this.currentCid,this.startDate,this.endDate)
+              this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
+              this.drawCrowdLine(this.currentCid,this.time[0],this.time[1])
+              this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
+              this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
+              this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
+              this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
+              this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
+              this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
           }
       },
       drawCrowdPie(id,startTime,endTime){
