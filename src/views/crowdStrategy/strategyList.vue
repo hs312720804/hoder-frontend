@@ -389,6 +389,7 @@ export default {
     this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
     this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
     this.time = [this.startDate,this.endDate]
+    this.time1 = [this.startDate,this.endDate]
   },
   watch: {
       refresh: function (val) {
@@ -401,13 +402,15 @@ export default {
           else if (val === 'POLICY_ID') {this.policyNameHolder = '请输入策略id'}
           else if (val === 'TAG_NAME'){this.policyNameHolder = '请输入策略维度'}
       },
-      time(val) {
-          if(this.currentPid){
+      time(val,oldVal) {
+          if(this.currentPid && oldVal.length !== 0){
+              console.log('watch-time')
               this.drawLines(this.currentPid,val[0],val[1])
           }
       },
-      time1(val) {
-          if(this.currentPid){
+      time1(val,oldVal) {
+          if(this.currentPid && oldVal.length !== 0){
+              console.log('watch-time1')
               this.drawPie(this.currentPid,val[0],val[1])
           }
       }
@@ -736,8 +739,6 @@ export default {
       },
       // 策略使用以及各业务使用次数统计
       handleCommandStastic(scope) {
-          this.time = [this.startDate,this.endDate]
-          this.time1 = [this.startDate,this.endDate]
           const type = scope[0]
           this.currentPid = scope[1].policyId
           this.showStatistics = true

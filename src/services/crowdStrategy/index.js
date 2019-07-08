@@ -175,6 +175,54 @@ export function hitAndBiToTalLine(params) {
         params
     })
 }
+// 人群总曝光以及各业务的曝光量饼图
+export function exposeCrowdTotalPie(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/exposeCrowdTotalPie',
+        params
+    })
+}
+// 人群总曝光以及各业务的曝光量折线图
+export function exposeCrowdTotalLine(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/exposeCrowdTotalLine',
+        params
+    })
+}
+// 该人群总点击以及各业务的点击次数圆饼图
+export function clickCrowdTotalPie(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/clickCrowdTotalPie',
+        params
+    })
+}
+// 该人群总点击以及各业务的点击次数折线图
+export function clickCrowdTotalLine(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/clickCrowdTotalLine',
+        params
+    })
+}
+// 漏斗图
+export function crowdLanuchData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/hopperDateMap',
+        params
+    })
+}
+// 省份分布比例
+export function exposeProvinceScale(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowdAndPolicyStatistics/exposeProvinceScale',
+        params
+    })
+}
 // 点击投放中调用
 export function policyUseInBi(params) {
     return this.fetch({
