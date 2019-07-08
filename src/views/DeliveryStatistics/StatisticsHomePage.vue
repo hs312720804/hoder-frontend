@@ -618,7 +618,6 @@
             }
         },
         mounted () {
-            console.log('woshimounted')
             this.getCrowdData()
             this.getCrowdtotal(this.startDate,this.endDate)
             this.getForcastotal(this.startDate,this.endDate)

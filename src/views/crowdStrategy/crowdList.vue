@@ -185,21 +185,138 @@
    </el-dialog>
     <!-- 查看统计弹窗-->
     <el-dialog
-            :visible.sync="showStatistics">
-      <div class="click-date-picker">
-        <el-date-picker
-                v-model="time"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-        >
-        </el-date-picker>
+            :visible.sync="showStatistics"
+            width="90%"
+    >
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{hitLinesTitle}}</div>
+          <div class="main" ref="hitLine" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time1"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{hitPieTitle}}</div>
+          <div class="main" ref="hitPie" v-if=" showStatistics === true"></div>
+        </div>
       </div>
-      <div class="lines-title">{{linesTitle}}</div>
-      <div class="main" ref="main" v-if=" showStatistics === true"></div>
-      <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time2"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{exposeLinesTitle}}</div>
+          <div class="main" ref="exposeLine" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time3"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{exposePieTitle}}</div>
+          <div class="main" ref="exposePie" v-if=" showStatistics === true"></div>
+        </div>
+      </div>
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time4"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{clickLinesTitle}}</div>
+          <div class="main" ref="clickLine" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time5"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{clickPieTitle}}</div>
+          <div class="main" ref="clickPie" v-if=" showStatistics === true"></div>
+        </div>
+      </div>
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time6"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{crowdLaunchTitle}}</div>
+          <div class="funnel-tips">人群投放过程中的数据（单位：条）</div>
+          <div class="main" ref="crowdLaunch" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time7"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{exposeProvinceTitle}}</div>
+          <div class="main" ref="exposeProvince" v-if=" showStatistics === true"></div>
+        </div>
+      </div>
     </el-dialog>
   </div>
 </template>
@@ -237,16 +354,84 @@ export default {
         totalUser: '',
         total4: '',
         time: [],
+        time1: [],
+        time2: [],
+        time3: [],
+        time4: [],
+        time5: [],
+        time6: [],
+        time7: [],
         showStatistics: false,
-        linesTitle: '',
-        startDate: '2019-05-28',
-        endDate: '2019-06-05',
+        hitLinesTitle: '',
+        hitPieTitle: '',
+        exposeLinesTitle: '',
+        exposePieTitle: '',
+        clickLinesTitle: '',
+        clickPieTitle: '',
+        crowdLaunchTitle: '',
+        exposeProvinceTitle: '',
+        startDate: '',
+        endDate: '',
         currentCid: undefined
     };
   },
   props: ["selectRow"],
   created() {
     this.loadData();
+      const start = new Date()
+      const end = new Date()
+      this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+      this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+      this.time = [this.startDate,this.endDate]
+      this.time1 = [this.startDate,this.endDate]
+      this.time2 = [this.startDate,this.endDate]
+      this.time3 = [this.startDate,this.endDate]
+      this.time4 = [this.startDate,this.endDate]
+      this.time5 = [this.startDate,this.endDate]
+      this.time6 = [this.startDate,this.endDate]
+      this.time7 = [this.startDate,this.endDate]
+  },
+  watch: {
+      time(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0 && val !== oldVal){
+              this.drawCrowdLine(this.currentCid,val[0],val[1])
+          }
+      },
+      time1(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.drawCrowdPie(this.currentCid,val[0],val[1])
+          }
+      },
+      time2(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.drawExposeLine(this.currentCid,val[0],val[1])
+          }
+      },
+      time3(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.drawExposePie(this.currentCid,val[0],val[1])
+          }
+      },
+      time4(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.drawClickLine(this.currentCid,val[0],val[1])
+          }
+      },
+      time5(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.drawClickPie(this.currentCid,val[0],val[1])
+          }
+      },
+      time6(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.crowdLaunchDetail(this.currentCid,val[0],val[1])
+          }
+      },
+      time7(val,oldVal) {
+          if(this.currentCid && oldVal.length !== 0){
+              this.setProvinceData(this.currentCid,val[0],val[1])
+          }
+      }
   },
   methods: {
     goBack() {
@@ -342,24 +527,279 @@ export default {
     handleReset: function() {
       this.$refs.searchForm.resetFields();
     },
+      // 通用多线性参数设置
+      setLinesEchart (element,title,xData,yData,legend) {
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              legend: {
+                  data: legend
+              },
+              xAxis: {
+                  type: 'category',
+                  data: xData,
+                  axisLabel: {
+                      interval: 0,
+                      rotate: -45
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  axisTick: {
+                      inside: true
+                  },
+                  scale: true,
+                  axisLabel: {
+                      margin: 2,
+                      formatter: function (value) {
+                          if (value >= 10000 && value < 10000000) {
+                              value = value / 10000 + "万";
+                          }
+                          else if (value >= 10000000) {
+                              value = value / 10000000 + "千万";
+                          } return value;
+                      }
+                  },
+              },
+              series: yData
+          })
+      },
+      setCircleEcharts(element,title,legend,data){
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+              },
+              legend: {
+                  orient: 'vertical',
+                  x: 'right',
+                  data: legend
+              },
+              series: [
+                  {
+                      name:'',
+                      type:'pie',
+                      radius: ['50%', '70%'],
+                      avoidLabelOverlap: false,
+                      itemStyle: {
+                          normal: {label:{
+                                  show:true,
+                                  formatter:'{b} : {c} ({d}%)'
+                              },
+                              labelLine:{show:true}},
+                          emphasis: {
+                              label: {
+                                  show: true,
+                                  formatter: "{b}\n{c} ({d}%)",
+                                  position: 'center',
+                                  textStyle: {
+                                      fontSize: '20',
+                                      fontWeight: 'bold'
+                                  }
+                              }
+                          }
+                      },
+                      data: data
+                  }
+              ]
+          });
+      },
+      setMapEcharts (element,title,data) {
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          // 中国地图
+          myChart.setOption({
+              title : {
+                  text: title,
+                  // subtext: '纯属虚构',
+                  left: 'center'
+              },
+              tooltip : {
+                  trigger: 'item',
+                  formatter: '{b}<br/>({c}%)'
+              },
+              series : [
+                  {
+                      name: '省份分布',
+                      type: 'map',
+                      mapType: 'china',
+                      roam: false,
+                      label: {
+                          normal: {
+                              show: false
+                          },
+                          emphasis: {
+                              show: true
+                          }
+                      },
+                      data:data
+                  },
+              ]
+          });
+      },
+      setFunnelEcharts(element,title,legend,data){
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+              },
+              legend: {
+                  data: legend
+              },
+              calculable: true,
+              series: [
+                  {
+                      name:'漏斗图',
+                      type:'funnel',
+                      left: '10%',
+                      top: 60,
+                      //x2: 80,
+                      bottom: 60,
+                      width: '80%',
+                      // height: {totalHeight} - y - y2,
+                      min: 0,
+                      max: 100,
+                      minSize: '0%',
+                      maxSize: '100%',
+                      sort: 'descending',
+                      gap: 2,
+                      label: {
+                          show: true,
+                          position: 'inside'
+                      },
+                      labelLine: {
+                          length: 10,
+                          lineStyle: {
+                              width: 1,
+                              type: 'solid'
+                          }
+                      },
+                      itemStyle: {
+                          borderColor: '#fff',
+                          borderWidth: 1
+                      },
+                      emphasis: {
+                          label: {
+                              fontSize: 20
+                          }
+                      },
+                      data: data
+                  }
+              ]
+          });
+      },
       // 策略使用以及各业务使用次数统计
       handleCommandStastic(scope) {
-          this.time = [this.startDate,this.endDate]
           const type = scope[0]
           this.currentCid = scope[1].crowdId
           this.showStatistics = true
-          if(type === 'detail') {this.drawCrowdData(this.currentCid,this.startDate,this.endDate)}
+          if(type === 'detail') {
+              this.drawCrowdPie(this.currentCid,this.startDate,this.endDate)
+              this.drawCrowdLine(this.currentCid,this.startDate,this.endDate)
+              this.drawExposePie(this.currentCid,this.startDate,this.endDate)
+              this.drawExposeLine(this.currentCid,this.startDate,this.endDate)
+              this.drawClickPie(this.currentCid,this.startDate,this.endDate)
+              this.drawClickLine(this.currentCid,this.startDate,this.endDate)
+              this.crowdLaunchDetail(this.currentCid,this.startDate,this.endDate)
+              this.setProvinceData(this.currentCid,this.startDate,this.endDate)
+          }
       },
-      drawCrowdData(id,startTime,endTime){
-        this.$service.hitAndBiToTal({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-            console.log(data)
+      drawCrowdPie(id,startTime,endTime){
+        this.$service.hitAndBiToTalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+            if(data.data.length === 0){this.hitPieTitle = '累计命中次数按业务分布暂无数据'}
+            else{this.hitPieTitle = '累计命中次数按业务分布'}
+            this.setCircleEcharts('hitPie','',data.name,data.data)
         })
+      },
+      drawCrowdLine(id,startTime,endTime){
+          this.$service.hitAndBiToTalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              const legendData = data.series.map((key) => {
+                  return key.name
+              })
+              const linesData = data.series.map((key) => {
+                  return {name:key.name, data:key.data, type: 'line'}
+              })
+              this.hitLinesTitle = '该人群总命中量以及各业务的命中量'
+              this.setLinesEchart('hitLine','',data.date,linesData,legendData)
+          })
+      },
+      drawExposePie(id,startTime,endTime){
+          this.$service.exposeCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              if(data.data.length === 0){this.hitPieTitle = '累计曝光数按业务分布暂无数据'}
+              else{this.hitPieTitle = '累计曝光数按业务分布'}
+              this.setCircleEcharts('hitPie','',data.name,data.data)
+          })
+      },
+      drawExposeLine(id,startTime,endTime){
+          this.$service.exposeCrowdTotalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              const legendData = data.series.map((key) => {
+                  return key.name
+              })
+              const linesData = data.series.map((key) => {
+                  return {name:key.name, data:key.data, type: 'line'}
+              })
+              this.exposeLinesTitle = '该人群总曝光量以及各业务的曝光量'
+              this.setLinesEchart('exposeLine','',data.date,linesData,legendData)
+          })
+      },
+      drawClickPie(id,startTime,endTime){
+          this.$service.clickCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              if(data.data.length === 0){this.clickPieTitle = '累计点击次数按业务分布暂无数据'}
+              else{this.clickPieTitle = '累计点击次数按业务分布'}
+              this.setCircleEcharts('clickPie','',data.name,data.data)
+          })
+      },
+      drawClickLine(id,startTime,endTime){
+          this.$service.clickCrowdTotalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              const legendData = data.series.map((key) => {
+                  return key.name
+              })
+              const linesData = data.series.map((key) => {
+                  return {name:key.name, data:key.data, type: 'line'}
+              })
+              this.clickLinesTitle = '该人群总点击以及各业务的点击次数'
+              this.setLinesEchart('clickLine','',data.date,linesData,legendData)
+          })
+      },
+      crowdLaunchDetail(id,startTime,endTime){
+          this.$service.crowdLanuchData({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              if(data.data.length === 0){this.crowdLaunchTitle = '该人群投放数据漏斗基本详情暂无数据'}
+              else{this.crowdLaunchTitle = '该人群投放数据漏斗基本详情'}
+              this.setFunnelEcharts('crowdLaunch','',data.names,data.data)
+          })
+      },
+      setProvinceData(id,startTime,endTime){
+          this.$service.exposeProvinceScale({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
+              const newData = data.map((item)=> {
+                  return {name: item.name,value: parseFloat(item.value)}
+              })
+              this.exposeProvinceTitle = '曝光人群省份分布'
+              this.setMapEcharts('exposeProvince','',newData)
+          })
+      },
+      formatDate (d) {
+          const time = new Date(d)
+          let y = time.getFullYear(); // 年份
+          let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+          let r = time.getDate().toString().padStart(2,'0'); // 日子
+          return `${y}-${m}-${r}`
       }
-    // 查看详情
-    // handleDetail: function(index, row) {
-    //   var id = row.id;
-    //   // todo: 以后再做
-    // }
   }
 };
 </script>
@@ -380,4 +820,34 @@ fieldset>div
 .label-or-space
   color: #1ac71c
   margin: 0 5px
+.echarts-container
+  position relative
+  width 50%
+  height auto
+  float left
+.crowd-statistic
+  border-bottom 1px dashed #ccc
+  &:before
+  &:after
+    display table
+    content ""
+  &:after
+    clear: both
+.main
+  width 100%
+  height 300px
+  padding 30px
+.click-date-picker
+  text-align center
+  margin 20px 0
+.lines-title
+  position absolute
+  font-size 18px
+  font-weight bold
+  color #000
+  margin-left 25px
+.funnel-tips
+  font-size 14px
+  color #333
+  margin 50px 0 0 25px
 </style>
