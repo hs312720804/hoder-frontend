@@ -404,13 +404,11 @@ export default {
       },
       time(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
-              console.log('watch-time')
               this.drawLines(this.currentPid,val[0],val[1])
           }
       },
       time1(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
-              console.log('watch-time1')
               this.drawPie(this.currentPid,val[0],val[1])
           }
       }
