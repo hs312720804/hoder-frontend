@@ -394,42 +394,82 @@ export default {
   watch: {
       time(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0 && val !== oldVal){
-              this.drawCrowdLine(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawCrowdLine(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time = oldVal
+              }
           }
       },
       time1(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.drawCrowdPie(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawCrowdPie(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time1 = oldVal
+              }
           }
       },
       time2(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.drawExposeLine(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawExposeLine(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time2 = oldVal
+              }
           }
       },
       time3(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.drawExposePie(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawExposePie(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time3 = oldVal
+              }
           }
       },
       time4(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.drawClickLine(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawClickLine(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time4 = oldVal
+              }
           }
       },
       time5(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.drawClickPie(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawClickPie(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time5 = oldVal
+              }
           }
       },
       time6(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.crowdLaunchDetail(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.crowdLaunchDetail(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time6 = oldVal
+              }
           }
       },
       time7(val,oldVal) {
           if(this.currentCid && oldVal.length !== 0){
-              this.setProvinceData(this.currentCid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.setProvinceData(this.currentCid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time7 = oldVal
+              }
           }
       }
   },
@@ -799,6 +839,13 @@ export default {
           let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
           let r = time.getDate().toString().padStart(2,'0'); // 日子
           return `${y}-${m}-${r}`
+      },
+      setDataInMonth(startDate,endDate){
+          const startTime = new Date(startDate).getTime()
+          const endTime = new Date(endDate).getTime()
+          const oneMonth = 3600*1000*24*30
+          if(endTime - startTime > oneMonth) {return false}
+          else{return true}
       }
   }
 };

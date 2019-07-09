@@ -378,7 +378,7 @@ export default {
         ]
       },
       statusTip: undefined,
-      searchValue: ''
+      searchValue: '',
     };
   },
   props: ["refresh"],
@@ -404,12 +404,22 @@ export default {
       },
       time(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
-              this.drawLines(this.currentPid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawLines(this.currentPid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time = oldVal
+              }
           }
       },
       time1(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
-              this.drawPie(this.currentPid,val[0],val[1])
+              if(this.setDataInMonth(val[0],val[1])){
+                  this.drawPie(this.currentPid,val[0],val[1])
+              }else{
+                  this.$message('日期间隔最多只能是30天！请重新选择日期')
+                  this.time1 = oldVal
+              }
           }
       }
   },
@@ -776,6 +786,13 @@ export default {
         this.$service.policyUseInBi({policyId : pid}).then((data)=> {
             this.launchItems = data
         })
+    },
+    setDataInMonth(startDate,endDate){
+        const startTime = new Date(startDate).getTime()
+        const endTime = new Date(endDate).getTime()
+        const oneMonth = 3600*1000*24*30
+        if(endTime - startTime > oneMonth) {return false}
+        else{return true}
     }
   }
 }

@@ -224,40 +224,75 @@
             time0(val,oldVal) {
                 // 防止第一次加载页面重复调用接口
                 if(oldVal.length !== 0) {
-                     this.getAllCrowdTotal(val[0],val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getAllCrowdTotal(val[0],val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time0 = oldVal
+                    }
                 }
             },
             time1(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getCrowdtotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getCrowdtotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time1 = oldVal
+                    }
                 }
             },
             time2(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getForcastotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getForcastotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time2 = oldVal
+                    }
                 }
             },
             time3(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getCrowdUvtotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getCrowdUvtotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time3 = oldVal
+                    }
                 }
             },
             time4(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getCrowdSendtotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getCrowdSendtotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time4 = oldVal
+                    }
                 }
             },
             time5(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getCrowdClicktotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getCrowdClicktotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time5 = oldVal
+                    }
                 }
             },
             time6(val,oldVal) {
                 if(oldVal.length !== 0) {
-                    this.getCrowdSextotal(val[0], val[1])
-                    this.getCrowdAgetotal(val[0], val[1])
-                    this.getCrowdDevicetotal(val[0], val[1])
-                    this.getCrowdProvincetotal(val[0], val[1])
+                    if(this.setDataInMonth(val[0],val[1])){
+                        this.getCrowdSextotal(val[0], val[1])
+                        this.getCrowdAgetotal(val[0], val[1])
+                        this.getCrowdDevicetotal(val[0], val[1])
+                        this.getCrowdProvincetotal(val[0], val[1])
+                    }else{
+                        this.$message('日期间隔最多只能是30天！请重新选择日期')
+                        this.time6 = oldVal
+                    }
                 }
             },
             businessType(val) {
@@ -615,6 +650,13 @@
                 let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
                 let r = time.getDate().toString().padStart(2,'0'); // 日子
                 return `${y}-${m}-${r}`
+            },
+            setDataInMonth(startDate,endDate){
+                const startTime = new Date(startDate).getTime()
+                const endTime = new Date(endDate).getTime()
+                const oneMonth = 3600*1000*24*30
+                if(endTime - startTime > oneMonth) {return false}
+                else{return true}
             }
         },
         mounted () {
