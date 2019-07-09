@@ -85,7 +85,7 @@ export default {
 </script>
 <style lang="stylus" scoped>
   .strategy >>> .el-transfer-panel
-    width 300px
+    width 280px
   .strategy >>> .el-transfer-panel__item.el-checkbox .el-checkbox__label
     overflow visible
 </style>

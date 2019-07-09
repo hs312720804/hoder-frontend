@@ -77,3 +77,21 @@ export function findLabelGroupById(params) {
         params
     })
 }
+
+// 编辑标签分组
+export function editLabelGroupName(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/labelGroup/edit',
+        params
+    })
+}
+
+// 删除标签分组
+export function delLabelGroup(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/labelGroup/delGroup',
+        params
+    })
+}
