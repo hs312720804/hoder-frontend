@@ -19,6 +19,7 @@ import * as tag from "./tag.js"
 import * as dataManage from "./dataManage/peoplePosition"
 import * as thirdInterface from "./dataManage/thirdInterface"
 import * as statisticCrowd from "./statisticCrowd/crowdPolicy"
+import * as clearCache from "./dataManage/clearCache"
 const service = {
     state: {},
     fetch,
@@ -40,6 +41,7 @@ const service = {
     ...tag,
     ...dataManage,
     ...statisticCrowd,
-    ...thirdInterface
+    ...thirdInterface,
+    ...clearCache
 }
 Vue.prototype.$service = utils.wrapService(service)
