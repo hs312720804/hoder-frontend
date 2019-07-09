@@ -31,6 +31,7 @@ import crowdPortrayal from '@/views/HomePage/crowdPortrayal'
 import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
 import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
 import thirdInterface from '@/views/thirdInterface/index'
+import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
 const children = [
     {
         name: 'homePage',
@@ -309,7 +310,17 @@ const children = [
                     title: '第三方接口',
                     icon: 'el-icon-cc-file'
                 }
-            }
+            },
+            {
+                name: 'clearCache',
+                path: 'clearCache',
+                component: clearCache,
+                meta: {
+                    tagId:"clearCache",
+                    title: '第三方接口',
+                    icon: 'el-icon-cc-close-circle'
+                }
+            },
         ]
     },
     {

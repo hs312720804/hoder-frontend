@@ -202,7 +202,6 @@ export default {
        },
        getThirdInterfaces () {
            this.$service.getthirdInterfaceSelectList().then((data) => {
-               console.log(data)
                this.thirdInterfaces = data
                // let arr = Object.keys(data).map(value => ({value: parseInt(value), label:data[value]}))
                // this.thirdInterfaces = arr

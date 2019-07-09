@@ -120,7 +120,8 @@
                     "/monitor/index": "DeliveryMonitor",
                     "/portrayal/index": "DeliveryAfterPeopleDraw",
                     "/dataAnalyze/index": "DeliveryDataAnalyse",
-                    "/thirdInterfaceConf/index": "thirdInterface"
+                    "/thirdInterfaceConf/index": "thirdInterface",
+                    "/devTool/clearCache":"clearCache"
                 }
             };
         },
