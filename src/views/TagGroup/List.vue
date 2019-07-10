@@ -24,7 +24,6 @@
                   ref="tree"
                   :default-expanded-keys="defaultExpanded"
                   expand-on-click-node
-                  default-expand-all
                   :show-checkbox="true"
                   @node-click="handleNodeClick"
                   @node-expand="nodeExpand"
@@ -159,12 +158,10 @@ export default {
         },
         remove() {
             const select = this.$refs.tree.getCheckedNodes()
-            console.log(select)
             this.showEditDialog = true
             this.editTitle = '删除标签组'
             this.mode = 'del'
             this.delGroupIds = select.map(item => item.groupId).join(',')
-            console.log(this.delGroupIds)
         },
         handleConfirm() {
             if(this.mode === 'edit') {
@@ -175,7 +172,6 @@ export default {
                         this.fetchData()
                     })}
             else if(this.mode === 'del') {
-                debugger
                 this.$service.delLabelGroup({groupIds: this.delGroupIds},'删除成功')
                     .then(() => {
                         this.showEditDialog = false
@@ -186,30 +182,11 @@ export default {
         handleTagEdit(){
             this.showCheckBox = true
         },
-        nodeExpand(node,data,key){
-            const child = this.$refs.tree.$children
-            const arr =[]
-            child.forEach((item)=>{
-                arr.push(item._uid)
-            })
-            this.defaultExpanded.push(arr.indexOf(key._uid)+1)
-            // console.log(this.defaultExpanded)
-            // console.log(arr)
-            // console.log(key._uid)
+        nodeExpand(node){
+            this.defaultExpanded.push(node.groupId)
         },
-        nodeCollapse(node,data,key){
-            const child = this.$refs.tree.$children
-            const arr =[]
-            child.forEach((item)=>{
-                arr.push(item._uid)
-            })
-            const del = this.defaultExpanded.indexOf(arr.indexOf(key._uid)+1)
-            // this.defaultExpanded.filter(del)
-            // this.defaultExpanded.forEach(item => {item.filter(item => item == del)})
-            // console.log(this.defaultExpanded)
-            // console.log(arr)
-            // console.log(del)
-            // console.log(key._uid)
+        nodeCollapse(node){
+            this.defaultExpanded = this.defaultExpanded.filter(item => item !== node.groupId)
         },
     },
     created() {
