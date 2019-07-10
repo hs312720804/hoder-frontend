@@ -29,6 +29,7 @@
                 width="30%"
                 class="organSelect"
         >
+            <el-button type="text" @click="handleTopMenu">顶级目录</el-button>
             <el-tree
                     :data="parentTree"
                     :props="parentProps"
@@ -69,7 +70,8 @@ export default {
                 groupName: [
                     { required: true, message: '请填写分组名', trigger: 'blur' }
                 ],
-            }
+            },
+            selectTop: false
             // schema: _
             //     .map({
             //         groupName: _.r.str.other('form', {label: '分组名'})
@@ -110,14 +112,23 @@ export default {
             this.showSelectDialog = true
         },
         handleSelectNodeClick (node) {
+            this.selectTop = false
             this.currentSelectDada = node
+        },
+        handleTopMenu(){
+            this.selectTop = true
         },
         parentSelectCancel () {
             this.showSelectDialog = false
         },
         parentSelectOk () {
-            this.form.pid = this.currentSelectDada.groupId
-            this.parentGroupName = this.currentSelectDada.groupName
+            if(this.selectTop){
+                this.form.pid = 0
+                this.parentGroupName = '顶级目录'
+            }else{
+                this.form.pid = this.currentSelectDada.groupId
+                this.parentGroupName = this.currentSelectDada.groupName
+            }
             this.showSelectDialog = false
         }
     },
