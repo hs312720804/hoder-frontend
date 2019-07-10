@@ -102,7 +102,7 @@
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
-      <el-table-column prop="priority" label="优先级" width="90"></el-table-column>
+      <el-table-column prop="priority" label="优先级" width="60"></el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="80">
           <template scope="scope">
@@ -117,8 +117,8 @@
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="creatorName" label="创建人"></el-table-column>
-      <el-table-column prop="department" label="业务部门"></el-table-column>
+      <el-table-column prop="creatorName" label="创建人" width="80"></el-table-column>
+      <el-table-column prop="department" label="业务部门" width="80"></el-table-column>
       <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>

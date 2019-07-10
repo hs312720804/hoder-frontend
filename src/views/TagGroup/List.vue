@@ -4,7 +4,7 @@
             <el-header class="tag-category-list__header">
                 分组
                 <el-button v-show="!showCheckBox" class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="$refs.tagGroupCreate.showCreateDialog = true">新建</el-button>
-                <el-button v-show="!showCheckBox" class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="handleTagEdit">删除</el-button>
+                <el-button v-show="!showCheckBox" class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="handleTagEdit">编辑</el-button>
                 <el-button v-show="showCheckBox" class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="showCheckBox = false">取消</el-button>
             </el-header>
             <div class="filter">
@@ -19,29 +19,32 @@
                 <el-tree
                   :class="!showCheckBox ? 'cat-tree__hide-checkbox' : ''"
                   :data="treeData"
-                  :props="treeProps"
-                  node-key="id"
+                  node-key="groupId"
                   :filter-node-method="filterNode"
                   ref="tree"
+                  :default-expanded-keys="defaultExpanded"
                   expand-on-click-node
+                  default-expand-all
                   :show-checkbox="true"
                   @node-click="handleNodeClick"
-                  :render-content="renderContent"
+                  @node-expand="nodeExpand"
+                  @node-collapse="nodeCollapse"
                 >
-                    <!--<span slot-scope="{ node, data }">-->
-                        <!--<span class="tree-data tree-data&#45;&#45;big-size">{{ data.groupName }}</span>-->
-                        <!--&lt;!&ndash;<span&ndash;&gt;-->
-                                <!--&lt;!&ndash;v-for="(dataItem,index) in data.children"&ndash;&gt;-->
-                                <!--&lt;!&ndash;class="tree-data"&ndash;&gt;-->
-                                <!--&lt;!&ndash;:key="index"&ndash;&gt;-->
-                                <!--&lt;!&ndash;@click.stop="()=>{}"&ndash;&gt;-->
-                        <!--&lt;!&ndash;&gt;{{dataItem.groupName}}&ndash;&gt;-->
-                        <!--&lt;!&ndash;</span>&ndash;&gt;-->
-                    <!--</span>-->
+                    <span slot-scope="{ node, data }" class="tree-child">
+                        <span class="tree-data tree-data--big-size">{{ data.groupName }}</span>
+                        <span class="edit-text-button" v-if="showCheckBox"><el-button type="text" @click="edit(node, data)">编辑</el-button></span>
+                        <!--<span-->
+                                <!--v-for="(dataItem,index) in data.children"-->
+                                <!--class="tree-data"-->
+                                <!--:key="index"-->
+                                <!--@click.stop="()=>{}"-->
+                        <!--&gt;{{dataItem.groupName}}-->
+                        <!--</span>-->
+                    </span>
                 </el-tree>
             </div>
             <div v-show="showCheckBox" class="del-button">
-                <el-button @click="remove">确定删除</el-button>
+                <el-button @click="remove" type="danger">确定删除</el-button>
             </div>
             <el-dialog
                 :visible.sync="showEditDialog"
@@ -89,16 +92,13 @@ export default {
             tagGroupList: [],
             treeData: [],
             showCheckBox: false,
-            treeProps:{
-                children: 'children',
-                label: 'groupName'
-            },
             editTitle: '',
             showEditDialog: false,
             mode : '',
             currentLabelData: undefined,
             delGroupIds: undefined,
-            editGroupName: ''
+            editGroupName: '',
+            defaultExpanded: []
         }
     },
     watch: {
@@ -134,7 +134,7 @@ export default {
             this.$emit('read-tag-group', item)
         },
         handleNodeClick(data) {
-            if(!this.showCheckbox){
+            if(!this.showCheckBox){
                 const item = { id:data.groupId,name: data.groupName }
                 // let item = undefined
                 // if( data.groupId === undefined ) {
@@ -144,15 +144,13 @@ export default {
                 //     item = { id:data.groupId,name: data.groupName }
                 // }
                 this.$emit('read-tag-group', item)
-            }else{console.log(data)}
+            }else{return }
         },
         filterNode(value,data) {
             if(!value) return true
             return data.groupName.indexOf(value) !== -1
         },
         edit(node, data) {
-            console.log(data)
-            console.log(node)
             this.showEditDialog = true
             this.editTitle = '修改标签组名'
             this.mode = 'edit'
@@ -177,7 +175,8 @@ export default {
                         this.fetchData()
                     })}
             else if(this.mode === 'del') {
-                this.$service.delLabelGroup({groupId: this.delGroupIds},'删除成功')
+                debugger
+                this.$service.delLabelGroup({groupIds: this.delGroupIds},'删除成功')
                     .then(() => {
                         this.showEditDialog = false
                         this.fetchData()
@@ -187,31 +186,31 @@ export default {
         handleTagEdit(){
             this.showCheckBox = true
         },
-        // renderContent(h, { node, data, store }) {
-        //     return (
-        //         <span style="flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;">
-        //             <span>
-        //             <span>{node.label}</span>
-        //         </span>
-        //         <span>
-        //         <el-button style="font-size: 12px;" type="text" on-click={ () => this.edit(node, data) }>编辑</el-button>
-        //         <el-button style="font-size: 12px;" type="text" on-click={ () => this.remove(node, data) }>删除</el-button>
-        //         </span>
-        //         </span>
-        //     );
-        // },
-        renderContent(h, { node, data, store }) {
-            return (
-                <span style="flex: 1; display: flex; align-items: center; justify-content: space-between; font-size: 14px; padding-right: 8px;">
-                <span>
-                <span>{node.label}</span>
-            </span>
-            <span>
-            <el-button style="font-size: 12px;" type="text" on-click={ () => this.edit(node, data) }>编辑</el-button>
-            </span>
-            </span>
-        );
-        }
+        nodeExpand(node,data,key){
+            const child = this.$refs.tree.$children
+            const arr =[]
+            child.forEach((item)=>{
+                arr.push(item._uid)
+            })
+            this.defaultExpanded.push(arr.indexOf(key._uid)+1)
+            // console.log(this.defaultExpanded)
+            // console.log(arr)
+            // console.log(key._uid)
+        },
+        nodeCollapse(node,data,key){
+            const child = this.$refs.tree.$children
+            const arr =[]
+            child.forEach((item)=>{
+                arr.push(item._uid)
+            })
+            const del = this.defaultExpanded.indexOf(arr.indexOf(key._uid)+1)
+            // this.defaultExpanded.filter(del)
+            // this.defaultExpanded.forEach(item => {item.filter(item => item == del)})
+            // console.log(this.defaultExpanded)
+            // console.log(arr)
+            // console.log(del)
+            // console.log(key._uid)
+        },
     },
     created() {
         // const activeId = this.activeId
@@ -274,6 +273,13 @@ export default {
         color #fff
 .cat-tree__hide-checkbox >>> .el-checkbox
     display none
+.tree-child
+    flex 1 1 0%
+    display flex
+    align-items center
+    justify-content space-between
+    font-size 14px
+    padding-right 8px
 .update-input
     display inline-block
     width 50%
@@ -281,4 +287,6 @@ export default {
     margin 30px 0 20px 30px
 .del-button
     text-align center
+.edit-text-button
+    font-size 12px
 </style>

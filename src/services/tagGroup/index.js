@@ -91,7 +91,7 @@ export function editLabelGroupName(params) {
 export function delLabelGroup(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/labelGroup/delGroup',
+        url: 'api/labelGroup/delGroupsList',
         params
     })
 }
