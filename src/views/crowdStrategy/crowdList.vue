@@ -140,7 +140,7 @@
               @click="estimateType(scope.row)"
               :disabled="scope.row.forcastStatus != 1"
             >估算</el-button>
-            <el-dropdown @command="handleCommandStastic" v-permission="'hoder:statistics:index'">
+            <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="danger">
                 统计
               </el-button>
