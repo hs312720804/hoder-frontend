@@ -169,7 +169,7 @@
                     type:'warning'
                 }).then( () => {
                     this.$service.peoplePositonDel({id: row.id}, '删除成功').then(
-                        (data) => {
+                        () => {
                             this.handleAllRowSelectionRemove()
                             this.fetchData()
                         }

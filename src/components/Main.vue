@@ -32,7 +32,7 @@
                   <i v-if="child.icons" :class="child.icons"></i>
                   <span>{{ child.name }}</span>
                 </template>
-                <template v-for="(c,n) in child.child">
+                <template v-for="(c) in child.child">
                   <el-menu-item :key="c.id" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
                     <i v-if="c.icons" :class="c.icons"></i>
                     <span slot="title">{{c.name}}</span>
@@ -121,7 +121,8 @@
                     "/portrayal/index": "DeliveryAfterPeopleDraw",
                     "/dataAnalyze/index": "DeliveryDataAnalyse",
                     "/thirdInterfaceConf/index": "thirdInterface",
-                    "/devTool/clearCache":"clearCache"
+                    "/devTool/clearCache":"clearCache",
+                    "/webApiServers/index":"ipManage"
                 }
             };
         },
@@ -200,7 +201,6 @@
                     }
                 }
                 const menus = this.$appState.menus
-                console.log(menus)
                 const findMenuByUrl = (url, menu) => {
                     if (Array.isArray(menu)) {
                         let length =  menu.length

@@ -1,10 +1,10 @@
 <template>
     <div class="clear-cache">
-        <div>清除指定MAC/激活id的策略缓存</div>
+        <div>清除指定MAC</div>
         <div class="clear-form">
             <el-form label-width="100px">
                 <el-form-item label="设备信息：">
-                    <el-input v-model="deviceMsg" placeholder="请输入设备MAC或者激活Id" class="clear-input" clearable></el-input>
+                    <el-input v-model="deviceMsg" placeholder="请输入设备MAC" class="clear-input" clearable></el-input>
                     <el-button @click="clearCache" class="clearBtn">清除缓存</el-button>
                 </el-form-item>
             </el-form>

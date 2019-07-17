@@ -1,0 +1,169 @@
+<template>
+    <div class="ipManageAdd">
+        <div class="title">{{title}}</div>
+        <el-form :model="form" :rules="rules" ref="form" label-width="130px">
+            <el-form-item label="业务分组" prop="group">
+                <el-select v-model="form.group" :disabled="disableValue">
+                    <el-option v-for="(item,index) in groupList" :label="item.label" :key="index" :value="item.value"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="用户名" prop="sshUsername">
+                <el-input v-model="form.sshUsername" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="密码" prop="sshPassword">
+                <el-input v-model="form.sshPassword" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="接口项目地址" prop="projectDir">
+                <el-input v-model="form.projectDir" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="刷新地址" prop="reloadApi">
+                <el-input v-model="form.reloadApi" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="lua脚本地址" prop="luaPath">
+                <el-input v-model="form.luaPath" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="ip地址" prop="host">
+                <el-input v-model="form.host" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="端口号" prop="sshPort">
+                <el-input v-model="form.sshPort" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="备注">
+                <el-input v-model="form.remark" :disabled="disableValue"></el-input>
+            </el-form-item>
+            <el-form-item label="启动/禁用" v-model="form.status">
+                <el-radio-group v-model="form.status" :disabled="disableValue">
+                    <el-radio  :label="1">启用</el-radio>
+                    <el-radio  :label="2">禁用</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="save" v-if="this.mode!= 'read'">保存</el-button>
+                <el-button @click="goBack">返回</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "peoplePositionAdd",
+        props: {
+            editId: '',
+            mode: ''
+        },
+        data () {
+            return {
+                form: {
+                    group: '',
+                    sshUsername: '',
+                    sshPassword: '',
+                    projectDir: '',
+                    reloadApi: '',
+                    luaPath: '',
+                    host: '',
+                    sshPort: '',
+                    remark: '',
+                    status: 1
+                },
+                groupList: [],
+                title: '',
+                disableValue: false,
+                rules: {
+                    group: [
+                        {required: true, message: '请选择业务分组', trigger: 'blur'}
+                    ],
+                    sshUsername: [
+                        {required:true, message:'请输入用户名', trigger: 'blur'}
+                    ],
+                    sshPassword: [
+                        {required:true, message:'请输入密码', trigger: 'blur'}
+                    ],
+                    projectDir: [
+                        {required:true, message:'请输入接口项目地址', trigger: 'blur'}
+                    ],
+                    reloadApi: [
+                        {required:true,message:'请输入刷新地址',trigger: 'blur'}
+                    ],
+                    luaPath: [
+                        {required:true,message:'请输入lua脚本地址',trigger: 'blur'}
+                    ],
+                    host: [
+                        {required:true,message:'请输入ip地址',trigger: 'blur'}
+                    ],
+                    sshPort: [
+                        {required:true,message:'请输入ip地址',trigger: 'blur'}
+                    ]
+                }
+            }
+        },
+        methods: {
+            getGroupList () {
+                this.$service.getBiList().then(
+                    (data) => {
+                        this.groupList = this._arrayingOption(data,'biName','biId')
+                        if (this.editId){ this.getDetail() }
+                    }
+                )
+            },
+            getDetail () {
+                this.$service.getIpManageDetail(this.editId).then(
+                    (data) => {
+                        this.form = data
+                    }
+                )
+            },
+            // 数组化[{label, value}]
+            _arrayingOption(arr, label, value) {
+                return arr.reduce((result, item) => {
+                    return result.concat({ label: item[label], value: item[value] })
+                }, [])
+            },
+            goBack () {
+                this.$emit('open-list-page')
+            },
+            save () {
+                this.$refs.form.validate(valid => {
+                    if(valid) {
+                        if (this.editId === undefined) {
+                            this.$service.addIpManage(this.form, '保存成功').then( () => {
+                                this.$emit('open-list-page')
+                            })
+                        }else {
+                            this.$service.updateIpManage({data:this.form, id:this.editId}, '修改成功').then( () => {
+                                this.$emit('open-list-page')
+                            })
+                        }
+                    }
+                })
+            },
+        },
+        created () {
+            this.getGroupList()
+            if(this.editId === undefined){
+                this.title = '新增IP管理'
+            }else {
+                if(this.mode === 'edit') {
+                    this.title = '编辑IP管理'
+                }else {
+                    this.title = '查看IP管理详情'
+                    this.disableValue = true
+                }
+            }
+        }
+    }
+</script>
+
+<style lang="stylus" scoped>
+    .ipManageAdd
+        width 80%
+        margin-left 20px
+    .title
+        margin 20px
+        font-size 30px
+    .example
+        font-size 12px
+        color #ccc
+    .example div
+        overflow auto
+</style>
