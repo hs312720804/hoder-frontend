@@ -501,7 +501,8 @@
                         .map(item => {if(item.tagType === 'string' || item.tagType === 'collect')
                             return item.tagId}
                             )
-                    if(cacheIds){cacheIds.forEach(this.fetchTagSuggestions)}
+                    if(cacheIds[0] !== undefined){
+                        cacheIds.forEach(this.fetchTagSuggestions)}
                 });
         }
     };
