@@ -2,9 +2,9 @@
     <div class="ipManageAdd">
         <div class="title">{{title}}</div>
         <el-form :model="form" :rules="rules" ref="form" label-width="130px">
-            <el-form-item label="业务分组" prop="group">
-                <el-select v-model="form.group" :disabled="disableValue">
-                    <el-option v-for="(item,index) in groupList" :label="item.label" :key="index" :value="item.value"></el-option>
+            <el-form-item label="业务分组" prop="groups">
+                <el-select v-model="form.groups" :disabled="disableValue" multiple>
+                    <el-option v-for="(item,index) in groupList" :label="item.biName" :key="index" :value="item.biId"></el-option>
                 </el-select>
             </el-form-item>
             <el-form-item label="用户名" prop="sshUsername">
@@ -55,7 +55,7 @@
         data () {
             return {
                 form: {
-                    group: '',
+                    groups: [],
                     sshUsername: '',
                     sshPassword: '',
                     projectDir: '',
@@ -101,7 +101,8 @@
             getGroupList () {
                 this.$service.getBiList().then(
                     (data) => {
-                        this.groupList = this._arrayingOption(data,'biName','biId')
+                        this.groupList = data
+                        // this.groupList = this._arrayingOption(data,'biName','biId')
                         if (this.editId){ this.getDetail() }
                     }
                 )
@@ -166,4 +167,6 @@
         color #ccc
     .example div
         overflow auto
+    .ipManageAdd >>>.el-select
+        width: 100%
 </style>

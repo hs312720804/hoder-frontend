@@ -178,7 +178,7 @@
                 this.$emit('open-add-page', row.id, 'edit')
             },
             handleDelete ({row}) {
-                this.$confirm('确定删除此活动吗？', '提示', {
+                this.$confirm('确定删除此条记录吗？', '提示', {
                     confirmButtonText: '确定',
                     cancelButtonText: '取消',
                     type:'warning'
