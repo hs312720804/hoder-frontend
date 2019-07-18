@@ -6,7 +6,7 @@ import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
 import strategy from '@/views/launch/strategy'
 import validate from '@/views/launch/validate'
-import dictionaryManage from '@/views/setting/dictionaryManage'
+// import dictionaryManage from '@/views/setting/dictionaryManage'
 import emailNotice from '@/views/setting/emailNotice'
 import loginLog from '@/views/setting/loginLog'
 import menuSetting from '@/views/setting/menuSetting/index'
@@ -32,6 +32,7 @@ import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
 import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
 import thirdInterface from '@/views/thirdInterface/index'
 import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
+import ipManage from '@/views/DevelopTools/ipManage/index'
 const children = [
     {
         name: 'homePage',
@@ -317,7 +318,17 @@ const children = [
                 component: clearCache,
                 meta: {
                     tagId:"clearCache",
-                    title: '第三方接口',
+                    title: '清除缓存',
+                    icon: 'el-icon-cc-close-circle'
+                }
+            },
+            {
+                name: 'ipManage',
+                path: 'ipManage',
+                component: ipManage,
+                meta: {
+                    tagId:"ipManage",
+                    title: '接口服务器管理',
                     icon: 'el-icon-cc-close-circle'
                 }
             },
