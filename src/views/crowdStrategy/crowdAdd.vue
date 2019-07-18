@@ -84,12 +84,14 @@
                               placeholder="请输入或选择"
                               :disabled="childItem.select"
                       >
+                        <template v-if="cache[childItem.tagId]">
                         <el-option
-                                v-for="item in childItem.list"
+                                v-for="item in cache[childItem.tagId].list"
                                 :key="index+item.attrValue"
                                 :label="item.attrName"
                                 :value="item.attrValue"
                         ></el-option>
+                        </template>
                       </el-select>
                       <el-input-number
                               v-else-if="childItem.tagType==='number'"
@@ -204,6 +206,7 @@
         data() {
             return {
                 //attrs: [[${attrs}]] || {},
+                cache: {},
                 tags: [],
                 tagInitSize: 200,
                 tagCurrentPage: 1,
@@ -286,10 +289,12 @@
                                     thirdPartyCode: tag.thirdPartyCode,
                                     thirdPartyField: tag.thirdPartyField,
                                     select: data.select,
-                                    list: data.pageInfo.list
                                 }
                             ]
                         });
+                        this.$set(this.cache, tag.tagId, {
+                            list: data.pageInfo.list
+                        })
                     });
                 }else {
                     this.rulesJson.rules.push({
@@ -338,9 +343,11 @@
                              isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
                              thirdPartyCode: tag.thirdPartyCode,
                              thirdPartyField: tag.thirdPartyField,
-                             select: data.select,
-                             list: data.pageInfo.list
+                             select: data.select
                         });
+                        this.$set(this.cache, tag.tagId, {
+                            list: data.pageInfo.list
+                        })
                     });
                 }else {
                     rule.rules.push({
@@ -376,26 +383,20 @@
                 // });
             },
             fetchTagSuggestions(tag) {
-                // const tagType = tag.tagType;
-                const tagId = tag.tagId;
-                this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
-                    this.tagSelectMoreShow = data.select
-                    this.$set(tag,'select',data.select)
-                    this.suggestionsNew = data.pageInfo.list
+                this.$service.getTagAttr({ tagId: tag, pageSize: this.tagInitSize, pageNum:1}).then(data => {
+                    this.$set(this.cache, tag, {
+                        list: data.pageInfo.list
+                    })
                 });
                 // if (!this.suggestions[tagId]&&tag.select != true) {
                 //     const self = this
                 //     self.$set(self.suggestions, tagId, []);
-                //     console.log('111')
-                //     console.log(self.suggestions)
                 //     this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
                 //         this.tagSelectMoreShow = data.select
                 //         this.$set(tag,'select',data.select)
                 //         this.tagList = data.pageInfo.list
                 //         if(!data.select){
                 //             self.$set(self.suggestions, tagId, data.pageInfo.list)
-                //             console.log('222')
-                //             console.log(self.suggestions)
                 //         }
                 //     });
                 // }
@@ -496,6 +497,11 @@
                     this.form.remark = data.policyCrowds.remark;
                     this.priority = data.policyCrowds.priority;
                     this.rulesJson = JSON.parse(data.policyCrowds.rulesJson);
+                    const cacheIds = JSON.parse(data.policyCrowds.rulesJson).rules[0].rules
+                        .map(item => {if(item.tagType === 'string' || item.tagType === 'collect')
+                            return item.tagId}
+                            )
+                    if(cacheIds){cacheIds.forEach(this.fetchTagSuggestions)}
                 });
         }
     };
