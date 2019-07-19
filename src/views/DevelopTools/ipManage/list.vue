@@ -142,14 +142,14 @@
                             label: '更新时间',
                             prop: 'updateTime'
                         },
-                        {
-                            label: '创建人',
-                            prop: 'creator'
-                        },
-                        {
-                            label: '更新人',
-                            prop: 'updator'
-                        },
+                        // {
+                        //     label: '创建人',
+                        //     prop: 'creator'
+                        // },
+                        // {
+                        //     label: '更新人',
+                        //     prop: 'updator'
+                        // },
                         {
                             label: '操作',
                             fixed: 'right',
