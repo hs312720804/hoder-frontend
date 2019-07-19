@@ -74,25 +74,24 @@
                           ></el-date-picker>
                         </template>
                     </span>
-                      <el-select
-                              v-else-if="childItem.tagType==='string' || childItem.tagType === 'collect'"
-                              v-model="childItem.value"
-                              class="inline-input"
-                              filterable
-                              :key="index+'select'"
-                              default-first-option
-                              placeholder="请输入或选择"
-                              :disabled="childItem.select"
-                      >
-                        <template v-if="cache[childItem.tagId]">
-                        <el-option
-                                v-for="item in cache[childItem.tagId].list"
-                                :key="index+item.attrValue"
-                                :label="item.attrName"
-                                :value="item.attrValue"
-                        ></el-option>
-                        </template>
-                      </el-select>
+                     <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
+                          <el-select
+                                  v-model="childItem.value"
+                                  class="inline-input"
+                                  filterable
+                                  :key="index+'select'"
+                                  default-first-option
+                                  placeholder="请输入或选择"
+                                  :disabled="cache[childItem.tagId].select"
+                          >
+                                <el-option
+                                        v-for="item in cache[childItem.tagId].list"
+                                        :key="index+item.attrValue+item.attrId"
+                                        :label="item.attrName"
+                                        :value="item.attrValue"
+                                ></el-option>
+                          </el-select>
+                      </template>
                       <el-input-number
                               v-else-if="childItem.tagType==='number'"
                               :key="index+'input'"
@@ -110,11 +109,13 @@
                         <span v-else>切换至时间天数</span>
                       </el-button>
                     </span>
-                    <span v-if="childItem.select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
-                      <el-button :key="childItem.tagId + n" @click="handleSelectMore(childItem)">
-                        点击选择更多
-                      </el-button>
-                    </span>
+                    <template v-if="cache[childItem.tagId]">
+                        <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
+                          <el-button :key="childItem.tagId + n" @click="handleSelectMore(childItem)">
+                            点击选择更多
+                          </el-button>
+                        </span>
+                    </template>
                     <el-dialog title="显示更多标签" :visible.sync="showMoreTags" class="showMoreTags">
                       <el-form :inline="true" :model="formInline" class="demo-form-inline">
                         <el-form-item label="标签名称">
@@ -250,11 +251,11 @@
             },
             handleRemoveRule(rule, childRule) {
                 const rulesJson = this.rulesJson;
-                rule.rules.splice(rule.rules.indexOf(childRule), 1);
+                rule.rules.splice(rule.rules.indexOf(childRule), 1)
                 if (rule.rules.length === 0) {
                     rulesJson.rules = rulesJson.rules.filter(function(item) {
-                        return item !== rule;
-                    });
+                        return item !== rule
+                    })
                 }
             },
             /*添加一级标签 */
@@ -263,143 +264,107 @@
              */
             handleAddRule(tag) {
                 if (this.rulesJson.rules.length > 50) {
-                    layer.msg("已达最大数量");
-                    return;
+                    layer.msg("已达最大数量")
+                    return
                 }
                 if(tag.tagType==='string' || tag.tagType === 'collect'){
-                    this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
-                        // this.tagSelectMoreShow = data.select
-                        // this.$set(tag,'select',data.select)
-                        // this.suggestionsNew = data.pageInfo.list
-                        this.rulesJson.rules.push({
-                            condition: "AND",
-                            rules: [
-                                {
-                                    operator: this.getDefaultOperator("="),
-                                    tagCode: tag.tagKey,
-                                    tagName: tag.tagName,
-                                    dataSource: tag.dataSource,
-                                    value: "",
-                                    tagId: tag.tagId,
-                                    tagType: tag.tagType,
-                                    categoryName: tag.tagName,
-                                    categoryCode: tag.tagKey,
-                                    dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                                    isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
-                                    thirdPartyCode: tag.thirdPartyCode,
-                                    thirdPartyField: tag.thirdPartyField,
-                                    select: data.select,
-                                }
-                            ]
-                        });
-                        this.$set(this.cache, tag.tagId, {
-                            list: data.pageInfo.list
-                        })
-                    });
-                }else {
-                    this.rulesJson.rules.push({
-                        condition: "AND",
-                        rules: [
-                            {
-                                operator: this.getDefaultOperator("="),
-                                tagCode: tag.tagKey,
-                                tagName: tag.tagName,
-                                dataSource: tag.dataSource,
-                                value: "",
-                                tagId: tag.tagId,
-                                tagType: tag.tagType,
-                                categoryName: tag.tagName,
-                                categoryCode: tag.tagKey,
-                                dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                                isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
-                                thirdPartyCode: tag.thirdPartyCode,
-                                thirdPartyField: tag.thirdPartyField
-                            }
-                        ]
-                    });
+                    if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
                 }
+                this.rulesJson.rules.push({
+                    condition: "AND",
+                    rules: [
+                        {
+                            operator: this.getDefaultOperator("="),
+                            tagCode: tag.tagKey,
+                            tagName: tag.tagName,
+                            dataSource: tag.dataSource,
+                            value: "",
+                            tagId: tag.tagId,
+                            tagType: tag.tagType,
+                            categoryName: tag.tagName,
+                            categoryCode: tag.tagKey,
+                            dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                            isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                            thirdPartyCode: tag.thirdPartyCode,
+                            thirdPartyField: tag.thirdPartyField
+                        }
+                    ]
+                })
             },
             handleAddChildRule(rule, tag) {
                 if (rule.rules.length > 50) {
-                    layer.msg("已达最大数量");
+                    layer.msg("已达最大数量")
                     return;
                 }
                 if(tag.tagType==='string' || tag.tagType === 'collect'){
-                    this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
-                        // this.tagSelectMoreShow = data.select
-                        // this.$set(tag,'select',data.select)
-                        // this.suggestionsNew = data.pageInfo.list
-                        rule.rules.push({
-                             operator: this.getDefaultOperator("="),
-                             tagCode: tag.tagKey,
-                             tagName: tag.tagName,
-                             dataSource: tag.dataSource,
-                             value: "",
-                             tagId: tag.tagId,
-                             tagType: tag.tagType,
-                             categoryName: tag.tagName,
-                             categoryCode: tag.tagKey,
-                             dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                             isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
-                             thirdPartyCode: tag.thirdPartyCode,
-                             thirdPartyField: tag.thirdPartyField,
-                             select: data.select
-                        });
-                        this.$set(this.cache, tag.tagId, {
-                            list: data.pageInfo.list
-                        })
-                    });
-                }else {
-                    rule.rules.push({
-                        operator: this.getDefaultOperator(tag),
-                        tagCode: tag.tagKey,
-                        tagName: tag.tagName,
-                        dataSource: tag.dataSource,
-                        value: "",
-                        tagId: tag.tagId,
-                        tagType: tag.tagType,
-                        categoryName: tag.tagName,
-                        categoryCode: tag.tagKey,
-                        dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                        isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
-                        thirdPartyCode: tag.thirdPartyCode,
-                        thirdPartyField: tag.thirdPartyField
-                    });
+                    if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
                 }
-                // rule.rules.push({
-                //     operator: this.getDefaultOperator(tag),
-                //     tagCode: tag.tagKey,
-                //     tagName: tag.tagName,
-                //     dataSource: tag.dataSource,
-                //     value: "",
-                //     tagId: tag.tagId,
-                //     tagType: tag.tagType,
-                //     categoryName: tag.tagName,
-                //     categoryCode: tag.tagKey,
-                //     dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                //     isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
-                //     thirdPartyCode: tag.thirdPartyCode,
-                //     thirdPartyField: tag.thirdPartyField
-                // });
-            },
-            fetchTagSuggestions(tag) {
-                this.$service.getTagAttr({ tagId: tag, pageSize: this.tagInitSize, pageNum:1}).then(data => {
-                    this.$set(this.cache, tag, {
-                        list: data.pageInfo.list
-                    })
-                });
-                // if (!this.suggestions[tagId]&&tag.select != true) {
-                //     const self = this
-                //     self.$set(self.suggestions, tagId, []);
-                //     this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
-                //         this.tagSelectMoreShow = data.select
-                //         this.$set(tag,'select',data.select)
-                //         this.tagList = data.pageInfo.list
-                //         if(!data.select){
-                //             self.$set(self.suggestions, tagId, data.pageInfo.list)
+                rule.rules.push({
+                                  operator: this.getDefaultOperator("="),
+                                  tagCode: tag.tagKey,
+                                  tagName: tag.tagName,
+                                  dataSource: tag.dataSource,
+                                  value: "",
+                                  tagId: tag.tagId,
+                                  tagType: tag.tagType,
+                                  categoryName: tag.tagName,
+                                  categoryCode: tag.tagKey,
+                                  dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                                  isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                                  thirdPartyCode: tag.thirdPartyCode,
+                                  thirdPartyField: tag.thirdPartyField
+                                })
+                // if(tag.tagType==='string' || tag.tagType === 'collect'){
+                //     this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
+                //         // this.tagSelectMoreShow = data.select
+                //         // this.$set(tag,'select',data.select)
+                //         // this.suggestionsNew = data.pageInfo.list
+                //         rule.rules.push({
+                //              operator: this.getDefaultOperator("="),
+                //              tagCode: tag.tagKey,
+                //              tagName: tag.tagName,
+                //              dataSource: tag.dataSource,
+                //              value: "",
+                //              tagId: tag.tagId,
+                //              tagType: tag.tagType,
+                //              categoryName: tag.tagName,
+                //              categoryCode: tag.tagKey,
+                //              dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                //              isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                //              thirdPartyCode: tag.thirdPartyCode,
+                //              thirdPartyField: tag.thirdPartyField,
+                //              select: data.select
+                //         })
+                //         if(this.cache[tag.tagId] === undefined) {
+                //             this.$set(this.cache, tag.tagId, {
+                //                 list: data.pageInfo.list
+                //             })
                 //         }
+                //     })
+                // }else {
+                //     rule.rules.push({
+                //         operator: this.getDefaultOperator(tag),
+                //         tagCode: tag.tagKey,
+                //         tagName: tag.tagName,
+                //         dataSource: tag.dataSource,
+                //         value: "",
+                //         tagId: tag.tagId,
+                //         tagType: tag.tagType,
+                //         categoryName: tag.tagName,
+                //         categoryCode: tag.tagKey,
+                //         dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                //         isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                //         thirdPartyCode: tag.thirdPartyCode,
+                //         thirdPartyField: tag.thirdPartyField
                 //     });
                 // }
+            },
+            fetchTagSuggestions(tagId) {
+                this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
+                    this.$set(this.cache, tagId, {
+                        list: data.pageInfo.list
+                    })
+                })
             },
             handleCheckboxOk(){
                 this.currentChildItem.value = this.checkboxValue
@@ -432,22 +397,8 @@
                     this.tagsListTotal = data.pageInfo.total
                 });
             },
-            // handleSelectTag(rule, tagCode) {
-            //   const suggestions = this.suggestions[rule.tagId];
-            //   const tag = suggestions.find(function(item) {
-            //     return item.attrValue === tagCode;
-            //   });
-            //   rule.tagCode = tag.attrValue;
-            //   rule.value = tag.attrValue; //谭文亮要求添加测试
-            //   rule.tagName = tag.attrName;
-            //   rule.dataSource = tag.dataSource;
-            // },
             getDefaultOperator(tag) {
                 return "=";
-            },
-            getDefaultValue(tag) {},
-            handleInputValue(rule, value) {
-                rule.tagCode = value;
             },
             handleSave() {
                 const form = this.form;
@@ -481,6 +432,19 @@
             // 取消
             cancelAdd: function() {
                 this.$emit("goBackCrowdListPage");
+            },
+            // 数组去重
+            distinct(a, b) {
+                let arr = a.concat(b)
+                let result = []
+                let obj = {}
+                for (let i of arr) {
+                    if (!obj[i]) {
+                        result.push(i)
+                        obj[i] = 1
+                    }
+                }
+                return result
             }
         },
         created() {
@@ -497,11 +461,18 @@
                     this.form.remark = data.policyCrowds.remark;
                     this.priority = data.policyCrowds.priority;
                     this.rulesJson = JSON.parse(data.policyCrowds.rulesJson);
-                    const cacheIds = JSON.parse(data.policyCrowds.rulesJson).rules[0].rules
-                        .map(item => {if(item.tagType === 'string' || item.tagType === 'collect')
-                            return item.tagId}
-                            )
-                    if(cacheIds[0] !== undefined){
+                    const rulesAll = JSON.parse(data.policyCrowds.rulesJson).rules
+                    console.log(rulesAll)
+                    const ruleLenght = rulesAll.length
+                    var cacheIds = []
+                    for (var i = 0;i< ruleLenght; i++ ) {
+                        rulesAll[i].rules.forEach(item => {
+                            if(item.tagType === 'string' || item.tagType === 'collect')
+                                cacheIds.push(item.tagId)
+                        })
+                    }
+                    cacheIds = this.distinct(cacheIds,[])
+                    if(cacheIds.length !== 0){
                         cacheIds.forEach(this.fetchTagSuggestions)}
                 });
         }
