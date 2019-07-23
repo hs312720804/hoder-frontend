@@ -2,36 +2,36 @@
     <div class="ipManageAdd">
         <div class="title">{{title}}</div>
         <el-form :model="form" :rules="rules" ref="form" label-width="130px">
-            <el-form-item label="业务分组" prop="groups" required="true">
+            <el-form-item label="业务分组" prop="groups" :required="true">
                 <el-select v-model="form.groups" :disabled="disableValue" multiple>
                     <el-option v-for="(item,index) in groupList" :label="item.biName" :key="index" :value="item.biId"></el-option>
                 </el-select>
             </el-form-item>
-            <el-form-item label="用户名" prop="sshUsername" required="true">
-                <el-input v-model="form.sshUsername" :disabled="disableValue"></el-input>
+            <el-form-item label="用户名" prop="sshUsername" :required="true">
+                <el-input v-model.trim="form.sshUsername" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="密码" prop="sshPassword" required="true">
-                <el-input v-model="form.sshPassword" :disabled="disableValue"></el-input>
+            <el-form-item label="密码" prop="sshPassword" :required="true">
+                <el-input v-model.trim="form.sshPassword" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="接口项目地址" prop="projectDir" required="true">
-                <el-input v-model="form.projectDir" :disabled="disableValue"></el-input>
+            <el-form-item label="接口项目地址" prop="projectDir" :required="true">
+                <el-input v-model.trim="form.projectDir" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="刷新地址" prop="reloadApi" required="true">
-                <el-input v-model="form.reloadApi" :disabled="disableValue"></el-input>
+            <el-form-item label="刷新地址" prop="reloadApi" :required="true">
+                <el-input v-model.trim="form.reloadApi" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="lua脚本地址" prop="luaPath" required="true">
-                <el-input v-model="form.luaPath" :disabled="disableValue"></el-input>
+            <el-form-item label="lua脚本地址" prop="luaPath" :required="true">
+                <el-input v-model.trim="form.luaPath" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="ip地址" prop="host" required="true">
-                <el-input v-model="form.host" :disabled="disableValue"></el-input>
+            <el-form-item label="ip地址" prop="host" :required="true">
+                <el-input v-model.trim="form.host" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="端口号" prop="sshPort" required="true">
-                <el-input v-model="form.sshPort" :disabled="disableValue"></el-input>
+            <el-form-item label="端口号" prop="sshPort" :required="true">
+                <el-input v-model.trim="form.sshPort" :disabled="disableValue"></el-input>
             </el-form-item>
             <el-form-item label="备注">
-                <el-input v-model="form.remark" :disabled="disableValue"></el-input>
+                <el-input v-model.trim="form.remark" :disabled="disableValue"></el-input>
             </el-form-item>
-            <el-form-item label="启动/禁用" v-model="form.status" required="true">
+            <el-form-item label="启动/禁用" v-model="form.status" :required="true">
                 <el-radio-group v-model="form.status" :disabled="disableValue">
                     <el-radio  :label="1">启用</el-radio>
                     <el-radio  :label="2">禁用</el-radio>
@@ -54,11 +54,12 @@
         },
         data () {
             var checkNoSpace = (rule, value, callback) => {
-                console.log(value.trim())
                 if(!value) {
-                    return callback(new Error('该字段不能为空'))
+                    callback(new Error('该字段不能为空'))
                 }else if(!value.trim()){
-                    return callback(new Error('该字段不能全部为空格'))
+                    callback(new Error('该字段不能全部为空格'))
+                }else {
+                    callback()
                 }
             };
             return {

@@ -362,6 +362,7 @@
             fetchTagSuggestions(tagId) {
                 this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
                     this.$set(this.cache, tagId, {
+                        select: data.select,
                         list: data.pageInfo.list
                     })
                 })
