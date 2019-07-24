@@ -99,11 +99,17 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column type="index" width="30"></el-table-column>
       <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
       <el-table-column prop="priority" label="优先级" width="60"></el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column prop="putway" label="上/下架" width="70px">
+        <template scope="scope">
+          <span type="text" v-if="scope.row.putway === 1">上架</span>
+          <span type="text" v-if="scope.row.putway === 0">下架</span>
+        </template>
+      </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="80">
           <template scope="scope">
               <span type="text" v-if="scope.row.forcastStatus == 1">未估算</span>
@@ -122,23 +128,42 @@
       <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
-            <el-button
-              size="small"
-              type="primary"
-              v-permission="'hoder:crowd:edit'"
-              @click="edit(scope.row)"
-            >编辑</el-button>
-            <el-button
-              size="small"
-              type="info"
-              v-permission="'hoder:crowd:del'"
-              @click="del(scope.row)"
-            >删除</el-button>
+            <el-dropdown @command="handleCommandOpreate">
+              <el-button size="small" type="primary">
+                操作
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['edit',scope.row]"
+                        v-permission="'hoder:crowd:edit'"
+                        :disabled="scope.row.putway === 0"
+                >编辑</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['del',scope.row]"
+                        v-permission="'hoder:crowd:del'"
+                >删除</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['upDown',scope.row]"
+                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span></el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-button-->
+              <!--size="small"-->
+              <!--type="primary"-->
+              <!--v-permission="'hoder:crowd:edit'"-->
+              <!--@click="edit(scope.row)"-->
+            <!--&gt;编辑</el-button>-->
+            <!--<el-button-->
+              <!--size="small"-->
+              <!--type="info"-->
+              <!--v-permission="'hoder:crowd:del'"-->
+              <!--@click="del(scope.row)"-->
+            <!--&gt;删除</el-button>-->
             <el-button
               size="small"
               type="warning"
               @click="estimateType(scope.row)"
-              :disabled="scope.row.forcastStatus != 1"
+              :disabled="scope.row.forcastStatus != 1 || scope.row.putway === 0"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="danger">
@@ -172,9 +197,9 @@
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
     <span slot="footer" class="dialog-footer">
-    <el-button @click="showEstimate = false">取 消</el-button>
-    <el-button type="primary" @click="handleEstimate">提交估算</el-button>
-  </span>
+      <el-button @click="showEstimate = false">取 消</el-button>
+      <el-button type="primary" @click="handleEstimate">提交估算</el-button>
+    </span>
   </el-dialog>
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
@@ -318,6 +343,14 @@
         </div>
       </div>
     </el-dialog>
+    <!--上下架确认弹窗-->
+    <el-dialog title="提示" :visible="showUpDownDialog">
+      <div>{{upDownTips}}</div>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="showUpDownDialog = false">取 消</el-button>
+      <el-button type="primary" @click="handleUpDown">确定</el-button>
+    </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -372,7 +405,10 @@ export default {
         exposeProvinceTitle: '',
         startDate: '',
         endDate: '',
-        currentCid: undefined
+        currentCid: undefined,
+        showUpDownDialog: false,
+        upDownTips: '',
+        currentTag: ''
     };
   },
   props: ["selectRow"],
@@ -846,7 +882,29 @@ export default {
           const oneMonth = 3600*1000*24*30
           if(endTime - startTime > oneMonth) {return false}
           else{return true}
-      }
+      },
+      upDownCrowd(row) {
+        this.showUpDownDialog = true
+        this.upDownTips = row.putway === 1 ? '确定下架人群吗？下架后该人群将无法使用，不再命中、返回' : '确定上架人群吗？点击确认后，该人群将可以用'
+        this.currentTag = row
+      },
+      handleUpDown() {
+        const row = this.currentTag
+        this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },row.putway === 1 ? '下架成功' : '上架成功')
+              .then(()=>{
+                  this.showUpDownDialog = false
+                  this.loadData()
+              })
+      },
+      handleCommandOpreate(scope) {
+          const type = scope[0]
+          const params = scope[1]
+          if (type === 'edit') {this.edit(params)}
+          else if (type === 'del') {this.del(params)}
+          else if (type === 'upDown') {
+              this.upDownCrowd(params)
+          }
+      },
   }
 };
 </script>

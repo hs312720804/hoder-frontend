@@ -231,3 +231,11 @@ export function policyUseInBi(params) {
         params
     })
 }
+// 人群上下架
+export function crowdUpDown(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/updateCrowdPutway',
+        params
+    })
+}
