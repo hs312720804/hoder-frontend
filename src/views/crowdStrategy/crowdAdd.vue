@@ -63,7 +63,7 @@
                           </el-select>
                           <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
                         </template>
-                        <template v-else>
+                        <template v-if="childItem.isDynamicTime === 1">
                           <el-date-picker
                                   v-model="childItem.value"
                                   type="date"
@@ -72,6 +72,14 @@
                                   value-format="yyyy-MM-dd"
                                   :key="index+'key'"
                           ></el-date-picker>
+                        </template>
+                        <template v-if="childItem.isDynamicTime === 3">
+                          <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dateAreaType">
+                              <el-option value='0' label="空"></el-option>
+                              <el-option value='1' label="已过期"></el-option>
+                              <el-option value='2' label="未过期"></el-option>
+                          </el-select>
+                          <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
                         </template>
                     </span>
                      <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
@@ -104,10 +112,12 @@
                       </el-select>
                     </span>
                     <span v-if="childItem.tagType === 'time'">
-                      <el-button :key="childItem.tagId + n" @click="changeTimeWays(childItem)">
+                      <el-button :key="childItem.tagId + n" @click="changeTimeWays(childItem)" v-if="childItem.isDynamicTime !== 3">
                         <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
-                        <span v-else>切换至时间天数</span>
+                        <span v-if="childItem.isDynamicTime === 1">切换至时间天数</span>
                       </el-button>
+                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;dateAreaType = 0">切换至新方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = '1'">切换至旧方案</el-button>
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
@@ -284,9 +294,10 @@
                             categoryName: tag.tagName,
                             categoryCode: tag.tagKey,
                             dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                            isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                            isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 3,
                             thirdPartyCode: tag.thirdPartyCode,
-                            thirdPartyField: tag.thirdPartyField
+                            thirdPartyField: tag.thirdPartyField,
+                            dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0
                         }
                     ]
                 })
@@ -310,9 +321,10 @@
                                   categoryName: tag.tagName,
                                   categoryCode: tag.tagKey,
                                   dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
-                                  isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 2,
+                                  isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 3,
                                   thirdPartyCode: tag.thirdPartyCode,
-                                  thirdPartyField: tag.thirdPartyField
+                                  thirdPartyField: tag.thirdPartyField,
+                                  dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0
                                 })
                 // if(tag.tagType==='string' || tag.tagType === 'collect'){
                 //     this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
