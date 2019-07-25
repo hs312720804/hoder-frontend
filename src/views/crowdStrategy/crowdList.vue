@@ -1,6 +1,6 @@
 <template>
   <div>
-  <div>
+  <div class="crowd-list">
     <fieldset>
       <legend>{{selectRow.policyName}}</legend>
       <div>
@@ -55,7 +55,9 @@
       </div>
     </div>
     <!-- talbe -->
-    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
+    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border
+      :row-class-name="tableRowClassName"
+    >
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" class="demo-table-expand">
@@ -106,8 +108,8 @@
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
       <el-table-column prop="putway" label="上/下架" width="70px">
         <template scope="scope">
-          <span type="text" v-if="scope.row.putway === 1">上架</span>
-          <span type="text" v-if="scope.row.putway === 0">下架</span>
+          <span type="text" v-if="scope.row.putway === 1">上架中</span>
+          <span type="text" v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="80">
@@ -344,7 +346,7 @@
       </div>
     </el-dialog>
     <!--上下架确认弹窗-->
-    <el-dialog title="提示" :visible="showUpDownDialog">
+    <el-dialog title="提示" :visible.sync="showUpDownDialog">
       <div>{{upDownTips}}</div>
       <span slot="footer" class="dialog-footer">
       <el-button @click="showUpDownDialog = false">取 消</el-button>
@@ -905,6 +907,9 @@ export default {
               this.upDownCrowd(params)
           }
       },
+      tableRowClassName({row}) {
+        if(row.putway === 0) {return 'gray-row'}
+      }
   }
 };
 </script>
@@ -955,4 +960,6 @@ fieldset>div
   font-size 14px
   color #333
   margin 50px 0 0 25px
+.crowd-list >>> .el-table tr.gray-row
+  color #ccc
 </style>

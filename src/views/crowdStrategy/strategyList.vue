@@ -381,7 +381,7 @@ export default {
       searchValue: '',
     };
   },
-  props: ["refresh"],
+  // props: ["refresh"],
   created() {
     this.loadData();
     const start = new Date()
@@ -392,11 +392,12 @@ export default {
     this.time1 = [this.startDate,this.endDate]
   },
   watch: {
-      refresh: function (val) {
-          if(val === true) {
-              this.loadData()
-          }
-      },
+      // refresh: function (val) {
+      //     debugger
+      //     if(val === true) {
+      //         this.loadData()
+      //     }
+      // },
       'searchForm.constType': function (val) {
           if (val === 'POLICY_NAME') {this.policyNameHolder = '请输入策略名称'}
           else if (val === 'POLICY_ID') {this.policyNameHolder = '请输入策略id'}
@@ -433,7 +434,7 @@ export default {
       });
     },
     freshCache(row) {
-            this.$confirm("确定要同步生效吗?", "提示", {
+            this.$confirm("确认同步生效人群吗？将实时生效新的人群，1分钟内请不要频繁点击同步", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
