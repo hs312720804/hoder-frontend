@@ -132,3 +132,12 @@ export function getCrowdsByPolicyId(params) {
         params
     })
 }
+
+// 多版本人群圈定接口
+export function getMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/multiVersionCrowd/index',
+        params
+    })
+}
