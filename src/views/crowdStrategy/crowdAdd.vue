@@ -30,10 +30,18 @@
                         name="oxve"
                         v-model="childItem.operator"
                         class="input-inline"
+                        v-show="!(childItem.tagType === 'time' && childItem.isDynamicTime === 3)"
                       >
                         <template
-                          v-if="childItem.tagType === 'number' || childItem.tagType === 'time'"
+                          v-if="childItem.tagType === 'number'"
                         >
+                          <el-option value="="></el-option>
+                          <el-option value=">="></el-option>
+                          <el-option value="<="></el-option>
+                          <el-option value=">"></el-option>
+                          <el-option value="<"></el-option>
+                        </template>
+                        <template v-if="childItem.tagType === 'time' && childItem.isDynamicTime !== 3">
                           <el-option value="="></el-option>
                           <el-option value=">="></el-option>
                           <el-option value="<="></el-option>
@@ -53,15 +61,22 @@
                           <el-option value="!=" label="不是"></el-option>
                         </template>
                       </el-select>
+                      <el-select
+                              v-show="childItem.tagType === 'time' && childItem.isDynamicTime === 3"
+                              class="time-dot-select-new" :key="n+'timeKey'" v-model="childItem.dateAreaType">
+                              <el-option :value='0' label="空"></el-option>
+                              <el-option :value='1' label="已过期"></el-option>
+                              <el-option :value='2' label="未过期"></el-option>
+                      </el-select>
                     </span>
                     <span class="in">
                       <span v-if="childItem.tagType === 'time'">
                         <template v-if="childItem.isDynamicTime === 2">
                           <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dynamicTimeType">
-                              <el-option value='1' label="在当日之前"></el-option>
-                              <el-option value='2' label="在当日之后"></el-option>
+                              <el-option :value='1' label="在当日之前"></el-option>
+                              <el-option :value='2' label="在当日之后"></el-option>
                           </el-select>
-                          <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
+                          <span><el-input class="time-dot-input" v-model="childItem.value" @blur="checkNum(childItem.value)"></el-input>天</span>
                         </template>
                         <template v-if="childItem.isDynamicTime === 1">
                           <el-date-picker
@@ -74,12 +89,8 @@
                           ></el-date-picker>
                         </template>
                         <template v-if="childItem.isDynamicTime === 3">
-                          <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dateAreaType">
-                              <el-option value='0' label="空"></el-option>
-                              <el-option value='1' label="已过期"></el-option>
-                              <el-option value='2' label="未过期"></el-option>
-                          </el-select>
-                          <span><el-input aria-placeholder="请输入天数" class="time-dot-input" v-model="childItem.value"></el-input>天</span>
+                          <span><el-input class="time-dot-input" v-model="childItem.startDay" @blur="checkNum(childItem.startDay)"></el-input>天~</span>
+                          <span><el-input class="time-dot-input" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
                         </template>
                     </span>
                      <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
@@ -116,8 +127,8 @@
                         <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
                         <span v-if="childItem.isDynamicTime === 1">切换至时间天数</span>
                       </el-button>
-                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;dateAreaType = 0">切换至新方案</el-button>
-                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = '1'">切换至旧方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;childItem.dateAreaType = 0;childItem.operator = 'between'">切换至新方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = 1;childItem.operator = '='">切换至旧方案</el-button>
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
@@ -159,6 +170,17 @@
                     </el-dialog>
                     <span class="i" @click="handleRemoveRule(item, childItem)">
                       <i class="icon iconfont el-icon-cc-delete"></i>
+                    </span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 3">
+                      <el-tooltip class="item" effect="dark"
+                                  placement="top-start"
+                      >
+                        <div slot="content">
+                          状态：到期时间请选择“已过期”或“未过期”，其他请选“空”<br/>
+                          时间设置：30天以内：输入0～30天；30天以外：请输入30天～99999999天
+                        </div>
+                        <el-button type="text">提示</el-button>
+                    </el-tooltip>
                     </span>
                     <el-button type="success" v-if="n>0" round class="and">且</el-button>
                   </div>
@@ -284,7 +306,7 @@
                     condition: "AND",
                     rules: [
                         {
-                            operator: this.getDefaultOperator("="),
+                            operator: tag.tagType==='time'? 'between' : this.getDefaultOperator("="),
                             tagCode: tag.tagKey,
                             tagName: tag.tagName,
                             dataSource: tag.dataSource,
@@ -293,11 +315,13 @@
                             tagType: tag.tagType,
                             categoryName: tag.tagName,
                             categoryCode: tag.tagKey,
-                            dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                            dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : 1,
                             isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 3,
                             thirdPartyCode: tag.thirdPartyCode,
                             thirdPartyField: tag.thirdPartyField,
-                            dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0
+                            dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
+                            startDay: tag.tagType==='time' ? (tag.startDay ? tag.startDay : ''): undefined,
+                            endDay: tag.tagType==='time' ? (tag.endDay ? tag.endDay : ''): undefined
                         }
                     ]
                 })
@@ -311,7 +335,7 @@
                     if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
                 }
                 rule.rules.push({
-                                  operator: this.getDefaultOperator("="),
+                                  operator: tag.tagType==='time'? 'between' : this.getDefaultOperator("="),
                                   tagCode: tag.tagKey,
                                   tagName: tag.tagName,
                                   dataSource: tag.dataSource,
@@ -320,11 +344,13 @@
                                   tagType: tag.tagType,
                                   categoryName: tag.tagName,
                                   categoryCode: tag.tagKey,
-                                  dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : '1',
+                                  dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : 1,
                                   isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 3,
                                   thirdPartyCode: tag.thirdPartyCode,
                                   thirdPartyField: tag.thirdPartyField,
-                                  dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0
+                                  dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
+                                  startDay: tag.tagType==='time' ? (tag.startDay ? tag.startDay : ''): undefined,
+                                  endDay: tag.tagType==='time' ? (tag.endDay ? tag.endDay : ''): undefined
                                 })
                 // if(tag.tagType==='string' || tag.tagType === 'collect'){
                 //     this.$service.getTagAttr({ tagId: tag.tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
@@ -414,15 +440,29 @@
                 return "=";
             },
             handleSave() {
-                const form = this.form;
-                const tagIds = [];
-                this.rulesJson.rules.forEach(function(item) {
+                const form = this.form
+                const tagIds = []
+                const rules = this.rulesJson.rules
+                const ruleLength = rules.length
+                let i, j = 0
+                // 判断是否有未填写的项
+                for (i=0; i<ruleLength; i++){
+                    for (j=0; j< rules[i].rules.length; j++) {
+                        if(rules[i].rules[j].value === ''){
+                            this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
+                            return
+                        }
+                    }
+                }
+                rules.forEach(function(item) {
                     item.rules.forEach(function(childItem) {
                         if (tagIds.indexOf(childItem.tagId) === -1) {
-                            tagIds.push(childItem.tagId);
+                            tagIds.push(childItem.tagId)
                         }
-                    });
-                });
+                        delete childItem.startDay
+                        delete childItem.endDay
+                    })
+                })
                 var data = {
                     crowdName: form.name,
                     tagIds: tagIds.join(","),
@@ -458,6 +498,26 @@
                     }
                 }
                 return result
+            },
+            checkNum(num) {
+                if((/(^\d+$)/).test(num)) {
+                    return true
+                }else {
+                    this.$message.error('该值为必填项，且必须是大于等于0的整数')
+                    return false
+                }
+            },
+            bigNum(item) {
+                const startDay = item.startDay
+                const endDay = item.endDay
+                this.checkNum(endDay)
+                if(this.checkNum(endDay)) {
+                    if(startDay >= endDay) {
+                        this.$message.error('第二个值必须大于第一个值')
+                    }else {
+                        item.value = startDay + '-' + endDay
+                    }
+                }else{ item.value = '' }
             }
         },
         created() {
@@ -470,26 +530,32 @@
             if (this.crowdId != null)
             //编辑
                 this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
-                    this.form.name = data.policyCrowds.crowdName;
-                    this.form.remark = data.policyCrowds.remark;
-                    this.priority = data.policyCrowds.priority;
-                    this.rulesJson = JSON.parse(data.policyCrowds.rulesJson);
-                    const rulesAll = JSON.parse(data.policyCrowds.rulesJson).rules
-                    console.log(rulesAll)
-                    const ruleLenght = rulesAll.length
+                    let policyData = data.policyCrowds
+                    this.form.name = policyData.crowdName
+                    this.form.remark = policyData.remark
+                    this.priority = policyData.priority
+                    let ruleJsonData = JSON.parse(policyData.rulesJson)
                     var cacheIds = []
-                    for (var i = 0;i< ruleLenght; i++ ) {
-                        rulesAll[i].rules.forEach(item => {
-                            if(item.tagType === 'string' || item.tagType === 'collect')
+                    ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
+                        itemParent.rules.forEach(item => {
+                            if(item.tagType === 'string' || item.tagType === 'collect') {
                                 cacheIds.push(item.tagId)
+                            }
+                            if(item.tagType === 'time' && item.isDynamicTime === 3){
+                                const value = item.value.split('-')
+                                this.$set(item,'startDay',value[0])
+                                this.$set(item,'endDay',value[1])
+                            }
                         })
-                    }
+                        return itemParent
+                    })
+                    this.rulesJson = ruleJsonData
                     cacheIds = this.distinct(cacheIds,[])
                     if(cacheIds.length !== 0){
                         cacheIds.forEach(this.fetchTagSuggestions)}
-                });
+                })
         }
-    };
+    }
 </script>
 <style lang="stylus" scoped>
   .multipleSelect
@@ -547,6 +613,8 @@
     float right
   .showMoreTags >>> .el-radio
     margin 5px
+  .label-item .time-dot-select-new
+    width 90px
 </style>
 
 
