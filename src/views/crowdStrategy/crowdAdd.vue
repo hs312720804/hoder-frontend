@@ -89,8 +89,8 @@
                           ></el-date-picker>
                         </template>
                         <template v-if="childItem.isDynamicTime === 3">
-                          <span><el-input class="time-dot-input" v-model="childItem.startDay" @blur="checkNum(childItem.startDay)"></el-input>天~</span>
-                          <span><el-input class="time-dot-input" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
+                          <span><el-input class="time-dot-input" style="width: 60px" v-model="childItem.startDay" @blur="checkNum(childItem.startDay)"></el-input>天~</span>
+                          <span><el-input class="time-dot-input" style="width: 106px" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
                         </template>
                     </span>
                      <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
