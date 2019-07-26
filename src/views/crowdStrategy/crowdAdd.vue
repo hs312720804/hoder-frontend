@@ -545,6 +545,9 @@
                                 const value = item.value.split('-')
                                 this.$set(item,'startDay',value[0])
                                 this.$set(item,'endDay',value[1])
+                            }else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                                this.$set(item,'dateAreaType','')
+                                this.$set(item,'dynamicTimeType',parseInt(item.dynamicTimeType))
                             }
                         })
                         return itemParent
