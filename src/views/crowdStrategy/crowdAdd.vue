@@ -127,8 +127,8 @@
                         <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
                         <span v-if="childItem.isDynamicTime === 1">切换至时间天数</span>
                       </el-button>
-                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;childItem.dateAreaType = 0;childItem.operator = 'between'">切换至新方案</el-button>
-                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = 1;childItem.operator = '='">切换至旧方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;childItem.dateAreaType = 0;childItem.operator = 'between';childItem.value = childItem.startDay + '-' + childItem.endDay">切换至新方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = 1;childItem.operator = '=';childItem.value = ''">切换至旧方案</el-button>
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
@@ -448,9 +448,21 @@
                 // 判断是否有未填写的项
                 for (i=0; i<ruleLength; i++){
                     for (j=0; j< rules[i].rules.length; j++) {
-                        if(rules[i].rules[j].value === ''){
+                        let rulesItem = rules[i].rules[j]
+                        if(rulesItem.value === ''){
                             this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
                             return
+                        }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
+                            if(this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
+                                if(rulesItem.startDay < rulesItem.endDay) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
+                                else {
+                                    this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
+                                    return
+                                }
+                            }else {
+                                this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的正整数')
+                                return
+                            }
                         }
                     }
                 }
