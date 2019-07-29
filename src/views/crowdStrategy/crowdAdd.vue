@@ -127,8 +127,8 @@
                         <span v-if="childItem.isDynamicTime === 2">切换到具体时间点</span>
                         <span v-if="childItem.isDynamicTime === 1">切换至时间天数</span>
                       </el-button>
-                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;childItem.dateAreaType = 0;childItem.operator = 'between'">切换至新方案</el-button>
-                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = 1;childItem.operator = '='">切换至旧方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime !== 3" @click="childItem.isDynamicTime = 3 ;childItem.dateAreaType = 0;childItem.operator = 'between';childItem.value = childItem.startDay + '-' +childItem.endDay">切换至新方案</el-button>
+                      <el-button v-if="childItem.isDynamicTime === 3" @click="childItem.isDynamicTime = 2 ;childItem.dynamicTimeType = 1;childItem.operator = '=';childItem.value = ''">切换至旧方案</el-button>
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
