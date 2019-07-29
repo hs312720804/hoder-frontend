@@ -3,14 +3,22 @@
         <!-- authority -->
         <div class="TopNav">
             <div class="left">
-                <el-button-group>
+                <el-button-group class="button-list">
                     <el-button
                             type="primary"
                             size="small"
                             @click="handleAdd"
                             v-permission="'hoder:launch:crowd:modify'"
                     >
-                        <a class="fa fa-plus" style="color: white;"></a>新增投放
+                       新增投放
+                    </el-button>
+                    <el-button
+                            type="primary"
+                            size="small"
+                            @click="handleCrowdDefineAdd"
+                            v-permission="'hoder:launch:crowd:modify'"
+                    >
+                        新增自定义人群
                     </el-button>
                 </el-button-group>
             </div>
@@ -85,7 +93,7 @@
                                 v-permission="'hoder:launch:crowd:modify'"
                                 size="small"
                                 type="primary"
-                                @click="handleEdit(scope.row.launchCrowdId)"
+                                @click="handleEdit(scope.row)"
                                 shiro:hasPermission="sysAdministrative:role:edit"
                         >编辑</el-button>
                         <el-button
@@ -178,10 +186,13 @@
                 this.loadData();
             },
             handleAdd() {
-                this.$emit("changeStatus", false);
+                this.$emit("changeStatus", false, 0)
             },
-            handleEdit(launchCrowdId) {
-                this.$emit("changeStatus", false, launchCrowdId);
+            handleCrowdDefineAdd() {
+                this.$emit("changeStatus", false, 1)
+            },
+            handleEdit(launchCrowdItem) {
+                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId)
             },
             condition(row) {
                 this.isShowCondition = true;
@@ -301,4 +312,8 @@
         color red
         font-size 14px
         margin-top 10px
+    .button-list >>> .el-button + .el-button
+        margin 0 10px
+    .button-list >>> .el-button
+        border-radius 3px
 </style>

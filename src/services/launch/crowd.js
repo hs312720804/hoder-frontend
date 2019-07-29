@@ -132,12 +132,46 @@ export function getCrowdsByPolicyId(params) {
         params
     })
 }
-
-// 多版本人群圈定接口
+/**
+ * 多版本人群圈定接口
+ */
+// 列表页
 export function getMultiVersionCrowd(params) {
     return this.fetch({
         method: 'GET',
         url: '/api/multiVersionCrowd/index',
         params
+    })
+}
+// 新增自定义人群或者普通人群
+export function addMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/multiVersionCrowd/add/'+params
+    })
+}
+// 新增保存接口
+export function saveAddMultiVersionCrowd({model,data}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/multiVersionCrowd/'+model,
+        data,
+        isJSON: true
+    })
+}
+// 编辑保存
+export function saveEditMultiVersionCrowd({model,data}) {
+    return this.fetch({
+        method: 'put',
+        url: '/api/multiVersionCrowd/'+model,
+        data,
+        isJSON: true
+    })
+}
+// 编辑获取详情接口
+export function editMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/modify/' + params
     })
 }

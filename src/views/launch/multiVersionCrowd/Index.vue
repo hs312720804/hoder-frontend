@@ -1,7 +1,7 @@
 <template>
     <div>
         <list v-show="isShowList" @changeStatus="changeStatus" ref="list"></list>
-        <add v-if="!isShowList" @changeStatus="changeStatus"  @goBack="goBack" :isShowAddOrEdit="!isShowList" :editLaunchCrowdId="editLaunchCrowdId"></add>
+        <add v-if="!isShowList" @changeStatus="changeStatus" :model="addModel"  @goBack="goBack" :isShowAddOrEdit="!isShowList" :editLaunchCrowdId="editLaunchCrowdId"></add>
     </div>
 </template>
 <script>
@@ -11,7 +11,8 @@
         data() {
             return {
                 isShowList: true,
-                editLaunchCrowdId:null //编辑的ID
+                editLaunchCrowdId:null, //编辑的ID
+                addModel: 0
             };
         },
         components: {
@@ -19,17 +20,18 @@
             Add
         },
         methods: {
-            changeStatus(state,launchCrowdId){
-                this.isShowList=state;
+            changeStatus(state,model,launchCrowdId){
+                this.isShowList=state
+                this.addModel = model
                 if(state)
-                    this.$refs.list.loadData();
+                    this.$refs.list.loadData()
                 if(launchCrowdId)
                     this.editLaunchCrowdId=launchCrowdId
                 else
                     this.editLaunchCrowdId=null
             },
             goBack(){
-                this.isShowList=true;
+                this.isShowList=true
             }
         }
     };
