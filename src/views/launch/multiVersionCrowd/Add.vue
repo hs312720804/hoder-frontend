@@ -198,7 +198,7 @@
                             this.crowdDefineForm = {
                                 launchCrowdId: row.launchCrowdId,
                                 launchName: row.launchName,
-                                biIds: this.distinct(data.launchCrowdBiIds,[]),
+                                biIds: biIds,
                                 crowdSql: row.crowdSql,
                                 expiryDay: row.expiryDay,
                                 autoVersion: row.autoVersion,
@@ -207,22 +207,21 @@
                     } else {
                         this.launchPlatform = data.biLists
                         this.strategyPlatform = data.policies
-                            this.crowdForm.launchCrowdId = row.launchCrowdId
-                            this.crowdForm.dmpCrowdId = row.dmpCrowdId
-                            this.crowdForm.launchName = row.launchName
-                            this.crowdForm.biIds = data.launchCrowdBiIds
-                            this.crowdForm.remark = row.remark
-                            this.crowdForm.dataSource = row.dataSource
-                            this.status = row.status
-                            this.crowdForm.policyIds = row.policyIds.split(",")
-                            this.getCrowd()
-                            data.respcl.forEach(element => {
-                                element.childs.forEach(v => {
-                                    if (v.choosed)
-                                        this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
-                                })
+                        this.crowdForm.launchCrowdId = row.launchCrowdId
+                        this.crowdForm.dmpCrowdId = row.dmpCrowdId
+                        this.crowdForm.launchName = row.launchName
+                        this.crowdForm.biIds = data.launchCrowdBiIds
+                        this.crowdForm.remark = row.remark
+                        this.crowdForm.dataSource = row.dataSource
+                        this.status = row.status
+                        this.crowdForm.policyIds = row.policyIds.split(",")
+                        this.getCrowd()
+                        data.respcl.forEach(element => {
+                            element.childs.forEach(v => {
+                                if (v.choosed)
+                                    this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
                             })
-
+                        })
                     }
                 })
             } else {
@@ -273,7 +272,6 @@
                             })
                         }
                     } else {
-                        console.log("error submit!!")
                         return false
                     }
                 })
@@ -296,7 +294,6 @@
                             })
                         }
                     } else {
-                        console.log("error submit!!")
                         return false
                     }
                 })
