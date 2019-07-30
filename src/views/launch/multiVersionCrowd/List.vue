@@ -118,8 +118,8 @@
                     @handle-current-change="handleCurrentChange"
             ></pagination>
         </div>
-        <el-dialog title="选择的策略" :visible.sync="isShowCondition" width="30%">
-            <el-form>
+        <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+            <el-form v-if="launchType === 0">
                 <el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">
                     <el-checkbox
                             v-model="v.choosed"
@@ -130,6 +130,7 @@
                     </el-checkbox>
                 </el-form-item>
             </el-form>
+            <div v-if="launchType === 1">{{selectStrategy}}</div>
         </el-dialog>
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
@@ -175,7 +176,9 @@
                 estimateValue: ['0'],
                 estimateItems: [],
                 currentLaunchId: '',
-                showError: false
+                showError: false,
+                launchType: undefined,
+                launchTitle: ''
             };
         },
         created() {
@@ -195,29 +198,35 @@
                 this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId)
             },
             condition(row) {
-                this.isShowCondition = true;
+                this.isShowCondition = true
                 this.$service
-                    .ruleDetail({ launchCrowdId: row.launchCrowdId })
-                    .then(({ respcl }) => {
-                        // if (respcl.length > 0) {
-                        this.selectStrategy = respcl
-                        //}
-                    });
+                    .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
+                    .then(data => {
+                        this.launchType = data.type
+                        if ( data.type === 1) {
+                            this.launchTitle = '人群条件'
+                            this.selectStrategy = data.sqlRule
+                        }
+                        else {
+                            this.launchTitle = '选择的策略'
+                            this.selectStrategy = data.respcl
+                        }
+                    })
             },
             del(row) {
-                var id = row.launchCrowdId;
+                var id = row.launchCrowdId
                 this.$confirm("确定要删除吗?", "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning"
                 })
                     .then(() => {
-                        this.$service.launchCrowdDel({ launchCrowdId: id },"删除成功").then(() => {
-                            this.callback();
-                        });
+                        this.$service.delMultiVersionCrowd(id, "删除成功").then(() => {
+                            this.callback()
+                        })
                     })
                     .catch(() => {
-                    });
+                    })
             },
             // 从服务器读取数据
             loadData: function() {
@@ -260,13 +269,13 @@
                 })
             },
             // 重置
-            handleReset: function() {
+            handleReset () {
                 this.searchForm.launchName = ''
                 this.criteria = {}
                 this.loadData()
             },
             // 修改状态
-            lanuch: function(index, row) {
+            lanuch (index, row) {
                 this.currentLaunchId = row.launchCrowdId
                 this.showEstimate = true
                 this.$service.getEstimateType().then((data) => {

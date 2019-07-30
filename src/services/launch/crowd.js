@@ -175,3 +175,18 @@ export function editMultiVersionCrowd(params) {
         url: '/api/multiVersionCrowd/modify/' + params
     })
 }
+// 删除
+export function delMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/multiVersionCrowd/' + params
+    })
+}
+// 人群条件
+export function MultiVersionCrowdPeople(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/ruleDetail',
+        params
+    })
+}
