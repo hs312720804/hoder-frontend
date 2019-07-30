@@ -8,7 +8,7 @@
                             type="primary"
                             size="small"
                             @click="handleAdd"
-                            v-permission="'hoder:launch:crowd:modify'"
+                            v-permission="'hoder:launch:crowd:ver:add'"
                     >
                        新增投放
                     </el-button>
@@ -16,7 +16,7 @@
                             type="primary"
                             size="small"
                             @click="handleCrowdDefineAdd"
-                            v-permission="'hoder:launch:crowd:modify'"
+                            v-permission="'hoder:launch:crowd:ver:add'"
                     >
                         新增自定义人群
                     </el-button>
@@ -71,14 +71,14 @@
                     <el-button-group  class="button-group-position">
                         <el-button
                                 v-if="scope.row.history.status==1"
-                                v-permission="'hoder:launch:crowd:launch'"
+                                v-permission="'hoder:launch:crowd:ver:launch'"
                                 size="small"
                                 type="warning"
                                 @click="lanuch(scope.$index, scope.row)"
                         >投放</el-button>
                         <el-button
                                 v-if="scope.row.history.status==3"
-                                v-permission="'hoder:launch:crowd:cancel'"
+                                v-permission="'hoder:launch:crowd:ver:cancel'"
                                 size="small"
                                 type="warning"
                                 @click="cancelLanuch(scope.row)"
@@ -86,11 +86,11 @@
                         <el-button
                                 size="small"
                                 type="success"
-                                v-permission="'hoder:launch:crowd:detail'"
+                                v-permission="'hoder:launch:crowd:ver:detail'"
                                 @click="condition(scope.row) "
                         >人群条件</el-button>
                         <el-button
-                                v-permission="'hoder:launch:crowd:modify'"
+                                v-permission="'hoder:launch:crowd:ver:modify'"
                                 size="small"
                                 type="primary"
                                 @click="handleEdit(scope.row)"
@@ -98,7 +98,7 @@
                         >编辑</el-button>
                         <el-button
                                 v-if="scope.row.history.status==1"
-                                v-permission="'hoder:launch:crowd:del'"
+                                v-permission="'hoder:launch:crowd:ver:delete'"
                                 size="small"
                                 type="info"
                                 @click="del(scope.row)"
@@ -195,7 +195,7 @@
                 this.$emit("changeStatus", false, 1)
             },
             handleEdit(launchCrowdItem) {
-                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId)
+                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId, launchCrowdItem.status)
             },
             condition(row) {
                 this.isShowCondition = true

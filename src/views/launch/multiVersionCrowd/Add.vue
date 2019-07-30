@@ -17,7 +17,11 @@
                             ></el-input>
                         </el-form-item>
                         <el-form-item label="SQL语句" prop="crowdSql">
-                            <el-input type="textarea" placeholder="请输入生成临时人群的sql语句" v-model="crowdDefineForm.crowdSql"></el-input>
+                            <el-input type="textarea"
+                                      placeholder="请输入生成临时人群的sql语句"
+                                      :disabled="status!==undefined && status!==1"
+                                      v-model="crowdDefineForm.crowdSql">
+                            </el-input>
                         </el-form-item>
                         <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
                             <el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">
@@ -32,7 +36,10 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据有效期" prop="expiryDay">
-                            <el-select v-model="crowdDefineForm.expiryDay">
+                            <el-select
+                                    v-model="crowdDefineForm.expiryDay"
+                                    :disabled="status!==undefined && status!==1"
+                            >
                                 <el-option
                                         v-for="(item,index) in effectTimeList"
                                         :key="index"
@@ -43,13 +50,16 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="每天是否更新" prop="remark">
-                            <el-select v-model="crowdDefineForm.autoVersion">
+                            <el-select
+                                    v-model="crowdDefineForm.autoVersion"
+                                    :disabled="status!==undefined && status!==1"
+                            >
                                 <el-option label="是" :value="1"></el-option>
                                 <el-option label="否" :value="0"></el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据类型" prop="calType">
-                            <el-checkbox-group v-model="crowdDefineForm.calType">
+                            <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && status!==1">
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
@@ -186,7 +196,7 @@
                 estimateItems: []
             }
         },
-        props: ["editLaunchCrowdId", "model"],
+        props: ["editLaunchCrowdId", "model","editStatus"],
         created() {
             this.getAddList(this.model)
             if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
@@ -204,6 +214,7 @@
                                 autoVersion: row.autoVersion,
                                 calType: row.calType.split(",")
                             }
+                            this.status = this.editStatus
                     } else {
                         this.launchPlatform = data.biLists
                         this.strategyPlatform = data.policies
@@ -213,7 +224,8 @@
                         this.crowdForm.biIds = data.launchCrowdBiIds
                         this.crowdForm.remark = row.remark
                         this.crowdForm.dataSource = row.dataSource
-                        this.status = row.status
+                        // this.status = row.status
+                        this.status = this.editStatus
                         this.crowdForm.policyIds = row.policyIds.split(",")
                         this.getCrowd()
                         data.respcl.forEach(element => {
