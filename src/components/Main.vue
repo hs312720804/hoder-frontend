@@ -122,7 +122,8 @@
                     "/dataAnalyze/index": "DeliveryDataAnalyse",
                     "/thirdInterfaceConf/index": "thirdInterface",
                     "/devTool/clearCache":"clearCache",
-                    "/webApiServers/index":"ipManage"
+                    "/webApiServers/index":"ipManage",
+                    "/multiVersionCrowd/index":"multiVersionCrowd"
                 }
             };
         },

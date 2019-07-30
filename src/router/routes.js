@@ -33,6 +33,7 @@ import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
 import thirdInterface from '@/views/thirdInterface/index'
 import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
 import ipManage from '@/views/DevelopTools/ipManage/index'
+import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
 const children = [
     {
         name: 'homePage',
@@ -222,20 +223,18 @@ const children = [
                     title: '人群分隔 管理',
                     icon: 'el-icon-cc-file'
                 }
+            },
+            {
+                name: 'multiVersionCrowd',
+                path: 'multiVersionCrowd',
+                component: multiVersionCrowd,
+                meta: {
+                    title: '人群多版本圈定',
+                    tagId:"multiVersionCrowd",
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
             }
-
-            // {
-            //     name: 'validate',
-            //     path: 'validate',
-            //     component: validate,
-            //     meta: {
-            //         title: '投放验证',
-            //         tagId:"validate",
-            //       //  hideInMenu: true,
-            //         isCache: false,
-            //         icon: 'el-icon-cc-file',
-            //     }
-            // }
         ],
     },
     {

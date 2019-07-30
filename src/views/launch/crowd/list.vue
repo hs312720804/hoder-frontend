@@ -230,19 +230,29 @@ export default {
     },
     // 搜索,提交表单
     submitForm: function() {
-      var _this = this;
-      this.$refs.searchForm.validate(function(result) {
-        if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
-        } else {
-          return false;
-        }
-      });
+      // var _this = this;
+      // this.$refs.searchForm.validate(function(result) {
+      //   if (result) {
+      //     _this.criteria = _this.searchForm;
+      //     _this.loadData();
+      //   } else {
+      //     return false;
+      //   }
+      // });
+        this.$refs.searchForm.validate((result) => {
+            if (result) {
+                this.criteria = this.searchForm
+                this.loadData()
+            } else {
+                return false
+            }
+        })
     },
     // 重置
     handleReset: function() {
-      this.$refs.searchForm.resetFields();
+        this.searchForm.launchName = ''
+        this.criteria = {}
+        this.loadData()
     },
     // 修改状态
     lanuch: function(index, row) {
