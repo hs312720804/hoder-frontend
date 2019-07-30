@@ -190,3 +190,19 @@ export function MultiVersionCrowdPeople(params) {
         params
     })
 }
+// 投放
+export function LaunchMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/launch',
+        params
+    })
+}
+// 取消投放
+export function cancelLaunchMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/cancelLaunch',
+        params
+    })
+}

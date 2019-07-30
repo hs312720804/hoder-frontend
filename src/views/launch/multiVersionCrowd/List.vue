@@ -288,7 +288,7 @@
                     return
                 } else {this.showError = false}
                 let calIdType = this.estimateValue.map((item) => item).join(',')
-                this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                     this.showEstimate = false
                     this.callback()
                 })
@@ -301,7 +301,7 @@
                     type: "warning"
                 })
                     .then(() => {
-                        this.$service.cancelLaunchCrowd({ launchCrowdId: id },"取消投放成功").then(() => {
+                        this.$service.cancelLaunchMultiVersionCrowd({ launchCrowdId: id },"取消投放成功").then(() => {
                             this.callback()
                         })
                     })
