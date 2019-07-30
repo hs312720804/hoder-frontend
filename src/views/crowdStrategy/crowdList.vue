@@ -165,7 +165,7 @@
               size="small"
               type="warning"
               @click="estimateType(scope.row)"
-              :disabled="scope.row.forcastStatus != 1 || scope.row.putway === 0"
+              :disabled="scope.row.putway === 0"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="danger">
@@ -552,7 +552,8 @@ export default {
     handleEstimate () {
         let calIdType = this.estimateValue.map((item) => item).join(',')
         this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
-            () => {
+            (data) => {
+                console.log(data)
                 this.showEstimate = false
                 this. loadData()
             }
