@@ -101,6 +101,7 @@
                 </el-form-item>
                 <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
                     <el-select
+                            filterable
                             v-model="crowdForm.policyIds"
                             multiple
                             placeholder="请选择策略"
