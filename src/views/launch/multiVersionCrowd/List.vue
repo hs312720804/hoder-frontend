@@ -195,7 +195,7 @@
                 this.$emit("changeStatus", false, 1)
             },
             handleEdit(launchCrowdItem) {
-                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId, launchCrowdItem.status)
+                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId, launchCrowdItem.history.status)
             },
             condition(row) {
                 this.isShowCondition = true
