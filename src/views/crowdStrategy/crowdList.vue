@@ -174,7 +174,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                         :command="['detail',scope.row]"
-                >使用情况</el-dropdown-item>
+                >投后效果</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-button-group>
