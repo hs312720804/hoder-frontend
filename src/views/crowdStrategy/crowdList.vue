@@ -552,8 +552,7 @@ export default {
     handleEstimate () {
         let calIdType = this.estimateValue.map((item) => item).join(',')
         this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
-            (data) => {
-                console.log(data)
+            () => {
                 this.showEstimate = false
                 this. loadData()
             }
