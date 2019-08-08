@@ -106,6 +106,11 @@
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
       <el-table-column prop="priority" label="优先级" width="60"></el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column prop="apiStatus" label="是否生效" width="90">
+        <template scope="scope">
+          {{effectStatus[scope.row.apiStatus]}}
+        </template>
+      </el-table-column>
       <el-table-column prop="putway" label="上/下架" width="70px">
         <template scope="scope">
           <span type="text" v-if="scope.row.putway === 1">上架中</span>
@@ -139,14 +144,22 @@
                         :command="['edit',scope.row]"
                         v-permission="'hoder:crowd:edit'"
                         :disabled="scope.row.putway === 0"
-                >编辑</el-dropdown-item>
+                >编辑
+                </el-dropdown-item>
                 <el-dropdown-item
                         :command="['del',scope.row]"
                         v-permission="'hoder:crowd:del'"
-                >删除</el-dropdown-item>
+                >删除
+                </el-dropdown-item>
                 <el-dropdown-item
                         :command="['upDown',scope.row]"
-                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span></el-dropdown-item>
+                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                        :command="['copy',scope.row]"
+                        :disabled="scope.row.putway === 0"
+                >人群复制
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-button-->
@@ -353,6 +366,14 @@
       <el-button type="primary" @click="handleUpDown">确定</el-button>
     </span>
     </el-dialog>
+    <!--复制选择策略-->
+    <el-dialog title="提示" :visible.sync="showCopyDialog">
+      <div>{{upDownTips}}</div>
+      <span slot="footer" class="dialog-footer">
+      <el-button @click="showUpDownDialog = false">取 消</el-button>
+      <el-button type="primary" @click="handleCopy">确定</el-button>
+    </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -410,7 +431,12 @@ export default {
         currentCid: undefined,
         showUpDownDialog: false,
         upDownTips: '',
-        currentTag: ''
+        currentTag: '',
+        showCopyDialog: false,
+        effectStatus: {
+          1 : '有效',
+          0 : '无效'
+        }
     };
   },
   props: ["selectRow"],
@@ -898,6 +924,19 @@ export default {
                   this.loadData()
               })
       },
+      copyCrowd (row) {
+        this.showCopyDialog = true
+        this.currentPage = row
+      },
+      handleCopy () {
+          const row = this.currentTag
+          alert('复制功能开发中')
+          // this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },row.putway === 1 ? '下架成功' : '上架成功')
+          //     .then(()=>{
+          //         this.showCopyDialog = false
+          //         this.loadData()
+          //     })
+      },
       handleCommandOpreate(scope) {
           const type = scope[0]
           const params = scope[1]
@@ -905,7 +944,7 @@ export default {
           else if (type === 'del') {this.del(params)}
           else if (type === 'upDown') {
               this.upDownCrowd(params)
-          }
+          }else if (type === 'copy') {this.copyCrowd(params)}
       },
       tableRowClassName({row}) {
         if(row.putway === 0) {return 'gray-row'}

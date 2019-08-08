@@ -120,7 +120,8 @@ export function CrowdLanuchEditBtn(params){
 export function launchPolicyIndex(params){
     return this.fetch({
         method: 'GET',
-        url: '/api/launchPolicy/index',
+        // url: '/api/launchPolicy/index',
+        url: '/api/launchPolicy/policyTab',
         params
       })
 }
@@ -130,6 +131,40 @@ export function getCrowdsByPolicyId(params) {
         method: 'GET',
         url: '/api/launchPolicy/getCrowdsByPolicyId',
         params
+    })
+}
+// 根据策略id获取人群Id列表页
+export function getCrowdsListByPolicyId(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchPolicy/index',
+        params
+    })
+}
+// 人群分割投放点击添加按钮获取数据
+export function getAddCrowdData(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchPolicy/add',
+        params
+    })
+}
+// 人群分割投放新增保存接口
+export function saveAddCrowdData(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/launchPolicy/',
+        data,
+        isJSON: true
+    })
+}
+// 取消投放
+export function cancelLaunchData(data) {
+    return this.fetch({
+        method: 'DELETE',
+        url: '/api/launchPolicy/cancelLaunch',
+        data,
+        isJSON: true
     })
 }
 /**
