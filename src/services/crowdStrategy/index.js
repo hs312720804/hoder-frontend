@@ -239,3 +239,19 @@ export function crowdUpDown(params) {
         params
     })
 }
+// 人群复制
+export function crowdCopy(data) {
+    return this.fetch({
+        method: 'post',
+        url: 'api/crowd/copyPolicyCrowd',
+        data
+    })
+}
+// 人群复制之前获取所有策略
+export function getAllPolicyList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/getPolicyList',
+        params
+    })
+}

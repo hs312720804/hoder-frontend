@@ -106,6 +106,18 @@
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
       <el-table-column prop="priority" label="优先级" width="60"></el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column prop="apiStatus" label="是否生效" width="90">
+        <template scope="scope">
+          <span type="text" v-if="scope.row.apiStatus === 1">已生效</span>
+          <span type="text" v-if="scope.row.apiStatus === 0">
+              <el-tooltip placement="right-start">
+                <div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>
+                <div v-else slot="content">人群未生效，因为未点击该策略的"同步按钮"</div>
+                <span class="uneffective">未生效<span>?</span></span>
+              </el-tooltip>
+          </span>
+        </template>
+      </el-table-column>
       <el-table-column prop="putway" label="上/下架" width="70px">
         <template scope="scope">
           <span type="text" v-if="scope.row.putway === 1">上架中</span>
@@ -139,14 +151,22 @@
                         :command="['edit',scope.row]"
                         v-permission="'hoder:crowd:edit'"
                         :disabled="scope.row.putway === 0"
-                >编辑</el-dropdown-item>
+                >编辑
+                </el-dropdown-item>
                 <el-dropdown-item
                         :command="['del',scope.row]"
                         v-permission="'hoder:crowd:del'"
-                >删除</el-dropdown-item>
+                >删除
+                </el-dropdown-item>
                 <el-dropdown-item
                         :command="['upDown',scope.row]"
-                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span></el-dropdown-item>
+                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
+                </el-dropdown-item>
+                <el-dropdown-item
+                        :command="['copy',scope.row]"
+                        :disabled="scope.row.putway === 0"
+                >人群复制
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-button-->
@@ -353,6 +373,30 @@
       <el-button type="primary" @click="handleUpDown">确定</el-button>
     </span>
     </el-dialog>
+    <!--复制选择策略-->
+    <el-dialog title="将人群复制到以下策略" :visible.sync="showCopyDialog">
+      <el-form :model="policyCopyForm" :rules="copyRules" ref="policyCopyForm" class="copy-form">
+        <el-form-item label="选择策略" prop="policyIds">
+          <el-select
+                  v-model="policyCopyForm.policyIds"
+                  multiple
+                  filterable
+          >
+            <el-option
+              v-for="(item,index) in allPolices"
+              :key="index"
+              :label="item.policyName"
+              :value="item.policyId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleCopy('policyCopyForm')">确定</el-button>
+          <el-button @click="handleCancelCopy('policyCopyForm')">取 消</el-button>
+        </el-form-item>
+      </el-form>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -410,7 +454,17 @@ export default {
         currentCid: undefined,
         showUpDownDialog: false,
         upDownTips: '',
-        currentTag: ''
+        currentTag: '',
+        showCopyDialog: false,
+        allPolices: [],
+        policyCopyForm: {
+          policyIds: []
+        },
+        copyRules: {
+            policyIds: [
+                {type: 'array', required: true, message: '请至少选择一个策略', trigger: 'change'}
+            ]
+        }
     };
   },
   props: ["selectRow"],
@@ -898,6 +952,32 @@ export default {
                   this.loadData()
               })
       },
+      copyCrowd (row) {
+        this.showCopyDialog = true
+        this.$service.getAllPolicyList().then(data => {
+            this.allPolices = data
+        })
+        this.currentTag = row
+      },
+      handleCopy (formName) {
+          const row = this.currentTag
+          let policyIds = this.policyCopyForm.policyIds.join(',')
+          this.$refs[formName].validate((valid) => {
+              if(valid) {
+                  this.$service.crowdCopy({crowdId: row.crowdId, policyIds}, '复制成功')
+                      .then(()=>{
+                          this.handleCancelCopy('policyCopyForm')
+                          this.loadData()
+                      })
+              }else {
+                  return false
+              }
+          })
+      },
+      handleCancelCopy(formName) {
+        this.showCopyDialog = false
+        this.$refs[formName].resetFields()
+      },
       handleCommandOpreate(scope) {
           const type = scope[0]
           const params = scope[1]
@@ -905,7 +985,7 @@ export default {
           else if (type === 'del') {this.del(params)}
           else if (type === 'upDown') {
               this.upDownCrowd(params)
-          }
+          }else if (type === 'copy') {this.copyCrowd(params)}
       },
       tableRowClassName({row}) {
         if(row.putway === 0) {return 'gray-row'}
@@ -962,4 +1042,18 @@ fieldset>div
   margin 50px 0 0 25px
 .crowd-list >>> .el-table tr.gray-row
   color #ccc
+.copy-form >>> .el-select
+  width 85%
+.uneffective
+  position relative
+  cursor pointer
+  span
+    position absolute
+    display inline-block
+    width 12px
+    height 12px
+    border 1px solid
+    border-radius 10px
+    text-align center
+    line-height 12px
 </style>
