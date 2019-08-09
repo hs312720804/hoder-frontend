@@ -108,7 +108,14 @@
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
       <el-table-column prop="apiStatus" label="是否生效" width="90">
         <template scope="scope">
-          {{effectStatus[scope.row.apiStatus]}}
+          <span type="text" v-if="scope.row.apiStatus === 1">已生效</span>
+          <span type="text" v-if="scope.row.apiStatus === 0">
+              <el-tooltip placement="right-start">
+                <div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>
+                <div v-else slot="content">人群未生效，因为未点击该策略的"同步按钮"</div>
+                <span class="uneffective">未生效<span>?</span></span>
+              </el-tooltip>
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="putway" label="上/下架" width="70px">
@@ -449,10 +456,6 @@ export default {
         upDownTips: '',
         currentTag: '',
         showCopyDialog: false,
-        effectStatus: {
-          1 : '已生效',
-          0 : '未生效'
-        },
         allPolices: [],
         policyCopyForm: {
           policyIds: []
@@ -961,9 +964,9 @@ export default {
           let policyIds = this.policyCopyForm.policyIds.join(',')
           this.$refs[formName].validate((valid) => {
               if(valid) {
-                  this.$service.crowdCopy({crowdId: row.crowdId, policyIds})
+                  this.$service.crowdCopy({crowdId: row.crowdId, policyIds}, '复制成功')
                       .then(()=>{
-                          this.showCopyDialog = false
+                          this.handleCancelCopy('policyCopyForm')
                           this.loadData()
                       })
               }else {
@@ -1041,4 +1044,16 @@ fieldset>div
   color #ccc
 .copy-form >>> .el-select
   width 85%
+.uneffective
+  position relative
+  cursor pointer
+  span
+    position absolute
+    display inline-block
+    width 12px
+    height 12px
+    border 1px solid
+    border-radius 10px
+    text-align center
+    line-height 12px
 </style>
