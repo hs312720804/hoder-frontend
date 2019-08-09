@@ -367,12 +367,28 @@
     </span>
     </el-dialog>
     <!--复制选择策略-->
-    <el-dialog title="提示" :visible.sync="showCopyDialog">
-      <div>{{upDownTips}}</div>
-      <span slot="footer" class="dialog-footer">
-      <el-button @click="showUpDownDialog = false">取 消</el-button>
-      <el-button type="primary" @click="handleCopy">确定</el-button>
-    </span>
+    <el-dialog title="将人群复制到以下策略" :visible.sync="showCopyDialog">
+      <el-form :model="policyCopyForm" :rules="copyRules" ref="policyCopyForm" class="copy-form">
+        <el-form-item label="选择策略" prop="policyIds">
+          <el-select
+                  v-model="policyCopyForm.policyIds"
+                  multiple
+                  filterable
+          >
+            <el-option
+              v-for="(item,index) in allPolices"
+              :key="index"
+              :label="item.policyName"
+              :value="item.policyId"
+            >
+            </el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handleCopy('policyCopyForm')">确定</el-button>
+          <el-button @click="handleCancelCopy('policyCopyForm')">取 消</el-button>
+        </el-form-item>
+      </el-form>
     </el-dialog>
   </div>
 </template>
@@ -434,8 +450,17 @@ export default {
         currentTag: '',
         showCopyDialog: false,
         effectStatus: {
-          1 : '有效',
-          0 : '无效'
+          1 : '已生效',
+          0 : '未生效'
+        },
+        allPolices: [],
+        policyCopyForm: {
+          policyIds: []
+        },
+        copyRules: {
+            policyIds: [
+                {type: 'array', required: true, message: '请至少选择一个策略', trigger: 'change'}
+            ]
         }
     };
   },
@@ -926,16 +951,29 @@ export default {
       },
       copyCrowd (row) {
         this.showCopyDialog = true
-        this.currentPage = row
+        this.$service.getAllPolicyList().then(data => {
+            this.allPolices = data
+        })
+        this.currentTag = row
       },
-      handleCopy () {
+      handleCopy (formName) {
           const row = this.currentTag
-          alert('复制功能开发中')
-          // this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },row.putway === 1 ? '下架成功' : '上架成功')
-          //     .then(()=>{
-          //         this.showCopyDialog = false
-          //         this.loadData()
-          //     })
+          let policyIds = this.policyCopyForm.policyIds.join(',')
+          this.$refs[formName].validate((valid) => {
+              if(valid) {
+                  this.$service.crowdCopy({crowdId: row.crowdId, policyIds})
+                      .then(()=>{
+                          this.showCopyDialog = false
+                          this.loadData()
+                      })
+              }else {
+                  return false
+              }
+          })
+      },
+      handleCancelCopy(formName) {
+        this.showCopyDialog = false
+        this.$refs[formName].resetFields()
       },
       handleCommandOpreate(scope) {
           const type = scope[0]
@@ -1001,4 +1039,6 @@ fieldset>div
   margin 50px 0 0 25px
 .crowd-list >>> .el-table tr.gray-row
   color #ccc
+.copy-form >>> .el-select
+  width 85%
 </style>
