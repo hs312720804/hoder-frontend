@@ -212,15 +212,18 @@
                 })
             },
             cancelLaunch ({row}) {
-                // const launchPolicyId = row.launchPolicyId
-                // const policyId = row.policyId
-                // const biId = this.biId
                 const launchForm = {
                     launchPolicyId: row.launchPolicyId,
                     policyId: row.policyId,
                     biId: this.biId
                 }
-                this.$service.cancelLaunchData(launchForm,'取消投放成功').then(() => { this.fetchData(this.biId) })
+                this.$confirm('确定要取消投放吗？取消投放之后这条记录将被删除，且策略及人群将不会投放到业务平台。', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                }).then(() => {
+                    this.$service.cancelLaunchData(launchForm,'取消投放成功').then(() => { this.fetchData(this.biId) })
+                })
             },
             handleCancel(formName) {
                 this.showAddDialog =false
