@@ -142,11 +142,9 @@
                         // 为去除之前的某组问题数据
                         // formData.positions = formData.positions.filter(item => item !== '').join(',')
                         // if(formData.positions === ',' || formData.positions === '') {alert('数据为空');formData.positions = '';return}
-                        debugger
                         if (biId) {
                             // 编辑保存
                             formData.biId = biId
-                            console.log(formData)
                             this.$service.updateLaunchMenu(formData,'保存成功').then(() => {
                                 this.saveSuccessReload()
                             })
