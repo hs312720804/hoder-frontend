@@ -60,7 +60,7 @@
                     >
                         <el-option
                                 v-for="(strategy,index) in strategyData"
-                                :label="strategy.policyName"
+                                :label="strategy.policyId + '-' +strategy.policyName"
                                 :value="strategy.policyId"
                                 :key="index"
                         >
@@ -113,10 +113,10 @@
                             type: 'index',
                             width: '50'
                         },
-                        {
-                            label: '投放ID',
-                            prop: 'launchPolicyId'
-                        },
+                        // {
+                        //     label: '投放ID',
+                        //     prop: 'launchPolicyId'
+                        // },
                         {
                             label: '策略ID',
                             prop: 'policyId'

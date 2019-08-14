@@ -66,12 +66,12 @@
                 </el-form-item>
                 <el-form-item label="业务投放方式" prop="positions">
                     <el-checkbox-group v-model="ruleForm.positions">
-                        <el-checkbox :label="1" :key="1">人群分割投放</el-checkbox>
-                        <el-checkbox :label="2" :key="2">人群圈定</el-checkbox>
+                        <el-checkbox label="1" :key="1">人群分割投放</el-checkbox>
+                        <el-checkbox label="2" :key="2">人群圈定</el-checkbox>
                     </el-checkbox-group>
                 </el-form-item>
                 <el-form-item>
-                    <el-button @click="resetForm('ruleForm')">返回</el-button>
+                    <el-button @click="goBack()">返回</el-button>
                     <el-button type="primary" @click="submitForm('ruleForm')">保存</el-button>
                 </el-form-item>
             </el-form>
@@ -128,6 +128,7 @@
                 })
             },
             handleAdd () {
+                this.resetForm()
                 this.showAddDialog = true
                 this.title = '新增业务'
                 this.currentId = ''
@@ -137,19 +138,18 @@
                     if (valid) {
                         const biId = this.currentId
                         let formData = JSON.parse(JSON.stringify(this.ruleForm))
+                        formData.positions = formData.positions.map(item => item).join(',')
                         if (biId) {
                             // 编辑保存
                             formData.biId = biId
                             console.log(formData)
                             this.$service.updateLaunchMenu(formData,'保存成功').then(() => {
-                                this.showAddDialog = false
-                                this.fetchData()
+                                this.saveSuccessReload()
                             })
                         } else {
                             // 新增保存
                             this.$service.addLaunchMenu(formData,'保存成功').then(() => {
-                                this.showAddDialog = false
-                                this.fetchData()
+                                this.saveSuccessReload()
                             })
                         }
 
@@ -158,23 +158,30 @@
                     }
                 })
             },
-            resetForm(formName) {
-                debugger
-                // this.showAddDialog = false
-                this.$refs[formName].resetFields()
+            resetForm() {
+                this.ruleForm = {
+                    biId: undefined,
+                    biName: '',
+                    positions: []
+                }
+            },
+            goBack () {
+               this.resetForm()
+               this.showAddDialog = false
             },
             handleEdit (row) {
                 this.showAddDialog = true
                 this.title = '编辑业务'
                 this.currentId = row.biId
-                console.log(row.position)
-                let a = []
                 this.ruleForm = {
                     biId: row.biId,
                     biName: row.biName,
-                    positions: a.push(row.position)
+                    positions: row.position.split(',')
                 }
-                console.log(this.ruleForm.positions)
+            },
+            saveSuccessReload() {
+                this.showAddDialog = false
+                this.fetchData()
             }
         },
         created () {

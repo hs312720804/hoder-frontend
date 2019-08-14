@@ -385,7 +385,7 @@
             <el-option
               v-for="(item,index) in allPolices"
               :key="index"
-              :label="item.policyName"
+              :label="item.policyId+'-'+item.policyName"
               :value="item.policyId"
             >
             </el-option>
