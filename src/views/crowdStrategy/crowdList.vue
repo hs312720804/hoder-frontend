@@ -385,7 +385,7 @@
             <el-option
               v-for="(item,index) in allPolices"
               :key="index"
-              :label="item.policyName"
+              :label="item.policyId+'-'+item.policyName"
               :value="item.policyId"
             >
             </el-option>
@@ -567,11 +567,11 @@ export default {
   },
   methods: {
     goBack() {
-      this.$emit("goBack");
+      this.$emit("goBack")
     },
     // tagsList(row) {},
     callback() {
-        this.loadData();
+        this.loadData()
     },
     handleAdd() {
       this.$emit("addCrowd");

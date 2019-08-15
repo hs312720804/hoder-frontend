@@ -1,6 +1,11 @@
 <template>
     <div>
-        <strategy-list v-if="isShowStrategyList" @openCrowdPage="openCrowdPage"></strategy-list>
+        <strategy-list
+                v-if="isShowStrategyList"
+                @openCrowdPage="openCrowdPage"
+                :listCurrentPage="listCurrentPage"
+                :listPageSize="listPageSize"
+        ></strategy-list>
         <crowd-index v-if="!isShowStrategyList" :selectRow="selectRow" @goBack="goBack"></crowd-index>
     </div>
 </template>
@@ -11,16 +16,20 @@ export default {
     data(){
         return{
           selectRow:null,//选中的一行策略数据
-          isShowStrategyList:true
+          isShowStrategyList:true,
+          listCurrentPage: undefined,
+          listPageSize: undefined
         }
     },
     methods: {
-        openCrowdPage(row){
-          this.selectRow=row;
-          this.isShowStrategyList=false;
+        openCrowdPage(row,listCurrentPage,ListPageSize){
+          this.selectRow=row
+          this.isShowStrategyList=false
+          this.listCurrentPage = listCurrentPage
+          this.listPageSize = ListPageSize
         },
         goBack(){
-            this.isShowStrategyList=true;
+            this.isShowStrategyList=true
         }
     },
     components: {

@@ -35,6 +35,7 @@ import thirdInterface from '@/views/thirdInterface/index'
 import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
 import ipManage from '@/views/DevelopTools/ipManage/index'
 import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
+import launchSettings from '@/views/setting/launchSetting'
 const children = [
     {
         name: 'homePage',
@@ -423,6 +424,16 @@ const children = [
                 meta: {
                     title: '邮件通知',
                     tagId:"emailNotice",
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'launchSettings',
+                path: 'launchSettings',
+                component: launchSettings,
+                meta: {
+                    title: '投放设置',
+                    tagId:"launchSettings",
                     icon: 'el-icon-cc-file'
                 }
             }

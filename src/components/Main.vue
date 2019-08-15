@@ -123,7 +123,8 @@
                     "/thirdInterfaceConf/index": "thirdInterface",
                     "/devTool/clearCache":"clearCache",
                     "/webApiServers/index":"ipManage",
-                    "/multiVersionCrowd/index":"multiVersionCrowd"
+                    "/multiVersionCrowd/index":"multiVersionCrowd",
+                    "/manager/biList":"launchSettings"
                 }
             };
         },

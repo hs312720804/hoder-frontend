@@ -241,3 +241,11 @@ export function cancelLaunchMultiVersionCrowd(params) {
         params
     })
 }
+// 新增自定义人群标签选择下拉框
+export function searchTags(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/label/searchTags',
+        params
+    })
+}
