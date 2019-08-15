@@ -190,9 +190,9 @@
                     biIds: "", //投放平台ID
                     crowdSql: '',
                     expiryDay: 7,
-                    autoVersion: 1,
+                    autoVersion: 0,
                     calType: ['0'],
-                    isProTempTag: true,
+                    isProTempTag: false,
                     autoLaunchTime: '',
                     tagId: ''
                 },
