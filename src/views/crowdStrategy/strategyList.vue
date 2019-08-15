@@ -379,9 +379,10 @@ export default {
       },
       statusTip: undefined,
       searchValue: '',
+      reloadHistory: true
     };
   },
-  // props: ["refresh"],
+  props: ["listCurrentPage","listPageSize"],
   created() {
     this.loadData();
     const start = new Date()
@@ -532,7 +533,7 @@ export default {
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
-      this.$emit("openCrowdPage", row);
+      this.$emit("openCrowdPage", row, this.currentPage, this.pageSize);
     },
     del(row) {
       var id = row.policyId;
@@ -550,8 +551,14 @@ export default {
     },
     // 从服务器读取数据
     loadData: function() {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
+      // 从列表返回第一次加载的时候，要保留上一次的页码数和size
+      if(this.reloadHistory){
+          this.currentPage = this.listCurrentPage || this.currentPage
+          this.pageSize = this.listPageSize || this.pageSize
+          this.reloadHistory = false
+      }
+      this.criteria["pageNum"] = this.currentPage
+      this.criteria["pageSize"] = this.pageSize
       this.$service.policyList(this.criteria).then(data => {
         this.tableData = data.pageInfo.list;
         this.totalCount = data.pageInfo.total;
@@ -564,7 +571,7 @@ export default {
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleSizeChange: function(val) {
-      this.pageSize = val;
+      this.pageSize = val
       this.loadData();
     },
     // 页码变更, 如第1页变成第2页时,val=2

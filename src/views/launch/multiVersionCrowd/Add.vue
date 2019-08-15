@@ -9,7 +9,7 @@
         <div v-if="model == 1">
             <el-row :gutter="40" >
                 <el-col :span="24">
-                    <el-form :model="crowdDefineForm" :rules="crowdDefineFormRules" ref="crowdDefineForm" label-width="100px">
+                    <el-form :model="crowdDefineForm" :rules="crowdDefineFormRules" ref="crowdDefineForm" label-width="140px">
                         <el-form-item label="人群名称" prop="launchName">
                             <el-input size="small"
                                       v-model="crowdDefineForm.launchName"
@@ -49,13 +49,37 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="每天是否更新" prop="remark">
+                        <el-form-item label="是否生成临时标签" prop="isProTempTag">
+                            <el-radio-group v-model="crowdDefineForm.isProTempTag">
+                                <el-radio :label="false">否</el-radio>
+                                <el-radio :label="true">是</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="每天是否更新" prop="autoVersion">
                             <el-select
                                     v-model="crowdDefineForm.autoVersion"
                                     :disabled="status!==undefined && status!==1"
                             >
                                 <el-option label="是" :value="1"></el-option>
                                 <el-option label="否" :value="0"></el-option>
+                            </el-select>
+                        </el-form-item>
+                        <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-time-picker v-model="crowdDefineForm.autoLaunchTime" @change="handleTimeChange"></el-time-picker>
+                        </el-form-item>
+                        <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.isProTempTag === true">
+                            <el-select
+                                    v-model="crowdDefineForm.tagId"
+                                    filterable
+                                    class="select-tag"
+                            >
+                                <el-option
+                                    v-for="item in tagsList"
+                                    :key="item.tagId"
+                                    :label="item.tagName"
+                                    :value="item.tagId"
+                                >
+                                </el-option>
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据类型" prop="calType">
@@ -161,13 +185,16 @@
                 },
                 // 新增自定义人群
                 crowdDefineForm: {
-                    launchCrowdId: "",
+                    launchCrowdId: undefined,
                     launchName: "", //投放名称
                     biIds: "", //投放平台ID
                     crowdSql: '',
                     expiryDay: 7,
-                    autoVersion: 0,
-                    calType: ['0']
+                    autoVersion: 1,
+                    calType: ['0'],
+                    isProTempTag: true,
+                    autoLaunchTime: '',
+                    tagId: ''
                 },
                 status: undefined,
                 crowdFormRules: {
@@ -186,15 +213,31 @@
                     launchName: [
                         { required: true, message: "请输入人群名称", trigger: "blur" }
                     ],
-                    biIds: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
+                    biIds: [
+                        { required: true, message: "请选择投放平台", trigger: "blur" }
+                    ],
                     crowdSql: [
                         { required: true, message: "请输入SQL语句", trigger: "blur" }
+                    ],
+                    isProTempTag: [
+                        { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
+                    ],
+                    autoVersion: [
+                        { required: true, message: "请选择每天是否更新", trigger: "blur" }
+                    ],
+                    autoLaunchTime: [
+                        { required: true, message: "请选择每天更新时间点", trigger: "blur" }
+                    ],
+                    tagId: [
+                        { required: true, message: "请选择标签", trigger: "blur" }
                     ]
                 },
                 filterText: "",
                 crowdData: null,
                 effectTimeList: [],
-                estimateItems: []
+                estimateItems: [],
+                tagsList: [],
+                formatTimeSet: undefined
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus"],
@@ -297,6 +340,7 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
+                        crowdForm.autoLaunchTime = this.formatTimeSet
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
@@ -326,6 +370,9 @@
                     this.$service.getEstimateType().then((data) => {
                         this.estimateItems = data
                     })
+                    this.$service.searchTags().then(data=> {
+                        this.tagsList = data
+                    })
                 }
                 else {
                     this.$service.addMultiVersionCrowd(this.model).then(data => {
@@ -346,6 +393,9 @@
                     }
                 }
                 return result
+            },
+            handleTimeChange(event) {
+                this.formatTimeSet = (event.getHours()+':'+event.getMinutes()+':'+event.getSeconds())
             }
         }
     }
@@ -364,6 +414,8 @@
     .footer
         display: flex
         justify-content: flex-end
+    .select-tag
+        width 30%
 </style>
 
 
