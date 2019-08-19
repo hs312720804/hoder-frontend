@@ -34,6 +34,14 @@
             </el-table-column>
             <el-table-column prop="attrValue" label="值">
             </el-table-column>
+            <el-table-column label="状态">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.status">
+                        {{this.statusList[scope.row.status]}}
+                    </div>
+                    <div v-else>暂无状态信息</div>
+                </template>
+            </el-table-column>
             <el-table-column prop="operation" label="操作" width="220"
                              v-if="tagCategory.dataSource !== 2"
             >
@@ -92,6 +100,10 @@ export default {
             },
             filter: {
                 name: undefined,
+            },
+            statusList: {
+                '1': '启用',
+                '0': '禁用'
             }
         }
     },
