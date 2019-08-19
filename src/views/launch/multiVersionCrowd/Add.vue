@@ -6,6 +6,7 @@
             </el-col>
         </el-row>
         <!--新增编辑界面-->
+        <!--新增自定义人群-->
         <div v-if="model == 1">
             <el-row :gutter="40" >
                 <el-col :span="24">
@@ -49,8 +50,8 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="是否生成临时标签" prop="isProTempTag">
-                            <el-radio-group v-model="crowdDefineForm.isProTempTag">
+                        <el-form-item label="是否生成临时标签" prop="proTempTag">
+                            <el-radio-group v-model="crowdDefineForm.proTempTag">
                                 <el-radio :label="false">否</el-radio>
                                 <el-radio :label="true">是</el-radio>
                             </el-radio-group>
@@ -65,9 +66,9 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-time-picker v-model="crowdDefineForm.autoLaunchTime" @change="handleTimeChange"></el-time-picker>
+                            <el-time-picker v-model="crowdDefineForm.autoLaunchTime" value-format="hh:mm:ss"></el-time-picker>
                         </el-form-item>
-                        <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.isProTempTag === true">
+                        <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
                             <el-select
                                     v-model="crowdDefineForm.tagId"
                                     filterable
@@ -95,6 +96,7 @@
                 <el-button type="primary" @click="addSubmit">保存</el-button>
             </div>
         </div>
+        <!--新增投放-->
         <div v-else>
             <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="100px">
                 <el-form-item label="投放名称" prop="launchName">
@@ -155,6 +157,32 @@
                         </el-checkbox-group>
                     </el-form-item>
                 </el-form-item>
+                <el-form-item label="数据有效期" prop="expiryDay">
+                    <el-select
+                            v-model="crowdForm.expiryDay"
+                            :disabled="status!==undefined && status!==1"
+                    >
+                        <el-option
+                                v-for="(item,index) in effectTimeList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="每天是否更新" prop="autoVersion">
+                    <el-select
+                            v-model="crowdForm.autoVersion"
+                            :disabled="status!==undefined && status!==1"
+                    >
+                        <el-option label="是" :value="1"></el-option>
+                        <el-option label="否" :value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
+                    <el-time-picker v-model="crowdForm.autoLaunchTime" value-format="hh:mm:ss"></el-time-picker>
+                </el-form-item>
             </el-form>
             <div slot="footer" class="footer">
                 <el-button @click="cancelAdd">返回</el-button>
@@ -181,7 +209,10 @@
                     remark: "",
                     //      dataSource: 2,
                     policyIds: "",
-                    policyCrowdIds: []
+                    policyCrowdIds: [],
+                    expiryDay: 7,
+                    autoVersion: 0,
+                    autoLaunchTime: ''
                 },
                 // 新增自定义人群
                 crowdDefineForm: {
@@ -192,7 +223,7 @@
                     expiryDay: 7,
                     autoVersion: 0,
                     calType: ['0'],
-                    isProTempTag: false,
+                    proTempTag: false,
                     autoLaunchTime: '',
                     tagId: ''
                 },
@@ -207,7 +238,10 @@
                     ],
                     policyCrowdIds: [
                         { required: true, message: "请选择人群", trigger: "blur" }
-                    ]
+                    ],
+                    autoLaunchTime: [
+                        { required: true, message: "请选择每天更新时间点", trigger: "blur" }
+                    ],
                 },
                 crowdDefineFormRules: {
                     launchName: [
@@ -219,7 +253,7 @@
                     crowdSql: [
                         { required: true, message: "请输入SQL语句", trigger: "blur" }
                     ],
-                    isProTempTag: [
+                    proTempTag: [
                         { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
                     ],
                     autoVersion: [
@@ -256,7 +290,10 @@
                                 crowdSql: row.crowdSql,
                                 expiryDay: row.expiryDay,
                                 autoVersion: row.autoVersion,
-                                calType: row.calType.split(",")
+                                calType: row.calType.split(","),
+                                proTempTag: row.proTempTag,
+                                autoLaunchTime: row.autoLaunchTime,
+                                tagId: row.tagId
                             }
                             this.status = this.editStatus
                     } else {
@@ -268,6 +305,9 @@
                         this.crowdForm.biIds = data.launchCrowdBiIds
                         this.crowdForm.remark = row.remark
                         this.crowdForm.dataSource = row.dataSource
+                        this.crowdForm.expiryDay = row.expiryDay
+                        this.crowdForm.autoVersion = row.autoVersion
+                        this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         // this.status = row.status
                         this.status = this.editStatus
                         this.crowdForm.policyIds = row.policyIds.split(",")
@@ -340,7 +380,6 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
-                        crowdForm.autoLaunchTime = this.formatTimeSet
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
@@ -378,6 +417,9 @@
                     this.$service.addMultiVersionCrowd(this.model).then(data => {
                         this.launchPlatform = data.biLists
                         this.strategyPlatform = data.policies
+                        this.effectTimeList = data.efTime.map(item => {
+                            return { label: item + '天',value: item }
+                        })
                     })
                 }
             },
@@ -393,9 +435,6 @@
                     }
                 }
                 return result
-            },
-            handleTimeChange(event) {
-                this.formatTimeSet = (event.getHours()+':'+event.getMinutes()+':'+event.getSeconds())
             }
         }
     }
