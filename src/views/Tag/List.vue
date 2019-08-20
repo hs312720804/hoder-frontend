@@ -103,7 +103,7 @@ export default {
             },
             statusList: {
                 '1': '启用',
-                '0': '禁用'
+                '2': '禁用'
             }
         }
     },
