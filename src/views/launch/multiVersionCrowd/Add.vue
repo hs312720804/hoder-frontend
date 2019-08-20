@@ -212,7 +212,7 @@
                     policyCrowdIds: [],
                     expiryDay: 7,
                     autoVersion: 0,
-                    autoLaunchTime: ''
+                    autoLaunchTime: undefined
                 },
                 // 新增自定义人群
                 crowdDefineForm: {
@@ -224,8 +224,8 @@
                     autoVersion: 0,
                     calType: ['0'],
                     proTempTag: false,
-                    autoLaunchTime: '',
-                    tagId: ''
+                    autoLaunchTime: undefined,
+                    tagId: undefined
                 },
                 status: undefined,
                 crowdFormRules: {
