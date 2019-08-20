@@ -37,7 +37,7 @@
             <el-table-column label="状态">
                 <template slot-scope="scope">
                     <div v-if="scope.row.status">
-                        {{this.statusList[scope.row.status]}}
+                        {{statusList[scope.row.status]}}
                     </div>
                     <div v-else>暂无状态信息</div>
                 </template>
