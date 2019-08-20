@@ -36,6 +36,7 @@ import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
 import ipManage from '@/views/DevelopTools/ipManage/index'
 import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
 import launchSettings from '@/views/setting/launchSetting'
+import StrategyInstruction from '@/views/instruction/StrategyInstruction'
 const children = [
     {
         name: 'homePage',
@@ -554,7 +555,37 @@ const children = [
             title: '投放统计',
             tagId:"statisticsHomePage",
         }
-    }
+    },
+    {
+        name: 'instruction',
+        path: 'instruction',
+        component: Wrapper,
+        meta: {
+            title: '操作指南',
+            icon: 'el-icon-cc-home',
+            hideInMenu: true
+        },
+        children:[
+            {
+                name: 'strategy',
+                path: 'strategy',
+                component: StrategyInstruction,
+                meta: {
+                    // tagId:"strategy",
+                    title: '人群分割管理操作指南'
+                }
+            },
+            {
+                name: 'strategy',
+                path: 'strategy',
+                component: StrategyInstruction,
+                meta: {
+                    // tagId:"strategy",
+                    title: '人群分割管理操作指南'
+                }
+            }
+        ]
+    },
 ]
 
 const routes = [

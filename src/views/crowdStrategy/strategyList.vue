@@ -19,6 +19,8 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
+          <!--<a href="#">操作指南</a>-->
+          <router-link to="/instruction/strategy">操作指南</router-link>
         </el-button-group>
       </div>
       <div class="right">
