@@ -193,6 +193,9 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
+                        :command="['estimatedDetail',scope.row]"
+                >估算画像</el-dropdown-item>
+                <el-dropdown-item
                         :command="['detail',scope.row]"
                 >投后效果</el-dropdown-item>
               </el-dropdown-menu>
@@ -474,14 +477,6 @@ export default {
       const end = new Date()
       this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
       this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
-      this.time = [this.startDate,this.endDate]
-      this.time1 = [this.startDate,this.endDate]
-      this.time2 = [this.startDate,this.endDate]
-      this.time3 = [this.startDate,this.endDate]
-      this.time4 = [this.startDate,this.endDate]
-      this.time5 = [this.startDate,this.endDate]
-      this.time6 = [this.startDate,this.endDate]
-      this.time7 = [this.startDate,this.endDate]
   },
   watch: {
       time(val,oldVal) {
@@ -569,7 +564,16 @@ export default {
     goBack() {
       this.$emit("goBack")
     },
-    // tagsList(row) {},
+    initTime() {
+        this.time = [this.startDate,this.endDate]
+        this.time1 = [this.startDate,this.endDate]
+        this.time2 = [this.startDate,this.endDate]
+        this.time3 = [this.startDate,this.endDate]
+        this.time4 = [this.startDate,this.endDate]
+        this.time5 = [this.startDate,this.endDate]
+        this.time6 = [this.startDate,this.endDate]
+        this.time7 = [this.startDate,this.endDate]
+    },
     callback() {
         this.loadData()
     },
@@ -841,17 +845,26 @@ export default {
           const type = scope[0]
           this.currentCid = scope[1].crowdId
           this.showStatistics = true
-          if(type === 'detail') {
-              this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
-              this.drawCrowdLine(this.currentCid,this.time[0],this.time[1])
-              this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
-              this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
-              this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
-              this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
-              this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
-              this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
+          switch (type) {
+              // 统计投后效果
+              case 'detail':
+                  this.initTime()
+                  this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
+                  this.drawCrowdLine(this.currentCid,this.time[0],this.time[1])
+                  this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
+                  this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
+                  this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
+                  this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
+                  this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
+                  this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
+                  break
+              // 人群画像估算
+              case 'estimatedDetail':
+                  this.getCrowdBaseInfo()
+                  break
           }
       },
+      // 统计投后效果---开始
       drawCrowdPie(id,startTime,endTime){
         this.$service.hitAndBiToTalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
             if(data.data.length === 0){this.hitPieTitle = '累计命中次数按业务分布暂无数据'}
@@ -925,6 +938,7 @@ export default {
               this.setMapEcharts('exposeProvince','',newData)
           })
       },
+      // 统计投后效果---结束
       formatDate (d) {
           const time = new Date(d)
           let y = time.getFullYear(); // 年份
@@ -981,14 +995,29 @@ export default {
       handleCommandOpreate(scope) {
           const type = scope[0]
           const params = scope[1]
-          if (type === 'edit') {this.edit(params)}
-          else if (type === 'del') {this.del(params)}
-          else if (type === 'upDown') {
-              this.upDownCrowd(params)
-          }else if (type === 'copy') {this.copyCrowd(params)}
+          switch (type) {
+              case 'edit':
+                  this.edit(params)
+                  break
+              case 'del':
+                  this.del(params)
+                  break
+              case 'upDown':
+                  this.upDownCrowd(params)
+                  break
+              case 'copy':
+                  this.copyCrowd(params)
+                  break
+          }
       },
       tableRowClassName({row}) {
         if(row.putway === 0) {return 'gray-row'}
+      },
+      // 人群画像估算---开始
+      getCrowdBaseInfo() {
+        alert('此功能待开发')
+        // const crdId = this.currentCid
+        // this.$service.getBaseInfo({crdId}).then((data) => console.log(data))
       }
   }
 };
