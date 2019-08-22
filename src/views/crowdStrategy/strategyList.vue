@@ -19,6 +19,7 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
+          <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>
         </el-button-group>
       </div>
       <div class="right">
@@ -884,4 +885,6 @@ ul > li
   cursor pointer
 .launch-item + .launch-item
   margin-left 20px
+.manual
+  margin 20px
 </style>

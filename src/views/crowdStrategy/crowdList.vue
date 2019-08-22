@@ -31,6 +31,7 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>新增人群
           </el-button>
+          <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>
         </el-button-group>
       </div>
       <div class="right">
@@ -1085,4 +1086,6 @@ fieldset>div
     border-radius 10px
     text-align center
     line-height 12px
+.manual
+  margin 20px
 </style>
