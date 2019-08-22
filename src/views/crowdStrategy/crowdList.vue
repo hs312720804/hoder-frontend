@@ -845,10 +845,10 @@ export default {
       handleCommandStastic(scope) {
           const type = scope[0]
           this.currentCid = scope[1].crowdId
-          this.showStatistics = true
           switch (type) {
               // 统计投后效果
               case 'detail':
+                  this.showStatistics = true
                   this.initTime()
                   this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
                   this.drawCrowdLine(this.currentCid,this.time[0],this.time[1])
