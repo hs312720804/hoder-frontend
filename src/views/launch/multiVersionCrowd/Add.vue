@@ -21,7 +21,7 @@
                             <el-input type="textarea"
                                       placeholder="请输入生成临时人群的sql语句"
                                       :disabled="status!==undefined && status!==1"
-                                      v-model.trim="crowdDefineForm.crowdSql">
+                                      v-model="crowdDefineForm.crowdSql">
                             </el-input>
                         </el-form-item>
                         <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
@@ -380,6 +380,7 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
+                        crowdForm.crowdSql = crowdForm.crowdSql.trim()
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
