@@ -255,3 +255,11 @@ export function getAllPolicyList(params) {
         params
     })
 }
+// 人群估算画像基本信息
+// export function getBaseInfo(params) {
+//     return this.fetch({
+//         method: 'get',
+//         params,
+//         url: 'http://172.20.155.103:3000/mock/140/map/esCrdStsMapBasic'
+//     })
+// }

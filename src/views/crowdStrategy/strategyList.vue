@@ -19,6 +19,7 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
+          <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>
         </el-button-group>
       </div>
       <div class="right">
@@ -384,13 +385,11 @@ export default {
   },
   props: ["listCurrentPage","listPageSize"],
   created() {
-    this.loadData();
+    this.loadData()
     const start = new Date()
     const end = new Date()
     this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
     this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
-    this.time = [this.startDate,this.endDate]
-    this.time1 = [this.startDate,this.endDate]
   },
   watch: {
       // refresh: function (val) {
@@ -759,6 +758,9 @@ export default {
           this.currentPid = scope[1].policyId
           this.showStatistics = true
           if(type === 'detail') {
+              // 重置时间
+              this.time = [this.startDate,this.endDate]
+              this.time1 = [this.startDate,this.endDate]
               this.drawPie(this.currentPid,this.startDate,this.endDate)
               this.drawLines(this.currentPid,this.startDate,this.endDate)
           }
@@ -883,4 +885,6 @@ ul > li
   cursor pointer
 .launch-item + .launch-item
   margin-left 20px
+.manual
+  margin 20px
 </style>

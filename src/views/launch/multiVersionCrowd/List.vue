@@ -20,6 +20,7 @@
                     >
                         新增自定义人群
                     </el-button>
+                    <a href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-quan-ding.html" target="_blank">操作指南</a>
                 </el-button-group>
             </div>
             <div class="right">
@@ -325,4 +326,6 @@
         margin 0 10px
     .button-list >>> .el-button
         border-radius 3px
+    .manual
+        margin 20px
 </style>

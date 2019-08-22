@@ -13,6 +13,7 @@
                         @click="handleAdd"
                         v-permission="'hoder:launch:policy:save'"
                 >新增投放</el-button>
+                <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-fen-ge-tou-fang.html" target="_blank">操作指南</a>
                 <div class="search-form">
                     <el-input v-model="filter.search" placeholder="请输入策略名称或ID"></el-input>
                     <el-button size="small" @click="handleSearch" type="primary">查询</el-button>
@@ -259,9 +260,11 @@
         display flex
     .search-form
         display flex
-        width 100%
+        width 87%
         justify-content flex-end
         .el-input
             width 20%
             margin-right 20px
+    .manual
+        margin 0 20px
 </style>

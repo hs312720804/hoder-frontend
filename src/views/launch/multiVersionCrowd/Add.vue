@@ -21,7 +21,7 @@
                             <el-input type="textarea"
                                       placeholder="请输入生成临时人群的sql语句"
                                       :disabled="status!==undefined && status!==1"
-                                      v-model="crowdDefineForm.crowdSql">
+                                      v-model.trim="crowdDefineForm.crowdSql">
                             </el-input>
                         </el-form-item>
                         <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
