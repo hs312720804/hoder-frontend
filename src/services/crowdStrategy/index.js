@@ -256,10 +256,59 @@ export function getAllPolicyList(params) {
     })
 }
 // 人群估算画像基本信息
-// export function getBaseInfo(params) {
-//     return this.fetch({
-//         method: 'get',
-//         params,
-//         url: 'http://172.20.155.103:3000/mock/140/map/esCrdStsMapBasic'
-//     })
-// }
+export function getEstimatedBaseInfo(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapBasic/'+params
+    })
+}
+// 人群估算画像省份分布
+export function getEstimatedProvinceAndCityData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapProvinceAndCityPct/'+params
+    })
+}
+// 人群估算画像TOP列表
+export function getEstimatedCityTopData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapCityTop/'+params
+    })
+}
+// 人群估算画像用户类别
+export function getEstimatedUserTypeData(url,params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapUserCgy/'+url,
+        params
+    })
+}
+// 人群估算画像用户观影习惯
+export function getEstimatedUserBehaviorData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapLookBehavior/'+params
+    })
+}
+// 人群估算画像付费分布
+export function getEstimatedPayData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapPayPct/'+params
+    })
+}
+// 人群估算画像估算画像
+export function getEstimatedTvEnumData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/estimateTVEnum/'+params
+    })
+}
+// 人群估算画像行为活跃
+export function getEstimatedAcitivityBehaviorData(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/map/esCrdStsMapActBehavior/'+params
+    })
+}
