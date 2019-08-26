@@ -594,7 +594,7 @@ export default {
                 },
                 {
                     label: '占比',
-                    prop: 'percent'
+                    prop: 'PCT'
                 }
             ],
             data: []
