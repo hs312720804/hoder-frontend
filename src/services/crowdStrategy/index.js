@@ -277,11 +277,13 @@ export function getEstimatedCityTopData(params) {
     })
 }
 // 人群估算画像用户类别
-export function getEstimatedUserTypeData(url,params) {
+export function getEstimatedUserTypeData(data) {
     return this.fetch({
         method: 'get',
-        url: 'api/map/esCrdStsMapUserCgy/'+url,
-        params
+        url: 'api/map/esCrdStsMapUserCgy/'+data.id,
+        params: {
+           'category': data.category
+        }
     })
 }
 // 人群估算画像用户观影习惯
@@ -292,17 +294,21 @@ export function getEstimatedUserBehaviorData(params) {
     })
 }
 // 人群估算画像付费分布
-export function getEstimatedPayData(params) {
+export function getEstimatedPayData(data) {
     return this.fetch({
         method: 'get',
-        url: 'api/map/esCrdStsMapPayPct/'+params
+        url: 'api/map/esCrdStsMapPayPct/'+data.id,
+        params: {
+            'category': data.category
+        }
     })
 }
-// 人群估算画像估算画像
+// 人群估算画像获取会员会员权益列表
 export function getEstimatedTvEnumData(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/map/estimateTVEnum/'+params
+        url: 'api/enumData/estimateTVEnum',
+        params
     })
 }
 // 人群估算画像行为活跃

@@ -66,7 +66,7 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-time-picker v-model="crowdDefineForm.autoLaunchTime" value-format="hh:mm:ss"></el-time-picker>
+                            <el-time-picker v-model="crowdDefineForm.autoLaunchTime" value-format="HH:mm:ss"></el-time-picker>
                         </el-form-item>
                         <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
                             <el-select

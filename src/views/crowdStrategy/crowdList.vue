@@ -441,15 +441,65 @@
         </div>
         <div class="estimate-item">
           <div class="estimate-title">用户类别</div>
+          <div class="member-select">
+              <div class="member-select--text">按会员权益</div>
+              <el-select v-model="memberListType">
+                  <template v-for="(item,index) in memberList">
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
+                  </template>
+              </el-select>
+          </div>
+          <div ref="member" class="member-total"></div>
+          <div class="estimate-statistic">
+              <div ref="memberActiveTime" class="member-total-item"></div>
+              <div ref="memberMainPageActiveTime" class="member-total-item"></div>
+              <div ref="memberExpirationTime" class="member-total-item"></div>
+          </div>
         </div>
         <div class="estimate-item">
           <div class="estimate-title">付费分布</div>
+          <div class="member-select">
+              <div class="member-select--text">按会员权益</div>
+              <el-select v-model="memberListByPay">
+                  <template v-for="(item,index) in memberList">
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
+                  </template>
+              </el-select>
+          </div>
+          <div ref="payDetail" class="member-total"></div>
         </div>
         <div class="estimate-item">
           <div class="estimate-title">观影行为</div>
+            <div>
+                <div class="watch-tv-behavior">
+                    <div class="member-select">
+                        <div class="member-select--text">近7日/30日起播活跃率（有起播行为等活跃天数7日/或30日）</div>
+                        <el-select v-model="expirationDay">
+                            <template v-for="(item,index) in objectToArray(expirationDayList)">
+                                <el-option
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
+                                ></el-option>
+                            </template>
+                        </el-select>
+                    </div>
+                    <div class="userBehavior" ref="userBehavior"></div>
+                </div>
+                <div class="watch-tv-behavior userBehavior" ref="watchPrefer"></div>
+            </div>
         </div>
         <div class="estimate-item">
           <div class="estimate-title">活跃行为</div>
+          <div ref="activeBehavior" class="activeBehaviorEcharts"></div>
         </div>
       </div>
     </el-dialog>
@@ -550,6 +600,14 @@ export default {
             data: []
         },
         cityData: '',
+        memberList: [],
+        memberListType: '',
+        memberListByPay: '',
+        expirationDayList: {
+          '7': '近7日',
+          '30': '近30日'
+        },
+        expirationDay: '7'
     }
   },
   props: ["selectRow"],
@@ -640,6 +698,21 @@ export default {
                   this.time7 = oldVal
               }
           }
+      },
+      memberListType(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getUserType()
+          }
+      },
+      memberListByPay(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getPayDetail()
+          }
+      },
+      expirationDay(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getWatchBehavior()
+          }
       }
   },
   methods: {
@@ -694,7 +767,7 @@ export default {
         this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
             () => {
                 this.showEstimate = false
-                this. loadData()
+                this.loadData()
             }
         )
     },
@@ -786,6 +859,49 @@ export default {
                   },
               },
               series: yData
+          })
+      },
+      // 通用柱状图参数设置
+      setBarEchart (element,title,xData,yData) {
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              xAxis: {
+                  type: 'category',
+                  data: xData,
+                  axisLabel: {
+                      interval: 0,
+                      rotate: -45
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  axisTick: {
+                      inside: true
+                  },
+                  scale: true,
+                  axisLabel: {
+                      margin: 2,
+                      formatter: function (value) {
+                          if (value >= 10000 && value < 10000000) {
+                              value = value / 10000 + "万";
+                          }
+                          else if (value >= 10000000) {
+                              value = value / 10000000 + "千万";
+                          } return value;
+                      }
+                  },
+              },
+              series: [{
+                  data: yData,
+                  type: 'bar'
+              }]
           })
       },
       setCircleEcharts(element,title,legend,data,showDetail){
@@ -947,7 +1063,9 @@ export default {
                   this.getCrowdBaseInfo()
                   this.getCrowdProvinceInfo()
                   this.getTopActiveRank()
-                  // this.getUserType()
+                  this.getMemberBenefits()
+                  this.getWatchBehavior()
+                  this.getActiveBehavior()
                   break
           }
       },
@@ -1125,11 +1243,53 @@ export default {
             this.table.data = data
         })
       },
-      // getUserType() {
-      //   this.$service.getEstimatedUserTypeData(this.currentCid,{category: 'user'}).then(data => {
-      //       console.log(data)
-      //   })
-      // }
+      getMemberBenefits() {
+        this.$service.getEstimatedTvEnumData().then(data => {
+            const memberListData = this.objectToArray(data)
+            this.memberList = memberListData
+            this.memberListType = memberListData[0].value
+            this.memberListByPay = memberListData[0].value
+            this.getUserType()
+            this.getPayDetail()
+        })
+      },
+      // 对象转成数组
+      objectToArray (obj) {
+          let arr = []
+          for (let i in obj) {
+              arr.push({ value: i, label: obj[i] })
+          }
+          return arr
+      },
+      getUserType() {
+        this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
+            this.setCircleEcharts('member','会员用户的分布情况',data.uCgyTal.name,data.uCgyTal.data,true)
+            this.setCircleEcharts('memberActiveTime','按会员有效期时长',data.vipPrdTtl.name,data.vipPrdTtl.data,false)
+            this.setCircleEcharts('memberMainPageActiveTime','按主页激活时间',data.nvActHptTtl.name,data.nvActHptTtl.data,false)
+            this.setCircleEcharts('memberExpirationTime','按会员过期时长',data.ovToutTtl.name,data.ovToutTtl.data,false)
+        })
+      },
+      getPayDetail() {
+        this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
+            this.setCircleEcharts('payDetail','上次付费的会员产品包情况',data.name,data.data,true)
+        })
+      },
+      getWatchBehavior() {
+        this.$service.getEstimatedUserBehaviorData(this.currentCid).then(data => {
+            const sevenDayData = data.uPlyActPrTtl.data.day7
+            const fiftyDayData = data.uPlyActPrTtl.data.day30
+            const daysCommon = data.uPlyActPrTtl
+            const watchPreferData = data.uPrePlyTtl
+            this.setCircleEcharts('watchPrefer',watchPreferData.title,watchPreferData.name,watchPreferData.data)
+            if (this.expirationDay === '7') {this.setCircleEcharts('userBehavior','',daysCommon.name,sevenDayData)}
+            else {this.setCircleEcharts('userBehavior','',daysCommon.name,fiftyDayData)}
+        })
+      },
+      getActiveBehavior() {
+        this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
+            this.setBarEchart('activeBehavior',data.title,data.name,data.data)
+        })
+      }
   }
 }
 </script>
@@ -1241,4 +1401,27 @@ fieldset>div
     color red
     display inline-block
     margin 20px 0
+.member-select
+    display flex
+    align-items center
+    justify-content center
+    .member-select--text
+        margin-right 20px
+.member-total
+    width 50%
+    height 300px
+    margin auto
+.member-total-item
+    width 33%
+    height 300px
+/*.watch-tv-behavior*/
+    /*border-top 1px dashed #000*/
+    /*&:first-child*/
+        /*border-top none*/
+.userBehavior
+    width 100%
+    height 300px
+.activeBehaviorEcharts
+    width 50%
+    height 300px
 </style>
