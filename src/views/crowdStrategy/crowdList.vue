@@ -29,7 +29,7 @@
             @click="handleAdd"
             v-permission="'hoder:crowd:add'"
           >
-            <a class="fa fa-plus" style="color: white;"></a>新增人群
+            <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
           <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>
         </el-button-group>
@@ -49,14 +49,14 @@
           <el-form-item>
             <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
             <el-button type="primary" size="small" @click="handleReset">
-              <a class="fa fa-refresh" style="color: white;"></a> 重置
+              <a class="fa fa-refresh" style="color: white"></a> 重置
             </el-button>
           </el-form-item>
         </el-form>
       </div>
     </div>
     <!-- talbe -->
-    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border
+    <el-table ref="myTable" :data="tableData" style="width: 100%" stripe border
       :row-class-name="tableRowClassName"
     >
       <el-table-column type="expand">
@@ -175,13 +175,13 @@
               <!--type="primary"-->
               <!--v-permission="'hoder:crowd:edit'"-->
               <!--@click="edit(scope.row)"-->
-            <!--&gt;编辑</el-button>-->
+            <!--&gt编辑</el-button>-->
             <!--<el-button-->
               <!--size="small"-->
               <!--type="info"-->
               <!--v-permission="'hoder:crowd:del'"-->
               <!--@click="del(scope.row)"-->
-            <!--&gt;删除</el-button>-->
+            <!--&gt删除</el-button>-->
             <el-button
               size="small"
               type="warning"
@@ -234,7 +234,7 @@
        <div>酷开openId：{{total2}}</div>
        <div>微信openId：{{total3}}</div>
    </el-dialog>
-    <!-- 查看统计弹窗-->
+    <!-- 查看统计 投后效果弹窗-->
     <el-dialog
             :visible.sync="showStatistics"
             width="90%"
@@ -401,10 +401,116 @@
         </el-form-item>
       </el-form>
     </el-dialog>
+    <!-- 统计 估算画像 -->
+    <el-dialog
+            :visible.sync="showEstimateEcharts"
+            width="90%"
+            title="该人群估算出的用户画像"
+    >
+      <div>
+        <div class="estimate-item">
+          <div class="estimate-title">基本信息</div>
+          <div class="estimate-statistic">
+            <div ref="circleSex" class="base-info-circle-echarts"></div>
+            <div ref="circleAge" class="base-info-circle-echarts"></div>
+            <div ref="circleDevice" class="base-info-circle-echarts"></div>
+          </div>
+        </div>
+        <div class="estimate-item">
+            <div class="estimate-statistic">
+                <div class="province-city-active-content city-info-echarts">
+                    <div ref="provinceMap" class="province-map"></div>
+                    <div class="city-active-proportion">
+                        <div class="city-active-proportion--title">{{cityData.title}}</div>
+                        <div v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
+                            {{item.name}}:{{item.value}}
+                        </div>
+                    </div>
+                </div>
+                <div class="city-info-echarts">
+                    <div class="table-title">Top50城市活跃排名(近30天活跃)</div>
+                    <Table
+                            :props="table.props"
+                            :header="table.header"
+                            :data="table.data"
+                            class="table-overflow"
+                    >
+                    </Table>
+                </div>
+            </div>
+        </div>
+        <div class="estimate-item">
+          <div class="estimate-title">用户类别</div>
+          <div class="member-select">
+              <div class="member-select--text">按会员权益</div>
+              <el-select v-model="memberListType">
+                  <template v-for="(item,index) in memberList">
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
+                  </template>
+              </el-select>
+          </div>
+          <div ref="member" class="member-total"></div>
+          <div class="estimate-statistic">
+              <div ref="memberActiveTime" class="member-total-item"></div>
+              <div ref="memberMainPageActiveTime" class="member-total-item"></div>
+              <div ref="memberExpirationTime" class="member-total-item"></div>
+          </div>
+        </div>
+        <div class="estimate-item">
+          <div class="estimate-title">付费分布</div>
+          <div class="member-select">
+              <div class="member-select--text">按会员权益</div>
+              <el-select v-model="memberListByPay">
+                  <template v-for="(item,index) in memberList">
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
+                  </template>
+              </el-select>
+          </div>
+          <div ref="payDetail" class="member-total"></div>
+        </div>
+        <div class="estimate-item">
+          <div class="estimate-title">观影行为</div>
+            <div>
+                <div class="watch-tv-behavior">
+                    <div class="member-select">
+                        <div class="member-select--text">近7日/30日起播活跃率（有起播行为等活跃天数7日/或30日）</div>
+                        <el-select v-model="expirationDay">
+                            <template v-for="(item,index) in objectToArray(expirationDayList)">
+                                <el-option
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
+                                ></el-option>
+                            </template>
+                        </el-select>
+                    </div>
+                    <div class="userBehavior" ref="userBehavior"></div>
+                </div>
+                <div class="watch-tv-behavior userBehavior" ref="watchPrefer"></div>
+            </div>
+        </div>
+        <div class="estimate-item">
+          <div class="estimate-title">活跃行为</div>
+          <div ref="activeBehavior" class="activeBehaviorEcharts"></div>
+        </div>
+      </div>
+    </el-dialog>
   </div>
 </template>
 <script>
+import { Table} from 'admin-toolkit'
 export default {
+  components: {
+      Table
+  },
   data() {
     return {
       // 表格当前页数据
@@ -468,12 +574,45 @@ export default {
             policyIds: [
                 {type: 'array', required: true, message: '请至少选择一个策略', trigger: 'change'}
             ]
-        }
-    };
+        },
+        showEstimateEcharts: false,
+        table: {
+            props: {},
+            header: [
+                {
+                    label: '排名',
+                    width: '50',
+                    type: 'index'
+                },
+                {
+                    label: '省份',
+                    prop: 'name'
+                },
+                {
+                    label: '活跃数量',
+                    prop: 'value'
+                },
+                {
+                    label: '占比',
+                    prop: 'percent'
+                }
+            ],
+            data: []
+        },
+        cityData: '',
+        memberList: [],
+        memberListType: '',
+        memberListByPay: '',
+        expirationDayList: {
+          '7': '近7日',
+          '30': '近30日'
+        },
+        expirationDay: '7'
+    }
   },
   props: ["selectRow"],
   created() {
-    this.loadData();
+    this.loadData()
       const start = new Date()
       const end = new Date()
       this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
@@ -559,6 +698,21 @@ export default {
                   this.time7 = oldVal
               }
           }
+      },
+      memberListType(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getUserType()
+          }
+      },
+      memberListByPay(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getPayDetail()
+          }
+      },
+      expirationDay(val,oldVal) {
+          if(val !== oldVal && oldVal.length !== 0){
+              this.getWatchBehavior()
+          }
       }
   },
   methods: {
@@ -579,13 +733,13 @@ export default {
         this.loadData()
     },
     handleAdd() {
-      this.$emit("addCrowd");
+      this.$emit("addCrowd")
     },
     edit(row) {
-      this.$emit("addCrowd", row.crowdId);
+      this.$emit("addCrowd", row.crowdId)
     },
     del(row) {
-      var id = row.crowdId;
+      var id = row.crowdId
       this.$confirm("确定要删除吗?", "提示", {
         confirmButtonText: "确定",
         cancelButtonText: "取消",
@@ -593,7 +747,7 @@ export default {
       })
         .then(() => {
           this.$service.strategyCrowdDel({ crowdId: id},"删除成功").then(()=>{
-            this.loadData();
+            this.loadData()
           })
         }).catch(function(){
 
@@ -613,7 +767,7 @@ export default {
         this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
             () => {
                 this.showEstimate = false
-                this. loadData()
+                this.loadData()
             }
         )
     },
@@ -630,39 +784,39 @@ export default {
     },
     // 从服务器读取数据
     loadData: function() {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
-      this.criteria.policyId = this.selectRow.policyId;
+      this.criteria["pageNum"] = this.currentPage
+      this.criteria["pageSize"] = this.pageSize
+      this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
-        this.tableData = data.pageInfo.list;
-        this.totalCount = data.pageInfo.total;
-      });
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+      })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleSizeChange: function(val) {
-      this.pageSize = val;
-      this.loadData();
+      this.pageSize = val
+      this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
     handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+      this.currentPage = val
+      this.loadData()
     },
     // 搜索,提交表单
     submitForm: function() {
-      var _this = this;
+      var _this = this
       this.$refs.searchForm.validate(function(result) {
         if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
+          _this.criteria = _this.searchForm
+          _this.loadData()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 重置
     handleReset: function() {
-      this.$refs.searchForm.resetFields();
+      this.$refs.searchForm.resetFields()
     },
       // 通用多线性参数设置
       setLinesEchart (element,title,xData,yData,legend) {
@@ -696,6 +850,46 @@ export default {
                       margin: 2,
                       formatter: function (value) {
                           if (value >= 10000 && value < 10000000) {
+                              value = value / 10000 + "万"
+                          }
+                          else if (value >= 10000000) {
+                              value = value / 10000000 + "千万"
+                          } return value
+                      }
+                  },
+              },
+              series: yData
+          })
+      },
+      // 通用柱状图参数设置
+      setBarEchart (element,title,xData,yData) {
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title
+              },
+              tooltip: {
+                  trigger: 'axis'
+              },
+              xAxis: {
+                  type: 'category',
+                  data: xData,
+                  axisLabel: {
+                      interval: 0,
+                      rotate: -45
+                  }
+              },
+              yAxis: {
+                  type: 'value',
+                  axisTick: {
+                      inside: true
+                  },
+                  scale: true,
+                  axisLabel: {
+                      margin: 2,
+                      formatter: function (value) {
+                          if (value >= 10000 && value < 10000000) {
                               value = value / 10000 + "万";
                           }
                           else if (value >= 10000000) {
@@ -704,10 +898,13 @@ export default {
                       }
                   },
               },
-              series: yData
+              series: [{
+                  data: yData,
+                  type: 'bar'
+              }]
           })
       },
-      setCircleEcharts(element,title,legend,data){
+      setCircleEcharts(element,title,legend,data,showDetail){
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
@@ -728,16 +925,17 @@ export default {
                       name:'',
                       type:'pie',
                       radius: ['50%', '70%'],
+                      // center: ['50%', '60%'],
                       avoidLabelOverlap: false,
                       itemStyle: {
                           normal: {label:{
-                                  show:true,
+                                  show:showDetail,
                                   formatter:'{b} : {c} ({d}%)'
                               },
-                              labelLine:{show:true}},
+                              labelLine:{show:showDetail}},
                           emphasis: {
                               label: {
-                                  show: true,
+                                  show: showDetail,
                                   formatter: "{b}\n{c} ({d}%)",
                                   position: 'center',
                                   textStyle: {
@@ -750,7 +948,7 @@ export default {
                       data: data
                   }
               ]
-          });
+          })
       },
       setMapEcharts (element,title,data) {
           let echarts = require('echarts')
@@ -783,7 +981,7 @@ export default {
                       data:data
                   },
               ]
-          });
+          })
       },
       setFunnelEcharts(element,title,legend,data){
           let echarts = require('echarts')
@@ -839,7 +1037,7 @@ export default {
                       data: data
                   }
               ]
-          });
+          })
       },
       // 策略使用以及各业务使用次数统计
       handleCommandStastic(scope) {
@@ -861,7 +1059,13 @@ export default {
                   break
               // 人群画像估算
               case 'estimatedDetail':
+                  this.showEstimateEcharts = true
                   this.getCrowdBaseInfo()
+                  this.getCrowdProvinceInfo()
+                  this.getTopActiveRank()
+                  this.getMemberBenefits()
+                  this.getWatchBehavior()
+                  this.getActiveBehavior()
                   break
           }
       },
@@ -870,7 +1074,7 @@ export default {
         this.$service.hitAndBiToTalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
             if(data.data.length === 0){this.hitPieTitle = '累计命中次数按业务分布暂无数据'}
             else{this.hitPieTitle = '累计命中次数按业务分布'}
-            this.setCircleEcharts('hitPie','',data.name,data.data)
+            this.setCircleEcharts('hitPie','',data.name,data.data,true)
         })
       },
       drawCrowdLine(id,startTime,endTime){
@@ -889,7 +1093,7 @@ export default {
           this.$service.exposeCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
               if(data.data.length === 0){this.exposePieTitle = '累计曝光数按业务分布暂无数据'}
               else{this.exposePieTitle = '累计曝光数按业务分布'}
-              this.setCircleEcharts('exposePie','',data.name,data.data)
+              this.setCircleEcharts('exposePie','',data.name,data.data,true)
           })
       },
       drawExposeLine(id,startTime,endTime){
@@ -908,7 +1112,7 @@ export default {
           this.$service.clickCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
               if(data.data.length === 0){this.clickPieTitle = '累计点击次数按业务分布暂无数据'}
               else{this.clickPieTitle = '累计点击次数按业务分布'}
-              this.setCircleEcharts('clickPie','',data.name,data.data)
+              this.setCircleEcharts('clickPie','',data.name,data.data,true)
           })
       },
       drawClickLine(id,startTime,endTime){
@@ -942,9 +1146,9 @@ export default {
       // 统计投后效果---结束
       formatDate (d) {
           const time = new Date(d)
-          let y = time.getFullYear(); // 年份
-          let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
-          let r = time.getDate().toString().padStart(2,'0'); // 日子
+          let y = time.getFullYear() // 年份
+          let m = (time.getMonth() + 1).toString().padStart(2,'0') // 月份
+          let r = time.getDate().toString().padStart(2,'0') // 日子
           return `${y}-${m}-${r}`
       },
       setDataInMonth(startDate,endDate){
@@ -1016,12 +1220,78 @@ export default {
       },
       // 人群画像估算---开始
       getCrowdBaseInfo() {
-        alert('此功能待开发')
-        // const crdId = this.currentCid
-        // this.$service.getBaseInfo({crdId}).then((data) => console.log(data))
+        const crdId = this.currentCid
+        this.$service.getEstimatedBaseInfo(crdId).then((data) => {
+            const ageInfo = data.ageTtl
+            const sexInfo = data.genderTtl
+            const deviceInfo = data.pdcLvlTtl
+            this.setCircleEcharts('circleAge', ageInfo.title, ageInfo.name, ageInfo.data,false)
+            this.setCircleEcharts('circleSex', sexInfo.title, sexInfo.name, sexInfo.data,false)
+            this.setCircleEcharts('circleDevice', deviceInfo.title, deviceInfo.name, deviceInfo.data,false)
+          }
+        )
+      },
+      getCrowdProvinceInfo() {
+        const crdId = this.currentCid
+        this.$service.getEstimatedProvinceAndCityData(crdId).then((data) => {
+            this.cityData = data.pctActLvlCity
+            this.setMapEcharts('provinceMap',data.prPctTtl.title,data.prPctTtl.data)
+        })
+      },
+      getTopActiveRank() {
+        this.$service.getEstimatedCityTopData(this.currentCid).then(data => {
+            this.table.data = data
+        })
+      },
+      getMemberBenefits() {
+        this.$service.getEstimatedTvEnumData().then(data => {
+            const memberListData = this.objectToArray(data)
+            this.memberList = memberListData
+            this.memberListType = memberListData[0].value
+            this.memberListByPay = memberListData[0].value
+            this.getUserType()
+            this.getPayDetail()
+        })
+      },
+      // 对象转成数组
+      objectToArray (obj) {
+          let arr = []
+          for (let i in obj) {
+              arr.push({ value: i, label: obj[i] })
+          }
+          return arr
+      },
+      getUserType() {
+        this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
+            this.setCircleEcharts('member','会员用户的分布情况',data.uCgyTal.name,data.uCgyTal.data,true)
+            this.setCircleEcharts('memberActiveTime','按会员有效期时长',data.vipPrdTtl.name,data.vipPrdTtl.data,false)
+            this.setCircleEcharts('memberMainPageActiveTime','按主页激活时间',data.nvActHptTtl.name,data.nvActHptTtl.data,false)
+            this.setCircleEcharts('memberExpirationTime','按会员过期时长',data.ovToutTtl.name,data.ovToutTtl.data,false)
+        })
+      },
+      getPayDetail() {
+        this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
+            this.setCircleEcharts('payDetail','上次付费的会员产品包情况',data.name,data.data,true)
+        })
+      },
+      getWatchBehavior() {
+        this.$service.getEstimatedUserBehaviorData(this.currentCid).then(data => {
+            const sevenDayData = data.uPlyActPrTtl.data.day7
+            const fiftyDayData = data.uPlyActPrTtl.data.day30
+            const daysCommon = data.uPlyActPrTtl
+            const watchPreferData = data.uPrePlyTtl
+            this.setCircleEcharts('watchPrefer',watchPreferData.title,watchPreferData.name,watchPreferData.data)
+            if (this.expirationDay === '7') {this.setCircleEcharts('userBehavior','',daysCommon.name,sevenDayData)}
+            else {this.setCircleEcharts('userBehavior','',daysCommon.name,fiftyDayData)}
+        })
+      },
+      getActiveBehavior() {
+        this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
+            this.setBarEchart('activeBehavior',data.title,data.name,data.data)
+        })
       }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 fieldset
@@ -1088,4 +1358,70 @@ fieldset>div
     line-height 12px
 .manual
   margin 20px
+.estimate-item
+  border-top 1px dashed #000
+  &:first-child
+    border-top none
+.base-info-circle-echarts
+  border-left 1px dashed #000
+  &:first-child
+    border-left none
+.estimate-statistic
+  display flex
+.base-info-circle-echarts
+  width 33%
+  height 220px
+.table-overflow
+  height 360px
+  overflow auto
+.city-info-echarts
+    width 50%
+.province-map
+    width 100%
+    height 300px
+.province-city-active-content
+    display flex
+    flex-direction column
+.city-active-proportion
+    display block
+    margin-left 20px
+.city-active-proportion--title
+    font-size 18px
+.city-active-proportion--name
+    width 50%
+    display inline-block
+    margin 5px 0
+.table-title
+    font-size 18px
+    margin 20px 0
+.estimate-title
+    padding 10px 20px
+    background-color #ccc
+    font-size 18px
+    color red
+    display inline-block
+    margin 20px 0
+.member-select
+    display flex
+    align-items center
+    justify-content center
+    .member-select--text
+        margin-right 20px
+.member-total
+    width 50%
+    height 300px
+    margin auto
+.member-total-item
+    width 33%
+    height 300px
+/*.watch-tv-behavior*/
+    /*border-top 1px dashed #000*/
+    /*&:first-child*/
+        /*border-top none*/
+.userBehavior
+    width 100%
+    height 300px
+.activeBehaviorEcharts
+    width 50%
+    height 300px
 </style>
