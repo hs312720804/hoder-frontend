@@ -195,6 +195,7 @@
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                         :command="['estimatedDetail',scope.row]"
+                        v-if="scope.row.forcastStatus == 3"
                 >估算画像</el-dropdown-item>
                 <el-dropdown-item
                         :command="['detail',scope.row]"
