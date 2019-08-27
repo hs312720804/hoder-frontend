@@ -552,18 +552,19 @@ export default {
     loadData: function() {
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
-          this.criteria = this.historyFilter
-          this.searchForm = {
-              policyName: this.historyFilter.policyName,
-              constType: this.historyFilter.constType || 'POLICY_NAME'
-          },
-          this.currentPage = this.historyFilter.pageNum || this.currentPage
-          this.pageSize = this.historyFilter.pageSize || this.pageSize
+          if(this.historyFilter != null) {
+              this.criteria = this.historyFilter
+              this.searchForm = {
+                  policyName: this.historyFilter.policyName,
+                  constType: this.historyFilter.constType || 'POLICY_NAME'
+              },
+                  this.currentPage = this.historyFilter.pageNum || this.currentPage
+              this.pageSize = this.historyFilter.pageSize || this.pageSize
+          }
           this.reloadHistory = false
       }
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
-        console.log(this.criteria)
       this.$service.policyList(this.criteria).then(data => {
         this.tableData = data.pageInfo.list;
         this.totalCount = data.pageInfo.total;

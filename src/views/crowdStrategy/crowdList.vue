@@ -1295,7 +1295,6 @@ export default {
       },
       getWatchBehavior() {
         this.$service.getEstimatedUserBehaviorData(this.currentCid).then(data => {
-            console.log(data)
             // 如果data直接是空对象
             let sevenDayData,fiftyDayData,daysCommon,watchPreferData = {}
             if(Object.keys(data).length === 0) {
