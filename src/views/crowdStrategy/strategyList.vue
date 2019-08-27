@@ -383,7 +383,7 @@ export default {
       reloadHistory: true
     };
   },
-  props: ["listCurrentPage","listPageSize"],
+  props: ["historyFilter"],
   created() {
     this.loadData()
     const start = new Date()
@@ -532,7 +532,7 @@ export default {
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
-      this.$emit("openCrowdPage", row, this.currentPage, this.pageSize);
+      this.$emit("openCrowdPage", row, this.criteria)
     },
     del(row) {
       var id = row.policyId;
@@ -552,12 +552,18 @@ export default {
     loadData: function() {
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
-          this.currentPage = this.listCurrentPage || this.currentPage
-          this.pageSize = this.listPageSize || this.pageSize
+          this.criteria = this.historyFilter
+          this.searchForm = {
+              policyName: this.historyFilter.policyName,
+              constType: this.historyFilter.constType || 'POLICY_NAME'
+          },
+          this.currentPage = this.historyFilter.pageNum || this.currentPage
+          this.pageSize = this.historyFilter.pageSize || this.pageSize
           this.reloadHistory = false
       }
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
+        console.log(this.criteria)
       this.$service.policyList(this.criteria).then(data => {
         this.tableData = data.pageInfo.list;
         this.totalCount = data.pageInfo.total;
@@ -580,20 +586,22 @@ export default {
     },
     // 搜索,提交表单
     submitForm: function() {
-      var _this = this;
-      this.$refs.searchForm.validate(function(result) {
+      this.$refs.searchForm.validate((result) => {
         if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
+          this.criteria = this.searchForm
+          // pageNum重置为1
+          this.currentPage = 1
+          this.loadData()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 重置
     handleReset: function() {
         this.searchForm.policyName = ''
         this.searchForm.constType = 'POLICY_NAME'
+        this.criteria = {}
         this.loadData()
       // this.$refs.searchForm.resetFields();
     },

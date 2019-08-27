@@ -3,8 +3,7 @@
         <strategy-list
                 v-if="isShowStrategyList"
                 @openCrowdPage="openCrowdPage"
-                :listCurrentPage="listCurrentPage"
-                :listPageSize="listPageSize"
+                :historyFilter="historyFilter"
         ></strategy-list>
         <crowd-index v-if="!isShowStrategyList" :selectRow="selectRow" @goBack="goBack"></crowd-index>
     </div>
@@ -17,16 +16,18 @@ export default {
         return{
           selectRow:null,//选中的一行策略数据
           isShowStrategyList:true,
-          listCurrentPage: undefined,
-          listPageSize: undefined
+          historyFilter: null
+          // listCurrentPage: undefined,
+          // listPageSize: undefined
         }
     },
     methods: {
-        openCrowdPage(row,listCurrentPage,ListPageSize){
+        openCrowdPage(row,filter){
           this.selectRow=row
           this.isShowStrategyList=false
-          this.listCurrentPage = listCurrentPage
-          this.listPageSize = ListPageSize
+          this.historyFilter = filter
+          // this.listCurrentPage = filter.page
+          // this.listPageSize = filter.pageSize
         },
         goBack(){
             this.isShowStrategyList=true
