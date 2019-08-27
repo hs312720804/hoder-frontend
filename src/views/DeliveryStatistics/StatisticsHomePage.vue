@@ -508,14 +508,14 @@
             // 省份分布
             getCrowdProvincetotal (startTime, endTime) {
                 this.$service.get_crowd_province_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const newData = data.data.map((key,index) => {
-                        return {value: key.value, name: key.name,seq: index+1,percent:key.percent}
+                    const newData = data.province.date.map((key,index) => {
+                        return {value: key.count, name: key.name,seq: index+1,percent:key.percent}
                     })
-                    this.setMapEcharts('main','省份分布',data.data)
+                    this.setMapEcharts('main','省份分布',data.province.date)
                     this.cityData = data.cityPercent
                     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
                     this.table.data = newData
-                    this.pagination.total = data.data.length
+                    this.pagination.total = data.province.date.length
                 })
             },
             setMapEcharts (element,title,data) {

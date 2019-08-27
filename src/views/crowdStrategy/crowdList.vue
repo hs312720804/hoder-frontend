@@ -421,11 +421,14 @@
             <div class="estimate-statistic">
                 <div class="province-city-active-content city-info-echarts">
                     <div ref="provinceMap" class="province-map"></div>
-                    <div class="city-active-proportion">
+                    <div class="city-active-proportion" v-if="cityData">
                         <div class="city-active-proportion--title">{{cityData.title}}</div>
-                        <div v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
-                            {{item.name}}:{{item.value}}
-                        </div>
+                        <template v-if="cityData.data.length > 0">
+                            <div  v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
+                                {{item.name}}:{{item.value}}
+                            </div>
+                        </template>
+                        <div v-else>暂无数据</div>
                     </div>
                 </div>
                 <div class="city-info-echarts">
@@ -600,7 +603,7 @@ export default {
             ],
             data: []
         },
-        cityData: '',
+        cityData: null,
         memberList: [],
         memberListType: '',
         memberListByPay: '',
@@ -608,7 +611,11 @@ export default {
           '7': '近7日',
           '30': '近30日'
         },
-        expirationDay: '7'
+        expirationDay: '7',
+        fillEmptyData: {
+          data: [{name: '总量',value: 0}],
+          name: {data: ['总量']}
+        }
     }
   },
   props: ["selectRow"],
@@ -900,8 +907,9 @@ export default {
                   },
               },
               series: [{
-                  data: yData,
-                  type: 'bar'
+                  data: yData.length === 0 ? this.fillEmptyData.data : yData,
+                  type: 'bar',
+                  barWidth : 30
               }]
           })
       },
@@ -910,7 +918,8 @@ export default {
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
               title: {
-                  text: title
+                  text: title,
+                  left: 'center'
               },
               tooltip: {
                   trigger: 'item',
@@ -946,7 +955,7 @@ export default {
                               }
                           }
                       },
-                      data: data
+                      data: (data.length === 0) ? this.fillEmptyData.data : data
                   }
               ]
           })
@@ -1223,6 +1232,7 @@ export default {
       getCrowdBaseInfo() {
         const crdId = this.currentCid
         this.$service.getEstimatedBaseInfo(crdId).then((data) => {
+            // 当data里面的ageTtl等都为空，直接传值
             const ageInfo = data.ageTtl
             const sexInfo = data.genderTtl
             const deviceInfo = data.pdcLvlTtl
@@ -1264,24 +1274,42 @@ export default {
       },
       getUserType() {
         this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
-            this.setCircleEcharts('member','会员用户的分布情况',data.uCgyTal.name,data.uCgyTal.data,true)
-            this.setCircleEcharts('memberActiveTime','按会员有效期时长',data.vipPrdTtl.name,data.vipPrdTtl.data,false)
-            this.setCircleEcharts('memberMainPageActiveTime','按主页激活时间',data.nvActHptTtl.name,data.nvActHptTtl.data,false)
-            this.setCircleEcharts('memberExpirationTime','按会员过期时长',data.ovToutTtl.name,data.ovToutTtl.data,false)
+            // 当data直接为空对象，里面uCgyTal啥都没有
+            this.setCircleEcharts('member','会员用户的分布情况',data.uCgyTal.name||this.fillEmptyData.name,data.uCgyTal.data||this.fillEmptyData.data,true)
+            this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',data.vipPrdTtl.name,data.vipPrdTtl.data,false)
+            this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',data.nvActHptTtl.name,data.nvActHptTtl.data,false)
+            this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',data.ovToutTtl.name,data.ovToutTtl.data,false)
         })
       },
       getPayDetail() {
         this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
-            this.setCircleEcharts('payDetail','上次付费的会员产品包情况',data.name,data.data,true)
+            // 如果data直接是空对象
+            let echartsData = {}
+            if(Object.keys(data).length === 0) {
+                echartsData = this.fillEmptyData
+            }else {
+                echartsData = data
+            }
+            this.setCircleEcharts('payDetail','上次付费的会员产品包情况',echartsData.name,echartsData.data,true)
         })
       },
       getWatchBehavior() {
         this.$service.getEstimatedUserBehaviorData(this.currentCid).then(data => {
-            const sevenDayData = data.uPlyActPrTtl.data.day7
-            const fiftyDayData = data.uPlyActPrTtl.data.day30
-            const daysCommon = data.uPlyActPrTtl
-            const watchPreferData = data.uPrePlyTtl
-            this.setCircleEcharts('watchPrefer',watchPreferData.title,watchPreferData.name,watchPreferData.data)
+            console.log(data)
+            // 如果data直接是空对象
+            let sevenDayData,fiftyDayData,daysCommon,watchPreferData = {}
+            if(Object.keys(data).length === 0) {
+                sevenDayData = this.fillEmptyData.data
+                fiftyDayData = this.fillEmptyData.data
+                daysCommon = this.fillEmptyData
+                watchPreferData = this.fillEmptyData
+            }else {
+                sevenDayData = data.uPlyActPrTtl.data.day7
+                fiftyDayData = data.uPlyActPrTtl.data.day30
+                daysCommon = data.uPlyActPrTtl
+                watchPreferData = data.uPrePlyTtl
+            }
+            this.setCircleEcharts('watchPrefer',watchPreferData.title||'暂无数据',watchPreferData.name,watchPreferData.data)
             if (this.expirationDay === '7') {this.setCircleEcharts('userBehavior','',daysCommon.name,sevenDayData)}
             else {this.setCircleEcharts('userBehavior','',daysCommon.name,fiftyDayData)}
         })
@@ -1291,6 +1319,7 @@ export default {
             this.setBarEchart('activeBehavior',data.title,data.name,data.data)
         })
       }
+      // 人群画像估算---结束
   }
 }
 </script>
@@ -1415,6 +1444,9 @@ fieldset>div
 .member-total-item
     width 33%
     height 300px
+    border-left 1px dashed #000
+    &:first-child
+        border-left none
 /*.watch-tv-behavior*/
     /*border-top 1px dashed #000*/
     /*&:first-child*/
@@ -1425,4 +1457,5 @@ fieldset>div
 .activeBehaviorEcharts
     width 50%
     height 300px
+    margin auto
 </style>
