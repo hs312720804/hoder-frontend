@@ -1233,12 +1233,25 @@ export default {
         const crdId = this.currentCid
         this.$service.getEstimatedBaseInfo(crdId).then((data) => {
             // 当data里面的ageTtl等都为空，直接传值
-            const ageInfo = data.ageTtl
-            const sexInfo = data.genderTtl
-            const deviceInfo = data.pdcLvlTtl
-            this.setCircleEcharts('circleAge', ageInfo.title, ageInfo.name, ageInfo.data,false)
-            this.setCircleEcharts('circleSex', sexInfo.title, sexInfo.name, sexInfo.data,false)
-            this.setCircleEcharts('circleDevice', deviceInfo.title, deviceInfo.name, deviceInfo.data,false)
+            let ageInfo,sexInfo,deviceInfo = {}
+            if(Object.keys(data.ageTtl).length === 0) {
+                ageInfo = this.fillEmptyData
+            }else {
+                ageInfo = data.ageTtl
+            }
+            if(Object.keys(data.genderTtl).length === 0) {
+                sexInfo = this.fillEmptyData
+            }else{
+                sexInfo = data.genderTtl
+            }
+            if(Object.keys(data.pdcLvlTtl).length === 0) {
+                deviceInfo = this.fillEmptyData
+            }else{
+                deviceInfo = data.pdcLvlTtl
+            }
+            this.setCircleEcharts('circleAge', '年龄分布', ageInfo.name, ageInfo.data,false)
+            this.setCircleEcharts('circleSex', '性别分布', sexInfo.name, sexInfo.data,false)
+            this.setCircleEcharts('circleDevice', '产品等级分布', deviceInfo.name, deviceInfo.data,false)
           }
         )
       },
@@ -1246,7 +1259,11 @@ export default {
         const crdId = this.currentCid
         this.$service.getEstimatedProvinceAndCityData(crdId).then((data) => {
             this.cityData = data.pctActLvlCity
-            this.setMapEcharts('provinceMap',data.prPctTtl.title,data.prPctTtl.data)
+            let mapData = data.prPctTtl.data.map(key => {
+                return {value: parseFloat(key.value),name:key.name}
+            })
+            console.log(mapData)
+            this.setMapEcharts('provinceMap','省份分布',mapData)
         })
       },
       getTopActiveRank() {
@@ -1258,6 +1275,7 @@ export default {
         this.$service.getEstimatedTvEnumData().then(data => {
             const memberListData = this.objectToArray(data)
             this.memberList = memberListData
+            // 设置两个默认的下拉框选值
             this.memberListType = memberListData[0].value
             this.memberListByPay = memberListData[0].value
             this.getUserType()
@@ -1275,10 +1293,22 @@ export default {
       getUserType() {
         this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
             // 当data直接为空对象，里面uCgyTal啥都没有
-            this.setCircleEcharts('member','会员用户的分布情况',data.uCgyTal.name||this.fillEmptyData.name,data.uCgyTal.data||this.fillEmptyData.data,true)
-            this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',data.vipPrdTtl.name,data.vipPrdTtl.data,false)
-            this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',data.nvActHptTtl.name,data.nvActHptTtl.data,false)
-            this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',data.ovToutTtl.name,data.ovToutTtl.data,false)
+            let spread,effectiveTime,activate,expire = {}
+            if(Object.keys(data).length === 0) {
+                spread = this.fillEmptyData
+                effectiveTime = this.fillEmptyData
+                activate = this.fillEmptyData
+                expire = this.fillEmptyData
+            }else {
+                spread = data.uCgyTal
+                effectiveTime = data.vipPrdTtl
+                activate = data.nvActHptTtl
+                expire = data.ovToutTtl
+            }
+            this.setCircleEcharts('member','会员用户的分布情况',spread.name,spread.data,true)
+            this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',effectiveTime.name,effectiveTime.data,false)
+            this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',activate.name,activate.data,false)
+            this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',expire.name,expire.data,false)
         })
       },
       getPayDetail() {
@@ -1308,14 +1338,20 @@ export default {
                 daysCommon = data.uPlyActPrTtl
                 watchPreferData = data.uPrePlyTtl
             }
-            this.setCircleEcharts('watchPrefer',watchPreferData.title||'暂无数据',watchPreferData.name,watchPreferData.data)
+            this.setCircleEcharts('watchPrefer',watchPreferData.title||'观影偏好',watchPreferData.name,watchPreferData.data)
             if (this.expirationDay === '7') {this.setCircleEcharts('userBehavior','',daysCommon.name,sevenDayData)}
             else {this.setCircleEcharts('userBehavior','',daysCommon.name,fiftyDayData)}
         })
       },
       getActiveBehavior() {
         this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
-            this.setBarEchart('activeBehavior',data.title,data.name,data.data)
+            let echartsData = {}
+            if(Object.keys(data).length === 0) {
+                echartsData = this.fillEmptyData
+            }else {
+                echartsData = data
+            }
+            this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',echartsData.name,echartsData.data)
         })
       }
       // 人群画像估算---结束
