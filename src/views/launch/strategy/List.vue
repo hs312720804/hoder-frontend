@@ -266,5 +266,5 @@
             width 20%
             margin-right 20px
     .manual
-        margin 0 20px
+        margin-left 8px
 </style>
