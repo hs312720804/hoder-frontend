@@ -185,7 +185,11 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
-                    <el-time-picker v-model="crowdForm.autoLaunchTime" value-format="HH:mm:ss"></el-time-picker>
+                    <el-time-picker
+                            v-model="crowdForm.autoLaunchTime"
+                            value-format="HH:mm:ss"
+                            :disabled="status!==undefined && status!==1"
+                    ></el-time-picker>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="footer">
