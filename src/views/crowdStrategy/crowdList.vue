@@ -1182,9 +1182,22 @@ export default {
         const crdId = this.currentCid
         this.$service.getEstimatedBaseInfo(crdId).then((data) => {
             // 当data里面的ageTtl等都为空，直接传值
-            const ageInfo = (Object.keys(data.ageTtl).length === 0) ? this.fillEmptyData : data.ageTtl
-            const sexInfo = (Object.keys(data.genderTtl).length === 0) ? this.fillEmptyData : data.genderTtl
-            const deviceInfo = (Object.keys(data.pdcLvlTtl).length === 0) ? this.fillEmptyData : data.pdcLvlTtl
+            let ageInfo,sexInfo,deviceInfo = {}
+            if(Object.keys(data.ageTtl).length === 0) {
+                ageInfo = this.fillEmptyData
+            }else {
+                ageInfo = data.ageTtl
+            }
+            if(Object.keys(data.genderTtl).length === 0) {
+                sexInfo = this.fillEmptyData
+            }else{
+                sexInfo = data.genderTtl
+            }
+            if(Object.keys(data.pdcLvlTtl).length === 0) {
+                deviceInfo = this.fillEmptyData
+            }else{
+                deviceInfo = data.pdcLvlTtl
+            }
             this.setCircleEcharts('circleAge', '年龄分布', ageInfo.name, ageInfo.data,false)
             this.setCircleEcharts('circleSex', '性别分布', sexInfo.name, sexInfo.data,false)
             this.setCircleEcharts('circleDevice', '产品等级分布', deviceInfo.name, deviceInfo.data,false)
@@ -1249,7 +1262,12 @@ export default {
       getPayDetail() {
         this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
             // 如果data直接是空对象
-            const echartsData = Object.keys(data).length === 0 ? this.fillEmptyData : data
+            let echartsData = {}
+            if(Object.keys(data).length === 0) {
+                echartsData = this.fillEmptyData
+            }else {
+                echartsData = data
+            }
             this.setCircleEcharts('payDetail','上次付费的会员产品包情况',echartsData.name,echartsData.data,true)
         })
       },
@@ -1275,7 +1293,12 @@ export default {
       },
       getActiveBehavior() {
         this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
-            const echartsData = Object.keys(data).length === 0 ? this.fillEmptyData : data
+            let echartsData = {}
+            if(Object.keys(data).length === 0) {
+                echartsData = this.fillEmptyData
+            }else {
+                echartsData = data
+            }
             this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',echartsData.name,echartsData.data)
         })
       }
