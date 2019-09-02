@@ -1211,7 +1211,6 @@ export default {
             let mapData = data.prPctTtl.data.map(key => {
                 return {value: parseFloat(key.value),name:key.name}
             })
-            console.log(mapData)
             this.setMapEcharts('provinceMap','省份分布',mapData)
         })
       },
