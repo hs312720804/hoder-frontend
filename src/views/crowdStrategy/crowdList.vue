@@ -231,7 +231,7 @@
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div>设备：{{totalUser}}</div>
-       <div>手机号：{{total1}}</div>
+       <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
        <div>酷开openId：{{total2}}</div>
        <div>微信openId：{{total3}}</div>
    </el-dialog>
@@ -244,7 +244,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time"
+                    :value="time0"
+                    @input="handleInputTime(0, $event, 'drawCrowdLine')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -259,7 +260,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time1"
+                    :value="time1"
+                    @input="handleInputTime(1, $event, 'drawCrowdPie')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -276,7 +278,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time2"
+                    :value="time2"
+                    @input="handleInputTime(2, $event, 'drawExposeLine')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -291,7 +294,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time3"
+                    :value="time3"
+                    @input="handleInputTime(3, $event, 'drawExposePie')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -308,7 +312,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time4"
+                    :value="time4"
+                    @input="handleInputTime(4, $event, 'drawClickLine')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -323,7 +328,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time5"
+                    :value="time5"
+                    @input="handleInputTime(5, $event, 'drawClickPie')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -340,7 +346,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time6"
+                    :value="time6"
+                    @input="handleInputTime(6, $event, 'crowdLaunchDetail')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -356,7 +363,8 @@
         <div class="echarts-container">
           <div class="click-date-picker">
             <el-date-picker
-                    v-model="time7"
+                    :value="time7"
+                    @input="handleInputTime(7, $event, 'setProvinceData')"
                     type="daterange"
                     range-separator="至"
                     start-placeholder="开始日期"
@@ -523,7 +531,6 @@ export default {
       criteria: {
         //  policyId:selectRow.policyId
       },
-      // 列表页
       searchForm: {
         crowdName: ""
       },
@@ -541,12 +548,12 @@ export default {
       estimateValue: ['0'],
       estimateId: '',
         showResult: false,
-        total1: '',
-        total2: '',
-        total3: '',
-        totalUser: '',
-        total4: '',
-        time: [],
+        total1: undefined,
+        total2: undefined,
+        total3: undefined,
+        totalUser: undefined,
+        total4: undefined,
+        time0: [],
         time1: [],
         time2: [],
         time3: [],
@@ -620,6 +627,9 @@ export default {
   },
   props: ["selectRow"],
   created() {
+        // 高阶函数
+      // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
+
     this.loadData()
       const start = new Date()
       const end = new Date()
@@ -627,86 +637,6 @@ export default {
       this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
   watch: {
-      time(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0 && val !== oldVal){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawCrowdLine(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time = oldVal
-              }
-          }
-      },
-      time1(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawCrowdPie(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time1 = oldVal
-              }
-          }
-      },
-      time2(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawExposeLine(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time2 = oldVal
-              }
-          }
-      },
-      time3(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawExposePie(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time3 = oldVal
-              }
-          }
-      },
-      time4(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawClickLine(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time4 = oldVal
-              }
-          }
-      },
-      time5(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawClickPie(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time5 = oldVal
-              }
-          }
-      },
-      time6(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.crowdLaunchDetail(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time6 = oldVal
-              }
-          }
-      },
-      time7(val,oldVal) {
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.setProvinceData(this.currentCid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time7 = oldVal
-              }
-          }
-      },
       memberListType(val,oldVal) {
           if(val !== oldVal && oldVal.length !== 0){
               this.getUserType()
@@ -724,11 +654,28 @@ export default {
       }
   },
   methods: {
+      handleInputTime (index, val, method) {
+          const key = 'time' + index
+          const oldVal = this[key]
+          if(this.currentCid && oldVal.length !== 0){
+              if(this.setDataInMonth(val[0],val[1])){
+                  this[key] = val
+                  this[method](this.currentCid,val[0],val[1])
+              }else{
+                  this.$message.error('日期间隔最多只能是30天！请重新选择日期')
+              }
+          }
+      },
+      // createTimeWatcher(index, method) {
+      //     return (val) => {
+      //         this.handleInputTime(index, val, method)
+      //     }
+      // },
     goBack() {
       this.$emit("goBack")
     },
     initTime() {
-        this.time = [this.startDate,this.endDate]
+        this.time0 = [this.startDate,this.endDate]
         this.time1 = [this.startDate,this.endDate]
         this.time2 = [this.startDate,this.endDate]
         this.time3 = [this.startDate,this.endDate]
@@ -784,14 +731,16 @@ export default {
         const crowdId = id
         this.showResult = true
         this.$service.estimateResult({crowdId: crowdId}).then((data) => {
-            this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-            this.total2 = data[0].total2 === null ? '暂无数据': data[0].total2
-            this.total3 = data[0].total3 === null ? '暂无数据': data[0].total3
-            this.totalUser = data[0].totalUser === null ? '暂无数据': data[0].totalUser
+            // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+            const {total1,total2,total3,totalUser} = data[0] || {}
+            this.total1 = total1 || '暂无数据'
+            this.total2 = total2 || '暂无数据'
+            this.total3 = total3 || '暂无数据'
+            this.totalUser = totalUser || '暂无数据'
         })
     },
     // 从服务器读取数据
-    loadData: function() {
+    loadData () {
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
@@ -801,29 +750,28 @@ export default {
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
+    handleSizeChange (val) {
       this.pageSize = val
       this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
+    handleCurrentChange (val) {
       this.currentPage = val
       this.loadData()
     },
     // 搜索,提交表单
-    submitForm: function() {
-      var _this = this
-      this.$refs.searchForm.validate(function(result) {
+    submitForm () {
+      this.$refs.searchForm.validate((result) => {
         if (result) {
-          _this.criteria = _this.searchForm
-          _this.loadData()
+          this.criteria = this.searchForm
+          this.loadData()
         } else {
           return false
         }
       })
     },
     // 重置
-    handleReset: function() {
+    handleReset () {
       this.$refs.searchForm.resetFields()
     },
       // 通用多线性参数设置
@@ -967,7 +915,7 @@ export default {
           myChart.setOption({
               title : {
                   text: title,
-                  // subtext: '纯属虚构',
+                  // subtext: '副标题',
                   left: 'center'
               },
               tooltip : {
@@ -1059,7 +1007,7 @@ export default {
                   this.showStatistics = true
                   this.initTime()
                   this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
-                  this.drawCrowdLine(this.currentCid,this.time[0],this.time[1])
+                  this.drawCrowdLine(this.currentCid,this.time0[0],this.time0[1])
                   this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
                   this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
                   this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
@@ -1165,8 +1113,9 @@ export default {
           const startTime = new Date(startDate).getTime()
           const endTime = new Date(endDate).getTime()
           const oneMonth = 3600*1000*24*30
-          if(endTime - startTime > oneMonth) {return false}
-          else{return true}
+          return endTime - startTime <= oneMonth
+          // if(endTime - startTime > oneMonth) {return false}
+          // else{return true}
       },
       upDownCrowd(row) {
         this.showUpDownDialog = true
@@ -1233,22 +1182,9 @@ export default {
         const crdId = this.currentCid
         this.$service.getEstimatedBaseInfo(crdId).then((data) => {
             // 当data里面的ageTtl等都为空，直接传值
-            let ageInfo,sexInfo,deviceInfo = {}
-            if(Object.keys(data.ageTtl).length === 0) {
-                ageInfo = this.fillEmptyData
-            }else {
-                ageInfo = data.ageTtl
-            }
-            if(Object.keys(data.genderTtl).length === 0) {
-                sexInfo = this.fillEmptyData
-            }else{
-                sexInfo = data.genderTtl
-            }
-            if(Object.keys(data.pdcLvlTtl).length === 0) {
-                deviceInfo = this.fillEmptyData
-            }else{
-                deviceInfo = data.pdcLvlTtl
-            }
+            const ageInfo = (Object.keys(data.ageTtl).length === 0) ? this.fillEmptyData : data.ageTtl
+            const sexInfo = (Object.keys(data.genderTtl).length === 0) ? this.fillEmptyData : data.genderTtl
+            const deviceInfo = (Object.keys(data.pdcLvlTtl).length === 0) ? this.fillEmptyData : data.pdcLvlTtl
             this.setCircleEcharts('circleAge', '年龄分布', ageInfo.name, ageInfo.data,false)
             this.setCircleEcharts('circleSex', '性别分布', sexInfo.name, sexInfo.data,false)
             this.setCircleEcharts('circleDevice', '产品等级分布', deviceInfo.name, deviceInfo.data,false)
@@ -1262,7 +1198,6 @@ export default {
             let mapData = data.prPctTtl.data.map(key => {
                 return {value: parseFloat(key.value),name:key.name}
             })
-            console.log(mapData)
             this.setMapEcharts('provinceMap','省份分布',mapData)
         })
       },
@@ -1314,12 +1249,7 @@ export default {
       getPayDetail() {
         this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
             // 如果data直接是空对象
-            let echartsData = {}
-            if(Object.keys(data).length === 0) {
-                echartsData = this.fillEmptyData
-            }else {
-                echartsData = data
-            }
+            const echartsData = Object.keys(data).length === 0 ? this.fillEmptyData : data
             this.setCircleEcharts('payDetail','上次付费的会员产品包情况',echartsData.name,echartsData.data,true)
         })
       },
@@ -1345,12 +1275,7 @@ export default {
       },
       getActiveBehavior() {
         this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
-            let echartsData = {}
-            if(Object.keys(data).length === 0) {
-                echartsData = this.fillEmptyData
-            }else {
-                echartsData = data
-            }
+            const echartsData = Object.keys(data).length === 0 ? this.fillEmptyData : data
             this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',echartsData.name,echartsData.data)
         })
       }
