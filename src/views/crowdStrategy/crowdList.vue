@@ -531,7 +531,6 @@ export default {
       criteria: {
         //  policyId:selectRow.policyId
       },
-      // 列表页
       searchForm: {
         crowdName: ""
       },
