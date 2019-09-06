@@ -34,6 +34,9 @@
             <el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>
             <el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>
             <el-option label="策略维度方式查询" value="TAG_NAME"></el-option>
+            <el-option label="创建人名称模糊查询" value="CREATOR_NAME"></el-option>
+            <el-option label="创建人部门名称模糊查询" value="OFFICE_NAME"></el-option>
+            <el-option label="人群ID匹配查询" value="CROWD_ID"></el-option>
           </el-select>
           <el-form-item>
             <el-input

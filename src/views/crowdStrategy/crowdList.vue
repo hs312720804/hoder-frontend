@@ -43,6 +43,16 @@
           @submit.native.prevent="submitForm"
           shiro:hasPermission="sysAdministrative:role:search"
         >
+          <el-form-item label="人群上下架状态" prop="putway">
+              <el-select v-model="searchForm.putway">
+                  <el-option
+                          v-for="item in putwayOptions"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value">
+                  </el-option>
+              </el-select>
+          </el-form-item>
           <el-form-item label prop="crowdName">
             <el-input v-model="searchForm.crowdName" style="width: 200px" placeholder="请输入人群名称"></el-input>
           </el-form-item>
@@ -105,7 +115,18 @@
       <el-table-column type="index" width="30"></el-table-column>
       <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
-      <el-table-column prop="priority" label="优先级" width="60"></el-table-column>
+      <el-table-column prop="priority" label="优先级" width="60">
+          <template slot-scope="scope">
+              <p
+                  :key="scope.row.crowdId"
+                  contenteditable="true"
+                  class="button_underline"
+                  @blur="setPriority($event,scope.row)"
+              >
+                  {{scope.row.priority}}
+              </p>
+          </template>
+      </el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
       <el-table-column prop="apiStatus" label="是否生效" width="90">
         <template scope="scope">
@@ -532,7 +553,8 @@ export default {
         //  policyId:selectRow.policyId
       },
       searchForm: {
-        crowdName: ""
+        crowdName: "",
+        putway: ''
       },
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
@@ -622,7 +644,21 @@ export default {
         fillEmptyData: {
           data: [{name: '总量',value: 0}],
           name: {data: ['总量']}
-        }
+        },
+        putwayOptions: [
+            {
+                value: '',
+                label: '全部状态'
+            },
+            {
+                value: 1,
+                label: '上架'
+            },
+            {
+                value: 0,
+                label: '下架'
+            }
+        ]
     }
   },
   props: ["selectRow"],
@@ -1301,8 +1337,49 @@ export default {
             }
             this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',echartsData.name,echartsData.data)
         })
-      }
+      },
       // 人群画像估算---结束
+      // 排序单独修改
+      checkIsNumber (num) {
+          if (num == null || num == '') {
+              this.$message({
+                  type: 'error',
+                  message: '该值不能为空'
+              })
+              return false
+          } else if (num < 0) {
+              this.$message({
+                  type: 'error',
+                  message: '该值不能小于0'
+              })
+              return false
+          } else if (num >= 0) {
+              return true
+          } else {
+              this.$message({
+                  type: 'error',
+                  message: '该数字不合法'
+              })
+              return false
+          }
+      },
+      setPriority (event, row) {
+          const newValue = event.currentTarget.innerText
+          if (this.checkIsNumber(newValue)) {
+              this.$set(row, 'priority', parseInt(newValue))
+              const formData = {
+                  priority: parseInt(newValue),
+                  policyId: row.policyId,
+                  crowdId: row.crowdId
+              }
+              console.log(formData)
+              this.$service.updatePrioorityInCrowdList(formData,'优先级修改成功').then(() => {
+                  this.loadData()
+              })
+          } else {
+              event.currentTarget.innerText = row.priority
+          }
+      }
   }
 }
 </script>
@@ -1441,4 +1518,6 @@ fieldset>div
     width 50%
     height 300px
     margin auto
+.button_underline
+    text-decoration underline
 </style>
