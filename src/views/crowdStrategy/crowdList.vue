@@ -1366,7 +1366,6 @@ export default {
       setPriority (event, row) {
           const newValue = event.currentTarget.innerText
           if (this.checkIsNumber(newValue)) {
-              this.$set(row, 'priority', parseInt(newValue))
               const formData = {
                   priority: parseInt(newValue),
                   policyId: row.policyId,
@@ -1374,6 +1373,8 @@ export default {
               }
               this.$service.updatePrioorityInCrowdList(formData,'优先级修改成功').then(() => {
                   this.loadData()
+              }).catch(() => {
+                  event.target.innerText = row.priority
               })
           } else {
               event.currentTarget.innerText = row.priority
