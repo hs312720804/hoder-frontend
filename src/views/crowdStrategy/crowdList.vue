@@ -1372,7 +1372,6 @@ export default {
                   policyId: row.policyId,
                   crowdId: row.crowdId
               }
-              console.log(formData)
               this.$service.updatePrioorityInCrowdList(formData,'优先级修改成功').then(() => {
                   this.loadData()
               })
