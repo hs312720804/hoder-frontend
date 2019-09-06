@@ -318,3 +318,11 @@ export function getEstimatedAcitivityBehaviorData(params) {
         url: 'api/map/esCrdStsMapActBehavior/'+params
     })
 }
+// 人群优先级单独修改
+export function updatePrioorityInCrowdList(data) {
+    return this.fetch({
+        method: 'PUT',
+        url: 'api/crowd/updatePriorityInCrowdList',
+        data
+    })
+}
