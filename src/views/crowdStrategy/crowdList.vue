@@ -1476,6 +1476,7 @@ export default {
           this.showDivide = true
           this.divideForm.crowdId = row.crowdId
           this.divideForm.crowdName = row.crowdName
+          debugger
           if (row.forcastStatus == 5) {
               this.showDivideEdit = true
               this.$service.crowdABTestEdit(row.crowdId).then(data => {
@@ -1517,7 +1518,8 @@ export default {
               percentArray.push(parseInt(100 / copies))
           }
           this.copiesItem = arr
-          if (!this.showDivide) {
+          debugger
+          if (!this.showDivideEdit) {
               this.percent = percentArray
           }
       },
@@ -1540,7 +1542,7 @@ export default {
           let crowdData = []
           let item = {}
           // AB TEST 新增保存时
-          if (!this.showDivide) {
+          if (!this.showDivideEdit) {
               for (let i = 0; i < crowdLength; i++) {
                   item = {
                       crowdId: i === 0 ? form.crowdId : undefined,
