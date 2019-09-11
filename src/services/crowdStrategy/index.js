@@ -326,3 +326,29 @@ export function updatePrioorityInCrowdList(data) {
         data
     })
 }
+// 人群AB test 划分新增
+export function crowdABTestAdd({model,data}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/crowd/aBTestPartition/'+model,
+        data,
+        isJSON: true
+    })
+}
+// 人群AB test 划分编辑获取详情
+export function crowdABTestEdit(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/aBTestPartition/'+params,
+    })
+}
+// 人群AB test 划分编辑保存
+export function crowdABTestEditSave({model,data}) {
+    return this.fetch({
+        method: 'put',
+        url: '/api/crowd/aBTestPartition/'+model,
+        data,
+        isJSON: true
+    })
+}
+
