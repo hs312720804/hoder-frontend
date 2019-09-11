@@ -151,6 +151,7 @@
               <span type="text" v-if="scope.row.forcastStatus == 1">未估算</span>
               <span type="text" v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+              <el-button type="text" v-if="scope.row.forcastStatus == 5" @click="showDivideResult(scope.row.crowdId)">已划分</el-button>
           </template>
       </el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="180">
@@ -188,6 +189,11 @@
                         :command="['copy',scope.row]"
                         :disabled="scope.row.putway === 0"
                 >人群复制
+                </el-dropdown-item>
+                <el-dropdown-item
+                :command="['divide',scope.row]"
+                v-if="scope.row.forcastStatus != 5"
+                >A/B test划分
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -536,6 +542,58 @@
         </div>
       </div>
     </el-dialog>
+      <!--AB test划分弹窗-->
+      <el-dialog :visible.sync="showDivide" title="圈定人群划分AB test">
+          <el-form :model="divideForm" label-width="120px">
+              <div class="first-step" v-show="step === 1">
+                  <div>第一步：填写人群份数</div>
+                  <el-form-item v-if="showDivideEdit" label="人群名称：">
+                      <el-input v-model="divideForm.crowdName"></el-input>
+                  </el-form-item>
+                  <el-form-item label="人群划分份数：">
+                      <el-select size="mini" v-model="copies" :disabled="showDivideEdit">
+                          <el-option v-for="(part,index) in parts"
+                                     :key="index"
+                                     :label="part"
+                                     :value="part"
+                          >
+                          </el-option>
+                      </el-select>份
+                  </el-form-item>
+                  <div><el-button type="primary" @click="firstStep">下一步</el-button></div>
+              </div>
+              <div class="first-step" v-show="step === 2">
+                  <div>第二步：设置人群占比</div>
+                  <el-form-item label="各人群占比：">
+                      <div class="block" v-for="(item,index) in copiesItem">
+                          <span>人群_{{alphaData[index]}}</span>
+                          <el-slider v-model="percent[index]" :key="item"></el-slider>
+                      </div>
+                  </el-form-item>
+                  <div>
+                      <el-button type="primary" @click="step = 1">上一步</el-button>
+                      <el-button type="primary" @click="secondStep">下一步</el-button>
+                  </div>
+              </div>
+              <div class="first-step" v-show="step === 3">
+                  <div>第三步：填写备注并保存</div>
+                  <el-form-item label="人群优先级：" v-if="showDivideEdit">
+                      <el-input v-model="divideForm.priority"></el-input>
+                  </el-form-item>
+                  <el-form-item label="人群备注：">
+                      <el-input v-model="divideForm.remark"></el-input>
+                  </el-form-item>
+                  <div>
+                      <el-button type="primary" @click="step = 2">上一步</el-button>
+                      <el-button type="primary" @click="finish">完成</el-button>
+                  </div>
+              </div>
+          </el-form>
+      </el-dialog>
+      <!--已划分弹窗显示-->
+      <el-dialog :visible.sync="showDivideDetail" title="划分详情">
+          <div>{{divideName}}:占比{{dividePercent}}%</div>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -658,7 +716,32 @@ export default {
                 value: 0,
                 label: '下架'
             }
-        ]
+        ],
+        showDivide: false,
+        parts: [2,3,4,5,6,7,8,9,10],
+        copies: 3,
+        step: 1,
+        divideForm: {
+            crowdId: undefined,
+            crowdName: undefined,
+            pct: [],
+            remark: '',
+            priority: undefined
+        },
+        copiesItem: [],
+        percent: [],
+        alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
+        showDivideDetail: false,
+        divideName: '',
+        dividePercent: '',
+        showDivideEdit: false,
+        crowdEditDivideForm: {
+          currentCrowdId: undefined,
+          id: [],
+          name: [],
+          pct: [],
+          priority: []
+        }
     }
   },
   props: ["selectRow"],
@@ -1197,7 +1280,11 @@ export default {
           const params = scope[1]
           switch (type) {
               case 'edit':
-                  this.edit(params)
+                  if (params.forcastStatus == 5) {
+                      this.divideAB(params)
+                  } else {
+                      this.edit(params)
+                  }
                   break
               case 'del':
                   this.del(params)
@@ -1207,6 +1294,9 @@ export default {
                   break
               case 'copy':
                   this.copyCrowd(params)
+                  break
+              case 'divide':
+                  this.divideAB(params)
                   break
           }
       },
@@ -1379,6 +1469,135 @@ export default {
           } else {
               event.currentTarget.innerText = row.priority
           }
+      },
+      // AB test划分
+      divideAB (row) {
+          console.log(row)
+          this.showDivide = true
+          this.divideForm.crowdId = row.crowdId
+          this.divideForm.crowdName = row.crowdName
+          if (row.forcastStatus == 5) {
+              this.showDivideEdit = true
+              this.$service.crowdABTestEdit(row.crowdId).then(data => {
+                  console.log(data)
+                  const crowd = data.crowds
+                  this.copies = crowd.length
+                  const percent = data.ratio
+                  let [pctArr, names, ids, pcts, priorities] = [[],[],[],[],[]]
+                  for (let i=0;i<percent.length;i++) {
+                      pctArr.push(percent[i].ratio)
+                      pcts.push(percent[i].ratio)
+                  }
+                  this.percent = pctArr
+                  for (let i=0;i<crowd.length;i++) {
+                      names.push(crowd[i].crowdName)
+                      ids.push(crowd[i].crowdId)
+                      priorities.push(crowd[i].priority)
+                  }
+                  this.crowdEditDivideForm = {
+                      currentCrowdId: row.crowdId,
+                      id: ids,
+                      name: names,
+                      pct: pcts,
+                      priority: priorities
+                  }
+              })
+              this.divideForm.crowdName = row.crowdName
+              this.divideForm.priority = row.priority
+              this.divideForm.remark = row.remark
+          }
+      },
+      firstStep () {
+          this.step = 2
+          const copies = this.copies
+          let arr = []
+          let percentArray = []
+          for (let i = 0; i < copies; i++) {
+              arr.push(i)
+              percentArray.push(parseInt(100 / copies))
+          }
+          this.copiesItem = arr
+          if (!this.showDivide) {
+              this.percent = percentArray
+          }
+      },
+      secondStep () {
+          const arr = this.percent
+          let total = arr.reduce((prev ,cur ,index ,array) => {
+              return prev + cur
+          })
+          if (total > 100) {
+              this.$message.error('所有比例总和不能超过100%')
+              return
+          }else {
+              this.step = 3
+              this.divideForm.pct = this.percent
+          }
+      },
+      finish () {
+          const form = this.divideForm
+          const crowdLength = form.pct.length
+          let crowdData = []
+          let item = {}
+          // AB TEST 新增保存时
+          if (!this.showDivide) {
+              for (let i = 0; i < crowdLength; i++) {
+                  item = {
+                      crowdId: i === 0 ? form.crowdId : undefined,
+                      name: form.crowdName + '_' + this.alphaData[i] + '人群',
+                      pct: form.pct[i],
+                      priority: i + 1
+                  }
+                  crowdData.push(item)
+              }
+              let formData = {
+                  crowd: crowdData,
+                  remark: form.remark
+              }
+              this.$service.crowdABTestAdd({model: form.crowdId, data: formData}, "新增A/B test划分成功").then(() => {
+                  this.showDivide = false
+                  this.loadData()
+              })
+          } else {
+              const getFormData = this.crowdEditDivideForm
+              for (let i = 0; i < crowdLength; i++) {
+                  item = {
+                      id: getFormData.id[i],
+                      name: getFormData.id[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
+                      pct: form.pct[i],
+                      priority: getFormData.id[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
+                  }
+                  crowdData.push(item)
+              }
+              let formData = {
+                  crowd: crowdData,
+                  remark: form.remark
+              }
+              this.$service.crowdABTestEditSave({model: getFormData.currentCrowdId, data: formData}, "编辑保存A/B test划分成功").then(() => {
+                  this.showDivide = false
+                  this.loadData()
+              })
+          }
+      },
+      showDivideResult (crowdId) {
+          this.showDivideDetail = true
+          this.$service.crowdABTestEdit(crowdId).then(data => {
+              const crowd = data.crowds
+              const percent = data.ratio
+              for (let i=0;i<crowd.length;i++) {
+                  if(crowd[i].crowdId === crowdId) {
+                      this.divideName = crowd[i].crowdName
+                      break
+                  }
+              }
+              for (let i=0;i<percent.length;i++) {
+                  if(percent[i].crowdId === crowdId) {
+                      this.dividePercent = percent[i].ratio
+                      break
+                  }
+              }
+          })
+
       }
   }
 }

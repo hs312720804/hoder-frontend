@@ -90,20 +90,45 @@
                                 v-permission="'hoder:launch:crowd:ver:detail'"
                                 @click="condition(scope.row) "
                         >人群条件</el-button>
-                        <el-button
-                                v-permission="'hoder:launch:crowd:ver:modify'"
-                                size="small"
-                                type="primary"
-                                @click="handleEdit(scope.row)"
-                                shiro:hasPermission="sysAdministrative:role:edit"
-                        >编辑</el-button>
-                        <el-button
-                                v-if="scope.row.history.status==1"
-                                v-permission="'hoder:launch:crowd:ver:delete'"
-                                size="small"
-                                type="info"
-                                @click="del(scope.row)"
-                        >删除</el-button>
+                        <el-dropdown @command="handleCommandOpreate">
+                            <el-button size="small" type="primary">
+                                操作
+                            </el-button>
+                            <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item
+                                        :command="['edit',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:modify'"
+                                >编辑
+                                </el-dropdown-item>
+                                <el-dropdown-item
+                                        :command="['del',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:delete'"
+                                        v-if="scope.row.history.status==1"
+                                        divided
+                                >删除
+                                </el-dropdown-item>
+                                <!--<el-dropdown-item-->
+                                        <!--:command="['divide',scope.row]"-->
+                                        <!--v-if="scope.row.history.status==1"-->
+                                        <!--divided-->
+                                <!--&gt;A/B test划分-->
+                                <!--</el-dropdown-item>-->
+                            </el-dropdown-menu>
+                        </el-dropdown>
+                        <!--<el-button-->
+                                <!--v-permission="'hoder:launch:crowd:ver:modify'"-->
+                                <!--size="small"-->
+                                <!--type="primary"-->
+                                <!--@click="handleEdit(scope.row)"-->
+                                <!--shiro:hasPermission="sysAdministrative:role:edit"-->
+                        <!--&gt;编辑</el-button>-->
+                        <!--<el-button-->
+                                <!--v-if="scope.row.history.status==1"-->
+                                <!--v-permission="'hoder:launch:crowd:ver:delete'"-->
+                                <!--size="small"-->
+                                <!--type="info"-->
+                                <!--@click="del(scope.row)"-->
+                        <!--&gt;删除</el-button>-->
                     </el-button-group>
                 </template>
             </el-table-column>
@@ -141,9 +166,52 @@
             </el-checkbox-group>
             <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
             <span slot="footer" class="dialog-footer">
-    <el-button @click="showEstimate = false">取 消</el-button>
-    <el-button type="primary" @click="handleEstimate">投放</el-button>
-  </span>
+                <el-button @click="showEstimate = false">取 消</el-button>
+                <el-button type="primary" @click="handleEstimate">投放</el-button>
+            </span>
+        </el-dialog>
+        <el-dialog :visible.sync="showDivide" title="圈定人群划分AB test">
+            <el-form :model="divideForm" label-width="120px">
+                <div class="first-step" v-show="step === 1">
+                    <div>第一步：填写人群份数</div>
+                    <el-form-item label="人群划分份数：">
+                        <el-select size="mini" v-model="copies">
+                            <el-option v-for="(part,index) in parts"
+                                       :key="index"
+                                       :label="part"
+                                       :value="part"
+                            >
+                            </el-option>
+                        </el-select>份
+                    </el-form-item>
+                    <div><el-button type="primary" @click="firstStep">下一步</el-button></div>
+                </div>
+                <div class="first-step" v-show="step === 2">
+                    <div>第二步：设置人群占比</div>
+                    <el-form-item label="各人群占比：">
+                        <div class="block" v-for="(item,index) in copiesItem">
+                            <span>人群_{{alphaData[index]}}</span>
+                            <el-slider v-model="percent[index]" :key="item"></el-slider>
+                        </div>
+                    </el-form-item>
+                    <div>
+                        <el-button type="primary" @click="step = 1">上一步</el-button>
+                        <el-button type="primary" @click="secondStep">下一步</el-button>
+                    </div>
+                </div>
+                <div class="first-step" v-show="step === 3">
+                    <div>第三步：勾选计算的类型</div>
+                    <el-form-item label="各人群占比：">
+                        <el-checkbox-group v-model="divideForm.calType" aria-required="true">
+                            <el-checkbox v-for="(item,index) in divideEstimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                    <div>
+                        <el-button type="primary" @click="step = 2">上一步</el-button>
+                        <el-button type="primary" @click="finish">完成</el-button>
+                    </div>
+                </div>
+            </el-form>
         </el-dialog>
     </div>
 </template>
@@ -179,7 +247,20 @@
                 currentLaunchId: '',
                 showError: false,
                 launchType: undefined,
-                launchTitle: ''
+                launchTitle: '',
+                showDivide: false,
+                parts: [2,3,4,5,6,7,8,9,10],
+                copies: 3,
+                step: 1,
+                divideForm: {
+                    launchCrowdId: undefined,
+                    pct: [],
+                    calType: []
+                },
+                copiesItem: [],
+                percent: [],
+                alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
+                divideEstimateItems: [],
             };
         },
         created() {
@@ -308,7 +389,68 @@
                     })
                     .catch(() => {
                     })
-            }
+            },
+            handleCommandOpreate(scope) {
+                const type = scope[0]
+                const params = scope[1]
+                switch (type) {
+                    case 'edit':
+                        this.handleEdit(params)
+                        break
+                    case 'del':
+                        this.del(params)
+                        break
+                    case 'divide':
+                        this.divideAB(params)
+                        break
+                }
+            },
+            divideAB (row) {
+                this.showDivide = true
+                console.log(row)
+                this.divideForm.launchCrowdId = row.launchCrowdId
+            },
+            firstStep () {
+                this.step = 2
+                const copies = this.copies
+                let arr = []
+                let percentArray = []
+                for (let i=0;i<copies;i++) {
+                    arr.push(i)
+                    percentArray.push(parseInt(100/copies))
+                }
+                this.copiesItem = arr
+                this.percent = percentArray
+            },
+            secondStep () {
+                const arr = this.percent
+                let total = arr.reduce((prev ,cur ,index ,array) => {
+                    return prev + cur
+                })
+                if (total > 100) {
+                    this.$message.error('所有比例总和不能超过100%')
+                    return
+                }else {
+                    this.step = 3
+                    this.divideForm.pct = this.percent
+                    this.$service.getEstimateType().then((data) => {
+                        this.divideEstimateItems = data
+                    })
+                }
+            },
+            finish () {
+                const model = this.divideForm.launchCrowdId
+                // const divideForm = JSON.stringify(this.divideForm)
+                const divideForm = this.divideForm
+                console.log(divideForm)
+                if (divideForm.calType.length === 0) {
+                    this.$message.error('请至少勾选一个计算的类型进行投放')
+                    return
+                }
+                this.$service.ABTestAdd({model: model,data: divideForm},"新增A/B test划分成功").then(() => {
+                    this.callback()
+                })
+            },
         }
     }
 </script>
@@ -328,4 +470,9 @@
         border-radius 3px
     .manual
         margin 20px
+    /*.block*/
+        /*width 80%*/
+        /*display inline-block*/
+    /*.button-group-position >>> .el-dropdown-menu__item*/
+        /*text-align center*/
 </style>

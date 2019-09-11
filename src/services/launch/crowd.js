@@ -249,3 +249,12 @@ export function searchTags(params) {
         params
     })
 }
+// 人群圈定ABtest划分新增
+export function ABTestAdd({model,data}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/multiVersionCrowd/aBTestPartition/'+model,
+        data,
+        isJSON: true
+    })
+}
