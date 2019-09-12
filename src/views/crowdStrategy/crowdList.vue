@@ -1563,7 +1563,7 @@ export default {
                       crowdId: i === 0 ? form.crowdId : undefined,
                       name: form.crowdName + '_' + this.alphaData[i] + '人群',
                       pct: form.pct[i],
-                      priority: i + 1
+                      // priority: i + 1
                   }
                   crowdData.push(item)
               }
