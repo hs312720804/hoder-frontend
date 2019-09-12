@@ -151,6 +151,7 @@
               <span type="text" v-if="scope.row.forcastStatus == 1">未估算</span>
               <span type="text" v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+              <span type="text" v-if="scope.row.forcastStatus == 4">估算失败</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 5" @click="showDivideResult(scope.row.crowdId)">已划分</el-button>
           </template>
       </el-table-column>

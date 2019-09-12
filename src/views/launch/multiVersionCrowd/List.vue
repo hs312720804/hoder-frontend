@@ -52,7 +52,9 @@
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column prop="status" label="人群状态" width="70">
                 <template scope="scope">
-                    <span style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status]}}</span>
+                    <!-- 计算失败要点击出弹窗 -->
+                    <el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>
+                    <span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status]}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="expiryTime" label="人群有效期" width="180">
@@ -71,7 +73,7 @@
                 <template scope="scope">
                     <el-button-group  class="button-group-position">
                         <el-button
-                                v-if="scope.row.history.status==1"
+                                v-if="scope.row.history.status==1 || scope.row.history.status==5"
                                 v-permission="'hoder:launch:crowd:ver:launch'"
                                 size="small"
                                 type="warning"
@@ -103,7 +105,7 @@
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="scope.row.history.status==1"
+                                        v-if="scope.row.history.status==1 || scope.row.history.status==5"
                                         divided
                                 >删除
                                 </el-dropdown-item>
@@ -213,10 +215,12 @@
                 </div>
             </el-form>
         </el-dialog>
+        <el-dialog :visible.sync="showCountFailDialog" title="计算失败">
+            <div class="count-fail-text">计算失败，原因可能是sql出错或者大数据计算失败，若想再次计算，请重新点击【投放】按钮</div>
+        </el-dialog>
     </div>
 </template>
 <script>
-    // import _ from "lodash";
     export default {
         data() {
             return {
@@ -261,6 +265,7 @@
                 percent: [],
                 alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
                 divideEstimateItems: [],
+                showCountFailDialog: false
             };
         },
         created() {
@@ -451,6 +456,9 @@
                     this.callback()
                 })
             },
+            handleCountFail () {
+                this.showCountFailDialog = true
+            }
         }
     }
 </script>
@@ -475,4 +483,6 @@
         /*display inline-block*/
     /*.button-group-position >>> .el-dropdown-menu__item*/
         /*text-align center*/
+    .count-fail-text
+        color red
 </style>
