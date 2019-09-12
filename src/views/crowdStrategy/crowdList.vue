@@ -1484,7 +1484,6 @@ export default {
       },
       // AB test划分
       divideAB (row) {
-          console.log(row)
           this.showDivide = true
           this.step = 1
           this.showDivideEdit = false
@@ -1494,7 +1493,6 @@ export default {
           if (row.forcastStatus == 5) {
               this.showDivideEdit = true
               this.$service.crowdABTestEdit(row.crowdId).then(data => {
-                  console.log(data)
                   const crowd = data.crowds
                   this.copies = crowd.length
                   const percent = data.ratio
@@ -1503,13 +1501,16 @@ export default {
                       pctArr.push(percent[i].ratio)
                       pcts.push(percent[i].ratio)
                       ids.push(percent[i].id)
+                      for (let j=0;j<crowd.length;j++) {
+                          if(percent[i].crowdId === crowd[j].crowdId) {
+                              names.push(crowd[j].crowdName)
+                              priorities.push(crowd[j].priority)
+                              crowdIds.push(crowd[j].crowdId)
+                          }
+                      }
+
                   }
                   this.percent = pctArr
-                  for (let i=0;i<crowd.length;i++) {
-                      names.push(crowd[i].crowdName)
-                      priorities.push(crowd[i].priority)
-                      crowdIds.push(crowd[i].crowdId)
-                  }
                   this.crowdEditDivideForm = {
                       currentCrowdId: row.crowdId,
                       id: ids,
