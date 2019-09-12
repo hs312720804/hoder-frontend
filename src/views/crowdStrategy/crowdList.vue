@@ -546,7 +546,7 @@
       <el-dialog :visible.sync="showDivide" title="圈定人群划分AB test">
           <el-form :model="divideForm" label-width="120px">
               <div class="first-step" v-show="step === 1">
-                  <div>第一步：填写人群份数</div>
+                  <div class="divide-header">第一步：填写人群份数</div>
                   <el-form-item v-if="showDivideEdit" label="人群名称：">
                       <el-input v-model="divideForm.crowdName"></el-input>
                   </el-form-item>
@@ -560,33 +560,34 @@
                           </el-option>
                       </el-select>份
                   </el-form-item>
-                  <div><el-button type="primary" @click="firstStep">下一步</el-button></div>
+                  <el-form-item><el-button type="primary" @click="firstStep">下一步</el-button></el-form-item>
               </div>
               <div class="first-step" v-show="step === 2">
-                  <div>第二步：设置人群占比</div>
+                  <div class="divide-header">第二步：设置人群占比</div>
                   <el-form-item label="各人群占比：">
                       <div class="block" v-for="(item,index) in copiesItem">
-                          <span>人群_{{alphaData[index]}}</span>
+                          <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                           <el-slider v-model="percent[index]" :key="item"></el-slider>
                       </div>
                   </el-form-item>
-                  <div>
+                  <el-form-item label="比例总和：">{{percentTotal}}</el-form-item>
+                  <el-form-item>
                       <el-button type="primary" @click="step = 1">上一步</el-button>
                       <el-button type="primary" @click="secondStep">下一步</el-button>
-                  </div>
+                  </el-form-item>
               </div>
               <div class="first-step" v-show="step === 3">
-                  <div>第三步：填写备注并保存</div>
+                  <div class="divide-header">第三步：填写备注并保存</div>
                   <el-form-item label="人群优先级：" v-if="showDivideEdit">
                       <el-input v-model="divideForm.priority"></el-input>
                   </el-form-item>
                   <el-form-item label="人群备注：">
                       <el-input v-model="divideForm.remark"></el-input>
                   </el-form-item>
-                  <div>
+                  <el-form-item>
                       <el-button type="primary" @click="step = 2">上一步</el-button>
                       <el-button type="primary" @click="finish">完成</el-button>
-                  </div>
+                  </el-form-item>
               </div>
           </el-form>
       </el-dialog>
@@ -740,8 +741,10 @@ export default {
           id: [],
           name: [],
           pct: [],
-          priority: []
-        }
+          priority: [],
+          crowdId: []
+        },
+        percentTotal: 0
     }
   },
   props: ["selectRow"],
@@ -770,6 +773,11 @@ export default {
           if(val !== oldVal && oldVal.length !== 0){
               this.getWatchBehavior()
           }
+      },
+      percent(val) {
+          this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
+              return prev + cur
+          })
       }
   },
   methods: {
@@ -1476,7 +1484,6 @@ export default {
           this.showDivide = true
           this.divideForm.crowdId = row.crowdId
           this.divideForm.crowdName = row.crowdName
-          debugger
           if (row.forcastStatus == 5) {
               this.showDivideEdit = true
               this.$service.crowdABTestEdit(row.crowdId).then(data => {
@@ -1484,23 +1491,25 @@ export default {
                   const crowd = data.crowds
                   this.copies = crowd.length
                   const percent = data.ratio
-                  let [pctArr, names, ids, pcts, priorities] = [[],[],[],[],[]]
+                  let [pctArr, names, ids, pcts, priorities, crowdIds] = [[],[],[],[],[],[]]
                   for (let i=0;i<percent.length;i++) {
                       pctArr.push(percent[i].ratio)
                       pcts.push(percent[i].ratio)
+                      ids.push(percent[i].id)
                   }
                   this.percent = pctArr
                   for (let i=0;i<crowd.length;i++) {
                       names.push(crowd[i].crowdName)
-                      ids.push(crowd[i].crowdId)
                       priorities.push(crowd[i].priority)
+                      crowdIds.push(crowd[i].crowdId)
                   }
                   this.crowdEditDivideForm = {
                       currentCrowdId: row.crowdId,
                       id: ids,
                       name: names,
                       pct: pcts,
-                      priority: priorities
+                      priority: priorities,
+                      crowdId: crowdIds
                   }
               })
               this.divideForm.crowdName = row.crowdName
@@ -1518,16 +1527,12 @@ export default {
               percentArray.push(parseInt(100 / copies))
           }
           this.copiesItem = arr
-          debugger
           if (!this.showDivideEdit) {
               this.percent = percentArray
           }
       },
       secondStep () {
-          const arr = this.percent
-          let total = arr.reduce((prev ,cur ,index ,array) => {
-              return prev + cur
-          })
+          let total = this.percentTotal
           if (total > 100) {
               this.$message.error('所有比例总和不能超过100%')
               return
@@ -1565,9 +1570,9 @@ export default {
               for (let i = 0; i < crowdLength; i++) {
                   item = {
                       id: getFormData.id[i],
-                      name: getFormData.id[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
+                      name: getFormData.crowdId[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
                       pct: form.pct[i],
-                      priority: getFormData.id[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
+                      priority: getFormData.crowdId[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
                   }
                   crowdData.push(item)
               }
@@ -1741,4 +1746,13 @@ fieldset>div
     margin auto
 .button_underline
     text-decoration underline
+.show-percent
+    color red
+    margin-left 20px
+.divide-header
+    background #0086b3
+    color #fff
+    padding 15px
+    font-size 16px
+    margin-bottom 20px
 </style>
