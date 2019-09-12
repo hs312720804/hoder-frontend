@@ -722,13 +722,7 @@ export default {
         parts: [2,3,4,5,6,7,8,9,10],
         copies: 3,
         step: 1,
-        divideForm: {
-            crowdId: undefined,
-            crowdName: undefined,
-            pct: [],
-            remark: '',
-            priority: undefined
-        },
+        divideForm: this.genDefaultDivideForm(),
         copiesItem: [],
         percent: [],
         alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
@@ -781,6 +775,16 @@ export default {
       }
   },
   methods: {
+      genDefaultDivideForm (preset) {
+          return {
+              crowdId: undefined,
+              crowdName: undefined,
+              pct: [],
+              remark: '',
+              priority: undefined,
+              ...preset
+          }
+      },
       handleInputTime (index, val, method) {
           const key = 'time' + index
           const oldVal = this[key]
@@ -1482,8 +1486,11 @@ export default {
       divideAB (row) {
           console.log(row)
           this.showDivide = true
-          this.divideForm.crowdId = row.crowdId
-          this.divideForm.crowdName = row.crowdName
+          this.step = 1
+          this.showDivideEdit = false
+          const divideForm = this.genDefaultDivideForm()
+          divideForm.crowdId = row.crowdId
+          divideForm.crowdName = row.crowdName
           if (row.forcastStatus == 5) {
               this.showDivideEdit = true
               this.$service.crowdABTestEdit(row.crowdId).then(data => {
@@ -1512,10 +1519,12 @@ export default {
                       crowdId: crowdIds
                   }
               })
-              this.divideForm.crowdName = row.crowdName
-              this.divideForm.priority = row.priority
-              this.divideForm.remark = row.remark
+              divideForm.crowdName = row.crowdName
+              divideForm.priority = row.priority
+              divideForm.remark = row.remark
+
           }
+          this.divideForm = divideForm
       },
       firstStep () {
           this.step = 2
