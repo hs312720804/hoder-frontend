@@ -115,16 +115,32 @@
       <el-table-column type="index" width="30"></el-table-column>
       <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
-      <el-table-column prop="priority" label="优先级" width="60">
+      <el-table-column prop="priority" label="优先级" width="100">
           <template slot-scope="scope">
-              <p
-                  :key="scope.row.crowdId"
-                  contenteditable="true"
-                  class="button_underline"
-                  @blur="setPriority($event,scope.row)"
-              >
-                  {{scope.row.priority}}
-              </p>
+              <div style="position: relative;z-index: 1">
+                  <p
+                          :key="scope.row.crowdId"
+                          contenteditable="true"
+                          class="button_underline"
+                          @blur="setPriority($event,scope.row)"
+                  >
+                      {{scope.row.priority}}
+                  </p>
+                  <!--<p-->
+                      <!--:key="scope.row.crowdId"-->
+                      <!--contenteditable="true"-->
+                      <!--class="button_underline"-->
+                      <!--@click="handleUpdatePriority($event,scope.row)"-->
+                      <!--@blur="setPriority($event,scope.row)"-->
+                      <!--style="z-index: 9;"-->
+                  <!--&gt;-->
+                      <!--{{scope.row.priority}}-->
+                  <!--</p>-->
+                  <!--<div class="fixed-button" v-if="clickShowSaveBtn && (scope.row.crowdId == currentPriorityCrowdId)">-->
+                      <!--<span @click="handleCommitPriority">✔️</span>-->
+                      <!--<span @click="cancelCommitPriority">✘</span>-->
+                  <!--</div>-->
+              </div>
           </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
@@ -739,7 +755,10 @@ export default {
           priority: [],
           crowdId: []
         },
-        percentTotal: 0
+        percentTotal: 0,
+        clickShowSaveBtn: false,
+        commitPriority: false,
+        currentPriorityCrowdId: undefined
     }
   },
   props: ["selectRow"],
@@ -1466,22 +1485,41 @@ export default {
               return false
           }
       },
+      handleUpdatePriority (event, row) {
+          this.clickShowSaveBtn = true
+          this.commitPriority = false
+          this.currentPriorityCrowdId = row.crowdId
+      },
+      // handleCommitPriority () {
+      //     debugger
+      //     this.commitPriority = true
+      // },
+      // cancelCommitPriority () {
+      //     this.commitPriority = false
+      // },
       setPriority (event, row) {
+          // this.clickShowSaveBtn = false
           const newValue = event.currentTarget.innerText
-          if (this.checkIsNumber(newValue)) {
-              const formData = {
-                  priority: parseInt(newValue),
-                  policyId: row.policyId,
-                  crowdId: row.crowdId
+          // if (this.commitPriority) {
+              if (newValue == row.priority) {
+                  return
               }
-              this.$service.updatePrioorityInCrowdList(formData,'优先级修改成功').then(() => {
-                  this.loadData()
-              }).catch(() => {
-                  event.target.innerText = row.priority
-              })
-          } else {
-              event.currentTarget.innerText = row.priority
-          }
+              if (this.checkIsNumber(newValue)) {
+                  const formData = {
+                      priority: parseInt(newValue),
+                      policyId: row.policyId,
+                      crowdId: row.crowdId
+                  }
+                  this.$service.updatePrioorityInCrowdList(formData, '优先级修改成功').then(() => {
+                      this.loadData()
+                  }).catch(() => {
+                      event.target.innerText = row.priority
+                  })
+              } else {
+                  event.currentTarget.innerText = row.priority
+              }
+          // }
+          // else {event.currentTarget.innerText = row.priority}
       },
       // AB test划分
       divideAB (row) {
@@ -1766,4 +1804,9 @@ fieldset>div
     padding 15px
     font-size 16px
     margin-bottom 20px
+.fixed-button
+    position absolute
+    top 0
+    right 0
+    z-index 999
 </style>
