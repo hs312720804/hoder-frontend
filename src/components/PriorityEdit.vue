@@ -62,11 +62,11 @@
             },
             verifyPriority (val) {
                 if (this.isIntNumber(val)) {
-                    if (val > 1000 || val < 0 ) {
-                        return '优先级只能填写1-1000的整数'
+                    if (val > 1000000 || val < 0 ) {
+                        return '优先级只能填写1-1000000的整数'
                     }
                 } else {
-                    return '优先级只能填写1-1000的整数，不可填非数字'
+                    return '优先级只能填写1-1000000的整数，不可填非数字'
                 }
             }
         },
