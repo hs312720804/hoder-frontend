@@ -117,22 +117,27 @@
       <el-table-column prop="crowdName" label="人群名称" width="200"></el-table-column>
       <el-table-column prop="priority" label="优先级" width="100">
           <template slot-scope="scope">
-              <div style="position: relative;z-index: 1">
-                  <p
-                          :key="scope.row.crowdId"
-                          contenteditable="true"
-                          class="button_underline"
-                          @blur="setPriority($event,scope.row)"
-                  >
-                      {{scope.row.priority}}
-                  </p>
+              <priorityEdit :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+              <!--<div class="priority-outer" :key="scope.row.crowdId">-->
+                  <!--<div>-->
+                      <!--<div v-if="!clickShowSaveBtn || currentPriorityCrowdId != scope.row.crowdId">{{scope.row.priority}}</div>-->
+                      <!--<el-input-->
+                              <!--v-if="clickShowSaveBtn && currentPriorityCrowdId === scope.row.crowdId"-->
+                              <!--:ref="'elInputPriority'+scope.row.crowdId"-->
+                              <!--type="text"-->
+                              <!--size="small"-->
+                              <!--@change="checkPriority(scope.row)"-->
+                              <!--@blur="blurPriority()"-->
+                              <!--v-model="scope.row.priority"-->
+                      <!--&gt;</el-input>-->
+                  <!--</div>-->
+                  <!--<div v-if="!clickShowSaveBtn || currentPriorityCrowdId != scope.row.crowdId" class="text-over fixed-button" @click="handleClickPencil(scope.row,scope.row.crowdId)"></div>-->
+              <!--</div>-->
                   <!--<p-->
-                      <!--:key="scope.row.crowdId"-->
-                      <!--contenteditable="true"-->
-                      <!--class="button_underline"-->
-                      <!--@click="handleUpdatePriority($event,scope.row)"-->
-                      <!--@blur="setPriority($event,scope.row)"-->
-                      <!--style="z-index: 9;"-->
+                          <!--:key="scope.row.crowdId"-->
+                          <!--contenteditable="true"-->
+                          <!--class="button_underline"-->
+                          <!--@blur="setPriority($event,scope.row)"-->
                   <!--&gt;-->
                       <!--{{scope.row.priority}}-->
                   <!--</p>-->
@@ -140,7 +145,6 @@
                       <!--<span @click="handleCommitPriority">✔️</span>-->
                       <!--<span @click="cancelCommitPriority">✘</span>-->
                   <!--</div>-->
-              </div>
           </template>
       </el-table-column>
       <el-table-column prop="remark" label="备注" width="90"></el-table-column>
@@ -230,7 +234,7 @@
               size="small"
               type="warning"
               @click="estimateType(scope.row)"
-              :disabled="scope.row.putway === 0"
+              :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 5"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="danger">
@@ -261,6 +265,8 @@
         @handle-current-change="handleCurrentChange"
       ></pagination>
     </div>
+      <!--<div><el-input v-if="clickShowSaveBtn" :ref="'elInput'+0" v-model="currentPriorityCrowdId"></el-input></div>-->
+      <!--<div><el-input v-if="clickShowSaveBtn" :ref="'elInput'+1" v-model="currentPriorityCrowdId"></el-input></div>-->
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
@@ -595,9 +601,9 @@
               </div>
               <div class="first-step" v-show="step === 3">
                   <div class="divide-header">第三步：填写备注并保存</div>
-                  <el-form-item label="人群优先级：" v-if="showDivideEdit">
-                      <el-input v-model="divideForm.priority"></el-input>
-                  </el-form-item>
+                  <!--<el-form-item label="人群优先级：" v-if="showDivideEdit">-->
+                      <!--<el-input v-model="divideForm.priority"></el-input>-->
+                  <!--</el-form-item>-->
                   <el-form-item label="人群备注：">
                       <el-input v-model="divideForm.remark"></el-input>
                   </el-form-item>
@@ -616,9 +622,11 @@
 </template>
 <script>
 import { Table} from 'admin-toolkit'
+import priorityEdit from '../../components/PriorityEdit'
 export default {
   components: {
-      Table
+      Table,
+      priorityEdit
   },
   data() {
     return {
@@ -758,7 +766,8 @@ export default {
         percentTotal: 0,
         clickShowSaveBtn: false,
         commitPriority: false,
-        currentPriorityCrowdId: undefined
+        currentPriorityCrowdId: undefined,
+        currentPriority: undefined
     }
   },
   props: ["selectRow"],
@@ -1497,6 +1506,36 @@ export default {
       // cancelCommitPriority () {
       //     this.commitPriority = false
       // },
+      blurPriority () {
+          this.clickShowSaveBtn = false
+      },
+      handleClickPencil (row,index) {
+          this.clickShowSaveBtn = true
+          this.currentPriorityCrowdId = row.crowdId
+          this.currentPriority = row.priority
+          this.$nextTick(() => {
+              this.$refs['elInputPriority'+index].focus()
+          })
+      },
+      checkPriority (row) {
+          const newValue = row.priority
+          if (this.checkIsNumber(newValue)) {
+              const formData = {
+                  priority: parseInt(newValue),
+                  policyId: row.policyId,
+                  crowdId: row.crowdId
+              }
+              this.$service.updatePrioorityInCrowdList(formData,'优先级修改成功').then(() => {
+                  this.clickShowSaveBtn = false
+              }).catch(() => {
+                  this.clickShowSaveBtn = true
+                  row.priority = this.currentPriority
+              })
+          } else {
+              row.priority = this.currentPriority
+              this.clickShowSaveBtn = true
+          }
+      },
       setPriority (event, row) {
           // this.clickShowSaveBtn = false
           const newValue = event.currentTarget.innerText
@@ -1621,7 +1660,8 @@ export default {
                       id: getFormData.id[i],
                       name: getFormData.crowdId[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
                       pct: form.pct[i],
-                      priority: getFormData.crowdId[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
+                      // priority: getFormData.crowdId[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
+                      priority: getFormData.priority[i]
                   }
                   crowdData.push(item)
               }
@@ -1804,9 +1844,15 @@ fieldset>div
     padding 15px
     font-size 16px
     margin-bottom 20px
+.priority-outer
+    display flex
+    position relative
+    align-items center
+    justify-content space-around
 .fixed-button
-    position absolute
-    top 0
-    right 0
-    z-index 999
+.text-over
+    width 16px
+    height 16px
+    background url(../../assets/pencil.png) no-repeat right center
+    text-align center
 </style>
