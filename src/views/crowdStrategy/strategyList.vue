@@ -383,7 +383,15 @@ export default {
       },
       statusTip: undefined,
       searchValue: '',
-      reloadHistory: true
+      reloadHistory: true,
+      placeHolderInputObject: {
+          'POLICY_NAME': '请输入策略名称',
+          'POLICY_ID': '请输入策略id',
+          'TAG_NAME': '请输入策略维度',
+          'CREATOR_NAME': '请输入创建人名称',
+          'OFFICE_NAME': '请输入创建人部门名称',
+          'CROWD_ID': '请输入人群ID'
+      }
     };
   },
   props: ["historyFilter"],
@@ -402,9 +410,7 @@ export default {
       //     }
       // },
       'searchForm.constType': function (val) {
-          if (val === 'POLICY_NAME') {this.policyNameHolder = '请输入策略名称'}
-          else if (val === 'POLICY_ID') {this.policyNameHolder = '请输入策略id'}
-          else if (val === 'TAG_NAME'){this.policyNameHolder = '请输入策略维度'}
+          this.policyNameHolder = this.placeHolderInputObject[val]
       },
       time(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
