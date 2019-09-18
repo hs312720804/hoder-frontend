@@ -5,3 +5,10 @@ export function setClearCache(params) {
         params
     })
 }
+export function setClearAllCache(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/api/settings/updateApiCacheVersion',
+        params
+    })
+}
