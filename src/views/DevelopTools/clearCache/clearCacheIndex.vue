@@ -9,6 +9,9 @@
                 </el-form-item>
             </el-form>
         </div>
+        <div class="clear-form">
+            <el-button v-permission="'sysAdministrative:user:add' || 'hoder:devTool:updateApiCache'" @click="handleAllCacheClean">清理人群查询接口缓存</el-button>
+        </div>
     </div>
 
 </template>
@@ -24,6 +27,10 @@
         methods: {
             clearCache() {
                 this.$service.setClearCache({keyword:this.deviceMsg},'清除缓存成功').then(() => {
+                }).catch(() => {})
+            },
+            handleAllCacheClean () {
+                this.$service.setClearAllCache({} ,'操作成功').then(() => {
                 }).catch(() => {})
             }
     }

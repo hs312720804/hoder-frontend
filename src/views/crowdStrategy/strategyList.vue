@@ -443,7 +443,7 @@ export default {
       });
     },
     freshCache(row) {
-            this.$confirm("确认同步生效人群吗？将实时生效新的人群，1分钟内请不要频繁点击同步", "提示", {
+            this.$confirm("新建的人群策略将实时生效，旧的策略更新需要延时2小时生效", "提示", {
                 confirmButtonText: "确定",
                 cancelButtonText: "取消",
                 type: "warning"
