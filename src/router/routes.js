@@ -36,6 +36,7 @@ import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
 import ipManage from '@/views/DevelopTools/ipManage/index'
 import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
 import launchSettings from '@/views/setting/launchSetting'
+import notice from '@/views/setting/messageNotice'
 const children = [
     {
         name: 'homePage',
@@ -407,6 +408,16 @@ const children = [
             icon: 'el-icon-cc-home'
         },
         children:[
+            {
+                name: 'notice',
+                path: 'notice',
+                component: notice,
+                meta: {
+                    tagId:"notice",
+                    title: '消息通知',
+                    icon: 'el-icon-cc-xinxi'
+                }
+            },
             {
                 name: 'menuSetting',
                 path: 'menuSetting',
