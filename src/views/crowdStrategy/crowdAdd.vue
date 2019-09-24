@@ -520,7 +520,6 @@
                 }
             },
             bigNum(item) {
-                debugger
                 const startDay = item.startDay
                 const endDay = item.endDay
                 this.checkNum(endDay)
