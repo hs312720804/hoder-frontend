@@ -520,11 +520,12 @@
                 }
             },
             bigNum(item) {
+                debugger
                 const startDay = item.startDay
                 const endDay = item.endDay
                 this.checkNum(endDay)
                 if(this.checkNum(endDay)) {
-                    if(startDay >= endDay) {
+                    if(parseInt(startDay) >= parseInt(endDay)) {
                         this.$message.error('第二个值必须大于第一个值')
                     }else {
                         item.value = startDay + '-' + endDay
