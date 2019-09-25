@@ -26,11 +26,13 @@ Vue.prototype.$isLoggedIn = async function() {
 }
 Vue.prototype.$login = async function(data) {
     return this.$service.login(data).then((res) => {
+        debugger
         const user = {
             name: data.username,
             token: res.jwtToken,
             password: data.password,
-            version: res.version
+            version: res.version,
+            roleName: res.roleNames
         }
         this.$service.service.state = user
         this.$appState.user = user

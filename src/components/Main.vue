@@ -54,10 +54,45 @@
         ></el-button>
         <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
+          <el-dropdown trigger="hover" @visible-change="handleDropDownChange">
+            <el-badge :value="unReadMessage" class="item">
+              <i class="el-icon-bell"></i>
+            </el-badge>
+            <el-dropdown-menu slot="dropdown" class="notice-dropdown">
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="升级通知" name="first">
+                  <div v-for="updateItem in updateMessage" :key="updateItem.noticeId" class="tab-content">
+                    <div
+                        :class="['notice-title',updateItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                        @click="handleReadMessage(updateItem.noticeId)"
+                    >{{updateItem.noticeTitle}}</div>
+                    <div class="notice-time">{{updateItem.pushTime}}</div>
+                  </div>
+                  <div class="see-more" v-if="showMoreUpdate" @click="handleSeeAllMessage">查看全部</div>
+                </el-tab-pane>
+                <el-tab-pane label="系统通知" name="second">
+                  <div v-for="systemItem in systemMessage" :key="systemItem.noticeId" class="tab-content">
+                    <div
+                        :class="['notice-title',systemItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                        @click="handleReadMessage(systemItem.noticeId)"
+                    >{{systemItem.noticeTitle}}</div>
+                    <div class="notice-time">{{systemItem.pushTime}}</div>
+                  </div>
+                  <div class="see-more" v-if="showMoreSystem" @click="handleSeeAllMessage">查看全部</div>
+                </el-tab-pane>
+              </el-tabs>
+              <!--<el-dropdown-item class="clearfix">-->
+                <!--<el-badge is-dot class="item">数据查询</el-badge>-->
+              <!--</el-dropdown-item>-->
+              <!--<el-dropdown-item class="clearfix">-->
+                <!--<el-badge is-dot class="item">数据查询1</el-badge>-->
+              <!--</el-dropdown-item>-->
+            </el-dropdown-menu>
+          </el-dropdown>
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
             <span class="el-dropdown-link">
               <i class="el-icon-cc-user"></i>
-              {{ $appState.user.name }}
+                 {{ $appState.user.name }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -124,8 +159,19 @@
                     "/devTool/clearCache":"clearCache",
                     "/webApiServers/index":"ipManage",
                     "/multiVersionCrowd/index":"multiVersionCrowd",
-                    "/manager/biList":"launchSettings"
-                }
+                    "/manager/biList":"launchSettings",
+                    "/manager/notice/index":"notice"
+                },
+                activeName: 'first',
+                updateMessage: [],
+                systemMessage: [],
+                messageTypeEnum: {
+                    'first': 1,
+                    'second': 2
+                },
+                unReadMessage: 0,
+                showMoreUpdate: false,
+                showMoreSystem: false
             };
         },
         computed: {
@@ -234,6 +280,45 @@
                 this.$router.push({
                     path: '/statisticsHomePage'
                 })
+            },
+            handleClick(tab) {
+                this.getNoticeMessages(this.messageTypeEnum[tab.name])
+            },
+            getNoticeMessages (type) {
+                const noticeType = type
+                this.$service.getNoticeHeaderList({noticeType}).then((data) => {
+                    this.unReadMessage = data['未读数量']
+                    let dataList = data['消息列表']
+                    if (type === 1) {
+                        if (dataList.length > 5) {
+                            this.showMoreUpdate = true
+                            // 只取前五条
+                            this.updateMessage = dataList.slice(0, 5)
+                        } else {
+                            this.updateMessage = dataList
+                        }
+                    }
+                    else {
+                        if (dataList.length > 5) {
+                            this.showMoreSystem = true
+                            this.systemMessage = dataList.slice(0, 5)
+                        } else {
+                            this.systemMessage = dataList
+                        }
+                    }
+                })
+            },
+            handleSeeAllMessage () {
+                this.$router.push({name: 'notice'})
+            },
+            handleReadMessage (noticeId) {
+                this.$router.push({
+                    name: 'notice',
+                    query: {noticeId: noticeId, mode: 'read'}
+                })
+            },
+            handleDropDownChange() {
+                this.getNoticeMessages(this.messageTypeEnum[this.activeName])
             }
         },
         created() {
@@ -242,6 +327,7 @@
                 this.breadcrumb = breadcrumb;
             });
             this.setMetaTitle()
+            this.getNoticeMessages(this.messageTypeEnum[this.activeName])
         },
         mounted() {
             window.addEventListener("beforeunload", this.saveTags);
@@ -329,9 +415,42 @@
       display none
   .user-info >>> .el-dropdown
     color #191414
+    margin-left 30px
   .el-icon-cc-iconset0225,.el-icon-cc-menu1,.el-icon-cc-team,.el-icon-cc-jiaose,.el-icon-cc-xitong
     font-size 21px
   .version
     color #ccc
     font-size 14px
+  .notice-title
+      width 300px
+      margin 5px 10px
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      cursor pointer
+  .notice-time
+    color #999
+    font-size 14px
+    margin 0 10px
+  .notice-dropdown >>> .el-tabs__item
+    width 160px
+    text-align center
+  .notice-dropdown >>> .red-dot-title
+    position relative
+    padding-left 12px
+    &:before
+      position absolute
+      width 8px
+      height 8px
+      border-radius 10px
+      content ""
+      background-color red
+      left 0
+      top 7px
+  .see-more
+      text-align center
+      color #999
+      font-size 14px
+      margin 15px 0
+      cursor pointer
 </style>

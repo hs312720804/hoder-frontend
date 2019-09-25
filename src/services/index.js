@@ -22,6 +22,7 @@ import * as statisticCrowd from "./statisticCrowd/crowdPolicy"
 import * as clearCache from "./dataManage/clearCache"
 import * as ipManage from "./dataManage/ipManage"
 import * as launchSetting from "./systemSetting/launch"
+import * as notice from './systemSetting/notice'
 const service = {
     state: {},
     fetch,
@@ -46,6 +47,7 @@ const service = {
     ...thirdInterface,
     ...clearCache,
     ...ipManage,
-    ...launchSetting
+    ...launchSetting,
+    ...notice
 }
 Vue.prototype.$service = utils.wrapService(service)
