@@ -7,7 +7,7 @@
                     {{readForm.noticeTitle}}
                 </div>
                 <div class="notice-time">时间：{{readForm.pushTime}}</div>
-                <div class="notice-content">{{readForm.content}}</div>
+                <textarea readonly class="notice-content" style="width: 100%;border:none;height: 300px;outline: none">{{readForm.content}}</textarea>
                 <el-button type="primary" @click="goBack">返回</el-button>
             </div>
         </template>
@@ -75,7 +75,10 @@
                 if (noticeId) {
                     this.addFormTitle = '编辑'
                     this.$service.noticeDetail({noticeId,mark}).then((data)=> {
-                        if (mode === 'read') {this.readForm = data}
+                        if (mode === 'read') {
+                            this.readForm = data
+                            this.$root.$emit('refresh-notifications')
+                        }
                         if (mode === 'edit') {this.addForm = data}
                     })
                 }else {

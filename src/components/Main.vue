@@ -54,7 +54,7 @@
         ></el-button>
         <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
-          <el-dropdown trigger="hover" @visible-change="handleDropDownChange">
+          <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
               <i class="el-icon-bell"></i>
             </el-badge>
@@ -317,9 +317,9 @@
                     query: {noticeId: noticeId, mode: 'read'}
                 })
             },
-            handleDropDownChange() {
-                this.getNoticeMessages(this.messageTypeEnum[this.activeName])
-            }
+            // handleDropDownChange() {
+            //     this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            // }
         },
         created() {
             this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
@@ -328,6 +328,9 @@
             });
             this.setMetaTitle()
             this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            this.$root.$on('refresh-notifications', () => {
+                this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            })
         },
         mounted() {
             window.addEventListener("beforeunload", this.saveTags);

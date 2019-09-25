@@ -11,7 +11,7 @@
             </div>
             <Table
                     :props="table.props"
-                    :header="tableHeader"
+                    :header="table.header"
                     :data="table.data"
                     :selected="table.selected"
                     :selection-type="table.selectionType"
@@ -93,11 +93,31 @@
                             label: '操作',
                             fixed: 'right',
                             width: '200',
-                            render: utils.component.createOperationRender(this, {
-                                handleRead: "详情",
-                                handleEdit: "编辑",
-                                handleDelete: "删除"
-                            })
+                            render: (h, params) => {
+                                const createBtn = (label, method, permission) => {
+                                    return h('el-button', {
+                                        directives: [
+                                            {
+                                                name: 'permission',
+                                                value: permission
+                                            }
+                                        ],
+                                        props: {
+                                            type: 'text'
+                                        },
+                                        on: {
+                                            click: () => {
+                                                this[method](params)
+                                            }
+                                        }
+                                    }, label)
+                                }
+                                return h('div', null, [
+                                    createBtn('详情', 'handleRead', 'sysSetup:notice:detail'),
+                                    createBtn('编辑', 'handleEdit', 'sysSetup:notice:edit'),
+                                    createBtn('删除', 'handleDelete', 'sysSetup:notice:del')
+                                ])
+                            }
                         }
                     ],
                     data: [],
@@ -106,13 +126,13 @@
                 }
             }
         },
-        computed: {
-            tableHeader () {
-                const roleName = this.$appState.user.roleName
-                if (roleName !== '超级管理员') {return this.table.header.slice(0, -1)}
-                else {return this.table.header}
-            }
-        },
+        // computed: {
+        //     tableHeader () {
+        //         const roleName = this.$appState.user.roleName
+        //         if (roleName !== '超级管理员') {return this.table.header.slice(0, -1)}
+        //         else {return this.table.header}
+        //     }
+        // },
         methods: {
             handleRead ({row}) {
                 this.$emit('open-add-page', row.noticeId, 'read')
