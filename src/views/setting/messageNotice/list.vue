@@ -108,8 +108,8 @@
         },
         computed: {
             tableHeader () {
-                debugger
-                if ('sysSetup:notice:add' === false) {return this.table.header.slice(0, -1)}
+                const roleName = this.$appState.user.roleName
+                if (roleName !== '超级管理员') {return this.table.header.slice(0, -1)}
                 else {return this.table.header}
             }
         },
