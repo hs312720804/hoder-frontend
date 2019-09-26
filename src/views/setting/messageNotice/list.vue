@@ -25,7 +25,7 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table, utils} from 'admin-toolkit'
+    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "messageNotice",
         components: {

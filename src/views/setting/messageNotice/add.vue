@@ -7,13 +7,13 @@
                     {{readForm.noticeTitle}}
                 </div>
                 <div class="notice-time">时间：{{readForm.pushTime}}</div>
-                <textarea readonly class="notice-content" style="width: 100%;border:none;height: 300px;outline: none">{{readForm.content}}</textarea>
+                <textarea readonly class="notice-content" style="width: 100%;border:none;height: 300px;outline: none" v-model="readForm.content"></textarea>
                 <el-button type="primary" @click="goBack">返回</el-button>
             </div>
         </template>
         <template v-else>
             <div class="header-title">{{addFormTitle}}</div>
-            <el-form :model="addForm" label-width="120px" class="add-form">
+            <el-form :model="addForm" :rules="rules" ref="ruleForm" label-width="120px" class="add-form">
                 <el-form-item label="标题" prop="noticeTitle">
                     <el-input v-model="addForm.noticeTitle"></el-input>
                 </el-form-item>
@@ -27,7 +27,7 @@
                     <el-input type="textarea" :rows="6" v-model="addForm.content"></el-input>
                 </el-form-item>
                 <el-form-item>
-                    <el-button type="primary" @click="handleSubmit">确定</el-button>
+                    <el-button type="primary" @click="handleSubmit('ruleForm')">确定</el-button>
                     <el-button @click="goBack">返回</el-button>
                 </el-form-item>
             </el-form>
@@ -59,6 +59,17 @@
                     noticeType: 1,
                     content: '',
                     noticeId: undefined
+                },
+                rules: {
+                    noticeTitle: [
+                        { required: true, message: '请输入标题',trigger: 'blur' }
+                    ],
+                    noticeType: [
+                        { required: true, message: '请选择消息类型',trigger: 'blur' }
+                    ],
+                    content: [
+                        { required: true, message: '请输入消息内容',trigger: 'blur' }
+                    ]
                 }
             }
         },
@@ -88,19 +99,25 @@
             goBack () {
                 this.$emit('open-list-page')
             },
-            handleSubmit () {
-                if (!this.editId) {
-                    // 新增保存
-                    this.$service.noticeAdd(this.addForm,'保存成功').then(() => {
-                        this.$emit('open-list-page')
-                    })
-                } else {
-                    // 编辑保存
-                    this.addForm.noticeId = this.editId
-                    this.$service.noticeEdit(this.addForm,'修改成功').then(() => {
-                        this.$emit('open-list-page')
-                    })
-                }
+            handleSubmit (formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        if (!this.editId) {
+                            // 新增保存
+                            this.$service.noticeAdd(this.addForm,'保存成功').then(() => {
+                                this.$emit('open-list-page')
+                            })
+                        } else {
+                            // 编辑保存
+                            this.addForm.noticeId = this.editId
+                            this.$service.noticeEdit(this.addForm,'修改成功').then(() => {
+                                this.$emit('open-list-page')
+                            })
+                        }
+                    } else {
+                        return false
+                    }
+                })
             }
         },
         created () {
