@@ -287,8 +287,13 @@
             getNoticeMessages (type) {
                 const noticeType = type
                 this.$service.getNoticeHeaderList({noticeType}).then((data) => {
+                    let interfaceData = data['消息列表']
+                    let statusData = data['消息状态']
                     this.unReadMessage = data['未读数量']
-                    let dataList = data['消息列表']
+                    interfaceData.forEach((item,index)=> {
+                        item.noticeStatus = statusData[index]
+                    })
+                    let dataList = interfaceData
                     if (type === 1) {
                         if (dataList.length > 5) {
                             this.showMoreUpdate = true
