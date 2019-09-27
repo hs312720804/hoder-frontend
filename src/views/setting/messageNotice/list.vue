@@ -217,8 +217,13 @@
             fetchData () {
                 const filter = this.parseFilter()
                 this.$service.noticeList(filter).then((data) => {
-                    this.table.data = data.list
-                    this.pagination.total = data.total
+                    let interfaceData = data.pageInfo.list
+                    const statusData = data.noticeUserStatus
+                    interfaceData.forEach((item,index)=> {
+                        item.noticeStatus = statusData[index]
+                    })
+                    this.table.data = interfaceData
+                    this.pagination.total = data.pageInfo.total
                 })
             }
         },
