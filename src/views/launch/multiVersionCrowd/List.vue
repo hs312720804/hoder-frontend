@@ -46,8 +46,15 @@
         <!-- talbe -->
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column type="index" width="50"></el-table-column>
-            <el-table-column prop="launchCrowdId" label="投放ID" width="50"></el-table-column>
-            <el-table-column prop="launchName" label="投放名称" width="100"></el-table-column>
+            <el-table-column prop="launchCrowdId" label="投放ID" width="60"></el-table-column>
+            <el-table-column prop="launchName" label="投放名称" width="100">
+                <template scope="scope">
+                    <!-- 后期对自定义人群实现AB Test再切换到下列代码 -->
+                    <!--<el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>-->
+                    <el-button type="text" v-if="scope.row.isFxFullSql == 0 && scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
+                    <span v-else>{{scope.row.launchName}}</span>
+                </template>
+            </el-table-column>
             <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column prop="status" label="人群状态" width="70">
@@ -111,7 +118,7 @@
                                 </el-dropdown-item>
                                 <!--<el-dropdown-item-->
                                         <!--:command="['divide',scope.row]"-->
-                                        <!--v-if="scope.row.history.status==1"-->
+                                        <!--v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false"-->
                                         <!--divided-->
                                 <!--&gt;A/B test划分-->
                                 <!--</el-dropdown-item>-->
@@ -192,10 +199,11 @@
                     <div>第二步：设置人群占比</div>
                     <el-form-item label="各人群占比：">
                         <div class="block" v-for="(item,index) in copiesItem">
-                            <span>人群_{{alphaData[index]}}</span>
+                            <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                             <el-slider v-model="percent[index]" :key="item"></el-slider>
                         </div>
                     </el-form-item>
+                    <el-form-item label="比例总和：">{{percentTotal}}</el-form-item>
                     <div>
                         <el-button type="primary" @click="step = 1">上一步</el-button>
                         <el-button type="primary" @click="secondStep">下一步</el-button>
@@ -203,20 +211,44 @@
                 </div>
                 <div class="first-step" v-show="step === 3">
                     <div>第三步：勾选计算的类型</div>
-                    <el-form-item label="各人群占比：">
+                    <el-form-item label="">
                         <el-checkbox-group v-model="divideForm.calType" aria-required="true">
-                            <el-checkbox v-for="(item,index) in divideEstimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+                            <el-checkbox v-for="(item,index) in divideEstimateItems" :label="parseInt(item.value)" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                     <div>
                         <el-button type="primary" @click="step = 2">上一步</el-button>
-                        <el-button type="primary" @click="finish">完成</el-button>
+                        <el-button type="primary" @click="finish">确定</el-button>
                     </div>
                 </div>
             </el-form>
         </el-dialog>
+        <!-- 计算失败弹窗 -->
         <el-dialog :visible.sync="showCountFailDialog" title="计算失败">
             <div class="count-fail-text">计算失败，原因可能是sql出错或者大数据计算失败，若想再次计算，请重新点击【投放】按钮</div>
+        </el-dialog>
+        <!-- 自定义人群 划分详情弹窗 -->
+        <el-dialog :visible.sync="showDivideDetailDialog" title="划分详情">
+            <el-table :data="DivideTableData" style="width: 100%;" stripe border v-if="dialogType">
+                <el-table-column prop="id" label="投放子ID"></el-table-column>
+                <el-table-column prop="launchName" label="人群名称"></el-table-column>
+                <el-table-column prop="ratio" label="占比">
+                    <template scope="scope">
+                        {{scope.row.ratio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column prop="count" label="数量"></el-table-column>
+            </el-table>
+            <el-table :data="DivideTableData" style="width: 100%;" stripe border v-else>
+                <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
+                <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+                <el-table-column prop="ratio" label="占比">
+                    <template scope="scope">
+                        {{scope.row.ratio}}%
+                    </template>
+                </el-table-column>
+                <el-table-column prop="count" label="数量"></el-table-column>
+            </el-table>
         </el-dialog>
     </div>
 </template>
@@ -254,24 +286,44 @@
                 launchTitle: '',
                 showDivide: false,
                 parts: [2,3,4,5,6,7,8,9,10],
-                copies: 3,
+                copies: 2,
                 step: 1,
-                divideForm: {
-                    launchCrowdId: undefined,
-                    pct: [],
-                    calType: []
-                },
+                // divideForm: {
+                //     launchCrowdId: undefined,
+                //     pct: [],
+                //     calType: []
+                // },
+                divideForm: this.genDefaultDivideForm(),
                 copiesItem: [],
                 percent: [],
                 alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
                 divideEstimateItems: [],
-                showCountFailDialog: false
+                showCountFailDialog: false,
+                percentTotal: 0,
+                showDivideDetailDialog: false,
+                DivideTableData: [],
+                dialogType: false
             };
         },
         created() {
             this.loadData();
         },
+        watch: {
+            percent(val) {
+                this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
+                    return prev + cur
+                })
+            }
+        },
         methods: {
+            genDefaultDivideForm (preset) {
+                return {
+                    launchCrowdId: undefined,
+                    pct: [],
+                    calType: [],
+                    ...preset
+                }
+            },
             callback() {
                 this.loadData();
             },
@@ -395,6 +447,14 @@
                     .catch(() => {
                     })
             },
+            // 对象转成数组
+            objectToArray (obj) {
+                let arr = []
+                for (let i in obj) {
+                    arr.push({ value: i, label: obj[i] })
+                }
+                return arr
+            },
             handleCommandOpreate(scope) {
                 const type = scope[0]
                 const params = scope[1]
@@ -412,8 +472,12 @@
             },
             divideAB (row) {
                 this.showDivide = true
-                console.log(row)
-                this.divideForm.launchCrowdId = row.launchCrowdId
+                this.step = 1
+                // 重置AB TEST 数据
+                this.copies = 2
+                const divideForm = this.genDefaultDivideForm()
+                divideForm.launchCrowdId = row.launchCrowdId
+                this.divideForm = divideForm
             },
             firstStep () {
                 this.step = 2
@@ -424,22 +488,26 @@
                     arr.push(i)
                     percentArray.push(parseInt(100/copies))
                 }
+                let total = percentArray.reduce((prev ,cur) => {
+                    return prev + cur
+                })
+                // 默认百分比设置，总和必须为100%，不能被整除的，都加在最后一个上
+                if (100%copies !== 0) {
+                    const lastPercent = 100 - total
+                    percentArray[copies-1] = percentArray[copies-1] + lastPercent
+                }
                 this.copiesItem = arr
                 this.percent = percentArray
             },
             secondStep () {
-                const arr = this.percent
-                let total = arr.reduce((prev ,cur ,index ,array) => {
-                    return prev + cur
-                })
-                if (total > 100) {
-                    this.$message.error('所有比例总和不能超过100%')
+                if (this.percentTotal !== 100) {
+                    this.$message.error('所有比例总和必须等于100%')
                     return
                 }else {
                     this.step = 3
                     this.divideForm.pct = this.percent
                     this.$service.getEstimateType().then((data) => {
-                        this.divideEstimateItems = data
+                        this.divideEstimateItems = this.objectToArray(data)
                     })
                 }
             },
@@ -447,17 +515,29 @@
                 const model = this.divideForm.launchCrowdId
                 // const divideForm = JSON.stringify(this.divideForm)
                 const divideForm = this.divideForm
-                console.log(divideForm)
                 if (divideForm.calType.length === 0) {
                     this.$message.error('请至少勾选一个计算的类型进行投放')
                     return
                 }
-                this.$service.ABTestAdd({model: model,data: divideForm},"新增A/B test划分成功").then(() => {
+                let formData = {
+                    pct: divideForm.pct,
+                    calType: divideForm.calType
+                }
+                this.$service.ABTestAdd({model: model,data: formData},"新增A/B test划分成功").then(() => {
+                    this.showDivide = false
                     this.callback()
                 })
             },
             handleCountFail () {
                 this.showCountFailDialog = true
+            },
+            showABTestDetail (row) {
+                const launchCrowdId = row.launchCrowdId
+                this.$service.getABTestDetail(launchCrowdId).then((data) => {
+                    this.showDivideDetailDialog = true
+                    this.dialogType = data.IsFxFullSql === 1
+                    this.DivideTableData = data.abTestRatio
+                })
             }
         }
     }
@@ -485,4 +565,7 @@
         /*text-align center*/
     .count-fail-text
         color red
+    .show-percent
+        color red
+        margin-left 20px
 </style>

@@ -258,3 +258,10 @@ export function ABTestAdd({model,data}) {
         isJSON: true
     })
 }
+// 人群圈定自定义人群ABTest划分查看划分详情
+export function getABTestDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/aBTestPartition/'+params,
+    })
+}
