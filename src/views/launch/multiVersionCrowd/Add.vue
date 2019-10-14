@@ -92,6 +92,16 @@
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
+                        <!--<el-form-item label="人群划分份数" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">-->
+                            <!--<el-input disabled v-model="crowdDefineForm.launchCrowdId"></el-input>-->
+                        <!--</el-form-item>-->
+                        <!--<el-form-item label="各人群占比" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">-->
+                            <!--<div class="block" v-for="(item,index) in copiesItem">-->
+                                <!--<span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>-->
+                                <!--<el-slider v-model="percent[index]" :key="item"></el-slider>-->
+                            <!--</div>-->
+                        <!--</el-form-item>-->
+                        <!--<el-form-item label="比例总和：" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">{{percentTotal}}</el-form-item>-->
                     </el-form>
                 </el-col>
             </el-row>
@@ -129,11 +139,18 @@
                 <el-form-item label="备注" prop="remark">
                     <el-input size="small" v-model="crowdForm.remark"></el-input>
                 </el-form-item>
+                <el-form-item label="是否做abTest">
+                    <el-radio-group v-model="crowdForm.abTest">
+                        <el-radio :label="false">否</el-radio>
+                        <el-radio :label="true">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
                 <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
                     <el-select
                             filterable
                             v-model="crowdForm.policyIds"
-                            multiple
+                            :key="crowdForm.abTest"
+                            :multiple="!crowdForm.abTest"
                             placeholder="请选择策略"
                             @change="getCrowd"
                             @remove-tag="removeTag"
@@ -149,17 +166,32 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="选择人群" prop="policyCrowdIds">
-                    <el-form-item v-for="v in crowdData" :label="v.policyName" :key="v.policyId">
-                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
-                            <el-checkbox
-                                    v-for="item in v.childs"
-                                    :label="v.policyId+'_'+item.crowdId"
-                                    :key="item.crowdId+''"
-                                    :disabled="item.canLaunch === false"
-                            >{{item.crowdName}}
-                            </el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
+                    <div v-if="!crowdForm.abTest">
+                        <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
+                                <el-checkbox
+                                        v-for="item in v.childs"
+                                        :label="v.policyId+'_'+item.crowdId"
+                                        :key="item.crowdId+''"
+                                        :disabled="item.canLaunch === false"
+                                >{{item.crowdName}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
+                    <div v-else>
+                        <el-form-item :label="pid">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
+                                <el-checkbox
+                                        v-for="item in crowdData"
+                                        :label="item.policyId+'_'+item.crowdId"
+                                        :key="item.crowdId+''"
+                                        :disabled="item.canLaunch === false"
+                                >{{item.crowdName}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
                 </el-form-item>
                 <el-form-item label="数据有效期" prop="expiryDay">
                     <el-select
@@ -211,12 +243,13 @@
                 title: "",
                 // 新增界面数据
                 crowdForm: {
+                    abTest: false,
                     launchCrowdId: "", //投放ID
                     launchName: "", //投放名称
                     biIds: "", //投放平台ID
                     remark: "",
                     //      dataSource: 2,
-                    policyIds: "",
+                    policyIds: [],
                     policyCrowdIds: [],
                     expiryDay: 7,
                     autoVersion: 0,
@@ -279,10 +312,20 @@
                 effectTimeList: [],
                 estimateItems: [],
                 tagsList: [],
-                formatTimeSet: undefined
+                formatTimeSet: undefined,
+                pid: null
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus"],
+        watch: {
+            'crowdForm.abTest': function (val, oldVal) {
+                if (oldVal) {
+                    this.crowdForm.policyIds = val ? '' : []
+                    this.pid = null
+                    this.crowdData = null
+                }
+            }
+        },
         created() {
             this.getAddList(this.model)
             if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
@@ -290,7 +333,8 @@
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
                     if (this.model == 1) {
-                            const biIds = this.distinct(data.launchCrowdBiIds,[])
+                            // const biIds = this.distinct(data.launchCrowdBiIds,[])
+                            const biIds = data.launchCrowdBiIds
                             this.crowdDefineForm = {
                                 launchCrowdId: row.launchCrowdId,
                                 launchName: row.launchName,
@@ -316,9 +360,10 @@
                         this.crowdForm.expiryDay = row.expiryDay
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
+                        this.crowdForm.abTest = row.abTest
                         // this.status = row.status
                         this.status = this.editStatus
-                        this.crowdForm.policyIds = row.policyIds.split(",")
+                        this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                         this.getCrowd()
                         data.respcl.forEach(element => {
                             element.childs.forEach(v => {
@@ -343,10 +388,22 @@
                 })
             },
             getCrowd () {
+                let policyId = null
+                if (this.crowdForm.abTest) {
+                    policyId = this.crowdForm.policyIds
+                } else {
+                    policyId = this.crowdForm.policyIds.join(",")
+                }
                 this.$service
-                    .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
+                    .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
                     .then(data => {
-                        this.crowdData = data
+                        if(this.crowdForm.abTest) {
+                            const pid = Object.keys(data[0].childs)[0]
+                            this.crowdData = data[0].childs[pid]
+                            this.pid = pid
+                        }else {
+                            this.crowdData = data
+                        }
                     })
                     .catch(err => {})
             },
@@ -362,7 +419,7 @@
                         let crowdForm = JSON.stringify(this.crowdForm)
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
-                        crowdForm.policyIds = crowdForm.policyIds.join(",")
+                        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
                         crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
                             return v.split("_")[1]
                         }).join(",")
