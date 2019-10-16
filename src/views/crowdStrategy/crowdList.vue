@@ -109,6 +109,9 @@
                 </div>
               </div>
             </el-form-item>
+            <el-form-item label="人群状态">
+                <crowdStatusItem :crowd-id="props.row.crowdId" :key="props.row.crowdId"></crowdStatusItem>
+            </el-form-item>
           </el-form>
         </template>
       </el-table-column>
@@ -623,10 +626,12 @@
 <script>
 import { Table} from 'admin-toolkit'
 import priorityEdit from '../../components/PriorityEdit'
+import crowdStatusItem from './CrowdStatusItem'
 export default {
   components: {
       Table,
-      priorityEdit
+      priorityEdit,
+      crowdStatusItem
   },
   data() {
     return {

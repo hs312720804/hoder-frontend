@@ -351,4 +351,12 @@ export function crowdABTestEditSave({model,data}) {
         isJSON: true
     })
 }
+// 人群状态追踪
+export function getCrowdStatus(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/crowdStatusTrack',
+        params
+    })
+}
 
