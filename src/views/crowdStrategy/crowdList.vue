@@ -1644,7 +1644,7 @@ export default {
               for (let i = 0; i < crowdLength; i++) {
                   item = {
                       crowdId: i === 0 ? form.crowdId : undefined,
-                      name: form.crowdName + '_' + this.alphaData[i] + '人群',
+                      name: this.alphaData[i] +'_' + '人群'+form.crowdName,
                       pct: form.pct[i],
                       // priority: i + 1
                   }
