@@ -9,6 +9,7 @@
   },
   "dependencies": {
     "@stateform/element": "^0.1.14",
+    "@tinymce/tinymce-vue": "^2.1.0",
     "@william17/vue-app-state": "^0.1.1",
     "admin-toolkit": "git+ssh://git@gitlab.skysri.com:FrontEnd/admin-toolkit.git",
     "async-validate": "^1.0.1",
