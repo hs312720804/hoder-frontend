@@ -180,10 +180,10 @@
                         </el-form-item>
                     </div>
                     <div v-else>
-                        <el-form-item :label="pid">
+                        <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
                                 <el-checkbox
-                                        v-for="item in crowdData"
+                                        v-for="item in v.childs"
                                         :label="item.policyId+'_'+item.crowdId"
                                         :key="item.crowdId+''"
                                         :disabled="item.canLaunch === false"
@@ -308,21 +308,27 @@
                     ]
                 },
                 filterText: "",
-                crowdData: null,
+                crowdData: [],
                 effectTimeList: [],
                 estimateItems: [],
                 tagsList: [],
                 formatTimeSet: undefined,
-                pid: null
+                firstTimeLoad: false
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus"],
         watch: {
             'crowdForm.abTest': function (val, oldVal) {
-                if (oldVal) {
+                // 根第一次加载的时候不判断，当值变的时候再触发
+                if (oldVal && this.firstTimeLoad) {
                     this.crowdForm.policyIds = val ? '' : []
-                    this.pid = null
-                    this.crowdData = null
+                    this.crowdData = []
+                    this.firstTimeLoad = false
+                }
+                if (val && !this.firstTimeLoad) {
+                    this.crowdData = []
+                    this.crowdForm.policyIds = val ? '' : []
+                    this.firstTimeLoad = true
                 }
             }
         },
@@ -364,6 +370,7 @@
                         // this.status = row.status
                         this.status = this.editStatus
                         this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
+                        console.log(this.crowdForm.policyIds)
                         this.getCrowd()
                         data.respcl.forEach(element => {
                             element.childs.forEach(v => {
@@ -371,6 +378,7 @@
                                     this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
                             })
                         })
+                        this.firstTimeLoad = true
                     }
                 })
             } else {
@@ -398,9 +406,12 @@
                     .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
                     .then(data => {
                         if(this.crowdForm.abTest) {
-                            const pid = Object.keys(data[0].childs)[0]
-                            this.crowdData = data[0].childs[pid]
-                            this.pid = pid
+                            let newDataForm = []
+                            const pid = Object.keys(data[0].childs)
+                            pid.forEach((item) => {
+                                newDataForm.push({Pid: item, childs: data[0].childs[item]})
+                            })
+                            this.crowdData = newDataForm
                         }else {
                             this.crowdData = data
                         }
