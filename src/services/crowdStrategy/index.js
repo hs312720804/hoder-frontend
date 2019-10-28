@@ -359,4 +359,11 @@ export function getCrowdStatus(params) {
         params
     })
 }
+// 人群列表查看自人群
+export function getAbChilds(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/showAbChilds/'+params
+    })
+}
 
