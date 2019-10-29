@@ -149,8 +149,8 @@
       </el-table-column>
       <el-table-column prop="abMainCrowd" label="是否AB测试" width="100px">
           <template scope="scope">
-              <span v-if="scope.row.abMainCrowd === 1">已划分</span>
-              <span v-if="scope.row.abMainCrowd === 0">未划分</span>
+              <span v-if="scope.row.abMainCrowd === 1">是</span>
+              <span v-if="scope.row.abMainCrowd === 0">否</span>
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="80">
