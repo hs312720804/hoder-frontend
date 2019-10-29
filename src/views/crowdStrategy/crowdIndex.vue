@@ -9,13 +9,13 @@
       @editABCrowd="editABCrowd"
     ></crowd-list>
     <crowd-add
-      v-if="!isShowCrowdList && !isAbTest && mode !== 'addABTest'"
+      v-if="!isShowCrowdList && !isAbTest && mode === ''"
       :crowdId="crowdId"
       :policyId="selectRow.policyId"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </crowd-add>
-    <div v-if="!isShowCrowdList && isAbTest && mode !== 'addABTest'">
+    <div v-if="!isShowCrowdList && isAbTest && mode === 'editABTest'">
       <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
           <crowd-add
@@ -60,11 +60,13 @@ export default {
   methods: {
     goBackFirstLayer() {
       //回到第一层页面，即策略列表页
-      this.$emit("goBack");
+      this.$emit("goBack")
     },
     addCrowd(crowdId) {
       //编辑添加
-      this.isShowCrowdList = false;
+      this.mode = ''
+      this.isAbTest = false
+      this.isShowCrowdList = false
       if (crowdId) {
         this.crowdId=crowdId
       }else{
@@ -73,7 +75,7 @@ export default {
     },
     goBackCrowdListPage(isLoadData) {
       this.isShowCrowdList = true;
-      if (isLoadData) this.$refs.list.loadData();
+      if (isLoadData) this.$refs.list.loadData()
     },
     // 编辑abtest人群
      editABCrowd(row,mode) {

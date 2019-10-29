@@ -1331,7 +1331,7 @@ export default {
           switch (type) {
               case 'edit':
                   if (params.abMainCrowd === 1) {
-                      this.divideAB(params)
+                      this.divideAB(params,'editABTest')
                   } else {
                       this.edit(params)
                   }
@@ -1749,21 +1749,6 @@ fieldset>div
     margin auto
 .button_underline
     text-decoration underline
-.show-percent
-    color red
-    margin-left 20px
-.divide-header
-    background #0086b3
-    color #fff
-    padding 15px
-    font-size 16px
-    margin-bottom 20px
-.priority-outer
-    display flex
-    position relative
-    align-items center
-    justify-content space-around
-.fixed-button
 .text-over
     width 16px
     height 16px

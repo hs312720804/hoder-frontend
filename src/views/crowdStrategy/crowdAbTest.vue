@@ -1,12 +1,15 @@
 <template>
     <div>
-        <el-button @click="cancelAdd">返回</el-button>
-        <el-row>
-            <el-col :span="24">
-                <div class="title" v-if="mode === 'editABTest'">编辑AB test子人群</div>
-                <div class="title" v-else>新增AB test子人群</div>
-            </el-col>
-        </el-row>
+        <div class="crowd-ab-title">
+            <div class="title" v-if="mode === 'editABTest'"></div>
+            <div class="title" v-else>新增AB test子人群</div>
+            <div @click="cancelAdd" class="el-icon-close icon-hover"></div>
+        </div>
+        <!--<el-row>-->
+            <!--<el-col :span="24">-->
+                <!---->
+            <!--</el-col>-->
+        <!--</el-row>-->
         <el-form :model="divideForm" :rules="divideFormRules" ref="divideForm" label-width="120px">
             <div class="first-step" v-show="step === 1">
                 <div class="divide-header">第一步：填写人群份数</div>
@@ -235,6 +238,20 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+    .show-percent
+        color red
+        margin-left 20px
+    .divide-header
+        background #0086b3
+        color #fff
+        padding 15px
+        font-size 16px
+        margin-bottom 20px
+    .icon-hover
+        cursor pointer
+    .crowd-ab-title
+        display flex
+        justify-content space-between
+        margin-bottom 20px
 </style>
