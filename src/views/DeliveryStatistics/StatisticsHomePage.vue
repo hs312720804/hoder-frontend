@@ -512,7 +512,8 @@
                         return {value: key.count, name: key.name,seq: index+1,percent:key.percent}
                     })
                     const newProvinceData = data.province.date.map((key) => {
-                        return {value: parseFloat(key.percent.replace("%","")), name: key.name}
+                        // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
+                        return {value: key.count, name: key.name}
                     })
                     console.log(newProvinceData)
                     this.setMapEcharts('main','省份分布',newProvinceData)
@@ -534,7 +535,7 @@
                     },
                     tooltip : {
                         trigger: 'item',
-                        formatter: '{b}<br/>({c}%)'
+                        formatter: '{b}<br/>{c}'
                     },
                     // legend: {
                     //     orient: 'vertical',

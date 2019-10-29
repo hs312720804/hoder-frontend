@@ -33,7 +33,7 @@
             <div class="first-step" v-show="step === 2">
                 <div class="divide-header">第二步：设置人群占比</div>
                 <el-form-item label="各人群占比：">
-                    <div class="block" v-for="(item,index) in copiesItem">
+                    <div class="block" v-for="(item,index) in copiesItem" :key="index">
                         <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                         <el-slider v-model="percent[index]" :key="item"></el-slider>
                     </div>
@@ -99,7 +99,7 @@
         },
         watch: {
             percent(val) {
-                this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
+                this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
                 })
             }

@@ -366,4 +366,12 @@ export function getAbChilds(params) {
         url: 'api/crowd/showAbChilds/'+params
     })
 }
+// 人群提交历史数据
+export function submitPolicyHistoryData(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/crowd/submitPolicyCrowd',
+        data
+    })
+}
 
