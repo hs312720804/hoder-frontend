@@ -265,3 +265,11 @@ export function getABTestDetail(params) {
         url: '/api/multiVersionCrowd/aBTestPartition/'+params,
     })
 }
+// 人群圈定提交历史数据
+export function getHistoryData(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/multiVersionCrowd/submitMultiVersionCrowd',
+        data
+    })
+}

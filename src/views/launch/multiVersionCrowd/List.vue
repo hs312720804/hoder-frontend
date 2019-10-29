@@ -122,6 +122,12 @@
                                         <!--divided-->
                                 <!--&gt;A/B test划分-->
                                 <!--</el-dropdown-item>-->
+                                <!--<el-dropdown-item-->
+                                <!--:command="['commitHistory',scope.row]"-->
+                                <!--v-if="scope.row.isFxFullSql !== 1"-->
+                                <!--divided-->
+                                <!--&gt;提交历史数据-->
+                                <!--</el-dropdown-item>-->
                             </el-dropdown-menu>
                         </el-dropdown>
                         <!--<el-button-->
@@ -468,6 +474,9 @@
                     case 'divide':
                         this.divideAB(params)
                         break
+                    case 'commitHistory':
+                        this.handleCommitHistory(params)
+                        break
                 }
             },
             divideAB (row) {
@@ -538,6 +547,9 @@
                     this.dialogType = data.IsFxFullSql === 1
                     this.DivideTableData = data.abTestRatio
                 })
+            },
+            handleCommitHistory (row) {
+
             }
         }
     }
