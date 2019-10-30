@@ -202,20 +202,12 @@
                 v-if="scope.row.abMainCrowd === 0"
                 >A/B test划分
                 </el-dropdown-item>
+                <el-dropdown-item
+                        :command="['commitHistory',scope.row]"
+                >提交历史数据
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <!--<el-button-->
-              <!--size="small"-->
-              <!--type="primary"-->
-              <!--v-permission="'hoder:crowd:edit'"-->
-              <!--@click="edit(scope.row)"-->
-            <!--&gt编辑</el-button>-->
-            <!--<el-button-->
-              <!--size="small"-->
-              <!--type="info"-->
-              <!--v-permission="'hoder:crowd:del'"-->
-              <!--@click="del(scope.row)"-->
-            <!--&gt删除</el-button>-->
             <el-button
               size="small"
               type="warning"
@@ -619,17 +611,25 @@
               <el-table-column prop="count" label="数量"></el-table-column>
           </el-table>
       </el-dialog>
+      <commit-history-dialog
+              :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
+              :crowdId="currentCrowdId"
+              @closeDialog="setShowCommitHistoryDialog = false"
+              @submit="handleSubmitHistory"
+      ></commit-history-dialog>
   </div>
 </template>
 <script>
 import { Table} from 'admin-toolkit'
 import priorityEdit from '../../components/PriorityEdit'
 import crowdStatusItem from './CrowdStatusItem'
+import CommitHistoryDialog from '@/components/CommitHistory'
 export default {
   components: {
       Table,
       priorityEdit,
-      crowdStatusItem
+      crowdStatusItem,
+      CommitHistoryDialog
   },
   data() {
     return {
@@ -746,31 +746,10 @@ export default {
                 label: '下架'
             }
         ],
-        // showDivide: false,
-        // parts: [2,3,4,5,6,7,8,9,10],
-        // copies: 3,
-        // step: 1,
-        // divideForm: this.genDefaultDivideForm(),
-        // divideFormRules: {
-        //     validityTime: [
-        //         {type: 'array', required: true, message: '请选择实验有效期', trigger: 'blur'}
-        //     ]
-        // },
-        // copiesItem: [],
-        // percent: [],
-        // alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
         showDivideDetail: false,
-        // showDivideEdit: false,
-        // crowdEditDivideForm: {
-        //   currentCrowdId: undefined,
-        //   id: [],
-        //   name: [],
-        //   pct: [],
-        //   priority: [],
-        //   crowdId: []
-        // },
-        // percentTotal: 0,
-        DivideTableData: []
+        DivideTableData: [],
+        setShowCommitHistoryDialog: false,
+        currentCrowdId: undefined
     }
   },
   props: ["selectRow"],
@@ -1348,6 +1327,9 @@ export default {
               case 'divide':
                   this.divideAB(params,'addABTest')
                   break
+              case 'commitHistory':
+                  this.handleCommitHistory(params)
+                  break
           }
       },
       tableRowClassName({row}) {
@@ -1479,135 +1461,28 @@ export default {
         })
       },
       // 人群画像估算---结束
-      // // AB test划分
-      // divideAB (row) {
-      //     this.showDivide = true
-      //     this.step = 1
-      //     this.showDivideEdit = false
-      //     const divideForm = this.genDefaultDivideForm()
-      //     divideForm.crowdId = row.crowdId
-      //     divideForm.crowdName = row.crowdName
-      //     if (row.abMainCrowd === 1) {
-      //         this.showDivideEdit = true
-      //         this.$service.crowdABTestEdit(row.crowdId).then(data => {
-      //             const crowd = data.crowds
-      //             this.copies = crowd.length
-      //             const percent = data.ratio
-      //             let [pctArr, names, ids, pcts, priorities, crowdIds] = [[],[],[],[],[],[]]
-      //             for (let i=0;i<percent.length;i++) {
-      //                 pctArr.push(percent[i].ratio)
-      //                 pcts.push(percent[i].ratio)
-      //                 ids.push(percent[i].id)
-      //                 for (let j=0;j<crowd.length;j++) {
-      //                     if(percent[i].crowdId === crowd[j].crowdId) {
-      //                         names.push(crowd[j].crowdName)
-      //                         priorities.push(crowd[j].priority)
-      //                         crowdIds.push(crowd[j].crowdId)
-      //                     }
-      //                 }
-      //
-      //             }
-      //             this.percent = pctArr
-      //             this.crowdEditDivideForm = {
-      //                 currentCrowdId: row.crowdId,
-      //                 id: ids,
-      //                 name: names,
-      //                 pct: pcts,
-      //                 priority: priorities,
-      //                 crowdId: crowdIds
-      //             }
-      //         })
-      //         divideForm.crowdName = row.crowdName
-      //         divideForm.priority = row.priority
-      //         // divideForm.remark = row.remark
-      //
-      //     }
-      //     this.divideForm = divideForm
-      // },
-      // firstStep () {
-      //     this.step = 2
-      //     const copies = this.copies
-      //     let arr = []
-      //     let percentArray = []
-      //     for (let i = 0; i < copies; i++) {
-      //         arr.push(i)
-      //         percentArray.push(parseInt(100 / copies))
-      //     }
-      //     this.copiesItem = arr
-      //     if (!this.showDivideEdit) {
-      //         this.percent = percentArray
-      //     }
-      // },
-      // secondStep () {
-      //     let total = this.percentTotal
-      //     if (total > 100) {
-      //         this.$message.error('所有比例总和不能超过100%')
-      //         return
-      //     }else {
-      //         this.step = 3
-      //         this.divideForm.pct = this.percent
-      //     }
-      // },
-      // finish (formName) {
-      //     const form = this.divideForm
-      //     const crowdLength = form.pct.length
-      //     let crowdData = []
-      //     let item = {}
-      //     // AB TEST 新增保存时
-      //     this.$refs[formName].validate((valid) => {
-      //         if(valid) {
-      //             if (!this.showDivideEdit) {
-      //                 for (let i = 0; i < crowdLength; i++) {
-      //                     item = {
-      //                         // crowdId: i === 0 ? form.crowdId : undefined,
-      //                         name: this.alphaData[i] + '人群'+'_' + form.crowdName,
-      //                         pct: form.pct[i],
-      //                         // priority: i + 1
-      //                     }
-      //                     crowdData.push(item)
-      //                 }
-      //                 let formData = {
-      //                     crowd: crowdData,
-      //                     startTime: form.validityTime[0],
-      //                     endTime: form.validityTime[1]
-      //                 }
-      //                 this.$service.crowdABTestAdd({model: form.crowdId, data: formData}, "新增A/B test划分成功").then(() => {
-      //                     this.showDivide = false
-      //                     this.loadData()
-      //                 })
-      //             } else {
-      //                 const getFormData = this.crowdEditDivideForm
-      //                 for (let i = 0; i < crowdLength; i++) {
-      //                     item = {
-      //                         id: getFormData.id[i],
-      //                         name: getFormData.crowdId[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
-      //                         pct: form.pct[i],
-      //                         // priority: getFormData.crowdId[i] === getFormData.currentCrowdId ? parseInt(form.priority) : getFormData.priority[i]
-      //                         priority: getFormData.priority[i]
-      //                     }
-      //                     crowdData.push(item)
-      //                 }
-      //                 let formData = {
-      //                     crowd: crowdData,
-      //                     startTime: form.validityTime[0],
-      //                     endTime: form.validityTime[1]
-      //                 }
-      //                 this.$service.crowdABTestEditSave({model: getFormData.currentCrowdId, data: formData}, "编辑保存A/B test划分成功").then(() => {
-      //                     this.showDivide = false
-      //                     this.loadData()
-      //                 })
-      //             }
-      //         }else {
-      //             return false
-      //         }
-      //     })
-      // },
+      // 显示划分详情
       showDivideResult (crowdId) {
           this.$service.getAbChilds(crowdId).then(data => {
               this.showDivideDetail = true
               this.DivideTableData = data
           })
 
+      },
+      // 提交历史数据
+      handleCommitHistory (row) {
+          this.setShowCommitHistoryDialog = true
+          this.currentCrowdId = row.crowdId
+      },
+      handleSubmitHistory (formData) {
+          let submitForm = {
+              isSubmit: formData.isSubmit,
+              crowdId: formData.id,
+              dateNum: formData.dateNum
+          }
+          this.$service.submitPolicyHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
+              this.setShowCommitHistoryDialog = false
+          })
       }
   }
 }

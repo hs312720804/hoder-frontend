@@ -122,12 +122,12 @@
                                         <!--divided-->
                                 <!--&gt;A/B test划分-->
                                 <!--</el-dropdown-item>-->
-                                <!--<el-dropdown-item-->
-                                <!--:command="['commitHistory',scope.row]"-->
-                                <!--v-if="scope.row.isFxFullSql !== 1"-->
-                                <!--divided-->
-                                <!--&gt;提交历史数据-->
-                                <!--</el-dropdown-item>-->
+                                <el-dropdown-item
+                                :command="['commitHistory',scope.row]"
+                                v-if="scope.row.isFxFullSql !== 1"
+                                divided
+                                >提交历史数据
+                                </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                         <!--<el-button-->
@@ -204,7 +204,7 @@
                 <div class="first-step" v-show="step === 2">
                     <div>第二步：设置人群占比</div>
                     <el-form-item label="各人群占比：">
-                        <div class="block" v-for="(item,index) in copiesItem">
+                        <div class="block" v-for="(item,index) in copiesItem" :key="index">
                             <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                             <el-slider v-model="percent[index]" :key="item"></el-slider>
                         </div>
@@ -256,10 +256,20 @@
                 <el-table-column prop="count" label="数量"></el-table-column>
             </el-table>
         </el-dialog>
+        <commit-history-dialog
+                :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
+                :crowdId="currentCrowdId"
+                @closeDialog="setShowCommitHistoryDialog = false"
+                @submit="handleSubmitHistory"
+        ></commit-history-dialog>
     </div>
 </template>
 <script>
+    import CommitHistoryDialog from '@/components/CommitHistory'
     export default {
+        components: {
+            CommitHistoryDialog
+        },
         data() {
             return {
                 // 表格当前页数据
@@ -294,11 +304,6 @@
                 parts: [2,3,4,5,6,7,8,9,10],
                 copies: 2,
                 step: 1,
-                // divideForm: {
-                //     launchCrowdId: undefined,
-                //     pct: [],
-                //     calType: []
-                // },
                 divideForm: this.genDefaultDivideForm(),
                 copiesItem: [],
                 percent: [],
@@ -308,7 +313,9 @@
                 percentTotal: 0,
                 showDivideDetailDialog: false,
                 DivideTableData: [],
-                dialogType: false
+                dialogType: false,
+                setShowCommitHistoryDialog: false,
+                currentCrowdId: undefined
             };
         },
         created() {
@@ -316,7 +323,7 @@
         },
         watch: {
             percent(val) {
-                this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
+                this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
                 })
             }
@@ -549,7 +556,18 @@
                 })
             },
             handleCommitHistory (row) {
-
+                this.setShowCommitHistoryDialog = true
+                this.currentCrowdId = row.launchCrowdId
+            },
+            handleSubmitHistory (formData) {
+                let submitForm = {
+                    isSubmit: formData.isSubmit,
+                    launchCrowdId: formData.id,
+                    dateNum: formData.dateNum
+                }
+                this.$service.submitMultiHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
+                    this.setShowCommitHistoryDialog = false
+                })
             }
         }
     }
