@@ -454,7 +454,7 @@
                             return
                         }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
                             if(this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
-                                if(rulesItem.startDay < rulesItem.endDay) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
+                                if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
                                 else {
                                     this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
                                     return
