@@ -160,7 +160,8 @@
                     "/webApiServers/index":"ipManage",
                     "/multiVersionCrowd/index":"multiVersionCrowd",
                     "/manager/biList":"launchSettings",
-                    "/manager/notice/index":"notice"
+                    "/manager/notice/index":"notice",
+                    "/crowd/AddMoreCrowds":"AddMoreCrowds",
                 },
                 activeName: 'first',
                 updateMessage: [],
