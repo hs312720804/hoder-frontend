@@ -8,9 +8,9 @@
             </el-steps>
         </div>
         <div>
-            <create-policy v-if="activeStep === 1"></create-policy>
-            <create-crowd v-if="activeStep === 2"></create-crowd>
-            <LaunchToBusiness v-if="activeStep === 3"></LaunchToBusiness>
+            <create-policy @nextStep="handleNextStep" v-show="activeStep === 1"></create-policy>
+            <create-crowd v-show="activeStep === 2"></create-crowd>
+            <LaunchToBusiness v-show="activeStep === 3"></LaunchToBusiness>
         </div>
     </div>
 </template>
@@ -30,10 +30,16 @@
             return {
                 activeStep: 1
             }
+        },
+        methods: {
+            handleNextStep(step) {
+                this.activeStep = step
+            }
         }
     }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+.header
+    margin-bottom 20px
 </style>

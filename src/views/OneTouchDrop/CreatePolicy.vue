@@ -85,7 +85,7 @@
                 treeData: [],
                 pagination: {},
                 addForm: {
-                    policyId: "",
+                    recordId: "",
                     policyName: "",
                     conditionTagIds: []
                 },
@@ -109,13 +109,11 @@
                 })
             },
             handleNodeClick(data) {
-                console.log(data)
                 const id = data.groupId
                 this.getTags(id)
             },
             getTags(groupId) {
                 this.$service.getTagGroupTreeList({groupId,pageNum: this.initCurrentPage ,pageSize: this.initPageSize,tagName: this.searchValue}).then((data) => {
-                    console.log(data)
                     this.conditionTagsFiltered = data.pageInfo.list
                     this.tagsListTotal = data.pageInfo.total
                     // this.pagination.pageNum = data.pageInfo.pageNum
@@ -153,21 +151,30 @@
                         let addForm = JSON.stringify(this.addForm)
                         addForm = JSON.parse(addForm)
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-                        // if (this.addForm.policyId != "") {
-                        //     this.$service.policyUpate(addForm, "编辑成功").then(() => {
-                        //         this.loadData();
-                        //     });
-                        // } else {
-                            this.$service.policyAddSave(addForm, "添加成功").then(() => {
-                                this.loadData();
+                        if (this.addForm.recordId != "") {
+                            this.$service.policyUpate(addForm, "策略编辑成功").then(() => {
+                                this.$router.push({ path: 'launch/strategyList' })
                             });
-                        // }
+                        } else {
+                            this.$service.policyAddSave(addForm, "策略新增成功").then(() => {
+                                this.$router.push({ path: 'launch/strategyList' })
+                            });
+                        }
                     } else {
                         return false
                     }
                 })
             },
-            nextStep () {}
+            nextStep () {
+                this.$emit('nextStep',3)
+                // this.$refs.addForm.validate(valid => {
+                //     if (valid) {
+                //         this.$emit('nextStep', 2)
+                //     } else {
+                //         return false
+                //     }
+                // })
+            }
         },
         created () {
             this.fetchData()
