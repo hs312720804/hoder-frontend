@@ -268,7 +268,7 @@
               <span class="el-form__tip">备注：数字越大排序越靠前</span>
             </el-form-item>
           </el-collapse-item>
-          <a class="app-params__remove-param" @click="handleRemoveParam(index)">
+          <a class="app-params__remove-param" @click="handleRemoveParam(i)">
             <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
           </a>
         </div>

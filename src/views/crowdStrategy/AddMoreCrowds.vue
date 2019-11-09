@@ -2,7 +2,7 @@
   <div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="90px">
       <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="17" />
-      <el-form-item label="人群用途" prop="purpose">
+      <el-form-item label="人群用途">
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
       </el-form-item>
       <el-form-item>
@@ -86,6 +86,10 @@ export default {
     },
     handleSave () {
       let form = JSON.parse(JSON.stringify(this.form))
+      if (form.purpose !== undefined && form.purpose !== '') {
+        this.$message.error('人群用途不能为空')
+        return
+      }
       if (!this.validateForm(form.rulesJson)) {
         return
       }
