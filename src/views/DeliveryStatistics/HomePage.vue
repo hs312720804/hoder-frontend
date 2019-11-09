@@ -13,7 +13,7 @@
         </div>
         <div>
             <div class="crowd-statistic">
-                <div class="echarts-container border-bottom border-right" style="width: 60%">
+                <div class="echarts-container border-right" style="width: 49%">
                     <div class="title">人群使用情况</div>
                     <div class="crowd-all-item-container">
                         <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
@@ -22,10 +22,17 @@
                         </div>
                     </div>
                 </div>
-                <div class="echarts-container border-bottom" style="width: 39%">
+                <div class="echarts-container" style="width: 50%">
                     <div class="title">人群应用场景分布</div>
-                    <div class="main" ref="useScene"></div>
+                    <div class="echarts-container" style="width: 50%">
+                        <ve-wordcloud :data="chartData" :settings="chartSettings" style="height: 300px;margin: -30px 0 0 -20px"></ve-wordcloud>
+                    </div>
+                    <div class="echarts-container" style="width: 50%">
+                        <div class="main" ref="useScene"></div>
                 </div>
+                </div>
+            </div>
+            <div class="crowd-statistic">
                 <div class="echarts-container border-right" style="width: 49%;">
                     <div class="title">标签覆盖情况</div>
                     <div class="tag-all-item-container">
@@ -46,25 +53,33 @@
                     <div class="title">标签场景覆盖情况</div>
                     <div class="main" ref="tagRadar"></div>
                 </div>
-                <div class="echarts-container">
-                    <!--<div class="title">人群应用场景分布</div>-->
-                    <div class="main" ref="crowdForcas"></div>
+            </div>
+            <div class="crowd-statistic">
+                <div class="echarts-container border-right" style="width: 49%">
+                    <div class="title">业务投放情况</div>
+                    <div class="launch-all-item-container border-bottom">
+                        <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
+                            <div class="launch-all-item--number">{{item.count}}</div>
+                            <div>{{item.name}}</div>
+                        </div>
+                    </div>
+                    <div class="two-mixed">
+                        <div class="mixed-item">
+                            <div class="title">业务人群使用情况</div>
+                            <div class="business-use-text">
+                                <div class="number">{{businessUseCrowdData.count}}</div>
+                                <div class="name">{{businessUseCrowdData.name}}</div>
+                            </div>
+                        </div>
+                        <div class="mixed-item">
+                            <div class="title" style="text-align: center">人群对应业务分布情况</div>
+                            <div class="main" ref="businessUseCrowd"></div>
+                        </div>
+                    </div>
                 </div>
                 <div class="echarts-container">
-                    <div class="business-text" @click="businessClick(1)">按业务下钻-></div>
-                    <div class="main" ref="peopleStatistic"></div>
-                </div>
-                <div class="echarts-container">
-                    <div class="business-text" @click="businessClick(2)">按业务下钻-></div>
-                    <div class="main" ref="crowdUv"></div>
-                </div>
-                <div class="echarts-container">
-                    <div class="business-text" @click="businessClick(3)">按业务下钻-></div>
-                    <div class="main" ref="crowdSend"></div>
-                </div>
-                <div class="echarts-container">
-                    <div class="business-text" @click="businessClick(4)">按业务下钻-></div>
-                    <div class="main" ref="crowdClick"></div>
+                    <div class="title">业务使用全流程趋势图（总调用、下发、曝光、点击）</div>
+                    <div class="main" ref="businessUseTendency" style="height: 300px"></div>
                 </div>
             </div>
         </div>
@@ -85,22 +100,76 @@
                         </div>
                     </div>
                 </div>
-                <div class="table-over">
-                    <div class="table-title">城市活跃排名</div>
-                    <!--<ContentWrapper-->
-                    <!--:filter="filter"-->
-                    <!--:pagination="pagination"-->
+                <!--<div class="table-over">-->
+                    <!--<div class="table-title">城市活跃排名</div>-->
+                    <!--<Table-->
+                            <!--:props="table.props"-->
+                            <!--:header="table.header"-->
+                            <!--:data="table.data"-->
+                            <!--class="table-overflow"-->
                     <!--&gt;-->
-                    <Table
-                            :props="table.props"
-                            :header="table.header"
-                            :data="table.data"
-                            class="table-overflow"
-                    >
-                    </Table>
-                    <!--</ContentWrapper>-->
+                    <!--</Table>-->
+                <!--</div>-->
+                <div class="table-over">
+                    <div class="title">活跃时段分布</div>
+                    <div class="main" ref="activeTimeDistrict" style="height: 300px"></div>
                 </div>
             </div>
+        </div>
+        <div class="crowd-statistic">
+            <div class="echarts-container border-right" style="width: 70%;height: 400px">
+                <div class="title">用户分布情况</div>
+                <div class="member-select">
+                    <div class="member-select--text">按会员权益</div>
+                    <el-select v-model="memberListType">
+                        <template v-for="(item,index) in memberList">
+                            <el-option
+                                    :key="index"
+                                    :label="item.name"
+                                    :value="item.value"
+                            ></el-option>
+                        </template>
+                    </el-select>
+                </div>
+                <div class="main" ref="userDistribution" style="height: 320px"></div>
+            </div>
+            <div class="echarts-container" style="width: 29%">
+                <div class="title">末次付费的会员产品包情况</div>
+                <div class="member-select">
+                    <div class="member-select--text">按会员权益</div>
+                    <el-select v-model="memberListByPay">
+                        <template v-for="(item,index) in memberList">
+                            <el-option
+                                    :key="index"
+                                    :label="item.name"
+                                    :value="item.value"
+                            ></el-option>
+                        </template>
+                    </el-select>
+                </div>
+                <div class="main" ref="lastPayProduct"></div>
+            </div>
+        </div>
+        <div class="crowd-statistic">
+            <div ref="deviceActive" class="circle-echarts border-right"></div>
+            <div class="circle-echarts border-right">
+                <div class="active-rate">
+                <div class="active-rate--title">起播活跃率</div>
+                    <div>
+                        <el-select v-model="dateData">
+                            <template v-for="(item,index) in dateList">
+                                <el-option
+                                        :key="index"
+                                        :label="item.name"
+                                        :value="item.value"
+                                ></el-option>
+                            </template>
+                        </el-select>
+                    </div>
+                </div>
+                <div ref="activeRate" style="width: 100%;height: 200px"></div>
+            </div>
+            <div ref="userWatchPreference" class="circle-echarts"></div>
         </div>
         <el-dialog
                 :title="businessTitle"
@@ -118,11 +187,13 @@
 
 <script>
     import { ContentWrapper, Table} from 'admin-toolkit'
+    import veWordcloud from 'v-charts/lib/wordcloud'
     export default {
         name: "StatisticsHomePage",
         components: {
             ContentWrapper,
-            Table
+            Table,
+            veWordcloud
         },
         data () {
             return {
@@ -162,7 +233,82 @@
                     data: []
                 },
                 tagAllData: [],
-                tagUseData: []
+                tagUseData: [],
+                launchData: [],
+                businessUseCrowdData: {},
+                memberListType: '',
+                memberListByPay: '',
+                memberList: [],
+                dateList: [],
+                dateData: '',
+                chartData: {
+                    columns: ['word', 'count'],
+                    rows: []
+                    // rows: [{
+                    //     'word': 'visualMap',
+                    //     'count': 22199
+                    // }, {
+                    //     'word': 'continuous',
+                    //     'count': 10288
+                    // }, {
+                    //     'word': 'contoller',
+                    //     'count': 620
+                    // }, {
+                    //     'word': 'series',
+                    //     'count': 274470
+                    // }, {
+                    //     'word': 'gauge',
+                    //     'count': 12311
+                    // }, {
+                    //     'word': 'detail',
+                    //     'count': 1206
+                    // }, {
+                    //     'word': 'piecewise',
+                    //     'count': 4885
+                    // }, {
+                    //     'word': 'textStyle',
+                    //     'count': 32294
+                    // }, {
+                    //     'word': 'markPoint',
+                    //     'count': 18574
+                    // }, {
+                    //     'word': 'pie',
+                    //     'count': 38929
+                    // }, {
+                    //     'word': 'roseType',
+                    //     'count': 969
+                    // }, {
+                    //     'word': 'label',
+                    //     'count': 37517
+                    // }, {
+                    //     'word': 'emphasis',
+                    //     'count': 12053
+                    // }, {
+                    //     'word': 'yAxis',
+                    //     'count': 57299
+                    // }, {
+                    //     'word': 'name',
+                    //     'count': 15418
+                    // }, {
+                    //     'word': 'type',
+                    //     'count': 22905
+                    // }, {
+                    //     'word': 'gridIndex',
+                    //     'count': 5146
+                    // }, {
+                    //     'word': 'normal',
+                    //     'count': 49487
+                    // }, {
+                    //     'word': 'itemStyle',
+                    //     'count': 33837
+                    // }, {
+                    //     'word': 'min',
+                    //     'count': 4500
+                    // }]
+                },
+                chartSettings: {
+                    // shape: 'star'
+                }
             }
         },
         watch: {
@@ -170,24 +316,39 @@
                 // 防止第一次加载页面重复调用接口
                 if(oldVal.length !== 0) {
                     if(this.setDataInMonth(val[0],val[1])){
-                        this.getAllCrowdTotal(val[0],val[1])
-                        this.getCrowdtotal(val[0], val[1])
-                        this.getForcastotal(val[0], val[1])
-                        this.getCrowdUvtotal(val[0], val[1])
-                        this.getCrowdSendtotal(val[0], val[1])
-                        this.getCrowdClicktotal(val[0], val[1])
-                        this.getCrowdSextotal(val[0], val[1])
-                        this.getCrowdAgetotal(val[0], val[1])
-                        this.getCrowdDevicetotal(val[0], val[1])
-                        this.getCrowdProvincetotal(val[0], val[1])
+                        this.getCrowdSextotal(this.startDate,this.endDate)
+                        this.getCrowdAgetotal(this.startDate,this.endDate)
+                        this.getCrowdDevicetotal(this.startDate,this.endDate)
+                        this.getCrowdProvincetotal(this.startDate,this.endDate)
+                        this.getAllCrowdTotal(this.startDate,this.endDate)
+                        this.setUseSceneCircle(this.startDate,this.endDate)
+                        this.getAllTagTotal(this.startDate,this.endDate)
+                        this.getTagUseTotal(this.startDate,this.endDate)
+                        this.getAllTagRadar(this.startDate,this.endDate)
+                        this.getLaunchTotal(this.startDate,this.endDate)
+                        this.getBusinessUseCrowdTotal(this.startDate,this.endDate)
+                        this.getBusinessToCrowdTotal(this.startDate,this.endDate)
+                        this.getBusinessUseTendency(this.startDate,this.endDate)
+                        this.getActiveTimeDistriction(this.startDate,this.endDate)
+                        this.getBroadcastRate(this.startDate,this.endDate)
+                        this.getUserWatchPreference(this.startDate,this.endDate)
+                        this.getUserDistribution(this.time0[0],this.time0[1])
+                        this.getLastPayProduct(this.time0[0],this.time0[1])
+                        this.getServiceActive(this.time0[0],this.time0[1])
                     }else{
                         this.$message('日期间隔最多只能是30天！请重新选择日期')
                         this.time0 = oldVal
                     }
                 }
             },
-            businessType(val) {
-                this.handleLinesBusiness(val)
+            'memberListType': function () {
+                this.getUserDistribution(this.time0[0],this.time0[1])
+            },
+            'memberListByPay': function () {
+                this.getLastPayProduct(this.time0[0],this.time0[1])
+            },
+            'dateData': function () {
+                this.getBroadcastRate(this.time0[0],this.time0[1])
             }
         },
         methods: {
@@ -291,19 +452,70 @@
                     },
                     legend: {
                         orient: 'vertical',
-                        x: 'right',
-                        data: legend
+                        x: circleType === 'all' ? 'bottom':'right',
+                        data: legend,
+                        type: 'scroll'
                     },
                     series: [
                         {
                             name:'',
                             type:'pie',
-                            radius: circleType === 'all' ? '85%' : ['50%', '70%'],
+                            radius: circleType === 'all' ? '70%' : ['50%', '70%'],
+                            avoidLabelOverlap: false,
+                            label: {
+                                normal: {
+                                    show: circleType === 'all' ? true : false,
+                                    position: circleType === 'all' ? '': 'center'
+                                },
+                                emphasis: {
+                                    show: true,
+                                    textStyle: {
+                                        fontSize: '30',
+                                        fontWeight: 'bold'
+                                    }
+                                }
+                            },
+                            labelLine: {
+                                normal: {
+                                    show: true
+                                }
+                            },
+                            data: data
+                        }
+                    ]
+                });
+            },
+            // 通用嵌套环形图
+            setCircleDoubleEcharts(element,title,legend,dataTotal,dataChild){
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'item',
+                        // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        formatter: "{b}: {c} ({d}%)"
+                    },
+                    legend: {
+                        orient: 'vertical',
+                        x: 'right',
+                        data: legend,
+                        type: 'scroll'
+                    },
+                    series: [
+                        {
+                            // name:'',
+                            type:'pie',
+                            selectedMode: 'single',
+                            radius: [0, '30%'],
                             avoidLabelOverlap: false,
                             label: {
                                 normal: {
                                     show: false,
-                                    position: 'center'
+                                    // position: 'center'
+                                    position: 'inner'
                                 },
                                 emphasis: {
                                     show: true,
@@ -318,7 +530,58 @@
                                     show: false
                                 }
                             },
-                            data: data
+                            data: dataTotal
+                        },
+                        {
+                            // name: '',
+                            type: 'pie',
+                            radius: ['40%','55%'],
+                            label: {
+
+                                normal: {
+                                    formatter: '  {b|{b}：}{c}  {per|{d}%}  ',
+                                    backgroundColor: '#eee',
+                                    borderColor: '#aaa',
+                                    borderWidth: 1,
+                                    borderRadius: 4,
+                                    // shadowBlur:3,
+                                    // shadowOffsetX: 2,
+                                    // shadowOffsetY: 2,
+                                    // shadowColor: '#999',
+                                    // padding: [0, 7],
+                                    rich: {
+                                        // a: {
+                                        //     color: '#999',
+                                        //     lineHeight: 22,
+                                        //     align: 'center'
+                                        // },
+                                        // abg: {
+                                        //     backgroundColor: '#333',
+                                        //     width: '100%',
+                                        //     align: 'right',
+                                        //     height: 22,
+                                        //     borderRadius: [4, 4, 0, 0]
+                                        // },
+                                        // hr: {
+                                        //     borderColor: '#aaa',
+                                        //     width: '100%',
+                                        //     borderWidth: 0.5,
+                                        //     height: 0
+                                        // },
+                                        b: {
+                                            fontSize: 16,
+                                            lineHeight: 33
+                                        },
+                                        per: {
+                                            color: '#eee',
+                                            backgroundColor: '#334455',
+                                            padding: [2, 4],
+                                            borderRadius: 2
+                                        }
+                                    }
+                                }
+                            },
+                            data: dataChild
                         }
                     ]
                 });
@@ -381,40 +644,92 @@
                     ]
                 });
             },
-            // 人群调用总量PV
-            getCrowdtotal (startTime, endTime) {
-                this.$service.get_crowd_pv_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    this.setLineEchart('peopleStatistic',data.series[0].name,data.date,data.series[0].data)
+            // 通用多线性参数设置
+            setLinesEchart (element,title,xData,yData,legend) {
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    legend: {
+                        data: legend
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xData,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisTick: {
+                            inside: true
+                        },
+                        scale: true,
+                        axisLabel: {
+                            margin: 2,
+                            formatter: function (value) {
+                                if (value >= 10000 && value < 10000000) {
+                                    value = value / 10000 + "万";
+                                }
+                                else if (value >= 10000000) {
+                                    value = value / 10000000 + "千万";
+                                } return value;
+                            }
+                        },
+                    },
+                    series: yData
                 })
             },
-            // 人群计算总量
-            getForcastotal (startTime, endTime) {
-                this.$service.get_crowd_forcas_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    this.setLineEchart('crowdForcas',data.series[0].name,data.date,data.series[0].data)
-                })
-            },
-            // 人群命中总量
-            getCrowdUvtotal (startTime, endTime) {
-                this.$service.get_crowd_uv_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    this.setLineEchart('crowdUv',data.series[0].name,data.date,data.series[0].data)
-                })
-            },
-            // 人群下发总量
-            getCrowdSendtotal (startTime, endTime) {
-                this.$service.get_crowd_send_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    this.setLineEchart('crowdSend',data.series[0].name,data.date,data.series[0].data)
-                })
-            },
-            // 人群曝光总量
-            getCrowdClicktotal (startTime, endTime) {
-                this.$service.get_crowd_click_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.data, type: 'line'}
-                    })
-                    this.setLinesEchart('crowdClick','曝光、点击量',data.date,linesData,legendData)
+            // 通用柱状图参数设置
+            setBarEchart (element,title,xData,yData) {
+                let echarts = require('echarts')
+                let myChart = echarts.init(this.$refs[element])
+                myChart.setOption({
+                    title: {
+                        text: title
+                    },
+                    tooltip: {
+                        trigger: 'axis'
+                    },
+                    xAxis: {
+                        type: 'category',
+                        data: xData,
+                        axisLabel: {
+                            interval: 0,
+                            rotate: -45
+                        }
+                    },
+                    yAxis: {
+                        type: 'value',
+                        axisTick: {
+                            inside: true
+                        },
+                        scale: true,
+                        axisLabel: {
+                            margin: 2,
+                            formatter: function (value) {
+                                if (value >= 10000 && value < 10000000) {
+                                    value = value / 10000 + "万";
+                                }
+                                else if (value >= 10000000) {
+                                    value = value / 10000000 + "千万";
+                                } return value;
+                            }
+                        },
+                    },
+                    series: [{
+                        // data: yData.length === 0 ? this.fillEmptyData.data : yData,
+                        data: yData,
+                        type: 'bar',
+                        barWidth : 30
+                    }]
                 })
             },
             // 人群画像性别
@@ -454,7 +769,6 @@
                         // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
                         return {value: key.count, name: key.name}
                     })
-                    console.log(newProvinceData)
                     this.setMapEcharts('main','省份分布',newProvinceData)
                     this.cityData = data.cityPercent
                     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
@@ -483,7 +797,7 @@
                     // },
                     visualMap: {
                         min: 0,
-                        max: 2000000,
+                        max: 5000000,
                         left: 'left',
                         top: 'bottom',
                         text:['高','低'],           // 文本，默认为数值文本
@@ -520,75 +834,6 @@
                     ]
                 });
             },
-            // 按业务下钻
-            businessClick (type) {
-                this.dialogVisible = true
-                if(type === 1) {
-                    this.dialogVisibleType = false
-                    this.businessTitle = '各业务的人群调用总量'
-                    this.$service.get_crowd_bi_pv_total({startDate:this.time0[0],endDate:this.time0[1]}).then((data) => {
-                        const legendData = data.series.map((key) => {
-                            return key.name
-                        })
-                        const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line'}
-                        })
-                        this.setLinesEchart('business','',data.date,linesData,legendData)
-                    })
-                }else if(type === 2){
-                    this.dialogVisibleType = false
-                    this.businessTitle = '各业务的人群命中总量'
-                    this.$service.get_crowd_bi_uv_total({startDate:this.time0[0],endDate:this.time0[1]}).then((data) => {
-                        const legendData = data.series.map((key) => {
-                            return key.name
-                        })
-                        const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line'}
-                        })
-                        this.setLinesEchart('business','',data.date,linesData,legendData)
-                    })
-                }else if(type === 3){
-                    this.dialogVisibleType = false
-                    this.businessTitle = '各业务的人群下发总量'
-                    this.$service.get_crowd_send_bi_total({startDate:this.time0[0],endDate:this.time0[1]}).then((data) => {
-                        const legendData = data.series.map((key) => {
-                            return key.name
-                        })
-                        const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line'}
-                        })
-                        this.setLinesEchart('business','',data.date,linesData,legendData)
-                    })
-                }else if(type === 4){
-                    this.dialogVisibleType = true
-                    this.handleLinesBusiness(this.businessType)
-                }
-            },
-            handleLinesBusiness(type) {
-                if(type === '1') {
-                    this.businessTitle = '各业务的人群曝光总量'
-                    this.$service.get_crowd_click_bi_total({startDate:this.time0[0],endDate:this.time0[1],type: 1}).then((data) => {
-                        const legendData = data.series.map((key) => {
-                            return key.name
-                        })
-                        const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line'}
-                        })
-                        this.setLinesEchart('business','',data.date,linesData,legendData)
-                    })
-                }else {
-                    this.businessTitle = '各业务的人群点击总量'
-                    this.$service.get_crowd_click_bi_total({startDate:this.time0[0],endDate:this.time0[1],type: 2}).then((data) => {
-                        const legendData = data.series.map((key) => {
-                            return key.name
-                        })
-                        const linesData = data.series.map((key) => {
-                            return {name:key.name, data:key.data, type: 'line'}
-                        })
-                        this.setLinesEchart('business','',data.date,linesData,legendData)
-                    })
-                }
-            },
             formatDate (d) {
                 const time = new Date(d)
                 let y = time.getFullYear(); // 年份
@@ -616,6 +861,11 @@
                         return {value: key.count, name: data.names[index]}
                     })
                     this.setCircleEcharts('useScene','',data.names,dataObject,'all')
+                    let chartRowsData = []
+                    data.data.forEach((item,index) => {
+                        chartRowsData.push({'word': data.names[index], 'count': item.count})
+                    })
+                    this.chartData.rows = chartRowsData
                 })
             },
             //  标签覆盖情况
@@ -640,13 +890,120 @@
                     this.tagUseData = data
                 })
             },
+            //  业务投放情况
+            getLaunchTotal (beginTime,endTime) {
+                this.$service.getLaunchEcharts({beginTime,endTime}).then((data)=>{
+                    this.launchData = data
+                })
+            },
+            //  业务人群使用情况
+            getBusinessUseCrowdTotal (beginTime,endTime) {
+                this.$service.getCrowdBusinessUseEcharts({beginTime,endTime}).then((data)=>{
+                    this.businessUseCrowdData = data
+                })
+            },
+            //  人群对应业务分布情况
+            getBusinessToCrowdTotal (beginTime,endTime) {
+                this.$service.getCrowdBusinessEcharts({beginTime,endTime}).then((data)=>{
+                    const dataObject = data.data.map((key,index) => {
+                        return {value: key.count, name: data.names[index]}
+                    })
+                    this.setCircleEcharts('businessUseCrowd','',data.names,dataObject,'all')
+                })
+            },
+            //  业务使用全流程趋势图
+            getBusinessUseTendency (beginTime,endTime) {
+                this.$service.getBusinessUseTendencyEcharts({beginTime,endTime}).then((data)=>{
+                    const legendData = data.series.map((key) => {
+                        return key.name
+                    })
+                    const linesData = data.series.map((key) => {
+                        return {name:key.name, data:key.value, type: 'line'}
+                    })
+                    this.setLinesEchart('businessUseTendency','',data.xaxis,linesData,legendData)
+                })
+            },
+            // 用户活跃时间段
+            getActiveTimeDistriction(beginTime,endTime) {
+                this.$service.getActiveTimeEcharts({beginTime,endTime}).then(data => {
+                    this.setBarEchart('activeTimeDistrict','',data.xaxis,data.series)
+                })
+            },
+            // 用户分布情况
+            getUserDistribution(beginTime,endTime) {
+                this.$service.getUseDistributionEcharts({beginTime,endTime,category: this.memberListType}).then(data => {
+                    let dataTotal = [],childData = []
+                    data.series[0].forEach(item => {
+                        childData.push({value: item.count, name: item.name})
+                    })
+                    data.series[1].forEach(item => {
+                        dataTotal.push({value: item.count, name: item.name})
+                    })
+                    this.setCircleDoubleEcharts('userDistribution','',data.legend,dataTotal,childData)
+                })
+            },
+            // 末次付费的会员产品包
+            getLastPayProduct (beginTime,endTime) {
+                this.$service.getLastPaidProductEcharts({beginTime,endTime,category: this.memberListByPay}).then(data => {
+                    const dataObject = []
+                    data.data.forEach(item => {
+                        dataObject.push({name: item.name, value: item.count})
+                    })
+                    this.setCircleEcharts('lastPayProduct','',data.names,dataObject)
+                })
+            },
+            // 对象转成数组
+            objectToArray (obj) {
+                let arr = []
+                for (let i in obj) {
+                    arr.push({ value: i, label: obj[i] })
+                }
+                return arr
+            },
+            // 获取会员权益
+            getMemberBenefits() {
+                this.$service.getUserVipRightsList().then(data => {
+                    const memberListData = data
+                    this.memberList = memberListData
+                    // 设置两个默认的下拉框选值
+                    this.memberListType = memberListData[0].value
+                    this.memberListByPay = memberListData[0].value
+                })
+            },
+            // 设备活跃情况
+            getServiceActive(beginTime,endTime) {
+                this.$service.getActiveDeviceEcharts({beginTime,endTime}).then(data => {
+                    this.setBarEchart('deviceActive','设备活跃情况',data.xaxis,data.series)
+                })
+            },
+            // 起播活跃率情况
+            getBroadcastRate(beginTime,endTime) {
+                this.$service.getBroadcastRateEcharts({beginTime,endTime,category: this.dateData}).then(data => {
+                    const dataObject = []
+                    data.data.forEach(item => {
+                        dataObject.push({name: item.name, value: item.count})
+                    })
+                    this.setCircleEcharts('activeRate','',data.names,dataObject)
+                })
+            },
+            // 用户观影偏好分布
+            getUserWatchPreference(beginTime,endTime) {
+                this.$service.getUserWatchPreferenceDistributionEcharts({beginTime,endTime}).then(data => {
+                    const dataObject = []
+                    data.data.forEach(item => {
+                        dataObject.push({name: item.name, value: item.count})
+                    })
+                    this.setCircleEcharts('userWatchPreference','用户观影偏好分布',data.names,dataObject)
+                })
+            },
+            getInitDate() {
+                this.$service.getinitDateEcharts().then((data) => {
+                    this.dateList = data
+                    this.dateData = data[0].value
+                })
+            }
         },
         mounted () {
-            // this.getCrowdtotal(this.startDate,this.endDate)
-            // this.getForcastotal(this.startDate,this.endDate)
-            // this.getCrowdUvtotal(this.startDate,this.endDate)
-            // this.getCrowdSendtotal(this.startDate,this.endDate)
-            // this.getCrowdClicktotal(this.startDate,this.endDate)
             this.getCrowdSextotal(this.startDate,this.endDate)
             this.getCrowdAgetotal(this.startDate,this.endDate)
             this.getCrowdDevicetotal(this.startDate,this.endDate)
@@ -656,6 +1013,14 @@
             this.getAllTagTotal(this.startDate,this.endDate)
             this.getTagUseTotal(this.startDate,this.endDate)
             this.getAllTagRadar(this.startDate,this.endDate)
+            this.getLaunchTotal(this.startDate,this.endDate)
+            this.getBusinessUseCrowdTotal(this.startDate,this.endDate)
+            this.getBusinessToCrowdTotal(this.startDate,this.endDate)
+            this.getBusinessUseTendency(this.startDate,this.endDate)
+            this.getActiveTimeDistriction(this.startDate,this.endDate)
+            this.getBroadcastRate(this.startDate,this.endDate)
+            this.getUserWatchPreference(this.startDate,this.endDate)
+            this.getServiceActive(this.time0[0],this.time0[1])
         },
         created() {
             // 设置默认时间为昨天的前一周
@@ -664,6 +1029,8 @@
             this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
             this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
             this.time0 = [this.startDate,this.endDate]
+            this.getMemberBenefits()
+            this.getInitDate()
         }
     }
 </script>
@@ -675,13 +1042,14 @@
         font-size 20px
         margin-left 20px
     .crowd-statistic
+        padding 10px 0
+        border-bottom 1px dashed #ccc
         &:before
         &:after
             display table
             content ""
         &:after
             clear: both
-        margin 30px 0
         .crowd-statistic-item
             width 25%
             float: left
@@ -732,11 +1100,36 @@
             font-weight bold
             font-size 16px
             margin-bottom 10px
+    .launch-all-item-container
+        display flex
+        align-items center
+        justify-content center
+        height 150px
+        margin 0 10px
+    .launch-all-item
+        width 25%
+        text-align center
+        margin 30px 0
+        font-size 12px
+        color #aaa
+        &:first-child
+            width 50%
+        .launch-all-item--number
+            color #000
+            font-weight bold
+            font-size 16px
+            margin-bottom 10px
     .echarts-container
         position relative
         width 50%
         height auto
         float left
+        &:before
+        &:after
+            display table
+            content ""
+        &:after
+            clear: both
     .main
         width 90%
         height 240px
@@ -780,7 +1173,7 @@
     .city-active-proportion--name
         width 50%
         float left
-        margin 10px 0
+        /*margin 10px 0*/
     .business-text
         text-decoration underline
         color #0077aa
@@ -789,4 +1182,34 @@
         top 80px
         right 80px
         cursor pointer
+    .two-mixed
+        display flex
+        .mixed-item
+            &:first-child
+                width 34%
+            width 66%
+    .business-use-text
+        width 100px
+        text-align center
+        margin 100px 75px
+    .number
+        color #000
+        font-weight bold
+        font-size 16px
+        margin-bottom 10px
+    .name
+        font-size 12px
+        color #aaa
+    .member-select
+        display flex
+        align-items center
+        justify-content center
+        .member-select--text
+            margin-right 20px
+    .active-rate
+        display flex
+        align-items center
+        margin-left 20px
+    .active-rate--title
+        margin-right 20px
 </style>
