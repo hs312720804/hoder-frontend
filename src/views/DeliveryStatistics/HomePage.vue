@@ -13,7 +13,7 @@
         </div>
         <div>
             <div class="crowd-statistic">
-                <div class="echarts-container border-right" style="width: 60%">
+                <div class="echarts-container border-right" style="width: 49%">
                     <div class="title">人群使用情况</div>
                     <div class="crowd-all-item-container">
                         <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
@@ -22,9 +22,14 @@
                         </div>
                     </div>
                 </div>
-                <div class="echarts-container" style="width: 39%">
+                <div class="echarts-container" style="width: 50%">
                     <div class="title">人群应用场景分布</div>
-                    <div class="main" ref="useScene"></div>
+                    <div class="echarts-container" style="width: 50%">
+                        <ve-wordcloud :data="chartData" :settings="chartSettings" style="height: 300px;margin: -30px 0 0 -20px"></ve-wordcloud>
+                    </div>
+                    <div class="echarts-container" style="width: 50%">
+                        <div class="main" ref="useScene"></div>
+                </div>
                 </div>
             </div>
             <div class="crowd-statistic">
@@ -112,7 +117,7 @@
             </div>
         </div>
         <div class="crowd-statistic">
-            <div class="echarts-container border-right" style="width: 70%;height: 300px">
+            <div class="echarts-container border-right" style="width: 70%;height: 400px">
                 <div class="title">用户分布情况</div>
                 <div class="member-select">
                     <div class="member-select--text">按会员权益</div>
@@ -126,7 +131,7 @@
                         </template>
                     </el-select>
                 </div>
-                <div class="main" ref="userDistribution"></div>
+                <div class="main" ref="userDistribution" style="height: 320px"></div>
             </div>
             <div class="echarts-container" style="width: 29%">
                 <div class="title">末次付费的会员产品包情况</div>
@@ -145,9 +150,9 @@
                 <div class="main" ref="lastPayProduct"></div>
             </div>
         </div>
-        <div class="crowd-statistic border-bottom">
+        <div class="crowd-statistic">
             <div ref="deviceActive" class="circle-echarts border-right"></div>
-            <div class="circle-echarts">
+            <div class="circle-echarts border-right">
                 <div class="active-rate">
                 <div class="active-rate--title">起播活跃率</div>
                     <div>
@@ -162,7 +167,7 @@
                         </el-select>
                     </div>
                 </div>
-                <div ref="activeRate" class="border-right" style="width: 100%;height: 200px"></div>
+                <div ref="activeRate" style="width: 100%;height: 200px"></div>
             </div>
             <div ref="userWatchPreference" class="circle-echarts"></div>
         </div>
@@ -182,11 +187,13 @@
 
 <script>
     import { ContentWrapper, Table} from 'admin-toolkit'
+    import veWordcloud from 'v-charts/lib/wordcloud'
     export default {
         name: "StatisticsHomePage",
         components: {
             ContentWrapper,
-            Table
+            Table,
+            veWordcloud
         },
         data () {
             return {
@@ -233,7 +240,75 @@
                 memberListByPay: '',
                 memberList: [],
                 dateList: [],
-                dateData: ''
+                dateData: '',
+                chartData: {
+                    columns: ['word', 'count'],
+                    rows: []
+                    // rows: [{
+                    //     'word': 'visualMap',
+                    //     'count': 22199
+                    // }, {
+                    //     'word': 'continuous',
+                    //     'count': 10288
+                    // }, {
+                    //     'word': 'contoller',
+                    //     'count': 620
+                    // }, {
+                    //     'word': 'series',
+                    //     'count': 274470
+                    // }, {
+                    //     'word': 'gauge',
+                    //     'count': 12311
+                    // }, {
+                    //     'word': 'detail',
+                    //     'count': 1206
+                    // }, {
+                    //     'word': 'piecewise',
+                    //     'count': 4885
+                    // }, {
+                    //     'word': 'textStyle',
+                    //     'count': 32294
+                    // }, {
+                    //     'word': 'markPoint',
+                    //     'count': 18574
+                    // }, {
+                    //     'word': 'pie',
+                    //     'count': 38929
+                    // }, {
+                    //     'word': 'roseType',
+                    //     'count': 969
+                    // }, {
+                    //     'word': 'label',
+                    //     'count': 37517
+                    // }, {
+                    //     'word': 'emphasis',
+                    //     'count': 12053
+                    // }, {
+                    //     'word': 'yAxis',
+                    //     'count': 57299
+                    // }, {
+                    //     'word': 'name',
+                    //     'count': 15418
+                    // }, {
+                    //     'word': 'type',
+                    //     'count': 22905
+                    // }, {
+                    //     'word': 'gridIndex',
+                    //     'count': 5146
+                    // }, {
+                    //     'word': 'normal',
+                    //     'count': 49487
+                    // }, {
+                    //     'word': 'itemStyle',
+                    //     'count': 33837
+                    // }, {
+                    //     'word': 'min',
+                    //     'count': 4500
+                    // }]
+                },
+                chartSettings: {
+                    // shape: 'star'
+                }
             }
         },
         watch: {
@@ -255,11 +330,25 @@
                         this.getBusinessToCrowdTotal(this.startDate,this.endDate)
                         this.getBusinessUseTendency(this.startDate,this.endDate)
                         this.getActiveTimeDistriction(this.startDate,this.endDate)
+                        this.getBroadcastRate(this.startDate,this.endDate)
+                        this.getUserWatchPreference(this.startDate,this.endDate)
+                        this.getUserDistribution(this.time0[0],this.time0[1])
+                        this.getLastPayProduct(this.time0[0],this.time0[1])
+                        this.getServiceActive(this.time0[0],this.time0[1])
                     }else{
                         this.$message('日期间隔最多只能是30天！请重新选择日期')
                         this.time0 = oldVal
                     }
                 }
+            },
+            'memberListType': function () {
+                this.getUserDistribution(this.time0[0],this.time0[1])
+            },
+            'memberListByPay': function () {
+                this.getLastPayProduct(this.time0[0],this.time0[1])
+            },
+            'dateData': function () {
+                this.getBroadcastRate(this.time0[0],this.time0[1])
             }
         },
         methods: {
@@ -363,19 +452,20 @@
                     },
                     legend: {
                         orient: 'vertical',
-                        x: 'right',
-                        data: legend
+                        x: circleType === 'all' ? 'bottom':'right',
+                        data: legend,
+                        type: 'scroll'
                     },
                     series: [
                         {
                             name:'',
                             type:'pie',
-                            radius: circleType === 'all' ? '85%' : ['50%', '70%'],
+                            radius: circleType === 'all' ? '70%' : ['50%', '70%'],
                             avoidLabelOverlap: false,
                             label: {
                                 normal: {
-                                    show: false,
-                                    position: 'center'
+                                    show: circleType === 'all' ? true : false,
+                                    position: circleType === 'all' ? '': 'center'
                                 },
                                 emphasis: {
                                     show: true,
@@ -387,7 +477,7 @@
                             },
                             labelLine: {
                                 normal: {
-                                    show: false
+                                    show: true
                                 }
                             },
                             data: data
@@ -411,7 +501,8 @@
                     legend: {
                         orient: 'vertical',
                         x: 'right',
-                        data: legend
+                        data: legend,
+                        type: 'scroll'
                     },
                     series: [
                         {
@@ -771,6 +862,11 @@
                         return {value: key.count, name: data.names[index]}
                     })
                     this.setCircleEcharts('useScene','',data.names,dataObject,'all')
+                    let chartRowsData = []
+                    data.data.forEach((item,index) => {
+                        chartRowsData.push({'word': data.names[index], 'count': item.count})
+                    })
+                    this.chartData.rows = chartRowsData
                 })
             },
             //  标签覆盖情况
@@ -874,21 +970,17 @@
                     // 设置两个默认的下拉框选值
                     this.memberListType = memberListData[0].value
                     this.memberListByPay = memberListData[0].value
-                    this.getUserDistribution(this.startDate,this.endDate)
-                    this.getLastPayProduct(this.startDate,this.endDate)
                 })
             },
             // 设备活跃情况
             getServiceActive(beginTime,endTime) {
                 this.$service.getActiveDeviceEcharts({beginTime,endTime}).then(data => {
-                    console.log(data)
                     this.setBarEchart('deviceActive','设备活跃情况',data.xaxis,data.series)
                 })
             },
             // 起播活跃率情况
             getBroadcastRate(beginTime,endTime) {
                 this.$service.getBroadcastRateEcharts({beginTime,endTime,category: this.dateData}).then(data => {
-                    console.log(data)
                     const dataObject = []
                     data.data.forEach(item => {
                         dataObject.push({name: item.name, value: item.count})
@@ -928,9 +1020,9 @@
             this.getBusinessToCrowdTotal(this.startDate,this.endDate)
             this.getBusinessUseTendency(this.startDate,this.endDate)
             this.getActiveTimeDistriction(this.startDate,this.endDate)
-            this.getServiceActive(this.startDate,this.endDate)
             this.getBroadcastRate(this.startDate,this.endDate)
             this.getUserWatchPreference(this.startDate,this.endDate)
+            this.getServiceActive(this.time0[0],this.time0[1])
         },
         created() {
             // 设置默认时间为昨天的前一周
@@ -1096,8 +1188,8 @@
         display flex
         .mixed-item
             &:first-child
-                width 40%
-            width 60%
+                width 34%
+            width 66%
     .business-use-text
         width 100px
         text-align center
