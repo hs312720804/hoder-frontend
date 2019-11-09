@@ -38,6 +38,7 @@ import ipManage from '@/views/DevelopTools/ipManage/index'
 import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
 import launchSettings from '@/views/setting/launchSetting'
 import notice from '@/views/setting/messageNotice'
+import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 const children = [
     {
         name: 'homePage',
@@ -238,7 +239,18 @@ const children = [
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
-            }
+            },
+
+            {
+              name: 'AddMoreCrowds',
+              path: 'AddMoreCrowds',
+              component: AddMoreCrowds,
+              meta: {
+                  tagId:"AddMoreCrowds",
+                  title: '添加多个人群',
+                  icon: 'el-icon-cc-file'
+              }
+          },
         ],
     },
     {

@@ -23,13 +23,21 @@
     <div class="TopNav">
       <div class="left">
         <el-button-group>
-          <el-button
+          <!-- <el-button
             type="primary"
             size="small"
             @click="handleAdd"
             v-permission="'hoder:crowd:add'"
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
+          </el-button> -->
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleAdd"
+            v-permission="'hoder:crowd:add'"
+          >
+            <a class="fa fa-plus" style="color: white"></a>新增多个人群
           </el-button>
           <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>
         </el-button-group>
