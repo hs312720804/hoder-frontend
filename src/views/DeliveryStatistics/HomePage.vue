@@ -1,15 +1,21 @@
 <template>
     <div class="launch-statistics">
-        <div class="date-picker">
-            <el-date-picker
-                    v-model="time0"
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期"
-                    value-format="yyyy-MM-dd"
-            >
-            </el-date-picker>
+        <div class="statistics-header">
+            <div class="date-picker">
+                <el-date-picker
+                        v-model="time0"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                >
+                </el-date-picker>
+            </div>
+            <div>
+                <el-button @click="handleOneTouchDrop">创建人群</el-button>
+                <el-button>投放列表</el-button>
+            </div>
         </div>
         <div>
             <div class="crowd-statistic">
@@ -316,22 +322,22 @@
                 // 防止第一次加载页面重复调用接口
                 if(oldVal.length !== 0) {
                     if(this.setDataInMonth(val[0],val[1])){
-                        this.getCrowdSextotal(this.startDate,this.endDate)
-                        this.getCrowdAgetotal(this.startDate,this.endDate)
-                        this.getCrowdDevicetotal(this.startDate,this.endDate)
-                        this.getCrowdProvincetotal(this.startDate,this.endDate)
-                        this.getAllCrowdTotal(this.startDate,this.endDate)
-                        this.setUseSceneCircle(this.startDate,this.endDate)
-                        this.getAllTagTotal(this.startDate,this.endDate)
-                        this.getTagUseTotal(this.startDate,this.endDate)
-                        this.getAllTagRadar(this.startDate,this.endDate)
-                        this.getLaunchTotal(this.startDate,this.endDate)
-                        this.getBusinessUseCrowdTotal(this.startDate,this.endDate)
-                        this.getBusinessToCrowdTotal(this.startDate,this.endDate)
-                        this.getBusinessUseTendency(this.startDate,this.endDate)
-                        this.getActiveTimeDistriction(this.startDate,this.endDate)
-                        this.getBroadcastRate(this.startDate,this.endDate)
-                        this.getUserWatchPreference(this.startDate,this.endDate)
+                        this.getCrowdSextotal(this.time0[0],this.time0[1])
+                        this.getCrowdAgetotal(this.time0[0],this.time0[1])
+                        this.getCrowdDevicetotal(this.time0[0],this.time0[1])
+                        this.getCrowdProvincetotal(this.time0[0],this.time0[1])
+                        this.getAllCrowdTotal(this.time0[0],this.time0[1])
+                        this.setUseSceneCircle(this.time0[0],this.time0[1])
+                        this.getAllTagTotal(this.time0[0],this.time0[1])
+                        this.getTagUseTotal(this.time0[0],this.time0[1])
+                        this.getAllTagRadar(this.time0[0],this.time0[1])
+                        this.getLaunchTotal(this.time0[0],this.time0[1])
+                        this.getBusinessUseCrowdTotal(this.time0[0],this.time0[1])
+                        this.getBusinessToCrowdTotal(this.time0[0],this.time0[1])
+                        this.getBusinessUseTendency(this.time0[0],this.time0[1])
+                        this.getActiveTimeDistriction(this.time0[0],this.time0[1])
+                        this.getBroadcastRate(this.time0[0],this.time0[1])
+                        this.getUserWatchPreference(this.time0[0],this.time0[1])
                         this.getUserDistribution(this.time0[0],this.time0[1])
                         this.getLastPayProduct(this.time0[0],this.time0[1])
                         this.getServiceActive(this.time0[0],this.time0[1])
@@ -1001,6 +1007,11 @@
                     this.dateList = data
                     this.dateData = data[0].value
                 })
+            },
+            handleOneTouchDrop () {
+                this.$router.push({
+                    path: 'oneTouchDrop'
+                })
             }
         },
         mounted () {
@@ -1134,8 +1145,8 @@
         width 90%
         height 240px
         padding 30px
-    .date-picker
-        text-align center
+    /*.date-picker*/
+        /*text-align center*/
     .circle-echarts
         float left
         width 33%
@@ -1212,4 +1223,9 @@
         margin-left 20px
     .active-rate--title
         margin-right 20px
+    .statistics-header
+        display flex
+        justify-content space-between
+        padding-bottom 20px
+        border-bottom 1px dashed #ccc
 </style>

@@ -1,0 +1,219 @@
+<template>
+    <div class="one-drop-create-policy">
+        <div class="left-tree">
+            <div class="all-tag" @click="getTags(0)">全部标签</div>
+            <el-tree
+                    :data="treeData"
+                    node-key="groupId"
+                    ref="tree"
+                    expand-on-click-node
+                    @node-click="handleNodeClick"
+            >
+                    <span slot-scope="{ node, data }" class="tree-child">
+                         <span class="tree-data tree-data--big-size">{{ data.groupName }}</span>
+                    </span>
+            </el-tree>
+        </div>
+        <div class="right-content">
+            <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+            <el-form-item label="策略名称" prop="policyName">
+                <el-input size="small" v-model="addForm.policyName" style="width: 80%"></el-input>
+            </el-form-item>
+            <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签,蓝色为账号标签</div>
+            <el-form-item label="策略纬度" prop="conditionTagIds">
+                <el-tabs tab-position="top">
+                    <div class="strategy-search">
+                        <el-input aria-placeholder="请输入标签关键字进行搜索"
+                                  v-model="searchValue"
+                                  class="strategy-search--input"
+                                  @keyup.enter.native="getTags()"
+                        >
+                        </el-input>
+                        <el-button @click="getTags()">查询</el-button>
+                        <el-button @click="resetSearch">重置</el-button>
+                    </div>
+                    <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
+                        <el-checkbox v-for="item in conditionTagsFiltered"
+                                     :class="item.dataSource === 2 ? 'checkbox--red' : (item.dataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
+                                     :label="item.tagId"
+                                     :key="item.tagId"
+                                     @change="handleTagChange($event,item)"
+                        >
+                            {{item.tagName}}
+                        </el-checkbox>
+                    </el-checkbox-group>
+                    <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+                    <el-pagination
+                            v-if="conditionTagsFiltered != '' "
+                            small
+                            class="pagination"
+                            layout="prev,pager,next"
+                            :total="tagsListTotal"
+                            :page-size="initPageSize"
+                            :current-page="initCurrentPage"
+                            @current-change="handleTagCurrentChange"
+                            @prev-click="handleTagCurrentChange"
+                            @next-click="handleTagCurrentChange"
+                    >
+                    </el-pagination>
+                </el-tabs>
+            </el-form-item>
+            <el-form-item label="已选标签">
+                <el-tag v-for="item in tagList"
+                        :key="item.tagId"
+                        :type= "item.dataSource === 1 ? 'success' : item.dataSource === 2 ? 'danger' : ''"
+                        closable
+                        @close="removeTag(item)"
+                >
+                    {{item.tagName}}
+                </el-tag>
+            </el-form-item>
+        </el-form>
+        <div slot="footer" class="button-footer">
+            <el-button type="warning" @click="saveAndNext">跳过下一步保存</el-button>
+            <el-button type="primary" @click="nextStep">下一步</el-button>
+        </div>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "CreatePolicy",
+        data () {
+            return {
+                treeData: [],
+                pagination: {},
+                addForm: {
+                    policyId: "",
+                    policyName: "",
+                    conditionTagIds: []
+                },
+                addFormRules: {
+                    policyName: [
+                        { required: true, message: "请填写策略名称", trigger: "blur" }
+                    ]
+                },
+                searchValue: '',
+                conditionTagsFiltered: [],
+                tagList: [],
+                initPageSize: 50,
+                tagsListTotal: 0,
+                initCurrentPage: 1,
+            }
+        },
+        methods: {
+            fetchData() {
+                return this.$service.getParentIdList().then((data) => {
+                    this.treeData = data
+                })
+            },
+            handleNodeClick(data) {
+                console.log(data)
+                const id = data.groupId
+                this.getTags(id)
+            },
+            getTags(groupId) {
+                this.$service.getTagGroupTreeList({groupId,pageNum: this.initCurrentPage ,pageSize: this.initPageSize,tagName: this.searchValue}).then((data) => {
+                    console.log(data)
+                    this.conditionTagsFiltered = data.pageInfo.list
+                    this.tagsListTotal = data.pageInfo.total
+                    // this.pagination.pageNum = data.pageInfo.pageNum
+                    // this.pagination.pageSize = data.pageInfo.pageSize
+                })
+            },
+            resetSearch () {
+                this.searchValue = ''
+                let currentTagsId = this.addForm.conditionTagIds
+                this.getTags()
+                this.addForm.conditionTagIds = currentTagsId
+            },
+            handleTagChange(flag,item) {
+                var arr = []
+                if(flag) {this.tagList.push(item)}
+                else {
+                    arr = this.tagList
+                    for(var i=arr.length-1;i>=0;i--) {
+                        if(arr[i].tagId == item.tagId) {arr.splice(i,1)}
+                    }
+                }
+            },
+            handleTagCurrentChange(pages) {
+                this.initCurrentPage = pages
+                this.getTags()
+            },
+            removeTag(tag) {
+                const addForm = this.addForm
+                addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+                this.tagList.splice(this.tagList.indexOf(tag),1)
+            },
+            saveAndNext() {
+                this.$refs.addForm.validate(valid => {
+                    if (valid) {
+                        let addForm = JSON.stringify(this.addForm)
+                        addForm = JSON.parse(addForm)
+                        addForm.conditionTagIds = addForm.conditionTagIds.join(",")
+                        // if (this.addForm.policyId != "") {
+                        //     this.$service.policyUpate(addForm, "编辑成功").then(() => {
+                        //         this.loadData();
+                        //     });
+                        // } else {
+                            this.$service.policyAddSave(addForm, "添加成功").then(() => {
+                                this.loadData();
+                            });
+                        // }
+                    } else {
+                        return false
+                    }
+                })
+            },
+            nextStep () {}
+        },
+        created () {
+            this.fetchData()
+            this.getTags(0)
+        }
+    }
+</script>
+
+<style lang="stylus" scoped>
+.one-drop-create-policy
+    display flex
+.left-tree
+    color #606266
+    background rgb(238, 241, 246)
+    padding 0 20px
+    margin 30px
+    overflow auto
+    -webkit-box-sizing border-box
+    box-sizing border-box
+    -ms-flex-negative 0
+    flex-shrink 0
+    .el-tree
+        background none
+.all-tag
+    margin 20px 0 10px 10px
+    cursor pointer
+.right-content
+    width 80%
+    height auto
+    margin-top 30px
+.strategy-search
+    display flex
+    margin-bottom 10px
+.strategy-search--input
+    width 70%
+    margin-right 20px
+.tags-tips
+    color red
+    font-size 12px
+    margin-left 100px
+.button-footer
+    float right
+.checkbox--red
+    color red
+.checkbox--green
+    color green
+.checkbox--blue
+    color blue
+</style>

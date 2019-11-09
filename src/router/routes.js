@@ -38,6 +38,7 @@ import ipManage from '@/views/DevelopTools/ipManage/index'
 import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
 import launchSettings from '@/views/setting/launchSetting'
 import notice from '@/views/setting/messageNotice'
+import oneTouchDrop from '@/views/OneTouchDrop/Index'
 const children = [
     {
         name: 'homePage',
@@ -565,6 +566,16 @@ const children = [
         meta: {
             title: '投放统计',
             tagId:"statisticsHomePage",
+        }
+    },
+    {
+        name: 'oneTouchDrop',
+        path: 'oneTouchDrop',
+        component: oneTouchDrop,
+        meta: {
+            title: '一键投放',
+            tagId:"oneTouchDrop",
+            hideInMenu: true
         }
     }
 ]
