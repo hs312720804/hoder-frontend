@@ -268,7 +268,7 @@
               <span class="el-form__tip">备注：数字越大排序越靠前</span>
             </el-form-item>
           </el-collapse-item>
-          <a class="app-params__remove-param" @click="handleRemoveParam(index)">
+          <a class="app-params__remove-param" @click="handleRemoveParam(i)">
             <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
           </a>
         </div>
@@ -465,7 +465,7 @@ export default {
     },
     changeSeq () {
       this.inputValue.sort(function (x, y) {
-        return y.crowdOrder - x.crowdOrder
+        return x.crowdOrder - y.crowdOrder
       })
       this.setSeq()
     },
@@ -484,7 +484,7 @@ export default {
     handleAddParam () {
       const length = this.inputValue.length
       this.activeName = length
-      if (length > 5) {
+      if (length >= 5) {
         this.$message({
           type: 'error',
           message: '最多添加5个'
@@ -499,7 +499,7 @@ export default {
           'tagIds': [],
           'purpose': undefined,
           'remark': undefined,
-          'crowdOrder': 1,
+          'crowdOrder': length + 1,
           'rulesJson': {
             condition: 'OR',
             rules: []
@@ -509,15 +509,15 @@ export default {
       this.setSeq()
     },
     setSeq () {
-      let length = this.inputValue.length
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
-        e.crowdOrder = length - index
+        e.crowdOrder = index + 1
         return e
       })
     },
     handleRemoveParam (index) {
       this.inputValue.splice(index, 1)
+      this.setSeq()
     }
   },
   created () {
