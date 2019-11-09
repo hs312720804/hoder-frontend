@@ -265,7 +265,6 @@
             </el-form-item>
             <el-form-item label="排序" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
               <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
-              <span class="el-form__tip">备注：数字越大排序越靠前</span>
             </el-form-item>
           </el-collapse-item>
           <a class="app-params__remove-param" @click="handleRemoveParam(i)">
