@@ -117,7 +117,7 @@
             </div>
         </div>
         <div class="crowd-statistic">
-            <div class="echarts-container border-right" style="width: 70%;height: 400px">
+            <div class="echarts-container border-right" style="width: 60%;height: 400px">
                 <div class="title">用户分布情况</div>
                 <div class="member-select">
                     <div class="member-select--text">按会员权益</div>
@@ -133,7 +133,7 @@
                 </div>
                 <div class="main" ref="userDistribution" style="height: 320px"></div>
             </div>
-            <div class="echarts-container" style="width: 29%">
+            <div class="echarts-container" style="width: 39%">
                 <div class="title">末次付费的会员产品包情况</div>
                 <div class="member-select">
                     <div class="member-select--text">按会员权益</div>
@@ -537,8 +537,8 @@
                             type: 'pie',
                             radius: ['40%','55%'],
                             label: {
-
                                 normal: {
+                                    show: false,
                                     formatter: '  {b|{b}：}{c}  {per|{d}%}  ',
                                     backgroundColor: '#eee',
                                     borderColor: '#aaa',
