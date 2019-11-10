@@ -1,6 +1,6 @@
 <template>
     <div>
-        <add-more-crowd></add-more-crowd>
+        <add-more-crowd @handleBackPrevStep="handleBackPrevStep" @handleToNextStep="handleToNextStep"></add-more-crowd>
     </div>
 </template>
 
@@ -11,7 +11,18 @@
         components: {
             addMoreCrowd
         },
-        data () {}
+        props: ['recordId'],
+        methods : {
+            handleBackPrevStep() {
+                this.$emit('prevStep',2)
+            },
+            handleToNextStep () {
+                this.$emit('nextStep',2)
+            }
+        },
+        created () {
+            console.log(this.recordId)
+        }
     }
 </script>
 

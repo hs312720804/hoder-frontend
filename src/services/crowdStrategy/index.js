@@ -27,6 +27,14 @@ export function policyAddSave(data) {
     data
   })
 }
+// 一键投放新建策略
+export function oneDropPolicyAddSave(data) {
+    return this.fetch({
+        method: 'POST',
+        url: '/api/keyAllLaunch/tempPolicy',
+        data
+    })
+}
 /** 策略编辑*/
 export function policyUpate(data) {
   return this.fetch({

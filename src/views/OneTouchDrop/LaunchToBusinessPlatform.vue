@@ -1,148 +1,153 @@
 <template>
-    <div>
-        <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm">
+    <div class="launchToBusiness">
+        <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
+            <el-form-item label="投放模式" prop="launchMode">
+                <el-checkbox v-model="crowdForm.launchMode.pull">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
+                <el-checkbox v-model="crowdForm.launchMode.push">push模式（用于消息、微信）</el-checkbox>
+            </el-form-item>
+            <div class="border" v-if="crowdForm.launchMode.pull">
+                <div class="tips">投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
+                <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
+                    <el-select
+                            v-model="crowdForm.biIdsPull"
+                            multiple
+                    >
+                        <el-option
+                                v-for="(platform,index) in Platforms"
+                                :label="platform.biName"
+                                :value="platform.biId"
+                                :key="index"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="选择策略" prop="policyIdsPull" class="multipleSelect">
+                    <el-select
+                            v-model="crowdForm.policyIdsPull"
+                            multiple
+                            filterable
+                    >
+                        <el-option
+                                v-for="(strategy,index) in strategyData"
+                                :label="strategy.policyId + '-' +strategy.policyName"
+                                :value="strategy.policyId"
+                                :key="index"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+            </div>
+            <div class="border" v-if="crowdForm.launchMode.push">
+                <div class="tips">投放模式（push）:针对消息、微信</div>
+                <el-form-item label="投放名称" prop="launchName">
+                    <el-input size="small"
+                              v-model="crowdForm.launchName"
+                              placeholder="投放名称"
+                    ></el-input>
+                </el-form-item>
+                <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
+                    <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                        <el-option
+                                v-for="item in launchPlatform"
+                                :key="item.biId+''"
+                                :label="item.biName"
+                                :value="item.biId+''"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="数据来源" prop="dataSource">
+                    <input type="hidden" value="2" v-model="crowdForm.dataSource">
+                    <el-input size="small" readonly value="大数据"></el-input>
+                </el-form-item>
+                <el-form-item label="备注" prop="remark">
+                    <el-input size="small" v-model="crowdForm.remark"></el-input>
+                </el-form-item>
+                <el-form-item label="是否做abTest">
+                    <el-radio-group v-model="crowdForm.abTest">
+                        <el-radio :label="false">否</el-radio>
+                        <el-radio :label="true">是</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
+                    <el-select
+                            filterable
+                            v-model="crowdForm.policyIds"
+                            :key="crowdForm.abTest"
+                            :multiple="!crowdForm.abTest"
+                            placeholder="请选择策略"
+                            @change="getCrowd"
+                            @remove-tag="removeTag"
+                    >
+                        <el-option
+                                v-for="item in strategyPlatform"
+                                :key="item.policyId+''"
+                                :label="item.policyName"
+                                :value="item.policyId+''"
+                        >{{item.policyName}}
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="选择人群" prop="policyCrowdIds">
+                    <div v-if="!crowdForm.abTest">
+                        <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                                <el-checkbox
+                                        v-for="item in v.childs"
+                                        :label="v.policyId+'_'+item.crowdId"
+                                        :key="item.crowdId+''"
+                                        :disabled="item.canLaunch === false"
+                                >{{item.crowdName}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
+                    <div v-else>
+                        <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                                <el-checkbox
+                                        v-for="(item,index) in v.childs"
+                                        :label="item.policyId+'_'+item.crowdId"
+                                        :key="item.crowdId+index"
+                                        :disabled="item.canLaunch === false"
+                                >{{item.crowdName}}
+                                </el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
+                    </div>
+                </el-form-item>
+                <el-form-item label="数据有效期" prop="expiryDay">
+                    <el-select
+                            v-model="crowdForm.expiryDay"
+                    >
+                        <el-option
+                                v-for="(item,index) in effectTimeList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="每天是否更新" prop="autoVersion">
+                    <el-select
+                            v-model="crowdForm.autoVersion"
+                    >
+                        <el-option label="是" :value="1"></el-option>
+                        <el-option label="否" :value="0"></el-option>
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
+                    <el-time-picker
+                            v-model="crowdForm.autoLaunchTime"
+                            value-format="HH:mm:ss"
+                    ></el-time-picker>
+                </el-form-item>
+            </div>
             <el-form-item>
-                <el-checkbox>pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
-                <el-checkbox>push模式（用于消息、微信）</el-checkbox>
-            </el-form-item>
-            <div>投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
-            <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
-                <el-select
-                        v-model="crowdForm.biIdsPull"
-                        multiple
-                >
-                    <el-option
-                            v-for="(platform,index) in Platforms"
-                            :label="platform.biName"
-                            :value="platform.biId"
-                            :key="index"
-                    >
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="选择策略" prop="policyIdsPull" class="multipleSelect">
-                <el-select
-                        v-model="crowdForm.policyIdsPull"
-                        multiple
-                        filterable
-                >
-                    <el-option
-                            v-for="(strategy,index) in strategyData"
-                            :label="strategy.policyId + '-' +strategy.policyName"
-                            :value="strategy.policyId"
-                            :key="index"
-                    >
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <div>投放模式（push）:针对消息、微信</div>
-            <el-form-item label="投放名称" prop="launchName">
-                <el-input size="small"
-                          v-model="crowdForm.launchName"
-                          placeholder="投放名称"
-                ></el-input>
-            </el-form-item>
-            <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
-                    <el-option
-                            v-for="item in launchPlatform"
-                            :key="item.biId+''"
-                            :label="item.biName"
-                            :value="item.biId+''"
-                    >
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="数据来源" prop="dataSource">
-                <input type="hidden" value="2" v-model="crowdForm.dataSource">
-                <el-input size="small" readonly value="大数据"></el-input>
-            </el-form-item>
-            <el-form-item label="备注" prop="remark">
-                <el-input size="small" v-model="crowdForm.remark"></el-input>
-            </el-form-item>
-            <el-form-item label="是否做abTest">
-                <el-radio-group v-model="crowdForm.abTest">
-                    <el-radio :label="false">否</el-radio>
-                    <el-radio :label="true">是</el-radio>
-                </el-radio-group>
-            </el-form-item>
-            <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
-                <el-select
-                        filterable
-                        v-model="crowdForm.policyIds"
-                        :key="crowdForm.abTest"
-                        :multiple="!crowdForm.abTest"
-                        placeholder="请选择策略"
-                        @change="getCrowd"
-                        @remove-tag="removeTag"
-                >
-                    <el-option
-                            v-for="item in strategyPlatform"
-                            :key="item.policyId+''"
-                            :label="item.policyName"
-                            :value="item.policyId+''"
-                    >{{item.policyName}}
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="选择人群" prop="policyCrowdIds">
-                <div v-if="!crowdForm.abTest">
-                    <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                        <el-checkbox-group v-model="crowdForm.policyCrowdIds">
-                            <el-checkbox
-                                    v-for="item in v.childs"
-                                    :label="v.policyId+'_'+item.crowdId"
-                                    :key="item.crowdId+''"
-                                    :disabled="item.canLaunch === false"
-                            >{{item.crowdName}}
-                            </el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                </div>
-                <div v-else>
-                    <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
-                        <el-checkbox-group v-model="crowdForm.policyCrowdIds">
-                            <el-checkbox
-                                    v-for="(item,index) in v.childs"
-                                    :label="item.policyId+'_'+item.crowdId"
-                                    :key="item.crowdId+index"
-                                    :disabled="item.canLaunch === false"
-                            >{{item.crowdName}}
-                            </el-checkbox>
-                        </el-checkbox-group>
-                    </el-form-item>
-                </div>
-            </el-form-item>
-            <el-form-item label="数据有效期" prop="expiryDay">
-                <el-select
-                        v-model="crowdForm.expiryDay"
-                >
-                    <el-option
-                            v-for="(item,index) in effectTimeList"
-                            :key="index"
-                            :label="item.label"
-                            :value="item.value"
-                    >
-                    </el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="每天是否更新" prop="autoVersion">
-                <el-select
-                        v-model="crowdForm.autoVersion"
-                >
-                    <el-option label="是" :value="1"></el-option>
-                    <el-option label="否" :value="0"></el-option>
-                </el-select>
-            </el-form-item>
-            <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
-                <el-time-picker
-                        v-model="crowdForm.autoLaunchTime"
-                        value-format="HH:mm:ss"
-                ></el-time-picker>
-            </el-form-item>
-            <el-form-item>
+                <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
+                <el-button type="warning" @click="submitForm('crowdForm')">存稿不投放</el-button>
                 <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
-                <el-button @click="handleCancel('crowdForm')">取消</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -151,6 +156,7 @@
 <script>
     export default {
         name: "LaunchToBusinessPlatform",
+        props: ['recordId'],
         data () {
             return {
                 crowdForm: {
@@ -166,9 +172,16 @@
                     policyCrowdIds: [],
                     expiryDay: 7,
                     autoVersion: 0,
-                    autoLaunchTime: undefined
+                    autoLaunchTime: undefined,
+                    launchMode: {
+                        pull: true,
+                        push: false
+                    }
                 },
                 rulesData: {
+                    launchMode: [{
+                        required: true, message: "请至少勾选一个投放模式"
+                    }],
                     biIdsPull: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
                     policyIdsPull: [
                         { required: true, message: "请选择策略平台", trigger: "blur" }
@@ -282,6 +295,9 @@
                         return v
                 })
             },
+            handleBackPrevStep () {
+                this.$emit('prevStep',3)
+            }
         },
         created () {
             this.handleGetPlatforms()
@@ -290,6 +306,18 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+.launchToBusiness
+    width 80%
+    margin auto
+    >>> .el-select
+        width 100%
+.border
+    border 1px dashed #ccc
+    border-radius 30px
+    padding 20px
+    margin-bottom 20px
+.tips
+    color #333
+    margin 10px
 </style>

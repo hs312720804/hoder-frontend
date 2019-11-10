@@ -68,11 +68,11 @@
                     {{item.tagName}}
                 </el-tag>
             </el-form-item>
+            <el-form-item>
+                <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
+                <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
+            </el-form-item>
         </el-form>
-        <div slot="footer" class="button-footer">
-            <el-button type="warning" @click="saveAndNext">跳过下一步保存</el-button>
-            <el-button type="primary" @click="nextStep">下一步</el-button>
-        </div>
         </div>
     </div>
 </template>
@@ -85,7 +85,7 @@
                 treeData: [],
                 pagination: {},
                 addForm: {
-                    recordId: "",
+                    recordId: undefined,
                     policyName: "",
                     conditionTagIds: []
                 },
@@ -145,35 +145,34 @@
                 addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
                 this.tagList.splice(this.tagList.indexOf(tag),1)
             },
-            saveAndNext() {
+            saveAndNext(mode) {
                 this.$refs.addForm.validate(valid => {
                     if (valid) {
                         let addForm = JSON.stringify(this.addForm)
                         addForm = JSON.parse(addForm)
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
                         if (this.addForm.recordId != "") {
-                            this.$service.policyUpate(addForm, "策略编辑成功").then(() => {
-                                this.$router.push({ path: 'launch/strategyList' })
+                            this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
+                                this.handleMode(mode)
                             });
                         } else {
-                            this.$service.policyAddSave(addForm, "策略新增成功").then(() => {
-                                this.$router.push({ path: 'launch/strategyList' })
-                            });
+                            this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
+                                console.log(data.recordId)
+                                this.addForm.recordId = data.recordId
+                                this.handleMode(mode)
+                            })
                         }
                     } else {
                         return false
                     }
                 })
             },
-            nextStep () {
-                this.$emit('nextStep',3)
-                // this.$refs.addForm.validate(valid => {
-                //     if (valid) {
-                //         this.$emit('nextStep', 2)
-                //     } else {
-                //         return false
-                //     }
-                // })
+            handleMode (mode) {
+                if (mode === 0) {
+                    this.$router.push({ path: 'launch/strategyList' })
+                } else {
+                    this.$emit('nextStep',1,this.addForm.recordId)
+                }
             }
         },
         created () {
@@ -215,8 +214,6 @@
     color red
     font-size 12px
     margin-left 100px
-.button-footer
-    float right
 .checkbox--red
     color red
 .checkbox--green

@@ -6,7 +6,9 @@
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="handleSave">保存</el-button>
+        <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
+        <el-button type="warning" @click="handleSave">保存</el-button>
+        <el-button type="primary" @click="handleToNextStep">下一步</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -118,10 +120,17 @@ export default {
           rulesJson: data
         }
       })
+    },
+    handleBackPrevStep () {
+        this.$emit('handleBackPrevStep')
+    },
+    handleToNextStep () {
+        this.$emit('handleToNextStep')
     }
   },
   created () {
-    this.handleEdit()
+      console.log(this.recordId)
+      // this.handleEdit()
   }
 }
 </script>
