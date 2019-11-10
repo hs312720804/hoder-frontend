@@ -151,7 +151,7 @@
                         let addForm = JSON.stringify(this.addForm)
                         addForm = JSON.parse(addForm)
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-                        if (this.addForm.recordId != "") {
+                        if (this.addForm.recordId) {
                             this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
                                 this.handleMode(mode)
                             });

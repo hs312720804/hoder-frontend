@@ -1,13 +1,13 @@
 <template>
   <div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="90px">
-      <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="17" />
-      <el-form-item label="人群用途">
+      <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="recordId" />
+      <el-form-item label="人群用途" prop="purpose">
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
       </el-form-item>
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-        <el-button type="warning" @click="handleSave">保存</el-button>
+        <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
         <el-button type="primary" @click="handleToNextStep">下一步</el-button>
       </el-form-item>
     </el-form>
@@ -26,7 +26,7 @@ export default {
         purpose: undefined,
         rulesJson: [
           {
-            'recordId': 17,
+            'recordId': this.getRecordId(),
             'tempCrowdId': undefined,
             'crowdName': undefined,
             'tagIds': [],
@@ -47,6 +47,9 @@ export default {
   },
   props: ['recordId'],
   methods: {
+      getRecordId () {
+          return this.recordId
+      },
     validateForm (rulesJson) {
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
@@ -86,25 +89,32 @@ export default {
       }
       return flag
     },
-    handleSave () {
-      let form = JSON.parse(JSON.stringify(this.form))
-      if (form.purpose !== undefined && form.purpose !== '') {
-        this.$message.error('人群用途不能为空')
-        return
-      }
-      if (!this.validateForm(form.rulesJson)) {
-        return
-      }
-      form.rulesJson = form.rulesJson.map((e) => {
-        e.purpose = form.purpose
-        e.tagIds = e.tagIds.join(',')
-        e.rulesJson = JSON.stringify(e.rulesJson)
-        return e
-      })
-      this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId ? this.recordId : 17 }, '保存成功')
+    handleSave (mode) {
+        let form = JSON.parse(JSON.stringify(this.form))
+        console.log(form)
+        if (form.purpose === undefined || form.purpose === '') {
+            this.$message.error('人群用途不能为空')
+            return
+        }
+        if (!this.validateForm(form.rulesJson)) {
+            return
+        }
+        form.rulesJson = form.rulesJson.map((e) => {
+            e.purpose = form.purpose
+            e.tagIds = e.tagIds.join(',')
+            e.rulesJson = JSON.stringify(e.rulesJson)
+            return e
+        })
+        if(mode === 0) {
+            this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
+                this.$router.push({ path: 'launch/strategyList' })
+            })
+        } else {
+            this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功')
+        }
     },
     handleEdit () {
-      const recordId = this.recordId ? this.recordId : 17
+      const recordId = this.recordId
       let purpose = undefined
       this.$service.getCrowdsDetail(recordId).then((data) => {
         data = data.map((e, index) => {
@@ -125,12 +135,22 @@ export default {
         this.$emit('handleBackPrevStep')
     },
     handleToNextStep () {
-        this.$emit('handleToNextStep')
-    }
+        this.handleSave(1)
+        this.$emit('handleToNextStep',this.recordId)
+    },
+      checkNum(num) {
+          if((/(^\d+$)/).test(num)) {
+              return true
+          }else {
+              this.$message.error('该值为必填项，且必须是大于等于0的整数')
+              return false
+          }
+      },
   },
   created () {
+      console.log('我是人群里面的create')
       console.log(this.recordId)
-      // this.handleEdit()
+      this.handleEdit()
   }
 }
 </script>

@@ -8,9 +8,23 @@
             </el-steps>
         </div>
         <div>
-            <create-policy @nextStep="handleNextStep" v-if="activeStep === 1"></create-policy>
-            <create-crowd :recordId="recordId" @nextStep="handleNextStep" @prevStep="handlePrevStep" v-if="activeStep === 2"></create-crowd>
-            <LaunchToBusiness :recordId="recordId" @nextStep="handleNextStep" @prevStep="handlePrevStep" v-if="activeStep === 3"></LaunchToBusiness>
+            <create-policy
+                    @nextStep="handleNextStep"
+                    v-if="activeStep === 1"
+            ></create-policy>
+            <create-crowd
+                    :recordId="recordId"
+                    @nextStep="handleNextStep"
+                    @prevStep="handlePrevStep"
+                    v-if="activeStep === 2">
+
+            </create-crowd>
+            <LaunchToBusiness
+                    :recordId="recordId"
+                    @nextStep="handleNextStep"
+                    @prevStep="handlePrevStep"
+                    v-if="activeStep === 3"
+            ></LaunchToBusiness>
         </div>
     </div>
 </template>

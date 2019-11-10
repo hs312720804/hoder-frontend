@@ -27,14 +27,6 @@ export function policyAddSave(data) {
     data
   })
 }
-// 一键投放新建策略
-export function oneDropPolicyAddSave(data) {
-    return this.fetch({
-        method: 'POST',
-        url: '/api/keyAllLaunch/tempPolicy',
-        data
-    })
-}
 /** 策略编辑*/
 export function policyUpate(data) {
   return this.fetch({
@@ -388,18 +380,6 @@ export function submitPolicyHistoryData(data) {
     data
   })
 }
-// 新建多个人群
-export function tempCrowds({
-  rulesJson,
-  recordId
-}) {
-  return this.fetch({
-    method: 'post',
-    url: '/api/keyAllLaunch/tempCrowds/' + recordId,
-    data: rulesJson,
-    isJSON: true
-  })
-}
 // 新建多个人群的标签接口
 export function tagInfoNew(recordId) {
   return this.fetch({
@@ -409,10 +389,62 @@ export function tagInfoNew(recordId) {
   })
 }
 
-export function getCrowdsDetail(recordId) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/keyAllLaunch/tempCrowds/' + recordId,
-    isJSON: true
-  })
+// 一键投放
+// 一键投放新建策略
+export function oneDropPolicyAddSave(data) {
+    return this.fetch({
+        method: 'POST',
+        url: '/api/keyAllLaunch/tempPolicy',
+        data,
+        isJSON: true
+    })
 }
+// 获取策略详情
+export function oneDropGetPolicyDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/keyAllLaunch/tempPolicy/'+params
+    })
+}
+// 新建保存多个人群
+export function tempCrowds({rulesJson, recordId}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/keyAllLaunch/tempCrowds/' + recordId,
+        data: rulesJson,
+        isJSON: true
+    })
+}
+// 人群列表获取详情
+export function getCrowdsDetail(recordId) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/keyAllLaunch/tempCrowds/' + recordId
+    })
+}
+// 人群列表点击暂存
+export function oneDropSaveCrowd({recordId,data}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/tempCrowds/notLaunch/' + recordId,
+        data,
+        isJSON: true
+    })
+}
+// 投放点击投放
+export function oneDropCrowdSaveAndLaunch({recordId,data}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/keyAllLaunch/keyLaunch/' + recordId,
+        data,
+        isJSON: true
+    })
+}
+// 存稿不投放
+export function oneDropCrowdSaveAndNotLaunch(recordId) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/keyAllLaunch/saveAndNotLaunch/' + recordId
+    })
+}
+

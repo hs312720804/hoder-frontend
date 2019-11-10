@@ -492,7 +492,7 @@ export default {
       }
       this.inputValue.push(
         {
-          'recordId': 427,
+          'recordId': this.getRecordId(),
           'tempCrowdId': undefined,
           'crowdName': undefined,
           'tagIds': [],
@@ -507,6 +507,9 @@ export default {
       )
       this.setSeq()
     },
+    getRecordId () {
+        return this.recordId
+    },
     setSeq () {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
@@ -517,7 +520,27 @@ export default {
     handleRemoveParam (index) {
       this.inputValue.splice(index, 1)
       this.setSeq()
-    }
+    },
+      checkNum(num) {
+          if((/(^\d+$)/).test(num)) {
+              return true
+          }else {
+              this.$message.error('该值为必填项，且必须是大于等于0的整数')
+              return false
+          }
+      },
+      bigNum(item) {
+          const startDay = item.startDay
+          const endDay = item.endDay
+          this.checkNum(endDay)
+          if(this.checkNum(endDay)) {
+              if(parseInt(startDay) >= parseInt(endDay)) {
+                  this.$message.error('第二个值必须大于第一个值')
+              }else {
+                  item.value = startDay + '-' + endDay
+              }
+          }else{ item.value = '' }
+      }
   },
   created () {
     if (this.value) {

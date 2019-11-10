@@ -146,7 +146,7 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" @click="submitForm('crowdForm')">存稿不投放</el-button>
+                <el-button type="warning" @click="saveNotLaunch()">存稿不投放</el-button>
                 <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
             </el-form-item>
         </el-form>
@@ -215,18 +215,44 @@
                     this.strategyData = data.polices
                 })
             },
-            handleCancel(formName) {
-                this.$refs[formName].resetFields()
+            saveNotLaunch() {
+                this.$service.oneDropCrowdSaveAndNotLaunch(this.recordId).then(() => {
+                    this.$router.push({ path: 'launch/strategyList' })
+                })
             },
             submitForm(formName) {
+                if (this.crowdForm.launchMode.pull || this.crowdForm.launchMode.push) {
+                    this.$message.error('请勾选至少一种投放模式')
+                    return
+                }
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
-                        let formData = JSON.stringify(this.crowdForm)
-                        formData = JSON.parse(formData)
-                        this.$service.saveAddCrowdData(formData).then(() => {
-                            // this.fetchData(this.biId)
-                            debugger
-                            this.$refs[formName].resetFields()
+                        let crowdForm = JSON.stringify(this.crowdForm)
+                        crowdForm = JSON.parse(crowdForm)
+                        if (this.crowdForm.launchMode.push) {
+                            crowdForm.biIds = crowdForm.biIds.join(",")
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
+                        }
+                        let formData = {
+                            pullBiIds: crowdForm.biIdsPull,
+                            pull: crowdForm.launchMode.pull,
+                            push: crowdForm.launchMode.push,
+                            multiVersionCrowd: {
+                                autoLaunchTime:crowdForm.autoLaunchTime,
+                                autoVersion: crowdForm.autoVersion,
+                                biIds: crowdForm.biIds,
+                                expiryDay:  crowdForm.expiryDay,
+                                launchName: crowdForm.launchName,
+                                policyCrowdIds: crowdForm.policyCrowdIds,
+                                calType: crowdForm.calType,
+                                remark: crowdForm.remark
+                            }
+                        }
+                        this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"编辑成功").then(() => {
+                            this.$router.push({ path: 'launch/strategy' })
                         })
                     } else {
                         return false
@@ -241,30 +267,6 @@
                             return { label: item + '天',value: item }
                         })
                     })
-            },
-            saveNormalCrowd () {
-                this.$refs.crowdForm.validate(valid => {
-                    if (valid) {
-                        let crowdForm = JSON.stringify(this.crowdForm)
-                        crowdForm = JSON.parse(crowdForm)
-                        crowdForm.biIds = crowdForm.biIds.join(",")
-                        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
-                        crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-                            return v.split("_")[1]
-                        }).join(",")
-                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
-                                this.callback()
-                            })
-                        } else {
-                            this.$service.saveAddMultiVersionCrowd({model: this.model,data: crowdForm},"新增成功").then(() => {
-                                this.callback()
-                            })
-                        }
-                    } else {
-                        return false
-                    }
-                })
             },
             getCrowd () {
                 let policyId = null
