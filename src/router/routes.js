@@ -241,7 +241,6 @@ const children = [
                     icon: 'el-icon-cc-file',
                 }
             },
-
             {
               name: 'AddMoreCrowds',
               path: 'AddMoreCrowds',
@@ -249,9 +248,10 @@ const children = [
               meta: {
                   tagId:"AddMoreCrowds",
                   title: '添加多个人群',
-                  icon: 'el-icon-cc-file'
+                  icon: 'el-icon-cc-file',
+                  hideInMenu: true
               }
-          },
+            },
         ],
     },
     {

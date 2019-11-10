@@ -1,10 +1,292 @@
 <template>
-    <div>投放到业务平台</div>
+    <div>
+        <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm">
+            <el-form-item>
+                <el-checkbox>pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
+                <el-checkbox>push模式（用于消息、微信）</el-checkbox>
+            </el-form-item>
+            <div>投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
+            <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
+                <el-select
+                        v-model="crowdForm.biIdsPull"
+                        multiple
+                >
+                    <el-option
+                            v-for="(platform,index) in Platforms"
+                            :label="platform.biName"
+                            :value="platform.biId"
+                            :key="index"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="选择策略" prop="policyIdsPull" class="multipleSelect">
+                <el-select
+                        v-model="crowdForm.policyIdsPull"
+                        multiple
+                        filterable
+                >
+                    <el-option
+                            v-for="(strategy,index) in strategyData"
+                            :label="strategy.policyId + '-' +strategy.policyName"
+                            :value="strategy.policyId"
+                            :key="index"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <div>投放模式（push）:针对消息、微信</div>
+            <el-form-item label="投放名称" prop="launchName">
+                <el-input size="small"
+                          v-model="crowdForm.launchName"
+                          placeholder="投放名称"
+                ></el-input>
+            </el-form-item>
+            <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
+                <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                    <el-option
+                            v-for="item in launchPlatform"
+                            :key="item.biId+''"
+                            :label="item.biName"
+                            :value="item.biId+''"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="数据来源" prop="dataSource">
+                <input type="hidden" value="2" v-model="crowdForm.dataSource">
+                <el-input size="small" readonly value="大数据"></el-input>
+            </el-form-item>
+            <el-form-item label="备注" prop="remark">
+                <el-input size="small" v-model="crowdForm.remark"></el-input>
+            </el-form-item>
+            <el-form-item label="是否做abTest">
+                <el-radio-group v-model="crowdForm.abTest">
+                    <el-radio :label="false">否</el-radio>
+                    <el-radio :label="true">是</el-radio>
+                </el-radio-group>
+            </el-form-item>
+            <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
+                <el-select
+                        filterable
+                        v-model="crowdForm.policyIds"
+                        :key="crowdForm.abTest"
+                        :multiple="!crowdForm.abTest"
+                        placeholder="请选择策略"
+                        @change="getCrowd"
+                        @remove-tag="removeTag"
+                >
+                    <el-option
+                            v-for="item in strategyPlatform"
+                            :key="item.policyId+''"
+                            :label="item.policyName"
+                            :value="item.policyId+''"
+                    >{{item.policyName}}
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="选择人群" prop="policyCrowdIds">
+                <div v-if="!crowdForm.abTest">
+                    <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                            <el-checkbox
+                                    v-for="item in v.childs"
+                                    :label="v.policyId+'_'+item.crowdId"
+                                    :key="item.crowdId+''"
+                                    :disabled="item.canLaunch === false"
+                            >{{item.crowdName}}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                </div>
+                <div v-else>
+                    <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                            <el-checkbox
+                                    v-for="(item,index) in v.childs"
+                                    :label="item.policyId+'_'+item.crowdId"
+                                    :key="item.crowdId+index"
+                                    :disabled="item.canLaunch === false"
+                            >{{item.crowdName}}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+                </div>
+            </el-form-item>
+            <el-form-item label="数据有效期" prop="expiryDay">
+                <el-select
+                        v-model="crowdForm.expiryDay"
+                >
+                    <el-option
+                            v-for="(item,index) in effectTimeList"
+                            :key="index"
+                            :label="item.label"
+                            :value="item.value"
+                    >
+                    </el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="每天是否更新" prop="autoVersion">
+                <el-select
+                        v-model="crowdForm.autoVersion"
+                >
+                    <el-option label="是" :value="1"></el-option>
+                    <el-option label="否" :value="0"></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
+                <el-time-picker
+                        v-model="crowdForm.autoLaunchTime"
+                        value-format="HH:mm:ss"
+                ></el-time-picker>
+            </el-form-item>
+            <el-form-item>
+                <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
+                <el-button @click="handleCancel('crowdForm')">取消</el-button>
+            </el-form-item>
+        </el-form>
+    </div>
 </template>
 
 <script>
     export default {
-        name: "LaunchToBusinessPlatform"
+        name: "LaunchToBusinessPlatform",
+        data () {
+            return {
+                crowdForm: {
+                    biIdsPull: [],
+                    policyIdsPull: [],
+                    abTest: false,
+                    launchCrowdId: "", //投放ID
+                    launchName: "", //投放名称
+                    biIds: "", //投放平台ID
+                    remark: "",
+                    //      dataSource: 2,
+                    policyIds: [],
+                    policyCrowdIds: [],
+                    expiryDay: 7,
+                    autoVersion: 0,
+                    autoLaunchTime: undefined
+                },
+                rulesData: {
+                    biIdsPull: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
+                    policyIdsPull: [
+                        { required: true, message: "请选择策略平台", trigger: "blur" }
+                    ],
+                    launchName: [
+                        { required: true, message: "请输入投放名称", trigger: "blur" }
+                    ],
+                    biIds: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
+                    policyIds: [
+                        { required: true, message: "请选择策略平台", trigger: "blur" }
+                    ],
+                    policyCrowdIds: [
+                        { required: true, message: "请选择人群", trigger: "blur" }
+                    ],
+                    autoLaunchTime: [
+                        { required: true, message: "请选择每天更新时间点", trigger: "blur" }
+                    ],
+                },
+                Platforms: [],
+                strategyData: [],
+                launchPlatform: [],
+                strategyPlatform: [],
+                effectTimeList: [],
+                crowdData: [],
+            }
+        },
+        methods: {
+            handleGetPlatforms() {
+                this.$service.getAddCrowdData().then((data) => {
+                    this.Platforms = data.biLists
+                    this.strategyData = data.polices
+                })
+            },
+            handleCancel(formName) {
+                this.$refs[formName].resetFields()
+            },
+            submitForm(formName) {
+                this.$refs[formName].validate((valid) => {
+                    if (valid) {
+                        let formData = JSON.stringify(this.crowdForm)
+                        formData = JSON.parse(formData)
+                        this.$service.saveAddCrowdData(formData).then(() => {
+                            // this.fetchData(this.biId)
+                            debugger
+                            this.$refs[formName].resetFields()
+                        })
+                    } else {
+                        return false
+                    }
+                })
+            },
+            getCrowdInitList () {
+                    this.$service.addMultiVersionCrowd(0).then(data => {
+                        this.launchPlatform = data.biLists
+                        this.strategyPlatform = data.policies
+                        this.effectTimeList = data.efTime.map(item => {
+                            return { label: item + '天',value: item }
+                        })
+                    })
+            },
+            saveNormalCrowd () {
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        let crowdForm = JSON.stringify(this.crowdForm)
+                        crowdForm = JSON.parse(crowdForm)
+                        crowdForm.biIds = crowdForm.biIds.join(",")
+                        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                        crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                            return v.split("_")[1]
+                        }).join(",")
+                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
+                            this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
+                                this.callback()
+                            })
+                        } else {
+                            this.$service.saveAddMultiVersionCrowd({model: this.model,data: crowdForm},"新增成功").then(() => {
+                                this.callback()
+                            })
+                        }
+                    } else {
+                        return false
+                    }
+                })
+            },
+            getCrowd () {
+                let policyId = null
+                if (this.crowdForm.abTest) {
+                    policyId = this.crowdForm.policyIds
+                } else {
+                    policyId = this.crowdForm.policyIds.join(",")
+                }
+                this.$service
+                .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+                .then(data => {
+                    if(this.crowdForm.abTest) {
+                        let newDataForm = []
+                        const pid = Object.keys(data[0].childs)
+                        pid.forEach((item) => {
+                            newDataForm.push({Pid: item, childs: data[0].childs[item]})
+                        })
+                        this.crowdData = newDataForm
+                    }else {
+                        this.crowdData = data
+                    }
+                })
+                .catch(err => {})
+            },
+            removeTag (policyId) {
+                this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
+                    if(v.split("_")[0]!=policyId)
+                        return v
+                })
+            },
+        },
+        created () {
+            this.handleGetPlatforms()
+            this.getCrowdInitList()
+        }
     }
 </script>
 
