@@ -80,6 +80,7 @@
 <script>
     export default {
         name: "CreatePolicy",
+        props: ['recordId','initTagList'],
         data () {
             return {
                 treeData: [],
@@ -157,7 +158,6 @@
                             });
                         } else {
                             this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
-                                console.log(data.recordId)
                                 this.addForm.recordId = data.recordId
                                 this.handleMode(mode)
                             })
@@ -171,13 +171,30 @@
                 if (mode === 0) {
                     this.$router.push({ path: 'launch/strategyList' })
                 } else {
-                    this.$emit('nextStep',1,this.addForm.recordId)
+                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
                 }
+            },
+            getPolicyDetail () {
+                this.$service.oneDropGetPolicyDetail(this.recordId).then((data)=> {
+                    const formData = data
+                    formData.conditionTagIds = formData.conditionTagIds.split(',').map(function(v) {
+                        return parseInt(v)
+                    })
+                    this.addForm = {
+                        recordId: this.recordId,
+                        policyName: formData.policyName,
+                        conditionTagIds: formData.conditionTagIds
+                    }
+                })
             }
         },
         created () {
             this.fetchData()
             this.getTags(0)
+            if (this.recordId) {
+                this.getPolicyDetail()
+                this.tagList = this.initTagList
+            }
         }
     }
 </script>

@@ -18,16 +18,14 @@
         },
         props: ['recordId'],
         methods : {
-            handleBackPrevStep() {
-                this.$emit('prevStep',2)
+            handleBackPrevStep(recordId) {
+                this.$emit('crowdPrevStep',2,recordId)
             },
-            handleToNextStep (recordId) {
-                this.$emit('nextStep',2,recordId)
+            handleToNextStep (recordId,currentPolicy) {
+                this.$emit('crowdNextStep',2,recordId,currentPolicy)
             }
         },
         created () {
-            console.log('我是create')
-            console.log(this.recordId)
             this.brotherRecordId = this.recordId
         }
     }

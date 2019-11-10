@@ -21,17 +21,21 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="选择策略" prop="policyIdsPull" class="multipleSelect">
+                <el-form-item label="当前策略">
                     <el-select
                             v-model="crowdForm.policyIdsPull"
-                            multiple
-                            filterable
+                            disabled
                     >
+                        <!--<el-option-->
+                                <!--v-for="(strategy,index) in strategyData"-->
+                                <!--:label="strategy.policyId + '-' +strategy.policyName"-->
+                                <!--:value="strategy.policyId"-->
+                                <!--:key="index"-->
+                        <!--&gt;-->
+                        <!--</el-option>-->
                         <el-option
-                                v-for="(strategy,index) in strategyData"
-                                :label="strategy.policyId + '-' +strategy.policyName"
-                                :value="strategy.policyId"
-                                :key="index"
+                                :label="strategyData.policyId + '-' +strategyData.policyName"
+                                :value="strategyData.policyId"
                         >
                         </el-option>
                     </el-select>
@@ -143,6 +147,11 @@
                             value-format="HH:mm:ss"
                     ></el-time-picker>
                 </el-form-item>
+                <el-form-item label="数据类型">
+                    <el-checkbox-group v-model="crowdForm.calType">
+                        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
+                    </el-checkbox-group>
+                </el-form-item>
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
@@ -156,12 +165,12 @@
 <script>
     export default {
         name: "LaunchToBusinessPlatform",
-        props: ['recordId'],
+        props: ['recordId','currentPolicy'],
         data () {
             return {
                 crowdForm: {
                     biIdsPull: [],
-                    policyIdsPull: [],
+                    policyIdsPull: '',
                     abTest: false,
                     launchCrowdId: "", //投放ID
                     launchName: "", //投放名称
@@ -176,16 +185,17 @@
                     launchMode: {
                         pull: true,
                         push: false
-                    }
+                    },
+                    calType: ['0']
                 },
                 rulesData: {
                     launchMode: [{
                         required: true, message: "请至少勾选一个投放模式"
                     }],
                     biIdsPull: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
-                    policyIdsPull: [
-                        { required: true, message: "请选择策略平台", trigger: "blur" }
-                    ],
+                    // policyIdsPull: [
+                    //     { required: true, message: "请选择策略平台", trigger: "blur" }
+                    // ],
                     launchName: [
                         { required: true, message: "请输入投放名称", trigger: "blur" }
                     ],
@@ -201,19 +211,24 @@
                     ],
                 },
                 Platforms: [],
-                strategyData: [],
+                strategyData: {
+                    policyId: undefined,
+                    policyName: ''
+                },
                 launchPlatform: [],
                 strategyPlatform: [],
                 effectTimeList: [],
                 crowdData: [],
+                estimateItems: []
             }
         },
         methods: {
-            handleGetPlatforms() {
+            handleGetCurrentPolicy() {
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
-                    this.strategyData = data.polices
                 })
+                this.strategyData = this.currentPolicy
+                this.crowdForm.policyIdsPull = this.currentPolicy.policyId
             },
             saveNotLaunch() {
                 this.$service.oneDropCrowdSaveAndNotLaunch(this.recordId).then(() => {
@@ -221,7 +236,7 @@
                 })
             },
             submitForm(formName) {
-                if (this.crowdForm.launchMode.pull || this.crowdForm.launchMode.push) {
+                if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
                     this.$message.error('请勾选至少一种投放模式')
                     return
                 }
@@ -231,6 +246,7 @@
                         crowdForm = JSON.parse(crowdForm)
                         if (this.crowdForm.launchMode.push) {
                             crowdForm.biIds = crowdForm.biIds.join(",")
+                            crowdForm.calType = crowdForm.calType.join(",")
                             crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
                             crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
                                 return v.split("_")[1]
@@ -240,7 +256,7 @@
                             pullBiIds: crowdForm.biIdsPull,
                             pull: crowdForm.launchMode.pull,
                             push: crowdForm.launchMode.push,
-                            multiVersionCrowd: {
+                            multiVersionCrowd: this.crowdForm.launchMode.push ? {
                                 autoLaunchTime:crowdForm.autoLaunchTime,
                                 autoVersion: crowdForm.autoVersion,
                                 biIds: crowdForm.biIds,
@@ -249,10 +265,13 @@
                                 policyCrowdIds: crowdForm.policyCrowdIds,
                                 calType: crowdForm.calType,
                                 remark: crowdForm.remark
-                            }
+                            }: undefined
                         }
-                        this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"编辑成功").then(() => {
-                            this.$router.push({ path: 'launch/strategy' })
+                        this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
+                            // 一键投放成功之后，调'未同步'的接口，手动进行同步
+                            this.$service.freshCache({policyId: data.policyId}).then(() => {
+                                this.$router.push({ path: 'launch/strategy' })
+                            })
                         })
                     } else {
                         return false
@@ -298,11 +317,17 @@
                 })
             },
             handleBackPrevStep () {
-                this.$emit('prevStep',3)
+                this.$emit('launchPrevStep',3)
+            },
+            getCountDataEnum () {
+                this.$service.getEstimateType().then((data) => {
+                    this.estimateItems = data
+                })
             }
         },
         created () {
-            this.handleGetPlatforms()
+            this.getCountDataEnum ()
+            this.handleGetCurrentPolicy()
             this.getCrowdInitList()
         }
     }

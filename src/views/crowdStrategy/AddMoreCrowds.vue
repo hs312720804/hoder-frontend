@@ -8,7 +8,7 @@
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
-        <el-button type="primary" @click="handleToNextStep">下一步</el-button>
+        <el-button type="primary" @click="handleSave(1)">下一步</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -42,7 +42,8 @@ export default {
       },
       formRules: {
         purpose: [{ required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur' }]
-      }
+      },
+      currentPolicy: {}
     }
   },
   props: ['recordId'],
@@ -91,7 +92,6 @@ export default {
     },
     handleSave (mode) {
         let form = JSON.parse(JSON.stringify(this.form))
-        console.log(form)
         if (form.purpose === undefined || form.purpose === '') {
             this.$message.error('人群用途不能为空')
             return
@@ -110,7 +110,13 @@ export default {
                 this.$router.push({ path: 'launch/strategyList' })
             })
         } else {
-            this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功')
+            this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功').then((data) => {
+                this.currentPolicy = {
+                    policyId: data.tempPolicy.id,
+                    policyName: data.tempPolicy.policyName
+                }
+                this.$emit('handleToNextStep',this.recordId,this.currentPolicy)
+            })
         }
     },
     handleEdit () {
@@ -132,11 +138,7 @@ export default {
       })
     },
     handleBackPrevStep () {
-        this.$emit('handleBackPrevStep')
-    },
-    handleToNextStep () {
-        this.handleSave(1)
-        this.$emit('handleToNextStep',this.recordId)
+        this.$emit('handleBackPrevStep',this.recordId)
     },
       checkNum(num) {
           if((/(^\d+$)/).test(num)) {
@@ -148,8 +150,6 @@ export default {
       },
   },
   created () {
-      console.log('我是人群里面的create')
-      console.log(this.recordId)
       this.handleEdit()
   }
 }

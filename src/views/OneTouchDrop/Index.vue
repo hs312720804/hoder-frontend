@@ -9,20 +9,22 @@
         </div>
         <div>
             <create-policy
-                    @nextStep="handleNextStep"
+                    @policyNextStep="handlePolicyNextStep"
                     v-if="activeStep === 1"
+                    :recordId="recordId"
+                    :initTagList="initTagList"
             ></create-policy>
             <create-crowd
                     :recordId="recordId"
-                    @nextStep="handleNextStep"
-                    @prevStep="handlePrevStep"
+                    @crowdNextStep="handleCrowdNextStep"
+                    @crowdPrevStep="handleCrowdPrevStep"
                     v-if="activeStep === 2">
-
             </create-crowd>
             <LaunchToBusiness
                     :recordId="recordId"
+                    :currentPolicy="currentPolicy"
                     @nextStep="handleNextStep"
-                    @prevStep="handlePrevStep"
+                    @launchPrevStep="handleLaunchPrevStep"
                     v-if="activeStep === 3"
             ></LaunchToBusiness>
         </div>
@@ -43,7 +45,9 @@
         data () {
             return {
                 activeStep: 1,
-                recordId: undefined
+                recordId: undefined,
+                currentPolicy: {},
+                initTagList: []
             }
         },
         methods: {
@@ -51,8 +55,22 @@
                 this.activeStep = step + 1
                 this.recordId = recordId
             },
-            handlePrevStep(step) {
+            handleCrowdNextStep (step,recordId,currentPolicy) {
+                this.activeStep = step + 1
+                this.recordId = recordId
+                this.currentPolicy = currentPolicy
+            },
+            handleCrowdPrevStep(step,recordId) {
                 this.activeStep = step - 1
+                this.recordId = recordId
+            },
+            handleLaunchPrevStep (step) {
+                this.activeStep = step - 1
+            },
+            handlePolicyNextStep (recordId,tagList) {
+                this.activeStep = 2
+                this.recordId = recordId
+                this.initTagList = tagList
             }
         }
     }
