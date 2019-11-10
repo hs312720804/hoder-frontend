@@ -68,11 +68,11 @@
                     {{item.tagName}}
                 </el-tag>
             </el-form-item>
+            <el-form-item>
+                <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
+                <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
+            </el-form-item>
         </el-form>
-        <div slot="footer" class="button-footer">
-            <el-button type="warning" @click="saveAndNext">跳过下一步保存</el-button>
-            <el-button type="primary" @click="nextStep">下一步</el-button>
-        </div>
         </div>
     </div>
 </template>
@@ -80,12 +80,13 @@
 <script>
     export default {
         name: "CreatePolicy",
+        props: ['recordId','initTagList'],
         data () {
             return {
                 treeData: [],
                 pagination: {},
                 addForm: {
-                    policyId: "",
+                    recordId: undefined,
                     policyName: "",
                     conditionTagIds: []
                 },
@@ -109,13 +110,11 @@
                 })
             },
             handleNodeClick(data) {
-                console.log(data)
                 const id = data.groupId
                 this.getTags(id)
             },
             getTags(groupId) {
                 this.$service.getTagGroupTreeList({groupId,pageNum: this.initCurrentPage ,pageSize: this.initPageSize,tagName: this.searchValue}).then((data) => {
-                    console.log(data)
                     this.conditionTagsFiltered = data.pageInfo.list
                     this.tagsListTotal = data.pageInfo.total
                     // this.pagination.pageNum = data.pageInfo.pageNum
@@ -147,31 +146,55 @@
                 addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
                 this.tagList.splice(this.tagList.indexOf(tag),1)
             },
-            saveAndNext() {
+            saveAndNext(mode) {
                 this.$refs.addForm.validate(valid => {
                     if (valid) {
                         let addForm = JSON.stringify(this.addForm)
                         addForm = JSON.parse(addForm)
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-                        // if (this.addForm.policyId != "") {
-                        //     this.$service.policyUpate(addForm, "编辑成功").then(() => {
-                        //         this.loadData();
-                        //     });
-                        // } else {
-                            this.$service.policyAddSave(addForm, "添加成功").then(() => {
-                                this.loadData();
+                        if (this.addForm.recordId) {
+                            this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
+                                this.handleMode(mode)
                             });
-                        // }
+                        } else {
+                            this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
+                                this.addForm.recordId = data.recordId
+                                this.handleMode(mode)
+                            })
+                        }
                     } else {
                         return false
                     }
                 })
             },
-            nextStep () {}
+            handleMode (mode) {
+                if (mode === 0) {
+                    this.$router.push({ path: 'launch/strategyList' })
+                } else {
+                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                }
+            },
+            getPolicyDetail () {
+                this.$service.oneDropGetPolicyDetail(this.recordId).then((data)=> {
+                    const formData = data
+                    formData.conditionTagIds = formData.conditionTagIds.split(',').map(function(v) {
+                        return parseInt(v)
+                    })
+                    this.addForm = {
+                        recordId: this.recordId,
+                        policyName: formData.policyName,
+                        conditionTagIds: formData.conditionTagIds
+                    }
+                })
+            }
         },
         created () {
             this.fetchData()
             this.getTags(0)
+            if (this.recordId) {
+                this.getPolicyDetail()
+                this.tagList = this.initTagList
+            }
         }
     }
 </script>
@@ -208,8 +231,6 @@
     color red
     font-size 12px
     margin-left 100px
-.button-footer
-    float right
 .checkbox--red
     color red
 .checkbox--green

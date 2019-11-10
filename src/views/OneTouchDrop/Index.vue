@@ -8,9 +8,25 @@
             </el-steps>
         </div>
         <div>
-            <create-policy v-if="activeStep === 1"></create-policy>
-            <create-crowd v-if="activeStep === 2"></create-crowd>
-            <LaunchToBusiness v-if="activeStep === 3"></LaunchToBusiness>
+            <create-policy
+                    @policyNextStep="handlePolicyNextStep"
+                    v-if="activeStep === 1"
+                    :recordId="recordId"
+                    :initTagList="initTagList"
+            ></create-policy>
+            <create-crowd
+                    :recordId="recordId"
+                    @crowdNextStep="handleCrowdNextStep"
+                    @crowdPrevStep="handleCrowdPrevStep"
+                    v-if="activeStep === 2">
+            </create-crowd>
+            <LaunchToBusiness
+                    :recordId="recordId"
+                    :currentPolicy="currentPolicy"
+                    @nextStep="handleNextStep"
+                    @launchPrevStep="handleLaunchPrevStep"
+                    v-if="activeStep === 3"
+            ></LaunchToBusiness>
         </div>
     </div>
 </template>
@@ -28,12 +44,39 @@
         },
         data () {
             return {
-                activeStep: 1
+                activeStep: 1,
+                recordId: undefined,
+                currentPolicy: {},
+                initTagList: []
+            }
+        },
+        methods: {
+            handleNextStep(step,recordId) {
+                this.activeStep = step + 1
+                this.recordId = recordId
+            },
+            handleCrowdNextStep (step,recordId,currentPolicy) {
+                this.activeStep = step + 1
+                this.recordId = recordId
+                this.currentPolicy = currentPolicy
+            },
+            handleCrowdPrevStep(step,recordId) {
+                this.activeStep = step - 1
+                this.recordId = recordId
+            },
+            handleLaunchPrevStep (step) {
+                this.activeStep = step - 1
+            },
+            handlePolicyNextStep (recordId,tagList) {
+                this.activeStep = 2
+                this.recordId = recordId
+                this.initTagList = tagList
             }
         }
     }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+.header
+    margin-bottom 20px
 </style>
