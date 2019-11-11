@@ -1,6 +1,6 @@
 <template>
     <div>
-        <add-more-crowd :recordId="brotherRecordId" @handleBackPrevStep="handleBackPrevStep" @handleToNextStep="handleToNextStep"></add-more-crowd>
+        <add-more-crowd @resetFormData="resetFormData" :recordId="brotherRecordId" @handleBackPrevStep="handleBackPrevStep" @handleToNextStep="handleToNextStep"></add-more-crowd>
     </div>
 </template>
 
@@ -21,8 +21,11 @@
             handleBackPrevStep(recordId) {
                 this.$emit('crowdPrevStep',2,recordId)
             },
-            handleToNextStep (recordId,currentPolicy) {
-                this.$emit('crowdNextStep',2,recordId,currentPolicy)
+            handleToNextStep (recordId,tempPolicyAndCrowd) {
+                this.$emit('crowdNextStep',2,recordId,tempPolicyAndCrowd)
+            },
+            resetFormData () {
+                this.$emit('resetFormData')
             }
         },
         created () {

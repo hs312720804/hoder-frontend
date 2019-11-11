@@ -34,7 +34,7 @@
                         <!--&gt;-->
                         <!--</el-option>-->
                         <el-option
-                                :label="strategyData.policyId + '-' +strategyData.policyName"
+                                :label="strategyData.policyName"
                                 :value="strategyData.policyId"
                         >
                         </el-option>
@@ -67,19 +67,11 @@
                 <el-form-item label="备注" prop="remark">
                     <el-input size="small" v-model="crowdForm.remark"></el-input>
                 </el-form-item>
-                <el-form-item label="是否做abTest">
-                    <el-radio-group v-model="crowdForm.abTest">
-                        <el-radio :label="false">否</el-radio>
-                        <el-radio :label="true">是</el-radio>
-                    </el-radio-group>
-                </el-form-item>
-                <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
+                <el-form-item label="选择策略" prop="policyIds">
                     <el-select
                             filterable
                             v-model="crowdForm.policyIds"
-                            :key="crowdForm.abTest"
-                            :multiple="!crowdForm.abTest"
-                            placeholder="请选择策略"
+                            disabled
                             @change="getCrowd"
                             @remove-tag="removeTag"
                     >
@@ -87,13 +79,12 @@
                                 v-for="item in strategyPlatform"
                                 :key="item.policyId+''"
                                 :label="item.policyName"
-                                :value="item.policyId+''"
+                                :value="item.policyId"
                         >{{item.policyName}}
                         </el-option>
                     </el-select>
                 </el-form-item>
                 <el-form-item label="选择人群" prop="policyCrowdIds">
-                    <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds">
                                 <el-checkbox
@@ -105,20 +96,6 @@
                                 </el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
-                    </div>
-                    <div v-else>
-                        <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds">
-                                <el-checkbox
-                                        v-for="(item,index) in v.childs"
-                                        :label="item.policyId+'_'+item.crowdId"
-                                        :key="item.crowdId+index"
-                                        :disabled="item.canLaunch === false"
-                                >{{item.crowdName}}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </div>
                 </el-form-item>
                 <el-form-item label="数据有效期" prop="expiryDay">
                     <el-select
@@ -165,7 +142,7 @@
 <script>
     export default {
         name: "LaunchToBusinessPlatform",
-        props: ['recordId','currentPolicy'],
+        props: ['recordId','tempPolicyAndCrowd'],
         data () {
             return {
                 crowdForm: {
@@ -227,11 +204,29 @@
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
                 })
-                this.strategyData = this.currentPolicy
-                this.crowdForm.policyIdsPull = this.currentPolicy.policyId
+                debugger
+                const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
+                const currentPolicy = {
+                    policyId: tempPolicyAndCrowdData.tempPolicy.id,
+                    policyName: tempPolicyAndCrowdData.tempPolicy.policyName
+                }
+                this.strategyData = currentPolicy
+                let crowdTempArr = []
+                let crowdArr = crowdTempArr.concat(currentPolicy)
+                this.strategyPlatform = crowdArr
+                this.crowdForm.policyIdsPull = currentPolicy.policyId
+                this.crowdForm.policyIds = currentPolicy.policyId
+                let arr = []
+                let currentCrowd = {
+                    policyId: tempPolicyAndCrowdData.tempPolicy.id,
+                    policyName: tempPolicyAndCrowdData.tempPolicy.policyName,
+                    childs: tempPolicyAndCrowdData.tempCrowds
+                }
+                this.crowdData = arr.concat(currentCrowd)
             },
             saveNotLaunch() {
                 this.$service.oneDropCrowdSaveAndNotLaunch(this.recordId).then(() => {
+                    this.$emit('resetFormData')
                     this.$router.push({ path: 'launch/strategyList' })
                 })
             },
@@ -269,6 +264,7 @@
                         }
                         this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
+                            this.$emit('resetFormData')
                             this.$service.freshCache({policyId: data.policyId}).then(() => {
                                 this.$router.push({ path: 'launch/strategy' })
                             })
@@ -281,7 +277,7 @@
             getCrowdInitList () {
                     this.$service.addMultiVersionCrowd(0).then(data => {
                         this.launchPlatform = data.biLists
-                        this.strategyPlatform = data.policies
+                        // this.strategyPlatform = data.policies
                         this.effectTimeList = data.efTime.map(item => {
                             return { label: item + '天',value: item }
                         })

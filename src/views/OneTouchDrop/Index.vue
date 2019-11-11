@@ -13,18 +13,21 @@
                     v-if="activeStep === 1"
                     :recordId="recordId"
                     :initTagList="initTagList"
+                    @resetFormData="resetFormData"
             ></create-policy>
             <create-crowd
                     :recordId="recordId"
                     @crowdNextStep="handleCrowdNextStep"
                     @crowdPrevStep="handleCrowdPrevStep"
+                    @resetFormData="resetFormData"
                     v-if="activeStep === 2">
             </create-crowd>
             <LaunchToBusiness
                     :recordId="recordId"
-                    :currentPolicy="currentPolicy"
+                    :tempPolicyAndCrowd="tempPolicyAndCrowd"
                     @nextStep="handleNextStep"
                     @launchPrevStep="handleLaunchPrevStep"
+                    @resetFormData="resetFormData"
                     v-if="activeStep === 3"
             ></LaunchToBusiness>
         </div>
@@ -46,7 +49,7 @@
             return {
                 activeStep: 1,
                 recordId: undefined,
-                currentPolicy: {},
+                tempPolicyAndCrowd: {},
                 initTagList: []
             }
         },
@@ -55,10 +58,10 @@
                 this.activeStep = step + 1
                 this.recordId = recordId
             },
-            handleCrowdNextStep (step,recordId,currentPolicy) {
+            handleCrowdNextStep (step,recordId,tempPolicyAndCrowd) {
                 this.activeStep = step + 1
                 this.recordId = recordId
-                this.currentPolicy = currentPolicy
+                this.tempPolicyAndCrowd = tempPolicyAndCrowd
             },
             handleCrowdPrevStep(step,recordId) {
                 this.activeStep = step - 1
@@ -71,6 +74,10 @@
                 this.activeStep = 2
                 this.recordId = recordId
                 this.initTagList = tagList
+            },
+            resetFormData () {
+                this.activeStep = 1
+                this.recordId = undefined
             }
         }
     }
