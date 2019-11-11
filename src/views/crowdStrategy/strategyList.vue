@@ -396,6 +396,7 @@ export default {
   },
   props: ["historyFilter"],
   created() {
+    this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
     const start = new Date()
     const end = new Date()
