@@ -102,6 +102,7 @@
         methods: {
             resetForm () {
                     this.addForm = this.genDefaultForm()
+                    this.tagList = []
             },
             genDefaultForm () {
                 return {
