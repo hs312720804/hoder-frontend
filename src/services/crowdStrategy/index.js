@@ -426,7 +426,7 @@ export function getCrowdsDetail(recordId) {
 export function oneDropSaveCrowd({recordId,data}) {
     return this.fetch({
         method: 'post',
-        url: '/api/tempCrowds/notLaunch/' + recordId,
+        url: '/api/keyAllLaunch/tempCrowds/notLaunch/' + recordId,
         data,
         isJSON: true
     })
