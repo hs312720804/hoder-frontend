@@ -42,8 +42,7 @@ export default {
       },
       formRules: {
         purpose: [{ required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur' }]
-      },
-      currentPolicy: {}
+      }
     }
   },
   props: ['recordId'],
@@ -108,14 +107,11 @@ export default {
         if(mode === 0) {
             this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
                 this.$router.push({ path: 'launch/strategyList' })
+                this.$emit('resetFormData')
             })
         } else {
             this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功').then((data) => {
-                this.currentPolicy = {
-                    policyId: data.tempPolicy.id,
-                    policyName: data.tempPolicy.policyName
-                }
-                this.$emit('handleToNextStep',this.recordId,this.currentPolicy)
+                this.$emit('handleToNextStep',this.recordId,data)
             })
         }
     },
@@ -140,14 +136,14 @@ export default {
     handleBackPrevStep () {
         this.$emit('handleBackPrevStep',this.recordId)
     },
-      checkNum(num) {
-          if((/(^\d+$)/).test(num)) {
-              return true
-          }else {
-              this.$message.error('该值为必填项，且必须是大于等于0的整数')
-              return false
-          }
-      },
+    checkNum(num) {
+        if((/(^\d+$)/).test(num)) {
+            return true
+        }else {
+            this.$message.error('该值为必填项，且必须是大于等于0的整数')
+            return false
+        }
+    },
   },
   created () {
       this.handleEdit()

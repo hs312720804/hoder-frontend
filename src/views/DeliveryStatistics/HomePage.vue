@@ -13,8 +13,8 @@
                 </el-date-picker>
             </div>
             <div>
-                <el-button @click="handleOneTouchDrop">创建人群</el-button>
-                <el-button>投放列表</el-button>
+                <el-button type="primary" @click="handleOneTouchDrop">创建人群</el-button>
+                <el-button type="warning">投放列表</el-button>
             </div>
         </div>
         <div>

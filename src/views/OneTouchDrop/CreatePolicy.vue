@@ -85,11 +85,7 @@
             return {
                 treeData: [],
                 pagination: {},
-                addForm: {
-                    recordId: undefined,
-                    policyName: "",
-                    conditionTagIds: []
-                },
+                addForm: this.genDefaultForm(),
                 addFormRules: {
                     policyName: [
                         { required: true, message: "请填写策略名称", trigger: "blur" }
@@ -104,6 +100,16 @@
             }
         },
         methods: {
+            resetForm () {
+                    this.addForm = this.genDefaultForm()
+            },
+            genDefaultForm () {
+                return {
+                    recordId: undefined,
+                    policyName: "",
+                    conditionTagIds: []
+                }
+            },
             fetchData() {
                 return this.$service.getParentIdList().then((data) => {
                     this.treeData = data
@@ -152,27 +158,32 @@
                         let addForm = JSON.stringify(this.addForm)
                         addForm = JSON.parse(addForm)
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-                        if (this.addForm.recordId) {
-                            this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
-                                this.handleMode(mode)
-                            });
+                        if (mode === 1) {
+                            if (this.addForm.recordId) {
+                                this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
+                                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                                });
+                            } else {
+                                this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
+                                    this.addForm.recordId = data.recordId
+                                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                                })
+                            }
                         } else {
-                            this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
-                                this.addForm.recordId = data.recordId
-                                this.handleMode(mode)
+                            let oldFormData = {
+                                policyName: addForm.policyName,
+                                conditionTagIds: addForm.conditionTagIds
+                            }
+                            this.$service.policyAddSave(oldFormData, "策略新增成功").then(() => {
+                                this.$router.push({ path: 'launch/strategyList' })
+                                this.resetForm()
+                                this.$emit('resetFormData')
                             })
                         }
                     } else {
                         return false
                     }
                 })
-            },
-            handleMode (mode) {
-                if (mode === 0) {
-                    this.$router.push({ path: 'launch/strategyList' })
-                } else {
-                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                }
             },
             getPolicyDetail () {
                 this.$service.oneDropGetPolicyDetail(this.recordId).then((data)=> {
