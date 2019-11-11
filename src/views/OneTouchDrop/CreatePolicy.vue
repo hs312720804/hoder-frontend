@@ -161,7 +161,7 @@
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
                         if (mode === 1) {
                             if (this.addForm.recordId) {
-                                this.$service.oneDropPolicyAddSave(addForm).then(() => {
+                                this.$service.oneDropPolicyAddSave(addForm).then((data) => {
                                     if (data.policyId) {
                                         this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
                                             confirmButtonText: '确定',

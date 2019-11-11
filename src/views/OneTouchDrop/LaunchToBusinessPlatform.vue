@@ -154,7 +154,7 @@
                     biIds: "", //投放平台ID
                     remark: "",
                     //      dataSource: 2,
-                    policyIds: [],
+                    policyIds: '',
                     policyCrowdIds: [],
                     expiryDay: 7,
                     autoVersion: 0,
@@ -204,10 +204,9 @@
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
                 })
-                debugger
                 const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
                 const currentPolicy = {
-                    policyId: tempPolicyAndCrowdData.tempPolicy.id,
+                    policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
                     policyName: tempPolicyAndCrowdData.tempPolicy.policyName
                 }
                 this.strategyData = currentPolicy
@@ -216,25 +215,21 @@
                 this.strategyPlatform = crowdArr
                 this.crowdForm.policyIdsPull = currentPolicy.policyId
                 this.crowdForm.policyIds = currentPolicy.policyId
+                debugger
                 let arr = []
                 let currentCrowd = {
-                    policyId: tempPolicyAndCrowdData.tempPolicy.id,
+                    policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
                     policyName: tempPolicyAndCrowdData.tempPolicy.policyName,
                     childs: tempPolicyAndCrowdData.tempCrowds
                 }
                 this.crowdData = arr.concat(currentCrowd)
-            },
-            saveNotLaunch() {
-                this.$service.oneDropCrowdSaveAndNotLaunch(this.recordId).then(() => {
-                    this.$emit('resetFormData')
-                    this.$router.push({ path: 'launch/strategyList' })
-                })
             },
             submitForm(formName,launch) {
                 if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
                     this.$message.error('请勾选至少一种投放模式')
                     return
                 }
+                console.log(this.crowdForm)
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let crowdForm = JSON.stringify(this.crowdForm)
