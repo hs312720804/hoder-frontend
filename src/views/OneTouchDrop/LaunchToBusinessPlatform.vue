@@ -132,8 +132,8 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" @click="saveNotLaunch()">存稿不投放</el-button>
-                <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
+                <el-button type="warning" @click="submitForm('crowdForm',false)">存稿不投放</el-button>
+                <el-button type="primary" @click="submitForm('crowdForm',true)">投放</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -230,7 +230,7 @@
                     this.$router.push({ path: 'launch/strategyList' })
                 })
             },
-            submitForm(formName) {
+            submitForm(formName,launch) {
                 if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
                     this.$message.error('请勾选至少一种投放模式')
                     return
@@ -242,12 +242,13 @@
                         if (this.crowdForm.launchMode.push) {
                             crowdForm.biIds = crowdForm.biIds.join(",")
                             crowdForm.calType = crowdForm.calType.join(",")
-                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyIds = crowdForm.policyIds
                             crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
                                 return v.split("_")[1]
                             }).join(",")
                         }
                         let formData = {
+                            launch: launch,
                             pullBiIds: crowdForm.biIdsPull,
                             pull: crowdForm.launchMode.pull,
                             push: crowdForm.launchMode.push,
@@ -284,12 +285,12 @@
                     })
             },
             getCrowd () {
-                let policyId = null
-                if (this.crowdForm.abTest) {
-                    policyId = this.crowdForm.policyIds
-                } else {
-                    policyId = this.crowdForm.policyIds.join(",")
-                }
+                let policyId = this.crowdForm.policyIds
+                // if (this.crowdForm.abTest) {
+                //     policyId = this.crowdForm.policyIds
+                // } else {
+                //     policyId = this.crowdForm.policyIds.join(",")
+                // }
                 this.$service
                 .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
                 .then(data => {

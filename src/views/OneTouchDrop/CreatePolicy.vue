@@ -161,13 +161,43 @@
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
                         if (mode === 1) {
                             if (this.addForm.recordId) {
-                                this.$service.oneDropPolicyAddSave(addForm, "策略编辑成功").then(() => {
-                                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                                });
+                                this.$service.oneDropPolicyAddSave(addForm).then(() => {
+                                    if (data.policyId) {
+                                        this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
+                                            confirmButtonText: '确定',
+                                            cancelButtonText: '取消',
+                                            type: 'warning'
+                                        }).then(() => {
+                                            this.$message({
+                                                type: 'success',
+                                                message: '即将自动跳转至策略列表页'
+                                            })
+                                            this.$router.push({ path: 'launch/strategyList' })
+                                        }).catch(() => {
+                                        })
+                                    } else {
+                                        this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                                    }
+                                })
                             } else {
-                                this.$service.oneDropPolicyAddSave(addForm, "策略新增成功").then((data) => {
-                                    this.addForm.recordId = data.recordId
-                                    this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                                this.$service.oneDropPolicyAddSave(addForm).then((data) => {
+                                    if (data.policyId) {
+                                        this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
+                                            confirmButtonText: '确定',
+                                            cancelButtonText: '取消',
+                                            type: 'warning'
+                                        }).then(() => {
+                                            this.$message({
+                                                type: 'success',
+                                                message: '即将自动跳转至策略列表页'
+                                            })
+                                            this.$router.push({ path: 'launch/strategyList' })
+                                        }).catch(() => {
+                                        })
+                                    } else {
+                                        this.addForm.recordId = data.recordId
+                                        this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
+                                    }
                                 })
                             }
                         } else {
@@ -175,10 +205,25 @@
                                 policyName: addForm.policyName,
                                 conditionTagIds: addForm.conditionTagIds
                             }
-                            this.$service.policyAddSave(oldFormData, "策略新增成功").then(() => {
-                                this.$router.push({ path: 'launch/strategyList' })
-                                this.resetForm()
-                                this.$emit('resetFormData')
+                            this.$service.policyAddSave(oldFormData).then((data) => {
+                                if (data.policyId) {
+                                    this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
+                                        confirmButtonText: '确定',
+                                        cancelButtonText: '取消',
+                                        type: 'warning'
+                                    }).then(() => {
+                                        this.$message({
+                                            type: 'success',
+                                            message: '即将自动跳转至策略列表页'
+                                        })
+                                        this.$router.push({ path: 'launch/strategyList' })
+                                    }).catch(() => {
+                                    })
+                                } else {
+                                    this.$router.push({path: 'launch/strategyList'})
+                                    this.resetForm()
+                                    this.$emit('resetFormData')
+                                }
                             })
                         }
                     } else {
