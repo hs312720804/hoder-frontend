@@ -78,7 +78,6 @@
             resetFormData () {
                 this.activeStep = 1
                 this.recordId = undefined
-                this.$root.$emit('stratege-list-refresh')
             }
         }
     }

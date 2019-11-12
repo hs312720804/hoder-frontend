@@ -258,9 +258,11 @@
     .button-group
         margin 20px 0
         display flex
+        align-items center
+        justify-content space-around
     .search-form
         display flex
-        width 87%
+        width 85%
         justify-content flex-end
         .el-input
             width 20%

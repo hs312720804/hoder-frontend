@@ -4,6 +4,7 @@ import Login from '@/views/Login'
 import TagGroup from '@/views/TagGroup/Index.vue'
 import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
+import launchTabList from '@/views/launch/LaunchTabList'
 // import strategy from '@/views/launch/strategy'
 import strategy from '@/views/launch/strategy/List'
 import validate from '@/views/launch/validate'
@@ -204,8 +205,17 @@ const children = [
                     title: '人群圈定',
                     icon: 'el-icon-cc-file'
                 },
-            }
-            ,
+            },
+            {
+                name: 'launchTabList',
+                path: 'launchTabList',
+                component: launchTabList,
+                meta: {
+                    tagId:"launchTabList",
+                    title: '投放管理',
+                    icon: 'el-icon-cc-file'
+                },
+            },
             {
                 name: 'strategy',
                 path: 'strategy',
@@ -217,9 +227,7 @@ const children = [
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
-            }
-            ,
-
+            },
             {
                 name: 'strategyList',
                 path: 'strategyList',
