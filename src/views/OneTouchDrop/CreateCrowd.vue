@@ -27,8 +27,7 @@ export default {
       this.$emit('crowdPrevStep', 2, recordId)
     },
     handleToNextStep (recordId, tempPolicyAndCrowd) {
-      debugger
-     // this.$emit('crowdNextStep', 2, recordId, tempPolicyAndCrowd)
+     this.$emit('crowdNextStep', 2, recordId, tempPolicyAndCrowd)
     },
     resetFormData () {
       this.$emit('resetFormData')
