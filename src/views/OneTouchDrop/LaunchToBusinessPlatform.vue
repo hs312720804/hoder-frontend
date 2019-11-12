@@ -89,8 +89,8 @@
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds">
                                 <el-checkbox
                                         v-for="item in v.childs"
-                                        :label="v.policyId+'_'+item.crowdId"
-                                        :key="item.crowdId+''"
+                                        :label="v.policyId+'_'+item.tempCrowdId"
+                                        :key="item.tempCrowdId+''"
                                         :disabled="item.canLaunch === false"
                                 >{{item.crowdName}}
                                 </el-checkbox>
