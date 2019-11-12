@@ -262,7 +262,8 @@
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
                             console.log(data.policyId)
                             this.$service.freshCache({policyId: data.policyId}).then(() => {
-                                this.$router.push({ path: 'launch/strategy' })
+                                this.$router.push({ path: 'launch/launchTabList' })
+                                this.$root.$emit('stratege-list-refresh')
                             })
                             this.$emit('resetFormData')
                         })
