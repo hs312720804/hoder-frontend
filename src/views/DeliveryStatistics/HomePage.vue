@@ -19,164 +19,242 @@
             </div>
         </div>
         <div>
-            <div class="crowd-statistic">
-                <div class="echarts-container border-right" style="width: 49%">
-                    <div class="title">人群使用情况</div>
-                    <div class="crowd-all-item-container">
-                        <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
-                            <div class="crowd-all-item--number">{{item.count}}</div>
-                            <div>{{item.name}}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="echarts-container" style="width: 50%">
-                    <div class="title">人群应用场景分布</div>
-                    <div class="echarts-container" style="width: 50%">
-                        <ve-wordcloud :data="chartData" :settings="chartSettings" style="height: 300px;margin: -30px 0 0 -20px"></ve-wordcloud>
-                    </div>
-                    <div class="echarts-container" style="width: 50%">
-                        <div class="main" ref="useScene"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="crowd-statistic">
-                <div class="echarts-container border-right" style="width: 49%;">
-                    <div class="title">标签覆盖情况</div>
-                    <div class="tag-all-item-container">
-                        <div class="tag-all-item" v-for="(item,index) in tagAllData" :key="index">
-                            <div class="tag-all-item--number">{{item.count}}</div>
-                            <div>{{item.name}}</div>
-                        </div>
-                    </div>
-                    <div class="title">标签使用情况</div>
-                    <div class="tag-all-item-container">
-                        <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
-                            <div class="tag-all-item--number">{{item.value}}</div>
-                            <div>{{item.name}}</div>
-                        </div>
-                    </div>
-                </div>
-                <div class="echarts-container">
-                    <div class="title">标签场景覆盖情况</div>
-                    <div class="main" ref="tagRadar"></div>
-                </div>
-            </div>
-            <div class="crowd-statistic">
-                <div class="echarts-container border-right" style="width: 49%">
-                    <div class="title">业务投放情况</div>
-                    <div class="launch-all-item-container border-bottom">
-                        <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
-                            <div class="launch-all-item--number">{{item.count}}</div>
-                            <div>{{item.name}}</div>
-                        </div>
-                    </div>
-                    <div class="two-mixed">
-                        <div class="mixed-item">
-                            <div class="title">业务人群使用情况</div>
-                            <div class="business-use-text">
-                                <div class="number">{{businessUseCrowdData.count}}</div>
-                                <div class="name">{{businessUseCrowdData.name}}</div>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">人群使用情况</div>
+                        <div class="unit-content">
+                            <div class="crowd-all-item-container">
+                                <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
+                                    <div class="crowd-all-item--number">{{item.count}}</div>
+                                    <div>{{item.name}}</div>
+                                </div>
                             </div>
                         </div>
-                        <div class="mixed-item">
-                            <div class="title" style="text-align: center">人群对应业务分布情况</div>
-                            <div class="main" ref="businessUseCrowd"></div>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">人群应用场景分布</div>
+                        <div class="unit-content">
+                            <el-row :gutter="20">
+                                <el-col :span="12">
+                                    <ve-wordcloud :data="chartData" :settings="chartSettings" height="300px"></ve-wordcloud>
+                                </el-col>
+                                <el-col :span="12">
+                                    <div class="main" ref="useScene"></div>
+                                </el-col>
+                            </el-row>
                         </div>
                     </div>
-                </div>
-                <div class="echarts-container">
-                    <div class="title">业务使用全流程趋势图（总调用、下发、曝光、点击）</div>
-                    <div class="main" ref="businessUseTendency" style="height: 300px"></div>
-                </div>
-            </div>
-        </div>
-        <div>
-            <div class="title" style="margin-top: 10px">曝光用户分布及行为特征</div>
-            <div class="crowd-statistic border-bottom">
-                <div ref="circleSex" class="circle-echarts border-right"></div>
-                <div ref="circleAge" class="circle-echarts border-right"></div>
-                <div ref="circleDevice" class="circle-echarts"></div>
-            </div>
-            <div class="crowd-statistic">
-                <div class="left-map-container border-right">
-                    <div class="map-echarts" ref="main"></div>
-                    <div class="city-active-proportion">
-                        <div class="city-active-proportion--title">{{cityData.name}}</div>
-                        <div v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
-                            {{item.name}}:{{item.percent}}
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">标签覆盖情况</div>
+                        <div class="unit-content">
+                            <div class="tag-all-item-container">
+                                <div class="tag-all-item" v-for="(item,index) in tagAllData" :key="index">
+                                    <div class="tag-all-item--number">{{item.count}}</div>
+                                    <div>{{item.name}}</div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                </div>
-                <!--<div class="table-over">-->
-                    <!--<div class="table-title">城市活跃排名</div>-->
-                    <!--<Table-->
-                            <!--:props="table.props"-->
-                            <!--:header="table.header"-->
-                            <!--:data="table.data"-->
-                            <!--class="table-overflow"-->
-                    <!--&gt;-->
-                    <!--</Table>-->
-                <!--</div>-->
-                <div class="table-over">
-                    <div class="title">活跃时段分布</div>
-                    <div class="main" ref="activeTimeDistrict" style="height: 300px"></div>
-                </div>
-            </div>
-        </div>
-        <div class="crowd-statistic">
-            <div class="echarts-container border-right" style="width: 60%;height: 400px">
-                <div class="title">用户分布情况</div>
-                <div class="member-select">
-                    <div class="member-select--text">按会员权益</div>
-                    <el-select v-model="memberListType">
-                        <template v-for="(item,index) in memberList">
-                            <el-option
-                                    :key="index"
-                                    :label="item.name"
-                                    :value="item.value"
-                            ></el-option>
-                        </template>
-                    </el-select>
-                </div>
-                <div class="main" ref="userDistribution" style="height: 320px"></div>
-            </div>
-            <div class="echarts-container" style="width: 39%">
-                <div class="title">末次付费的会员产品包情况</div>
-                <div class="member-select">
-                    <div class="member-select--text">按会员权益</div>
-                    <el-select v-model="memberListByPay">
-                        <template v-for="(item,index) in memberList">
-                            <el-option
-                                    :key="index"
-                                    :label="item.name"
-                                    :value="item.value"
-                            ></el-option>
-                        </template>
-                    </el-select>
-                </div>
-                <div class="main" ref="lastPayProduct"></div>
-            </div>
-        </div>
-        <div class="crowd-statistic">
-            <div ref="deviceActive" class="circle-echarts border-right"></div>
-            <div class="circle-echarts border-right">
-                <div class="active-rate">
-                <div class="active-rate--title">起播活跃率</div>
-                    <div>
-                        <el-select v-model="dateData">
-                            <template v-for="(item,index) in dateList">
-                                <el-option
-                                        :key="index"
-                                        :label="item.name"
-                                        :value="item.value"
-                                ></el-option>
-                            </template>
-                        </el-select>
+                    <div class="unit-box margin-top20">
+                        <div class="unit-header clearfix">标签使用情况</div>
+                        <div class="unit-content">
+                            <div class="tag-all-item-container">
+                                <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
+                                    <div class="tag-all-item--number">{{item.value}}</div>
+                                    <div>{{item.name}}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
-                <div ref="activeRate" style="width: 100%;height: 200px"></div>
-            </div>
-            <div ref="userWatchPreference" class="circle-echarts"></div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">标签场景覆盖情况</div>
+                        <div class="unit-content">
+                            <div ref="tagRadar" style="height:407px"></div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+
+            
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">业务投放情况</div>
+                        <div class="unit-content">
+                            <div class="launch-all-item-container">
+                                <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
+                                    <div class="launch-all-item--number">{{item.count}}</div>
+                                    <div>{{item.name}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <el-row :gutter="20" class="unit-row margin-top20">
+                        <el-col :span="8">
+                            <div class="unit-box">
+                                <div class="unit-header clearfix">业务人群使用情况</div>
+                                <div class="unit-content">
+                                    <div class="business-use-text">
+                                        <div class="number">{{businessUseCrowdData.count}}</div>
+                                        <div class="name">{{businessUseCrowdData.name}}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </el-col>
+                        <el-col :span="16">
+                            <div class="unit-box">
+                                <div class="unit-header clearfix">人群对应业务分布情况</div>
+                                <div class="unit-content">
+                                    <div ref="businessUseCrowd" style="height:250px"></div>
+                                </div>
+                            </div>
+                        </el-col>
+                    </el-row>
+                    
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">业务使用全流程趋势图（总调用、下发、曝光、点击）</div>
+                        <div class="unit-content">
+                            <div ref="businessUseTendency" style="height: 436px"></div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="24">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">曝光用户分布及行为特征</div>
+                        <div class="unit-content">
+                            <el-row :gutter="20" class="unit-row">
+                                <el-col :span="8">
+                                    <div ref="circleSex" style="height:250px"></div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div ref="circleAge" style="height:250px"></div>
+                                </el-col>
+                                <el-col :span="8">
+                                    <div ref="circleDevice" style="height:250px"></div>
+                                </el-col>
+                            </el-row>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">省份分布</div>
+                        <div class="unit-content">
+                            <div class="map-echarts" ref="main"></div>
+                            <div class="city-active-proportion cf">
+                                <div class="city-active-proportion--title">{{cityData.name}}</div>
+                                <div v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
+                                    {{item.name}}:{{item.percent}}
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">活跃时段分布</div>
+                        <div class="unit-content">
+                            <div ref="activeTimeDistrict" style="height: 405px"></div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">用户分布情况
+                            <div class="member-select">
+                                <el-select v-model="memberListType">
+                                    <template v-for="(item,index) in memberList">
+                                        <el-option
+                                                :key="index"
+                                                :label="item.name"
+                                                :value="item.value"
+                                        ></el-option>
+                                    </template>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="unit-content">
+                            <div class="main" ref="userDistribution" style="height: 320px"></div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">末次付费的会员产品包情况
+                            <div class="member-select">
+                                <el-select v-model="memberListByPay">
+                                    <template v-for="(item,index) in memberList">
+                                        <el-option
+                                            :key="index"
+                                            :label="item.name"
+                                            :value="item.value"
+                                        ></el-option>
+                                    </template>
+                                </el-select>
+                            </div>
+                        </div>
+                        <div class="unit-content">
+                            <div class="main" ref="lastPayProduct" style="height:320px"></div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="8">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">人群使用情况</div>
+                        <div class="unit-content">
+                            <div ref="deviceActive" style="height:400px"></div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :span="8">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">起播活跃率
+                            <div class="member-select">
+                            <el-select v-model="dateData">
+                                <template v-for="(item,index) in dateList">
+                                    <el-option
+                                            :key="index"
+                                            :label="item.name"
+                                            :value="item.value"
+                                    ></el-option>
+                                </template>
+                            </el-select>
+                            </div>
+                        </div>
+                        <div class="unit-content">
+                            <div ref="activeRate" style="height: 400px"></div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :span="8">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">人群应用场景分布</div>
+                        <div class="unit-content">
+                            <div ref="userWatchPreference" style="height:400px"></div>
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+
         </div>
         <el-dialog
                 :title="businessTitle"
@@ -1066,12 +1144,12 @@
         display flex
         align-items center
         justify-content center
-        height 150px
+        // height 150px
         margin 0 10px
     .launch-all-item
         width 25%
         text-align center
-        margin 30px 0
+        margin 15px 0
         font-size 12px
         color #aaa
         &:first-child
@@ -1135,7 +1213,8 @@
     .city-active-proportion--name
         width 50%
         float left
-        /*margin 10px 0*/
+        height 20px
+        line-height 20px
     .business-text
         text-decoration underline
         color #0077aa
@@ -1152,9 +1231,10 @@
                 width 34%
             width 66%
     .business-use-text
-        width 100px
         text-align center
-        margin 100px 75px
+        height 250px
+    .business-use-text .number
+        padding-top 100px
     .number
         color #000
         font-weight bold
@@ -1164,9 +1244,10 @@
         font-size 12px
         color #aaa
     .member-select
-        display flex
-        align-items center
-        justify-content center
+        // display flex
+        // align-items center
+        // justify-content center
+        float right
         .member-select--text
             margin-right 20px
     .active-rate
@@ -1179,5 +1260,5 @@
         display flex
         justify-content space-between
         padding-bottom 20px
-        border-bottom 1px dashed #ccc
+        // border-bottom 1px dashed #ccc
 </style>
