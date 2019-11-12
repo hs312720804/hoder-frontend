@@ -7,6 +7,7 @@
                 @filter-change="handleFilterChange"
         >
             <div class="button-group">
+                <div>
                 <el-button
                         type="primary"
                         size="small"
@@ -14,6 +15,7 @@
                         v-permission="'hoder:launch:policy:save'"
                 >新增投放</el-button>
                 <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-fen-ge-tou-fang.html" target="_blank">操作指南</a>
+                </div>
                 <div class="search-form">
                     <el-input v-model="filter.search" placeholder="请输入策略名称或ID"></el-input>
                     <el-button size="small" @click="handleSearch" type="primary">查询</el-button>
@@ -256,11 +258,13 @@
         >>>.el-select
             width: 90%
     .button-group
-        margin 20px 0
+        margin -20px 0 20px 0
         display flex
+        align-items center
+        justify-content space-around
     .search-form
         display flex
-        width 87%
+        width 85%
         justify-content flex-end
         .el-input
             width 20%

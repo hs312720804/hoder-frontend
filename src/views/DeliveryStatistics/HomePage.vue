@@ -15,7 +15,7 @@
             </div>
             <div>
                 <el-button type="primary" @click="handleOneTouchDrop">创建人群</el-button>
-                <el-button type="warning">投放列表</el-button>
+                <el-button type="warning" @click="handleOpenLaunchList">投放列表</el-button>
             </div>
         </div>
         <div>
@@ -36,7 +36,7 @@
                     </div>
                     <div class="echarts-container" style="width: 50%">
                         <div class="main" ref="useScene"></div>
-                </div>
+                    </div>
                 </div>
             </div>
             <div class="crowd-statistic">
@@ -91,7 +91,7 @@
             </div>
         </div>
         <div>
-            <div class="title">曝光用户分布及行为特征</div>
+            <div class="title" style="margin-top: 10px">曝光用户分布及行为特征</div>
             <div class="crowd-statistic border-bottom">
                 <div ref="circleSex" class="circle-echarts border-right"></div>
                 <div ref="circleAge" class="circle-echarts border-right"></div>
@@ -253,7 +253,7 @@
                     rows: []
                 },
                 chartSettings: {
-                    // shape: 'star'
+                    shape: 'star'
                 },
                 pickerOptions: {
                     disabledDate(time) {
@@ -957,6 +957,11 @@
                 this.$router.push({
                     path: 'oneTouchDrop'
                 })
+            },
+            handleOpenLaunchList () {
+                this.$router.push({
+                    path: 'launch/launchTabList'
+                })
             }
         },
         mounted () {
@@ -1140,6 +1145,7 @@
         right 80px
         cursor pointer
     .two-mixed
+        margin-top 10px
         display flex
         .mixed-item
             &:first-child
