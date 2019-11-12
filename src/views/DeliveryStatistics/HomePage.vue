@@ -9,6 +9,7 @@
                         start-placeholder="开始日期"
                         end-placeholder="结束日期"
                         value-format="yyyy-MM-dd"
+                        :picker-options="pickerOptions"
                 >
                 </el-date-picker>
             </div>
@@ -250,70 +251,14 @@
                 chartData: {
                     columns: ['word', 'count'],
                     rows: []
-                    // rows: [{
-                    //     'word': 'visualMap',
-                    //     'count': 22199
-                    // }, {
-                    //     'word': 'continuous',
-                    //     'count': 10288
-                    // }, {
-                    //     'word': 'contoller',
-                    //     'count': 620
-                    // }, {
-                    //     'word': 'series',
-                    //     'count': 274470
-                    // }, {
-                    //     'word': 'gauge',
-                    //     'count': 12311
-                    // }, {
-                    //     'word': 'detail',
-                    //     'count': 1206
-                    // }, {
-                    //     'word': 'piecewise',
-                    //     'count': 4885
-                    // }, {
-                    //     'word': 'textStyle',
-                    //     'count': 32294
-                    // }, {
-                    //     'word': 'markPoint',
-                    //     'count': 18574
-                    // }, {
-                    //     'word': 'pie',
-                    //     'count': 38929
-                    // }, {
-                    //     'word': 'roseType',
-                    //     'count': 969
-                    // }, {
-                    //     'word': 'label',
-                    //     'count': 37517
-                    // }, {
-                    //     'word': 'emphasis',
-                    //     'count': 12053
-                    // }, {
-                    //     'word': 'yAxis',
-                    //     'count': 57299
-                    // }, {
-                    //     'word': 'name',
-                    //     'count': 15418
-                    // }, {
-                    //     'word': 'type',
-                    //     'count': 22905
-                    // }, {
-                    //     'word': 'gridIndex',
-                    //     'count': 5146
-                    // }, {
-                    //     'word': 'normal',
-                    //     'count': 49487
-                    // }, {
-                    //     'word': 'itemStyle',
-                    //     'count': 33837
-                    // }, {
-                    //     'word': 'min',
-                    //     'count': 4500
-                    // }]
                 },
                 chartSettings: {
                     // shape: 'star'
+                },
+                pickerOptions: {
+                    disabledDate(time) {
+                        return time.getTime() > Date.now() - 8.64e6
+                    }
                 }
             }
         },
@@ -1034,11 +979,12 @@
             this.getServiceActive(this.time0[0],this.time0[1])
         },
         created() {
-            // 设置默认时间为昨天的前一周
+            // 设置默认时间为今天的前一周
             const start = new Date()
             const end = new Date()
             this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
-            this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+            // this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+            this.endDate = this.formatDate(end.setTime(end.getTime()))
             this.time0 = [this.startDate,this.endDate]
             this.getMemberBenefits()
             this.getInitDate()
