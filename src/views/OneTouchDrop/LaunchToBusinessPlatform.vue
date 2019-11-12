@@ -261,6 +261,7 @@
                         this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
                             this.$emit('resetFormData')
+                            console.log(data.policyId)
                             this.$service.freshCache({policyId: data.policyId}).then(() => {
                                 this.$router.push({ path: 'launch/strategy' })
                             })
