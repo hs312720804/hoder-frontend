@@ -264,6 +264,7 @@
                             this.$service.freshCache({policyId: data.policyId}).then(() => {
                                 this.$router.push({ path: 'launch/strategy' })
                             })
+                            this.$emit('resetFormData')
                         })
                     } else {
                         return false

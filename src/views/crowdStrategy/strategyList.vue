@@ -2,7 +2,7 @@
   <div>
     <div class="TopNav">
       <div class="left">
-        <el-button-group>
+        <div>
           <el-button
                   type="primary"
                   size="small"
@@ -20,7 +20,7 @@
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
           <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>
-        </el-button-group>
+        </div>
       </div>
       <div class="right">
         <!-- form search -->
