@@ -253,7 +253,8 @@
                     rows: []
                 },
                 chartSettings: {
-                    shape: 'star'
+                    shape: 'diamond',
+                    sizeMax: 30
                 },
                 pickerOptions: {
                     disabledDate(time) {
