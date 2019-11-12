@@ -598,4 +598,7 @@
     .show-percent
         color red
         margin-left 20px
+    .button-list
+        display flex
+        align-items center
 </style>
