@@ -378,11 +378,14 @@ export default {
       const rulesJson = crowd.rulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       const tagIds = []
-      rule.rules.forEach((e) => {
-        if (!tagIds.includes(e.tagId)) {
-          tagIds.push(e.tagId)
-        }
+      crowd.rulesJson.rules.forEach((e) => {
+        e.rules.forEach((n) => {
+          if (!tagIds.includes(n.tagId)) {
+            tagIds.push(n.tagId)
+          }
+        })
       })
+      console.log("tagIds=" + tagIds)
       crowd.tagIds = tagIds
       if (rule.rules.length === 0) {
         rulesJson.rules = rulesJson.rules.filter(function (item) {
@@ -395,12 +398,16 @@ export default {
      * tag 为标签
      */
     handleAddRule (crowd, tag) {
+      debugger
       if (crowd.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
           message: '已达最大数量'
         })
         return
+      }
+      if (!crowd.tagIds.includes(tag.tagId)) {
+        crowd.tagIds.push(tag.tagId)
       }
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) { this.fetchTagSuggestions(tag.tagId) }
@@ -430,6 +437,7 @@ export default {
       })
     },
     handleAddChildRule (crowd, rule, tag) {
+      debugger
       if (rule.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -443,6 +451,7 @@ export default {
       if (!crowd.tagIds.includes(tag.tagId)) {
         crowd.tagIds.push(tag.tagId)
       }
+      console.log("add tags=" + crowd.tagIds)
       rule.rules.push({
         operator: tag.tagType === 'time' ? 'between' : this.getDefaultOperator("="),
         tagCode: tag.tagKey,
@@ -508,7 +517,7 @@ export default {
       this.setSeq()
     },
     getRecordId () {
-        return this.recordId
+      return this.recordId
     },
     setSeq () {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
@@ -521,26 +530,26 @@ export default {
       this.inputValue.splice(index, 1)
       this.setSeq()
     },
-      checkNum(num) {
-          if((/(^\d+$)/).test(num)) {
-              return true
-          }else {
-              this.$message.error('该值为必填项，且必须是大于等于0的整数')
-              return false
-          }
-      },
-      bigNum(item) {
-          const startDay = item.startDay
-          const endDay = item.endDay
-          this.checkNum(endDay)
-          if(this.checkNum(endDay)) {
-              if(parseInt(startDay) >= parseInt(endDay)) {
-                  this.$message.error('第二个值必须大于第一个值')
-              }else {
-                  item.value = startDay + '-' + endDay
-              }
-          }else{ item.value = '' }
+    checkNum (num) {
+      if ((/(^\d+$)/).test(num)) {
+        return true
+      } else {
+        this.$message.error('该值为必填项，且必须是大于等于0的整数')
+        return false
       }
+    },
+    bigNum (item) {
+      const startDay = item.startDay
+      const endDay = item.endDay
+      this.checkNum(endDay)
+      if (this.checkNum(endDay)) {
+        if (parseInt(startDay) >= parseInt(endDay)) {
+          this.$message.error('第二个值必须大于第一个值')
+        } else {
+          item.value = startDay + '-' + endDay
+        }
+      } else { item.value = '' }
+    }
   },
   created () {
     if (this.value) {
