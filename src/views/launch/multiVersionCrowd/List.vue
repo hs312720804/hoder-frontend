@@ -67,7 +67,7 @@
             <el-table-column prop="expiryTime" label="人群有效期" width="180">
                 <template scope="scope">
                     <el-icon name="time"></el-icon>
-                    <span style="margin-left: 10px">{{ scope.row.history.expiryTime }}</span>
+                    <span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="history.totalUser" label="设备数量" width="80"></el-table-column>
