@@ -515,14 +515,17 @@ export default {
         this.addForm.conditionTagIds = currentTagsId
     },
     handleAdd() {
-      this.addFormVisible = true;
-      this.addForm.policyName = "";
-      this.addForm.policyId = "";
-      this.title = "新增";
-      this.searchValue = ''
-      this.getTags();
-      this.tagList = []
-      this.addForm.conditionTagIds = [];
+      this.$router.push({
+          path: '/oneTouchDrop'
+      })
+      // this.addFormVisible = true;
+      // this.addForm.policyName = "";
+      // this.addForm.policyId = "";
+      // this.title = "新增";
+      // this.searchValue = ''
+      // this.getTags();
+      // this.tagList = []
+      // this.addForm.conditionTagIds = [];
     },
     handleEdit(row) {
       const Row = cloneDeep(row)
