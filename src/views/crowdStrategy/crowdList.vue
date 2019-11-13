@@ -205,11 +205,11 @@
                         :disabled="scope.row.putway === 0"
                 >人群复制
                 </el-dropdown-item>
-                <el-dropdown-item
-                :command="['divide',scope.row]"
-                v-if="scope.row.abMainCrowd === 0"
-                >A/B test划分
-                </el-dropdown-item>
+                <!--<el-dropdown-item-->
+                <!--:command="['divide',scope.row]"-->
+                <!--v-if="scope.row.abMainCrowd === 0"-->
+                <!--&gt;A/B test划分-->
+                <!--</el-dropdown-item>-->
                 <el-dropdown-item
                         :command="['commitHistory',scope.row]"
                 >提交历史数据
@@ -222,6 +222,13 @@
               @click="estimateType(scope.row)"
               :disabled="scope.row.putway === 0"
             >估算</el-button>
+              <el-button
+                      v-if="scope.row.abMainCrowd === 0"
+                      size="small"
+                      type="success"
+                      @click="divideAB(scope.row,'addABTest')"
+              >AB实验
+              </el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="danger">
                 统计
@@ -254,6 +261,7 @@
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
+    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量</div>
     <el-checkbox-group v-model="estimateValue">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
@@ -264,6 +272,7 @@
   </el-dialog>
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
+       <div class="estimate-tips">只估算包含大数据标签的人群数量为：</div>
        <div>设备：{{totalUser}}</div>
        <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
        <div>酷开openId：{{total2}}</div>
@@ -1313,6 +1322,7 @@ export default {
         this.$refs[formName].resetFields()
       },
       handleCommandOpreate(scope) {
+          debugger
           const type = scope[0]
           const params = scope[1]
           switch (type) {
@@ -1637,4 +1647,7 @@ fieldset>div
     height 16px
     background url(../../assets/pencil.png) no-repeat right center
     text-align center
+.estimate-tips
+    margin 10px 0
+    color red
 </style>
