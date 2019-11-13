@@ -155,10 +155,11 @@
           <span v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
-      <el-table-column prop="abMainCrowd" label="是否AB测试" width="100px">
+      <el-table-column label="是否AB测试" width="100px">
           <template scope="scope">
-              <span v-if="scope.row.abMainCrowd === 1">是</span>
-              <span v-if="scope.row.abMainCrowd === 0">否</span>
+              {{abStatusEnum[scope.row.abstatus]}}
+              <!--<span v-if="scope.row.abMainCrowd === 1">是</span>-->
+              <!--<span v-if="scope.row.abMainCrowd === 0">否</span>-->
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="80">
@@ -766,7 +767,8 @@ export default {
         showDivideDetail: false,
         DivideTableData: [],
         setShowCommitHistoryDialog: false,
-        currentCrowdId: undefined
+        currentCrowdId: undefined,
+        abStatusEnum: {}
     }
   },
   props: ["selectRow"],
@@ -909,6 +911,8 @@ export default {
       this.criteria["pageSize"] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
+        this.abStatusEnum = data.ABStatus
+          console.log(this.abStatusEnum)
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
       })
