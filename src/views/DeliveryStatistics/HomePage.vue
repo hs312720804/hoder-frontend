@@ -26,7 +26,7 @@
                         <div class="unit-content">
                             <div class="crowd-all-item-container">
                                 <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
-                                    <div class="crowd-all-item--number">{{item.count}}</div>
+                                    <div class="crowd-all-item--number">{{item.value}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -84,7 +84,7 @@
                 </el-col>
             </el-row>
 
-            
+
             <el-row :gutter="20" class="unit-row">
                 <el-col :span="12">
                     <div class="unit-box">
@@ -119,7 +119,7 @@
                             </div>
                         </el-col>
                     </el-row>
-                    
+
                 </el-col>
                 <el-col :span="12">
                     <div class="unit-box">

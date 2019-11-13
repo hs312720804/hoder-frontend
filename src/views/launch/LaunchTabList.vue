@@ -2,9 +2,11 @@
     <div>
         <el-tabs v-model="tabsValue" type="card">
             <el-tab-pane name="pull" label="人群分割投放（pull）">
+                <div class="tips">备注：pull模式（针对主页产品包、广告、活动、弹窗、媒资）</div>
                 <pull-list></pull-list>
             </el-tab-pane>
             <el-tab-pane name="push" label="人群圈定投放（push）">
+                <div class="tips">备注：push模式（用于消息、微信圈定人群）</div>
                 <push-list></push-list>
             </el-tab-pane>
         </el-tabs>
@@ -28,6 +30,7 @@
     }
 </script>
 
-<style scoped>
-
+<style lang="stylus" scoped>
+.tips
+    padding-bottom 10px
 </style>
