@@ -219,7 +219,7 @@
             <el-row :gutter="20" class="unit-row">
                 <el-col :span="8">
                     <div class="unit-box">
-                        <div class="unit-header clearfix">人群使用情况</div>
+                        <div class="unit-header clearfix">设备活跃情况</div>
                         <div class="unit-content">
                             <div ref="deviceActive" style="height:400px"></div>
                         </div>
@@ -247,7 +247,7 @@
                 </el-col>
                 <el-col :span="8">
                     <div class="unit-box">
-                        <div class="unit-header clearfix">人群应用场景分布</div>
+                        <div class="unit-header clearfix">用户观影偏好分布</div>
                         <div class="unit-content">
                             <div ref="userWatchPreference" style="height:400px"></div>
                         </div>
@@ -799,7 +799,7 @@
                         // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
                         return {value: key.count, name: key.name}
                     })
-                    this.setMapEcharts('main','省份分布',newProvinceData)
+                    this.setMapEcharts('main','',newProvinceData)
                     this.cityData = data.cityPercent
                     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
                     this.table.data = newData
@@ -1003,7 +1003,7 @@
             // 设备活跃情况
             getServiceActive(beginTime,endTime) {
                 this.$service.getActiveDeviceEcharts({beginTime,endTime}).then(data => {
-                    this.setBarEchart('deviceActive','设备活跃情况',data.xaxis,data.series)
+                    this.setBarEchart('deviceActive','',data.xaxis,data.series)
                 })
             },
             // 起播活跃率情况
@@ -1023,7 +1023,7 @@
                     data.data.forEach(item => {
                         dataObject.push({name: item.name, value: item.count})
                     })
-                    this.setCircleEcharts('userWatchPreference','用户观影偏好分布',data.names,dataObject)
+                    this.setCircleEcharts('userWatchPreference','',data.names,dataObject)
                 })
             },
             getInitDate() {
@@ -1066,7 +1066,7 @@
             // 设置默认时间为今天的前一周
             const start = new Date()
             const end = new Date()
-            this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+            this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 6))
             // this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
             this.endDate = this.formatDate(end.setTime(end.getTime()))
             this.time0 = [this.startDate,this.endDate]
