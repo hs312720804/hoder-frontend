@@ -91,29 +91,36 @@ export default {
     },
     handleSave (mode) {
         let form = JSON.parse(JSON.stringify(this.form))
-        if (form.purpose === undefined || form.purpose === '') {
-            this.$message.error('人群用途不能为空')
-            return
-        }
-        if (!this.validateForm(form.rulesJson)) {
-            return
-        }
-        form.rulesJson = form.rulesJson.map((e) => {
-            e.purpose = form.purpose
-            e.tagIds = e.tagIds.join(',')
-            e.rulesJson = JSON.stringify(e.rulesJson)
-            return e
+        // if (form.purpose === undefined || form.purpose === '') {
+        //     this.$message.error('人群用途不能为空')
+        //     return
+        // }
+        this.$refs['form'].validate((valid) => {
+            if (valid) {
+                if (!this.validateForm(form.rulesJson)) {
+                    return
+                }
+                form.rulesJson = form.rulesJson.map((e) => {
+                    e.purpose = form.purpose
+                    e.tagIds = e.tagIds.join(',')
+                    e.rulesJson = JSON.stringify(e.rulesJson)
+                    return e
+                })
+                if(mode === 0) {
+                    this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
+                        this.$router.push({ path: 'launch/strategyList' })
+                        this.$emit('resetFormData')
+                    })
+                } else {
+                    this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功').then((data) => {
+                        this.$emit('handleToNextStep',this.recordId,data)
+                    })
+                }
+            } else {
+                this.$message.error('人群用途输入格式不正确')
+                return false
+            }
         })
-        if(mode === 0) {
-            this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
-                this.$router.push({ path: 'launch/strategyList' })
-                this.$emit('resetFormData')
-            })
-        } else {
-            this.$service.tempCrowds({ rulesJson: form.rulesJson, recordId: this.recordId }, '保存成功').then((data) => {
-                this.$emit('handleToNextStep',this.recordId,data)
-            })
-        }
     },
     handleEdit () {
       const recordId = this.recordId
