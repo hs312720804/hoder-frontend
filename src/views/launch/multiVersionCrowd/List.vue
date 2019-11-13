@@ -70,6 +70,11 @@
                     <span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>
                 </template>
             </el-table-column>
+            <el-table-column label="人群类型">
+                <template scope="scope">
+                    {{crowdType[scope.row.isFxFullSql]}}
+                </template>
+            </el-table-column>
             <el-table-column prop="history.totalUser" label="设备数量" width="80"></el-table-column>
             <el-table-column prop="history.totalPhone" label="手机号数量" width="90"></el-table-column>
             <el-table-column prop="history.totalWxOpenid" label="微信openId数量" width="110"></el-table-column>
@@ -315,7 +320,11 @@
                 DivideTableData: [],
                 dialogType: false,
                 setShowCommitHistoryDialog: false,
-                currentCrowdId: undefined
+                currentCrowdId: undefined,
+                crowdType: {
+                    0: '普通人群',
+                    1: '自定义人群'
+                }
             };
         },
         created() {
