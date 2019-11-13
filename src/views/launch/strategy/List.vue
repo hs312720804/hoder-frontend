@@ -261,10 +261,10 @@
         margin -20px 0 20px 0
         display flex
         align-items center
-        justify-content space-around
+        justify-content space-between
     .search-form
         display flex
-        width 85%
+        width 80%
         justify-content flex-end
         .el-input
             width 20%
