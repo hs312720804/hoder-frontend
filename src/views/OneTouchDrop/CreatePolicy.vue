@@ -1,7 +1,7 @@
 <template>
     <div class="one-drop-create-policy">
         <div class="left-tree">
-            <div class="all-tag" @click="getTags(0)">全部标签</div>
+            <div class="all-tag" @click="handleGetAllTags()">全部标签</div>
             <el-tree
                     :data="treeData"
                     node-key="groupId"
@@ -97,6 +97,7 @@
                 initPageSize: 50,
                 tagsListTotal: 0,
                 initCurrentPage: 1,
+                currentTagParent: 0
             }
         },
         methods: {
@@ -117,11 +118,13 @@
                 })
             },
             handleNodeClick(data) {
-                const id = data.groupId
-                this.getTags(id)
+                if (data.groupId === this.currentTagParent) {return}
+                this.currentTagParent = data.groupId
+                this.initCurrentPage = 1
+                this.getTags()
             },
-            getTags(groupId) {
-                this.$service.getTagGroupTreeList({groupId,pageNum: this.initCurrentPage ,pageSize: this.initPageSize,tagName: this.searchValue}).then((data) => {
+            getTags() {
+                this.$service.getTagGroupTreeList({groupId: this.currentTagParent,pageNum: this.initCurrentPage ,pageSize: this.initPageSize,tagName: this.searchValue}).then((data) => {
                     this.conditionTagsFiltered = data.pageInfo.list
                     this.tagsListTotal = data.pageInfo.total
                     // this.pagination.pageNum = data.pageInfo.pageNum
@@ -243,11 +246,17 @@
                         conditionTagIds: formData.conditionTagIds
                     }
                 })
+            },
+            handleGetAllTags () {
+                if (this.currentTagParent === 0) {return}
+                this.currentTagParent = 0
+                this.initCurrentPage = 1
+                this.getTags()
             }
         },
         created () {
             this.fetchData()
-            this.getTags(0)
+            this.getTags()
             if (this.recordId) {
                 this.getPolicyDetail()
                 this.tagList = this.initTagList
