@@ -261,11 +261,17 @@
                         this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
                             console.log(data.policyId)
-                            this.$service.freshCache({policyId: data.policyId}).then(() => {
-                                this.$router.push({ path: 'launch/launchTabList' })
-                                this.$root.$emit('stratege-list-refresh')
+                            if (launch) {
+                                this.$service.freshCache({policyId: data.policyId}).then(() => {
+                                    this.$router.push({ path: 'launch/launchTabList' })
+                                    this.$root.$emit('stratege-list-refresh')
+                                    this.$emit('resetFormData')
+                                })
+                            } else {
+                                this.$router.push({ path: 'launch/strategyList' })
                                 this.$emit('resetFormData')
-                            })
+                            }
+
                         })
                     } else {
                         return false
