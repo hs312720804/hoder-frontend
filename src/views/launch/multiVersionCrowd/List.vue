@@ -129,7 +129,7 @@
                                 <!--</el-dropdown-item>-->
                                 <el-dropdown-item
                                 :command="['commitHistory',scope.row]"
-                                v-if="scope.row.isFxFullSql !== 1"
+                                v-if="scope.row.history.status !== 1"
                                 divided
                                 >提交历史数据
                                 </el-dropdown-item>

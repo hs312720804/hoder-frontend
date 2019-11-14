@@ -65,7 +65,7 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="270px">
         <template scope="scope">
           <el-tag
                   size="mini"
@@ -75,7 +75,7 @@
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="应用场景"></el-table-column>
+      <el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>
       <el-table-column prop="createTime" label="创建时间" width="170">
         <template scope="scope">
           <el-icon name="time"></el-icon>
