@@ -559,63 +559,6 @@
         </div>
       </div>
     </el-dialog>
-      <!--AB test划分弹窗-->
-      <!--<el-dialog :visible.sync="showDivide" title="圈定人群划分AB test">-->
-          <!--<el-form :model="divideForm" :rules="divideFormRules" ref="divideForm" label-width="120px">-->
-              <!--<div class="first-step" v-show="step === 1">-->
-                  <!--<div class="divide-header">第一步：填写人群份数</div>-->
-                  <!--<el-form-item v-if="showDivideEdit" label="人群名称：">-->
-                      <!--<el-input v-model="divideForm.crowdName"></el-input>-->
-                  <!--</el-form-item>-->
-                  <!--<el-form-item label="人群划分份数：">-->
-                      <!--<el-select size="mini" v-model="copies" :disabled="showDivideEdit">-->
-                          <!--<el-option v-for="(part,index) in parts"-->
-                                     <!--:key="index"-->
-                                     <!--:label="part"-->
-                                     <!--:value="part"-->
-                          <!--&gt;-->
-                          <!--</el-option>-->
-                      <!--</el-select>份-->
-                  <!--</el-form-item>-->
-                  <!--<el-form-item><el-button type="primary" @click="firstStep">下一步</el-button></el-form-item>-->
-              <!--</div>-->
-              <!--<div class="first-step" v-show="step === 2">-->
-                  <!--<div class="divide-header">第二步：设置人群占比</div>-->
-                  <!--<el-form-item label="各人群占比：">-->
-                      <!--<div class="block" v-for="(item,index) in copiesItem">-->
-                          <!--<span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>-->
-                          <!--<el-slider v-model="percent[index]" :key="item"></el-slider>-->
-                      <!--</div>-->
-                  <!--</el-form-item>-->
-                  <!--<el-form-item label="比例总和：">{{percentTotal}}</el-form-item>-->
-                  <!--<el-form-item>-->
-                      <!--<el-button type="primary" @click="step = 1">上一步</el-button>-->
-                      <!--<el-button type="primary" @click="secondStep">下一步</el-button>-->
-                  <!--</el-form-item>-->
-              <!--</div>-->
-              <!--<div class="first-step" v-show="step === 3">-->
-                  <!--<div class="divide-header">第三步：填写实验有效期并保存</div>-->
-                  <!--<el-form-item label="实验有效期：" prop="validityTime">-->
-                      <!--<el-date-picker-->
-                              <!--v-model="divideForm.validityTime"-->
-                              <!--type='datetimerange'-->
-                              <!--range-separator="至"-->
-                              <!--start-placeholder="开始日期"-->
-                              <!--end-placeholder="结束日期"-->
-                              <!--value-format="yyyy-MM-dd HH:mm:ss"-->
-                              <!--align="right">-->
-                      <!--</el-date-picker>-->
-                  <!--</el-form-item>-->
-                  <!--&lt;!&ndash;<el-form-item label="人群备注：">&ndash;&gt;-->
-                      <!--&lt;!&ndash;<el-input v-model="divideForm.remark"></el-input>&ndash;&gt;-->
-                  <!--&lt;!&ndash;</el-form-item>&ndash;&gt;-->
-                  <!--<el-form-item>-->
-                      <!--<el-button type="primary" @click="step = 2">上一步</el-button>-->
-                      <!--<el-button type="primary" @click="finish('divideForm')">完成</el-button>-->
-                  <!--</el-form-item>-->
-              <!--</div>-->
-          <!--</el-form>-->
-      <!--</el-dialog>-->
       <!--已划分弹窗显示-->
       <el-dialog :visible.sync="showDivideDetail" title="划分详情">
           <el-table :data="DivideTableData" style="width: 100%;" stripe border>
@@ -627,6 +570,11 @@
                   </template>
               </el-table-column>
               <el-table-column prop="count" label="数量"></el-table-column>
+              <el-table-column label="操作">
+                  <template scope="scope">
+                      <el-button type="danger" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                  </template>
+              </el-table-column>
           </el-table>
       </el-dialog>
       <commit-history-dialog
@@ -1175,16 +1123,7 @@ export default {
           switch (type) {
               // 统计投后效果
               case 'detail':
-                  this.showStatistics = true
-                  this.initTime()
-                  this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
-                  this.drawCrowdLine(this.currentCid,this.time0[0],this.time0[1])
-                  this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
-                  this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
-                  this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
-                  this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
-                  this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
-                  this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
+                  this.showCrowdDetailDialog()
                   break
               // 人群画像估算
               case 'estimatedDetail':
@@ -1197,6 +1136,19 @@ export default {
                   this.getActiveBehavior()
                   break
           }
+      },
+      // 显示投后效果弹窗
+      showCrowdDetailDialog() {
+          this.showStatistics = true
+          this.initTime()
+          this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
+          this.drawCrowdLine(this.currentCid,this.time0[0],this.time0[1])
+          this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
+          this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
+          this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
+          this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
+          this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
+          this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
       },
       // 统计投后效果---开始
       drawCrowdPie(id,startTime,endTime){
