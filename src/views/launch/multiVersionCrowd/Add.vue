@@ -14,13 +14,13 @@
                         <el-form-item label="人群名称" prop="launchName">
                             <el-input size="small"
                                       v-model="crowdDefineForm.launchName"
-                                      :disabled="status!==undefined && status!==1"
+                                      :disabled="status!==undefined && (status === 2 || status === 3)"
                             ></el-input>
                         </el-form-item>
                         <el-form-item label="SQL语句" prop="crowdSql">
                             <el-input type="textarea"
                                       placeholder="请输入生成临时人群的sql语句"
-                                      :disabled="status!==undefined && status!==1"
+                                      :disabled="status!==undefined && (status === 2 || status === 3)"
                                       v-model="crowdDefineForm.crowdSql">
                             </el-input>
                         </el-form-item>
@@ -39,7 +39,7 @@
                         <el-form-item label="数据有效期" prop="expiryDay">
                             <el-select
                                     v-model="crowdDefineForm.expiryDay"
-                                    :disabled="status!==undefined && status!==1"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
                             >
                                 <el-option
                                         v-for="(item,index) in effectTimeList"
@@ -59,7 +59,7 @@
                         <el-form-item label="每天是否更新" prop="autoVersion">
                             <el-select
                                     v-model="crowdDefineForm.autoVersion"
-                                    :disabled="status!==undefined && status!==1"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
                             >
                                 <el-option label="是" :value="1"></el-option>
                                 <el-option label="否" :value="0"></el-option>
@@ -69,7 +69,7 @@
                             <el-time-picker
                                     v-model="crowdDefineForm.autoLaunchTime"
                                     value-format="HH:mm:ss"
-                                    :disabled="status!==undefined && status!==1"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
                             ></el-time-picker>
                         </el-form-item>
                         <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
@@ -88,20 +88,22 @@
                             </el-select>
                         </el-form-item>
                         <el-form-item label="数据类型" prop="calType">
-                            <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && status!==1">
+                            <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
-                        <!--<el-form-item label="人群划分份数" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">-->
-                            <!--<el-input disabled v-model="crowdDefineForm.launchCrowdId"></el-input>-->
-                        <!--</el-form-item>-->
-                        <!--<el-form-item label="各人群占比" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">-->
-                            <!--<div class="block" v-for="(item,index) in copiesItem">-->
-                                <!--<span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>-->
-                                <!--<el-slider v-model="percent[index]" :key="item"></el-slider>-->
-                            <!--</div>-->
-                        <!--</el-form-item>-->
-                        <!--<el-form-item label="比例总和：" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined">{{percentTotal}}</el-form-item>-->
+                        <div style="width: 80%" v-if="editLaunchCrowdId!=null && editLaunchCrowdId != undefined && crowdDefineForm.abTest">
+                        <el-form-item label="人群划分份数">
+                            <el-input disabled v-model="abTestApart" style="width: 10%;margin-right: 10px"></el-input>份
+                        </el-form-item>
+                        <el-form-item label="各人群占比">
+                            <div class="block" v-for="(item,index) in copiesItem">
+                                <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
+                                <el-slider :disabled="status === 2 || status === 3" v-model="percent[index]" :key="item"></el-slider>
+                            </div>
+                        </el-form-item>
+                        <el-form-item label="比例总和：">{{percentTotal}}</el-form-item>
+                        </div>
                     </el-form>
                 </el-col>
             </el-row>
@@ -266,8 +268,11 @@
                     calType: ['0'],
                     proTempTag: false,
                     autoLaunchTime: undefined,
-                    tagId: undefined
+                    tagId: undefined,
+                    abTest: undefined,
+                    ratios: undefined
                 },
+                abTestApart: undefined,
                 status: undefined,
                 crowdFormRules: {
                     launchName: [
@@ -313,7 +318,11 @@
                 estimateItems: [],
                 tagsList: [],
                 formatTimeSet: undefined,
-                firstTimeLoad: false
+                firstTimeLoad: false,
+                alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
+                percent: [],
+                copiesItem: [],
+                percentTotal: 0
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus"],
@@ -330,6 +339,11 @@
                     this.crowdForm.policyIds = val ? '' : []
                     this.firstTimeLoad = true
                 }
+            },
+            percent(val) {
+                this.percentTotal = val.reduce((prev ,cur) => {
+                    return prev + cur
+                })
             }
         },
         created() {
@@ -338,6 +352,7 @@
                 this.title = "编辑"
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
+                    let abTestRatio = data.ratio || {}
                     if (this.model == 1) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
@@ -351,7 +366,22 @@
                                 calType: row.calType.split(","),
                                 proTempTag: row.proTempTag,
                                 autoLaunchTime: row.autoLaunchTime,
-                                tagId: row.tagId
+                                tagId: row.tagId,
+                                abTest: row.abTest,
+                                ratios: abTestRatio
+                            }
+                            if (row.abTest) {
+                                this.abTestApart = Object.keys(abTestRatio).length
+                                let a = []
+                                Object.keys(abTestRatio).forEach(item => {
+                                    a.push(abTestRatio[item])
+                                })
+                                let arr = []
+                                for (let i = 0; i < this.abTestApart; i++) {
+                                    arr.push(i)
+                                }
+                                this.copiesItem = arr
+                                this.percent = a
                             }
                             this.status = this.editStatus
                     } else {
@@ -367,7 +397,6 @@
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         this.crowdForm.abTest = row.abTest
-                        // this.status = row.status
                         this.status = this.editStatus
                         this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                         console.log(this.crowdForm.policyIds)
@@ -457,6 +486,18 @@
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
                         crowdForm.crowdSql = crowdForm.crowdSql.trim()
+                        // ab划分对保存的数据进行处理
+                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined && crowdForm.abTest ) {
+                            if (this.percentTotal !== 100) {
+                                this.$message.error('划分的所有比例总和必须等于100%，请调整比例再保存！')
+                                return
+                            }
+                            let oldRatio = crowdForm.ratios
+                            Object.keys(oldRatio).forEach((key, index) => {
+                                oldRatio[key] = this.percent[index]
+                            })
+                            crowdForm.ratios = oldRatio
+                        }
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
