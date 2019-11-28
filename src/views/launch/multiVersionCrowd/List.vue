@@ -49,9 +49,7 @@
             <el-table-column prop="launchCrowdId" label="投放ID" width="60"></el-table-column>
             <el-table-column prop="launchName" label="投放名称" width="100">
                 <template scope="scope">
-                    <!-- 后期对自定义人群实现AB Test再切换到下列代码 -->
-                    <!--<el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>-->
-                    <el-button type="text" v-if="scope.row.isFxFullSql == 0 && scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
+                    <el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
                     <span v-else>{{scope.row.launchName}}</span>
                 </template>
             </el-table-column>
@@ -117,16 +115,16 @@
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="scope.row.history.status==1 || scope.row.history.status==5"
+                                        v-if="scope.row.history.status == 1 || scope.row.history.status == 5"
                                         divided
                                 >删除
                                 </el-dropdown-item>
-                                <!--<el-dropdown-item-->
-                                        <!--:command="['divide',scope.row]"-->
-                                        <!--v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false"-->
-                                        <!--divided-->
-                                <!--&gt;A/B test划分-->
-                                <!--</el-dropdown-item>-->
+                                <el-dropdown-item
+                                        :command="['divide',scope.row]"
+                                        v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && scope.row.history.status == 1"
+                                        divided
+                                >AB实验
+                                </el-dropdown-item>
                                 <el-dropdown-item
                                 :command="['commitHistory',scope.row]"
                                 v-if="scope.row.history.status !== 1"
@@ -187,7 +185,7 @@
             <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showEstimate = false">取 消</el-button>
-                <el-button type="primary" @click="handleEstimate">投放</el-button>
+                <el-button type="primary" @click="handleEstimate(estimateValue)">投放</el-button>
             </span>
         </el-dialog>
         <el-dialog :visible.sync="showDivide" title="圈定人群划分AB test">
@@ -229,7 +227,8 @@
                     </el-form-item>
                     <div>
                         <el-button type="primary" @click="step = 2">上一步</el-button>
-                        <el-button type="primary" @click="finish">确定</el-button>
+                        <el-button type="warning" @click="finish(0)">存稿不投放</el-button>
+                        <el-button type="primary" @click="finish(1)">投放</el-button>
                     </div>
                 </div>
             </el-form>
@@ -306,7 +305,7 @@
                 launchType: undefined,
                 launchTitle: '',
                 showDivide: false,
-                parts: [2,3,4,5,6,7,8,9,10],
+                parts: [2,3,4,5],
                 copies: 2,
                 step: 1,
                 divideForm: this.genDefaultDivideForm(),
@@ -443,17 +442,28 @@
                     this.estimateItems = data
                 })
             },
-            handleEstimate () {
-                if (this.estimateValue.length === 0) {
-                    this.showError = true
+            handleEstimate (calTypes) {
+                if (calTypes.length === 0) {
+                    this.$message.error('请至少选择一个要投放的人群')
                     return
-                } else {this.showError = false}
-                let calIdType = this.estimateValue.map((item) => item).join(',')
+                }
+                let calIdType = calTypes.map((item) => item).join(',')
                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                     this.showEstimate = false
                     this.callback()
                 })
             },
+            // handleEstimate () {
+            //     if (this.estimateValue.length === 0) {
+            //         this.showError = true
+            //         return
+            //     } else {this.showError = false}
+            //     let calIdType = this.estimateValue.map((item) => item).join(',')
+            //     this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+            //         this.showEstimate = false
+            //         this.callback()
+            //     })
+            // },
             cancelLanuch(row) {
                 var id = row.launchCrowdId;
                 this.$confirm("确定要取消投放吗?", "提示", {
@@ -536,7 +546,7 @@
                     })
                 }
             },
-            finish () {
+            finish (saveType) {
                 const model = this.divideForm.launchCrowdId
                 // const divideForm = JSON.stringify(this.divideForm)
                 const divideForm = this.divideForm
@@ -551,6 +561,10 @@
                 this.$service.ABTestAdd({model: model,data: formData},"新增A/B test划分成功").then(() => {
                     this.showDivide = false
                     this.callback()
+                    if (saveType === 1) {
+                        this.currentLaunchId = this.divideForm.launchCrowdId
+                        this.handleEstimate(formData.calType)
+                    }
                 })
             },
             handleCountFail () {
