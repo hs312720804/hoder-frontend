@@ -115,7 +115,7 @@
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="scope.row.history.status == 1 || scope.row.history.status == 5"
+                                        v-if="scope.row.history.status == 1 || scope.row.history.status == 5 || scope.row.history.status==7"
                                         divided
                                 >删除
                                 </el-dropdown-item>
