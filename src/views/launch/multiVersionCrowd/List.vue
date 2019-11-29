@@ -83,7 +83,7 @@
                 <template scope="scope">
                     <el-button-group  class="button-group-position">
                         <el-button
-                                v-if="scope.row.history.status==1 || scope.row.history.status==5"
+                                v-if="scope.row.history.status==1 || scope.row.history.status==5 || scope.row.history.status==7"
                                 v-permission="'hoder:launch:crowd:ver:launch'"
                                 size="small"
                                 type="warning"
