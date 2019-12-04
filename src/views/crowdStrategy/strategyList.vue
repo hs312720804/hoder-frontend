@@ -94,6 +94,7 @@
         <template scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
+            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="warning" @click="handleLaunch(scope.row)">投放策略</el-button>
             <el-dropdown @command="handleCommand">
               <el-button size="small" type="primary">
                 操作
@@ -315,11 +316,22 @@
       <!--<div>该策略正在使用情况</div>-->
       <div>正在投放：<span v-for="item in launchItems" class="launch-item">{{item}}</span></div>
     </el-dialog>
+    <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
+      <LaunchToBusiness
+              :recordId="recordId"
+              :tempPolicyAndCrowd="tempPolicyAndCrowd"
+              @closeDialog="handleCloseDialog"
+      ></LaunchToBusiness>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash'
+import LaunchToBusiness from '../launch/StrategyPutIn'
 export default {
+  components: {
+      LaunchToBusiness
+  },
   data() {
     return {
       // 表格当前页数据
@@ -392,8 +404,12 @@ export default {
           'CREATOR_NAME': '请输入创建人名称',
           'OFFICE_NAME': '请输入创建人部门名称',
           'CROWD_ID': '请输入人群ID'
-      }
-    };
+      },
+      recordId: undefined,
+      tempPolicyAndCrowd: {},
+      showLaunchToBusiness: false,
+      launchSource: 'strategy'
+    }
   },
   props: ["historyFilter"],
   created() {
@@ -826,6 +842,14 @@ export default {
         const oneMonth = 3600*1000*24*30
         if(endTime - startTime > oneMonth) {return false}
         else{return true}
+    },
+    handleLaunch (row) {
+        this.showLaunchToBusiness = true
+        this.recordId = row.policyId
+        this.tempPolicyAndCrowd = row
+    },
+    handleCloseDialog () {
+        this.showLaunchToBusiness = false
     }
   }
 }

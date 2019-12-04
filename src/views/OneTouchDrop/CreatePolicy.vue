@@ -223,6 +223,7 @@
                                     }).catch(() => {
                                     })
                                 } else {
+                                    this.$root.$emit('stratege-list-refresh')
                                     this.$router.push({path: 'launch/strategyList'})
                                     this.resetForm()
                                     this.$emit('resetFormData')
