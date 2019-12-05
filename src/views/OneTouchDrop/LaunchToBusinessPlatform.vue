@@ -268,6 +268,7 @@
                                     this.$emit('resetFormData')
                                 })
                             } else {
+                                this.$root.$emit('stratege-list-refresh')
                                 this.$router.push({ path: 'launch/strategyList' })
                                 this.$emit('resetFormData')
                             }
