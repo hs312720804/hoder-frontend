@@ -2,15 +2,15 @@
     <div>
         <div class="header">
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
-                <el-step title="第一步：选择策略维度" ></el-step>
-                <el-step title="第二步：设置人群条件" ></el-step>
-                <el-step title="第三步：投放到业务平台" ></el-step>
+                <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
+                <el-step title="第二步：设置人群条件" icon="el-icon-edit"></el-step>
+                <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step>
             </el-steps>
         </div>
         <div>
             <create-policy
                     @policyNextStep="handlePolicyNextStep"
-                    v-if="activeStep === 1"
+                    v-if="activeStep === 0"
                     :recordId="recordId"
                     :initTagList="initTagList"
                     @resetFormData="resetFormData"
@@ -20,7 +20,7 @@
                     @crowdNextStep="handleCrowdNextStep"
                     @crowdPrevStep="handleCrowdPrevStep"
                     @resetFormData="resetFormData"
-                    v-if="activeStep === 2">
+                    v-if="activeStep === 1">
             </create-crowd>
             <LaunchToBusiness
                     :recordId="recordId"
@@ -28,7 +28,7 @@
                     @nextStep="handleNextStep"
                     @launchPrevStep="handleLaunchPrevStep"
                     @resetFormData="resetFormData"
-                    v-if="activeStep === 3"
+                    v-if="activeStep === 2"
             ></LaunchToBusiness>
         </div>
     </div>
@@ -47,7 +47,7 @@
         },
         data () {
             return {
-                activeStep: 1,
+                activeStep: 0,
                 recordId: undefined,
                 tempPolicyAndCrowd: {},
                 initTagList: []
@@ -71,12 +71,12 @@
                 this.activeStep = step - 1
             },
             handlePolicyNextStep (recordId,tagList) {
-                this.activeStep = 2
+                this.activeStep = 1
                 this.recordId = recordId
                 this.initTagList = tagList
             },
             resetFormData () {
-                this.activeStep = 1
+                this.activeStep = 0
                 this.recordId = undefined
             }
         }
