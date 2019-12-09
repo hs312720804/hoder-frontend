@@ -118,7 +118,7 @@
                     a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
                 }
                 this.dateList = a
-                this.form.date = a[0]
+                this.form.date = a[1]
             }
         },
         created () {
