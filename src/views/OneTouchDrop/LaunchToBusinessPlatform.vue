@@ -215,7 +215,6 @@
                 this.strategyPlatform = crowdArr
                 this.crowdForm.policyIdsPull = currentPolicy.policyId
                 this.crowdForm.policyIds = currentPolicy.policyId
-                debugger
                 let arr = []
                 let currentCrowd = {
                     policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
@@ -229,7 +228,6 @@
                     this.$message.error('请勾选至少一种投放模式')
                     return
                 }
-                console.log(this.crowdForm)
                 this.$refs[formName].validate((valid) => {
                     if (valid) {
                         let crowdForm = JSON.stringify(this.crowdForm)
@@ -260,7 +258,6 @@
                         }
                         this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
-                            console.log(data.policyId)
                             if (launch) {
                                 this.$service.freshCache({policyId: data.policyId}).then(() => {
                                     this.$router.push({ path: 'launch/launchTabList' })
@@ -309,7 +306,7 @@
                         this.crowdData = data
                     }
                 })
-                .catch(err => {})
+                .catch(err => {this.$message.error(err)})
             },
             removeTag (policyId) {
                 this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
@@ -318,7 +315,7 @@
                 })
             },
             handleBackPrevStep () {
-                this.$emit('launchPrevStep',3)
+                this.$emit('launchPrevStep',2)
             },
             getCountDataEnum () {
                 this.$service.getEstimateType().then((data) => {

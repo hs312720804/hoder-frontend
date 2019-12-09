@@ -24,10 +24,10 @@ export default {
   props: ['recordId'],
   methods: {
     handleBackPrevStep (recordId) {
-      this.$emit('crowdPrevStep', 2, recordId)
+      this.$emit('crowdPrevStep', 1, recordId)
     },
     handleToNextStep (recordId, tempPolicyAndCrowd) {
-     this.$emit('crowdNextStep', 2, recordId, tempPolicyAndCrowd)
+     this.$emit('crowdNextStep', 1, recordId, tempPolicyAndCrowd)
     },
     resetFormData () {
       this.$emit('resetFormData')
