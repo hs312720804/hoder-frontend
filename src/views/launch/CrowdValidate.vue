@@ -24,29 +24,35 @@
         <div>
             <div>
                 <div>人群：</div>
-                <div class="result">
-                    <div class="result-item">{{crowdForm.crowd}}</div>
+                <div class="result" v-if="crowdForm.crowd">
+                    <div class="result-item">
+                        {{crowdForm.crowd}}
+                    </div>
                 </div>
+                <div v-else class="no-result">暂无数据</div>
             </div>
             <div>
                 <div>该设备对应的人群条件是：</div>
-                <div class="result">
+                <div class="result" v-if="crowdForm.condition.length > 0">
                     <div v-for="(item,index) in crowdForm.condition" :key="index" class="result-item">
                         <div>{{item.date}}</div>
                         <div>{{item.thisMacTagValues}}</div>
                     </div>
                 </div>
+                <div v-else class="no-result">暂无数据</div>
             </div>
             <div>
                 <div>对比结果：</div>
-                <div class="result red--text">
+                <div class="result red--text" v-if="crowdForm.match.length > 0">
                     <div v-for="(item,index) in crowdForm.match" :key="index" class="result-item">
                         <div>{{item.date}}</div>
                         <div>{{item.reason}}</div>
                     </div>
                 </div>
+                <div v-else class="no-result">暂无数据</div>
             </div>
             <el-pagination
+                    v-if="crowdForm.match.length > 0 || crowdForm.condition.length > 0"
                     layout="prev, pager, next"
                     :total="pagination.total"
                     :page-size="pagination.pageSize"
@@ -132,10 +138,14 @@
     border 1px dashed #333
     padding 0 20px
     margin 20px
+    height 200px
+    overflow auto
     .result-item
         margin 20px 0
 .red--text
     color red
 .title
     margin-bottom 20px
+.no-result
+    margin 20px
 </style>
