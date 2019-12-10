@@ -161,7 +161,8 @@
                     "/multiVersionCrowd/index":"multiVersionCrowd",
                     "/manager/biList":"launchSettings",
                     "/manager/notice/index":"notice",
-                    "/launchAdmin": "launchTabList"
+                    "/launchAdmin": "launchTabList",
+                    "/anomaly/index": "anomalyEcharts"
                 },
                 activeName: 'first',
                 updateMessage: [],
