@@ -41,6 +41,7 @@ import launchSettings from '@/views/setting/launchSetting'
 import notice from '@/views/setting/messageNotice'
 import oneTouchDrop from '@/views/OneTouchDrop/Index'
 import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
+import anomalyEcharts from '@/views/launch/anomaly'
 const children = [
     {
         name: 'homePage',
@@ -283,17 +284,16 @@ const children = [
                     icon: 'el-icon-cc-file',
                 }
             },
-            // {
-            //     name: 'statisticsHomePage',
-            //     path: 'statisticsHomePage',
-            //     component: statisticsHomePage,
-            //     meta: {
-            //         title: '投放统计',
-            //         tagId:"statisticsHomePage",
-            //         isCache: false,
-            //         icon: 'el-icon-cc-file',
-            //     }
-            // },
+            {
+                name: 'anomalyEcharts',
+                path: 'anomalyEcharts',
+                component: anomalyEcharts,
+                meta: {
+                    title: '异常监测',
+                    tagId:"anomalyEcharts",
+                    isCache: false
+                }
+            },
             {
                 name: 'DeliveryMonitor',
                 path: 'DeliveryMonitor',
