@@ -1,14 +1,14 @@
 <template>
     <div>
         <div class="title">查询指定MAC的命中情况</div>
-        <el-form :model="form" ref="form" :inline="true">
+        <el-form :model="form" ref="form" :rules="rules" :inline="true">
             <el-form-item label="设备信息：" prop="mac">
                 <el-input v-model="form.mac"></el-input>
             </el-form-item>
-            <el-form-item label="人群id：">
+            <el-form-item label="人群id：" prop="crowdId">
                 <el-input v-model="form.crowdId"></el-input>
             </el-form-item>
-            <el-form-item label="日期：">
+            <el-form-item label="日期：" prop="date">
                 <el-select v-model="form.date">
                     <el-option
                             v-for="item in dateList"
@@ -84,7 +84,11 @@
                     condition: [],
                     match: []
                 },
-                dateList: []
+                dateList: [],
+                rules: {
+                    mac: {required: true, message: '请输入mac', trigger: blur},
+                    crowdId: {required: true, message: '请输入人群id', trigger: blur}
+                }
             }
         },
         methods: {
@@ -99,12 +103,16 @@
                 return filter
             },
             handleSearch () {
-                const filter = this.getFilter()
-                this.$service.launchHelpCrowdIndex(filter).then(data => {
-                    this.pagination.total = data.total
-                    this.crowdForm.crowd = data.fx || '暂无数据'
-                    this.crowdForm.condition = data.historyCondition || []
-                    this.crowdForm.match = data.historyResMatch || []
+                this.$refs.form.validate(valid => {
+                    if(valid) {
+                        const filter = this.getFilter()
+                        this.$service.launchHelpCrowdIndex(filter).then(data => {
+                            this.pagination.total = data.total
+                            this.crowdForm.crowd = data.fx || '暂无数据'
+                            this.crowdForm.condition = data.historyCondition || []
+                            this.crowdForm.match = data.historyResMatch || []
+                        })
+                    }
                 })
             },
             handleCurrentChange(val) {
