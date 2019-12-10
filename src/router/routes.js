@@ -289,7 +289,7 @@ const children = [
                 path: 'anomalyEcharts',
                 component: anomalyEcharts,
                 meta: {
-                    title: '异常检测',
+                    title: '异常监测',
                     tagId:"anomalyEcharts",
                     isCache: false
                 }
