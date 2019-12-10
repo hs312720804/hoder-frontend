@@ -46,6 +46,7 @@
                 <div class="result red--text" v-if="crowdForm.match.length > 0">
                     <div v-for="(item,index) in crowdForm.match" :key="index" class="result-item">
                         <div>{{item.date}}</div>
+                        <div>{{item.matchRes}}</div>
                         <div>{{item.reason}}</div>
                     </div>
                 </div>
