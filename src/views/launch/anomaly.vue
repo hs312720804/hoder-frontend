@@ -70,7 +70,7 @@
         },
         watch: {
             'time': function (val,oldVal) {
-                if (oldVal !== undefined && (val !== oldVal)) {
+                if (oldVal.length !== 0 && (val !== oldVal)) {
                     this.fetchData()
                 }
             },
