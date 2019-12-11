@@ -14,6 +14,11 @@
         </div>
         <div class="anomaly-content">
             <div class="anomaly-content--item">
+                <div class="day-select">
+                    <el-select v-model="day">
+                        <el-option v-for="(item,index) in dayEnum" :label="item+'天'" :value="item" :key="index">{{item}}天</el-option>
+                    </el-select>
+                </div>
                 <div class="anomaly-item" ref="longTimeNoUse"></div>
                 <div class="anomaly-item" ref="tempCrowd"></div>
             </div>
@@ -55,13 +60,20 @@
                     disabledDate(time) {
                         return time.getTime() > Date.now() - 8.64e6
                     }
-                }
+                },
+                day: 7,
+                dayEnum: [7,15,30]
             }
         },
         watch: {
             'time': function (val,oldVal) {
                 if (oldVal !== undefined && (val !== oldVal)) {
                     this.fetchData()
+                }
+            },
+            'day': function (val,oldVal) {
+                if (oldVal !== undefined && (val !== oldVal)) {
+                    this.getLongTimeNoUse()
                 }
             }
         },
@@ -207,116 +219,152 @@
                 let r = time.getDate().toString().padStart(2,'0'); // 日子
                 return `${y}-${m}-${r}`
             },
+            validateEmptyData (data,ele) {
+                if(Object.keys(data).length === 0) {
+                    this.$refs[ele].innerHTML = '暂无数据'
+                    return false
+                } else {
+                    return true
+                }
+            },
             getLongTimeNoUse () {
-                this.$service.longTimeNoUseEcharts({beginDate: this.time[0], endDate: this.time[1], day: 15}).then((data) => {
-                    this.setLineEchart('longTimeNoUse','长期未使用人群情况',data.xaxis,data.series[0].value)
+                this.$service.longTimeNoUseEcharts({beginDate: this.time[0], endDate: this.time[1], day: this.day}).then((data) => {
+                    if(this.validateEmptyData(data,'longTimeNoUse')) {
+                        this.setLineEchart('longTimeNoUse', '长期未使用人群情况', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getTempCrowd () {
                 this.$service.tempCrowdEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('tempCrowd','临时人群（高级人群）异常情况',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'tempCrowd')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('tempCrowd', '临时人群（高级人群）异常情况', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             getAbTest () {
                 this.$service.abTestEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    this.setLineEchart('abTest','已过期AB实验人群',data.xaxis,data.series[0].value)
+                    if(this.validateEmptyData(data,'abTest')) {
+                        this.setLineEchart('abTest', '已过期AB实验人群', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getTempTagAnomaly () {
                 this.$service.tempCrowdEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('tempCrowdAnomaly','临时标签异常情况',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'tempCrowdAnomaly')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('tempCrowdAnomaly', '临时标签异常情况', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             getDmpApiUseDistribute () {
                 this.$service.getDmpApiRequestEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('dmpApiDistribute','DMP接口调用分布情况',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'dmpApiDistribute')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('dmpApiDistribute', 'DMP接口调用分布情况', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             getDmpApiUseSuccess () {
                 this.$service.getDmpApiRequestAccuracyEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    this.setLineEchart('dmpApiSuccess','DMP接口调用正确率',data.xaxis,data.series[0].value)
+                    if(this.validateEmptyData(data,'dmpApiSuccess')) {
+                        this.setLineEchart('dmpApiSuccess', 'DMP接口调用正确率', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getDmpApiUseFail () {
                 this.$service.getDmpApiRequestErrorEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    this.setLineEchart('dmpApiFail','DMP接口调用错误率',data.xaxis,data.series[0].value)
+                    if(this.validateEmptyData(data,'dmpApiFail')) {
+                        this.setLineEchart('dmpApiFail', 'DMP接口调用错误率', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getDmpApiUseFailReason () {
                 this.$service.getDmpApiRequestErrorReasonEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('dmpApiFailReason','DMP接口调用错误原因分布',data.names,dataObject)
+                    if(this.validateEmptyData(data,'dmpApiFailReason')) {
+                        const dataObject = data.data.map((key, index) => {
+                            return {value: key.count, name: data.names[index]}
+                        })
+                        this.setCircleEcharts('dmpApiFailReason', 'DMP接口调用错误原因分布', data.names, dataObject)
+                    }
                 })
             },
             getTaskStability () {
                 this.$service.getDmpTaskEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('taskStability','任务调度系统稳定性',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'taskStability')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('taskStability', '任务调度系统稳定性', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             getTaskFailReason () {
                 this.$service.getDmpTaskFailReasonEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('taskStabilityErrorReason','任务调度系统失败原因',data.names,dataObject)
+                    if(this.validateEmptyData(data,'taskStabilityErrorReason')) {
+                        const dataObject = data.data.map((key, index) => {
+                            return {value: key.count, name: data.names[index]}
+                        })
+                        this.setCircleEcharts('taskStabilityErrorReason', '任务调度系统失败原因', data.names, dataObject)
+                    }
                 })
             },
             getQPS () {
                 this.$service.getDmpQpsApiRequestEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    this.setLineEchart('QPS','QPS(每日单次请求峰值)',data.xaxis,data.series[0].value)
+                    if(this.validateEmptyData(data,'QPS')) {
+                        this.setLineEchart('QPS', 'QPS(每日单次请求峰值)', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getSearchCrowdTime () {
                 this.$service.getSelectCrowdTimeEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    this.setLineEchart('searchCrowdTime','单人群查询最长耗时（每日）',data.xaxis,data.series[0].value)
+                    if(this.validateEmptyData(data,'searchCrowdTime')) {
+                        this.setLineEchart('searchCrowdTime', '单人群查询最长耗时（每日）', data.xaxis, data.series[0].value)
+                    }
                 })
             },
             getHitDeclineFifty () {
                 this.$service.getCrowdHitCountDeclineEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('hitOverFifty','命中、曝光、点击今日突降50%以上人群数（投放中）',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'hitOverFifty')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('hitOverFifty', '命中、曝光、点击今日突降50%以上人群数（投放中）', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             getHitDeclineToZero () {
                 this.$service.getCrowdHitCountDeclineToZeroEcharts({beginDate: this.time[0], endDate: this.time[1]}).then((data) => {
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('hitToZero','命中、曝光、点击今日突降为0人群数（投放中）',data.xaxis,linesData,legendData)
+                    if(this.validateEmptyData(data,'hitToZero')) {
+                        const legendData = data.series.map((key) => {
+                            return key.name
+                        })
+                        const linesData = data.series.map((key) => {
+                            return {name: key.name, data: key.value, type: 'line'}
+                        })
+                        this.setLinesEchart('hitToZero', '命中、曝光、点击今日突降为0人群数（投放中）', data.xaxis, linesData, legendData)
+                    }
                 })
             },
             fetchData () {
@@ -352,10 +400,17 @@
 <style lang="stylus" scoped>
     .anomaly-content--item
         display flex
+        position relative
     .anomaly-item
         width 49%
         height 300px
         background-color #f2f4f6
         margin 15px 10px
         padding 15px
+    .day-select
+        position absolute
+        z-index 999
+        top 30px
+        width 49%
+        text-align center
 </style>
