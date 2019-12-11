@@ -16,7 +16,11 @@
             <div class="anomaly-content--item">
                 <div class="day-select">
                     <el-select v-model="day">
-                        <el-option v-for="(item,index) in dayEnum" :label="item+'天'" :value="item" :key="index">{{item}}天</el-option>
+                        <el-option label="近7天" value="last7Day">近7天</el-option>
+                        <el-option label="近15天" value="last15Day">近15天</el-option>
+                        <el-option label="近30天" value="last30Day">近30天</el-option>
+                        <el-option label="30天以上" value="over30Day">30天以上</el-option>
+                        <!--<el-option v-for="(item,index) in dayEnum" :label="item+'天'" :value="item" :key="index">{{item}}天</el-option>-->
                     </el-select>
                 </div>
                 <div class="anomaly-item" ref="longTimeNoUse"></div>
@@ -61,8 +65,7 @@
                         return time.getTime() > Date.now() - 8.64e6
                     }
                 },
-                day: 7,
-                dayEnum: [7,15,30]
+                day: 'last7Day'
             }
         },
         watch: {

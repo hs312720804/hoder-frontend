@@ -2,7 +2,7 @@
 export function longTimeNoUseEcharts(params){
     return this.fetch({
         method: 'GET',
-        url: '/api/chart/expStat/longTimeUnusedCrowd/last'+params.day+'Day',
+        url: '/api/chart/expStat/longTimeUnusedCrowd/'+params.day,
         params
     })
 }
