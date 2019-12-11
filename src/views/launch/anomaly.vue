@@ -386,12 +386,12 @@
         },
         created() {
             // 设置默认时间为今天的前一周
-            // const start = new Date()
-            // const end = new Date()
-            // const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 6))
-            // const endDate = this.formatDate(end.setTime(end.getTime()))
-            // this.time = [startDate,endDate]
-            this.time = ['2019-10-28','2019-10-29']
+            const start = new Date()
+            const end = new Date()
+            const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 6))
+            const endDate = this.formatDate(end.setTime(end.getTime()))
+            this.time = [startDate,endDate]
+            // this.time = ['2019-10-28','2019-10-29']
             this.fetchData()
         }
     }
