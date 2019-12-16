@@ -28,11 +28,8 @@ export default function fetch({
       if (parseInt(data.code) === 0) {
           return data.data;
       } else if(parseInt(data.code) === 400001) {
-          this.$router.push({ name: "login" })
+          location.href = location.origin + location.pathname + '#/login'
       } else {
-        console.log(location.origin)
-        console.log(location.pathname)
-          // location.href = location.origin + '/#/login'
         throw {
           code: data.code,
           message: data.msg
