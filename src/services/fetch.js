@@ -27,9 +27,11 @@ export default function fetch({
       NProgress.done();
       if (parseInt(data.code) === 0) {
           return data.data;
-      } else if(parseInt(data.code) === 400001) {
-          this.$router.push({ name: "login" })
-      } else {
+      }
+      // else if(parseInt(data.code) === 400001) {
+      //     this.$router.push({ name: "login" })
+      // }
+      else {
         throw {
           code: data.code,
           message: data.msg
