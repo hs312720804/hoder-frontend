@@ -39,8 +39,24 @@
           >
             <a class="fa fa-plus" style="color: white"></a>新增多个人群
           </el-button>
-          <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>
+          <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
+          <el-popover
+                  placement="top"
+                  trigger="click"
+                  class="popover-button"
+          >
+              <div>
+                  <el-checkbox-group v-model="checkList">
+                      <el-checkbox label="createTime">创建时间</el-checkbox>
+                      <el-checkbox label="creatorName">创建人</el-checkbox>
+                      <el-checkbox label="apiStatus">是否生效</el-checkbox>
+                      <el-checkbox label="department">业务部门</el-checkbox>
+                      <el-checkbox label="remark">备注</el-checkbox>
+                  </el-checkbox-group>
+              </div>
+              <el-button slot="reference">选择列表展示维度</el-button>
+          </el-popover>
       </div>
       <div class="right">
         <!-- form search -->
@@ -136,8 +152,8 @@
               <priorityEdit :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
           </template>
       </el-table-column>
-      <el-table-column prop="remark" label="备注" width="90"></el-table-column>
-      <el-table-column prop="apiStatus" label="是否生效" width="90">
+      <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">
         <template scope="scope">
           <span v-if="scope.row.apiStatus === 1">已生效</span>
           <span v-if="scope.row.apiStatus === 0">
@@ -170,14 +186,14 @@
               <span v-if="scope.row.forcastStatus == 4">估算失败</span>
           </template>
       </el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="180">
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="180">
         <template scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="creatorName" label="创建人" width="80"></el-table-column>
-      <el-table-column prop="department" label="业务部门" width="80"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
       <el-table-column label="操作" fixed="right">
         <template scope="scope">
           <el-button-group>
@@ -716,7 +732,8 @@ export default {
         DivideTableData: [],
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
-        abStatusEnum: {}
+        abStatusEnum: {},
+        checkList: ['apiStatus']
     }
   },
   props: ["selectRow"],
@@ -1606,4 +1623,6 @@ fieldset>div
 .estimate-tips
     margin 10px 0
     color red
+.left div
+    margin-right 10px
 </style>
