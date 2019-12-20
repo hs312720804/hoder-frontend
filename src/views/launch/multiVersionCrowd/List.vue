@@ -20,7 +20,26 @@
                     >
                         新增自定义人群
                     </el-button>
-                    <a href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-quan-ding.html" target="_blank">操作指南</a>
+                    <el-popover
+                            placement="top"
+                            trigger="click"
+                            class="popover-button"
+                    >
+                        <div>
+                            <el-checkbox-group v-model="checkList">
+                                <el-checkbox label="createTime">创建时间</el-checkbox>
+                                <el-checkbox label="creatorName">创建人</el-checkbox>
+                                <el-checkbox label="status">投放状态</el-checkbox>
+                                <el-checkbox label="department">业务部门</el-checkbox>
+                                <el-checkbox label="totalWxOpenid">微信openId数量</el-checkbox>
+                                <el-checkbox label="totalPhone">手机号数量</el-checkbox>
+                                <el-checkbox label="totalUser">设备数量</el-checkbox>
+                                <el-checkbox label="totalCoocaaOpenid">酷开openId数量</el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                        <el-button slot="reference">选择列表展示维度</el-button>
+                    </el-popover>
+                    <!--<a href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-quan-ding.html" target="_blank">操作指南</a>-->
                 </el-button-group>
             </div>
             <div class="right">
@@ -55,7 +74,7 @@
             </el-table-column>
             <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
-            <el-table-column prop="status" label="人群状态" width="70">
+            <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="70">
                 <template scope="scope">
                     <!-- 计算失败要点击出弹窗 -->
                     <el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>
@@ -73,12 +92,13 @@
                     {{crowdType[scope.row.isFxFullSql]}}
                 </template>
             </el-table-column>
-            <el-table-column prop="history.totalUser" label="设备数量" width="80"></el-table-column>
-            <el-table-column prop="history.totalPhone" label="手机号数量" width="90"></el-table-column>
-            <el-table-column prop="history.totalWxOpenid" label="微信openId数量" width="110"></el-table-column>
-            <el-table-column prop="history.totalCoocaaOpenid" label="酷开openId数量" width="110"></el-table-column>
-            <el-table-column prop="creatorName" label="创建人"></el-table-column>
-            <el-table-column prop="department" label="业务部门"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('totalUser') > -1)" prop="history.totalUser" label="设备数量" width="80"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('totalPhone') > -1)" prop="history.totalPhone" label="手机号数量" width="90"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('totalWxOpenid') > -1)" prop="history.totalWxOpenid" label="微信openId数量" width="110"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('totalCoocaaOpenid') > -1)" prop="history.totalCoocaaOpenid" label="酷开openId数量" width="110"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间"></el-table-column>
+            <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门"></el-table-column>
             <el-table-column label="操作" fixed="right" min-width="200">
                 <template scope="scope">
                     <el-button-group  class="button-group-position">
@@ -323,7 +343,8 @@
                 crowdType: {
                     0: '普通人群',
                     1: '自定义人群'
-                }
+                },
+                checkList: ['status','totalWxOpenid','totalUser']
             };
         },
         created() {

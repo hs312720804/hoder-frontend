@@ -19,7 +19,22 @@
           >
             <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
           </el-button>
-          <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>
+          <el-popover
+                  placement="top"
+                  trigger="click"
+                  class="popover-button"
+          >
+            <div>
+              <el-checkbox-group v-model="checkList">
+                <el-checkbox label="createTime">创建时间</el-checkbox>
+                <el-checkbox label="creatorName">创建人</el-checkbox>
+                <el-checkbox label="useStatus">投放状态</el-checkbox>
+                <el-checkbox label="department">业务部门</el-checkbox>
+              </el-checkbox-group>
+            </div>
+            <el-button slot="reference">选择列表展示维度</el-button>
+          </el-popover>
+          <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
         </div>
       </div>
       <div class="right">
@@ -76,15 +91,15 @@
         </template>
       </el-table-column>
       <el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>
-      <el-table-column prop="createTime" label="创建时间" width="170">
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
         <template scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
       </el-table-column>
-      <el-table-column prop="creatorName" label="创建人" width="60"></el-table-column>
-      <el-table-column prop="department" label="业务部门" width="70"></el-table-column>
-      <el-table-column prop="useStatus" label="状态" width="60">
+      <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="60"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="70"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('useStatus') > -1)" prop="useStatus" label="状态" width="60">
         <template scope="scope">
           <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
           <span v-else>未投放</span>
@@ -408,7 +423,8 @@ export default {
       recordId: undefined,
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
-      launchSource: 'strategy'
+      launchSource: 'strategy',
+      checkList: ['useStatus']
     }
   },
   props: ["historyFilter"],
@@ -934,4 +950,7 @@ ul > li
   margin-left 20px
 .manual
   margin 20px
+.left
+  >>> .el-button + .el-button
+    margin-right 10px
 </style>

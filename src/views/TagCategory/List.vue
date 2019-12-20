@@ -1,7 +1,22 @@
 <template>
     <el-container>
         <el-header class="tag-category-read__header">
-            标签种类
+            <el-popover
+                    placement="top"
+                    trigger="click"
+                    class="popover-button"
+            >
+                <div>
+                    <el-checkbox-group v-model="checkList">
+                        <el-checkbox label="tagKey">标签code</el-checkbox>
+                        <el-checkbox label="tagValues">示例值</el-checkbox>
+                        <el-checkbox label="defineRemark">标签定义</el-checkbox>
+                        <el-checkbox label="tagType">类型</el-checkbox>
+                        <el-checkbox label="remark">备注</el-checkbox>
+                    </el-checkbox-group>
+                </div>
+                <el-button slot="reference">选择列表展示维度</el-button>
+            </el-popover>
             <el-form :inline="true">
                 <el-form-item>
                     <el-input clearable @keyup.enter.native="fetchData" v-model="filter.tagName" placeholder="种类名称"></el-input>
@@ -24,18 +39,18 @@
                         {{ dataSourceEnum[scope.row.dataSource] }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="defineRemark" label="标签定义">
+                <el-table-column v-if="(checkList.indexOf('defineRemark') > -1)" prop="defineRemark" label="标签定义">
                 </el-table-column>
-                <el-table-column prop="tagValues" label="示例值">
+                <el-table-column v-if="(checkList.indexOf('tagValues') > -1)" prop="tagValues" label="示例值">
                 </el-table-column>
-                <el-table-column prop="tagKey" label="标签code">
+                <el-table-column v-if="(checkList.indexOf('tagKey') > -1)" prop="tagKey" label="标签code">
                 </el-table-column>
-                <el-table-column prop="tagType" label="类型" width="140">
+                <el-table-column v-if="(checkList.indexOf('tagType') > -1)" prop="tagType" label="类型" width="140">
                     <template slot-scope="scope">
                         {{ typeEnum[scope.row.tagType] }}
                     </template>
                 </el-table-column>
-                <el-table-column prop="remark" label="备注">
+                <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注">
                 </el-table-column>
                 <el-table-column prop="operation" label="操作" width="220">
                     <template slot-scope="scope">
@@ -109,7 +124,8 @@ export default {
                 pageNum: undefined,
                 pageSize: undefined,
                 total: undefined
-            }
+            },
+            checkList: ['defineRemark']
         }
     },
     computed: {
