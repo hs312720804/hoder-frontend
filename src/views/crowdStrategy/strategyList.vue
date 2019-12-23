@@ -424,10 +424,10 @@ export default {
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
       launchSource: 'strategy',
-      checkList: ['useStatus']
+      checkList: []
     }
   },
-  props: ["historyFilter"],
+  props: ["historyFilter","checkListFilter"],
   created() {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
@@ -578,7 +578,7 @@ export default {
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
-      this.$emit("openCrowdPage", row, this.criteria)
+      this.$emit("openCrowdPage", row, this.criteria, this.checkList)
     },
     del(row) {
       var id = row.policyId;
@@ -604,11 +604,12 @@ export default {
                   policyName: this.historyFilter.policyName,
                   constType: this.historyFilter.constType || 'POLICY_NAME'
               },
-                  this.currentPage = this.historyFilter.pageNum || this.currentPage
+              this.currentPage = this.historyFilter.pageNum || this.currentPage
               this.pageSize = this.historyFilter.pageSize || this.pageSize
           }
           this.reloadHistory = false
       }
+      this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
       this.$service.policyList(this.criteria).then(data => {
