@@ -448,3 +448,20 @@ export function oneDropCrowdSaveAndNotLaunch(recordId) {
     })
 }
 
+// 查看主页投放后的列表
+export function getHomepageReleaseRecordList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'/api/businessDelivery/getBdList',
+        params
+    })
+}
+
+// 主页投后数据漏斗图
+export function getHomepageReleaseRecordFunnel(params) {
+    return this.fetch({
+        method: 'get',
+        url:'/api/businessDelivery/getFunnels',
+        params
+    })
+}

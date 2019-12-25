@@ -586,9 +586,10 @@
                   </template>
               </el-table-column>
               <el-table-column prop="count" label="数量"></el-table-column>
-              <el-table-column label="操作">
+              <el-table-column label="操作" width="250">
                   <template scope="scope">
                       <el-button type="danger" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                      <el-button type="primary" @click="handleSeeHomepageData(scope.row.crowdId)">看主页数据</el-button>
                   </template>
               </el-table-column>
           </el-table>
@@ -1474,6 +1475,11 @@ export default {
           this.$service.submitPolicyHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
               this.setShowCommitHistoryDialog = false
           })
+      },
+      // 查看主页数据
+      handleSeeHomepageData (crowdId) {
+          this.showDivideDetail = false
+          this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId}})
       }
   }
 }
