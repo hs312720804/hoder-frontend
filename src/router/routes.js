@@ -42,6 +42,7 @@ import notice from '@/views/setting/messageNotice'
 import oneTouchDrop from '@/views/OneTouchDrop/Index'
 import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
+import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
 const children = [
     {
         name: 'homePage',
@@ -595,6 +596,16 @@ const children = [
         meta: {
             title: '一键投放',
             tagId:"oneTouchDrop",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'homepageReleaseRecord',
+        path: 'homepageReleaseRecord/:id',
+        component: homepageReleaseRecord,
+        meta: {
+            title: '主页投放记录',
+            tagId:"homepageReleaseRecord",
             hideInMenu: true
         }
     }
