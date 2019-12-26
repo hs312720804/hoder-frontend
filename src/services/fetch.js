@@ -25,9 +25,10 @@ export default function fetch({
   return axios(option)
     .then(function({ data }) {
       NProgress.done();
-      if (parseInt(data.code) === 0) {
+      const codeFormat = parseInt(data.code)
+      if (codeFormat === 0) {
           return data.data;
-      } else if(parseInt(data.code) === 400001) {
+      } else if(codeFormat === 400001 || codeFormat === 9999) {
           location.href = location.origin + location.pathname + '#/login'
       } else {
         throw {
