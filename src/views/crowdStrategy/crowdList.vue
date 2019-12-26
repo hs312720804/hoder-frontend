@@ -258,6 +258,9 @@
                 <el-dropdown-item
                         :command="['detail',scope.row]"
                 >投后效果</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['homepageData',scope.row]"
+                >看主页数据</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-button-group>
@@ -1153,6 +1156,8 @@ export default {
                   this.getWatchBehavior()
                   this.getActiveBehavior()
                   break
+              case 'homepageData':
+                  this.handleSeeHomepageData(this.currentCid)
           }
       },
       // 显示投后效果弹窗

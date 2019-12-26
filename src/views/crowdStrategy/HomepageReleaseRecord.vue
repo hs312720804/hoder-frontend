@@ -15,12 +15,15 @@
             >
             </Table>
         </ContentWrapper>
-        <el-dialog :visible.sync="showFunnel" title="该推荐位人群投后全链路的漏斗数据">
-            <div style="float: right"><el-button type="primary" @click="handleExport">导出数据</el-button></div>
-            <div ref="funnel" class="funnel-echarts"></div>
-            <div class="funnel-item">
-                <div class="item-title">1</div>
-                <div class="item-buf">2</div>
+        <el-dialog :visible.sync="showFunnel" @close="handleClose" title="该推荐位人群投后全链路的漏斗数据">
+            <!--<div><el-button type="primary" @click="handleExport">导出数据</el-button></div>-->
+            <div class="funnel-item" v-if="funnelData.length > 0" v-for="(item,index) in funnelData" :key="index">
+                <div class="item-title">{{item.name}}</div>
+                <div class="item-buf">
+                    <div v-if="loadColor" :style="{width: (index < 6 ? (100-index*15) : 40) + '%',background: '#' + generateMixed(),margin: 'auto'}">
+                        {{item.value}}
+                    </div>
+                </div>
             </div>
         </el-dialog>
     </div>
@@ -87,7 +90,19 @@
                     homepageCtr: '主页ctr',
                     orderNumber: '成交单量',
                     orderTotal: '成交总金额'
-                }
+                },
+                funnelUnit: {
+                    totalPopulation: '人',
+                    homepageActivity: '人',
+                    homepageExposure: '次',
+                    homepageClick: '次',
+                    homepageCtr: '%',
+                    orderNumber: '单',
+                    orderTotal: '元'
+                },
+                funnelData: [],
+                chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'A', 'B', 'C', 'D', 'E', 'F'],
+                loadColor: true
             }
         },
         methods: {
@@ -151,7 +166,8 @@
             parseFilter () {
                 const {filter, pagination} = this
                 filter.bid = 2
-                filter.crowdId = 12
+                // filter.crowdId = 12
+                filter.crowdId = this.$route.params.id
                 if(pagination) {
                     filter.pageNum = pagination.currentPage || 1
                     filter.pageSize = pagination.pageSize || 10
@@ -161,7 +177,6 @@
             fetchData () {
                 const filter = this.parseFilter()
                 this.$service.getHomepageReleaseRecordList(filter).then((data) => {
-                    console.log(data)
                     this.table.data = data.list
                     this.pagination.total = data.total
                 })
@@ -174,24 +189,46 @@
             },
             handleSeeFunnel ({row}) {
                 const bdiId = row.id
+                // const bdiId = 1
                 this.showFunnel = true
+                this.loadColor = true
                 this.$service.getHomepageReleaseRecordFunnel({bdiId}).then((data) => {
                     if(data == null) {
                         this.$refs['funnel'].innerHTML = '暂无数据'
                     } else {
                         const dataArr = []
-                        const legendArr = []
                         const obj = Object.keys(this.funnelTransform)
                         obj.forEach((item) => {
-                            dataArr.push({name: this.funnelTransform[item], value: data[item]})
-                            legendArr.push(this.funnelTransform[item])
+                            dataArr.push({name: this.funnelTransform[item], value: data[item]+this.funnelUnit[item]})
                         })
-                        this.setFunnelEcharts('funnel','',legendArr,dataArr)
+                        this.funnelData = dataArr
                     }
                 })
             },
             handleExport () {
-
+                alert('sss')
+            },
+            generateMixed () {
+                let res = ''
+                for (let i = 0; i < 6; i++) {
+                    let id = Math.ceil(Math.random() * 16)
+                    res += this.chars[id]
+                }
+                if (res == 'FFF' || res == 'FFFFFF') {
+                    res = '000000'
+                }
+                return res.slice(0,6)
+            },
+            handleClose () {
+                // 解决关闭弹窗，颜色会变化的问题
+                this.loadColor = false
+            }
+        },
+        watch: {
+            '$route.params.id': function (val) {
+                if(val !== undefined){
+                    this.fetchData()
+                }
             }
         },
         created () {
@@ -205,16 +242,13 @@
     text-align center
     margin-bottom 20px
     color red
-.funnel-echarts
-    width 50%
-    height 300px
-    margin auto
 .funnel-item
     display flex
     text-align center
+    margin 15px 0
 .item-title
     width 30%
 .item-buf
     width 70%
-    background #9a6e3a
+    color #fff
 </style>
