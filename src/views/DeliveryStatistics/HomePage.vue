@@ -14,6 +14,8 @@
                 </el-date-picker>
             </div>
             <div>
+                <a :href="downloadUrl" download ref="download_Url"></a>
+                <el-button type="success" @click="handleDownload">导出数据</el-button>
                 <el-button type="primary" @click="handleOneTouchDrop">创建人群</el-button>
                 <el-button type="warning" @click="handleOpenLaunchList">投放列表</el-button>
             </div>
@@ -338,7 +340,8 @@
                     disabledDate(time) {
                         return time.getTime() > Date.now() - 8.64e6
                     }
-                }
+                },
+                downloadUrl: undefined
             }
         },
         watch: {
@@ -1040,6 +1043,12 @@
             handleOpenLaunchList () {
                 this.$router.push({
                     path: 'launch/launchTabList'
+                })
+            },
+            handleDownload () {
+                this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
+                this.$nextTick(() => {
+                    this.$refs.download_Url.click()
                 })
             }
         },

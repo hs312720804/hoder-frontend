@@ -16,7 +16,10 @@
             </Table>
         </ContentWrapper>
         <el-dialog :visible.sync="showFunnel" @close="handleClose" title="该推荐位人群投后全链路的漏斗数据">
-            <!--<div><el-button type="primary" @click="handleExport">导出数据</el-button></div>-->
+            <div class="export-button">
+                <a :href="downloadUrl" download ref="download_Url"></a>
+                <el-button type="primary" @click="handleExport">导出数据</el-button>
+            </div>
             <div class="funnel-item" v-if="funnelData.length > 0" v-for="(item,index) in funnelData" :key="index">
                 <div class="item-title">{{item.name}}</div>
                 <div class="item-buf">
@@ -102,7 +105,9 @@
                 },
                 funnelData: [],
                 chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'A', 'B', 'C', 'D', 'E', 'F'],
-                loadColor: true
+                loadColor: true,
+                currentId: undefined,
+                downloadUrl: undefined
             }
         },
         methods: {
@@ -189,7 +194,7 @@
             },
             handleSeeFunnel ({row}) {
                 const bdiId = row.id
-                // const bdiId = 1
+                this.currentId = row.id
                 this.showFunnel = true
                 this.loadColor = true
                 this.$service.getHomepageReleaseRecordFunnel({bdiId}).then((data) => {
@@ -206,7 +211,11 @@
                 })
             },
             handleExport () {
-                alert('sss')
+                const bdiId = this.currentId
+                this.downloadUrl = '/api/businessDelivery/exportExcel?bdiId=' + bdiId
+                this.$nextTick(() => {
+                    this.$refs.download_Url.click()
+                })
             },
             generateMixed () {
                 let res = ''
@@ -251,4 +260,7 @@
 .item-buf
     width 70%
     color #fff
+.export-button
+    display flex
+    justify-content flex-end
 </style>

@@ -479,6 +479,10 @@
             width="90%"
             title="该人群估算出的用户画像"
     >
+      <div class="export-button">
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleDownload">导出数据</el-button>
+      </div>
       <div>
         <div class="estimate-item">
           <div class="estimate-title">基本信息</div>
@@ -737,7 +741,8 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
-        checkList: ['apiStatus']
+        checkList: ['apiStatus'],
+        downloadUrl: undefined
     }
   },
   props: ["selectRow"],
@@ -1485,6 +1490,13 @@ export default {
       handleSeeHomepageData (crowdId) {
           this.showDivideDetail = false
           this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId}})
+      },
+      //  导出估算画像数据
+      handleDownload () {
+          this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
+          this.$nextTick(() => {
+              this.$refs.download_Url.click()
+          })
       }
   }
 }
@@ -1636,4 +1648,7 @@ fieldset>div
     color red
 .left div
     margin-right 10px
+.export-button
+    display flex
+    justify-content flex-end
 </style>
