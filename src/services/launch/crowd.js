@@ -273,3 +273,10 @@ export function submitMultiHistoryData(data) {
         data
     })
 }
+// 人群圈定Push模式投放详情
+export function getPushLaunchDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/multiVersionCrowd/getTaskLogInfo/'+params
+    })
+}

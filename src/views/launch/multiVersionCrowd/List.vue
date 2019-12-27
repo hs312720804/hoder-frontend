@@ -153,13 +153,11 @@
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
-                        <!--<el-button-->
-                                <!--v-permission="'hoder:launch:crowd:ver:modify'"-->
-                                <!--size="small"-->
-                                <!--type="primary"-->
-                                <!--@click="handleEdit(scope.row)"-->
-                                <!--shiro:hasPermission="sysAdministrative:role:edit"-->
-                        <!--&gt;编辑</el-button>-->
+                        <el-button
+                                size="small"
+                                type="danger"
+                                @click="handleGetLaunchDetail(scope.row)"
+                        >投放详情</el-button>
                         <!--<el-button-->
                                 <!--v-if="scope.row.history.status==1"-->
                                 <!--v-permission="'hoder:launch:crowd:ver:delete'"-->
@@ -611,6 +609,12 @@
                 }
                 this.$service.submitMultiHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
                     this.setShowCommitHistoryDialog = false
+                })
+            },
+            // 投放详情弹窗
+            handleGetLaunchDetail (row) {
+                this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
+                    console.log(data)
                 })
             }
         }
