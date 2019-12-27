@@ -886,7 +886,6 @@ export default {
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
         this.abStatusEnum = data.ABStatus
-          console.log(this.abStatusEnum)
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
       })
