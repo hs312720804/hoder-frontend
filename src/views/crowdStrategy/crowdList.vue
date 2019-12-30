@@ -303,6 +303,10 @@
             :visible.sync="showStatistics"
             width="90%"
     >
+      <div class="export-button">
+          <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
+          <el-button type="success" @click="handleLaunchedExport">导出数据</el-button>
+      </div>
       <div class="crowd-statistic">
         <div class="echarts-container">
           <div class="click-date-picker">
@@ -742,7 +746,8 @@ export default {
         currentCrowdId: undefined,
         abStatusEnum: {},
         checkList: ['apiStatus'],
-        downloadUrl: undefined
+        downloadUrl: undefined,
+        launchedExportUrl: undefined
     }
   },
   props: ["selectRow"],
@@ -1495,6 +1500,22 @@ export default {
           this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
           this.$nextTick(() => {
               this.$refs.download_Url.click()
+          })
+      },
+      //  导出投后效果数据
+      handleLaunchedExport () {
+          this.launchedExportUrl =
+              '/api/crowdAndPolicyStatistics/export/' + this.currentCid
+              +'?sHitLineTime='+ this.time0[0] + '&eHitLineTime='+ this.time0[1]
+              +'&sHitPieTime='+ this.time1[0] + '&eHitPieTime='+ this.time1[1]
+              +'&sExposeLineTime='+ this.time2[0] + '&eExposeLineTime='+ this.time2[1]
+              +'&sExposePieTime='+ this.time3[0] + '&eExposePieTime='+ this.time3[1]
+              +'&sClickLineTime='+ this.time4[0] + '&eClickLineTime='+ this.time4[1]
+              +'&sClickPieTime='+ this.time5[0] + '&eClickPieTime='+ this.time5[1]
+              +'&sFunnelTime='+ this.time6[0] + '&eFunnelTime='+ this.time6[1]
+              +'&sProvinceTime='+ this.time7[0] + '&eProvinceTime='+ this.time7[1]
+          this.$nextTick(() => {
+              this.$refs.launchedDownLoad.click()
           })
       }
   }
