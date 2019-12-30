@@ -153,13 +153,11 @@
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
-                        <!--<el-button-->
-                                <!--v-permission="'hoder:launch:crowd:ver:modify'"-->
-                                <!--size="small"-->
-                                <!--type="primary"-->
-                                <!--@click="handleEdit(scope.row)"-->
-                                <!--shiro:hasPermission="sysAdministrative:role:edit"-->
-                        <!--&gt;编辑</el-button>-->
+                        <el-button
+                                size="small"
+                                type="danger"
+                                @click="handleGetLaunchDetail(scope.row)"
+                        >投放详情</el-button>
                         <!--<el-button-->
                                 <!--v-if="scope.row.history.status==1"-->
                                 <!--v-permission="'hoder:launch:crowd:ver:delete'"-->
@@ -286,6 +284,20 @@
                 @closeDialog="setShowCommitHistoryDialog = false"
                 @submit="handleSubmitHistory"
         ></commit-history-dialog>
+        <el-dialog title="投放详情" :visible.sync="showLaunchDetail">
+            <el-form :form="launchDetailFormData" label-width="120px">
+                <el-form-item label="创建时间：">{{launchDetailFormData.createTime || '暂无数据'}}</el-form-item>
+                <el-form-item label="是否更新：">{{updateEnum[launchDetailFormData.autoUpdate] || '暂无数据'}}</el-form-item>
+                <el-form-item label="更新时间：">{{launchDetailFormData.autoTime || '暂无数据'}}</el-form-item>
+                <el-form-item label="任务调度：">
+                    <div v-if="launchDetailFormData.logs.length > 0">
+                        <div v-for="(item,index) in launchDetailFormData.logs" :key="index">{{item}}</div>
+                    </div>
+                    <div v-else>暂无数据</div>
+                </el-form-item>
+                <el-form-item label="所属标签分类：">{{launchDetailFormData.tempTag || '暂无数据'}}</el-form-item>
+            </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -344,7 +356,19 @@
                     0: '普通人群',
                     1: '自定义人群'
                 },
-                checkList: ['status','totalWxOpenid','totalUser']
+                checkList: ['status','totalWxOpenid','totalUser'],
+                showLaunchDetail: false,
+                launchDetailFormData: {
+                    createTime: '',
+                    autoUpdate: null,
+                    autoTime: '',
+                    logs:[],
+                    tempTag: ''
+                },
+                updateEnum: {
+                    0: '否',
+                    1: '是'
+                }
             };
         },
         created() {
@@ -611,6 +635,13 @@
                 }
                 this.$service.submitMultiHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
                     this.setShowCommitHistoryDialog = false
+                })
+            },
+            // 投放详情弹窗
+            handleGetLaunchDetail (row) {
+                this.showLaunchDetail = true
+                this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
+                    this.launchDetailFormData = data
                 })
             }
         }

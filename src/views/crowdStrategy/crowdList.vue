@@ -303,6 +303,10 @@
             :visible.sync="showStatistics"
             width="90%"
     >
+      <div class="export-button">
+          <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
+          <el-button type="success" @click="handleLaunchedExport">导出数据</el-button>
+      </div>
       <div class="crowd-statistic">
         <div class="echarts-container">
           <div class="click-date-picker">
@@ -479,6 +483,10 @@
             width="90%"
             title="该人群估算出的用户画像"
     >
+      <div class="export-button">
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleDownload">导出数据</el-button>
+      </div>
       <div>
         <div class="estimate-item">
           <div class="estimate-title">基本信息</div>
@@ -737,7 +745,9 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
-        checkList: ['apiStatus']
+        checkList: ['apiStatus'],
+        downloadUrl: undefined,
+        launchedExportUrl: undefined
     }
   },
   props: ["selectRow"],
@@ -881,7 +891,6 @@ export default {
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
         this.abStatusEnum = data.ABStatus
-          console.log(this.abStatusEnum)
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
       })
@@ -1301,7 +1310,6 @@ export default {
         this.$refs[formName].resetFields()
       },
       handleCommandOpreate(scope) {
-          debugger
           const type = scope[0]
           const params = scope[1]
           switch (type) {
@@ -1485,6 +1493,29 @@ export default {
       handleSeeHomepageData (crowdId) {
           this.showDivideDetail = false
           this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId}})
+      },
+      //  导出估算画像数据
+      handleDownload () {
+          this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
+          this.$nextTick(() => {
+              this.$refs.download_Url.click()
+          })
+      },
+      //  导出投后效果数据
+      handleLaunchedExport () {
+          this.launchedExportUrl =
+              '/api/crowdAndPolicyStatistics/export/' + this.currentCid
+              +'?sHitLineTime='+ this.time0[0] + '&eHitLineTime='+ this.time0[1]
+              +'&sHitPieTime='+ this.time1[0] + '&eHitPieTime='+ this.time1[1]
+              +'&sExposeLineTime='+ this.time2[0] + '&eExposeLineTime='+ this.time2[1]
+              +'&sExposePieTime='+ this.time3[0] + '&eExposePieTime='+ this.time3[1]
+              +'&sClickLineTime='+ this.time4[0] + '&eClickLineTime='+ this.time4[1]
+              +'&sClickPieTime='+ this.time5[0] + '&eClickPieTime='+ this.time5[1]
+              +'&sFunnelTime='+ this.time6[0] + '&eFunnelTime='+ this.time6[1]
+              +'&sProvinceTime='+ this.time7[0] + '&eProvinceTime='+ this.time7[1]
+          this.$nextTick(() => {
+              this.$refs.launchedDownLoad.click()
+          })
       }
   }
 }
@@ -1636,4 +1667,7 @@ fieldset>div
     color red
 .left div
     margin-right 10px
+.export-button
+    display flex
+    justify-content flex-end
 </style>
