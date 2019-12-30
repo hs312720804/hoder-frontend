@@ -1310,7 +1310,6 @@ export default {
         this.$refs[formName].resetFields()
       },
       handleCommandOpreate(scope) {
-          debugger
           const type = scope[0]
           const params = scope[1]
           switch (type) {
