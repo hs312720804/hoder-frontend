@@ -154,6 +154,7 @@
                             </el-dropdown-menu>
                         </el-dropdown>
                         <el-button
+                                v-if="scope.row.history.status !== 1"
                                 size="small"
                                 type="danger"
                                 @click="handleGetLaunchDetail(scope.row)"
