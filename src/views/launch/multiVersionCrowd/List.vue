@@ -285,7 +285,7 @@
                 @submit="handleSubmitHistory"
         ></commit-history-dialog>
         <el-dialog title="投放详情" :visible.sync="showLaunchDetail">
-            <el-form :form="launchDetailFormData" label-width="120px">
+            <el-form :form="launchDetailFormData" label-width="140px">
                 <el-form-item label="创建时间：">{{launchDetailFormData.createTime || '暂无数据'}}</el-form-item>
                 <el-form-item label="是否更新：">{{updateEnum[launchDetailFormData.autoVision] || '暂无数据'}}</el-form-item>
                 <el-form-item label="更新时间：">{{launchDetailFormData.autoTime || '暂无数据'}}</el-form-item>
