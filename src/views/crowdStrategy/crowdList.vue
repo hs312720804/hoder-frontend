@@ -1370,11 +1370,19 @@ export default {
       getCrowdProvinceInfo() {
         const crdId = this.currentCid
         this.$service.getEstimatedProvinceAndCityData(crdId).then((data) => {
-            this.cityData = data.pctActLvlCity
-            let mapData = data.prPctTtl.data.map(key => {
-                return {value: parseFloat(key.value),name:key.name}
-            })
-            this.setMapEcharts('provinceMap','省份分布',mapData)
+            if(Object.keys(data.pctActLvlCity).length === 0) {
+                this.cityData = null
+            }else{
+                this.cityData = data.pctActLvlCity
+            }
+            if(Object.keys(data.prPctTtl).length === 0) {
+                this.setMapEcharts('provinceMap','省份分布暂无数据')
+            }else{
+                let mapData = data.prPctTtl.data.map(key => {
+                    return {value: parseFloat(key.value),name:key.name}
+                })
+                this.setMapEcharts('provinceMap','省份分布',mapData)
+            }
         })
       },
       getTopActiveRank() {

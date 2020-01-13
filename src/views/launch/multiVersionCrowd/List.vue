@@ -154,6 +154,7 @@
                             </el-dropdown-menu>
                         </el-dropdown>
                         <el-button
+                                v-if="scope.row.history.status !== 1"
                                 size="small"
                                 type="danger"
                                 @click="handleGetLaunchDetail(scope.row)"
@@ -285,10 +286,11 @@
                 @submit="handleSubmitHistory"
         ></commit-history-dialog>
         <el-dialog title="投放详情" :visible.sync="showLaunchDetail">
-            <el-form :form="launchDetailFormData" label-width="120px">
+            <el-form :form="launchDetailFormData" label-width="140px">
                 <el-form-item label="创建时间：">{{launchDetailFormData.createTime || '暂无数据'}}</el-form-item>
-                <el-form-item label="是否更新：">{{updateEnum[launchDetailFormData.autoUpdate] || '暂无数据'}}</el-form-item>
+                <el-form-item label="是否更新：">{{updateEnum[launchDetailFormData.autoVision] || '暂无数据'}}</el-form-item>
                 <el-form-item label="更新时间：">{{launchDetailFormData.autoTime || '暂无数据'}}</el-form-item>
+                <el-form-item label="任务调度是否更新：">{{updateEnum[launchDetailFormData.autoUpdate] || '暂无数据'}}</el-form-item>
                 <el-form-item label="任务调度：">
                     <div v-if="launchDetailFormData.logs.length > 0">
                         <div v-for="(item,index) in launchDetailFormData.logs" :key="index">{{item}}</div>
@@ -363,7 +365,8 @@
                     autoUpdate: null,
                     autoTime: '',
                     logs:[],
-                    tempTag: ''
+                    tempTag: '',
+                    autoVision: null
                 },
                 updateEnum: {
                     0: '否',
