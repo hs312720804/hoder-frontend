@@ -283,13 +283,13 @@
 <script>
 export default {
   data () {
-    function validateKV (rule, value, cb) {
-      if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
-        cb(new Error('请勿输入特殊或空白字符'))
-      } else {
-        cb()
-      }
-    }
+    // function validateKV (rule, value, cb) {
+    //   if (/[！￥……（）——【】：；“”‘’、《》，。？\s+]/.test(value)) {
+    //     cb(new Error('请勿输入特殊或空白字符'))
+    //   } else {
+    //     cb()
+    //   }
+    // }
     return {
       tags: [],
       cache: {},
@@ -385,7 +385,6 @@ export default {
           }
         })
       })
-      console.log("tagIds=" + tagIds)
       crowd.tagIds = tagIds
       if (rule.rules.length === 0) {
         rulesJson.rules = rulesJson.rules.filter(function (item) {
@@ -449,7 +448,6 @@ export default {
       if (!crowd.tagIds.includes(tag.tagId)) {
         crowd.tagIds.push(tag.tagId)
       }
-      console.log("add tags=" + crowd.tagIds)
       rule.rules.push({
         operator: tag.tagType === 'time' ? 'between' : this.getDefaultOperator("="),
         tagCode: tag.tagKey,
