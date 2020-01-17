@@ -10,7 +10,7 @@
     <el-row :gutter="40">
       <el-col :span="24">
         <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
-          <el-form-item label="人群名称" prop="crowdName">
+          <el-form-item label="人群名称" prop="name">
             <el-input size="small" v-model="form.name" placeholder="投放名称"></el-input>
           </el-form-item>
           <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
@@ -219,6 +219,19 @@
               </div>
             </div>
           </el-form-item>
+          <el-form-item label="人群有效期" prop="crowdExp">
+            <el-date-picker
+             v-model="form.crowdExp"
+             type="datetimerange"
+             range-separator="至"
+             start-placeholder="开始日期"
+             end-placeholder="结束日期"
+             value-format="yyyy-MM-dd HH:mm"
+             :picker-options="pickerOptions"
+             :default-time="['00:00:00', '23:59:59']"
+            >
+            </el-date-picker>
+          </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input size="small" v-model="form.remark"></el-input>
           </el-form-item>
@@ -264,10 +277,22 @@
                 form: {
                     name: "",
                     policyId: null,
-                    remark: ""
+                    remark: "",
+                    crowdExp: []
                 },
                 formRules: {
-                    name: [{ required: true, message: "请填写人群名称", trigger: "blur" }]
+                    name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
+                    crowdExp: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
+                },
+                pickerOptions: {
+                    disabledDate(time) {
+                        // 设置可选时间为今天之后的60天内
+                        const curDate = (new Date()).getTime()
+                        // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+                        const day = 60 * 24 * 3600 * 1000
+                        const dateRange = curDate + day
+                        return time.getTime() < Date.now() - 24*60*60*1000 || time.getTime() > dateRange
+                    }
                 }
             };
         },
@@ -440,59 +465,67 @@
                 return "=";
             },
             handleSave() {
-                const form = this.form
-                const tagIds = []
-                const rules = this.rulesJson.rules
-                const ruleLength = rules.length
-                let i, j = 0
-                // 判断是否有未填写的项
-                for (i=0; i<ruleLength; i++){
-                    for (j=0; j< rules[i].rules.length; j++) {
-                        let rulesItem = rules[i].rules[j]
-                        if(rulesItem.value === ''){
-                            this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
-                            return
-                        }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
-                            if(this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
-                                if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
-                                else {
-                                    this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
+                this.$refs['form'].validate((valid) => {
+                    if (valid) {
+                        const form = this.form
+                        const tagIds = []
+                        const rules = this.rulesJson.rules
+                        const ruleLength = rules.length
+                        let i, j = 0
+                        // 判断是否有未填写的项
+                        for (i=0; i<ruleLength; i++){
+                            for (j=0; j< rules[i].rules.length; j++) {
+                                let rulesItem = rules[i].rules[j]
+                                if(rulesItem.value === ''){
+                                    this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
                                     return
+                                }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
+                                    if(this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
+                                        if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
+                                        else {
+                                            this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
+                                            return
+                                        }
+                                    }else {
+                                        this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的正整数')
+                                        return
+                                    }
                                 }
-                            }else {
-                                this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的正整数')
-                                return
                             }
                         }
-                    }
-                }
-                rules.forEach(function(item) {
-                    item.rules.forEach(function(childItem) {
-                        if (tagIds.indexOf(childItem.tagId) === -1) {
-                            tagIds.push(childItem.tagId)
+                        rules.forEach(function(item) {
+                            item.rules.forEach(function(childItem) {
+                                if (tagIds.indexOf(childItem.tagId) === -1) {
+                                    tagIds.push(childItem.tagId)
+                                }
+                                delete childItem.startDay
+                                delete childItem.endDay
+                            })
+                        })
+                        const data = {
+                            crowdName: form.name,
+                            tagIds: tagIds.join(","),
+                            rulesJson: JSON.stringify(this.rulesJson),
+                            remark: form.remark,
+                            policyId: form.policyId,
+                            crowdValidFrom: form.crowdExp[0],
+                            crowdValidTo: form.crowdExp[1]
                         }
-                        delete childItem.startDay
-                        delete childItem.endDay
-                    })
+                        if (this.crowdId != null) {
+                            data.crowdId = this.crowdId;
+                            data.priority = this.priority;
+                            this.$service.crowdUpdate(data, "编辑成功").then(() => {
+                                this.$emit("goBackCrowdListPage", true)
+                            })
+                        } else {
+                            this.$service.crowdSave(data, "新增成功").then(() => {
+                                this.$emit("goBackCrowdListPage", true)
+                            })
+                        }
+                    }else {
+                        return false
+                    }
                 })
-                var data = {
-                    crowdName: form.name,
-                    tagIds: tagIds.join(","),
-                    rulesJson: JSON.stringify(this.rulesJson),
-                    remark: form.remark,
-                    policyId: form.policyId
-                };
-                if (this.crowdId != null) {
-                    data.crowdId = this.crowdId;
-                    data.priority = this.priority;
-                    this.$service.crowdUpdate(data, "编辑成功").then(() => {
-                        this.$emit("goBackCrowdListPage", true);
-                    });
-                } else {
-                    this.$service.crowdSave(data, "新增成功").then(() => {
-                        this.$emit("goBackCrowdListPage", true);
-                    });
-                }
             },
             // 取消
             cancelAdd: function() {
@@ -546,6 +579,13 @@
                     this.form.name = policyData.crowdName
                     this.form.remark = policyData.remark
                     this.priority = policyData.priority
+                    const dateArr = []
+                    if (policyData.crowdValidFrom === null && policyData.crowdValidTo === null) {this.form.crowdExp = []}
+                    else {
+                        dateArr[0] = policyData.crowdValidFrom === null ? '' : policyData.crowdValidFrom
+                        dateArr[1] = policyData.crowdValidTo === null ? '' : policyData.crowdValidTo
+                        this.form.crowdExp = dateArr
+                    }
                     let ruleJsonData = JSON.parse(policyData.rulesJson)
                     var cacheIds = []
                     ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {

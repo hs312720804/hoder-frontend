@@ -37,7 +37,7 @@
             @click="handleAdd"
             v-permission="'hoder:crowd:add'"
           >
-            <a class="fa fa-plus" style="color: white"></a>新增多个人群
+            <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
@@ -53,6 +53,7 @@
                       <el-checkbox label="apiStatus">是否生效</el-checkbox>
                       <el-checkbox label="department">业务部门</el-checkbox>
                       <el-checkbox label="remark">备注</el-checkbox>
+                      <el-checkbox label="crowdValidStatus">是否有效期内</el-checkbox>
                   </el-checkbox-group>
               </div>
               <el-button slot="reference">选择列表展示维度</el-button>
@@ -171,6 +172,11 @@
           <span v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('crowdValidStatus') > -1)" prop="crowdValidStatus" label="是否有效期内" width="100px">
+        <template scope="scope">
+            {{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}
+        </template>
+      </el-table-column>
       <el-table-column label="是否AB测试" width="100px">
           <template scope="scope">
               {{abStatusEnum[scope.row.abstatus]}}
@@ -178,7 +184,7 @@
               <!--<span v-if="scope.row.abMainCrowd === 0">否</span>-->
           </template>
       </el-table-column>
-      <el-table-column prop="forcastStatus" label="估算状态" width="80">
+      <el-table-column prop="forcastStatus" label="估算状态" width="90">
           <template scope="scope">
               <span v-if="scope.row.forcastStatus == 1">未估算</span>
               <span v-if="scope.row.forcastStatus == 2">估算中</span>
@@ -281,7 +287,7 @@
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
-    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量</div>
+    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
     <el-checkbox-group v-model="estimateValue">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
@@ -292,7 +298,7 @@
   </el-dialog>
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
-       <div class="estimate-tips">只估算包含大数据标签的人群数量为：</div>
+       <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
        <div>设备：{{totalUser}}</div>
        <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
        <div>酷开openId：{{total2}}</div>
@@ -745,9 +751,10 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
-        checkList: ['apiStatus'],
+        checkList: ['apiStatus','crowdValidStatus'],
         downloadUrl: undefined,
-        launchedExportUrl: undefined
+        launchedExportUrl: undefined,
+        crowdValidEnum: {}
     }
   },
   props: ["selectRow"],
@@ -755,7 +762,7 @@ export default {
         // 高阶函数
       // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
 
-    this.loadData()
+      this.loadData()
       const start = new Date()
       const end = new Date()
       this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
@@ -891,6 +898,7 @@ export default {
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
         this.abStatusEnum = data.ABStatus
+        this.crowdValidEnum = data.crowdValidEnum
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
       })
