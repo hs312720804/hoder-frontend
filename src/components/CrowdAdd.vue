@@ -398,7 +398,6 @@ export default {
      * tag 为标签
      */
     handleAddRule (crowd, tag) {
-      debugger
       if (crowd.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -437,7 +436,6 @@ export default {
       })
     },
     handleAddChildRule (crowd, rule, tag) {
-      debugger
       if (rule.rules.length > 50) {
         this.$message({
           type: 'error',

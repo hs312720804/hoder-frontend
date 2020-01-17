@@ -1,9 +1,22 @@
 <template>
   <div>
-    <el-form :model="form" :rules="formRules" ref="form" label-width="90px">
+    <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
       <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="recordId" />
       <el-form-item label="人群用途" prop="purpose">
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
+      </el-form-item>
+      <el-form-item label="人群有效期" prop="crowdExp">
+        <el-date-picker
+                v-model="form.crowdExp"
+                type="datetimerange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd HH:mm"
+                :picker-options="pickerOptions"
+                :default-time="['00:00:00', '23:59:59']"
+        >
+        </el-date-picker>
       </el-form-item>
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
@@ -19,32 +32,44 @@ export default {
   components: {
     CrowdAdd
   },
-  data () {
-    return {
-      activeName: 0,
-      form: {
-        purpose: undefined,
-        rulesJson: [
-          {
-            'recordId': this.getRecordId(),
-            'tempCrowdId': undefined,
-            'crowdName': undefined,
-            'tagIds': [],
-            'purpose': undefined,
-            'remark': undefined,
-            'crowdOrder': 0,
-            'rulesJson': {
-              condition: 'OR',
-              rules: []
+    data: function () {
+        return {
+            activeName: 0,
+            form: {
+                purpose: undefined,
+                rulesJson: [
+                    {
+                        'recordId': this.getRecordId(),
+                        'tempCrowdId': undefined,
+                        'crowdName': undefined,
+                        'tagIds': [],
+                        'purpose': undefined,
+                        'remark': undefined,
+                        'crowdOrder': 0,
+                        'rulesJson': {
+                            condition: 'OR',
+                            rules: []
+                        }
+                    }
+                ],
+                crowdExp: []
+            },
+            formRules: {
+                purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
+                crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
+            },
+            pickerOptions: {
+                disabledDate(time) {
+                    // 设置可选时间为今天之后的60天内
+                    const curDate = (new Date()).getTime()
+                    // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+                    const day = 60 * 24 * 3600 * 1000
+                    const dateRange = curDate + day
+                    return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
+                }
             }
-          }
-        ]
-      },
-      formRules: {
-        purpose: [{ required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur' }]
-      }
-    }
-  },
+        }
+    },
   props: ['recordId'],
   methods: {
       getRecordId () {
@@ -104,6 +129,8 @@ export default {
                     e.purpose = form.purpose
                     e.tagIds = e.tagIds.join(',')
                     e.rulesJson = JSON.stringify(e.rulesJson)
+                    e.crowdValidFrom = form.crowdExp[0]
+                    e.crowdValidTo = form.crowdExp[1]
                     return e
                 })
                 if(mode === 0) {
@@ -126,10 +153,16 @@ export default {
     handleEdit () {
       const recordId = this.recordId
       let purpose = undefined
+      let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then((data) => {
         data = data.map((e, index) => {
           if (index === 0) {
             purpose = e.purpose
+              if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
+              else {
+                  crowdExp[0] = e.crowdValidFrom === null ? '' : e.crowdValidFrom
+                  crowdExp[1] = e.crowdValidTo === null ? '' : e.crowdValidTo
+              }
           }
           e.tagIds = e.tagIds.split(",")
           e.rulesJson = JSON.parse(e.rulesJson)
@@ -137,7 +170,8 @@ export default {
         })
         this.form = {
           purpose,
-          rulesJson: data
+          rulesJson: data,
+          crowdExp
         }
       })
     },
