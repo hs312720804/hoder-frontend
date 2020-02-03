@@ -321,7 +321,7 @@
              */
             handleAddRule(tag) {
                 if (this.rulesJson.rules.length > 50) {
-                    layer.msg("已达最大数量")
+                    this.$message.warning("已达最大数量")
                     return
                 }
                 if(tag.tagType==='string' || tag.tagType === 'collect'){
@@ -353,7 +353,7 @@
             },
             handleAddChildRule(rule, tag) {
                 if (rule.rules.length > 50) {
-                    layer.msg("已达最大数量")
+                    this.$message.warning("已达最大数量")
                     return;
                 }
                 if(tag.tagType==='string' || tag.tagType === 'collect'){
@@ -461,7 +461,7 @@
                     this.tagsListTotal = data.pageInfo.total
                 });
             },
-            getDefaultOperator(tag) {
+            getDefaultOperator() {
                 return "=";
             },
             handleSave() {

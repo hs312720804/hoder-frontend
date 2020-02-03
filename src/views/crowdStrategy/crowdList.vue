@@ -160,7 +160,11 @@
           <span v-if="scope.row.apiStatus === 0">
               <el-tooltip placement="right-start">
                 <div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>
-                <div v-else slot="content">人群未生效，因为未点击该策略的"同步按钮"</div>
+                <div v-else>
+                   <div v-if="scope.row.crowdValidStatus === 1" slot="content">人群未生效，因为该人群条件未生效</div>
+                   <div v-if="scope.row.crowdValidStatus === 3" slot="content">人群未生效，因为该人群条件已过期</div>
+                   <div v-else slot="content">人群未生效，因为未点击该策略的"同步按钮"</div>
+                </div>
                 <span class="uneffective">未生效<span>?</span></span>
               </el-tooltip>
           </span>
