@@ -160,11 +160,12 @@
           <span v-if="scope.row.apiStatus === 0">
               <el-tooltip placement="right-start">
                 <div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>
-                <div v-else>
-                   <div v-if="scope.row.crowdValidStatus === 1" slot="content">人群未生效，因为该人群条件未生效</div>
-                   <div v-if="scope.row.crowdValidStatus === 3" slot="content">人群未生效，因为该人群条件已过期</div>
-                   <div v-else slot="content">人群未生效，因为未点击该策略的"同步按钮"</div>
-                </div>
+                <div v-else slot="content">{{unActiveTips(scope.row.crowdValidStatus)}}</div>
+                <!--<div v-else>-->
+                   <!--&lt;!&ndash;<div v-if="scope.row.crowdValidStatus === 1" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件未生效</div>&ndash;&gt;-->
+                   <!--<div v-if="scope.row.crowdValidStatus === 3" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件已过期</div>-->
+                   <!--<div v-else slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为未点击该策略的"同步按钮"</div>-->
+                <!--</div>-->
                 <span class="uneffective">未生效<span>?</span></span>
               </el-tooltip>
           </span>
@@ -1536,6 +1537,13 @@ export default {
           this.$nextTick(() => {
               this.$refs.launchedDownLoad.click()
           })
+      },
+      unActiveTips(activeType) {
+          if (activeType == 1 || activeType == 3) {
+              return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
+          } else {
+              return '人群未生效，因为未点击该策略的"同步按钮"'
+          }
       }
   }
 }
