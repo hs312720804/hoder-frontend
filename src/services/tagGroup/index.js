@@ -95,3 +95,20 @@ export function delLabelGroup(params) {
         params
     })
 }
+// 复制标签分组
+export function copyLabelGroup(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/label/copyByGroups',
+        params
+    })
+}
+// 复制单个标签
+export function copyLabelSingle(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/label/copyByTagIds',
+        params
+    })
+}
+

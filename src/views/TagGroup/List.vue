@@ -43,7 +43,8 @@
                 </el-tree>
             </div>
             <div v-show="showCheckBox" class="del-button">
-                <el-button @click="remove" type="danger">确定删除</el-button>
+                <el-button @click="copyTag" type="primary">复制</el-button>
+                <el-button @click="remove" type="danger">删除</el-button>
             </div>
             <el-dialog
                 :visible.sync="showEditDialog"
@@ -56,12 +57,15 @@
                 <div v-if="mode === 'del'">
                     <div>确定删除所勾选的标签吗？</div>
                 </div>
+                <!--<div v-if="mode === 'copy'">-->
+                    <!--<choose-tag-group :parentId="parentId"></choose-tag-group>-->
+                <!--</div>-->
                 <div class="edit-dialog-buttons">
                     <el-button type="primary" @click="handleConfirm">确定</el-button>
                     <el-button @click="showEditDialog = false">取消</el-button>
                 </div>
             </el-dialog>
-
+            <choose-tag-group ref="chooseTagGroup" @saveCopyTag="handleSaveCopyForm"></choose-tag-group>
             <!--<div class="tag-category-list">-->
                 <!--<ul>-->
                     <!--<li-->
@@ -81,9 +85,11 @@
 </template>
 <script>
 import TagGroupCreate from './Create.vue'
+import ChooseTagGroup from '@/components/ChooseTagGroup.vue'
 export default {
     components: {
-        TagGroupCreate
+        TagGroupCreate,
+        ChooseTagGroup
     },
     data() {
         return {
@@ -156,12 +162,25 @@ export default {
             this.currentLabelData = data
             this.editGroupName = data.groupName
         },
-        remove() {
+        checkboxChooseIdentify () {
             const select = this.$refs.tree.getCheckedNodes()
+            if(select.length > 0) {
+                this.delGroupIds = select.map(item => item.groupId).join(',')
+                return true
+            } else {
+                this.$message.error('请勾选至少一个标签！')
+                return false
+            }
+        },
+        remove() {
+            // const select = this.$refs.tree.getCheckedNodes()
             this.showEditDialog = true
             this.editTitle = '删除标签组'
             this.mode = 'del'
-            this.delGroupIds = select.map(item => item.groupId).join(',')
+            // this.delGroupIds = select.map(item => item.groupId).join(',')
+        },
+        copyTag () {
+            this.$refs.chooseTagGroup.showCreateDialog = true
         },
         handleConfirm() {
             if(this.mode === 'edit') {
@@ -172,11 +191,22 @@ export default {
                         this.fetchData()
                     })}
             else if(this.mode === 'del') {
-                this.$service.delLabelGroup({groupIds: this.delGroupIds},'删除成功')
+                if(this.checkboxChooseIdentify()){
+                    this.$service.delLabelGroup({groupIds: this.delGroupIds},'删除成功')
                     .then(() => {
                         this.showEditDialog = false
                         this.fetchData()
                     })
+                }
+            }
+        },
+        handleSaveCopyForm (pid) {
+            if(this.checkboxChooseIdentify()){
+                this.$service.copyLabelGroup({tagGroupId: pid,groupIds: this.delGroupIds},'复制成功')
+                .then(() => {
+                    this.$refs.chooseTagGroup.showCreateDialog = false
+                    this.fetchData()
+                })
             }
         },
         handleTagEdit(){
