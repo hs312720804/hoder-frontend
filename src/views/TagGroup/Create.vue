@@ -52,7 +52,7 @@ export default {
             showSelectDialog: false,
             parentTree: [],
             parentProps:{
-                chilidren:"children",
+                children:"children",
                 label:"groupName"
             },
             parentGroupName: '',
