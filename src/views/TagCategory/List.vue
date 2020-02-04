@@ -52,7 +52,7 @@
                 </el-table-column>
                 <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注">
                 </el-table-column>
-                <el-table-column prop="operation" label="操作" width="220">
+                <el-table-column prop="operation" label="操作" width="260">
                     <template slot-scope="scope">
                          <el-button-group>
                         <el-button
@@ -78,6 +78,13 @@
                         >
                             删除
                         </el-button>
+                        <el-button
+                                size="small"
+                                type="success"
+                                @click="handleCopyToTag(scope.row)"
+                        >
+                            复制
+                        </el-button>
                          </el-button-group>
                     </template>
                 </el-table-column>
@@ -101,15 +108,21 @@
             :data-source-enum="dataSourceEnum"
             @upsert-end="fetchData"
         />
+        <choose-tag-group
+                ref="chooseTagGroup"
+                @saveCopyTag="handleSaveCopyForm"
+        ></choose-tag-group>
     </el-container>
 </template>
 
 <script>
 import { cloneDeep } from 'lodash'
 import TagCategoryUpsert from '../TagCategory/Upsert.vue'
+import ChooseTagGroup from '@/components/ChooseTagGroup.vue'
 export default {
     components: {
-        TagCategoryUpsert
+        TagCategoryUpsert,
+        ChooseTagGroup
     },
     data() {
         return {
@@ -125,7 +138,8 @@ export default {
                 pageSize: undefined,
                 total: undefined
             },
-            checkList: ['defineRemark']
+            checkList: ['defineRemark'],
+            currentTagId: undefined
         }
     },
     computed: {
@@ -170,6 +184,17 @@ export default {
             })
             .catch(() => {
                 //
+            })
+        },
+        handleCopyToTag (row) {
+            this.$refs.chooseTagGroup.showCreateDialog = true
+            this.currentTagId = row.tagId
+        },
+        handleSaveCopyForm (pid) {
+            this.$service.copyLabelSingle({tagGroupId: pid,tagIds: this.currentTagId},'复制成功')
+            .then(() => {
+                this.$refs.chooseTagGroup.showCreateDialog = false
+                this.fetchData()
             })
         },
         fetchData() {
