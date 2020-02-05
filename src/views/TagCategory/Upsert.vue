@@ -164,7 +164,7 @@ export default {
    },
    watch: {
        'tagCategory.dataSource':
-           function (newVal, oldVal) {
+           function (newVal) {
                if(newVal === 3) {this.hideThirdparam = false}
                else {this.hideThirdparam = true}
            },
