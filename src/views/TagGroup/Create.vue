@@ -130,13 +130,27 @@ export default {
                 this.parentGroupName = this.currentSelectDada.groupName
             }
             this.showSelectDialog = false
+        },
+        resetForm () {
+            this.$nextTick(() => {
+                this.$refs['form'].resetFields()
+            })
+            this.parentGroupName = null
+        }
+    },
+    watch: {
+        'showSelectDialog': function (val) {
+            if (val) { this.getPidList() }
+        },
+        'showCreateDialog': function (val) {
+            if (val) { this.resetForm() }
         }
     },
     created() {
-        this.getPidList()
-        this.form.pid = null
-        this.form.groupName = null
-        this.parentGroupName = null
+        // this.getPidList()
+        // this.form.pid = null
+        // this.form.groupName = null
+        // this.parentGroupName = null
     }
 }
 </script>
