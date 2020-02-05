@@ -33,10 +33,10 @@
                         <el-button @click="resetSearch">重置</el-button>
                     </div>
                     <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
-                        <el-checkbox v-for="item in conditionTagsFiltered"
+                        <el-checkbox v-for="(item,index) in conditionTagsFiltered"
                                      :class="item.dataSource === 2 ? 'checkbox--red' : (item.dataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
                                      :label="item.tagId"
-                                     :key="item.tagId"
+                                     :key="item.tagId+'_'+index"
                                      @change="handleTagChange($event,item)"
                         >
                             {{item.tagName}}
