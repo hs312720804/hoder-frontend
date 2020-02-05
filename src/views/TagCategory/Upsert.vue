@@ -103,7 +103,8 @@ export default {
                label:"groupName"
             },
             hideThirdparam: true,
-            thirdInterfaces: []
+            thirdInterfaces: [],
+            oldGroupId: undefined
        }
    },
    props: ['typeEnum', 'currentTagCategory'],
@@ -163,7 +164,7 @@ export default {
    },
    watch: {
        'tagCategory.dataSource':
-           function (newVal, oldVal) {
+           function (newVal) {
                if(newVal === 3) {this.hideThirdparam = false}
                else {this.hideThirdparam = true}
            },
@@ -173,6 +174,9 @@ export default {
                 form.activePaths = {}
             }
             this.tagCategory = val ? cloneDeep(val) : {}
+           if(this.tagCategory){
+               this.oldGroupId = this.tagCategory.groupId
+           }
             this.getParentInfo()
        }
    },
@@ -190,6 +194,9 @@ export default {
        },
        getFormData(){
            const data = JSON.parse(JSON.stringify(this.tagCategory))
+           if(data.tagId) {
+               data.oldGroup = this.oldGroupId ? this.oldGroupId : data.groupId
+           }
            delete data.createTime
            delete data.updateTime
            return data
