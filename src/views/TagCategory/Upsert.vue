@@ -181,7 +181,7 @@ export default {
        },
        showCreateDialog (val) {
            if(!val) {
-               this.tagCategory = {}
+               // this.tagCategory = {}
                this.parentGroupName = ''
            }
        }
