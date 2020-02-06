@@ -39,6 +39,15 @@
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
+          <el-button
+                  style="display: none"
+                  type="primary"
+                  size="small"
+                  @click="handleBatchEstimate"
+                  :disabled="canBatchEstimate"
+          >
+              批量估算
+          </el-button>
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
           <el-popover
@@ -759,7 +768,8 @@ export default {
         checkList: ['apiStatus','crowdValidStatus'],
         downloadUrl: undefined,
         launchedExportUrl: undefined,
-        crowdValidEnum: {}
+        crowdValidEnum: {},
+        canBatchEstimate: false
     }
   },
   props: ["selectRow"],
@@ -865,7 +875,16 @@ export default {
 
         })
     },
-      // 点击估算按钮
+    // 批量估算
+    handleBatchEstimate() {
+        this.canBatchEstimate = true
+        setTimeout(() => {
+            // this.canBatchEstimate = true
+            this.$set(this,'canBatchEstimate',false)
+            console.log(this.canBatchEstimate)
+        },5000)
+    },
+    // 点击估算按钮
     estimateType(row) {
         this.estimateId = row.crowdId
         this.showEstimate = true
