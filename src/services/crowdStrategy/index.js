@@ -116,7 +116,7 @@ export function getEstimateType(params) {
     params
   })
 }
-// 人群估算
+// 老人群估算
 export function estimatePeople(params) {
   return this.fetch({
     method: 'get',
@@ -125,6 +125,14 @@ export function estimatePeople(params) {
   })
 
 }
+// 新人群估算（实时）
+export function singleCrowdEstimate(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/singleCrowdEstimate',
+        params
+    })
+}
 // 获取估算结果
 export function estimateResult(params) {
   return this.fetch({
@@ -132,7 +140,14 @@ export function estimateResult(params) {
     url: 'api/crowd/crowdForcastLastOnceResult',
     params
   })
-
+}
+// 获取新估算结果
+export function estimateNewResult(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/estimateResult',
+        params
+    })
 }
 // 查看配置文件
 export function seeDevFile(params) {

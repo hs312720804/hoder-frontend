@@ -4,7 +4,7 @@
                 :title="tagCategory.tagId ? '编辑种类' : '新建种类'"
                 :visible.sync="showCreateDialog"
         >
-            <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
+            <GateSchemaForm v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
                 <div key="/groupId">
                     <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
                     <el-input   size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
@@ -178,6 +178,12 @@ export default {
                this.oldGroupId = this.tagCategory.groupId
            }
             this.getParentInfo()
+       },
+       showCreateDialog (val) {
+           if(!val) {
+               this.tagCategory = {}
+               this.parentGroupName = ''
+           }
        }
    },
    methods: {

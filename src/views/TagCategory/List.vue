@@ -180,7 +180,7 @@ export default {
         handleDeleteTagCategory(row) {
             this.$confirm('确认删除？')
             .then(() => {
-                this.$service.deleteTagCategory({tagId: row.tagId}, '删除成功').then(this.fetchData)
+                this.$service.deleteTagCategory({tagId: row.tagId,groupId: row.groupId}, '删除成功').then(this.fetchData)
             })
             .catch(() => {
                 //
