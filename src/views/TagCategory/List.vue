@@ -126,7 +126,7 @@ export default {
     },
     data() {
         return {
-            tagCategory: null,
+            tagCategory: {},
             tagCategoryList: [],
             dataSourceEnum: {},
             typeEnum: {},
@@ -168,7 +168,7 @@ export default {
             this.fetchData()
         },
         handleAddTagCategory() {
-            this.tagCategory = null
+            this.tagCategory = {}
             this.$refs.tagCategoryUpsert.showCreateDialog = true
         },
         handleEditTagCategory(row) {
