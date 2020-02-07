@@ -125,11 +125,19 @@ export function estimatePeople(params) {
   })
 
 }
-// 新人群估算（实时）
-export function singleCrowdEstimate(params) {
+// 新人群估算
+// export function singleCrowdEstimate(params) {
+//     return this.fetch({
+//         method: 'get',
+//         url: 'api/singleCrowdEstimate',
+//         params
+//     })
+// }
+// 新人群批量估算
+export function batchCrowdEstimate(params) {
     return this.fetch({
         method: 'get',
-        url: 'api/singleCrowdEstimate',
+        url: 'api/batchCrowdEstimate',
         params
     })
 }
@@ -142,13 +150,13 @@ export function estimateResult(params) {
   })
 }
 // 获取新估算结果
-export function estimateNewResult(params) {
-    return this.fetch({
-        method: 'get',
-        url: 'api/estimateResult',
-        params
-    })
-}
+// export function estimateNewResult(params) {
+//     return this.fetch({
+//         method: 'get',
+//         url: 'api/estimateResult',
+//         params
+//     })
+// }
 // 查看配置文件
 export function seeDevFile(params) {
   return this.fetch({
