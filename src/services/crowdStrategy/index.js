@@ -149,6 +149,23 @@ export function estimateResult(params) {
     params
   })
 }
+// 临时人群实时估算
+// export function estimateTemp(data) {
+//     return this.fetch({
+//         method: 'post',
+//         url: 'api/syncCrowdEstimate',
+//         data
+//     })
+// }
+export function estimateTemp(object) {
+    const newFormData = new FormData()
+    newFormData.append('crowdRule',JSON.stringify(object))
+    return this.fetch({
+        method: 'post',
+        url: 'api/syncCrowdEstimate',
+        data: newFormData
+    })
+}
 // 获取新估算结果
 // export function estimateNewResult(params) {
 //     return this.fetch({
