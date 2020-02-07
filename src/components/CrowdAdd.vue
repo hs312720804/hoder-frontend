@@ -3,7 +3,16 @@
     <el-form-item label="人群条件" class="el-collapse_item">
       <template v-for="(crowd, i) in inputValue">
         <div class="items" :key="i">
-          <el-collapse-item :title="crowd.crowdName" :name="i" :key="i" class="crowd-content">
+          <el-collapse-item :name="i" :key="i" class="crowd-content">
+            <template slot="title">
+              <div class="collapse-title">
+                <div>{{crowd.crowdName}}</div>
+                <div><el-button @click="handleEstimate(crowd)">估算</el-button></div>
+              </div>
+              <div class="collapse-title" style="justify-content: center" v-if="crowd.total0">
+                <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
+              </div>
+            </template>
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
               <el-input v-model="crowd.crowdName" placeholder="投放名称"></el-input>
             </el-form-item>
@@ -507,7 +516,8 @@ export default {
           'rulesJson': {
             condition: 'OR',
             rules: []
-          }
+          },
+          total0: undefined
         }
       )
       this.setSeq()
@@ -545,6 +555,11 @@ export default {
           item.value = startDay + '-' + endDay
         }
       } else { item.value = '' }
+    },
+    handleEstimate(formData) {
+        this.$service.estimateTemp(formData.rulesJson).then((data)=> {
+            if(data){this.$set(formData,'total0',data)}
+        })
     }
   },
   created () {
@@ -651,4 +666,11 @@ i
   margin 5px
 .label-item .time-dot-select-new
   width 90px
+.items >>> .collapse-title
+  width 50%
+  display flex
+  justify-content space-between
+.items >>> .count-tips
+  color red
+  font-size 12px
 </style>
