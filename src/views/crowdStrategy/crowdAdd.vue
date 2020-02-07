@@ -515,11 +515,11 @@
                         if (this.crowdId != null) {
                             data.crowdId = this.crowdId;
                             data.priority = this.priority;
-                            this.$service.crowdUpdate(data, "编辑成功").then(() => {
+                            this.$service.crowdUpdate(data, "操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据").then(() => {
                                 this.$emit("goBackCrowdListPage", true)
                             })
                         } else {
-                            this.$service.crowdSave(data, "新增成功").then(() => {
+                            this.$service.crowdSave(data, "操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据").then(() => {
                                 this.$emit("goBackCrowdListPage", true)
                             })
                         }

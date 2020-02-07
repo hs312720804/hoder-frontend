@@ -46,7 +46,7 @@
                     this.$message.error(error)
                     this.priority = this.dataBackup
                 } else {
-                    this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '修改优先级成功').then(() => {
+                    this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
                         this.isEdit = false
                         this.dataBackup = this.priority
                     })

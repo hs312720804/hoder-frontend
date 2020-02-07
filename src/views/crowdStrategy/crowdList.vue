@@ -39,15 +39,17 @@
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
-          <el-button
-                  style="display: none"
-                  type="primary"
-                  size="small"
-                  @click="handleBatchEstimate"
-                  :disabled="canBatchEstimate"
-          >
+          <el-tooltip placement="right-start">
+            <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有人</div>
+            <span class="uneffective"><el-button
+                    type="success"
+                    size="small"
+                    @click="handleBatchEstimate"
+                    :disabled="canBatchEstimate"
+            >
               批量估算
-          </el-button>
+            </el-button><span>?</span></span>
+          </el-tooltip>
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
           <el-popover
@@ -200,7 +202,7 @@
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
           <template scope="scope">
-              <span v-if="scope.row.forcastStatus == 1">未估算</span>
+              <span v-if="scope.row.forcastStatus == 1" @click="showCountResult(scope.row.crowdId)">未估算</span>
               <span v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
               <span v-if="scope.row.forcastStatus == 4">估算失败</span>
@@ -256,7 +258,7 @@
             <el-button
               size="small"
               type="warning"
-              @click="estimateType(scope.row)"
+              @click="handleClickEstimate(scope.row)"
               :disabled="scope.row.putway === 0"
             >估算</el-button>
               <el-button
@@ -301,8 +303,11 @@
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
-    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
-    <el-checkbox-group v-model="estimateValue">
+    <!--<div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>-->
+    <div class="estimate-tips">说明：</div>
+    <div>1、估算会自动过滤自定义条件，只估算包含大数据标签的设备数量</div>
+    <div>2、依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
+    <el-checkbox-group v-model="estimateValue" style="display: none">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
     <span slot="footer" class="dialog-footer">
@@ -314,9 +319,9 @@
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
        <div>设备：{{totalUser}}</div>
-       <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
-       <div>酷开openId：{{total2}}</div>
-       <div>微信openId：{{total3}}</div>
+       <!--<div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>-->
+       <!--<div>酷开openId：{{total2}}</div>-->
+       <!--<div>微信openId：{{total3}}</div>-->
    </el-dialog>
     <!-- 查看统计 投后效果弹窗-->
     <el-dialog
@@ -671,9 +676,9 @@ export default {
       estimateValue: ['0'],
       estimateId: '',
         showResult: false,
-        total1: undefined,
-        total2: undefined,
-        total3: undefined,
+        // total1: undefined,
+        // total2: undefined,
+        // total3: undefined,
         totalUser: undefined,
         total4: undefined,
         time0: [],
@@ -769,7 +774,8 @@ export default {
         downloadUrl: undefined,
         launchedExportUrl: undefined,
         crowdValidEnum: {},
-        canBatchEstimate: false
+        canBatchEstimate: false,
+        estimateType: undefined
     }
   },
   props: ["selectRow"],
@@ -868,7 +874,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.strategyCrowdDel({ crowdId: id},"删除成功").then(()=>{
+          this.$service.strategyCrowdDel({ crowdId: id},"操作成功，删除人群会影响该策略下所有人群的估算梳理，请点击“估算”重新估算其他人群的圈定数据").then(()=>{
             this.loadData()
           })
         }).catch(function(){
@@ -877,17 +883,14 @@ export default {
     },
     // 批量估算
     handleBatchEstimate() {
-        this.canBatchEstimate = true
-        setTimeout(() => {
-            // this.canBatchEstimate = true
-            this.$set(this,'canBatchEstimate',false)
-            console.log(this.canBatchEstimate)
-        },5000)
+        this.estimateType = 'batch'
+        this.showEstimate = true
     },
     // 点击估算按钮
-    estimateType(row) {
+    handleClickEstimate(row) {
         this.estimateId = row.crowdId
         this.showEstimate = true
+        this.estimateType = 'single'
         this.$service.getEstimateType().then((data) => {
             this.estimateItems = data
         })
@@ -895,26 +898,74 @@ export default {
       // 提交估算
     handleEstimate () {
         let calIdType = this.estimateValue.map((item) => item).join(',')
-        this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
-            () => {
-                this.showEstimate = false
-                this.loadData()
-            }
-        )
+        const formData = {
+            policyId: this.selectRow.policyId,
+            crowdId: this.estimateType === 'single'? this.estimateId : undefined,
+            triggerUser: this.getUserName(),
+            triggerTime: (new Date()).valueOf()
+        }
+        if (this.estimateType === 'single') {
+            this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
+                () => {
+                    this.showEstimate = false
+                    this.loadData()
+                }
+            )
+            // this.$service.singleCrowdEstimate(formData,"提交估算成功").then(
+            //     () => {
+            //         this.showEstimate = false
+            //         this.loadData()
+            //     }
+            // )
+        } else {
+            this.$service.batchCrowdEstimate(formData,"提交估算成功").then(
+                () => {
+                    this.showEstimate = false
+                    this.loadData()
+                    this.canBatchEstimate = true
+                    setTimeout(() => {
+                        this.$set(this,'canBatchEstimate',false)
+                    },5000)
+                }
+            )
+        }
+    },
+    // 获取当前用户拼音
+    getUserName () {
+          return this.$appState.user.name.split('@')[0]
     },
       // 显示估算结果
-    showCountResult (id) {
-        const crowdId = id
-        this.showResult = true
-        this.$service.estimateResult({crowdId: crowdId}).then((data) => {
-            // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-            const {total1,total2,total3,totalUser} = data[0] || {}
-            this.total1 = total1 || '暂无数据'
-            this.total2 = total2 || '暂无数据'
-            this.total3 = total3 || '暂无数据'
-            this.totalUser = totalUser || '暂无数据'
-        })
-    },
+      showCountResult (id) {
+          const crowdId = id
+          this.showResult = true
+          this.$service.estimateResult({crowdId: crowdId}).then((data) => {
+              // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+              // const {total1,total2,total3,totalUser} = data[0] || {}
+              const {totalUser} = data[0] || {}
+              // this.total1 = total1 || '暂无数据'
+              // this.total2 = total2 || '暂无数据'
+              // this.total3 = total3 || '暂无数据'
+              this.totalUser = totalUser || '暂无数据'
+          })
+      },
+    // showCountResult (id) {
+    //     this.showResult = true
+    //     const formData = {
+    //         crowdId: id,
+    //         triggerUser: this.getUserName(),
+    //         triggerTime: (new Date()).valueOf()
+    //     }
+    //     this.$service.estimateNewResult(formData).then((data) => {
+    //         console.log(data)
+    //         // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+    //         // const {total1,total2,total3,totalUser} = data[0] || {}
+    //         // this.total1 = total1 || '暂无数据'
+    //         // this.total2 = total2 || '暂无数据'
+    //         // this.total3 = total3 || '暂无数据'
+    //
+    //         this.totalUser = data.crowdTotal || '暂无数据'
+    //     })
+    // },
     // 从服务器读取数据
     loadData () {
       this.criteria["pageNum"] = this.currentPage
@@ -1713,7 +1764,7 @@ fieldset>div
     margin 10px 0
     color red
 .left div
-    margin-right 10px
+    margin-right 25px
 .export-button
     display flex
     justify-content flex-end
