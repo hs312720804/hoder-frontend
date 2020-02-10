@@ -9,7 +9,7 @@
                 <div>{{crowd.crowdName}}</div>
                 <div><el-button @click="handleEstimate(crowd)">估算</el-button></div>
               </div>
-              <div class="collapse-title" style="justify-content: center" v-if="crowd.total0">
+              <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
                 <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
               </div>
             </template>
@@ -558,7 +558,9 @@ export default {
     },
     handleEstimate(formData) {
         this.$service.estimateTemp(formData.rulesJson).then((data)=> {
-            if(data){this.$set(formData,'total0',data)}
+            if (data || data === 0) {
+                this.$set(formData,'total0',data)
+            }
         })
     }
   },
