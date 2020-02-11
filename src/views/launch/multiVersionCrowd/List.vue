@@ -65,20 +65,33 @@
         <!-- talbe -->
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column type="index" width="50"></el-table-column>
-            <el-table-column prop="launchCrowdId" label="投放ID" width="60"></el-table-column>
+            <el-table-column prop="launchCrowdId" label="投放ID" width="60">
+                <template scope="scope">
+                    <div :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">
+                        <span v-if="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5">！</span>
+                        <span>{{scope.row.launchCrowdId}}</span>
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column prop="launchName" label="投放名称" width="100">
                 <template scope="scope">
                     <el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
-                    <span v-else>{{scope.row.launchName}}</span>
+                    <span v-else :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{scope.row.launchName}}</span>
                 </template>
             </el-table-column>
             <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="70">
+            <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
                 <template scope="scope">
-                    <!-- 计算失败要点击出弹窗 -->
-                    <el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>
-                    <span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status]}}</span>
+                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)">{{(launchStatusEnum[scope.row.history.status]).name}}</span>
+                    <span v-else>
+                          <el-tooltip placement="right-start">
+                            <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
+                              <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
+                          </el-tooltip>
+                    </span>
+                    <!--<el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>-->
+                    <!--<span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status].name}}</span>-->
                 </template>
             </el-table-column>
             <el-table-column prop="expiryTime" label="人群有效期" width="180">
@@ -102,15 +115,17 @@
             <el-table-column label="操作" fixed="right" min-width="200">
                 <template scope="scope">
                     <el-button-group  class="button-group-position">
+                        <!-- 投放按钮显示的状态：1未投放，4计算失败，5投放失败，7已过期 -->
                         <el-button
-                                v-if="scope.row.history.status==1 || scope.row.history.status==5 || scope.row.history.status==7"
+                                v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
                                 v-permission="'hoder:launch:crowd:ver:launch'"
                                 size="small"
                                 type="warning"
                                 @click="lanuch(scope.$index, scope.row)"
                         >投放</el-button>
+                        <!-- 取消投放显示的状态：3投放中 -->
                         <el-button
-                                v-if="scope.row.history.status==3"
+                                v-if="(launchStatusEnum[scope.row.history.status]).code === 3"
                                 v-permission="'hoder:launch:crowd:ver:cancel'"
                                 size="small"
                                 type="warning"
@@ -135,26 +150,26 @@
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="scope.row.history.status == 1 || scope.row.history.status == 5 || scope.row.history.status==7"
+                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
                                         divided
                                 >删除
                                 </el-dropdown-item>
                                 <el-dropdown-item
                                         :command="['divide',scope.row]"
-                                        v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && scope.row.history.status == 1"
+                                        v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && (launchStatusEnum[scope.row.history.status]).code === 1"
                                         divided
                                 >AB实验
                                 </el-dropdown-item>
                                 <el-dropdown-item
                                 :command="['commitHistory',scope.row]"
-                                v-if="scope.row.history.status !== 1"
+                                v-if="(launchStatusEnum[scope.row.history.status]).code !== 1"
                                 divided
                                 >提交历史数据
                                 </el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                         <el-button
-                                v-if="scope.row.history.status !== 1"
+                                v-if="(launchStatusEnum[scope.row.history.status]).code !== 1"
                                 size="small"
                                 type="danger"
                                 @click="handleGetLaunchDetail(scope.row)"
@@ -679,4 +694,18 @@
     .button-list
         display flex
         align-items center
+    .uneffective
+        position relative
+        cursor pointer
+        .circle
+            position absolute
+            display inline-block
+            width 12px
+            height 12px
+            border 1px solid
+            border-radius 10px
+            text-align center
+            line-height 12px
+    .red-text
+        color red
 </style>
