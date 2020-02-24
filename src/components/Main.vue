@@ -162,7 +162,8 @@
                     "/manager/biList":"launchSettings",
                     "/manager/notice/index":"notice",
                     "/launchAdmin": "launchTabList",
-                    "/anomaly/index": "anomalyEcharts"
+                    "/anomaly/index": "anomalyEcharts",
+                    "/myPolicy/index": "myPolicy"
                 },
                 activeName: 'first',
                 updateMessage: [],
