@@ -389,6 +389,7 @@
                 }
             };
         },
+        props: ["parentSource"],
         created() {
             this.loadData();
         },
@@ -455,11 +456,19 @@
             loadData: function() {
                 this.criteria["pageNum"] = this.currentPage
                 this.criteria["pageSize"] = this.pageSize
-                this.$service.getMultiVersionCrowd(this.criteria).then(data => {
-                    this.launchStatusEnum = data.launchStatusEnum
-                    this.tableData = data.pageInfo.list
-                    this.totalCount = data.pageInfo.total
-                })
+                if(this.parentSource) {
+                    this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
+                        this.launchStatusEnum = data.launchStatusEnum
+                        this.tableData = data.pageInfo.list
+                        this.totalCount = data.pageInfo.total
+                    })
+                }else {
+                    this.$service.getMultiVersionCrowd(this.criteria).then(data => {
+                        this.launchStatusEnum = data.launchStatusEnum
+                        this.tableData = data.pageInfo.list
+                        this.totalCount = data.pageInfo.total
+                    })
+                }
             },
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
             handleSizeChange: function(val) {

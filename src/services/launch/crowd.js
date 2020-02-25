@@ -149,6 +149,14 @@ export function getAddCrowdData(params) {
         params
     })
 }
+// 人群分割投放点击添加按钮获取数据
+export function getAddMyCrowdData(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/launchPolicy/add/my',
+        params
+    })
+}
 // 人群分割投放新增保存接口
 export function saveAddCrowdData(data) {
     return this.fetch({
@@ -178,11 +186,26 @@ export function getMultiVersionCrowd(params) {
         params
     })
 }
+// 我的人群 圈定列表页
+export function getMyMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/multiVersionCrowd/index/my',
+        params
+    })
+}
 // 新增自定义人群或者普通人群
 export function addMultiVersionCrowd(params) {
     return this.fetch({
         method: 'GET',
         url: '/api/multiVersionCrowd/add/'+params
+    })
+}
+// 我的人群-新增自定义人群或者普通人群
+export function addMyMultiVersionCrowd(params) {
+    return this.fetch({
+        method: 'GET',
+        url: '/api/multiVersionCrowd/add/my/'+params
     })
 }
 // 新增保存接口
@@ -278,5 +301,13 @@ export function getPushLaunchDetail(params) {
     return this.fetch({
         method: 'get',
         url: '/api/multiVersionCrowd/getTaskLogInfo/'+params
+    })
+}
+// 我的人群 圈定列表
+export function getMyCrowdLaunchList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'/api/launchPolicy/index/my',
+        params
     })
 }

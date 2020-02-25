@@ -2,10 +2,10 @@
     <div>
         <el-tabs v-model="tabsValue" type="card">
             <el-tab-pane name="crowd" label="我的人群">
-                <policy-list></policy-list>
+                <policy-list :source="source"></policy-list>
             </el-tab-pane>
             <el-tab-pane name="launch" label="我的投放">
-                <launch-list></launch-list>
+                <launch-list :source="source"></launch-list>
             </el-tab-pane>
         </el-tabs>
     </div>
@@ -22,7 +22,8 @@ import launchList from '../launch/LaunchTabList'
         },
         data () {
             return {
-                tabsValue: 'crowd'
+                tabsValue: 'crowd',
+                source: 'myCrowd'
             }
         }
     }

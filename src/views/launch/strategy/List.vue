@@ -160,6 +160,7 @@
                 launchStatusEnum: { "1": "投放中" },
             }
         },
+        props: ["parentSource"],
         methods: {
             getPolicyList() {
                 this.$service.launchPolicyIndex().then(data => {
@@ -202,17 +203,31 @@
                 const pageNum = this.pagination.currentPage
                 const pageSize = this.pagination.pageSize
                 const search = this.filter.search
-                this.$service.getCrowdsListByPolicyId({ tabIndex , pageNum, pageSize, search}).then((data)=> {
-                    this.table.data = data.list
-                    this.pagination.total = data.total
-                })
+                if (this.parentSource) {
+                    this.$service.getMyCrowdLaunchList({ tabIndex , pageNum, pageSize, search}).then((data)=> {
+                        this.table.data = data.list
+                        this.pagination.total = data.total
+                    })
+                } else {
+                    this.$service.getCrowdsListByPolicyId({ tabIndex , pageNum, pageSize, search}).then((data)=> {
+                        this.table.data = data.list
+                        this.pagination.total = data.total
+                    })
+                }
             },
             handleAdd() {
                 this.showAddDialog = true
-                this.$service.getAddCrowdData().then((data) => {
-                    this.Platforms = data.biLists
-                    this.strategyData = data.polices
-                })
+                if (this.parentSource) {
+                    this.$service.getAddMyCrowdData().then((data) => {
+                        this.Platforms = data.biLists
+                        this.strategyData = data.polices
+                    })
+                } else {
+                    this.$service.getAddCrowdData().then((data) => {
+                        this.Platforms = data.biLists
+                        this.strategyData = data.polices
+                    })
+                }
             },
             cancelLaunch ({row}) {
                 const launchForm = {

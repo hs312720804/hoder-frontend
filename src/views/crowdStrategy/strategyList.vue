@@ -427,7 +427,7 @@ export default {
       checkList: []
     }
   },
-  props: ["historyFilter","checkListFilter"],
+  props: ["historyFilter","checkListFilter","parentSource"],
   created() {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
@@ -612,15 +612,18 @@ export default {
       this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
-      this.$service.policyList(this.criteria).then(data => {
-        this.tableData = data.pageInfo.list;
-        this.totalCount = data.pageInfo.total;
-        // const statusData = data.pageInfo.list;
-        // statusData.forEach((item) => {
-        //     if(item.status === 1) {this.statusTip = '点击生效'}
-        //     else if(item.status === 2) {this.statusTip = '已生效'}}
-        //     )
-      });
+      // 如果是【我的人群】模块进入
+      if (this.parentSource){
+          this.$service.getMyCrowdList(this.criteria).then(data => {
+              this.tableData = data.pageInfo.list;
+              this.totalCount = data.pageInfo.total;
+          });
+      }else {
+          this.$service.policyList(this.criteria).then(data => {
+              this.tableData = data.pageInfo.list;
+              this.totalCount = data.pageInfo.total;
+          });
+      }
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleSizeChange: function(val) {
