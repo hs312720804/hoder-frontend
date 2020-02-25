@@ -1,6 +1,6 @@
 <template>
     <div>
-        <list v-show="isShowList" @changeStatus="changeStatus" ref="list"></list>
+        <list v-show="isShowList" :parentSource="parentSource" @changeStatus="changeStatus" ref="list"></list>
         <add v-if="!isShowList"
              @changeStatus="changeStatus"
              :model="addModel"
@@ -8,6 +8,7 @@
              :isShowAddOrEdit="!isShowList"
              :editLaunchCrowdId="editLaunchCrowdId"
              :editStatus="editStatus"
+             :parentSource="parentSource"
         ></add>
     </div>
 </template>
@@ -23,6 +24,7 @@
                 editStatus: null
             };
         },
+        props: ["parentSource"],
         components: {
             List,
             Add

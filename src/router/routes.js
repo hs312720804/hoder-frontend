@@ -43,6 +43,7 @@ import oneTouchDrop from '@/views/OneTouchDrop/Index'
 import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
+import myPolicy from '@/views/MyPolicy/Index'
 const children = [
     {
         name: 'homePage',
@@ -215,6 +216,16 @@ const children = [
                 meta: {
                     tagId:"launchTabList",
                     title: '投放管理',
+                    icon: 'el-icon-cc-file'
+                },
+            },
+            {
+                name: 'myPolicy',
+                path: 'myPolicy',
+                component: myPolicy,
+                meta: {
+                    tagId:"myPolicy",
+                    title: '我的人群',
                     icon: 'el-icon-cc-file'
                 },
             },

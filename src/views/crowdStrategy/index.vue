@@ -5,6 +5,7 @@
                 @openCrowdPage="openCrowdPage"
                 :historyFilter="historyFilter"
                 :checkListFilter="checkListFilter"
+                :parentSource="source"
         ></strategy-list>
         <crowd-index v-if="!isShowStrategyList" :selectRow="selectRow" @goBack="goBack"></crowd-index>
     </div>
@@ -23,6 +24,7 @@ export default {
           // listPageSize: undefined
         }
     },
+    props: ["source"],
     methods: {
         openCrowdPage(row,filter,checkList){
           this.selectRow=row

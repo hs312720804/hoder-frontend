@@ -325,7 +325,7 @@
                 percentTotal: 0
             }
         },
-        props: ["editLaunchCrowdId", "model","editStatus"],
+        props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
         watch: {
             'crowdForm.abTest': function (val, oldVal) {
                 // 根第一次加载的时候不判断，当值变的时候再触发
@@ -399,7 +399,6 @@
                         this.crowdForm.abTest = row.abTest
                         this.status = this.editStatus
                         this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
-                        console.log(this.crowdForm.policyIds)
                         this.getCrowd()
                         data.respcl.forEach(element => {
                             element.childs.forEach(v => {
@@ -532,13 +531,23 @@
                     })
                 }
                 else {
-                    this.$service.addMultiVersionCrowd(this.model).then(data => {
-                        this.launchPlatform = data.biLists
-                        this.strategyPlatform = data.policies
-                        this.effectTimeList = data.efTime.map(item => {
-                            return { label: item + '天',value: item }
+                    if (this.parentSource) {
+                        this.$service.addMyMultiVersionCrowd(this.model).then(data => {
+                            this.launchPlatform = data.biLists
+                            this.strategyPlatform = data.policies
+                            this.effectTimeList = data.efTime.map(item => {
+                                return { label: item + '天',value: item }
+                            })
                         })
-                    })
+                    } else {
+                        this.$service.addMultiVersionCrowd(this.model).then(data => {
+                            this.launchPlatform = data.biLists
+                            this.strategyPlatform = data.policies
+                            this.effectTimeList = data.efTime.map(item => {
+                                return {label: item + '天', value: item}
+                            })
+                        })
+                    }
                 }
             },
             // 数组去重
