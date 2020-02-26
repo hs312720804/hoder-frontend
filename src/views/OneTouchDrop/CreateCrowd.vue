@@ -5,6 +5,7 @@
       :recordId="brotherRecordId"
       @handleBackPrevStep="handleBackPrevStep"
       @handleToNextStep="handleToNextStep"
+      @handleDirectStrategyListBrother="handleDirectStrategyListBrother"
     ></add-more-crowd>
   </div>
 </template>
@@ -31,6 +32,9 @@ export default {
     },
     resetFormData () {
       this.$emit('resetFormData')
+    },
+    handleDirectStrategyListBrother() {
+      this.$emit('handleDirectStrategyList')
     }
   },
   created () {

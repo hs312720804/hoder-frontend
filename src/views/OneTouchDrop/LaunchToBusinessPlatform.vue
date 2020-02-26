@@ -142,7 +142,7 @@
 <script>
     export default {
         name: "LaunchToBusinessPlatform",
-        props: ['recordId','tempPolicyAndCrowd'],
+        props: ['recordId','tempPolicyAndCrowd','routeSource'],
         data () {
             return {
                 crowdForm: {
@@ -260,13 +260,19 @@
                             // 一键投放成功之后，调'未同步'的接口，手动进行同步
                             if (launch) {
                                 this.$service.freshCache({policyId: data.policyId}).then(() => {
-                                    this.$router.push({ path: 'launch/launchTabList' })
+                                    if (this.routeSource) {
+                                        this.$router.push({ path: 'launch/myPolicy' })
+                                    } else {
+                                        this.$router.push({ path: 'launch/launchTabList' })
+                                    }
+                                    // this.$router.push({ path: 'launch/launchTabList' })
                                     this.$root.$emit('stratege-list-refresh')
                                     this.$emit('resetFormData')
                                 })
                             } else {
-                                this.$root.$emit('stratege-list-refresh')
-                                this.$router.push({ path: 'launch/strategyList' })
+                                this.$emit('handleDirectStrategyList')
+                                // this.$root.$emit('stratege-list-refresh')
+                                // this.$router.push({ path: 'launch/strategyList' })
                                 this.$emit('resetFormData')
                             }
 

@@ -14,20 +14,24 @@
                     :recordId="recordId"
                     :initTagList="initTagList"
                     @resetFormData="resetFormData"
+                    @handleDirectStrategyList="handleDirectStrategyList"
             ></create-policy>
             <create-crowd
                     :recordId="recordId"
                     @crowdNextStep="handleCrowdNextStep"
                     @crowdPrevStep="handleCrowdPrevStep"
                     @resetFormData="resetFormData"
+                    @handleDirectStrategyList="handleDirectStrategyList"
                     v-if="activeStep === 1">
             </create-crowd>
             <LaunchToBusiness
                     :recordId="recordId"
                     :tempPolicyAndCrowd="tempPolicyAndCrowd"
+                    :routeSource="routeSource"
                     @nextStep="handleNextStep"
                     @launchPrevStep="handleLaunchPrevStep"
                     @resetFormData="resetFormData"
+                    @handleDirectStrategyList="handleDirectStrategyList"
                     v-if="activeStep === 2"
             ></LaunchToBusiness>
         </div>
@@ -50,7 +54,15 @@
                 activeStep: 0,
                 recordId: undefined,
                 tempPolicyAndCrowd: {},
-                initTagList: []
+                initTagList: [],
+                routeSource: undefined
+            }
+        },
+        watch: {
+            '$route.params.source' : function (val, oldVal) {
+                if(val != oldVal) {
+                    this.routeSource = val ? val : undefined
+                }
             }
         },
         methods: {
@@ -78,7 +90,18 @@
             resetFormData () {
                 this.activeStep = 0
                 this.recordId = undefined
+            },
+            handleDirectStrategyList () {
+                this.$root.$emit('stratege-list-refresh')
+                if (this.routeSource) {
+                    this.$router.push({ path: 'launch/myPolicy' })
+                } else{
+                    this.$router.push({ path: 'launch/strategyList' })
+                }
             }
+        },
+        created () {
+            if (this.$route.params.source) {this.routeSource = this.$route.params.source}
         }
     }
 </script>

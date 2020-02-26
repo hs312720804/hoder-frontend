@@ -136,8 +136,9 @@ export default {
                 })
                 if(mode === 0) {
                     this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
-                        this.$root.$emit('stratege-list-refresh')
-                        this.$router.push({ path: 'launch/strategyList' })
+                        // this.$root.$emit('stratege-list-refresh')
+                        // this.$router.push({ path: 'launch/strategyList' })
+                        this.$emit('handleDirectStrategyListBrother')
                         this.$emit('resetFormData')
                     })
                 } else {

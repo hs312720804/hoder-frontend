@@ -549,7 +549,8 @@ export default {
     },
     handleAdd() {
       this.$router.push({
-          path: '/oneTouchDrop'
+          name: 'oneTouchDrop',
+          params: { source: this.parentSource ? 'myCrowd': undefined}
       })
       // this.addFormVisible = true;
       // this.addForm.policyName = "";

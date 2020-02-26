@@ -175,7 +175,8 @@
                                                 type: 'success',
                                                 message: '即将自动跳转至策略列表页'
                                             })
-                                            this.$router.push({ path: 'launch/strategyList' })
+                                            this.$emit('handleDirectStrategyList')
+                                            // this.$router.push({ path: 'launch/strategyList' })
                                         }).catch(() => {
                                         })
                                     } else {
@@ -194,7 +195,7 @@
                                                 type: 'success',
                                                 message: '即将自动跳转至策略列表页'
                                             })
-                                            this.$router.push({ path: 'launch/strategyList' })
+                                            this.$emit('handleDirectStrategyList')
                                         }).catch(() => {
                                         })
                                     } else {
@@ -219,12 +220,14 @@
                                             type: 'success',
                                             message: '即将自动跳转至策略列表页'
                                         })
-                                        this.$router.push({ path: 'launch/strategyList' })
+                                        this.$emit('handleDirectStrategyList')
+                                        // this.$router.push({ path: 'launch/strategyList' })
                                     }).catch(() => {
                                     })
                                 } else {
-                                    this.$root.$emit('stratege-list-refresh')
-                                    this.$router.push({path: 'launch/strategyList'})
+                                    // this.$root.$emit('stratege-list-refresh')
+                                    // this.$router.push({path: 'launch/strategyList'})
+                                    this.$emit('handleDirectStrategyList')
                                     this.resetForm()
                                     this.$emit('resetFormData')
                                 }
