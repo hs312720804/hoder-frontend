@@ -261,7 +261,10 @@
                             if (launch) {
                                 this.$service.freshCache({policyId: data.policyId}).then(() => {
                                     if (this.routeSource) {
-                                        this.$router.push({ path: 'launch/myPolicy' })
+                                        this.$router.push({
+                                            name: 'myPolicy',
+                                            params: { changeTab: 'ToMyLaunch' }
+                                        })
                                     } else {
                                         this.$router.push({ path: 'launch/launchTabList' })
                                     }

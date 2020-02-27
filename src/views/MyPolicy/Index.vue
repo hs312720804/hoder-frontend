@@ -25,6 +25,18 @@ import launchList from '../launch/LaunchTabList'
                 tabsValue: 'crowd',
                 source: 'myCrowd'
             }
+        },
+        watch : {
+            '$route.params.changeTab': function (val ,oldVal) {
+                if(val != oldVal && val) {
+                    this.tabsValue = 'launch'
+                }
+            }
+        },
+        created () {
+            if(this.$route.params.changeTab) {
+                this.tabsValue = 'launch'
+            }
         }
     }
 </script>
