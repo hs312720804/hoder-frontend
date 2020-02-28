@@ -625,7 +625,7 @@
               <el-table-column label="操作" width="250">
                   <template scope="scope">
                       <el-button type="danger" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                      <el-button type="primary" @click="handleSeeHomepageData(scope.row.crowdId)">看主页数据</el-button>
+                      <el-button type="primary" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
                   </template>
               </el-table-column>
           </el-table>
@@ -1249,7 +1249,7 @@ export default {
                   this.getActiveBehavior()
                   break
               case 'homepageData':
-                  this.handleSeeHomepageData(this.currentCid)
+                  this.handleSeeHomepageData(this.currentCid,scope[1].crowdName)
           }
       },
       // 显示投后效果弹窗
@@ -1581,9 +1581,10 @@ export default {
           })
       },
       // 查看主页数据
-      handleSeeHomepageData (crowdId) {
+      handleSeeHomepageData (crowdId, crowdName) {
           this.showDivideDetail = false
-          this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId}})
+          this.$appState.$set("homepageReleaseCrowdName", crowdName)
+          this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId, crowdName: crowdName}})
       },
       //  导出估算画像数据
       handleDownload () {

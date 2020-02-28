@@ -506,6 +506,15 @@ export function getHomepageReleaseRecordFunnel(params) {
     })
 }
 
+// 主页数据状态列举接口
+export function getHomepageReleaseRecordTypeEnum(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/businessDelivery/getDataStatus',
+        params
+    })
+}
+
 // 我的人群策略列表分页及查询
 export function getMyCrowdList(params) {
     return this.fetch({
