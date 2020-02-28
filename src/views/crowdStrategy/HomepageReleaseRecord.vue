@@ -6,7 +6,29 @@
                 @filter-change="handleFilterChange"
         >
             <div class="header-title">
-                该人群主页投放相关的DMP记录
+                人群<span>{{crowdName}}</span>主页投放相关的DMP记录
+            </div>
+            <div class="search-content">
+                <div class="search-left">
+                    <div>漏斗数据状态：</div>
+                    <div>
+                        <el-select v-model="dataEnumValue" placeholder="请选择">
+                            <el-option
+                                    v-for="item in dataTypeEnum"
+                                    :key="item.value"
+                                    :label="item.label"
+                                    :value="item.value">
+                            </el-option>
+                        </el-select>
+                    </div>
+                    <div>
+                        <el-input v-model="searchStr" clearable placeholder="请输入版块名称（选填）"></el-input>
+                    </div>
+                    <div><el-button type="primary" @click="fetchData">搜索</el-button></div>
+                </div>
+                <div>
+                    <el-button type="success" @click="handleBackToCrowdList">返回人群列表</el-button>
+                </div>
             </div>
             <Table
                     :props="table.props"
@@ -60,6 +82,10 @@
                             prop: 'endTime'
                         },
                         {
+                            label: '拉取版块数据时间',
+                            prop: 'createTime'
+                        },
+                        {
                             label: '版块Id',
                             prop: 'sectionId'
                         },
@@ -107,7 +133,11 @@
                 chars: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'A', 'B', 'C', 'D', 'E', 'F'],
                 loadColor: true,
                 currentId: undefined,
-                downloadUrl: undefined
+                downloadUrl: undefined,
+                crowdName: undefined,
+                dataTypeEnum: [],
+                dataEnumValue: 1,
+                searchStr: undefined
             }
         },
         methods: {
@@ -171,8 +201,9 @@
             parseFilter () {
                 const {filter, pagination} = this
                 filter.bid = 2
-                // filter.crowdId = 12
                 filter.crowdId = this.$route.params.id
+                filter.searchStr = this.searchStr
+                filter.status = this.dataEnumValue
                 if(pagination) {
                     filter.pageNum = pagination.currentPage || 1
                     filter.pageSize = pagination.pageSize || 10
@@ -231,6 +262,24 @@
             handleClose () {
                 // 解决关闭弹窗，颜色会变化的问题
                 this.loadColor = false
+            },
+            getDataTypeEnum () {
+                this.$service.getHomepageReleaseRecordTypeEnum().then(data => {
+                    const arr = []
+                    Object.keys(data).forEach((item) => {
+                        arr.push({label: data[item], value: parseInt(item)})
+                    })
+                    this.dataTypeEnum = arr
+                })
+            },
+            handleBackToCrowdList () {
+                // 根据GlobalStrategySource判断是从哪里跳来的
+                const source = this.$appState.$get('GlobalStrategySource')
+                if (source) {
+                    this.$router.push({ name: 'myPolicy' })
+                } else{
+                    this.$router.push({ name: 'strategyList'})
+                }
             }
         },
         watch: {
@@ -238,10 +287,19 @@
                 if(val !== undefined){
                     this.fetchData()
                 }
+            },
+            // 解决当前页面，点击其他tab页，crowdName没值的问题
+            '$route.params.crowdName': function (val) {
+                if(val !== undefined){
+                    this.crowdName = val
+                }
             }
         },
         created () {
+            this.getDataTypeEnum()
             this.fetchData()
+            // 防止刷新页面策略名称被刷新而消失
+            this.crowdName = this.$appState.$get('homepageReleaseCrowdName')
         }
     }
 </script>
@@ -250,7 +308,9 @@
 .header-title
     text-align center
     margin-bottom 20px
-    color red
+    color purple
+    span
+        color red
 .funnel-item
     display flex
     text-align center
@@ -263,4 +323,13 @@
 .export-button
     display flex
     justify-content flex-end
+.search-content
+    display flex
+    justify-content space-between
+    margin 20px 0
+.search-left
+    display flex
+    align-items center
+    div + div
+        margin 0 5px
 </style>

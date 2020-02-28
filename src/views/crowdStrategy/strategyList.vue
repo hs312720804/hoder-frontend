@@ -431,6 +431,7 @@ export default {
   created() {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
+    // this.setGlobalStrategySource()
     const start = new Date()
     const end = new Date()
     this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
@@ -595,6 +596,13 @@ export default {
         })
         .catch(() => {});
     },
+    // setGlobalStrategySource ()  {
+    //     if (this.parentSource){
+    //         this.$appState.$set('GlobalStrategySource', this.parentSource)
+    //     } else {
+    //         this.$appState.$set('GlobalStrategySource', undefined)
+    //     }
+    // },
     // 从服务器读取数据
     loadData: function() {
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
@@ -619,11 +627,13 @@ export default {
               this.tableData = data.pageInfo.list;
               this.totalCount = data.pageInfo.total;
           });
+          this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
           this.$service.policyList(this.criteria).then(data => {
               this.tableData = data.pageInfo.list;
               this.totalCount = data.pageInfo.total;
           });
+          this.$appState.$set('GlobalStrategySource', '')
       }
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
