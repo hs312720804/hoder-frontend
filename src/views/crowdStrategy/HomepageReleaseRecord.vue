@@ -6,7 +6,7 @@
                 @filter-change="handleFilterChange"
         >
             <div class="header-title">
-                人群<span>{{crowdName}}</span>主页投放相关的DMP记录
+                人群<span>{{$route.params.id}}:{{crowdName}}</span>主页投放相关的DMP记录
             </div>
             <div class="search-content">
                 <div class="search-left">
