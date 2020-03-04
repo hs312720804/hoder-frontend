@@ -12,6 +12,7 @@
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
       :crowdId="crowdId"
       :policyId="selectRow.policyId"
+      :limitLaunchDisabled="effectCrowd"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </crowd-add>
@@ -21,6 +22,7 @@
           <crowd-add
                   :crowdId="crowdId"
                   :policyId="selectRow.policyId"
+                  :limitLaunchDisabled="effectCrowd"
                   @goBackCrowdListPage="goBackCrowdListPage"
           >
           </crowd-add>
@@ -53,7 +55,8 @@ export default {
       isAbTest: false,
       tabSet: 'first',
         mode: '',
-        crowd: undefined
+        crowd: undefined,
+        effectCrowd: false
     };
   },
   props: ["selectRow"],
@@ -62,15 +65,19 @@ export default {
       //回到第一层页面，即策略列表页
       this.$emit("goBack")
     },
-    addCrowd(crowdId) {
+    addCrowd(row) {
       //编辑添加
+      const crowdId = row ? row.crowdId : undefined
       this.mode = ''
       this.isAbTest = false
       this.isShowCrowdList = false
       if (crowdId) {
         this.crowdId=crowdId
+          // 当策略在投放中且在有效期内，人群限制投放不可编辑
+        this.effectCrowd = (this.selectRow.useStatus === '投放中' && row.crowdValidStatus == 2)
       }else{
         this.crowdId=null
+        this.effectCrowd = false
       }
     },
     goBackCrowdListPage(isLoadData) {
@@ -84,6 +91,8 @@ export default {
          this.isAbTest = row.abMainCrowd === 1
          this.crowdId= row.crowdId
          this.mode = mode
+         // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
+         this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
     }
   },
   components: {

@@ -202,11 +202,17 @@
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
           <template scope="scope">
-              <span v-if="scope.row.forcastStatus == 1" @click="showCountResult(scope.row.crowdId)">未估算</span>
+              <span v-if="scope.row.forcastStatus == 1">未估算</span>
               <span v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
               <span v-if="scope.row.forcastStatus == 4">估算失败</span>
           </template>
+      </el-table-column>
+      <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
+        <template scope="scope">
+          <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
+          <span v-else>否</span>
+        </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="180">
         <template scope="scope">
@@ -262,7 +268,7 @@
               :disabled="scope.row.putway === 0"
             >估算</el-button>
               <el-button
-                      v-if="scope.row.abMainCrowd === 0"
+                      v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
                       size="small"
                       type="success"
                       @click="divideAB(scope.row,'addABTest')"
@@ -636,6 +642,9 @@
               @closeDialog="setShowCommitHistoryDialog = false"
               @submit="handleSubmitHistory"
       ></commit-history-dialog>
+      <el-dialog :visible.sync="showLimitLaunchDialog">
+        <div>限制投放数量为：{{this.showLimitLaunchCount}}</div>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -775,7 +784,9 @@ export default {
         launchedExportUrl: undefined,
         crowdValidEnum: {},
         canBatchEstimate: false,
-        estimateType: undefined
+        estimateType: undefined,
+        showLimitLaunchDialog: false,
+        showLimitLaunchCount: undefined
     }
   },
   props: ["selectRow"],
@@ -860,7 +871,7 @@ export default {
       this.$emit("addCrowd")
     },
     edit(row) {
-      this.$emit("addCrowd", row.crowdId)
+      this.$emit("addCrowd", row)
     },
     // 编辑ab test人群
     divideAB(row,mode) {
@@ -1615,6 +1626,11 @@ export default {
           } else {
               return '人群未生效，因为未点击该策略的"同步按钮"'
           }
+      },
+      // 显示限制数量
+      handleShowLimitLaunch (launchCount) {
+          this.showLimitLaunchDialog = true
+          this.showLimitLaunchCount = launchCount
       }
   }
 }

@@ -269,6 +269,15 @@
                 </div>
               </div>
             </el-form-item>
+            <el-form-item label="是否限制投放数量" prop="limitLaunch">
+              <el-radio-group v-model="crowd.limitLaunch">
+                <el-radio  :label="false">否</el-radio>
+                <el-radio  :label="true">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
+              <el-input-number size="medium" placeholder="不能大于10万" :max="100000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+            </el-form-item>
             <el-form-item label="备注" :prop="formProp('remark')">
               <el-input v-model="crowd.remark" placeholder="备注"></el-input>
             </el-form-item>
@@ -324,6 +333,9 @@ export default {
         ],
         crowdName: [
           { required: true, message: '请输入人群名称', trigger: 'blur' }
+        ],
+        limitLaunchCount: [
+          { required: true, message: '请输入大于0小于10万的限制数量', trigger: 'blur' }
         ]
       }
     }
@@ -517,6 +529,8 @@ export default {
             condition: 'OR',
             rules: []
           },
+          'limitLaunch': false,
+          'limitLaunchCount': undefined,
           total0: undefined
         }
       )
