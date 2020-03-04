@@ -9,7 +9,7 @@
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
-        <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+        <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
           <el-form-item label="人群名称" prop="name">
             <el-input size="small" v-model="form.name" placeholder="投放名称"></el-input>
           </el-form-item>
@@ -233,6 +233,15 @@
             >
             </el-date-picker>
           </el-form-item>
+          <el-form-item label="是否限制投放数量" prop="limitLaunch">
+            <el-radio-group v-model="form.limitLaunch" :disabled="limitLaunchDisabled">
+              <el-radio  :label="false">否</el-radio>
+              <el-radio  :label="true">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item label="投放数量" prop="limitLaunchCount" v-if="form.limitLaunch">
+            <el-input-number size="medium" placeholder="不能大于10万" :max="100000" :min="1" v-model="form.limitLaunchCount"></el-input-number>
+          </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input size="small" v-model="form.remark"></el-input>
           </el-form-item>
@@ -279,11 +288,14 @@
                     name: "",
                     policyId: null,
                     remark: "",
-                    crowdExp: []
+                    crowdExp: [],
+                    limitLaunch: false,
+                    limitLaunchCount: undefined
                 },
                 formRules: {
                     name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
-                    crowdExp: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
+                    crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
+                    limitLaunchCount: [{ required: true, message: '请输入大于0小于10万的限制数量', trigger: 'blur' }]
                 },
                 pickerOptions: {
                     disabledDate(time) {
@@ -294,10 +306,11 @@
                         const dateRange = curDate + day
                         return time.getTime() < Date.now() - 24*60*60*1000 || time.getTime() > dateRange
                     }
-                }
+                },
+                currentLaunchLimitCount: undefined
             };
         },
-        props: ["policyId", "crowdId"],
+        props: ["policyId", "crowdId","limitLaunchDisabled"],
         methods: {
             changeTimeWays(childItem) {
                 childItem.value = ''
@@ -468,11 +481,18 @@
             handleSave() {
                 this.$refs['form'].validate((valid) => {
                     if (valid) {
-                        const form = this.form
+                        const form = JSON.parse(JSON.stringify(this.form))
                         const tagIds = []
-                        const rules = this.rulesJson.rules
+                        const rules = JSON.parse(JSON.stringify(this.rulesJson.rules))
                         const ruleLength = rules.length
                         let i, j = 0
+                        debugger
+                        if (this.limitLaunchDisabled && !this.currentLaunchLimitCount) {
+                            if (this.currentLaunchLimitCount > form.limitLaunchCount) {
+                                this.$message.error('投放数量不能小于上一次设置的限制数量')
+                                return
+                            }
+                        }
                         // 判断是否有未填写的项
                         for (i=0; i<ruleLength; i++){
                             for (j=0; j< rules[i].rules.length; j++) {
@@ -510,7 +530,9 @@
                             remark: form.remark,
                             policyId: form.policyId,
                             crowdValidFrom: form.crowdExp[0],
-                            crowdValidTo: form.crowdExp[1]
+                            crowdValidTo: form.crowdExp[1],
+                            limitLaunch: form.limitLaunch,
+                            limitLaunchCount: form.limitLaunch ? form.limitLaunchCount : undefined
                         }
                         if (this.crowdId != null) {
                             data.crowdId = this.crowdId;
@@ -580,6 +602,9 @@
                     this.form.name = policyData.crowdName
                     this.form.remark = policyData.remark
                     this.priority = policyData.priority
+                    this.form.limitLaunch = policyData.limitLaunch
+                    this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
+                    this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     const dateArr = []
                     if (policyData.crowdValidFrom === null && policyData.crowdValidTo === null) {this.form.crowdExp = []}
                     else {

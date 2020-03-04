@@ -1,6 +1,6 @@
 <template>
   <div>
-    <el-form :model="form" :rules="formRules" ref="form" label-width="100px">
+    <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="recordId" />
       <el-form-item label="人群用途" prop="purpose">
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
@@ -50,7 +50,9 @@ export default {
                         'rulesJson': {
                             condition: 'OR',
                             rules: []
-                        }
+                        },
+                        'limitLaunch': false,
+                        'limitLaunchCount': undefined
                     }
                 ],
                 crowdExp: []
@@ -83,6 +85,13 @@ export default {
           this.$message.error('第' + (index + 1) + "人群的人群名称不能为空")
           flag = false
           break
+        }
+        if (rulesJson[index].limitLaunch) {
+            if(!rulesJson[index].limitLaunchCount) {
+                this.$message.error('第' + (index + 1) + "人群的人群限制数量必须大于1小于10万")
+                flag = false
+                break
+            }
         }
         const rulesJsonData = rulesJson[index].rulesJson
         const rules = rulesJsonData.rules
@@ -132,6 +141,7 @@ export default {
                     e.rulesJson = JSON.stringify(e.rulesJson)
                     e.crowdValidFrom = form.crowdExp[0]
                     e.crowdValidTo = form.crowdExp[1]
+                    e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
                     return e
                 })
                 if(mode === 0) {
