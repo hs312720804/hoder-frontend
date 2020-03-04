@@ -486,8 +486,7 @@
                         const rules = JSON.parse(JSON.stringify(this.rulesJson.rules))
                         const ruleLength = rules.length
                         let i, j = 0
-                        debugger
-                        if (this.limitLaunchDisabled && !this.currentLaunchLimitCount) {
+                        if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
                             if (this.currentLaunchLimitCount > form.limitLaunchCount) {
                                 this.$message.error('投放数量不能小于上一次设置的限制数量')
                                 return

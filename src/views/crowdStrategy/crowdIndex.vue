@@ -73,7 +73,8 @@ export default {
       this.isShowCrowdList = false
       if (crowdId) {
         this.crowdId=crowdId
-        this.effectCrowd = (this.selectRow.useStatus === '投放中' && row.apiStatus == 1)
+          // 当策略在投放中且在有效期内，人群限制投放不可编辑
+        this.effectCrowd = (this.selectRow.useStatus === '投放中' && row.crowdValidStatus == 2)
       }else{
         this.crowdId=null
         this.effectCrowd = false
@@ -90,8 +91,8 @@ export default {
          this.isAbTest = row.abMainCrowd === 1
          this.crowdId= row.crowdId
          this.mode = mode
-         // 当策略在投放中且已生效，或已经是ab划分的主人群，人群限制投放不可编辑
-         this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 1) || this.isAbTest)
+         // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
+         this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
     }
   },
   components: {
