@@ -273,7 +273,7 @@
         </el-dialog>
         <!-- 自定义人群 划分详情弹窗 -->
         <el-dialog :visible.sync="showDivideDetailDialog" title="划分详情">
-            <el-table :data="DivideTableData" style="width: 100%;" stripe border v-if="dialogType">
+            <el-table :data="DivideTableData" style="width: 100%;" stripe border>
                 <el-table-column prop="id" label="投放子ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="ratio" label="占比">
@@ -283,16 +283,16 @@
                 </el-table-column>
                 <el-table-column prop="count" label="数量"></el-table-column>
             </el-table>
-            <el-table :data="DivideTableData" style="width: 100%;" stripe border v-else>
-                <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
-                <el-table-column prop="crowdName" label="人群名称"></el-table-column>
-                <el-table-column prop="ratio" label="占比">
-                    <template scope="scope">
-                        {{scope.row.ratio}}%
-                    </template>
-                </el-table-column>
-                <el-table-column prop="count" label="数量"></el-table-column>
-            </el-table>
+            <!--<el-table :data="DivideTableData" style="width: 100%;" stripe border v-else>-->
+                <!--<el-table-column prop="crowdId" label="投放子ID"></el-table-column>-->
+                <!--<el-table-column prop="crowdName" label="人群名称"></el-table-column>-->
+                <!--<el-table-column prop="ratio" label="占比">-->
+                    <!--<template scope="scope">-->
+                        <!--{{scope.row.ratio}}%-->
+                    <!--</template>-->
+                <!--</el-table-column>-->
+                <!--<el-table-column prop="count" label="数量"></el-table-column>-->
+            <!--</el-table>-->
         </el-dialog>
         <commit-history-dialog
                 :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
@@ -366,7 +366,7 @@
                 percentTotal: 0,
                 showDivideDetailDialog: false,
                 DivideTableData: [],
-                dialogType: false,
+                // dialogType: false,
                 setShowCommitHistoryDialog: false,
                 currentCrowdId: undefined,
                 crowdType: {
@@ -646,7 +646,7 @@
                 const launchCrowdId = row.launchCrowdId
                 this.$service.getABTestDetail(launchCrowdId).then((data) => {
                     this.showDivideDetailDialog = true
-                    this.dialogType = data.IsFxFullSql === 1
+                    // this.dialogType = data.IsFxFullSql === 1
                     this.DivideTableData = data.abTestRatio
                 })
             },
