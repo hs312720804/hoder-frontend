@@ -264,11 +264,11 @@
                 if (!value) {
                     return callback(new Error('限制投放数量不能为空'));
                 }
-                setTimeout(() => {
-                    if (!Number.isInteger(value)) {
-                        callback(new Error('请输入大于0小于10万的整数'));
-                    }
-                }, 1000);
+                if (!Number.isInteger(value)) {
+                    callback(new Error('请输入大于0小于10万的整数'));
+                } else {
+                    callback()
+                }
             };
             return {
                 //attrs: [[${attrs}]] || {},
@@ -305,7 +305,7 @@
                 formRules: {
                     name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
                     crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
-                    limitLaunchCount: [{ required: true, validator: checkIntNumber, trigger: 'blur' }]
+                    limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
                 },
                 pickerOptions: {
                     disabledDate(time) {

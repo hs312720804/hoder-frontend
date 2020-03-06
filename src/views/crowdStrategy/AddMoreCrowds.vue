@@ -85,18 +85,18 @@ export default {
           this.$message.error('第' + (index + 1) + "人群的人群名称不能为空")
           flag = false
           break
-        }else{
-            if (!Number.isInteger(rulesJson[index].crowdName)) {
-                this.$message.error('请输入大于0小于10万的整数')
-                flag = false
-                break
-            }
         }
         if (rulesJson[index].limitLaunch) {
             if(!rulesJson[index].limitLaunchCount) {
-                this.$message.error('第' + (index + 1) + "人群的人群限制数量必须大于1小于10万")
+                this.$message.error('第' + (index + 1) + "人群的人群限制数量为必填")
                 flag = false
                 break
+            }else{
+                if (!Number.isInteger(rulesJson[index].limitLaunchCount)) {
+                    this.$message.error('第' + (index + 1) + "人群的人群限制数量必须是大于1小于10万的整数")
+                    flag = false
+                    break
+                }
             }
         }
         const rulesJsonData = rulesJson[index].rulesJson
