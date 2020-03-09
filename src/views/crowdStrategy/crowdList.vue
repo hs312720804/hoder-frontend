@@ -40,7 +40,7 @@
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
           <el-tooltip placement="right-start">
-            <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有人</div>
+            <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有人群</div>
             <span class="uneffective"><el-button
                     type="success"
                     size="small"
@@ -309,11 +309,8 @@
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
-    <!--<div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>-->
-    <div class="estimate-tips">说明：</div>
-    <div>1、估算会自动过滤自定义条件，只估算包含大数据标签的设备数量</div>
-    <div>2、依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
-    <el-checkbox-group v-model="estimateValue" style="display: none">
+    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
+    <el-checkbox-group v-model="estimateValue">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
     <span slot="footer" class="dialog-footer">
@@ -325,9 +322,9 @@
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
        <div>设备：{{totalUser}}</div>
-       <!--<div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>-->
-       <!--<div>酷开openId：{{total2}}</div>-->
-       <!--<div>微信openId：{{total3}}</div>-->
+       <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
+       <div>酷开openId：{{total2}}</div>
+       <div>微信openId：{{total3}}</div>
    </el-dialog>
     <!-- 查看统计 投后效果弹窗-->
     <el-dialog
@@ -685,9 +682,9 @@ export default {
       estimateValue: ['0'],
       estimateId: '',
         showResult: false,
-        // total1: undefined,
-        // total2: undefined,
-        // total3: undefined,
+        total1: undefined,
+        total2: undefined,
+        total3: undefined,
         totalUser: undefined,
         total4: undefined,
         time0: [],
@@ -896,6 +893,11 @@ export default {
     handleBatchEstimate() {
         this.estimateType = 'batch'
         this.showEstimate = true
+        this.$service.getEstimateType().then((data) => {
+            this.estimateItems = data
+        })
+        //    初始化值
+        this.estimateValue = ['0']
     },
     // 点击估算按钮
     handleClickEstimate(row) {
@@ -905,6 +907,8 @@ export default {
         this.$service.getEstimateType().then((data) => {
             this.estimateItems = data
         })
+    //    初始化值
+        this.estimateValue = ['0']
     },
       // 提交估算
     handleEstimate () {
@@ -913,7 +917,8 @@ export default {
             policyId: this.selectRow.policyId,
             crowdId: this.estimateType === 'single'? this.estimateId : undefined,
             triggerUser: this.getUserName(),
-            triggerTime: (new Date()).valueOf()
+            triggerTime: (new Date()).valueOf(),
+            calIdType
         }
         if (this.estimateType === 'single') {
             this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
@@ -950,12 +955,12 @@ export default {
           const crowdId = id
           this.showResult = true
           this.$service.estimateResult({crowdId: crowdId}).then((data) => {
-              // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-              // const {total1,total2,total3,totalUser} = data[0] || {}
-              const {totalUser} = data[0] || {}
-              // this.total1 = total1 || '暂无数据'
-              // this.total2 = total2 || '暂无数据'
-              // this.total3 = total3 || '暂无数据'
+              this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+              const {total1,total2,total3,totalUser} = data[0] || {}
+              // const {totalUser} = data[0] || {}
+              this.total1 = total1 || '暂无数据'
+              this.total2 = total2 || '暂无数据'
+              this.total3 = total3 || '暂无数据'
               this.totalUser = totalUser || '暂无数据'
           })
       },
