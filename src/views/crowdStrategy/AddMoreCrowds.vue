@@ -108,7 +108,7 @@ export default {
           for (j = 0; j < rules[i].rules.length; j++) {
             let rulesItem = rules[i].rules[j]
             if (rulesItem.value === '') {
-              this.$message.error('第' + (index + 1) + '人群里面的第' + (i + 1) + '设置标签块里面的第' + (j + 1) + '行的值不能为空')
+              this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
@@ -120,7 +120,7 @@ export default {
                   break
                 }
               } else {
-                this.$message.error('第' + (index + 1) + '人群里面的第' + (i + 1) + '设置标签块里面的第' + (j + 1) + '行的值是大于等于0的正整数')
+                this.$message.error('第' + (index + 1) + '人群里面的第' + (i + 1) + '设置标签块里面的第' + (j + 1) + '行的值是大于等于0的整数且不能超过4位数')
                 flag = false
                 break
               }
@@ -197,10 +197,11 @@ export default {
         this.$emit('handleBackPrevStep',this.recordId)
     },
     checkNum(num) {
-        if((/(^\d+$)/).test(num)) {
+        const numInt = parseInt(num)
+        if((/(^\d+$)/).test(num) && numInt <= 9999) {
             return true
         }else {
-            this.$message.error('该值为必填项，且必须是大于等于0的整数')
+            this.$message.error('该值为必填项，且必须是大于等于0的整数且不能超过4位数')
             return false
         }
     },
