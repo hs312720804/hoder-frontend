@@ -108,7 +108,7 @@ export default {
           for (j = 0; j < rules[i].rules.length; j++) {
             let rulesItem = rules[i].rules[j]
             if (rulesItem.value === '') {
-              this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
+              this.$message.error('请正确填写第'+(index + 1)+'人群里第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
@@ -127,6 +127,7 @@ export default {
             }
           }
         }
+        if(!flag) break
       }
       return flag
     },
@@ -163,7 +164,7 @@ export default {
                     })
                 }
             } else {
-                this.$message.error('人群用途输入格式不正确')
+                this.$message.error('请检查表单各项是否填写完整')
                 return false
             }
         })
