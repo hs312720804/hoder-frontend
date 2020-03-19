@@ -54,6 +54,36 @@
             <el-row :gutter="20" class="unit-row">
                 <el-col :span="12">
                     <div class="unit-box">
+                        <div class="unit-header clearfix">主页推荐位分人群情况</div>
+                        <div class="unit-content">
+                            <div class="home-page-recommend">
+                                <div class="home-page-recommend-item" v-for="(item,index) in homePageRecommendation" :key="index">
+                                    <div class="home-page-recommend-item--number">{{item.value}}</div>
+                                    <div>{{item.name}}</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </el-col>
+                <el-col :span="12">
+                    <div class="unit-box">
+                        <div class="unit-header clearfix">DMP支撑-主页推荐位路径下单产品包成功交易趋势图</div>
+                        <div class="unit-content">
+                            <!--<el-row :gutter="20">-->
+                                <!--<el-col :span="12">-->
+                                <!--<ve-wordcloud :data="chartData" :settings="chartSettings" height="300px"></ve-wordcloud>-->
+                            <!--</el-col>-->
+                                <!--<el-col :span="12">-->
+                                    <div class="main" ref="homepageRecommendTrade"></div>
+                                <!--</el-col>-->
+                            <!--</el-row>-->
+                        </div>
+                    </div>
+                </el-col>
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
+                <el-col :span="12">
+                    <div class="unit-box">
                         <div class="unit-header clearfix">标签覆盖情况</div>
                         <div class="unit-content">
                             <div class="tag-all-item-container">
@@ -341,7 +371,8 @@
                         return time.getTime() > Date.now() - 8.64e6
                     }
                 },
-                downloadUrl: undefined
+                downloadUrl: undefined,
+                homePageRecommendation: []
             }
         },
         watch: {
@@ -368,6 +399,7 @@
                         this.getUserDistribution(this.time0[0],this.time0[1])
                         this.getLastPayProduct(this.time0[0],this.time0[1])
                         this.getServiceActive(this.time0[0],this.time0[1])
+                        this.handleGetHomePageRecommend(this.time0[0],this.time0[1])
                     }else{
                         this.$message('日期间隔最多只能是30天！请重新选择日期')
                         this.time0 = oldVal
@@ -1050,6 +1082,15 @@
                 this.$nextTick(() => {
                     this.$refs.download_Url.click()
                 })
+            },
+            // 主页推荐位分人群情况
+            handleGetHomePageRecommend (beginTime,endTime) {
+                this.$service.getHomePageRecommend({beginTime,endTime}).then(data => {
+                    this.homePageRecommendation = data
+                })
+                this.$service.getHomePageRecommendLine({beginTime,endTime}).then(data=> {
+                    this.setLineEchart('homepageRecommendTrade','',data.xaxis,data.series[0].value)
+                })
             }
         },
         mounted () {
@@ -1070,6 +1111,7 @@
             this.getBroadcastRate(this.startDate,this.endDate)
             this.getUserWatchPreference(this.startDate,this.endDate)
             this.getServiceActive(this.time0[0],this.time0[1])
+            this.handleGetHomePageRecommend(this.startDate,this.endDate)
         },
         created() {
             // 设置默认时间为今天的前一周
@@ -1125,6 +1167,20 @@
                 font-size 30px
                 margin-bottom 0
         .crowd-all-item--number
+            color #000
+            font-weight bold
+            font-size 16px
+            margin-bottom 10px
+    .home-page-recommend
+        height 300px
+    .home-page-recommend-item
+        width 50%
+        text-align center
+        margin-top 50px
+        font-size 12px
+        color #aaa
+        float left
+        .home-page-recommend-item--number
             color #000
             font-weight bold
             font-size 16px

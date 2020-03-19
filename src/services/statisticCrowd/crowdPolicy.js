@@ -133,3 +133,19 @@ export function get_crowd_all_total(params){
         params
     })
 }
+// 主页推荐位分人群情况
+export function getHomePageRecommend(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/chart/recommendCrowd/detail',
+        params
+    })
+}
+// 主页推荐位分人群折线图
+export function getHomePageRecommendLine(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/chart/recommendAllTotal/detail',
+        params
+    })
+}
