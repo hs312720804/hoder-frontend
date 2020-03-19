@@ -89,7 +89,7 @@
                           ></el-date-picker>
                         </template>
                         <template v-if="childItem.isDynamicTime === 3">
-                          <span><el-input class="time-dot-input" style="width: 60px" v-model="childItem.startDay" @blur="checkNum(childItem.startDay)"></el-input>天~</span>
+                          <span><el-input class="time-dot-input" style="width: 60px" v-model="childItem.startDay" @blur="checkNumMostFour(childItem.startDay)"></el-input>天~</span>
                           <span><el-input class="time-dot-input" style="width: 106px" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
                         </template>
                     </span>
@@ -510,7 +510,7 @@
                                     this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
                                     return
                                 }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
-                                    if(this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
+                                    if(this.checkNumMostFour(rulesItem.startDay) && this.checkNumMostFour(rulesItem.endDay)) {
                                         if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) { rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay }
                                         else {
                                             this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
@@ -577,6 +577,14 @@
                 return result
             },
             checkNum(num) {
+                if((/(^\d+$)/).test(num)) {
+                    return true
+                }else {
+                    this.$message.error('该值为必填项，且必须是大于等于0的整数')
+                    return false
+                }
+            },
+            checkNumMostFour(num) {
                 const numInt = parseInt(num)
                 if((/(^\d+$)/).test(num) && numInt <= 9999) {
                     return true
@@ -588,7 +596,6 @@
             bigNum(item) {
                 const startDay = item.startDay
                 const endDay = item.endDay
-                // this.checkNum(endDay)
                 if(this.checkNum(endDay)) {
                     if(parseInt(startDay) >= parseInt(endDay)) {
                         this.$message.error('第二个值必须大于第一个值')
