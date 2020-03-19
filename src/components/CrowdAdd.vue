@@ -110,7 +110,7 @@
                                 class="time-dot-input"
                                 style="width: 60px"
                                 v-model="childItem.startDay"
-                                @blur="checkNum(childItem.startDay)"
+                                @blur="checkNumMostFour(childItem.startDay)"
                               ></el-input>天~
                             </span>
                             <span>
@@ -551,6 +551,14 @@ export default {
       this.setSeq()
     },
     checkNum (num) {
+        if((/(^\d+$)/).test(num)) {
+            return true
+        }else {
+            this.$message.error('该值为必填项，且必须是大于等于0整数')
+            return false
+        }
+    },
+    checkNumMostFour (num) {
         const numInt = parseInt(num)
         if((/(^\d+$)/).test(num) && numInt <= 9999) {
             return true
@@ -562,7 +570,6 @@ export default {
     bigNum (item) {
       const startDay = item.startDay
       const endDay = item.endDay
-      // this.checkNum(endDay)
       if (this.checkNum(endDay)) {
         if (parseInt(startDay) >= parseInt(endDay)) {
           this.$message.error('第二个值必须大于第一个值')
