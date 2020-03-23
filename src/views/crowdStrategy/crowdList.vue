@@ -309,7 +309,11 @@
   </div>
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
-    <div class="estimate-tips">说明：会自动过滤自定义条件，只估算包含大数据标签的人群数量，同时依据人群优先级去重交叉部分，重合部分算入优先级高的人群</div>
+    <div class="estimate-tips">说明：
+      <div>1、会自动过滤自定义条件，只估算包含大数据标签的人群数量</div>
+      <div>2、依据人群优先级去重估算，重合部分算入优先级高的人群</div>
+      <div>3、该策略下上架中的人群将参与去重估算</div>
+    </div>
     <el-checkbox-group v-model="estimateValue">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>
@@ -882,7 +886,7 @@ export default {
         type: "warning"
       })
         .then(() => {
-          this.$service.strategyCrowdDel({ crowdId: id},"操作成功，删除人群会影响该策略下所有人群的估算梳理，请点击“估算”重新估算其他人群的圈定数据").then(()=>{
+          this.$service.strategyCrowdDel({ crowdId: id},"删除人群会影响该策略下所有人群的估算数量，请点击“估算”重新估算其他人群的圈定数据").then(()=>{
             this.loadData()
           })
         }).catch(function(){
@@ -1376,7 +1380,9 @@ export default {
       },
       handleUpDown() {
         const row = this.currentTag
-        this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },row.putway === 1 ? '下架成功' : '上架成功')
+        console.log(row)
+        console.log(row.putway)
+        this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },(row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据')
               .then(()=>{
                   this.showUpDownDialog = false
                   this.loadData()
