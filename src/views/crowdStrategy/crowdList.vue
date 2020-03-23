@@ -1380,8 +1380,6 @@ export default {
       },
       handleUpDown() {
         const row = this.currentTag
-        console.log(row)
-        console.log(row.putway)
         this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },(row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据')
               .then(()=>{
                   this.showUpDownDialog = false
