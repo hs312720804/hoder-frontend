@@ -40,7 +40,7 @@
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
           <el-tooltip placement="right-start">
-            <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有人群</div>
+            <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective"><el-button
                     type="success"
                     size="small"
