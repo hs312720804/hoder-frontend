@@ -523,3 +523,12 @@ export function getMyCrowdList(params) {
         params
     })
 }
+
+// 人群重定向列表
+export function getRedirectCrowdList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/reLaunch/index/'+params.crowdId,
+        params
+    })
+}

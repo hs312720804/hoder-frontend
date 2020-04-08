@@ -44,6 +44,8 @@ import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
 import myPolicy from '@/views/MyPolicy/Index'
+import redirectList from '@/views/crowdStrategy/redirect/List'
+import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 const children = [
     {
         name: 'homePage',
@@ -617,6 +619,26 @@ const children = [
         meta: {
             title: '主页投放记录',
             tagId:"homepageReleaseRecord",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'redirectList',
+        path: 'redirectList/:redirectListId',
+        component: redirectList,
+        meta: {
+            title: '重定向投放记录',
+            tagId:"redirectList",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'redirectAdd',
+        path: 'redirectAdd',
+        component: redirectAdd,
+        meta: {
+            title: '新增/编辑重定向人群',
+            tagId:"redirectAdd",
             hideInMenu: true
         }
     }

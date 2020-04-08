@@ -39,17 +39,23 @@
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button>
-          <el-tooltip placement="right-start">
+          <el-tooltip placement="top-start">
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
-            <span class="uneffective"><el-button
+            <span class="uneffective">
+              <el-button
                     type="success"
                     size="small"
                     @click="handleBatchEstimate"
                     :disabled="canBatchEstimate"
             >
               批量估算
-            </el-button><span>?</span></span>
+              </el-button>
+              <!--<span>?</span>-->
+            </span>
           </el-tooltip>
+          <!--<el-button type="primary" @click="handleClickRedirect">-->
+            <!--新增重定向人群-->
+          <!--</el-button>-->
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
           <el-popover
@@ -267,6 +273,11 @@
               @click="handleClickEstimate(scope.row)"
               :disabled="scope.row.putway === 0"
             >估算</el-button>
+            <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="primary"-->
+                    <!--@click="handleClickRedirectWithId(scope.row)"-->
+            <!--&gt;新增重定向投放</el-button>-->
               <el-button
                       v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
                       size="small"
@@ -289,6 +300,9 @@
                 <el-dropdown-item
                         :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
+                <!--<el-dropdown-item-->
+                        <!--:command="['redirectCrowd',scope.row]"-->
+                <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
           </el-button-group>
@@ -1270,6 +1284,9 @@ export default {
                   break
               case 'homepageData':
                   this.handleSeeHomepageData(this.currentCid,scope[1].crowdName)
+                  break
+              case 'redirectCrowd':
+                  this.handleClickRedirectList(this.currentCid)
           }
       },
       // 显示投后效果弹窗
@@ -1640,6 +1657,21 @@ export default {
       handleShowLimitLaunch (launchCount) {
           this.showLimitLaunchDialog = true
           this.showLimitLaunchCount = launchCount
+      },
+      handleClickRedirect () {
+        this.$router.push({name: 'redirectAdd'})
+      },
+      handleClickRedirectWithId (crowdId) {
+          this.$router.push({
+              params: {redirectListId : crowdId},
+              name: 'redirectList'
+          })
+      },
+      handleClickRedirectList (crowdId) {
+          this.$router.push({
+              params: {redirectListId : crowdId},
+              name: 'redirectList'
+          })
       }
   }
 }
@@ -1794,4 +1826,6 @@ fieldset>div
 .export-button
     display flex
     justify-content flex-end
+.crowd-list >>> .el-button-group > .el-button
+    float none
 </style>
