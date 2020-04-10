@@ -523,3 +523,20 @@ export function getMyCrowdList(params) {
         params
     })
 }
+
+// 人群重定向列表
+export function getRedirectCrowdList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/reLaunch/index/'+params.crowdId,
+        params
+    })
+}
+// 人群估算画像接口统一，通过type区分
+export function getCrowdCountMap({params,crowdId}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/crowdPortrait/'+crowdId,
+        params
+    })
+}
