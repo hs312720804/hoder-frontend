@@ -547,9 +547,9 @@
                 <div class="province-city-active-content city-info-echarts">
                     <div ref="provinceMap" class="province-map"></div>
                     <div class="city-active-proportion" v-if="cityData">
-                        <div class="city-active-proportion--title">{{cityData.title}}</div>
-                        <template v-if="cityData.data.length > 0">
-                            <div  v-for="(item,index) in cityData.data" :key="index" class="city-active-proportion--name">
+                        <div class="city-active-proportion--title">城市活跃比</div>
+                        <template v-if="cityData.length > 0">
+                            <div  v-for="(item,index) in cityData" :key="index" class="city-active-proportion--name">
                                 {{item.name}}:{{item.value}}
                             </div>
                         </template>
@@ -982,24 +982,6 @@ export default {
               this.totalUser = totalUser || '暂无数据'
           })
       },
-    // showCountResult (id) {
-    //     this.showResult = true
-    //     const formData = {
-    //         crowdId: id,
-    //         triggerUser: this.getUserName(),
-    //         triggerTime: (new Date()).valueOf()
-    //     }
-    //     this.$service.estimateNewResult(formData).then((data) => {
-    //         console.log(data)
-    //         // this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-    //         // const {total1,total2,total3,totalUser} = data[0] || {}
-    //         // this.total1 = total1 || '暂无数据'
-    //         // this.total2 = total2 || '暂无数据'
-    //         // this.total3 = total3 || '暂无数据'
-    //
-    //         this.totalUser = data.crowdTotal || '暂无数据'
-    //     })
-    // },
     // 从服务器读取数据
     loadData () {
       this.criteria["pageNum"] = this.currentPage
@@ -1172,8 +1154,95 @@ export default {
               ]
           })
       },
+      // 双层夹心圆饼图
+      setNestedCircleEcharts(element,title,legend,innerData,outData,showDetail){
+          let echarts = require('echarts')
+          let myChart = echarts.init(this.$refs[element])
+          myChart.setOption({
+              title: {
+                  text: title,
+                  left: 'center'
+              },
+              tooltip: {
+                  trigger: 'item',
+                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+              },
+              legend: {
+                  orient: 'vertical',
+                  x: 'right',
+                  data: legend
+              },
+              series: [
+
+                  {
+                      name: '访问来源',
+                      type: 'pie',
+                      selectedMode: 'single',
+                      radius: [0, '30%'],
+
+                      label: {
+                          position: 'inner'
+                      },
+                      labelLine: {
+                          show: false
+                      },
+                      // 里层所有数据
+                      data: innerData
+                  },
+                  {
+                      name: '',
+                      type: 'pie',
+                      radius: ['40%', '55%'],
+                      label: {
+                          formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+                          backgroundColor: '#eee',
+                          borderColor: '#aaa',
+                          borderWidth: 1,
+                          borderRadius: 4,
+                          // shadowBlur:3,
+                          // shadowOffsetX: 2,
+                          // shadowOffsetY: 2,
+                          // shadowColor: '#999',
+                          // padding: [0, 7],
+                          rich: {
+                              a: {
+                                  color: '#999',
+                                  lineHeight: 22,
+                                  align: 'center'
+                              },
+                              // abg: {
+                              //     backgroundColor: '#333',
+                              //     width: '100%',
+                              //     align: 'right',
+                              //     height: 22,
+                              //     borderRadius: [4, 4, 0, 0]
+                              // },
+                              hr: {
+                                  borderColor: '#aaa',
+                                  width: '100%',
+                                  borderWidth: 0.5,
+                                  height: 0
+                              },
+                              b: {
+                                  fontSize: 16,
+                                  lineHeight: 33
+                              },
+                              per: {
+                                  color: '#eee',
+                                  backgroundColor: '#334455',
+                                  padding: [2, 4],
+                                  borderRadius: 2
+                              }
+                          }
+                      },
+                      data: (outData.length === 0) ? this.fillEmptyData.data : outData // 外层所有数据
+                  }
+
+              ]
+          })
+      },
       // 中国地图
-      setMapEcharts (element,title,data) {
+      setMapEcharts (element,title,data,minValue,maxValue) {
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           // 中国地图
@@ -1185,7 +1254,17 @@ export default {
               },
               tooltip : {
                   trigger: 'item',
-                  formatter: '{b}<br/>({c}%)'
+                  formatter: '{b}<br/>({c})'
+              },
+              visualMap: {
+                  min: minValue ? minValue : 0,
+                  max: maxValue ? maxValue : 20000000,
+                  text: ['High', 'Low'],
+                  realtime: false,
+                  calculable: true,
+                  inRange: {
+                      color: ['lightskyblue', 'yellow', 'orangered']
+                  }
               },
               series : [
                   {
@@ -1463,55 +1542,70 @@ export default {
       // 人群画像估算---开始
       getCrowdBaseInfo() {
         const crdId = this.currentCid
-        this.$service.getEstimatedBaseInfo(crdId).then((data) => {
-            // 当data里面的ageTtl等都为空，直接传值
-            let ageInfo,sexInfo,deviceInfo = {}
-            if(Object.keys(data.ageTtl).length === 0) {
-                ageInfo = this.fillEmptyData
-            }else {
-                ageInfo = data.ageTtl
-            }
-            if(Object.keys(data.genderTtl).length === 0) {
-                sexInfo = this.fillEmptyData
-            }else{
-                sexInfo = data.genderTtl
-            }
-            if(Object.keys(data.pdcLvlTtl).length === 0) {
-                deviceInfo = this.fillEmptyData
-            }else{
-                deviceInfo = data.pdcLvlTtl
-            }
-            this.setCircleEcharts('circleAge', '年龄分布', ageInfo.name, ageInfo.data,false)
-            this.setCircleEcharts('circleSex', '性别分布', sexInfo.name, sexInfo.data,false)
-            this.setCircleEcharts('circleDevice', '产品等级分布', deviceInfo.name, deviceInfo.data,false)
-          }
-        )
+        // 性别，年龄，产品等级
+        const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
+        this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+            const [names,values] = [[],[]]
+            data.dataList.forEach(item => {
+                names.push(item.name)
+                values.push({value: item.value, name: item.name})
+            })
+            this.setCircleEcharts('circleSex', '性别分布', names, values,false)
+        })
+        this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
+            const [names,values] = [[],[]]
+            data.dataList.forEach(item => {
+                names.push(item.name)
+                values.push({value: item.value, name: item.name})
+            })
+            this.setCircleEcharts('circleAge', '年龄分布', names, values,false)
+        })
+        this.$service.getCrowdCountMap({params: {type: typeEnum[2]},crowdId: this.currentCid}).then(data => {
+            const [names,values] = [[],[]]
+            data.dataList.forEach(item => {
+                names.push(item.name)
+                values.push({value: item.value, name: item.name})
+            })
+            this.setCircleEcharts('circleDevice', '产品等级分布', names, values,false)
+        })
       },
       getCrowdProvinceInfo() {
         const crdId = this.currentCid
-        this.$service.getEstimatedProvinceAndCityData(crdId).then((data) => {
-            if(Object.keys(data.pctActLvlCity).length === 0) {
-                this.cityData = null
-            }else{
-                this.cityData = data.pctActLvlCity
-            }
-            if(Object.keys(data.prPctTtl).length === 0) {
-                this.setMapEcharts('provinceMap','省份分布暂无数据')
-            }else{
-                let mapData = data.prPctTtl.data.map(key => {
-                    return {value: parseFloat(key.value),name:key.name}
-                })
-                this.setMapEcharts('provinceMap','省份分布',mapData)
-            }
-        })
+          // 省份、城市活跃度
+          const typeEnum = ['portrait.province','portrait.cities.rank']
+          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+              const [names,nameWithValues,values,length] = [[],[],[],data.dataList.length]
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push(parseInt(item.value))
+                  nameWithValues.push({value: parseInt(item.value), name: item.name})
+              })
+              const bubbleArr = this.bubbleSort(values)
+              const max = bubbleArr[length-1]
+              const min = bubbleArr[0]
+              this.setMapEcharts('provinceMap','省份分布',nameWithValues,min,max)
+          })
+          this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
+              this.cityData = data.dataList
+          })
       },
       getTopActiveRank() {
-        this.$service.getEstimatedCityTopData(this.currentCid).then(data => {
-            this.table.data = data
-        })
+          const typeEnum = ['portrait.top50.active.city']
+          this.$service.getCrowdCountMap({params: {type: typeEnum[0], orderBy: 'value',sortOrder: 'desc'},crowdId: this.currentCid}).then(data => {
+              console.log(data.dataList)
+              const arr = data.dataList
+              var sum = 0
+              arr.forEach(item => {
+                  sum += parseInt(item.value)
+              })
+              this.table.data = arr.reduce((result, item) => {
+                  return result.concat({ name: item.name, value: parseInt(item.value), PCT:((parseInt(item.value)/sum)*100).toFixed(2)+ '%' })
+              }, [])
+          })
       },
       getMemberBenefits() {
         this.$service.getEstimatedTvEnumData().then(data => {
+            console.log(data)
             const memberListData = this.objectToArray(data)
             this.memberList = memberListData
             // 设置两个默认的下拉框选值
@@ -1530,68 +1624,187 @@ export default {
           return arr
       },
       getUserType() {
-        this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
-            // 当data直接为空对象，里面uCgyTal啥都没有
-            let spread,effectiveTime,activate,expire = {}
-            if(Object.keys(data).length === 0) {
-                spread = this.fillEmptyData
-                effectiveTime = this.fillEmptyData
-                activate = this.fillEmptyData
-                expire = this.fillEmptyData
-            }else {
-                spread = data.uCgyTal
-                effectiveTime = data.vipPrdTtl
-                activate = data.nvActHptTtl
-                expire = data.ovToutTtl
-            }
-            this.setCircleEcharts('member','会员用户的分布情况',spread.name,spread.data,true)
-            this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',effectiveTime.name,effectiveTime.data,false)
-            this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',activate.name,activate.data,false)
-            this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',expire.name,expire.data,false)
-        })
+          // 正常用户类型
+          const typeWithSelectEnum = {
+              'jyVIP': "portrait.user.category.education.vip.member",
+              'sjyVIP': "portrait.user.category.education.super.vip.member",
+              'djPlatform': "portrait.user.category.premier.theater.member",
+              'cjyVIP': "portrait.user.category.education.kids.vip.member",
+              'aqy': "portrait.user.category.iqiyi.member",
+              'multAqy': "portrait.user.category.mixed.source.iqiyi.member",
+              'fkGarden': "portrait.user.category.4k.garden.member",
+              'phyVIP': "portrait.user.category.sports.vip.member",
+              'tencent': "portrait.user.category.tencent.movie.member",
+              'kmVIP': "portrait.user.category.cool.meow.vip.member"
+          }
+          // 非会员
+          const typeWithNoVipSelectEnum = {
+              'jyVIP': "portrait.user.category.education.vip.nonmember",
+              'sjyVIP': "portrait.user.category.education.super.vip.nonmember",
+              'djPlatform': "portrait.user.category.premier.theater.nonmember",
+              'cjyVIP': "portrait.user.category.education.kids.vip.nonmember",
+              'aqy': "portrait.user.category.iqiyi.nonmember",
+              'multAqy': "portrait.user.category.mixed.source.iqiyi.nonmember",
+              'fkGarden': "portrait.user.category.4k.garden.nonmember",
+              'phyVIP': "portrait.user.category.sports.vip.nonmember",
+              'tencent': "portrait.user.category.tencent.movie.nonmember",
+              'kmVIP': "portrait.user.category.cool.meow.vip.nonmember"
+          }
+          // 有效期会员
+          const typeWithVipSelectEnum = {
+              'jyVIP': "portrait.user.category.education.vip.validdate.member",
+              'sjyVIP': "portrait.user.category.education.super.vip.validdate.member",
+              'djPlatform': "portrait.user.category.premier.theater.validdate.member",
+              'cjyVIP': "portrait.user.category.education.kids.vip.validdate.member",
+              'aqy': "portrait.user.category.iqiyi.validdate.member",
+              'multAqy': "portrait.user.category.mixed.source.iqiyi.validdate.member",
+              'fkGarden': "portrait.user.category.4k.garden.validdate.member",
+              'phyVIP': "portrait.user.category.sports.vip.validdate.member",
+              'tencent': "portrait.user.category.tencent.movie.validdate.member",
+              'kmVIP': "portrait.user.category.cool.meow.vip.validdate.member"
+          }
+          // 已过期会员
+          const typeWithVipNoValidSelectEnum = {
+              'jyVIP': "portrait.user.category.education.vip.expireddate.member",
+              'sjyVIP': "portrait.user.category.education.super.vip.expireddate.member",
+              'djPlatform': "portrait.user.category.premier.theater.expireddate.member",
+              'cjyVIP': "portrait.user.category.education.kids.vip.expireddate.member",
+              'aqy': "portrait.user.category.iqiyi.expireddate.member",
+              'multAqy': "portrait.user.category.mixed.source.iqiyi.expireddate.member",
+              'fkGarden': "portrait.user.category.4k.garden.expireddate.member",
+              'phyVIP': "portrait.user.category.sports.vip.expireddate.member",
+              'tencent': "portrait.user.category.tencent.movie.expireddate.member",
+              'kmVIP': "portrait.user.category.cool.meow.vip.expireddate.member"
+          }
+          this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
+              console.log(data)
+              const [names,values] = [[],[]]
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+                  console.log(item.name+':'+item.value)
+              })
+              this.setCircleEcharts('member','会员用户的分布情况',names,values,true)
+          })
+          this.$service.getCrowdCountMap({params: {type: typeWithNoVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
+              console.log(data)
+              const [names,values] = [[],[]]
+              var dataCount = 0
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+                  dataCount += parseInt(item.value)
+              })
+              console.log('非会员总数======'+dataCount)
+              this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
+          })
+          this.$service.getCrowdCountMap({params: {type: typeWithVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
+              console.log(data)
+              const [names,values] = [[],[]]
+              var dataCount = 0
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+                  dataCount += parseInt(item.value)
+              })
+              console.log('有效期会员总数======'+dataCount)
+              this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
+          })
+          this.$service.getCrowdCountMap({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
+              console.log(data)
+              const [names,values] = [[],[]]
+              var dataCount = 0
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+                  dataCount += parseInt(item.value)
+              })
+              console.log('过期会员总数======'+dataCount)
+              this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
+          })
+        // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
+        //     // 当data直接为空对象，里面uCgyTal啥都没有
+        //     let spread,effectiveTime,activate,expire = {}
+        //     if(Object.keys(data).length === 0) {
+        //         spread = this.fillEmptyData
+        //         effectiveTime = this.fillEmptyData
+        //         activate = this.fillEmptyData
+        //         expire = this.fillEmptyData
+        //     }else {
+        //         spread = data.uCgyTal
+        //         effectiveTime = data.vipPrdTtl
+        //         activate = data.nvActHptTtl
+        //         expire = data.ovToutTtl
+        //     }
+        //     this.setCircleEcharts('member','会员用户的分布情况',spread.name,spread.data,true)
+        //     this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',effectiveTime.name,effectiveTime.data,false)
+        //     this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',activate.name,activate.data,false)
+        //     this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',expire.name,expire.data,false)
+        // })
       },
       getPayDetail() {
-        this.$service.getEstimatedPayData({id: this.currentCid,category: this.memberListByPay}).then((data) => {
-            // 如果data直接是空对象
-            let echartsData = {}
-            if(Object.keys(data).length === 0) {
-                echartsData = this.fillEmptyData
-            }else {
-                echartsData = data
-            }
-            this.setCircleEcharts('payDetail','上次付费的会员产品包情况',echartsData.name,echartsData.data,true)
-        })
+          const typeWithSelectEnum = {
+              'jyVIP': "portrait.last.payment.education.vip",
+              'sjyVIP': "portrait.last.payment.education.super.vip",
+              'djPlatform': "portrait.last.payment.premier.theater",
+              'cjyVIP': "portrait.last.payment.education.kids.vip",
+              'aqy': "portrait.last.payment.iqiyi",
+              'multAqy': "portrait.last.payment.mixed.source.iqiyi",
+              'fkGarden': "portrait.last.payment.4k.garden",
+              'phyVIP': "portrait.last.payment.sports.vip",
+              'tencent': "portrait.last.payment.tencent.movie",
+              'kmVIP': "portrait.last.payment.cool.meow.vip"
+          }
+          this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListByPay]},crowdId: this.currentCid}).then(data => {
+              console.log(data)
+              const [names,values] = [[],[]]
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+              })
+              this.setCircleEcharts('payDetail','上次付费的会员产品包情况',names,values,true)
+          })
       },
       getWatchBehavior() {
-        this.$service.getEstimatedUserBehaviorData(this.currentCid).then(data => {
-            // 如果data直接是空对象
-            let sevenDayData,fiftyDayData,daysCommon,watchPreferData = {}
-            if(Object.keys(data).length === 0) {
-                sevenDayData = this.fillEmptyData.data
-                fiftyDayData = this.fillEmptyData.data
-                daysCommon = this.fillEmptyData
-                watchPreferData = this.fillEmptyData
-            }else {
-                sevenDayData = data.uPlyActPrTtl.data.day7
-                fiftyDayData = data.uPlyActPrTtl.data.day30
-                daysCommon = data.uPlyActPrTtl
-                watchPreferData = data.uPrePlyTtl
-            }
-            this.setCircleEcharts('watchPrefer',watchPreferData.title||'观影偏好',watchPreferData.name,watchPreferData.data)
-            if (this.expirationDay === '7') {this.setCircleEcharts('userBehavior','',daysCommon.name,sevenDayData)}
-            else {this.setCircleEcharts('userBehavior','',daysCommon.name,fiftyDayData)}
-        })
+          const typeEnum = ['portrait.user.viewing.preferences','portrait.broadcast.rate.within.seven.days','portrait.broadcast.rate.within.thirty.days']
+          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+              const [names,values] = [[],[]]
+              data.dataList.forEach(item => {
+                  names.push(item.name)
+                  values.push({value: item.value, name: item.name})
+              })
+              this.setCircleEcharts('watchPrefer','观影偏好',names,values)
+          })
+          if (this.expirationDay === '7') {
+              this.$service.getCrowdCountMap({params: {type: typeEnum[1]}, crowdId: this.currentCid}).then(data => {
+                  const [names, values] = [[], []]
+                  data.dataList.forEach(item => {
+                      names.push(item.name)
+                      values.push({value: item.value, name: item.name})
+                  })
+                  this.setCircleEcharts('userBehavior', '', names, values)
+              })
+          } else {
+              this.$service.getCrowdCountMap({params: {type: typeEnum[2]}, crowdId: this.currentCid}).then(data => {
+                  const [names, values] = [[], []]
+                  data.dataList.forEach(item => {
+                      names.push(item.name)
+                      values.push({value: item.value, name: item.name})
+                  })
+                  this.setCircleEcharts('userBehavior', '', names, values)
+              })
+          }
       },
       getActiveBehavior() {
-        this.$service.getEstimatedAcitivityBehaviorData(this.currentCid).then(data => {
-            let echartsData = {}
-            if(Object.keys(data).length === 0) {
-                echartsData = this.fillEmptyData
-            }else {
-                echartsData = data
-            }
-            this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',echartsData.name,echartsData.data)
-        })
+          const typeEnum = ['portrait.active.device.amount.yesterday']
+          const [names,values] = [[],[]]
+          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+             data.dataList.forEach(item => {
+                 names.push(item.name)
+                 values.push({value: item.value, name: item.name})
+             })
+             this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',names,values)
+          })
       },
       // 人群画像估算---结束
       // 显示划分详情
@@ -1625,7 +1838,12 @@ export default {
       },
       //  导出估算画像数据
       handleDownload () {
-          this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
+          // this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
+          // this.$nextTick(() => {
+          //     this.$refs.download_Url.click()
+          // })
+          this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
+          // this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
           this.$nextTick(() => {
               this.$refs.download_Url.click()
           })
@@ -1672,6 +1890,20 @@ export default {
               params: {redirectListId : crowdId},
               name: 'redirectList'
           })
+      },
+      bubbleSort(arr) {
+          // 冒泡排序
+          const len = arr.length
+          for(var i=0;i< len;i++) {
+              for (var j=0;j<len-1-i;j++) {
+                  if (arr[j] > arr[j + 1]) {
+                      var temp = arr[j + 1]
+                      arr[j + 1] = arr[j]
+                      arr[j] = temp
+                  }
+              }
+          }
+          return arr
       }
   }
 }

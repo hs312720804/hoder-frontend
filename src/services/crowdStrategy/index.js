@@ -532,3 +532,11 @@ export function getRedirectCrowdList(params) {
         params
     })
 }
+// 人群估算画像接口统一，通过type区分
+export function getCrowdCountMap({params,crowdId}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/crowdPortrait/'+crowdId,
+        params
+    })
+}
