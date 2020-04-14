@@ -534,15 +534,16 @@
           <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
       <div>
+        <!--<div class="estimate-item">-->
+          <!--<div class="estimate-title">基本信息</div>-->
+          <!--<div class="estimate-statistic">-->
+            <!--&lt;!&ndash;<div ref="circleSex" class="base-info-circle-echarts"></div>&ndash;&gt;-->
+            <!--&lt;!&ndash;<div ref="circleAge" class="base-info-circle-echarts"></div>&ndash;&gt;-->
+            <!--<div ref="circleDevice" class="base-info-circle-echarts"></div>-->
+          <!--</div>-->
+        <!--</div>-->
         <div class="estimate-item">
           <div class="estimate-title">基本信息</div>
-          <div class="estimate-statistic">
-            <div ref="circleSex" class="base-info-circle-echarts"></div>
-            <div ref="circleAge" class="base-info-circle-echarts"></div>
-            <div ref="circleDevice" class="base-info-circle-echarts"></div>
-          </div>
-        </div>
-        <div class="estimate-item">
             <div class="estimate-statistic">
                 <div class="province-city-active-content city-info-echarts">
                     <div ref="provinceMap" class="province-map"></div>
@@ -566,6 +567,7 @@
                     >
                     </Table>
                 </div>
+                <div ref="circleDevice" class="base-info-circle-echarts" style="border: none;height: 300px"></div>
             </div>
         </div>
         <div class="estimate-item">
@@ -1544,29 +1546,29 @@ export default {
         const crdId = this.currentCid
         // 性别，年龄，产品等级
         const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
-        this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
-            const [names,values] = [[],[]]
-            data.dataList.forEach(item => {
-                names.push(item.name)
-                values.push({value: item.value, name: item.name})
-            })
-            this.setCircleEcharts('circleSex', '性别分布', names, values,false)
-        })
-        this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
-            const [names,values] = [[],[]]
-            data.dataList.forEach(item => {
-                names.push(item.name)
-                values.push({value: item.value, name: item.name})
-            })
-            this.setCircleEcharts('circleAge', '年龄分布', names, values,false)
-        })
+        // this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+        //     const [names,values] = [[],[]]
+        //     data.dataList.forEach(item => {
+        //         names.push(item.name)
+        //         values.push({value: item.value, name: item.name})
+        //     })
+        //     this.setCircleEcharts('circleSex', '性别分布', names, values,false)
+        // })
+        // this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
+        //     const [names,values] = [[],[]]
+        //     data.dataList.forEach(item => {
+        //         names.push(item.name)
+        //         values.push({value: item.value, name: item.name})
+        //     })
+        //     this.setCircleEcharts('circleAge', '年龄分布', names, values,false)
+        // })
         this.$service.getCrowdCountMap({params: {type: typeEnum[2]},crowdId: this.currentCid}).then(data => {
             const [names,values] = [[],[]]
             data.dataList.forEach(item => {
                 names.push(item.name)
                 values.push({value: item.value, name: item.name})
             })
-            this.setCircleEcharts('circleDevice', '产品等级分布', names, values,false)
+            this.setCircleEcharts('circleDevice', '产品等级分布', names, values,true)
         })
       },
       getCrowdProvinceInfo() {
@@ -1990,7 +1992,8 @@ fieldset>div
   height 360px
   overflow auto
 .city-info-echarts
-    width 50%
+    width 33%
+    border-right 1px dashed
 .province-map
     width 100%
     height 300px
