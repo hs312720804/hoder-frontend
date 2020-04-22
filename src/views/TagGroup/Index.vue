@@ -1,15 +1,18 @@
 <template>
     <el-container>
-        <TagGroupList 
-            v-show="mode === MODE.listTagGroup || mode === MODE.readTagGroup" 
-            @read-tag-group="handleReadTagGroup" 
-        />                
+        <TagGroupList
+            v-show="mode === MODE.listTagGroup || mode === MODE.readTagGroup"
+            @read-tag-group="handleReadTagGroup"
+        />
         <TagGroupRead
             v-show="mode === MODE.listTagGroup || mode === MODE.readTagGroup"
             @read-tag-category="handleReadTagCategory"
+            :filterHistory="filterHistory"
+            :useFilterHistory="useFilterHistory"
+            @change-history-filter="handleChangeHistoryFilterFlag"
         />
-        <TagCategoryRead 
-            v-if="mode === MODE.readTagCategory" 
+        <TagCategoryRead
+            v-if="mode === MODE.readTagCategory"
             @read-cancel="handleReadTagCategoryCancel"
         />
     </el-container>
@@ -38,7 +41,9 @@ export default {
             tag: null,
             filterText: '',
             tagGroupId: undefined,
-            readTagCategoryBack: null
+            readTagCategoryBack: null,
+            filterHistory: undefined,
+            useFilterHistory: false
         }
     },
     props: ['mode'],
@@ -54,15 +59,20 @@ export default {
         handleReadTagCategoryCancel() {
             const route = this.readTagCategoryBack || {name: 'tag'}
             this.$router.push(route)
+            this.useFilterHistory = true
         },
-        handleReadTagCategory(tag) {
+        handleReadTagCategory(tag,filter) {
             this.readTagCategoryBack = this.$route.fullPath
+            this.filterHistory = filter
             this.$router.push({
                 name: 'tag-category-read',
                 params: {
                     id: tag.tagId
                 }
             })
+        },
+        handleChangeHistoryFilterFlag(flag) {
+            this.useFilterHistory = flag
         }
     }
   };

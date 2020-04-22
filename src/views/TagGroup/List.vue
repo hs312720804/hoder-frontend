@@ -116,9 +116,10 @@ export default {
             //     return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
             // }
         },
-        activeId() {
-            return this.$route.params.id
-        }
+        // activeId() {
+        //     console.log(this.$route.params)
+        //     return this.$route.params.id
+        // }
     },
     methods: {
         // fetchData() {
@@ -220,15 +221,11 @@ export default {
         },
     },
     created() {
-        // const activeId = this.activeId
-        // if (activeId) {
-        //     this.fetchData()
-        // } else {
-        //     this.fetchData().then(() => {
-        //         this.handleReadTagGroup(this.tagGroupList[0])
-        //     })
-        // }
+        const activeId = this.$route.params.id
         this.fetchData()
+        if (!activeId) {
+            this.handleReadAllTagGroup()
+        }
     }
 }
 </script>
