@@ -19,7 +19,7 @@
             </el-popover>
             <el-form :inline="true">
                 <el-form-item>
-                    <el-input clearable @keyup.enter.native="fetchData" v-model="filter.tagName" placeholder="种类名称"></el-input>
+                    <el-input style="width: 250px" clearable @keyup.enter.native="fetchData" v-model="filter.tagName" placeholder="请输入标签种类名称或者标签code"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
@@ -58,7 +58,7 @@
                         <el-button
                             size="small"
                             type="success"
-                            @click="$emit('read-tag-category', scope.row)"
+                            @click="handleSeeTagCategoryDetail(scope.row)"
                         >
                             查看
                         </el-button>
@@ -124,6 +124,7 @@ export default {
         TagCategoryUpsert,
         ChooseTagGroup
     },
+    props:['filterHistoryToList','useFilterHistory'],
     data() {
         return {
             tagCategory: {},
@@ -138,6 +139,7 @@ export default {
                 pageSize: undefined,
                 total: undefined
             },
+            filterAll : undefined,
             checkList: ['defineRemark'],
             currentTagId: undefined
         }
@@ -152,10 +154,23 @@ export default {
     },
     methods: {
         getFilter() {
-            return {
-                groupId: this.tagGroupId,
-                ...this.filter,
-                ...this.pagination
+            const filterHistoryToList = this.filterHistoryToList
+            if(filterHistoryToList && this.useFilterHistory){
+                this.$emit('change-history-filter', false)
+                this.filter.tagName = filterHistoryToList.tagName
+                return {
+                    groupId: this.tagGroupId,
+                    pageNum: filterHistoryToList.pageNum,
+                    pageSize: filterHistoryToList.pageSize,
+                    ...this.filter
+                }
+            } else {
+                return {
+                    groupId: this.tagGroupId,
+                    pageNum: this.pagination.pageNum,
+                    pageSize: this.pagination.pageSize,
+                    ...this.filter
+                }
             }
         },
         resetFilter() {
@@ -170,6 +185,9 @@ export default {
         handleAddTagCategory() {
             this.tagCategory = {}
             this.$refs.tagCategoryUpsert.showCreateDialog = true
+        },
+        handleSeeTagCategoryDetail (row) {
+            this.$emit('read-tag-category', row, this.filterAll)
         },
         handleEditTagCategory(row) {
             this.tagCategory = cloneDeep(row)
@@ -198,8 +216,8 @@ export default {
             })
         },
         fetchData() {
-            const filter = this.getFilter()
-            this.$service.getTagGroupTreeList(filter).then((data) => {
+            this.filterAll = this.getFilter()
+            this.$service.getTagGroupTreeList(this.filterAll).then((data) => {
                 this.tagCategoryList = data.pageInfo.list
                 this.dataSourceEnum = data.lableDataSourceEnum
                 this.typeEnum = data.tagsTypeEnum

@@ -1,5 +1,5 @@
 <template>
-    <TagCategoryList v-if="$route.params.id || $route.params.id == 0" @read-tag-category="$emit('read-tag-category', $event)" />
+    <TagCategoryList v-if="$route.params.id || $route.params.id == 0" :filterHistoryToList="filterHistory" :useFilterHistory="useFilterHistory"  @change-history-filter="handleChangeHistoryFilterFlag" @read-tag-category="handleIndexReadTagCategory" />
 </template>
 
 <script>
@@ -8,11 +8,18 @@ export default {
     components: {
         TagCategoryList
     },
+    props: ['filterHistory','useFilterHistory'],
     data() {
         return {
         }
     },
     methods: {
+        handleIndexReadTagCategory (tag, filter) {
+            this.$emit('read-tag-category', tag, filter)
+        },
+        handleChangeHistoryFilterFlag (flag) {
+            this.$emit('change-history-filter', flag)
+        }
     },
     created() {
     }
