@@ -17,7 +17,7 @@
                 </div>
                 <el-button slot="reference">选择列表展示维度</el-button>
             </el-popover>
-            <el-form :inline="true">
+            <el-form :inline="true" @submit.native.prevent>
                 <el-form-item>
                     <el-input style="width: 250px" clearable @keyup.enter.native="fetchData" v-model="filter.tagName" placeholder="请输入标签种类名称或者标签code"></el-input>
                 </el-form-item>

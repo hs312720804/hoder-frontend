@@ -57,7 +57,7 @@ export default {
             })
         },
         handleReadTagCategoryCancel() {
-            const route = this.readTagCategoryBack || {name: 'tag'}
+            const route = this.readTagCategoryBack || {name: 'tag-group-read'}
             this.$router.push(route)
             this.useFilterHistory = true
         },

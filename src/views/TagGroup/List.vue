@@ -116,10 +116,11 @@ export default {
             //     return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
             // }
         },
-        // activeId() {
-        //     console.log(this.$route.params)
-        //     return this.$route.params.id
-        // }
+        '$route.params.id':function (val) {
+            if(val === undefined) {
+                this.handleReadAllTagGroup()
+            }
+        }
     },
     methods: {
         // fetchData() {
