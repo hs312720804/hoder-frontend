@@ -339,7 +339,7 @@
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
-       <div>设备：{{totalUser}}</div>
+       <div>设备：{{totalUser}}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
        <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
        <div>酷开openId：{{total2}}</div>
        <div>微信openId：{{total3}}</div>
@@ -2063,4 +2063,6 @@ fieldset>div
     justify-content flex-end
 .crowd-list >>> .el-button-group > .el-button
     float none
+.blue-tip
+    color #0086b3
 </style>
