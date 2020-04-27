@@ -87,6 +87,22 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <el-form-item label="人群数量上限" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="mac数量不超过" prop="maxMacEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.maxMacEstimateCount" type="number" placeholder="请输入mac数量的最大值"></el-input>
+                            </el-form-item>
+                            <el-form-item label="微信数量不超过" prop="maxWxEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.maxWxEstimateCount" type="number" placeholder="请输入微信数量的最大值"></el-input>
+                            </el-form-item>
+                        </el-form-item>
+                        <el-form-item label="人群数量下限" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="mac数量不少于" prop="minMacEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minMacEstimateCount" type="number" placeholder="请输入mac数量的最小值"></el-input>
+                            </el-form-item>
+                            <el-form-item label="微信数量不少于" prop="minWxEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minWxEstimateCount" type="number" placeholder="请输入微信数量的最小值"></el-input>
+                            </el-form-item>
+                        </el-form-item>
                         <el-form-item label="数据类型" prop="calType">
                             <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
@@ -237,6 +253,60 @@
     import _ from "lodash"
     export default {
         data() {
+            // 正整数数字校验
+            const reg = /^[1-9][0-9]{0,7}$/
+            var checkMaxMac = (rule, value, callback) => {
+                if (value) {
+                    const testFlag = reg.test(value)
+                    if (!testFlag) {
+                        callback(new Error('请输入正整数,最多8位数'))
+                    } else if (this.crowdDefineForm.minMacEstimateCount && (parseInt(value) < parseInt(this.crowdDefineForm.minMacEstimateCount))) {
+                        callback(new Error('mac数量上限必须大于mac数量下限'))
+                    }
+                    else {
+                        callback()
+                    }
+                }
+            };
+            var checkMinMac = (rule, value, callback) => {
+                if (value) {
+                    const testFlag = reg.test(value)
+                    if (!testFlag) {
+                        callback(new Error('请输入正整数,最多8位数'))
+                    } else if (this.crowdDefineForm.maxMacEstimateCount && (parseInt(value) > parseInt(this.crowdDefineForm.maxMacEstimateCount))) {
+                        callback(new Error('mac数量下限必须小于mac数量上限'))
+                    }
+                    else {
+                        callback()
+                    }
+                }
+            };
+            var checkMaxWx = (rule, value, callback) => {
+                if (value) {
+                    const testFlag = reg.test(value)
+                    if (!testFlag) {
+                        callback(new Error('请输入正整数,最多8位数'))
+                    } else if (this.crowdDefineForm.minWxEstimateCount && (parseInt(value) < parseInt(this.crowdDefineForm.minWxEstimateCount))) {
+                        callback(new Error('微信数量上限必须大于微信数量下限'))
+                    }
+                    else {
+                        callback()
+                    }
+                }
+            };
+            var checkMinWx = (rule, value, callback) => {
+                if (value) {
+                    const testFlag = reg.test(value)
+                    if (!testFlag) {
+                        callback(new Error('请输入正整数,最多8位数'))
+                    } else if (this.crowdDefineForm.maxWxEstimateCount && (parseInt(value) > parseInt(this.crowdDefineForm.maxWxEstimateCount))) {
+                        callback(new Error('微信数量下限必须小于微信数量上限'))
+                    }
+                    else {
+                        callback()
+                    }
+                }
+            };
             return {
                 // 表格当前页数据
                 strategyPlatform: [],
@@ -270,7 +340,11 @@
                     autoLaunchTime: undefined,
                     tagId: undefined,
                     abTest: undefined,
-                    ratios: undefined
+                    ratios: undefined,
+                    minMacEstimateCount: undefined,
+                    maxMacEstimateCount: undefined,
+                    minWxEstimateCount: undefined,
+                    maxWxEstimateCount: undefined
                 },
                 abTestApart: undefined,
                 status: undefined,
@@ -310,6 +384,18 @@
                     ],
                     tagId: [
                         { required: true, message: "请选择标签", trigger: "blur" }
+                    ],
+                    maxMacEstimateCount: [
+                        { validator: checkMaxMac, trigger: "blur"}
+                    ],
+                    maxWxEstimateCount: [
+                        { validator: checkMaxWx, trigger: "blur"}
+                    ],
+                    minMacEstimateCount: [
+                        { validator: checkMinMac, trigger: "blur"}
+                    ],
+                    minWxEstimateCount: [
+                        { validator: checkMinWx, trigger: "blur"}
                     ]
                 },
                 filterText: "",
@@ -368,7 +454,11 @@
                                 autoLaunchTime: row.autoLaunchTime,
                                 tagId: row.tagId,
                                 abTest: row.abTest,
-                                ratios: abTestRatio
+                                ratios: abTestRatio,
+                                minMacEstimateCount: row.minMacEstimateCount,
+                                maxMacEstimateCount: row.maxMacEstimateCount,
+                                minWxEstimateCount: row.minWxEstimateCount,
+                                maxWxEstimateCount: row.maxWxEstimateCount
                             }
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
@@ -581,6 +671,9 @@
         display: flex
         justify-content: flex-end
     .select-tag
+        width 30%
+    .inline-block
+        display inline-block
         width 30%
 </style>
 
