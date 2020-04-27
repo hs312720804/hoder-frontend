@@ -266,6 +266,9 @@
                     else {
                         callback()
                     }
+                } else {
+                    callback()
+                    return true
                 }
             };
             var checkMinMac = (rule, value, callback) => {
@@ -279,6 +282,9 @@
                     else {
                         callback()
                     }
+                } else {
+                    callback()
+                    return true
                 }
             };
             var checkMaxWx = (rule, value, callback) => {
@@ -292,6 +298,9 @@
                     else {
                         callback()
                     }
+                } else {
+                    callback()
+                    return true
                 }
             };
             var checkMinWx = (rule, value, callback) => {
@@ -305,6 +314,9 @@
                     else {
                         callback()
                     }
+                } else {
+                    callback()
+                    return true
                 }
             };
             return {
@@ -386,16 +398,16 @@
                         { required: true, message: "请选择标签", trigger: "blur" }
                     ],
                     maxMacEstimateCount: [
-                        { validator: checkMaxMac, trigger: "blur"}
+                        { required: false,validator: checkMaxMac, trigger: "blur"}
                     ],
                     maxWxEstimateCount: [
-                        { validator: checkMaxWx, trigger: "blur"}
+                        { required: false,validator: checkMaxWx, trigger: "blur"}
                     ],
                     minMacEstimateCount: [
-                        { validator: checkMinMac, trigger: "blur"}
+                        { required: false,validator: checkMinMac, trigger: "blur"}
                     ],
                     minWxEstimateCount: [
-                        { validator: checkMinWx, trigger: "blur"}
+                        { required: false,validator: checkMinWx, trigger: "blur"}
                     ]
                 },
                 filterText: "",
