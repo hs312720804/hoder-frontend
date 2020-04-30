@@ -1,7 +1,7 @@
 <template>
     <div>
         <div>重定向新增</div>
-        <div>{{$route.params}}</div>
+        <div>{{$route.query}}</div>
         <div>
             <el-form :model="form" label-width="100px">
                 <el-form-item label="人群名称" prop="crowdName">
@@ -30,6 +30,10 @@
                     >
                     </el-date-picker>
                 </el-form-item>
+                <el-form-item>
+                    <el-button>返回</el-button>
+                    <el-button>创建</el-button>
+                </el-form-item>
             </el-form>
         </div>
     </div>
@@ -46,6 +50,9 @@
                     conditions: undefined,
                     validPeriod: undefined
                 },
+                business: [],
+                behavior: [],
+                parentCrowd: [],
                 pickerOptions: {
                     disabledDate(time) {
                         // 设置可选时间为今天之后的60天内
@@ -57,6 +64,38 @@
                     }
                 }
             }
+        },
+        watch : {
+            '$route.query.policyId': function (val) {
+                if(val != undefined) {
+                    this.fetchData()
+                }
+            }
+        },
+        methods : {
+            fetchData () {
+                const routeData = this.$route.query
+                this.$service.getRedirectCrowdAdd(
+                    {policyId: routeData.policyId, params: {crowdId: routeData.crowdId ? routeData.crowdId : undefined}})
+                        .then(data => {
+                            const [businessList,behaviorList,parentCrowdList] = [[],[],[]]
+                            data.tags.forEach(item => {
+                                if (item.tagName === "父人群中活跃用户在业务") {businessList.push({value: item.attrValue, label: item.tagName})}
+                                else if(item.tagName === "父人群用户行为满足"){behaviorList.push({value: item.attrValue, label: item.tagName})}
+                            })
+                            this.business = businessList
+                            this.behavior = behaviorList
+                            if(data.crowds.length > 0) {
+                                data.crowds.forEach(item => {
+                                    parentCrowdList.push({value: item.crowdId, label: item.crowdName})
+                                })
+                            }
+                            this.parentCrowd = parentCrowdList
+                        })
+            }
+        },
+        created () {
+            this.fetchData()
         }
     }
 </script>

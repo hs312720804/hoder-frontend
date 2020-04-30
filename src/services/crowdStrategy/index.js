@@ -540,3 +540,11 @@ export function getCrowdCountMap({params,crowdId}) {
         params
     })
 }
+// 人群重定向新增
+export function getRedirectCrowdAdd({policyId,params}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/reLaunch/'+policyId,
+        params
+    })
+}

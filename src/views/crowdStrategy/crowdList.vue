@@ -53,9 +53,9 @@
               <!--<span>?</span>-->
             </span>
           </el-tooltip>
-          <!--<el-button type="primary" @click="handleClickRedirect">-->
-            <!--新增重定向人群-->
-          <!--</el-button>-->
+          <el-button type="primary" @click="handleClickRedirect">
+            新增重定向人群
+          </el-button>
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
           <el-popover
@@ -273,11 +273,12 @@
               @click="handleClickEstimate(scope.row)"
               :disabled="scope.row.putway === 0"
             >估算</el-button>
-            <!--<el-button-->
-                    <!--size="small"-->
-                    <!--type="primary"-->
-                    <!--@click="handleClickRedirectWithId(scope.row)"-->
-            <!--&gt;新增重定向投放</el-button>-->
+            <el-button
+                    size="small"
+                    type="primary"
+                    @click="handleClickRedirectWithId(scope.row)"
+                    v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"
+            >新增重定向投放</el-button>
               <el-button
                       v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
                       size="small"
@@ -300,9 +301,9 @@
                 <el-dropdown-item
                         :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
-                <!--<el-dropdown-item-->
-                        <!--:command="['redirectCrowd',scope.row]"-->
-                <!--&gt;重定向数据</el-dropdown-item>-->
+                <el-dropdown-item
+                        :command="['redirectCrowd',scope.row]"
+                >重定向数据</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-button-group>
@@ -1879,18 +1880,20 @@ export default {
           this.showLimitLaunchCount = launchCount
       },
       handleClickRedirect () {
-        this.$router.push({name: 'redirectAdd'})
+        this.$router.push({
+            path: '/redirectAdd?policyId='+this.selectRow.policyId
+        })
       },
-      handleClickRedirectWithId (crowdId) {
+      handleClickRedirectWithId (crowd) {
+          console.log(crowd)
           this.$router.push({
-              params: {redirectListId : crowdId},
-              name: 'redirectList'
+              path: '/redirectAdd?policyId='+this.selectRow.policyId +'&crowdId=' + crowd.crowdId + '&crowdName=' + crowd.crowdName
           })
       },
       handleClickRedirectList (crowdId) {
           this.$router.push({
               params: {redirectListId : crowdId},
-              name: 'redirectList'
+              name: 'redirectAdd'
           })
       },
       bubbleSort(arr) {
