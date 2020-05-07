@@ -189,7 +189,7 @@
                       <el-tag
                               class="oc-item"
                               v-for="tagItem in tags"
-                              :key="tagItem.tagItem"
+                              :key="tagItem.tagId+ '_' +tagItem.tagName"
                               @click.native="handleAddChildRule(item, tagItem)"
                               :type= "tagItem.dataSource === 2 ? 'danger' : (tagItem.dataSource === 1 ? 'success' : '')"
                       >{{ tagItem.tagName }}</el-tag>
@@ -211,7 +211,7 @@
                   <el-tag
                           class="oc-item"
                           v-for="(item) in tags"
-                          :key="item.tagName"
+                          :key="item.tagId+ '_' +item.tagName"
                           @click.native="handleAddRule(item)"
                           :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
                   >{{ item.tagName }}</el-tag>
