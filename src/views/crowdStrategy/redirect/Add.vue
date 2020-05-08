@@ -25,7 +25,7 @@
                                 <div>父人群中活跃用户在业务</div>
                                 <div class="poniter">
                                     <span class="i" @click="handleAddRuleToBusiness(item,index)">
-                                        <i class="icon iconfont el-icon-cc-folder-add"></i>添加
+                                        <i class="icon iconfont el-icon-cc-plus"></i>添加
                                     </span>
                                 </div>
                             </div>
@@ -62,7 +62,7 @@
                                 <div>父人群用户行为满足</div>
                                 <div class="poniter">
                                     <span class="i" @click="handleAddRuleToBehavior(item,index)">
-                                        <i class="icon iconfont el-icon-cc-folder-add"></i>添加
+                                        <i class="icon iconfont el-icon-cc-plus"></i>添加
                                     </span>
                                 </div>
                             </div>
@@ -227,20 +227,20 @@
             handleRemoveBusinessRule (rule, childRule) {
                 const rulesJson = this.rulesJson
                 rule.rules.business.splice(rule.rules.business.indexOf(childRule), 1)
-                // if (rule.rules.business.length === 0) {
-                //     rulesJson.rules.business = rulesJson.rules.business.filter(function(item) {
-                //         return item !== rule
-                //     })
-                // }
+                if (rule.rules.business.length === 0 && rule.rules.behavior.length === 0) {
+                    rulesJson.rules = rulesJson.rules.filter(function(item) {
+                        return item !== rule
+                    })
+                }
             },
             handleRemoveBehaviorRule (rule, childRule) {
                 const rulesJson = this.rulesJson
                 rule.rules.behavior.splice(rule.rules.behavior.indexOf(childRule), 1)
-                // if (rule.rules.behavior.length === 0) {
-                //     rulesJson.rules.behavior = rulesJson.rules.behavior.filter(function(item) {
-                //         return item !== rule
-                //     })
-                // }
+                if (rule.rules.behavior.length === 0 && rule.rules.business.length === 0) {
+                    rulesJson.rules = rulesJson.rules.filter(function(item) {
+                        return item !== rule
+                    })
+                }
             },
             handleAddRuleToBusiness (tag,index) {
                 if (this.rulesJson.rules[index].rules.business.length > 50) {
