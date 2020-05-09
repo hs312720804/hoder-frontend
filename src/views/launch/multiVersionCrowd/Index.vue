@@ -5,7 +5,6 @@
              @changeStatus="changeStatus"
              :model="addModel"
              @goBack="goBack"
-             :isShowAddOrEdit="!isShowList"
              :editLaunchCrowdId="editLaunchCrowdId"
              :editStatus="editStatus"
              :parentSource="parentSource"
