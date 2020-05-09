@@ -1879,18 +1879,20 @@ export default {
           this.showLimitLaunchCount = launchCount
       },
       handleClickRedirect () {
-        this.$router.push({name: 'redirectAdd'})
+        this.$router.push({
+            path: '/redirectAdd?policyId='+this.selectRow.policyId
+        })
       },
-      handleClickRedirectWithId (crowdId) {
+      handleClickRedirectWithId (crowd) {
+          console.log(crowd)
           this.$router.push({
-              params: {redirectListId : crowdId},
-              name: 'redirectList'
+              path: '/redirectAdd?policyId='+this.selectRow.policyId +'&crowdId=' + crowd.crowdId + '&crowdName=' + crowd.crowdName
           })
       },
       handleClickRedirectList (crowdId) {
           this.$router.push({
               params: {redirectListId : crowdId},
-              name: 'redirectList'
+              name: 'redirectAdd'
           })
       },
       bubbleSort(arr) {
