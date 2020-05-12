@@ -294,7 +294,7 @@ export default {
       this.loadData();
     },
     // 从服务器读取数据
-    loadData: function() {
+    loadData () {
       this.criteria["pageNum"] = this.currentPage;
       this.criteria["pageSize"] = this.pageSize;
       this.$service.get_roles_json(this.criteria).then(data => {
@@ -333,7 +333,6 @@ export default {
     searchTree(json, id) {
       var newJson = json.concat([]);
       var len = newJson.length; //长度
-      console.log("json", len);
       var parentNode = [];
       //查找id
       for (var s = 0; s < len; s++) {
@@ -356,7 +355,6 @@ export default {
       var newJson = json.concat([]);
       var len = newJson.length; //长度
       var parentNode = [];
-      console.log("newJson", newJson);
       for (var i = 0; i < len; i++) {
         var item = newJson[i];
         if (item.children && item.children.length != 0) {
@@ -367,7 +365,6 @@ export default {
             } else {
               child[j].parentNode = [item.id];
             }
-            console.log(item.parentNode, item.id);
             newJson[len + j] = child[j];
           }
           len = newJson.length;
@@ -376,14 +373,13 @@ export default {
       return newJson;
     },
     // 搜索,提交表单
-    submitForm: function() {
+    submitForm () {
       var _this = this;
       this.$refs.searchForm.validate(function(result) {
         if (result) {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -393,11 +389,11 @@ export default {
     //     window.location.href = localStorage.getItem("adminPath") + "/manage/role/index";
     // },
     // 重置
-    handleReset: function() {
+    handleReset () {
       this.$refs.searchForm.resetFields();
     },
     // 修改状态
-    handleChangetStatus: function(index, row) {
+    handleChangetStatus (index, row) {
       var id = row.id;
       var useable = row.useable == 1 ? 0 : 1;
       this.$confirm("确定修改该条记录的状态?", "提示", {
@@ -418,7 +414,7 @@ export default {
     },
 
     // 查看详情
-    handleDetail: function(index, row) {
+    handleDetail (index, row) {
       var id = row.id;
       // todo: 以后再做
     },
@@ -429,7 +425,7 @@ export default {
       return data.label.indexOf(value) !== -1;
     },
     // 显示新增界面
-    handleAdd: function() {
+    handleAdd () {
       this.addFormVisible = true;
       this.roleForm.id = "";
       this.roleForm.name = "";
@@ -439,8 +435,7 @@ export default {
       this.roleForm.menuAllIds = [];
     },
     // 新增
-    addSubmit: function() {
-      // var _this = this;
+    addSubmit () {
       this.roleForm.menuIds = this.$refs.tree.getCheckedKeys();
       this.$refs.roleForm.validate(valid => {
         if (valid) {
@@ -454,19 +449,18 @@ export default {
             this.addFormVisible = false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
     },
 
-    resetAdd: function() {
+    resetAdd () {
       this.$refs["roleForm"].resetFields();
       this.$refs.tree.setCheckedKeys([]);
     },
 
     // 显示编辑页面
-    handleEdit: function(index, row) {
+    handleEdit (index, row) {
       this.editFormVisible = true;
       this.roleForm.id = row.id;
       this.roleForm.name = row.name;
@@ -479,8 +473,7 @@ export default {
       });
     },
     // editSubmit
-    editSubmit: function() {
-      var _this = this;
+    editSubmit () {
       this.roleForm.menuIds = this.$refs.editTree.getCheckedKeys();
       this.$refs.roleForm.validate(valid => {
         if (valid) {
@@ -494,15 +487,13 @@ export default {
             this.editFormVisible = false;
           });
         } else {
-          alert("al");
-          console.log("error submit!!");
           return false;
         }
       });
     },
 
     // 取消
-    cancelAdd: function() {
+    cancelAdd () {
       this.addFormVisible = false;
       this.$message({
         showClose: true,
@@ -511,7 +502,7 @@ export default {
       this.$refs.tree.setCheckedKeys([]);
       this.$refs["roleForm"].resetFields();
     },
-    cancelEdit: function() {
+    cancelEdit () {
       this.editFormVisible = false;
       this.$message({
         showClose: true,
@@ -520,7 +511,7 @@ export default {
     },
 
     // 单行删除
-    handleDelete: function(index, row) {
+    handleDelete (index, row) {
       var id = row.id;
       this.$confirm("确定要删除该条记录?", "提示", {
         confirmButtonText: "确定",
@@ -537,17 +528,16 @@ export default {
         });
     },
     // 多选响应
-    handleSelectionChange: function(val) {
+    handleSelectionChange (val) {
       // 循环该数组,取出id放到(push)multipleSelection
       var ids = [];
       for (var i = 0; i < val.length; i++) {
         ids.push(val[i].id);
       }
       this.multipleSelection = ids;
-      // console.log(this.multipleSelection);
     },
     // 批量删除
-    handleBatchDel: function() {
+    handleBatchDel () {
       var ids = this.multipleSelection;
       if (ids.length > 0) {
         this.$confirm("确定要删除这批记录?", "提示", {
