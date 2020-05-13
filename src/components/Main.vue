@@ -163,7 +163,8 @@
                     "/manager/notice/index":"notice",
                     "/launchAdmin": "launchTabList",
                     "/anomaly/index": "anomalyEcharts",
-                    "/myPolicy/index": "myPolicy"
+                    "/myPolicy/index": "myPolicy",
+                    "/groupImageInsight/index": "groupImageInsight",
                 },
                 activeName: 'first',
                 updateMessage: [],
