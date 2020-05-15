@@ -46,6 +46,7 @@ import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
 import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
 import redirectAdd from '@/views/crowdStrategy/redirect/Add'
+import groupImageInsight from '@/views/GroupImageInsight/Index'
 const children = [
     {
         name: 'homePage',
@@ -633,6 +634,14 @@ const children = [
         }
     },
     {
+        name: 'dashboard',
+        path: '/',
+        component: Wrapper,
+        meta: {
+            title: '重定向',
+            icon: 'el-icon-cc-home'
+        },
+        children:[{
         name: 'redirectAdd',
         path: 'redirectAdd',
         component: redirectAdd,
@@ -640,8 +649,28 @@ const children = [
             title: '新增/编辑重定向人群',
             tagId:"redirectAdd",
             hideInMenu: true
-        }
-    }
+        }}]
+    },
+    {
+        name: 'dashboard',
+        path: '/',
+        component: Wrapper,
+        meta: {
+            title: '群像洞察',
+            icon: 'el-icon-cc-home'
+        },
+        children:[
+            {
+                name: 'groupImageInsight',
+                path: 'groupImageInsight',
+                component: groupImageInsight,
+                meta: {
+                    title: '设备画像',
+                    tagId:"groupImageInsight",
+                }
+            }
+        ]
+    },
 ]
 
 const routes = [

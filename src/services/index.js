@@ -25,6 +25,7 @@ import * as launchSetting from "./systemSetting/launch"
 import * as notice from './systemSetting/notice'
 import * as crowdStatistic from './statisticCrowd/crowdStatistic'
 import * as anomaly from './launch/anomaly'
+import * as devicePortrait from './GroupImageInsight/devicePortrait'
 const service = {
     state: {},
     fetch,
@@ -52,6 +53,7 @@ const service = {
     ...launchSetting,
     ...notice,
     ...crowdStatistic,
-    ...anomaly
+    ...anomaly,
+    ...devicePortrait
 }
 Vue.prototype.$service = utils.wrapService(service)
