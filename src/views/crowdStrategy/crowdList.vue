@@ -53,9 +53,9 @@
               <!--<span>?</span>-->
             </span>
           </el-tooltip>
-          <el-button type="primary" @click="handleClickRedirect">
-            新增重定向人群
-          </el-button>
+          <!--<el-button type="primary" @click="handleClickRedirect">-->
+            <!--新增重定向人群-->
+          <!--</el-button>-->
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
           <el-popover
@@ -273,12 +273,12 @@
               @click="handleClickEstimate(scope.row)"
               :disabled="scope.row.putway === 0"
             >估算</el-button>
-            <el-button
-                    size="small"
-                    type="primary"
-                    @click="handleClickRedirectWithId(scope.row)"
-                    v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"
-            >新增重定向投放</el-button>
+            <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="primary"-->
+                    <!--@click="handleClickRedirectWithId(scope.row)"-->
+                    <!--v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"-->
+            <!--&gt;新增重定向投放</el-button>-->
               <el-button
                       v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
                       size="small"
@@ -301,9 +301,9 @@
                 <el-dropdown-item
                         :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
-                <el-dropdown-item
-                        :command="['redirectCrowd',scope.row]"
-                >重定向数据</el-dropdown-item>
+                <!--<el-dropdown-item-->
+                        <!--:command="['redirectCrowd',scope.row]"-->
+                <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
           </el-button-group>
@@ -1595,7 +1595,6 @@ export default {
       getTopActiveRank() {
           const typeEnum = ['portrait.top50.active.city']
           this.$service.getCrowdCountMap({params: {type: typeEnum[0], orderBy: 'value',sortOrder: 'desc'},crowdId: this.currentCid}).then(data => {
-              console.log(data.dataList)
               const arr = data.dataList
               var sum = 0
               arr.forEach(item => {
@@ -1608,7 +1607,6 @@ export default {
       },
       getMemberBenefits() {
         this.$service.getEstimatedTvEnumData().then(data => {
-            console.log(data)
             const memberListData = this.objectToArray(data)
             this.memberList = memberListData
             // 设置两个默认的下拉框选值
@@ -1680,17 +1678,14 @@ export default {
               'kmVIP': "portrait.user.category.cool.meow.vip.expireddate.member"
           }
           this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              console.log(data)
               const [names,values] = [[],[]]
               data.dataList.forEach(item => {
                   names.push(item.name)
                   values.push({value: item.value, name: item.name})
-                  console.log(item.name+':'+item.value)
               })
               this.setCircleEcharts('member','会员用户的分布情况',names,values,true)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithNoVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              console.log(data)
               const [names,values] = [[],[]]
               var dataCount = 0
               data.dataList.forEach(item => {
@@ -1702,7 +1697,6 @@ export default {
               this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              console.log(data)
               const [names,values] = [[],[]]
               var dataCount = 0
               data.dataList.forEach(item => {
@@ -1714,7 +1708,6 @@ export default {
               this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              console.log(data)
               const [names,values] = [[],[]]
               var dataCount = 0
               data.dataList.forEach(item => {
@@ -1759,7 +1752,6 @@ export default {
               'kmVIP': "portrait.last.payment.cool.meow.vip"
           }
           this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListByPay]},crowdId: this.currentCid}).then(data => {
-              console.log(data)
               const [names,values] = [[],[]]
               data.dataList.forEach(item => {
                   names.push(item.name)
@@ -1885,7 +1877,6 @@ export default {
         })
       },
       handleClickRedirectWithId (crowd) {
-          console.log(crowd)
           this.$router.push({
               path: '/redirectAdd?policyId='+this.selectRow.policyId +'&crowdId=' + crowd.crowdId + '&crowdName=' + crowd.crowdName
           })
@@ -1994,6 +1985,7 @@ fieldset>div
 .table-overflow
   height 360px
   overflow auto
+  margin 10px
 .city-info-echarts
     width 33%
     border-right 1px dashed
@@ -2014,7 +2006,7 @@ fieldset>div
     margin 5px 0
 .table-title
     font-size 18px
-    margin 20px 0
+    margin 10px
 .estimate-title
     padding 10px 20px
     background-color #ccc

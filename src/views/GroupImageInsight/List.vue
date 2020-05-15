@@ -5,8 +5,8 @@
                 <el-button type="primary" @click="handleAddDevice">新增设备信息包</el-button>
             </div>
             <div class="search-content">
-                <el-input placeholder="请输入设备包名称"></el-input>
-                <el-button>搜索</el-button>
+                <el-input v-model="searchVal" placeholder="请输入设备包名称" clearable></el-input>
+                <el-button @click="fetchData" type="primary">搜索</el-button>
             </div>
         </div>
         <!--列表页-->
@@ -41,17 +41,13 @@
                     @handle-size-change="handleSizeChange"
                     @handle-current-change="handleCurrentChange">
         </pagination>
-        <!--<add-form ref="addDeviceForm" @upsert-end="fetchData"></add-form>-->
     </div>
 </template>
 
 <script>
-    // import addForm from './Add'
     export default {
         name: "List",
-        components: {
-            // addForm
-        },
+        components: {},
         props: ['refreshList'],
         data () {
             return {
@@ -67,7 +63,8 @@
                     pageSize: 10,
                     currentPage: 1,
                     totalCount: 0
-                }
+                },
+                searchVal: undefined
             }
         },
         watch: {
@@ -82,7 +79,7 @@
                 const filter = {
                     pageNum: this.pagination.currentPage,
                     pageSize: this.pagination.pageSize,
-                    fileName: undefined
+                    fileName: this.searchVal
                 }
                 return filter
             },
@@ -102,9 +99,7 @@
                 this.fetchData()
             },
             handleSeeEcharts (id) {
-                this.$service.seeDevicePortraintCharts({id}).then( data=> {
-                    console.log(data)
-                })
+                this.$emit('open-echarts',id)
             },
             handleDelete (id) {
                 this.$service.devicePortraintDel({id},'删除成功').then(()=> {
@@ -112,7 +107,6 @@
                 })
             },
             handleAddDevice() {
-                // this.$refs.addDeviceForm.showAddForm = true
                 this.$emit('open-add')
             },
         },

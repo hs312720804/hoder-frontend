@@ -31,18 +31,10 @@ export function devicePortraintDel(params) {
     })
 }
 // 设备画像 查看画像
-export function seeDevicePortraintCharts(params) {
+export function seeDevicePortraintCharts({params,id}) {
     return this.fetch({
         method: 'get',
-        url: '/api/crowd/devPacketPortrait/'+params.id,
-        params
-    })
-}
-// 设备画像 导出
-export function ExportDevicePortraintCharts(params) {
-    return this.fetch({
-        method: 'get',
-        url: '/api/crowd/exportDevPacketPortrait/'+params.id,
+        url: '/api/crowd/devPacketPortrait/'+ id,
         params
     })
 }
