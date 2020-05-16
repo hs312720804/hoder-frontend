@@ -102,8 +102,13 @@
                 this.$emit('open-echarts',id)
             },
             handleDelete (id) {
-                this.$service.devicePortraintDel({id},'删除成功').then(()=> {
-                    this.fetchData()
+                this.$confirm('确定删除吗？')
+                .then(() => {
+                    this.$service.devicePortraintDel({id},'删除成功').then(()=> {
+                        this.fetchData()
+                    })
+                })
+                .catch(() => {
                 })
             },
             handleAddDevice() {
