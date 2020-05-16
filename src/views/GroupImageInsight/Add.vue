@@ -6,7 +6,7 @@
                 <el-radio :label="1" v-model="form.type">上传txt文件</el-radio>
             </el-form-item>
             <el-form-item label="">
-                <input style="display: none" @change="handleSelectFile" type="file" name="fileName" ref="upload"></input>
+                <input style="display: none" @change="handleSelectFile" type="file" ref="upload"></input>
                 <el-button @click="handleUploadFile">上传</el-button>
                 <span>【请上传只包含mac地址的单列文件】</span>
                 <div v-if="form.originFileName">{{form.originFileName}} 上传成功</div>
@@ -38,10 +38,16 @@
                 }
             }
         },
+        watch : {
+            'form.type': function (val) {
+                this.message = ''
+                this.resetFormFile()
+                this.$refs.upload.value = ''
+            }
+        },
         methods : {
             handleSelectFile(event) {
                 this.message = ''
-                debugger
                 if(event.currentTarget.files[0]!== '') {
                     const fileName = event.currentTarget.files[0].name
                     const extension = fileName.split('.')[1] === 'xls'
@@ -92,6 +98,7 @@
                     if (valid) {
                         const form = this.form
                         const formData = JSON.parse(JSON.stringify(form))
+                        console.log(form)
                         if(form.fileName != undefined && form.originFileName != undefined){
                             this.$service.devicePortraintAddSave(formData,'保存成功').then(() => {
                                 this.$emit('upsert-end')
