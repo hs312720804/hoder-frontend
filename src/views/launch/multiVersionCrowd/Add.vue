@@ -135,7 +135,7 @@
                     <el-input size="small"
                               v-model="crowdForm.launchName"
                               placeholder="投放名称"
-                              :disabled="status!==undefined && status!==1"
+                              :disabled="status!==undefined && (status === 2 || status === 3)"
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
@@ -172,7 +172,7 @@
                             placeholder="请选择策略"
                             @change="getCrowd"
                             @remove-tag="removeTag"
-                            :disabled="status!==undefined && status!==1"
+                            :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                         <el-option
                                 v-for="item in strategyPlatform"
@@ -186,7 +186,7 @@
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                     <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox
                                         v-for="item in v.childs"
                                         :label="v.policyId+'_'+item.crowdId"
@@ -199,7 +199,7 @@
                     </div>
                     <div v-else>
                         <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && status!==1">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox
                                         v-for="item in v.childs"
                                         :label="item.policyId+'_'+item.crowdId"
@@ -214,7 +214,7 @@
                 <el-form-item label="数据有效期" prop="expiryDay">
                     <el-select
                             v-model="crowdForm.expiryDay"
-                            :disabled="status!==undefined && status!==1"
+                            :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                         <el-option
                                 v-for="(item,index) in effectTimeList"
@@ -228,7 +228,7 @@
                 <el-form-item label="每天是否更新" prop="autoVersion">
                     <el-select
                             v-model="crowdForm.autoVersion"
-                            :disabled="status!==undefined && status!==1"
+                            :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                         <el-option label="是" :value="1"></el-option>
                         <el-option label="否" :value="0"></el-option>
@@ -238,7 +238,7 @@
                     <el-time-picker
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
-                            :disabled="status!==undefined && status!==1"
+                            :disabled="status!==undefined && (status === 2 || status === 3)"
                     ></el-time-picker>
                 </el-form-item>
             </el-form>
