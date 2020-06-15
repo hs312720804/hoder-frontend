@@ -77,6 +77,7 @@
                                     v-model="crowdDefineForm.tagId"
                                     filterable
                                     class="select-tag"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
                             >
                                 <el-option
                                     v-for="item in tagsList"
