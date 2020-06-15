@@ -11,7 +11,7 @@
         <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
-              :default-active="activeIndex"
+              :default-active="$route.name"
               class="main_menu menu"
               :collapse="isCollapseMenu"
       >
@@ -22,9 +22,14 @@
               <span>{{ item.name }}</span>
             </template>
             <template v-for="(child, idx) in item.child">
-              <el-menu-item v-if="!child.child.length>0" :key="child.id" :index="index + '_' + idx" @click.native="getRouter(child.url)">
+              <el-menu-item
+                      v-if="!child.child.length>0"
+                      :key="child.id"
+                      :index="routerMap[child.url]"
+                      @click.native="getRouter(child.url)"
+              >
                 <i v-if="child.icons" :class="child.icons"></i>
-                <!-- {{routerMap[child.url]}} aa -->
+                 <!--{{routerMap[child.url]}}-->
                 <span slot="title">{{ child.name }} </span>
               </el-menu-item>
               <el-submenu v-else :key="idx" :index="index+'-'+idx">
@@ -126,8 +131,8 @@
                 breadcrumb: [],
                 isCollapseMenu: false,
                 routerMap: {
-                    // "label/index": "tag-group-read",
-                    "label/index": "tag",
+                    "label/index": "tag-group-read",
+                    // "label/index": "tag",
                     "launchHelp/index": "validate",
                     "launchCrowd/index": "crowd",
                     "launchPolicy/index": "strategy",
@@ -326,6 +331,18 @@
                     query: {noticeId: noticeId, mode: 'read'}
                 })
             },
+            scrollMenuIntoView () {
+                setTimeout(() => {
+                    const $activeSubMenu = document.querySelector('.el-submenu.is-active')
+                    const $activeMenu = document.querySelector('.el-menu-item.is-active')
+                    if ($activeMenu) {
+                        $activeMenu.scrollIntoViewIfNeeded()
+                    }
+                    if ($activeSubMenu) {
+                        $activeSubMenu.scrollIntoViewIfNeeded()
+                    }
+                }, 1000)
+            }
             // handleDropDownChange() {
             //     this.getNoticeMessages(this.messageTypeEnum[this.activeName])
             // }
@@ -333,7 +350,8 @@
         created() {
             this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
             this.$bus.$on("breadcrumb-change", breadcrumb => {
-                this.breadcrumb = breadcrumb;
+                this.breadcrumb = breadcrumb
+                this.scrollMenuIntoView()
             });
             this.setMetaTitle()
             this.getNoticeMessages(this.messageTypeEnum[this.activeName])
