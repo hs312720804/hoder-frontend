@@ -432,8 +432,10 @@
       background: transparent
     >>> .el-menu-item span:hover, >>>.el-menu-item span:focus
       color: white
-    >>> .el-menu-item.is-active span
-      color: #409EFF
+    >>> .el-menu-item.is-active
+        border-left 2px solid
+        span
+            color: #409EFF
     >>> .el-submenu__title:hover
       background: transparent
       color: hsla(0, 0%, 100%, 0.9)
