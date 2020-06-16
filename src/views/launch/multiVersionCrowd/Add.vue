@@ -121,6 +121,17 @@
                         </el-form-item>
                         <el-form-item label="比例总和：">{{percentTotal}}</el-form-item>
                         </div>
+                        <el-form-item label="该人群所属的视频源">
+                            <el-radio-group v-model="crowdDefineForm.videoSource">
+                                <el-radio label="0">不区分</el-radio>
+                                <el-radio label="1">区分</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="" v-show="crowdDefineForm.videoSource === '1'">
+                            <el-checkbox-group v-model="crowdDefineForm.videoSourceIds">
+                                <el-checkbox v-for="(item,index) in videoSourceList" :key="index" :label="item.tagValueId">{{item.tagValue}}</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
                     </el-form>
                 </el-col>
             </el-row>
@@ -357,7 +368,9 @@
                     minMacEstimateCount: undefined,
                     maxMacEstimateCount: undefined,
                     minWxEstimateCount: undefined,
-                    maxWxEstimateCount: undefined
+                    maxWxEstimateCount: undefined,
+                    videoSource: 0,
+                    videoSourceIds: []
                 },
                 abTestApart: undefined,
                 status: undefined,
@@ -421,7 +434,8 @@
                 alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
                 percent: [],
                 copiesItem: [],
-                percentTotal: 0
+                percentTotal: 0,
+                videoSourceList: []
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
@@ -447,6 +461,7 @@
         },
         created() {
             this.getAddList(this.model)
+            this.handleGetVideoList()
             if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
                 this.title = "编辑"
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
@@ -471,8 +486,13 @@
                                 minMacEstimateCount: row.minMacEstimateCount,
                                 maxMacEstimateCount: row.maxMacEstimateCount,
                                 minWxEstimateCount: row.minWxEstimateCount,
-                                maxWxEstimateCount: row.maxWxEstimateCount
+                                maxWxEstimateCount: row.maxWxEstimateCount,
+                                videoSource: row.videoSource,
+                                videoSourceIds: row.videoSourceIds ? row.videoSourceIds.split(",") : []
                             }
+                            console.log('---------'+row.videoSourceIds)
+                            console.log(this.crowdDefineForm)
+                            console.log(this.crowdDefineForm.videoSource)
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
                                 let a = []
@@ -588,6 +608,15 @@
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
                         crowdForm.crowdSql = crowdForm.crowdSql.trim()
+                        // 校验当区分视频源时，是否勾选内容源
+                        if (crowdForm.videoSource === '1') {
+                            if (crowdForm.videoSourceIds.length === 0) {
+                                this.$message.error('请必须勾选至少一种内容源！')
+                                return
+                            } else {
+                                crowdForm.videoSourceIds = crowdForm.videoSourceIds.join(',')
+                            }
+                        }
                         // ab划分对保存的数据进行处理
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined && crowdForm.abTest ) {
                             if (this.percentTotal !== 100) {
@@ -665,6 +694,11 @@
                     }
                 }
                 return result
+            },
+            handleGetVideoList () {
+                this.$service.getVideoSourceList().then(data => {
+                    this.videoSourceList = data
+                })
             }
         }
     }

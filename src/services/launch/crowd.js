@@ -311,3 +311,11 @@ export function getMyCrowdLaunchList(params) {
         params
     })
 }
+// 人群圈定 视频源枚举
+export function getVideoSourceList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'/api/label/videoSource',
+        params
+    })
+}
