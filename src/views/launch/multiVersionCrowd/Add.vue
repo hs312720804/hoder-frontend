@@ -488,11 +488,8 @@
                                 minWxEstimateCount: row.minWxEstimateCount,
                                 maxWxEstimateCount: row.maxWxEstimateCount,
                                 videoSource: row.videoSource,
-                                videoSourceIds: row.videoSourceIds ? row.videoSourceIds.split(",") : []
+                                videoSourceIds: data.videoSourceIds ? data.videoSourceIds.split(",") : []
                             }
-                            console.log('---------'+row.videoSourceIds)
-                            console.log(this.crowdDefineForm)
-                            console.log(this.crowdDefineForm.videoSource)
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
                                 let a = []
