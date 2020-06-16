@@ -488,7 +488,7 @@
                                 minWxEstimateCount: row.minWxEstimateCount,
                                 maxWxEstimateCount: row.maxWxEstimateCount,
                                 videoSource: row.videoSource,
-                                videoSourceIds: data.videoSourceIds ? data.videoSourceIds.split(",") : []
+                                videoSourceIds: data.videoSourceIds
                             }
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
