@@ -457,6 +457,11 @@
                 this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
                 })
+            },
+            'crowdDefineForm.videoSource': function (val) {
+                if (val === '0') {
+                    this.crowdDefineForm.videoSourceIds = []
+                }
             }
         },
         created() {
@@ -487,8 +492,8 @@
                                 maxMacEstimateCount: row.maxMacEstimateCount,
                                 minWxEstimateCount: row.minWxEstimateCount,
                                 maxWxEstimateCount: row.maxWxEstimateCount,
-                                videoSource: row.videoSource,
-                                videoSourceIds: data.videoSourceIds
+                                videoSource: row.videoSource.split(",").length > 0 ? '1' : '0',
+                                videoSourceIds: row.videoSource.split(",")
                             }
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
@@ -611,7 +616,7 @@
                                 this.$message.error('请必须勾选至少一种内容源！')
                                 return
                             } else {
-                                crowdForm.videoSourceIds = crowdForm.videoSourceIds.join(',')
+                                crowdForm.videoSource = crowdForm.videoSourceIds.join(',')
                             }
                         }
                         // ab划分对保存的数据进行处理
