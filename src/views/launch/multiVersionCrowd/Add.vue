@@ -492,8 +492,8 @@
                                 maxMacEstimateCount: row.maxMacEstimateCount,
                                 minWxEstimateCount: row.minWxEstimateCount,
                                 maxWxEstimateCount: row.maxWxEstimateCount,
-                                videoSource: row.videoSource.split(",").length > 0 ? '1' : '0',
-                                videoSourceIds: row.videoSource.split(",")
+                                videoSource: row.videoSource === null ? '0' : '1',
+                                videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(",")
                             }
                             if (row.abTest) {
                                 this.abTestApart = Object.keys(abTestRatio).length
