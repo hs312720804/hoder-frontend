@@ -837,8 +837,8 @@ export default {
       },
       drawPie(id,startTime,endTime){
         this.$service.policyWithBiTotalPie({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
-          if(data.data.length === 0){this.pieTitle = '累计命中次数按业务分部暂无数据'}
-          else{this.pieTitle = '累计命中次数按业务分部'}
+          if(data.data.length === 0){this.pieTitle = '累计使用次数按业务分部暂无数据'}
+          else{this.pieTitle = '累计使用次数按业务分部'}
           this.setCircleEcharts('hitBiTotal','',data.name,data.data)
         })
       },
