@@ -201,7 +201,7 @@
             parseFilter () {
                 const {filter, pagination} = this
                 filter.bid = 2
-                filter.crowdId = this.$route.params.id
+                filter.crowdId = this.$route.params.homepageReleaseRecordId
                 filter.searchStr = this.searchStr
                 filter.status = this.dataEnumValue
                 if(pagination) {
@@ -283,7 +283,7 @@
             }
         },
         watch: {
-            '$route.params.id': function (val) {
+            '$route.params.homepageReleaseRecordId': function (val) {
                 if(val !== undefined){
                     this.fetchData()
                 }

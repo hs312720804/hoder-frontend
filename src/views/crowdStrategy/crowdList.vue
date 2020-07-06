@@ -1829,7 +1829,7 @@ export default {
       handleSeeHomepageData (crowdId, crowdName) {
           this.showDivideDetail = false
           this.$appState.$set("homepageReleaseCrowdName", crowdName)
-          this.$router.push({name: 'homepageReleaseRecord', params: {id: crowdId, crowdName: crowdName}})
+          this.$router.push({name: 'homepageReleaseRecord', params: {homepageReleaseRecordId: crowdId, crowdName: crowdName}})
       },
       //  导出估算画像数据
       handleDownload () {
