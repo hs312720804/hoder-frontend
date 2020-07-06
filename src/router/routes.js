@@ -615,7 +615,7 @@ const children = [
     },
     {
         name: 'homepageReleaseRecord',
-        path: 'homepageReleaseRecord/:id',
+        path: 'homepageReleaseRecord/:homepageReleaseRecordId',
         component: homepageReleaseRecord,
         meta: {
             title: '主页投放记录',
