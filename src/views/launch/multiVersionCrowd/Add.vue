@@ -369,7 +369,7 @@
                     maxMacEstimateCount: undefined,
                     minWxEstimateCount: undefined,
                     maxWxEstimateCount: undefined,
-                    videoSource: 0,
+                    videoSource: '0',
                     videoSourceIds: []
                 },
                 abTestApart: undefined,
