@@ -117,7 +117,9 @@ export default {
             // }
         },
         '$route.params.id':function (val) {
-            if(val === undefined) {
+            //  解决id在其他页面命名冲突带来的跳转bug
+            const routeFlag = this.$route.name === 'tag-group-read'
+            if(val === undefined && routeFlag) {
                 this.handleReadAllTagGroup()
             }
         }
