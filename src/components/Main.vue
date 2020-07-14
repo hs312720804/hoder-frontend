@@ -169,6 +169,7 @@
                     "/anomaly/index": "anomalyEcharts",
                     "/myPolicy/index": "myPolicy",
                     "/groupImageInsight/index": "groupImageInsight",
+                    "/userTagsSearch/index": "userTagsSearch"
                 },
                 activeName: 'first',
                 updateMessage: [],

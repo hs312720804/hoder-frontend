@@ -47,6 +47,7 @@ import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
 import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 import groupImageInsight from '@/views/GroupImageInsight/Index'
+import userTagsSearch from  '@/views/launch/userTagsSearch'
 const children = [
     {
         name: 'homePage',
@@ -316,6 +317,18 @@ const children = [
                 meta: {
                     title: '投放中的投放监控',
                     tagId:"DeliveryMonitor",
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'userTagsSearch',
+                path: 'userTagsSearch',
+                component: userTagsSearch,
+                meta: {
+                    title: '用户标签查询',
+                    tagId:"userTagsSearch",
+                    //  hideInMenu: true,
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
