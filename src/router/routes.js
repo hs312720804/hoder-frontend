@@ -48,6 +48,7 @@ import redirectList from '@/views/crowdStrategy/redirect/List'
 import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 import groupImageInsight from '@/views/GroupImageInsight/Index'
 import userTagsSearch from  '@/views/launch/userTagsSearch'
+import hitSearch from  '@/views/launch/hitSearch'
 const children = [
     {
         name: 'homePage',
@@ -329,6 +330,17 @@ const children = [
                     title: '用户标签查询',
                     tagId:"userTagsSearch",
                     //  hideInMenu: true,
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'hitSearch',
+                path: 'hitSearch',
+                component: hitSearch,
+                meta: {
+                    title: '命中查询',
+                    tagId:"hitSearch",
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
