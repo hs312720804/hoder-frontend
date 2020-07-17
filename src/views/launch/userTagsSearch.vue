@@ -86,7 +86,7 @@
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                 </el-form-item>
             </el-form>
-            <div>{{content}}</div>
+            <div class="content" v-if="content">{{content}}</div>
         </div>
     </div>
 </template>
@@ -167,6 +167,8 @@
 </script>
 
 <style lang="stylus" scoped>
-.small-input
-    /*width 20%*/
+    .content
+        margin 20px
+        border 1px solid #ccc
+        padding 20px
 </style>
