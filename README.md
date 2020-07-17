@@ -40,7 +40,6 @@ server {
 
 ```
 ##本地启动，内网其它机子访问
-一、BACKEND=172.20.135.123:8011 npm run serve
 一、BACKEND=172.20.135.133:8011 npm run serve
 备注：ip地址为后端代码访问地址 172.20.135.123:8011 测试环境IP
 二、修改vue.config.js配置
