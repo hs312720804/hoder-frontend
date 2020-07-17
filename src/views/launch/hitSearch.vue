@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form :model="outForm" inline label-width="200px">
+        <el-form :model="outForm" inline label-width="200px" style="border-bottom: 1px dashed #ccc;margin-bottom: 20px">
             <el-form-item label="MAC地址：">
                 <el-input v-model="outForm.MAC" clearable></el-input>
             </el-form-item>
