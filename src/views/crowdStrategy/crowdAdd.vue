@@ -310,7 +310,10 @@
                 pickerOptions: {
                     disabledDate(time) {
                         // 设置可选时间为今天之后的60天内
-                        const curDate = (new Date()).getTime()
+                        // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
+                        // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
+                        const today = new Date().setHours(23, 59, 59)
+                        const curDate = new Date(today).getTime()
                         // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
                         const day = 60 * 24 * 3600 * 1000
                         const dateRange = curDate + day
