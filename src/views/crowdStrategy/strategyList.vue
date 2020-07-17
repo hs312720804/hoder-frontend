@@ -81,7 +81,7 @@
         <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="270px">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag
                   size="mini"
                   v-for="item in scope.row.tagsList"
@@ -92,7 +92,7 @@
       </el-table-column>
       <el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
@@ -100,13 +100,13 @@
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="60"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="70"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('useStatus') > -1)" prop="useStatus" label="状态" width="60">
-        <template scope="scope">
+        <template slot-scope="scope">
           <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
           <span v-else>未投放</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
             <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="warning" @click="handleLaunch(scope.row)">投放策略</el-button>
@@ -329,7 +329,7 @@
     <!-- 投放中弹窗-->
     <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
       <!--<div>该策略正在使用情况</div>-->
-      <div>正在投放：<span v-for="item in launchItems" class="launch-item">{{item}}</span></div>
+      <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
     </el-dialog>
     <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
       <LaunchToBusiness

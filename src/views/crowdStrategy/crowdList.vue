@@ -160,7 +160,7 @@
       <el-table-column type="index" width="30"></el-table-column>
       <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
-           <template scope="scope">
+           <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
                <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
@@ -172,7 +172,7 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">
-        <template scope="scope">
+        <template slot-scope="scope">
           <span v-if="scope.row.apiStatus === 1">已生效</span>
           <span v-if="scope.row.apiStatus === 0">
               <el-tooltip placement="right-start">
@@ -189,25 +189,25 @@
         </template>
       </el-table-column>
       <el-table-column prop="putway" label="上/下架" width="70px">
-        <template scope="scope">
+        <template slot-scope="scope">
           <span v-if="scope.row.putway === 1">上架中</span>
           <span v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('crowdValidStatus') > -1)" prop="crowdValidStatus" label="是否有效期内" width="100px">
-        <template scope="scope">
+        <template slot-scope="scope">
             {{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}
         </template>
       </el-table-column>
       <el-table-column label="是否AB测试" width="100px">
-          <template scope="scope">
+          <template slot-scope="scope">
               {{abStatusEnum[scope.row.abstatus]}}
               <!--<span v-if="scope.row.abMainCrowd === 1">是</span>-->
               <!--<span v-if="scope.row.abMainCrowd === 0">否</span>-->
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
-          <template scope="scope">
+          <template slot-scope="scope">
               <span v-if="scope.row.forcastStatus == 1">未估算</span>
               <span v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
@@ -215,13 +215,13 @@
           </template>
       </el-table-column>
       <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
           <span v-else>否</span>
         </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="180">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
@@ -229,7 +229,7 @@
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <el-dropdown @command="handleCommandOpreate">
               <el-button size="small" type="primary">
@@ -641,13 +641,13 @@
               <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
               <el-table-column prop="crowdName" label="人群名称"></el-table-column>
               <el-table-column prop="ratio" label="占比">
-                  <template scope="scope">
+                  <template slot-scope="scope">
                       {{scope.row.ratio}}%
                   </template>
               </el-table-column>
               <el-table-column prop="count" label="数量"></el-table-column>
               <el-table-column label="操作" width="250">
-                  <template scope="scope">
+                  <template slot-scope="scope">
                       <el-button type="danger" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
                       <el-button type="primary" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
                   </template>
@@ -1158,92 +1158,92 @@ export default {
           })
       },
       // 双层夹心圆饼图
-      setNestedCircleEcharts(element,title,legend,innerData,outData,showDetail){
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title,
-                  left: 'center'
-              },
-              tooltip: {
-                  trigger: 'item',
-                  formatter: "{a} <br/>{b}: {c} ({d}%)"
-              },
-              legend: {
-                  orient: 'vertical',
-                  x: 'right',
-                  data: legend
-              },
-              series: [
-
-                  {
-                      name: '访问来源',
-                      type: 'pie',
-                      selectedMode: 'single',
-                      radius: [0, '30%'],
-
-                      label: {
-                          position: 'inner'
-                      },
-                      labelLine: {
-                          show: false
-                      },
-                      // 里层所有数据
-                      data: innerData
-                  },
-                  {
-                      name: '',
-                      type: 'pie',
-                      radius: ['40%', '55%'],
-                      label: {
-                          formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-                          backgroundColor: '#eee',
-                          borderColor: '#aaa',
-                          borderWidth: 1,
-                          borderRadius: 4,
-                          // shadowBlur:3,
-                          // shadowOffsetX: 2,
-                          // shadowOffsetY: 2,
-                          // shadowColor: '#999',
-                          // padding: [0, 7],
-                          rich: {
-                              a: {
-                                  color: '#999',
-                                  lineHeight: 22,
-                                  align: 'center'
-                              },
-                              // abg: {
-                              //     backgroundColor: '#333',
-                              //     width: '100%',
-                              //     align: 'right',
-                              //     height: 22,
-                              //     borderRadius: [4, 4, 0, 0]
-                              // },
-                              hr: {
-                                  borderColor: '#aaa',
-                                  width: '100%',
-                                  borderWidth: 0.5,
-                                  height: 0
-                              },
-                              b: {
-                                  fontSize: 16,
-                                  lineHeight: 33
-                              },
-                              per: {
-                                  color: '#eee',
-                                  backgroundColor: '#334455',
-                                  padding: [2, 4],
-                                  borderRadius: 2
-                              }
-                          }
-                      },
-                      data: (outData.length === 0) ? this.fillEmptyData.data : outData // 外层所有数据
-                  }
-
-              ]
-          })
-      },
+      // setNestedCircleEcharts(element,title,legend,innerData,outData,showDetail){
+      //     let echarts = require('echarts')
+      //     let myChart = echarts.init(this.$refs[element])
+      //     myChart.setOption({
+      //         title: {
+      //             text: title,
+      //             left: 'center'
+      //         },
+      //         tooltip: {
+      //             trigger: 'item',
+      //             formatter: "{a} <br/>{b}: {c} ({d}%)"
+      //         },
+      //         legend: {
+      //             orient: 'vertical',
+      //             x: 'right',
+      //             data: legend
+      //         },
+      //         series: [
+      //
+      //             {
+      //                 name: '访问来源',
+      //                 type: 'pie',
+      //                 selectedMode: 'single',
+      //                 radius: [0, '30%'],
+      //
+      //                 label: {
+      //                     position: 'inner'
+      //                 },
+      //                 labelLine: {
+      //                     show: false
+      //                 },
+      //                 // 里层所有数据
+      //                 data: innerData
+      //             },
+      //             {
+      //                 name: '',
+      //                 type: 'pie',
+      //                 radius: ['40%', '55%'],
+      //                 label: {
+      //                     formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+      //                     backgroundColor: '#eee',
+      //                     borderColor: '#aaa',
+      //                     borderWidth: 1,
+      //                     borderRadius: 4,
+      //                     // shadowBlur:3,
+      //                     // shadowOffsetX: 2,
+      //                     // shadowOffsetY: 2,
+      //                     // shadowColor: '#999',
+      //                     // padding: [0, 7],
+      //                     rich: {
+      //                         a: {
+      //                             color: '#999',
+      //                             lineHeight: 22,
+      //                             align: 'center'
+      //                         },
+      //                         // abg: {
+      //                         //     backgroundColor: '#333',
+      //                         //     width: '100%',
+      //                         //     align: 'right',
+      //                         //     height: 22,
+      //                         //     borderRadius: [4, 4, 0, 0]
+      //                         // },
+      //                         hr: {
+      //                             borderColor: '#aaa',
+      //                             width: '100%',
+      //                             borderWidth: 0.5,
+      //                             height: 0
+      //                         },
+      //                         b: {
+      //                             fontSize: 16,
+      //                             lineHeight: 33
+      //                         },
+      //                         per: {
+      //                             color: '#eee',
+      //                             backgroundColor: '#334455',
+      //                             padding: [2, 4],
+      //                             borderRadius: 2
+      //                         }
+      //                     }
+      //                 },
+      //                 data: (outData.length === 0) ? this.fillEmptyData.data : outData // 外层所有数据
+      //             }
+      //
+      //         ]
+      //     })
+      // },
       // 中国地图
       setMapEcharts (element,title,data,minValue,maxValue) {
           let echarts = require('echarts')
@@ -1544,7 +1544,7 @@ export default {
       },
       // 人群画像估算---开始
       getCrowdBaseInfo() {
-        const crdId = this.currentCid
+        // const crdId = this.currentCid
         // 性别，年龄，产品等级
         const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
         // this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
@@ -1573,7 +1573,7 @@ export default {
         })
       },
       getCrowdProvinceInfo() {
-        const crdId = this.currentCid
+        // const crdId = this.currentCid
           // 省份、城市活跃度
           const typeEnum = ['portrait.province','portrait.cities.rank']
           this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
@@ -1687,35 +1687,35 @@ export default {
           })
           this.$service.getCrowdCountMap({params: {type: typeWithNoVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
               const [names,values] = [[],[]]
-              var dataCount = 0
+              // var dataCount = 0
               data.dataList.forEach(item => {
                   names.push(item.name)
                   values.push({value: item.value, name: item.name})
-                  dataCount += parseInt(item.value)
+                  // dataCount += parseInt(item.value)
               })
-              console.log('非会员总数======'+dataCount)
+              // console.log('非会员总数======'+dataCount)
               this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
               const [names,values] = [[],[]]
-              var dataCount = 0
+              // var dataCount = 0
               data.dataList.forEach(item => {
                   names.push(item.name)
                   values.push({value: item.value, name: item.name})
-                  dataCount += parseInt(item.value)
+                  // dataCount += parseInt(item.value)
               })
-              console.log('有效期会员总数======'+dataCount)
+              // console.log('有效期会员总数======'+dataCount)
               this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
               const [names,values] = [[],[]]
-              var dataCount = 0
+              // var dataCount = 0
               data.dataList.forEach(item => {
                   names.push(item.name)
                   values.push({value: item.value, name: item.name})
-                  dataCount += parseInt(item.value)
+                  // dataCount += parseInt(item.value)
               })
-              console.log('过期会员总数======'+dataCount)
+              // console.log('过期会员总数======'+dataCount)
               this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
           })
         // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {

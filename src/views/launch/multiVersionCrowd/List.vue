@@ -66,7 +66,7 @@
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column type="index" width="50"></el-table-column>
             <el-table-column prop="launchCrowdId" label="投放ID" width="60">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <div :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">
                         <span v-if="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5">！</span>
                         <span>{{scope.row.launchCrowdId}}</span>
@@ -74,7 +74,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="launchName" label="投放名称" width="100">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
                     <span v-else :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{scope.row.launchName}}</span>
                 </template>
@@ -82,7 +82,7 @@
             <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)">{{(launchStatusEnum[scope.row.history.status]).name}}</span>
                     <span v-else>
                           <el-tooltip placement="right-start">
@@ -95,13 +95,13 @@
                 </template>
             </el-table-column>
             <el-table-column prop="expiryTime" label="人群有效期" width="180">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-icon name="time"></el-icon>
                     <span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>
                 </template>
             </el-table-column>
             <el-table-column label="人群类型">
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{crowdType[scope.row.isFxFullSql]}}
                 </template>
             </el-table-column>
@@ -113,7 +113,7 @@
             <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门"></el-table-column>
             <el-table-column label="操作" fixed="right" min-width="200">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button-group  class="button-group-position">
                         <!-- 投放按钮显示的状态：1未投放，4计算失败，5投放失败，7已过期 -->
                         <el-button
@@ -277,7 +277,7 @@
                 <el-table-column prop="id" label="投放子ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="ratio" label="占比">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         {{scope.row.ratio}}%
                     </template>
                 </el-table-column>

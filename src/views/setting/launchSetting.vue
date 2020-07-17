@@ -16,24 +16,26 @@
                 <el-table-column label="人群分割投放" prop="position">
                     <template slot-scope="scope">
                         <div v-if="scope.row.position.length > 1">
-                            <div v-for="item in (scope.row.position.split(','))">
+                            <div v-for="item in (scope.row.position.split(','))" :key="item">
                                 <el-checkbox v-if="item == 1" checked disabled></el-checkbox>
                             </div>
                         </div>
                         <div v-else>
-                            <el-checkbox v-model="scope.row.position == 1"></el-checkbox>
+                            <!--<el-checkbox v-model="scope.row.position == 1"></el-checkbox>-->
+                            <el-checkbox :checked="scope.row.position == 1"></el-checkbox>
                         </div>
                     </template>
                 </el-table-column>
                 <el-table-column label="人群圈定" prop="position">
                     <template slot-scope="scope">
                         <div v-if="scope.row.position.length > 1">
-                            <div v-for="item in (scope.row.position.split(','))">
+                            <div v-for="item in (scope.row.position.split(','))" :key="item">
                                 <el-checkbox v-if="item == 2" checked disabled></el-checkbox>
                             </div>
                         </div>
                         <div v-else>
-                            <el-checkbox v-model="scope.row.position == 2"></el-checkbox>
+                            <!--<el-checkbox v-model="scope.row.position == 2"></el-checkbox>-->
+                            <el-checkbox :checked="scope.row.position == 2"></el-checkbox>
                         </div>
                     </template>
                 </el-table-column>

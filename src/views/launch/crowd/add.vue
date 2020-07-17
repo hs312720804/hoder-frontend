@@ -76,7 +76,7 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
+// import _ from "lodash";
 export default {
   data() {
     return {
@@ -147,11 +147,11 @@ export default {
     }
   },
   methods: {
-    callback(data, successMsg) {
+    callback() {
       this.$emit("changeStatus", true);
     },
     removeTag(policyId){
-      this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v,index)=>{
+      this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
         if(v.split("_")[0]!=policyId)
           return v
       })
@@ -162,7 +162,7 @@ export default {
         .then(data => {
           this.crowdData = data;
         })
-        .catch(err => {});
+        .catch(() => {});
     },
     // 新增
     addSubmit: function() {
@@ -172,23 +172,22 @@ export default {
           crowdForm = JSON.parse(crowdForm);
           crowdForm.biIds = crowdForm.biIds.join(",");
           crowdForm.policyIds = crowdForm.policyIds.join(",");
-          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v,i)=>{
+          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
             return v.split("_")[1]
           }).join(",")
           if (
             this.editLaunchCrowdId != null &&
             this.editLaunchCrowdId != undefined
           ) {
-            this.$service.CrowdLanuchEditBtn(crowdForm,"编辑成功").then(data => {
-              this.callback(data);
+            this.$service.CrowdLanuchEditBtn(crowdForm,"编辑成功").then(() => {
+              this.callback();
             });
           } else {
-            this.$service.CrowdLanuchAddBtn(crowdForm,"新增成功").then(data => {
-              this.callback(data);
+            this.$service.CrowdLanuchAddBtn(crowdForm,"新增成功").then(() => {
+              this.callback();
             });
           }
         } else {
-          console.log("error submit!!");
           return false;
         }
       });

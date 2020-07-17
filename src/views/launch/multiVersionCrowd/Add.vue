@@ -114,7 +114,7 @@
                             <el-input disabled v-model="abTestApart" style="width: 10%;margin-right: 10px"></el-input>份
                         </el-form-item>
                         <el-form-item label="各人群占比">
-                            <div class="block" v-for="(item,index) in copiesItem">
+                            <div class="block" v-for="(item,index) in copiesItem" :key="index">
                                 <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                                 <el-slider :disabled="status === 2 || status === 3" v-model="percent[index]" :key="item"></el-slider>
                             </div>
@@ -262,7 +262,7 @@
     </div>
 </template>
 <script>
-    import _ from "lodash"
+    // import _ from "lodash"
     export default {
         data() {
             // 正整数数字校验
@@ -569,7 +569,7 @@
                             this.crowdData = data
                         }
                     })
-                    .catch(err => {})
+                    .catch(() => {})
             },
             // 新增
             addSubmit () {

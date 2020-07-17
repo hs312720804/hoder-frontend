@@ -460,49 +460,6 @@
                     }]
                 })
             },
-            // 通用多线性参数设置
-            setLinesEchart (element,title,xData,yData,legend) {
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: legend
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: xData,
-                        axisLabel: {
-                            interval: 0,
-                            rotate: -45
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisTick: {
-                            inside: true
-                        },
-                        scale: true,
-                        axisLabel: {
-                            margin: 2,
-                            formatter: function (value) {
-                                if (value >= 10000 && value < 10000000) {
-                                    value = value / 10000 + "万";
-                                }
-                                else if (value >= 10000000) {
-                                    value = value / 10000000 + "千万";
-                                } return value;
-                            }
-                        },
-                    },
-                    series: yData
-                })
-            },
             // 通用圆饼图
             setCircleEcharts(element,title,legend,data,circleType){
                 let echarts = require('echarts')

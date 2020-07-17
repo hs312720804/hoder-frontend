@@ -20,7 +20,7 @@
     <el-table :data="tableData" ref="myTable" style="width: 100%;" stripe border>
       <!--<el-table-column prop="id" label="ID" width="100"></el-table-column>-->
       <el-table-column prop="name" label="机构名称" width="150">
-        <template scope="scope">
+        <template slot-scope="scope">
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 1" style="margin-left: 0px"></a>
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 2" style="margin-left: 10px"></a>
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 3" style="margin-left: 20px"></a>
@@ -33,12 +33,12 @@
       <el-table-column prop="master" label="负责人" width="80"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="150"></el-table-column>
       <el-table-column prop="sort" label="排序" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-input :value="scope.row.sort"></el-input>
         </template>
       </el-table-column>
       <el-table-column prop="useable" label="可见" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.useable === 1">
             <a class="fa fa-unlock"></a> 可用
           </el-tag>
@@ -48,7 +48,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
                             <a class="fa fa-search" style="color: white;"></a> 查看
@@ -208,7 +208,7 @@ export default {
     };
   },
   methods: {
-    callback(data, successMsg) {
+    callback() {
       this.loadData();
     },
     // 从服务器读取数据
@@ -234,8 +234,8 @@ export default {
         .then(() => {
           this.$service
             .changeOrganStatus({ id: id, useable: useable },"状态修改成功")
-            .then(data => {
-              this.callback(data, "状态修改成功");
+            .then(() => {
+              this.callback();
             });
         })
         .catch(() => {
@@ -243,10 +243,8 @@ export default {
     },
 
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail: function(index, row) {
+    // },
     selectOffice() {
       this.organVisible = true;
       this.$service.get_office_tree_json().then(data => {
@@ -283,12 +281,11 @@ export default {
       var _this = this;
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.addOrgan(_this.officeForm,"添加成功").then(data => {
-            this.callback(data, "添加成功");
+          this.$service.addOrgan(_this.officeForm,"添加成功").then(() => {
+            this.callback();
             this.addFormVisible = false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -296,7 +293,6 @@ export default {
     // 显示编辑页面
     handleEdit: function(index, row) {
       this.editFormVisible = true;
-      // console.log(row);
       this.officeForm.id = row.id;
       this.officeForm.parentId = row.parentId;
       if (row.parentName == null) {
@@ -315,12 +311,11 @@ export default {
       var _this = this;
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.updateOrgan(_this.officeForm,"编辑成功").then(data => {
-            this.callback(data, "编辑成功");
+          this.$service.updateOrgan(_this.officeForm,"编辑成功").then(() => {
+            this.callback();
             this.editFormVisible = false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -349,8 +344,8 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delOrgan({ id: id },"删除成功").then(data => {
-            this.callback(data, "删除成功");
+          this.$service.delOrgan({ id: id },"删除成功").then(() => {
+            this.callback();
           });
         })
         .catch(() => {

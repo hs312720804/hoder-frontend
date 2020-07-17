@@ -52,7 +52,7 @@
                     })
                 }
             },
-            onDataChange (val, oldVal) {
+            onDataChange () {
                 this.getPriority()
                 this.isEdit = false
             },

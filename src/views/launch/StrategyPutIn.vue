@@ -263,7 +263,7 @@
                         this.crowdData = data
                     }
                 })
-                .catch(err => {})
+                .catch(() => {})
             },
             // pull模式保存
             savePullData() {

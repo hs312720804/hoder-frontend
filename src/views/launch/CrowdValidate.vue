@@ -11,8 +11,9 @@
             <el-form-item label="日期：" prop="date">
                 <el-select v-model="form.date">
                     <el-option
-                            v-for="item in dateList"
+                            v-for="(item,index) in dateList"
                             :label="item"
+                            :key="index"
                             :value="item.replace(/-/g,'.')"
                     ></el-option>
                 </el-select>

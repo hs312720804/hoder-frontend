@@ -28,11 +28,11 @@
                 </el-button>
             </el-form-item>
         </el-form>
-    
+
         <!-- talbe -->
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column type="expand">
-                <template scope="props">
+                <template slot-scope="props">
                     <el-form label-position="left" inline class="demo-table-expand">
                         <el-form-item label="操作">
                             <span>{{ props.row.operation }}</span>
@@ -60,7 +60,7 @@
             <el-table-column prop="operateIp" label="操作IP" width="200"></el-table-column>
             <el-table-column prop="status" label="状态" width="100"></el-table-column>
             <el-table-column prop="operateTime" fixed="right" label="操作时间" width="200">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-icon name="time"></el-icon>
                     <span style="margin-left: 10px">{{ scope.row.operateTime }}</span>
                 </template>
@@ -114,7 +114,6 @@ export default {
                     _this.criteria = _this.queryForm;
                     _this.loadData();
                 } else {
-                    console.log("error submit!!");
                     return false;
                 }
             });
@@ -122,15 +121,12 @@ export default {
         // 显示新增界面
         pageRefresh: function() {
             var _this = this;
-            //console.log(JSON.stringify(this.tableData.loginName));
-            // debugger
             if(this.tableData[0].loginName){
                 this.$refs.queryForm.validate(function(result) {
                     if (result) {
                         _this.criteria = _this.queryForm;
                         _this.loadData();
                     } else {
-                        console.log("error submit!!");
                         return false;
                     }
                 });
@@ -138,7 +134,7 @@ export default {
                 this.$message('未查询！');
             }
         },
-        
+
         // 重置
         handleReset: function () {
             this.$refs.queryForm.resetFields();

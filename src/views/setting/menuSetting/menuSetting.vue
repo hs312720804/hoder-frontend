@@ -16,14 +16,14 @@
     <el-table :data="tableData" ref="myTable" style="width: 100%;" stripe border>
       <!--<el-table-column prop="id" label="ID" width="100"></el-table-column>-->
       <el-table-column prop="name" label="名称" width="250">
-        <!--<template scope="scope">
+        <!--<template slot-scope="scope">
                      <el-button type="text" @click="changeExpandAndOff(scope.$index, scope.row)">
                          <i v-if="!expand" class="el-icon-caret-right"></i>
                          <i v-if="expand" class="el-icon-caret-bottom"></i>
                      </el-button>
                      {{ scope.row.name }}
         </template>-->
-        <template scope="scope">
+        <template slot-scope="scope">
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 1" style="margin-left: 0px"></a>
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 2" style="margin-left: 10px"></a>
           <a :class="scope.row.fullIcon" v-if="scope.row.depth === 3" style="margin-left: 20px"></a>
@@ -35,13 +35,13 @@
       </el-table-column>
       <el-table-column prop="href" label="链接" width="300"></el-table-column>
       <el-table-column prop="sort" label="排序">
-        <!--<template scope="scope">-->
+        <!--<template slot-scope="scope">-->
           <!--<el-input :value="scope.row.sort" @blur="updateSort(scope.$index, scope.row)"></el-input>-->
         <!--</template>-->
       </el-table-column>
       <el-table-column prop="permission" label="权限标识" width="300"></el-table-column>
       <el-table-column prop="isShow" label="可见">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.isShow === 1">
             <a class="fa fa-unlock"></a> 显示
           </el-tag>
@@ -51,7 +51,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="280">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
                             <a class="fa fa-search" style="color: white;"></a> 查看
@@ -223,7 +223,7 @@ export default {
         .then(() => {
           this.$service
             .changeMenuStatus({ id: id, isShow: isShow },"修改成功")
-            .then(data => {
+            .then(() => {
               this.loadData();
             });
         })
@@ -233,10 +233,8 @@ export default {
     },
 
     // 查看详情
-    handleDetail (index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail (index, row) {
+    // },
     selectMenu() {
       this.$service.get_menu_tree_json().then(data => {
         this.organs = data;
@@ -279,12 +277,12 @@ export default {
       this.$refs.menuForm.validate(valid => {
         if (valid) {
           if (formData.id != "") {
-            this.$service.MenuUpdate(formData,"更新成功").then(data => {
+            this.$service.MenuUpdate(formData,"更新成功").then(() => {
               this.loadData();
               this.addFormVisible = false;
             });
           } else {
-            this.$service.MenuAdd(formData,"添加成功").then(data => {
+            this.$service.MenuAdd(formData,"添加成功").then(() => {
               this.loadData();
               this.addFormVisible = false;
             });
@@ -326,7 +324,7 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delMenu({ id: id },"删除成功").then(data => {
+          this.$service.delMenu({ id: id },"删除成功").then(() => {
             this.loadData();
           });
         })

@@ -10,7 +10,7 @@
             <el-table-column label="父人群id" prop="pcrowdId"></el-table-column>
             <el-table-column label="父人群名称" prop="pcrowdName"></el-table-column>
             <el-table-column label="是否生效" prop="apiStatus">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <span v-if="scope.row.apiStatus === 1">已生效</span>
                     <span v-if="scope.row.apiStatus === 0">
                       <el-tooltip placement="right-start">
@@ -22,7 +22,7 @@
                 </template>
             </el-table-column>
             <el-table-column label="是否为有效期内">
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}
                 </template>
             </el-table-column>
@@ -72,7 +72,6 @@
             fetchData () {
                 this.parseFilter()
                 this.$service.getRedirectCrowdList(this.filter).then(data => {
-                    console.log(data)
                     this.tableData = data.list
                     this.totalCount = data.total
                 })

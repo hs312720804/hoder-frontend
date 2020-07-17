@@ -39,7 +39,7 @@
             }
         },
         watch : {
-            'form.type': function (val) {
+            'form.type': function () {
                 this.message = ''
                 this.resetFormFile()
                 this.$refs.upload.value = ''
@@ -98,7 +98,6 @@
                     if (valid) {
                         const form = this.form
                         const formData = JSON.parse(JSON.stringify(form))
-                        console.log(form)
                         if(form.fileName != undefined && form.originFileName != undefined){
                             this.$service.devicePortraintAddSave(formData,'保存成功').then(() => {
                                 this.$emit('upsert-end')

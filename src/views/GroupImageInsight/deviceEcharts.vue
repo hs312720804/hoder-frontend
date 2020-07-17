@@ -426,7 +426,6 @@
             },
             // 设备画像---开始
             getCrowdBaseInfo() {
-                const crdId = this.currentCid
                 // 性别，年龄，产品等级
                 const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
                 // this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0]},id: this.currentCid}).then(data => {
@@ -455,7 +454,6 @@
                 })
             },
             getCrowdProvinceInfo() {
-                const crdId = this.currentCid
                 // 省份、城市活跃度
                 const typeEnum = ['portrait.province','portrait.cities.rank']
                 this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0]},id: this.currentCid}).then(data => {
@@ -477,7 +475,6 @@
             getTopActiveRank() {
                 const typeEnum = ['portrait.top50.active.city']
                 this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0], orderBy: 'value',sortOrder: 'desc'},id: this.currentCid}).then(data => {
-                    console.log(data.dataList)
                     const arr = data.dataList
                     var sum = 0
                     arr.forEach(item => {
@@ -486,13 +483,10 @@
                     this.table.data = arr.reduce((result, item) => {
                         return result.concat({ name: item.name, value: parseInt(item.value), PCT:((parseInt(item.value)/sum)*100).toFixed(2)+ '%' })
                     }, [])
-                    console.log('---------')
-                    console.log(this.table.data)
                 })
             },
             getMemberBenefits() {
                 this.$service.getEstimatedTvEnumData().then(data => {
-                    console.log(data)
                     const memberListData = this.objectToArray(data)
                     this.memberList = memberListData
                     // 设置两个默认的下拉框选值
@@ -564,49 +558,35 @@
                     'kmVIP': "portrait.user.category.cool.meow.vip.expireddate.member"
                 }
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        console.log(item.name+':'+item.value)
                     })
                     this.setCircleEcharts('member','会员用户的分布情况',names,values,true)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithNoVipSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('非会员总数======'+dataCount)
                     this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithVipSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('有效期会员总数======'+dataCount)
                     this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('过期会员总数======'+dataCount)
                     this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
                 })
                 // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
@@ -643,7 +623,6 @@
                     'kmVIP': "portrait.last.payment.cool.meow.vip"
                 }
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithSelectEnum[this.memberListByPay]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
                     data.dataList.forEach(item => {
                         names.push(item.name)
