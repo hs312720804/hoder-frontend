@@ -13,15 +13,23 @@ export default function fetch({
   let option = {
     method,
     url,
-    data: isJSON ? data : qs.stringify(data),
+    data: data instanceof FormData
+        ? data
+        : isJSON
+            ? data
+            : qs.stringify(data),
     params
   };
+
   if (url != "/api/login") option.headers = { Authorization: this.state.token };
   return axios(option)
     .then(function({ data }) {
       NProgress.done();
-      if (parseInt(data.code) === 0) {
+      const codeFormat = parseInt(data.code)
+      if (codeFormat === 0) {
           return data.data;
+      } else if(codeFormat === 400001 || codeFormat === 9999) {
+          location.href = location.origin + location.pathname + '#/login'
       } else {
         throw {
           code: data.code,

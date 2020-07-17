@@ -4,9 +4,11 @@ import Login from '@/views/Login'
 import TagGroup from '@/views/TagGroup/Index.vue'
 import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
-import strategy from '@/views/launch/strategy'
-import validate from '@/views/launch/validate'
-import dictionaryManage from '@/views/setting/dictionaryManage'
+import launchTabList from '@/views/launch/LaunchTabList'
+// import strategy from '@/views/launch/strategy'
+import strategy from '@/views/launch/strategy/List'
+import validate from '@/views/launch/CrowdValidate'
+// import dictionaryManage from '@/views/setting/dictionaryManage'
 import emailNotice from '@/views/setting/emailNotice'
 import loginLog from '@/views/setting/loginLog'
 import menuSetting from '@/views/setting/menuSetting/index'
@@ -16,7 +18,119 @@ import password from '@/views/setting/password'
 import personalInformation from '@/views/setting/personalInformation'
 import personManage from '@/views/setting/personManage'
 import roleManage from '@/views/setting/roleManage'
+import dataMange from '@/views/DataManage/peoplePositionIndex'
+import tagDictDatabase from '@/views/Tag/tagDictDatabase'
+import statisticsHomePage from '@/views/DeliveryStatistics/HomePage'
+// import statisticsHomePage from '@/views/DeliveryStatistics/StatisticsHomePage'
+import DeliveryDataAnalyse from '@/views/DeliveryStatistics/DeliveryDataAnalyse'
+import DeliveryMonitor from '@/views/DeliveryStatistics/DeliveryMonitor'
+import DeliveryAfterPeopleDraw from '@/views/DeliveryStatistics/DeliveryAfterPeopleDraw'
+import OverallDeliveryStatistics from '@/views/HomePage/OverallDeliveryStatistics'
+import CurrentPopulationClassification from '@/views/HomePage/CurrentPopulationClassification'
+import OTTBigscreenIndex from '@/views/HomePage/OTTBigscreenIndex'
+import tabStructure from '@/views/HomePage/tabStructure'
+import indexBI from '@/views/HomePage/indexBI'
+import crowdPortrayal from '@/views/HomePage/crowdPortrayal'
+import thirdPartyDMP from '@/views/ThirdParty/thirdPartyDMP'
+import OverallCrowdStatistics from '@/views/HomePage/OverallCrowdStatistics'
+import thirdInterface from '@/views/thirdInterface/index'
+import clearCache from '@/views/DevelopTools/clearCache/clearCacheIndex'
+import ipManage from '@/views/DevelopTools/ipManage/index'
+import multiVersionCrowd from '@/views/launch/multiVersionCrowd/Index'
+import launchSettings from '@/views/setting/launchSetting'
+import notice from '@/views/setting/messageNotice'
+import oneTouchDrop from '@/views/OneTouchDrop/Index'
+import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
+import anomalyEcharts from '@/views/launch/anomaly'
+import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
+import myPolicy from '@/views/MyPolicy/Index'
+import redirectList from '@/views/crowdStrategy/redirect/List'
+import redirectAdd from '@/views/crowdStrategy/redirect/Add'
+import groupImageInsight from '@/views/GroupImageInsight/Index'
+import userTagsSearch from  '@/views/launch/userTagsSearch'
+import hitSearch from  '@/views/launch/hitSearch'
 const children = [
+    {
+        name: 'homePage',
+        path: 'homePage',
+        component: Wrapper,
+        meta: {
+            title: '首页',
+            icon: 'el-icon-cc-home'
+        },
+        children: [
+            {
+                name: 'OverallDeliveryStatistics',
+                path: 'OverallDeliveryStatistics',
+                component: OverallDeliveryStatistics,
+                meta: {
+                    tagId: 'OverallDeliveryStatistics',
+                    title: '整体指标统计',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'OverallCrowdStatistics',
+                path: 'OverallCrowdStatistics',
+                component: OverallCrowdStatistics,
+                meta: {
+                    tagId: 'OverallCrowdStatistics',
+                    title: '整体人群统计',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'indexBI',
+                path: 'indexBI',
+                component: indexBI,
+                meta: {
+                    tagId: 'indexBI',
+                    title: '已有的BI指数',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'CurrentPopulationClassification',
+                path: 'CurrentPopulationClassification',
+                component: CurrentPopulationClassification,
+                meta: {
+                    tagId: 'CurrentPopulationClassification',
+                    title: '现有人群分类',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'OTTBigscreenIndex',
+                path: 'OTTBigscreenIndex',
+                component: OTTBigscreenIndex,
+                meta: {
+                    tagId: 'OTTBigscreenIndex',
+                    title: 'OTT大屏指数',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'tabStructure',
+                path: 'tabStructure',
+                component: tabStructure,
+                meta: {
+                    tagId: 'tabStructure',
+                    title: '标签结构',
+                    icon: 'el-icon-cc-home'
+                }
+            },
+            {
+                name: 'crowdPortrayal',
+                path: 'crowdPortrayal',
+                component: crowdPortrayal,
+                meta: {
+                    tagId: 'crowdPortrayal',
+                    title: '投前人群画像',
+                    icon: 'el-icon-cc-home'
+                }
+            }
+        ]
+    },
     {
         name: 'dashboard',
         path: '/',
@@ -65,6 +179,19 @@ const children = [
                     icon: 'el-icon-cc-file',
                     hideInMenu: true
                 }
+            },
+            {
+                name: 'tagDictDatabase',
+                path: 'tagDictDatabase',
+                component: tagDictDatabase,
+                props: {
+                    mode: 'list-tag-dict-database'
+                },
+                meta: {
+                    tagId: "tagDictDatabase",
+                    title: '标签字典库',
+                    icon: 'el-icon-cc-file'
+                }
             }
         ]
     },
@@ -72,7 +199,7 @@ const children = [
         path: 'launch',
         name:"launch",
         meta: {
-            title: '投放助手',
+            title: '人群管理',
             icon: 'el-icon-cc-file',
         },
         component: Wrapper,
@@ -83,24 +210,85 @@ const children = [
                 component: crowd,
                 meta: {
                     tagId:"crowd",
-                    title: '人群投放',
+                    title: '人群圈定',
                     icon: 'el-icon-cc-file'
                 },
-            }
-            ,
+            },
+            {
+                name: 'launchTabList',
+                path: 'launchTabList',
+                component: launchTabList,
+                meta: {
+                    tagId:"launchTabList",
+                    title: '投放管理',
+                    icon: 'el-icon-cc-file'
+                },
+            },
+            {
+                name: 'myPolicy',
+                path: 'myPolicy',
+                component: myPolicy,
+                meta: {
+                    tagId:"myPolicy",
+                    title: '我的人群',
+                    icon: 'el-icon-cc-file'
+                },
+            },
             {
                 name: 'strategy',
                 path: 'strategy',
                 component: strategy,
                 meta: {
-                    title: '策略投放',
+                    title: '人群分割 投放',
                     tagId:"strategy",
                   //  hideInMenu: true,
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
-            }
-            ,
+            },
+            {
+                name: 'strategyList',
+                path: 'strategyList',
+                component: strategyList,
+                meta: {
+                    tagId:"strategyList",
+                    title: '人群分隔 管理',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'multiVersionCrowd',
+                path: 'multiVersionCrowd',
+                component: multiVersionCrowd,
+                meta: {
+                    title: '人群多版本圈定',
+                    tagId:"multiVersionCrowd",
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+              name: 'AddMoreCrowds',
+              path: 'AddMoreCrowds',
+              component: AddMoreCrowds,
+              meta: {
+                  tagId:"AddMoreCrowds",
+                  title: '添加多个人群',
+                  icon: 'el-icon-cc-file',
+                  hideInMenu: true
+              }
+            },
+        ],
+    },
+    {
+        name: 'launchHelper',
+        path: 'launchHelper',
+        component: Wrapper,
+        meta: {
+            title: '投放助手',
+            icon: 'el-icon-cc-home'
+        },
+        children:[
             {
                 name: 'validate',
                 path: 'validate',
@@ -108,29 +296,166 @@ const children = [
                 meta: {
                     title: '投放验证',
                     tagId:"validate",
-                  //  hideInMenu: true,
+                    //  hideInMenu: true,
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'anomalyEcharts',
+                path: 'anomalyEcharts',
+                component: anomalyEcharts,
+                meta: {
+                    title: '异常监测',
+                    tagId:"anomalyEcharts",
+                    isCache: false
+                }
+            },
+            {
+                name: 'DeliveryMonitor',
+                path: 'DeliveryMonitor',
+                component: DeliveryMonitor,
+                meta: {
+                    title: '投放中的投放监控',
+                    tagId:"DeliveryMonitor",
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'userTagsSearch',
+                path: 'userTagsSearch',
+                component: userTagsSearch,
+                meta: {
+                    title: '用户标签查询',
+                    tagId:"userTagsSearch",
+                    //  hideInMenu: true,
+                    isCache: false,
+                    icon: 'el-icon-cc-file',
+                }
+            },
+            {
+                name: 'hitSearch',
+                path: 'hitSearch',
+                component: hitSearch,
+                meta: {
+                    title: '命中查询',
+                    tagId:"hitSearch",
                     isCache: false,
                     icon: 'el-icon-cc-file',
                 }
             }
-        ],
+        ]
     },
     {
-        name: 'strategy',
-        path: 'strategy',
+        name: 'dataManage',
+        path: 'dataManage',
         component: Wrapper,
         meta: {
-            title: '人群策略管理',
+            title: '开发工具',
+            icon: 'el-icon-cc-institute'
+        },
+        children:[
+            {
+                name: 'dataManage',
+                path: 'dataManage',
+                component: dataMange,
+                meta: {
+                    tagId:"dataManage",
+                    title: '人群位置信息管理',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'thirdInterface',
+                path: 'thirdInterface',
+                component: thirdInterface,
+                meta: {
+                    tagId:"thirdInterface",
+                    title: '第三方接口',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'clearCache',
+                path: 'clearCache',
+                component: clearCache,
+                meta: {
+                    tagId:"clearCache",
+                    title: '清除缓存',
+                    icon: 'el-icon-cc-close-circle'
+                }
+            },
+            {
+                name: 'ipManage',
+                path: 'ipManage',
+                component: ipManage,
+                meta: {
+                    tagId:"ipManage",
+                    title: '接口服务器管理',
+                    icon: 'el-icon-cc-close-circle'
+                }
+            },
+        ]
+    },
+    {
+        name: 'analyse',
+        path: 'analyse',
+        component: Wrapper,
+        meta: {
+            title: '洞察分析',
+            icon: 'el-icon-cc-institute'
+        },
+        children:[
+            {
+                name: 'DeliveryAfterPeopleDraw',
+                path: 'DeliveryAfterPeopleDraw',
+                component: DeliveryAfterPeopleDraw,
+                meta: {
+                    tagId:"DeliveryAfterPeopleDraw",
+                    title: '投后人群画像',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'DeliveryDataAnalyse',
+                path: 'DeliveryDataAnalyse',
+                component: DeliveryDataAnalyse,
+                meta: {
+                    tagId:"DeliveryDataAnalyse",
+                    title: '数据分析报告',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+        ]
+    },
+    {
+        name: 'thirdParty',
+        path: 'thirdParty',
+        component: Wrapper,
+        meta: {
+            title: '第三方管理',
             icon: 'el-icon-cc-home'
         },
         children:[
             {
-                name: 'strategyList',
-                path: 'strategyList',
-                component: strategyList,
+                name: 'thirdPartyDMP',
+                path: 'thirdPartyDMP',
+                component: thirdPartyDMP,
                 meta: {
-                    tagId:"strategyList",
-                    title: '策略列表',
+                    tagId:"thirdPartyDMP",
+                    title: '第三方DMP',
+                    icon: 'el-icon-cc-file'
+                }
+            }
+            ,
+            {
+                name: 'operateLog',
+                path: 'operateLog',
+                component: operateLog,
+                meta: {
+                    tagId:"operateLog",
+                    title: '操作日志',
                     icon: 'el-icon-cc-file'
                 }
             }
@@ -145,6 +470,16 @@ const children = [
             icon: 'el-icon-cc-home'
         },
         children:[
+            {
+                name: 'notice',
+                path: 'notice',
+                component: notice,
+                meta: {
+                    tagId:"notice",
+                    title: '消息通知',
+                    icon: 'el-icon-cc-xinxi'
+                }
+            },
             {
                 name: 'menuSetting',
                 path: 'menuSetting',
@@ -162,6 +497,16 @@ const children = [
                 meta: {
                     title: '邮件通知',
                     tagId:"emailNotice",
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'launchSettings',
+                path: 'launchSettings',
+                component: launchSettings,
+                meta: {
+                    title: '投放设置',
+                    tagId:"launchSettings",
                     icon: 'el-icon-cc-file'
                 }
             }
@@ -273,7 +618,84 @@ const children = [
                 }
             }
         ]
-    }
+    },
+    {
+        name: 'statisticsHomePage',
+        path: 'statisticsHomePage',
+        component: statisticsHomePage,
+        meta: {
+            title: '投放统计',
+            tagId:"statisticsHomePage",
+        }
+    },
+    {
+        name: 'oneTouchDrop',
+        path: 'oneTouchDrop',
+        component: oneTouchDrop,
+        meta: {
+            title: '一键投放',
+            tagId:"oneTouchDrop",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'homepageReleaseRecord',
+        path: 'homepageReleaseRecord/:homepageReleaseRecordId',
+        component: homepageReleaseRecord,
+        meta: {
+            title: '主页投放记录',
+            tagId:"homepageReleaseRecord",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'redirectList',
+        path: 'redirectList/:redirectListId',
+        component: redirectList,
+        meta: {
+            title: '重定向投放记录',
+            tagId:"redirectList",
+            hideInMenu: true
+        }
+    },
+    {
+        name: 'dashboard',
+        path: '/',
+        component: Wrapper,
+        meta: {
+            title: '重定向',
+            icon: 'el-icon-cc-home'
+        },
+        children:[{
+        name: 'redirectAdd',
+        path: 'redirectAdd',
+        component: redirectAdd,
+        meta: {
+            title: '新增/编辑重定向人群',
+            tagId:"redirectAdd",
+            hideInMenu: true
+        }}]
+    },
+    {
+        name: 'dashboard',
+        path: '/',
+        component: Wrapper,
+        meta: {
+            title: '群像洞察',
+            icon: 'el-icon-cc-home'
+        },
+        children:[
+            {
+                name: 'groupImageInsight',
+                path: 'groupImageInsight',
+                component: groupImageInsight,
+                meta: {
+                    title: '设备画像',
+                    tagId:"groupImageInsight",
+                }
+            }
+        ]
+    },
 ]
 
 const routes = [

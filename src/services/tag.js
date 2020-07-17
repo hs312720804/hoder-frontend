@@ -1,7 +1,7 @@
 export function getTagList(input) {
     const {
-        pageSize, 
-        currentPage: pageNum, 
+        pageSize,
+        currentPage: pageNum,
         name: attrName,
         tagCategoryId: tagId
     } = input
@@ -43,3 +43,21 @@ export function deleteTag(input) {
         data: input,
     })
 }
+
+export function tagBatchsave(input) {
+    return this.fetch({
+        method: 'post',
+        url:'api/labelAttr/batchSave',
+        data: input
+    })
+}
+
+// 标签字典库
+export function getTagDictDatabaseList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'api/tagDict/index',
+        params
+    })
+}
+

@@ -56,3 +56,11 @@ export function readTagCategory({id}) {
         }
     })
 }
+
+export function getDatasource(params) {
+    return this.fetch({
+        url: 'api/enumData/getDataSource',
+        method: 'get',
+        params
+    })
+}

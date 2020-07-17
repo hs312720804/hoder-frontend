@@ -8,7 +8,22 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
-                    <el-button type="primary" @click="handleAddTag" v-permission="'hoder:label:attr:add'">新建标签</el-button>
+                    <el-button
+                            type="primary"
+                            @click="handleAddTag"
+                            v-if="tagCategory.dataSource !== 2"
+                            v-permission="'hoder:label:attr:add'"
+                    >
+                        新建标签
+                    </el-button>
+                    <el-button
+                            type="primary"
+                            @click="handleAddBatchTag"
+                            v-if="tagCategory.dataSource !== 2"
+                            v-permission="'hoder:label:attr:add'"
+                    >
+                        批量上传
+                    </el-button>
                 </el-form-item>
             </el-form>
         </div>
@@ -19,13 +34,23 @@
             </el-table-column>
             <el-table-column prop="attrValue" label="值">
             </el-table-column>
-            <el-table-column prop="operation" label="操作" width="220">
+            <el-table-column label="状态">
+                <template slot-scope="scope">
+                    <div v-if="scope.row.status">
+                        {{statusList[scope.row.status]}}
+                    </div>
+                    <div v-else>暂无状态信息</div>
+                </template>
+            </el-table-column>
+            <el-table-column prop="operation" label="操作" width="220"
+                             v-if="tagCategory.dataSource !== 2"
+            >
                 <template slot-scope="scope">
                     <el-button-group>
                     <el-button
                         size="small"
                         type="success"
-                        @click="handleEditTag(scope.row)" 
+                        @click="handleEditTag(scope.row)"
                         v-permission="'hoder:label:attr:modify'"
                     >
                         编辑
@@ -42,7 +67,7 @@
                 </template>
             </el-table-column>
         </el-table>
-        <el-pagination 
+        <el-pagination
             class="pagination"
             :current-page.sync="pagination.currentPage"
             :page-size.sync="pagination.pageSize"
@@ -54,14 +79,17 @@
         >
         </el-pagination>
         <TagUpsert ref="tagUpsert" @upsert-end="fetchData" :current-tag="tag" />
+        <BatchUpload ref="BatchUpload" @upsert-end="fetchData" :current-tag="tag" />
     </el-card>
 
 </template>
 <script>
 import TagUpsert from './Upsert.vue'
+import BatchUpload from './batchUpload.vue'
 export default {
     components: {
-        TagUpsert
+        TagUpsert,
+        BatchUpload
     },
     data() {
         return {
@@ -72,6 +100,10 @@ export default {
             },
             filter: {
                 name: undefined,
+            },
+            statusList: {
+                '1': '启用',
+                '2': '禁用'
             }
         }
     },
@@ -93,12 +125,22 @@ export default {
         },
         handleAddTag() {
             this.tag = {
-                tagId: this.tagCategory.tagId
+                tagId: this.tagCategory.tagId,
             }
+            this.tag.tagType = this.tagCategory.tagType
             this.$refs.tagUpsert.showCreateDialog = true
         },
+        handleAddBatchTag () {
+            this.tag = {
+                tagId: this.tagCategory.tagId,
+            }
+            this.tag.tagType = this.tagCategory.tagType
+            this.$refs.BatchUpload.showBatchDialog = true
+        },
         handleEditTag(row) {
-            this.tag = row
+            this.tag = JSON.parse(JSON.stringify(row))
+            this.tag.tagType = this.tagCategory.tagType
+            this.tag.tagId = this.tagCategory.tagId
             this.$refs.tagUpsert.showCreateDialog = true
         },
         handleDeleteTag(row) {

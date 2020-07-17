@@ -19,7 +19,7 @@ Vue.prototype.$isLoggedIn = async function() {
             res.permissions.forEach((item)=>{
                 this.$appState.permissions[item]=item;
             })
-            this.$appState.menus=res.menus;
+            this.$appState.menus=res.menus
         })
     }
     throw {}
@@ -29,7 +29,9 @@ Vue.prototype.$login = async function(data) {
         const user = {
             name: data.username,
             token: res.jwtToken,
-            password: data.password
+            password: data.password,
+            version: res.version,
+            roleName: res.roleNames
         }
         this.$service.service.state = user
         this.$appState.user = user

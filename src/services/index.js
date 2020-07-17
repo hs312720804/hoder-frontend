@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import { utils } from "admin-toolkit";
-
 import fetch from './fetch'
 import login from './login'
 import getConstants from './getConstants'
@@ -17,6 +16,17 @@ import * as menu from "./systemSetting/menu"
 import * as tagGroup from "./tagGroup"
 import * as tagCategory from "./tagCategory.js"
 import * as tag from "./tag.js"
+import * as dataManage from "./dataManage/peoplePosition"
+import * as thirdInterface from "./dataManage/thirdInterface"
+import * as statisticCrowd from "./statisticCrowd/crowdPolicy"
+import * as clearCache from "./dataManage/clearCache"
+import * as ipManage from "./dataManage/ipManage"
+import * as launchSetting from "./systemSetting/launch"
+import * as notice from './systemSetting/notice'
+import * as crowdStatistic from './statisticCrowd/crowdStatistic'
+import * as anomaly from './launch/anomaly'
+import * as devicePortrait from './GroupImageInsight/devicePortrait'
+import * as userTagsSearch from './launch/useTagsSearch'
 const service = {
     state: {},
     fetch,
@@ -36,5 +46,16 @@ const service = {
     ...tagGroup,
     ...tagCategory,
     ...tag,
+    ...dataManage,
+    ...statisticCrowd,
+    ...thirdInterface,
+    ...clearCache,
+    ...ipManage,
+    ...launchSetting,
+    ...notice,
+    ...crowdStatistic,
+    ...anomaly,
+    ...devicePortrait,
+    ...userTagsSearch
 }
 Vue.prototype.$service = utils.wrapService(service)

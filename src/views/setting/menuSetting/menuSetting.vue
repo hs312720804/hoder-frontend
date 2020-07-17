@@ -34,13 +34,13 @@
         </template>
       </el-table-column>
       <el-table-column prop="href" label="链接" width="300"></el-table-column>
-      <el-table-column prop="sort" label="排序" width="100">
-        <template scope="scope">
-          <el-input :value="scope.row.sort" @blur="updateSort(scope.$index, scope.row)"></el-input>
-        </template>
+      <el-table-column prop="sort" label="排序">
+        <!--<template scope="scope">-->
+          <!--<el-input :value="scope.row.sort" @blur="updateSort(scope.$index, scope.row)"></el-input>-->
+        <!--</template>-->
       </el-table-column>
       <el-table-column prop="permission" label="权限标识" width="300"></el-table-column>
-      <el-table-column prop="isShow" label="可见" width="100">
+      <el-table-column prop="isShow" label="可见">
         <template scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.isShow === 1">
             <a class="fa fa-unlock"></a> 显示
@@ -114,7 +114,7 @@
           <el-button size="small" type="primary" icon="search" @click="selectIcon">选择图标</el-button>
         </el-form-item>
         <el-form-item label="排序" prop="sort">
-          <el-input size="small" v-model="menuForm.sort" placeholder="请填写排序数"></el-input>
+          <el-input size="small" v-model.number="menuForm.sort" placeholder="请填写排序数"></el-input>
         </el-form-item>
         <el-form-item label="是否在菜单中显示">
           <el-radio-group v-model="menuForm.isShow">
@@ -141,6 +141,16 @@
 <script>
 export default {
   data() {
+    const checkSort = (rule, value, callback) => {
+        if(!value) {
+            return callback(new Error('排序不能为空'))
+        }
+        if(!Number.isInteger(value)){
+            callback(new Error('请输入正整数'))
+        } else {
+            callback()
+        }
+    }
     return {
       // 表格当前页数据
       tableData: [],
@@ -170,10 +180,10 @@ export default {
         permission: [
           { required: true, message: "请填写权限", trigger: "blur" }
         ],
-        icon: [{ required: true, message: "请填写菜单图标", trigger: "blur" }]
-        // sort: [
-        //     {required: true, message: '请填写排序数', trigger: 'blur'}
-        // ] // 注意: 由于 Form 的校验内置了 async-validator，而它会给每个字段加一个默认的值为 string 的 type 规则，即默认情况下字段必须是字符串型
+        icon: [{ required: true, message: "请填写菜单图标", trigger: "blur" }],
+        sort: [
+            {required: true, validator: checkSort, trigger: 'blur'}
+        ]
       },
 
       // 编辑页
@@ -186,13 +196,13 @@ export default {
     this.menuForm.icon = this.iconName;
   },
   watch: {
-    iconName: function(val) {
+    iconName (val) {
       this.menuForm.icon = val;
     }
   },
   methods: {
     // 从服务器读取数据
-    loadData: function() {
+    loadData () {
       this.$service.get_menus_json().then(data => {
         this.tableData = data.menuTreeTable;
       });
@@ -202,7 +212,7 @@ export default {
       document.querySelector(".v-modal").style.display = "none";
     },
     // 修改状态
-    handleChangetStatus: function(index, row) {
+    handleChangetStatus (index, row) {
       var id = row.id;
       var isShow = row.isShow == 1 ? 0 : 1;
       this.$confirm("确定修改该条记录的状态?", "提示", {
@@ -223,7 +233,7 @@ export default {
     },
 
     // 查看详情
-    handleDetail: function(index, row) {
+    handleDetail (index, row) {
       var id = row.id;
       // todo: 以后再做
     },
@@ -248,7 +258,7 @@ export default {
     },
 
     // 显示新增界面
-    handleAdd: function() {
+    handleAdd () {
       this.dialogTitle = "新增";
       this.addFormVisible = true;
       this.menuForm.id = "";
@@ -263,33 +273,32 @@ export default {
     },
 
     // 新增
-    addSubmit: function() {
-      var _this = this;
+    addSubmit () {
+      const formData = JSON.parse(JSON.stringify(this.menuForm))
+      if(formData.parentId === '') {formData.parentId = 0}
       this.$refs.menuForm.validate(valid => {
         if (valid) {
-          if (this.menuForm.id != "") {
-            this.$service.MenuUpdate(this.menuForm,"更新成功").then(data => {
+          if (formData.id != "") {
+            this.$service.MenuUpdate(formData,"更新成功").then(data => {
               this.loadData();
               this.addFormVisible = false;
             });
           } else {
-            this.$service.MenuAdd(this.menuForm,"添加成功").then(data => {
+            this.$service.MenuAdd(formData,"添加成功").then(data => {
               this.loadData();
               this.addFormVisible = false;
             });
           }
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
     },
 
     // 显示编辑页面
-    handleEdit: function(index, row) {
+    handleEdit (index, row) {
       this.dialogTitle = "编辑";
       this.addFormVisible = true;
-      // console.log(row);
       this.menuForm.id = row.id;
       this.menuForm.parentId = row.parentId;
       if (row.parentName == null) {
@@ -305,11 +314,11 @@ export default {
       this.menuForm.isShow = row.isShow;
     },
     // 取消
-    cancelAdd: function() {
+    cancelAdd () {
       this.addFormVisible = false;
     },
     // 单行删除
-    handleDelete: function(index, row) {
+    handleDelete (index, row) {
       var id = row.id;
       this.$confirm("确定要删除该条记录?", "提示", {
         confirmButtonText: "确定",

@@ -1,0 +1,160 @@
+<template>
+    <div>
+        <div class="title">查询指定MAC的命中情况</div>
+        <el-form :model="form" ref="form" :rules="rules" :inline="true">
+            <el-form-item label="设备信息：" prop="mac">
+                <el-input v-model="form.mac"></el-input>
+            </el-form-item>
+            <el-form-item label="人群id：" prop="crowdId">
+                <el-input v-model="form.crowdId"></el-input>
+            </el-form-item>
+            <el-form-item label="日期：" prop="date">
+                <el-select v-model="form.date">
+                    <el-option
+                            v-for="item in dateList"
+                            :label="item"
+                            :value="item.replace(/-/g,'.')"
+                    ></el-option>
+                </el-select>
+            </el-form-item>
+            <el-form-item>
+                <el-button @click="handleSearch">查询</el-button>
+            </el-form-item>
+        </el-form>
+        <div>
+            <div>
+                <div>人群：</div>
+                <div class="result" v-if="crowdForm.crowd">
+                    <div class="result-item">
+                        {{crowdForm.crowd}}
+                    </div>
+                </div>
+                <div v-else class="no-result">暂无数据</div>
+            </div>
+            <div>
+                <div>该设备对应的人群条件是：</div>
+                <div class="result" v-if="crowdForm.condition.length > 0">
+                    <div v-for="(item,index) in crowdForm.condition" :key="index" class="result-item">
+                        <div>{{item.date}}</div>
+                        <div>{{item.thisMacTagValues}}</div>
+                    </div>
+                </div>
+                <div v-else class="no-result">暂无数据</div>
+            </div>
+            <div>
+                <div>对比结果：</div>
+                <div class="result red--text" v-if="crowdForm.match.length > 0">
+                    <div v-for="(item,index) in crowdForm.match" :key="index" class="result-item">
+                        <div>{{item.date}}</div>
+                        <div>{{item.matchRes}}</div>
+                        <div>{{item.reason}}</div>
+                    </div>
+                </div>
+                <div v-else class="no-result">暂无数据</div>
+            </div>
+            <el-pagination
+                    v-if="crowdForm.match.length > 0 || crowdForm.condition.length > 0"
+                    layout="prev, pager, next"
+                    :total="pagination.total"
+                    :page-size="pagination.pageSize"
+                    :current-page="pagination.pageNum"
+                    @current-change="handleCurrentChange"
+            >
+            </el-pagination>
+        </div>
+    </div>
+</template>
+
+<script>
+    export default {
+        name: "CrowdValidate",
+        data () {
+            return {
+                form: {
+                    mac: '',
+                    crowdId: '',
+                    date: ''
+                },
+                pagination: {
+                    pageSize: 3,
+                    pageNum: 1,
+                    total: 0
+                },
+                crowdForm: {
+                    crowd: '',
+                    condition: [],
+                    match: []
+                },
+                dateList: [],
+                rules: {
+                    mac: {required: true, message: '请输入mac', trigger: blur},
+                    crowdId: {required: true, message: '请输入人群id', trigger: blur}
+                }
+            }
+        },
+        methods: {
+            getFilter () {
+                const filter = {
+                    mac: this.form.mac,
+                    crowdId: this.form.crowdId,
+                    date: this.form.date,
+                    pageSize: this.pagination.pageSize,
+                    pageNum: this.pagination.pageNum
+                }
+                return filter
+            },
+            handleSearch () {
+                this.$refs.form.validate(valid => {
+                    if(valid) {
+                        const filter = this.getFilter()
+                        this.$service.launchHelpCrowdIndex(filter).then(data => {
+                            this.pagination.total = data.total
+                            this.crowdForm.crowd = data.fx || '暂无数据'
+                            this.crowdForm.condition = data.historyCondition || []
+                            this.crowdForm.match = data.historyResMatch || []
+                        })
+                    }
+                })
+            },
+            handleCurrentChange(val) {
+                this.pagination.pageNum = val
+                this.handleSearch()
+            },
+            formatDate (d) {
+                const time = new Date(d)
+                let y = time.getFullYear(); // 年份
+                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+                let r = time.getDate().toString().padStart(2,'0'); // 日子
+                return `${y}-${m}-${r}`
+            },
+            setDateData () {
+                const a = []
+                for (let i=0;i<5;i++) {
+                    a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
+                }
+                this.dateList = a
+                this.form.date = a[1]
+            }
+        },
+        created () {
+            this.setDateData()
+        }
+    }
+</script>
+
+<style lang="stylus" scoped>
+.result
+    border 1px dashed #333
+    padding 0 20px
+    margin 20px
+    height 200px
+    overflow auto
+    .result-item
+        margin 20px 0
+.red--text
+    color red
+.title
+    margin-bottom 20px
+.no-result
+    margin 20px
+</style>

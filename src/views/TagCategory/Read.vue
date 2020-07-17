@@ -65,6 +65,6 @@ export default {
 
 </script>
 <style lang="stylus" scoped>
-.read-tag-category 
+.read-tag-category
     width 100%
 </style>

@@ -2,17 +2,18 @@
   <el-container class="layout">
     <div class="leftMenu">
       <div class="logo">
-        <div class="logo__img">
+        <div class="logo__img" @click="handleLogoClick">
 
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
-           <i class="el-icon-cc-celve2"></i>
-          <span v-show="!isCollapseMenu">人群策略平台</span>
-          </div>
+          <i class="el-icon-cc-celve2"></i>
+          <span v-show="!isCollapseMenu">人群平台</span>
+        </div>
+        <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
-        :default-active="$route.name"
-        class="main_menu menu"
-        :collapse="isCollapseMenu" 
+              :default-active="$route.name"
+              class="main_menu menu"
+              :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
           <el-submenu v-if="item.child" :key="index" :index="index+''">
@@ -21,7 +22,12 @@
               <span>{{ item.name }}</span>
             </template>
             <template v-for="(child, idx) in item.child">
-              <el-menu-item v-if="!child.child.length>0" :key="idx" :index="routerMap[child.url]" @click.native="getRouter(child.url)">
+              <el-menu-item
+                      v-if="( !child.child.length > 0 ) && routerMap[child.url] !== undefined"
+                      :key="child.id"
+                      :index="routerMap[child.url]"
+                      @click.native="getRouter(child.url)"
+              >
                 <i v-if="child.icons" :class="child.icons"></i>
                 <span slot="title">{{ child.name }} </span>
               </el-menu-item>
@@ -30,8 +36,8 @@
                   <i v-if="child.icons" :class="child.icons"></i>
                   <span>{{ child.name }}</span>
                 </template>
-                <template v-for="(c,n) in child.child">
-                       <el-menu-item :key="n" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
+                <template v-for="(c) in child.child">
+                  <el-menu-item :key="c.id" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
                     <i v-if="c.icons" :class="c.icons"></i>
                     <span slot="title">{{c.name}}</span>
                   </el-menu-item>
@@ -45,17 +51,52 @@
     <el-container direction="vertical">
       <el-header class="header">
         <el-button
-          class="collpase-btn"
-          type="text"
-          :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
-          @click="toggleMenu"
+                class="collpase-btn"
+                type="text"
+                :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
+                @click="toggleMenu"
         ></el-button>
         <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
+          <el-dropdown trigger="hover">
+            <el-badge :value="unReadMessage" class="item">
+              <i class="el-icon-bell"></i>
+            </el-badge>
+            <el-dropdown-menu slot="dropdown" class="notice-dropdown">
+              <el-tabs v-model="activeName" @tab-click="handleClick">
+                <el-tab-pane label="升级通知" name="first">
+                  <div v-for="updateItem in updateMessage" :key="updateItem.noticeId" class="tab-content">
+                    <div
+                        :class="['notice-title',updateItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                        @click="handleReadMessage(updateItem.noticeId)"
+                    >{{updateItem.noticeTitle}}</div>
+                    <div class="notice-time">{{updateItem.pushTime}}</div>
+                  </div>
+                  <div class="see-more" v-if="showMoreUpdate" @click="handleSeeAllMessage">查看全部</div>
+                </el-tab-pane>
+                <el-tab-pane label="系统通知" name="second">
+                  <div v-for="systemItem in systemMessage" :key="systemItem.noticeId" class="tab-content">
+                    <div
+                        :class="['notice-title',systemItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                        @click="handleReadMessage(systemItem.noticeId)"
+                    >{{systemItem.noticeTitle}}</div>
+                    <div class="notice-time">{{systemItem.pushTime}}</div>
+                  </div>
+                  <div class="see-more" v-if="showMoreSystem" @click="handleSeeAllMessage">查看全部</div>
+                </el-tab-pane>
+              </el-tabs>
+              <!--<el-dropdown-item class="clearfix">-->
+                <!--<el-badge is-dot class="item">数据查询</el-badge>-->
+              <!--</el-dropdown-item>-->
+              <!--<el-dropdown-item class="clearfix">-->
+                <!--<el-badge is-dot class="item">数据查询1</el-badge>-->
+              <!--</el-dropdown-item>-->
+            </el-dropdown-menu>
+          </el-dropdown>
           <el-dropdown :hide-on-click="false" @command="handleDropdownCommand">
             <span class="el-dropdown-link">
               <i class="el-icon-cc-user"></i>
-              {{ $appState.user.name }}
+                 {{ $appState.user.name }}
               <i class="el-icon-arrow-down el-icon--right"></i>
             </span>
             <el-dropdown-menu slot="dropdown">
@@ -75,180 +116,374 @@
   </el-container>
 </template>
 <script>
-import { Breadcrumb, Menu, TagNav } from "admin-toolkit";
-export default {
-  components: {
-    Menu,
-    Breadcrumb,
-    TagNav
-  },
-  props: ["menu"],
-  data() {
-    return {
-      breadcrumb: [],
-      isCollapseMenu: false,
-      routerMap: {
-          "label/index": "tag-group-read",
-          "launchHelp/index": "validate",
-          "launchCrowd/index": "crowd",
-          "launchPolicy/index": "strategy",
-          "/policy/index": "strategyList",
-          "/manage/menu/index": "menuSetting",
-          "/manage/email/index": "emailNotice",
-          "/manage/user/index": "personManage",
-          "/manage/office/index": "organManage",
-          "/manage/role/index": "roleManage",
-          "/manage/user/personalInformation": "personalInformation",
-          "/manage/user/modifyPassword": "password",
-          "/manage/loginLog/index": "loginLog",
-           "/manage/operateLog/index": "operateLog"
-      }
+    import { Breadcrumb, Menu, TagNav } from "admin-toolkit";
+    export default {
+        components: {
+            Menu,
+            Breadcrumb,
+            TagNav
+        },
+        props: ["menu"],
+        data() {
+            return {
+                activeIndex: '',
+                breadcrumb: [],
+                isCollapseMenu: false,
+                routerMap: {
+                    "label/index": "tag-group-read",
+                    // "label/index": "tag",
+                    "launchHelp/index": "validate",
+                    "launchCrowd/index": "crowd",
+                    "launchPolicy/index": "strategy",
+                    "/policy/index": "strategyList",
+                    "/manage/menu/index": "menuSetting",
+                    "/manage/email/index": "emailNotice",
+                    "/manage/user/index": "personManage",
+                    "/manage/office/index": "organManage",
+                    "/manage/role/index": "roleManage",
+                    "/manage/user/personalInformation": "personalInformation",
+                    "/manage/user/modifyPassword": "password",
+                    "/manage/loginLog/index": "loginLog",
+                    "/manage/operateLog/index": "operateLog",
+                    "/crowdDataPos/index": "dataManage",
+                    "/tagDict/index": "tagDictDatabase",
+                    "/total/index": "statisticsHomePage",
+                    "/indexTotal/index": "OverallDeliveryStatistics",
+                    "/crowTotal/index": "OverallCrowdStatistics",
+                    "/tagStructure/index": "tabStructure",
+                    "/crowdCategory/index": "CurrentPopulationClassification",
+                    "/crowdPortrayal/index": "crowdPortrayal",
+                    "/biIndex/index": "indexBI",
+                    "/ottIndex/index": "OTTBigscreenIndex",
+                    "/thirdDMP/index": "thirdPartyDMP",
+                    "/monitor/index": "DeliveryMonitor",
+                    "/portrayal/index": "DeliveryAfterPeopleDraw",
+                    "/dataAnalyze/index": "DeliveryDataAnalyse",
+                    "/thirdInterfaceConf/index": "thirdInterface",
+                    "/devTool/clearCache":"clearCache",
+                    "/webApiServers/index":"ipManage",
+                    "/multiVersionCrowd/index":"multiVersionCrowd",
+                    "/manager/biList":"launchSettings",
+                    "/manager/notice/index":"notice",
+                    "/launchAdmin": "launchTabList",
+                    "/anomaly/index": "anomalyEcharts",
+                    "/myPolicy/index": "myPolicy",
+                    "/groupImageInsight/index": "groupImageInsight",
+                    "/userTagsSearch/index": "userTagsSearch",
+                    "/hitSearch/index": "hitSearch"
+                },
+                activeName: 'first',
+                updateMessage: [],
+                systemMessage: [],
+                messageTypeEnum: {
+                    'first': 1,
+                    'second': 2
+                },
+                unReadMessage: 0,
+                showMoreUpdate: false,
+                showMoreSystem: false
+            };
+        },
+        computed: {
+            isKeepAlive() {
+                const meta = this.$route.meta;
+                return meta && meta.isCache !== false;
+            },
+            // defaultMenu() {
+            //   const mainRoute = this.$router.options.routes.find(item => {
+            //     return item.path === "/";
+            //   });
+            //   function gen({ name, meta = {}, children }) {
+            //     if (!meta.hideInMenu) {
+            //       const currentMenuItem = {
+            //         title: meta.title,
+            //         icon: meta.icon,
+            //         route: name
+            //       };
+            //       if (children) {
+            //         currentMenuItem.children = children.reduce((result, item) => {
+            //           const menuItem = gen(item);
+            //           if (menuItem) {
+            //             result.push(menuItem);
+            //           }
+            //           return result;
+            //         }, []);
+            //       }
+            //       return currentMenuItem;
+            //     }
+            //   }
+            //   const items = gen(mainRoute).children;
+            //   return items;
+            // },
+            initTags() {
+                return this.$appState.$get("tags") || [];
+            }
+        },
+        methods: {
+            getRouter(url){
+                this.$router.push({name:this.routerMap[url]});
+            },
+            handleDropdownCommand(command) {
+                if (command === "logout") {
+                    this.$logout().then(() => {
+                        this.$router.push({ name: "login" });
+                    });
+                }
+            },
+            toggleMenu() {
+                const isCollapseMenu = !this.isCollapseMenu;
+                this.$appState.$set("isCollapseMenu", isCollapseMenu);
+                this.isCollapseMenu = isCollapseMenu;
+            },
+            saveTags() {
+                const tags = this.$refs.tag.tags;
+                this.$appState.$set("tags", tags);
+            },
+            setMetaTitle() {
+                const routes = this.$router.options.routes
+                const findRouteByName = (name, route) => {
+                    if (Array.isArray(route)) {
+                        let length = route.length
+                        while(--length >= 0) {
+                            const found = findRouteByName(name, route[length])
+                            if (found) {
+                                return found
+                            }
+                        }
+                    } else {
+                        if (route.name === name) {
+                            return route
+                        } else if (route.children) {
+                            return findRouteByName(name, route.children)
+                        }
+                    }
+                }
+                const menus = this.$appState.menus
+                const findMenuByUrl = (url, menu) => {
+                    if (Array.isArray(menu)) {
+                        let length =  menu.length
+                        while(--length >= 0) {
+                            const found = findMenuByUrl(url, menu[length])
+                            if (found) {
+                                return found
+                            }
+                        }
+                    } else {
+                        if (menu.url === url) {
+                            return menu
+                        } else if (menu.child) {
+                            return findMenuByUrl(url, menu.child)
+                        }
+                    }
+                }
+                const routerMap = this.routerMap
+                Object.keys(routerMap).forEach((url) => {
+                    const menu = findMenuByUrl(url, menus)
+                    const route = findRouteByName(routerMap[url], routes)
+                    if (route && route.meta && menu) {
+                        route.meta.title = menu.name
+                    }
+
+                })
+            },
+            handleLogoClick() {
+                this.$router.push({
+                    path: '/statisticsHomePage'
+                })
+            },
+            handleClick(tab) {
+                this.getNoticeMessages(this.messageTypeEnum[tab.name])
+            },
+            getNoticeMessages (type) {
+                const noticeType = type
+                this.$service.getNoticeHeaderList({noticeType}).then((data) => {
+                    let interfaceData = data['消息列表']
+                    let statusData = data['消息状态']
+                    this.unReadMessage = data['未读数量']
+                    interfaceData.forEach((item,index)=> {
+                        item.noticeStatus = statusData[index]
+                    })
+                    let dataList = interfaceData
+                    if (type === 1) {
+                        if (dataList.length > 5) {
+                            this.showMoreUpdate = true
+                            // 只取前五条
+                            this.updateMessage = dataList.slice(0, 5)
+                        } else {
+                            this.updateMessage = dataList
+                        }
+                    }
+                    else {
+                        if (dataList.length > 5) {
+                            this.showMoreSystem = true
+                            this.systemMessage = dataList.slice(0, 5)
+                        } else {
+                            this.systemMessage = dataList
+                        }
+                    }
+                })
+            },
+            handleSeeAllMessage () {
+                this.$router.push({name: 'notice'})
+            },
+            handleReadMessage (noticeId) {
+                this.$router.push({
+                    name: 'notice',
+                    query: {noticeId: noticeId, mode: 'read'}
+                })
+            },
+            scrollMenuIntoView () {
+                setTimeout(() => {
+                    const $activeSubMenu = document.querySelector('.el-submenu.is-active')
+                    const $activeMenu = document.querySelector('.el-menu-item.is-active')
+                    if ($activeMenu) {
+                        $activeMenu.scrollIntoViewIfNeeded()
+                    }
+                    if ($activeSubMenu) {
+                        $activeSubMenu.scrollIntoViewIfNeeded()
+                    }
+                }, 1000)
+            }
+            // handleDropDownChange() {
+            //     this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            // }
+        },
+        created() {
+            this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
+            this.$bus.$on("breadcrumb-change", breadcrumb => {
+                this.breadcrumb = breadcrumb
+                this.scrollMenuIntoView()
+            });
+            this.setMetaTitle()
+            this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            this.$root.$on('refresh-notifications', () => {
+                this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+            })
+        },
+        mounted() {
+            window.addEventListener("beforeunload", this.saveTags);
+        },
+        destroyed() {
+            window.removeEventListener("beforeunload", this.saveTags);
+        }
     };
-  },
-  computed: {
-    isKeepAlive() {
-      const meta = this.$route.meta;
-      return meta && meta.isCache !== false;
-    },
-    // defaultMenu() {
-    //   const mainRoute = this.$router.options.routes.find(item => {
-    //     return item.path === "/";
-    //   });
-    //   function gen({ name, meta = {}, children }) {
-    //     if (!meta.hideInMenu) {
-    //       const currentMenuItem = {
-    //         title: meta.title,
-    //         icon: meta.icon,
-    //         route: name
-    //       };
-    //       if (children) {
-    //         currentMenuItem.children = children.reduce((result, item) => {
-    //           const menuItem = gen(item);
-    //           if (menuItem) {
-    //             result.push(menuItem);
-    //           }
-    //           return result;
-    //         }, []);
-    //       }
-    //       return currentMenuItem;
-    //     }
-    //   }
-    //   const items = gen(mainRoute).children;
-    //   return items;
-    // },
-    initTags() {
-      return this.$appState.$get("tags") || [];
-    }
-  },
-  methods: {
-    getRouter(url){
-       this.$router.push({name:this.routerMap[url]});
-    },
-    handleDropdownCommand(command) {
-      if (command === "logout") {
-        this.$logout().then(() => {
-          this.$router.push({ name: "login" });
-        });
-      }
-    },
-    toggleMenu() {
-      const isCollapseMenu = !this.isCollapseMenu;
-      this.$appState.$set("isCollapseMenu", isCollapseMenu);
-      this.isCollapseMenu = isCollapseMenu;
-    },
-    saveTags() {
-      const tags = this.$refs.tag.tags;
-      this.$appState.$set("tags", tags);
-    }
-  },
-  created() {
-    this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
-    this.$bus.$on("breadcrumb-change", breadcrumb => {
-      this.breadcrumb = breadcrumb;
-    });
-  },
-  mounted() {
-    window.addEventListener("beforeunload", this.saveTags);
-  },
-  destroyed() {
-    window.removeEventListener("beforeunload", this.saveTags);
-  }
-};
 </script>
 <style lang="stylus" scoped>
-.header
-  display: flex
-  align-items: center
-  padding: 10px
-  border-left: none
-  background-color white
-.logo
-  text-align: center
-  height: 60px
-  line-height: 60px
-  font-size: 28px
-  background-color: #092035
-  border-right: 1px solid #092035
-  border-bottom: 1px solid #092035
-.logo__img
-  color: #409eff
-  font-size 22px
-  font-weight bolder
-.logo__img i 
-  font-size 28px
-  font-weight bolder
-  margin-right 5px
-.collpase-btn
-  color: #191414
-.collpase-btn i
-  color: #191414
-.collpase-btn
-  &, &:hover, &:focus
+  .header
+    display: flex
+    align-items: center
+    padding: 10px
+    border-left: none
+    background-color white
+  .logo
+    text-align: center
+    font-size: 28px
+    margin 15px
+    background-color: #092035
+    border-right: 1px solid #092035
+    border-bottom: 1px solid #092035
+    cursor pointer
+  .logo__img
+    color: #409eff
+    font-size 22px
+    font-weight bolder
+  .logo__img i
+    font-size 28px
+    font-weight bolder
+    margin-right 5px
+  .collpase-btn
     color: #191414
-.breadcrumb
-  margin-left: 10px
-.user-info
-  margin-left: auto
-.menu
-  background-color: #092035
-.menu:not(.el-menu--collapse)
-  width: 220px
-.leftMenu
-  height 100vh
-  display flex
-  flex-direction column
-  background-color #092035
-.leftMenu >>> .menu
-  flex-grow 1
-  overflow-y auto
-.tagNav
-  overflow: visible
-.layout
-  height: 100%
-.breadcrumb >>> .el-breadcrumb__inner
-  color: #191414
-.user-info
-  cursor: pointer
-.main_menu
-  border-right: none
-  overflow: auto
-  >>> .el-menu
-    background: #17090930
-  >>> span
-    color: #c7bfbf
-  >>> .el-menu-item:hover, >>>.el-menu-item:focus
-    background: transparent
-  >>> .el-menu-item span:hover, >>>.el-menu-item span:focus
-    color: white
-  >>> .el-menu-item.is-active span
-    color: #409EFF
-  >>> .el-submenu__title:hover
-    background: transparent
-    color: hsla(0, 0%, 100%, 0.9)
-.tagNav >>>.el-button-group .el-button:first-child
-   display none
-.user-info >>> .el-dropdown
-   color #191414
-.el-icon-cc-iconset0225,.el-icon-cc-menu1,.el-icon-cc-team,.el-icon-cc-jiaose,.el-icon-cc-xitong
-  font-size 21px
+  .collpase-btn i
+    color: #191414
+  .collpase-btn
+    &, &:hover, &:focus
+      color: #191414
+  .breadcrumb
+    margin-left: 10px
+  .user-info
+    margin-left: auto
+  .menu
+    background-color: #092035
+  .menu:not(.el-menu--collapse)
+    width: 220px
+  .leftMenu
+    height 100vh
+    display flex
+    flex-direction column
+    background-color #092035
+  .leftMenu >>> .menu
+    flex-grow 1
+    overflow-y auto
+  .tagNav
+    overflow: visible
+  .layout
+    height: 100%
+  .breadcrumb >>> .el-breadcrumb__inner
+    color: #191414
+  .user-info
+    cursor: pointer
+  .main_menu
+    border-right: none
+    overflow: auto
+    >>> .el-menu
+      background: #17090930
+    >>> span
+      color: #c7bfbf
+    >>> .el-menu-item:hover, >>>.el-menu-item:focus
+      background: transparent
+    >>> .el-menu-item span:hover, >>>.el-menu-item span:focus
+      color: white
+    >>> .el-menu-item.is-active
+        border-left 2px solid
+        span
+            color: #409EFF
+    >>> .el-submenu__title:hover
+      background: transparent
+      color: hsla(0, 0%, 100%, 0.9)
+  .tagNav
+    padding-right 50px
+    >>> .tag-nav__right
+      right 25px
+    >>> .tag-nav__back
+      display none
+  .user-info >>> .el-dropdown
+    color #191414
+    margin-left 30px
+  .el-icon-cc-iconset0225,.el-icon-cc-menu1,.el-icon-cc-team,.el-icon-cc-jiaose,.el-icon-cc-xitong
+    font-size 21px
+  .version
+    color #ccc
+    font-size 14px
+  .notice-title
+      width 300px
+      margin 5px 10px
+      overflow hidden
+      text-overflow ellipsis
+      white-space nowrap
+      cursor pointer
+  .notice-time
+    color #999
+    font-size 14px
+    margin 0 10px
+  .notice-dropdown >>> .el-tabs__item
+    width 160px
+    text-align center
+  .notice-dropdown >>> .red-dot-title
+    position relative
+    padding-left 12px
+    &:before
+      position absolute
+      width 8px
+      height 8px
+      border-radius 10px
+      content ""
+      background-color red
+      left 0
+      top 7px
+  .see-more
+      text-align center
+      color #999
+      font-size 14px
+      margin 15px 0
+      cursor pointer
 </style>

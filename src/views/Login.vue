@@ -1,5 +1,5 @@
 <template>
-<div id="login">  
+<div id="login">
   <el-row class="login-content">
     <el-col :span="6" :offset="9" class="login-form">
       <div class="login-logo"></div>
@@ -49,7 +49,7 @@ export default {
         if (err.length === 0) {
             this.$login(this.user).then(() => {
                 this.$router.push({
-                    path: this.$route.query.redirect || '/'
+                    path: this.$route.query.redirect || '/statisticsHomePage'
                 })
             })
         }
@@ -77,13 +77,13 @@ export default {
    color #fff
    text-align center
    margin 10px
-.login-form >>> .el-input--small .el-input__inner 
+.login-form >>> .el-input--small .el-input__inner
     height 40px
     line-height 32px
 .login-logo
   background url(../assets/img/coocaa_logo.png) no-repeat center
   background-size 60%
   height 30px
-  
+
 
 </style>
