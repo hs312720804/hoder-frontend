@@ -111,4 +111,19 @@ export function copyLabelSingle(params) {
         params
     })
 }
-
+// 标签收藏
+export function collectTags(data) {
+    return this.fetch({
+        method: 'post',
+        url: 'api/collect/label',
+        data
+    })
+}
+// 标签取消收藏
+export function cancelCollectTags(data) {
+    return this.fetch({
+        method: 'delete',
+        url: 'api/collect/label',
+        data
+    })
+}

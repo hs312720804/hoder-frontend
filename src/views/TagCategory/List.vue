@@ -28,7 +28,7 @@
             </el-form>
         </el-header>
 
-        <el-main>
+        <el-main class="tag-table">
             <el-table border :data="tagCategoryList" >
                 <el-table-column prop="tagId" label="ID" width="100">
                 </el-table-column>
@@ -85,7 +85,9 @@
                         >
                             复制
                         </el-button>
-                         </el-button-group>
+                        <div :class="scope.row.myCollect ? 'el-icon-cc-star-fill': 'el-icon-cc-star'" @click="handleCollect(scope.row)"></div>
+                        <!--<div v-else class="el-icon-cc-star"></div>-->
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
@@ -232,6 +234,21 @@ export default {
             //     this.pagination = pagination
             // })
         },
+        handleCollect (currentTag) {
+            const flag = currentTag.myCollect
+            const tagId = currentTag.tagId
+            if (flag) {
+            //    取消收藏
+                this.$service.cancelCollectTags({tagId},'已取消收藏！').then(() => {
+                    this.fetchData()
+                })
+            } else {
+            //    收藏
+                this.$service.collectTags({tagId},'已成功收藏！').then(() => {
+                    this.fetchData()
+                })
+            }
+        }
     },
     created() {
         this.fetchData()
@@ -247,4 +264,12 @@ export default {
 .tag-category-read__header >>> .el-form
     margin-top 15px
     float right
+.tag-table >>> .el-icon-cc-star-fill
+    color #E6A13C
+    font-size 24px
+.tag-table >>> .el-icon-cc-star
+    font-size 24px
+.tag-table >>> .el-button-group
+    display flex
+    align-items center
 </style>
