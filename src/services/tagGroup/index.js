@@ -123,7 +123,6 @@ export function collectTags(data) {
 export function cancelCollectTags(data) {
     return this.fetch({
         method: 'delete',
-        url: 'api/collect/label',
-        data
+        url: 'api/collect/label?'+'tagId='+data.tagId
     })
 }
