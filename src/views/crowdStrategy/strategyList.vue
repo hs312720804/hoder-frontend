@@ -127,15 +127,15 @@
                         :command="['detail',scope.row]"
                 >查看配置</el-dropdown-item>
                 <el-dropdown-item
-                        v-if="scope.row.myCollect === false"
+                        v-if="!scope.row.myCollect"
                         :command="['collect',scope.row]"
                 >添加到'我的'</el-dropdown-item>
                 <el-dropdown-item
-                        v-if="scope.row.myCollect === true && !parentSource"
+                        v-if="scope.row.myCollect && !parentSource"
                         disabled
                 >添加到'我的'</el-dropdown-item>
                 <el-dropdown-item
-                        v-if="scope.row.myCollect === true && parentSource"
+                        v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
                         :command="['collect',scope.row]"
                 >从'我的'删除</el-dropdown-item>
               </el-dropdown-menu>
@@ -617,6 +617,7 @@ export default {
     // },
     // 从服务器读取数据
     loadData () {
+        console.log(this.$appState)
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
           if(this.historyFilter != null) {

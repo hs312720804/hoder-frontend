@@ -165,15 +165,15 @@
                                 >提交历史数据
                                 </el-dropdown-item>
                                 <el-dropdown-item
-                                        v-if="scope.row.myCollect === false"
+                                        v-if="!scope.row.myCollect"
                                         :command="['collect',scope.row]"
                                 >添加到'我的'</el-dropdown-item>
                                 <el-dropdown-item
-                                        v-if="scope.row.myCollect === true && !parentSource"
+                                        v-if="scope.row.myCollect && !parentSource"
                                         disabled
                                 >添加到'我的'</el-dropdown-item>
                                 <el-dropdown-item
-                                        v-if="scope.row.myCollect === true && parentSource"
+                                        v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
                                         :command="['collect',scope.row]"
                                 >从'我的'删除</el-dropdown-item>
                             </el-dropdown-menu>
