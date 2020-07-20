@@ -319,3 +319,18 @@ export function getVideoSourceList(params) {
         params
     })
 }
+// 人群圈定push 收藏
+export function collectPush(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/collect/multiVersionCrowd',
+        data
+    })
+}
+// 人群圈定push 取消收藏
+export function removeCollectPush(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/collect/multiVersionCrowd?launchCrowdId='+params.launchCrowdId
+    })
+}

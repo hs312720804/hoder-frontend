@@ -151,13 +151,11 @@
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
                                         v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                                        divided
                                 >删除
                                 </el-dropdown-item>
                                 <el-dropdown-item
                                         :command="['divide',scope.row]"
                                         v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && (launchStatusEnum[scope.row.history.status]).code === 1"
-                                        divided
                                 >AB实验
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -166,6 +164,18 @@
                                 divided
                                 >提交历史数据
                                 </el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="scope.row.myCollect === false"
+                                        :command="['collect',scope.row]"
+                                >添加到'我的'</el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="scope.row.myCollect === true && !parentSource"
+                                        disabled
+                                >添加到'我的'</el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="scope.row.myCollect === true && parentSource"
+                                        :command="['collect',scope.row]"
+                                >从'我的'删除</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                         <el-button
@@ -453,7 +463,7 @@
                     })
             },
             // 从服务器读取数据
-            loadData: function() {
+            loadData () {
                 this.criteria["pageNum"] = this.currentPage
                 this.criteria["pageSize"] = this.pageSize
                 if(this.parentSource) {
@@ -574,6 +584,8 @@
                         break
                     case 'commitHistory':
                         this.handleCommitHistory(params)
+                    case 'collect':
+                        this.handlePushCollect(params)
                         break
                 }
             },
@@ -670,6 +682,19 @@
                 this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
                     this.launchDetailFormData = data
                 })
+            },
+            handlePushCollect (row) {
+                const collectFlag = row.myCollect
+                const launchCrowdId = row.launchCrowdId
+                if (collectFlag) {
+                    this.$service.removeCollectPush({launchCrowdId},'成功取消收藏此圈定人群！').then(() => {
+                        this.loadData()
+                    })
+                } else {
+                    this.$service.collectPush({launchCrowdId},'成功收藏圈定人群！').then(() => {
+                        this.loadData()
+                    })
+                }
             }
         }
     }

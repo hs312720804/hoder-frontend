@@ -131,7 +131,11 @@
                         :command="['collect',scope.row]"
                 >添加到'我的'</el-dropdown-item>
                 <el-dropdown-item
-                        v-if="scope.row.myCollect === true"
+                        v-if="scope.row.myCollect === true && !parentSource"
+                        disabled
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect === true && parentSource"
                         :command="['collect',scope.row]"
                 >从'我的'删除</el-dropdown-item>
               </el-dropdown-menu>
