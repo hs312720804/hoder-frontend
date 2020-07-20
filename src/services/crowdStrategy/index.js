@@ -548,3 +548,18 @@ export function getRedirectCrowdAdd({policyId,params}) {
         params
     })
 }
+// 人群收藏
+export function collectPolicy(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/collect/policy',
+        data
+    })
+}
+// 人群删除收藏
+export function removeCollectPolicy(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/collect/policy?policyId='+params.policyId
+    })
+}

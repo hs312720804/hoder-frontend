@@ -126,6 +126,14 @@
                 <el-dropdown-item
                         :command="['detail',scope.row]"
                 >查看配置</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect === false"
+                        :command="['collect',scope.row]"
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect === true"
+                        :command="['collect',scope.row]"
+                >从'我的'删除</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <el-dropdown @command="handleCommandStastic" >
@@ -604,7 +612,7 @@ export default {
     //     }
     // },
     // 从服务器读取数据
-    loadData: function() {
+    loadData () {
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
           if(this.historyFilter != null) {
@@ -712,9 +720,15 @@ export default {
     handleCommand(scope) {
         const type = scope[0]
         const params = scope[1]
-        if (type === 'edit') {this.handleEdit(params)}
-        else if (type === 'del') {this.del(params)}
-        else if (type === 'detail') {this.seeDevDetail(params)}
+        if (type === 'edit') {
+            this.handleEdit(params)
+        } else if (type === 'del') {
+            this.del(params)
+        } else if (type === 'detail') {
+            this.seeDevDetail(params)
+        } else if (type === 'collect') {
+            this.handlePolicyCollect(params)
+        }
     },
       // 通用多线性参数设置
       setLinesEchart (element,title,xData,yData,legend) {
@@ -881,6 +895,19 @@ export default {
     },
     handleCloseDialog () {
         this.showLaunchToBusiness = false
+    },
+    handlePolicyCollect (row) {
+        const collectFlag = row.myCollect
+        const policyId = row.policyId
+        if (collectFlag) {
+            this.$service.removeCollectPolicy({policyId},'成功取消收藏此策略！').then(() => {
+                this.loadData()
+            })
+        } else {
+            this.$service.collectPolicy({policyId},'成功收藏此策略！').then(() => {
+                this.loadData()
+            })
+        }
     }
   }
 }
