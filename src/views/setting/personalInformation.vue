@@ -36,7 +36,7 @@ export default {
                 id:''
 
             }
-            
+
         }
     },
     methods: {
@@ -47,14 +47,12 @@ export default {
             const mobile = this.personalInformation.mobile;
             const email = this.personalInformation.email;
             const id = this.personalInformation.id
-            this.$service.updateUserInformation({id:id,loginName:loginName,officeName:officeName,name:name,mobile:mobile,email:email},"修改成功").then((data)=>{
-            })
+            this.$service.updateUserInformation({
+                id:id,loginName:loginName,officeName:officeName,name:name,mobile:mobile,email:email},"修改成功")
         }
     },
     created () {
         this.$service.get_user_json().then((data)=>{
-            console.log("yonghuxinxi=====");
-            console.log(data);
             this.personalInformation=data.user;
             this.personalInformation.id = data.user.id;
         })

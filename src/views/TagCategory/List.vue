@@ -7,7 +7,7 @@
                     class="popover-button"
             >
                 <div>
-                    <el-checkbox-group v-model="checkList">
+                    <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                         <el-checkbox label="tagKey">标签code</el-checkbox>
                         <el-checkbox label="tagValues">示例值</el-checkbox>
                         <el-checkbox label="defineRemark">标签定义</el-checkbox>
@@ -218,6 +218,11 @@ export default {
             })
         },
         fetchData() {
+            this.$service.getListDimension({type: 4}).then(data => {
+                if (data) {
+                    this.checkList = data.behaviorShow.split(',')
+                }
+            })
             this.filterAll = this.getFilter()
             this.$service.getTagGroupTreeList(this.filterAll).then((data) => {
                 this.tagCategoryList = data.pageInfo.list
@@ -248,6 +253,9 @@ export default {
                     this.fetchData()
                 })
             }
+        },
+        handleCheckListChange (val) {
+            this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
         }
     },
     created() {

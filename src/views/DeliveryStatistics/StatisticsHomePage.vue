@@ -515,7 +515,6 @@
                         // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
                         return {value: key.count, name: key.name}
                     })
-                    console.log(newProvinceData)
                     this.setMapEcharts('main','省份分布',newProvinceData)
                     this.cityData = data.cityPercent
                     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})

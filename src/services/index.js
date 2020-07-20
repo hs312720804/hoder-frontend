@@ -27,6 +27,7 @@ import * as crowdStatistic from './statisticCrowd/crowdStatistic'
 import * as anomaly from './launch/anomaly'
 import * as devicePortrait from './GroupImageInsight/devicePortrait'
 import * as userTagsSearch from './launch/useTagsSearch'
+import * as listDimension from './listDimension'
 const service = {
     state: {},
     fetch,
@@ -56,6 +57,7 @@ const service = {
     ...crowdStatistic,
     ...anomaly,
     ...devicePortrait,
-    ...userTagsSearch
+    ...userTagsSearch,
+    ...listDimension
 }
 Vue.prototype.$service = utils.wrapService(service)

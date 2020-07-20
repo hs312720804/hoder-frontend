@@ -26,7 +26,7 @@
                             class="popover-button"
                     >
                         <div>
-                            <el-checkbox-group v-model="checkList">
+                            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                                 <el-checkbox label="createTime">创建时间</el-checkbox>
                                 <el-checkbox label="creatorName">创建人</el-checkbox>
                                 <el-checkbox label="status">投放状态</el-checkbox>
@@ -469,6 +469,11 @@
             },
             // 从服务器读取数据
             loadData () {
+                this.$service.getListDimension({type: 3}).then(data => {
+                    if (data) {
+                        this.checkList = data.behaviorShow.split(',')
+                    }
+                })
                 this.criteria["pageNum"] = this.currentPage
                 this.criteria["pageSize"] = this.pageSize
                 if(this.parentSource) {
@@ -589,6 +594,7 @@
                         break
                     case 'commitHistory':
                         this.handleCommitHistory(params)
+                        break
                     case 'collect':
                         this.handlePushCollect(params)
                         break
@@ -700,6 +706,9 @@
                         this.loadData()
                     })
                 }
+            },
+            handleCheckListChange (val) {
+                this.$service.saveListDimension({type: 3,behaviorShow: val.join(',')})
             }
         }
     }

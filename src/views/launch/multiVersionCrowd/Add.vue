@@ -98,7 +98,7 @@
                             </div>
                        <el-form-item label="Mac数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="" prop="macInitialValue" class="inline-block  base-line">
-                               <cc-input-thousands-int 
+                               <cc-input-thousands-int
                                  v-model="crowdDefineForm.macInitialValue"
                                  ref="inputThousandsInt"
                                  >
@@ -115,7 +115,7 @@
                         </el-form-item>
                          <el-form-item label="微信数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="" prop="wxInitialValue" class="inline-block  base-line">
-                               <cc-input-thousands-int 
+                               <cc-input-thousands-int
                                  v-model="crowdDefineForm.wxInitialValue"
                                  >
                                </cc-input-thousands-int>
@@ -125,7 +125,7 @@
                             </el-form-item>&nbsp;&nbsp;%，则告警
                              <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
                                 <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
-                              
+
                             </el-form-item>&nbsp;&nbsp;%，则告警
                               <span>请至少填写一组基准和环比阀值</span>
                         </el-form-item>
@@ -311,8 +311,6 @@
     </div>
 </template>
 <script>
-    // import _ from "lodash"
-    import _ from "lodash"
     import CcInputThousandsInt from '@/components/CcInputThousandsInt'
     export default {
         components: {
@@ -640,12 +638,12 @@
             },
             // 新增
             addSubmit () {
-                if (this.model == 1) 
-                 { 
-                   this.saveDefineCrowd() 
+                if (this.model == 1)
+                 {
+                   this.saveDefineCrowd()
                 }
-                else 
-                { 
+                else
+                {
                   this.saveNormalCrowd()
                 }
 
@@ -718,7 +716,6 @@
                           })
                           return
                         }
-                        debugger
                         if (macCondition) {
                           if ((wxInitialValue !== undefined && wxInitialValue !== '')) {
                              if (wxBelowPer === undefined || wxBelowPer === '') {
@@ -860,7 +857,7 @@
         top 30px
   .base-line
     width 180px
-  .ratio 
+  .ratio
     width 230px
 </style>
 
