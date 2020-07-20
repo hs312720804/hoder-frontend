@@ -617,7 +617,6 @@ export default {
     // },
     // 从服务器读取数据
     loadData () {
-        console.log(this.$appState)
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
           if(this.historyFilter != null) {
