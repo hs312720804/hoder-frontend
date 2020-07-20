@@ -147,6 +147,11 @@
                                         v-permission="'hoder:launch:crowd:ver:modify'"
                                 >编辑
                                 </el-dropdown-item>
+                                 <el-dropdown-item
+                                        :command="['edit',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:modify'"
+                                >调整波动阀值
+                                </el-dropdown-item>
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"

@@ -21,7 +21,7 @@
                 editLaunchCrowdId:null, //编辑的ID
                 addModel: 0,
                 editStatus: null
-            };
+            }
         },
         props: ["parentSource"],
         components: {
@@ -45,6 +45,6 @@
                 this.isShowList=true
             }
         }
-    };
+    }
 </script>
 

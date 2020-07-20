@@ -50,27 +50,12 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
                                 <el-radio :label="false">否</el-radio>
                                 <el-radio :label="true">是</el-radio>
                             </el-radio-group>
-                        </el-form-item>
-                        <el-form-item label="每天是否更新" prop="autoVersion">
-                            <el-select
-                                    v-model="crowdDefineForm.autoVersion"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            >
-                                <el-option label="是" :value="1"></el-option>
-                                <el-option label="否" :value="0"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-time-picker
-                                    v-model="crowdDefineForm.autoLaunchTime"
-                                    value-format="HH:mm:ss"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            ></el-time-picker>
                         </el-form-item>
                         <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
                             <el-select
@@ -88,7 +73,71 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="人群数量上限" v-if="crowdDefineForm.autoVersion === 1">
+                        </div>
+                            <div class="horizontal-line">
+                        <el-form-item label="每天是否更新" prop="autoVersion">
+                           <el-radio-group v-model="crowdDefineForm.autoVersion"  :disabled="status!==undefined && (status === 2 || status === 3)">
+                                <el-radio :label="0">否</el-radio>
+                                <el-radio :label="1">是</el-radio>
+                            </el-radio-group>
+                            <!-- <el-select
+                                    v-model="crowdDefineForm.autoVersion"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
+                                <el-option label="是" :value="1"></el-option>
+                                <el-option label="否" :value="0"></el-option>
+                            </el-select> -->
+                        </el-form-item>
+                        <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-time-picker
+                                    v-model="crowdDefineForm.autoLaunchTime"
+                                    value-format="HH:mm:ss"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            ></el-time-picker>
+                        </el-form-item>
+                            </div>
+                       <el-form-item label="Mac数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="" prop="macInitialValue" class="inline-block  base-line">
+                               <cc-input-thousands-int 
+                                 v-model="crowdDefineForm.macInitialValue"
+                                 ref="inputThousandsInt"
+                                 >
+                               </cc-input-thousands-int>
+                               <!-- <el-input-number v-model="crowdDefineForm.macInitialValue" :precision="0"  :min="1"></el-input-number> -->
+                            </el-form-item>
+                            <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
+                               <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1"></el-input-number>
+                            </el-form-item>&nbsp;&nbsp;%，则告警
+                             <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
+                               <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                            </el-form-item>&nbsp;&nbsp;%，则告警
+                             <span>请至少填写一组基准和环比阀值</span>
+                        </el-form-item>
+                         <el-form-item label="微信数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="" prop="wxInitialValue" class="inline-block  base-line">
+                               <cc-input-thousands-int 
+                                 v-model="crowdDefineForm.wxInitialValue"
+                                 >
+                               </cc-input-thousands-int>
+                            </el-form-item>
+                            <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
+                                <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1"></el-input-number>
+                            </el-form-item>&nbsp;&nbsp;%，则告警
+                             <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
+                                <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                              
+                            </el-form-item>&nbsp;&nbsp;%，则告警
+                              <span>请至少填写一组基准和环比阀值</span>
+                        </el-form-item>
+                        <!-- <el-form-item label="微信数量" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="mac数量不少于" prop="minMacEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minMacEstimateCount" type="number" placeholder="请输入mac数量的最小值"></el-input>
+                            </el-form-item>
+                            <el-form-item label="微信数量不少于" prop="minWxEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minWxEstimateCount" type="number" placeholder="请输入微信数量的最小值"></el-input>
+                            </el-form-item>
+                        </el-form-item> -->
+                        <!-- <el-form-item label="人群数量上限" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="mac数量不超过" prop="maxMacEstimateCount" class="inline-block">
                                 <el-input v-model="crowdDefineForm.maxMacEstimateCount" type="number" placeholder="请输入mac数量的最大值"></el-input>
                             </el-form-item>
@@ -103,7 +152,7 @@
                             <el-form-item label="微信数量不少于" prop="minWxEstimateCount" class="inline-block">
                                 <el-input v-model="crowdDefineForm.minWxEstimateCount" type="number" placeholder="请输入微信数量的最小值"></el-input>
                             </el-form-item>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="数据类型" prop="calType">
                             <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
@@ -263,7 +312,12 @@
 </template>
 <script>
     // import _ from "lodash"
+    import _ from "lodash"
+    import CcInputThousandsInt from '@/components/CcInputThousandsInt'
     export default {
+        components: {
+          CcInputThousandsInt
+        },
         data() {
             // 正整数数字校验
             const reg = /^[1-9][0-9]{0,7}$/
@@ -365,10 +419,16 @@
                     tagId: undefined,
                     abTest: undefined,
                     ratios: undefined,
-                    minMacEstimateCount: undefined,
-                    maxMacEstimateCount: undefined,
-                    minWxEstimateCount: undefined,
-                    maxWxEstimateCount: undefined,
+                    macInitialValue: undefined, //Mac基准值
+                    macAbovePer: undefined, //Mac最大阈值
+                    macBelowPer: 5.00, //Mac最小阈值
+                    wxInitialValue: undefined, //微信基准值
+                    wxAbovePer: undefined, //微信最大阈值
+                    wxBelowPer: undefined, //微信最小阈值
+                    // minMacEstimateCount: undefined,
+                    // maxMacEstimateCount: undefined,
+                    // minWxEstimateCount: undefined,
+                    // maxWxEstimateCount: undefined,
                     videoSource: '0',
                     videoSourceIds: []
                 },
@@ -475,6 +535,7 @@
                     if (this.model == 1) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
+                            let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
                             this.crowdDefineForm = {
                                 launchCrowdId: row.launchCrowdId,
                                 launchName: row.launchName,
@@ -488,10 +549,16 @@
                                 tagId: row.tagId,
                                 abTest: row.abTest,
                                 ratios: abTestRatio,
-                                minMacEstimateCount: row.minMacEstimateCount,
-                                maxMacEstimateCount: row.maxMacEstimateCount,
-                                minWxEstimateCount: row.minWxEstimateCount,
-                                maxWxEstimateCount: row.maxWxEstimateCount,
+                                macInitialValue: macInitialValue === null ? undefined : macInitialValue, //Mac基准值
+                                macAbovePer: macAbovePer === null ? undefined : macAbovePer, //Mac最大阈值
+                                macBelowPer: macBelowPer === null ? undefined : macBelowPer, //Mac最小阈值
+                                wxInitialValue: wxInitialValue === null ? undefined : wxInitialValue, //微信基准值
+                                wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, //微信最大阈值
+                                wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, //微信最小阈值
+                                // minMacEstimateCount: row.minMacEstimateCount,
+                                // maxMacEstimateCount: row.maxMacEstimateCount,
+                                // minWxEstimateCount: row.minWxEstimateCount,
+                                // maxWxEstimateCount: row.maxWxEstimateCount,
                                 videoSource: row.videoSource === null ? '0' : '1',
                                 videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(",")
                             }
@@ -573,8 +640,14 @@
             },
             // 新增
             addSubmit () {
-                if (this.model == 1) {this.saveDefineCrowd()}
-                else {this.saveNormalCrowd()}
+                if (this.model == 1) 
+                 { 
+                   this.saveDefineCrowd() 
+                }
+                else 
+                { 
+                  this.saveNormalCrowd()
+                }
 
             },
             saveNormalCrowd () {
@@ -630,6 +703,61 @@
                                 oldRatio[key] = this.percent[index]
                             })
                             crowdForm.ratios = oldRatio
+                        }
+                        let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
+                        macInitialValue = macInitialValue && macInitialValue.replace(/,/, '')
+                        wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/, '')
+                        crowdForm.macInitialValue = macInitialValue
+                        crowdForm.wxInitialValue = wxInitialValue
+                        const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
+                        const wxCondition = wxInitialValue !== undefined && wxInitialValue !== '' && wxBelowPer !== undefined && wxBelowPer !== ''
+                        if (!(macCondition || wxCondition)) {
+                          this.$message({
+                            type: 'error',
+                            message: '请至少填写一组基准和环比阀值'
+                          })
+                          return
+                        }
+                        debugger
+                        if (macCondition) {
+                          if ((wxInitialValue !== undefined && wxInitialValue !== '')) {
+                             if (wxBelowPer === undefined || wxBelowPer === '') {
+                                this.$message({
+                                type: 'error',
+                                message: '请把微信数量环比低于这个选项填写完整'
+                              })
+                              return
+                             }
+                          }
+                          if ((wxBelowPer !== undefined && wxBelowPer !== '')) {
+                             if (wxInitialValue === undefined || wxInitialValue === '') {
+                                this.$message({
+                                type: 'error',
+                                message: '请把微信数量基准这个选项填写完整'
+                              })
+                              return
+                             }
+                          }
+                        }
+                        if (wxCondition) {
+                          if ((macInitialValue !== undefined && macInitialValue !== '')) {
+                             if (macBelowPer === undefined || macBelowPer === '') {
+                                this.$message({
+                                type: 'error',
+                                message: '请把Mac数量环比低于这个选项填写完整'
+                              })
+                              return
+                             }
+                          }
+                          if ((macBelowPer !== undefined && macBelowPer !== '')) {
+                             if (macInitialValue === undefined || macInitialValue === '') {
+                                this.$message({
+                                type: 'error',
+                                message: '请把Mac数量基准这个选项填写完整'
+                              })
+                              return
+                             }
+                          }
                         }
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
@@ -706,24 +834,34 @@
     }
 </script>
 <style lang="stylus" scoped>
-    .multipleSelect
-        >>>.el-select
-            width: 100%
-    .add
-        border: 1px solid #ebeef5
-        padding: 20px
-        border-radius: 4px
-    .title
-        font-size: 18px
-        margin-bottom: 30px
-    .footer
-        display: flex
-        justify-content: flex-end
-    .select-tag
-        width 30%
-    .inline-block
-        display inline-block
-        width 30%
+  .horizontal-line
+    display flex
+  .multipleSelect
+      >>>.el-select
+          width: 100%
+  .add
+      border: 1px solid #ebeef5
+      padding: 20px
+      border-radius: 4px
+  .title
+      font-size: 18px
+      margin-bottom: 30px
+  .footer
+      display: flex
+      justify-content: flex-end
+  .inline-block
+      display inline-block
+  .one-line
+      position relative
+      span
+        color #c3bcbc
+        position absolute
+        left 0px
+        top 30px
+  .base-line
+    width 180px
+  .ratio 
+    width 230px
 </style>
 
 
