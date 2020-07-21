@@ -813,13 +813,14 @@
                this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
                  // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
                  this.monitorTab = data.mac ? 'mac' : 'wx'
-
-                 if (data.mac) {
-                   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
-                 }
-                 if (data.wx) {
-                   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
-                 }
+                 this.chartMonitorMacData = data.mac ? this.setMonitorFormart(data.mac) : undefined
+                 this.chartMonitorWxData = data.wx ? this.setMonitorFormart(data.wx) : undefined
+                 // if (data.mac) {
+                 //   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
+                 // }
+                 // if (data.wx) {
+                 //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
+                 // }
                })
             },
             divideAB (row) {
