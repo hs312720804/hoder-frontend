@@ -83,7 +83,12 @@
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
                 <template slot-scope="scope">
-                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)">{{(launchStatusEnum[scope.row.history.status]).name}}</span>
+                    <!-- 当投放中，人群波动，要显示红色-->
+                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
+                          :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
+                    >
+                        {{(launchStatusEnum[scope.row.history.status]).name}}
+                    </span>
                     <span v-else>
                           <el-tooltip placement="right-start">
                             <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
@@ -148,7 +153,7 @@
                                 >编辑
                                 </el-dropdown-item>
                                  <el-dropdown-item
-                                        v-if="scope.row.isFxFullSql === 1"
+                                        v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
                                         :command="['adjust',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
@@ -741,7 +746,7 @@
                 this.adjustDialog = false
               })
             },
-            /** 
+            /**
              * 千分位格式化
             */
             format_number(n) {
@@ -757,12 +762,12 @@
                this.$service.fluctuation({ launchCrowdId: row.launchCrowdId}).then((data) => {
                  const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
                  this.crowdDefineForm = {
-                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue), 
-                   macAbovePer: macAbovePer === null ? undefined : macAbovePer, 
-                   macBelowPer: macBelowPer === null ? undefined : macBelowPer, 
-                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue), 
-                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, 
-                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, 
+                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue),
+                   macAbovePer: macAbovePer === null ? undefined : macAbovePer,
+                   macBelowPer: macBelowPer === null ? undefined : macBelowPer,
+                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue),
+                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer,
+                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer,
                  }
                  this.adjustChartdata = {
                    columns: ['日期', 'mac数量波动', '微信数量波动']
@@ -806,9 +811,9 @@
                const startDate = monitorRangeTime[0]
                const endDate = monitorRangeTime[1]
                this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
-                 const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+                 // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
                  this.monitorTab = data.mac ? 'mac' : 'wx'
-                 
+
                  if (data.mac) {
                    this.chartMonitorMacData = this.setMonitorFormart(data.mac)
                  }
@@ -942,7 +947,7 @@
           top 30px
     .base-line
       width 150px
-    .ratio 
+    .ratio
       width 130px
     .monitor-time
       margin-bottom 30px
