@@ -106,7 +106,7 @@
                                <!-- <el-input-number v-model="crowdDefineForm.macInitialValue" :precision="0"  :min="1"></el-input-number> -->
                             </el-form-item>
                             <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
-                               <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1"></el-input-number>
+                               <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1" :max="100"></el-input-number>
                             </el-form-item>&nbsp;&nbsp;%，则告警
                              <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
                                <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
@@ -121,7 +121,7 @@
                                </cc-input-thousands-int>
                             </el-form-item>
                             <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
-                                <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1"></el-input-number>
+                                <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1" :max="100"></el-input-number>
                             </el-form-item>&nbsp;&nbsp;%，则告警
                              <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
                                 <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
@@ -703,8 +703,9 @@
                             crowdForm.ratios = oldRatio
                         }
                         let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
-                        macInitialValue = macInitialValue && macInitialValue.replace(/,/, '')
-                        wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/, '')
+                        macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
+                        wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+                        debugger
                         crowdForm.macInitialValue = macInitialValue
                         crowdForm.wxInitialValue = wxInitialValue
                         const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
