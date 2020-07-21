@@ -353,7 +353,7 @@
           <ve-histogram v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量']}" :data="chartMonitorMacData"></ve-histogram>
           <ve-histogram v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId']}" :data="chartMonitorWxData"></ve-histogram>
         </el-dialog>
-        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" width="80%">
+        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1050px' : '80%'">
             <ve-line :data="adjustChartdata"></ve-line>
             <el-form :inline="true">
             <el-row>
@@ -449,6 +449,7 @@
                 searchForm: {
                     launchName: ""
                 },
+                screenWidth: undefined,
                 crowdDefineForm: {
                     macInitialValue: undefined, //Mac基准值
                     macAbovePer: undefined, //Mac最大阈值
@@ -522,6 +523,7 @@
         },
         props: ["parentSource"],
         created() {
+            this.screenWidth = window.screen.width
             this.loadData();
             this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
         },
@@ -735,7 +737,7 @@
               crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.replace(/,/g, '') : undefined
               crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.replace(/,/g, '') : undefined
               this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
-                this.adjustDialog = fasle
+                this.adjustDialog = false
               })
             },
             /** 
