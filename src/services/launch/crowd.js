@@ -334,3 +334,27 @@ export function removeCollectPush(params) {
         url: '/api/collect/multiVersionCrowd?launchCrowdId='+params.launchCrowdId
     })
 }
+// 人群管理-人群圈定投放-数据监控
+export function dataMonitor(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/historyResult',
+      params
+  })
+}
+// 人群管理-人群圈定投放-调整波动阈值
+export function fluctuation(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/fluctuation',
+      params
+  })
+}
+// 人群管理-人群圈定投放-调整波动阈值-确定调整
+export function fluctuationLaunch(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/fluctuationLaunch',
+      params
+  })
+}

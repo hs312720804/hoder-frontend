@@ -1,6 +1,4 @@
 <template>
-<div>
-
   <el-input
     ref="input"
     type="text"
@@ -24,7 +22,6 @@
       {{append}}
     </span>
   </el-input>
-  </div>
 </template>
 
 <script>

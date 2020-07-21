@@ -148,9 +148,15 @@
                                 >编辑
                                 </el-dropdown-item>
                                  <el-dropdown-item
-                                        :command="['edit',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:modify'"
+                                        v-if="scope.row.isFxFullSql === 1"
+                                        :command="['adjust',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
+                                </el-dropdown-item>
+                                <el-dropdown-item
+                                        :command="['monitor',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                >数据监控
                                 </el-dropdown-item>
                                 <el-dropdown-item
                                         :command="['del',scope.row]"
@@ -330,6 +336,100 @@
                 <el-form-item label="所属标签分类：">{{launchDetailFormData.tempTag || '暂无数据'}}</el-form-item>
             </el-form>
         </el-dialog>
+        <el-dialog title="数据监控" :visible.sync="monitorDialog">
+            <el-date-picker
+                v-model="monitorRangeTime"
+              type="daterange"
+              align="right"
+              @change="getDataMonitor"
+              class="monitor-time"
+            ></el-date-picker>
+            <div class="monitor-legend" v-if="isShowMonitorTab">
+            <el-radio-group v-model="monitorTab">
+              <el-radio-button label="mac" >设备数量</el-radio-button>
+              <el-radio-button label="wx" >wxopenId</el-radio-button>
+          </el-radio-group>
+          </div>
+          <ve-histogram v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量']}" :data="chartMonitorMacData"></ve-histogram>
+          <ve-histogram v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId']}" :data="chartMonitorWxData"></ve-histogram>
+        </el-dialog>
+        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" width="80%">
+            <ve-line :data="adjustChartdata"></ve-line>
+            <el-form :inline="true">
+            <el-row>
+             <el-col :span="7">
+               <el-form-item label="Mac数量基准" prop="macInitialValue">
+                      <el-input v-model="crowdDefineForm.macInitialValue" :disabled="true"></el-input>
+                  </el-form-item>
+             </el-col>
+             <el-col :span="8">
+                <el-row>
+                   <el-col :span="18">
+               <el-form-item label="环比低于" label-width="100px" prop="macBelowPer">
+                      <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1"></el-input-number>
+                  </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+             </el-col>
+              <el-col :span="8">
+                <el-row>
+                   <el-col :span="18">
+                 <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer">
+                      <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                  </el-form-item>
+                  </el-col>
+                    <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+               <el-col :span="7">
+                 <el-form-item label="微信数量基准" prop="wxInitialValue">
+                   <el-input v-model="crowdDefineForm.wxInitialValue" :disabled="true"></el-input>
+                  </el-form-item>
+               </el-col>
+               <el-col :span="8">
+                 <el-row>
+                   <el-col :span="18">
+                 <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer">
+                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1"></el-input-number>
+                  </el-form-item>
+                   </el-col>
+                   <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+               </el-col>
+               <el-col :span="8">
+                 <el-row>
+                   <el-col :span="18">
+                  <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer">
+                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                  </el-form-item>
+                     </el-col>
+                  <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+               </el-col>
+            </el-row>
+            <el-row justify="end">
+               <el-col :span="4" :offset="20">
+               <el-button @click="adjustDialog=false">取消</el-button>
+               <el-button type="primary" @click="handleFluctuationLaunch">确定调整</el-button>
+               </el-col>
+            </el-row>
+             </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -349,6 +449,14 @@
                 searchForm: {
                     launchName: ""
                 },
+                crowdDefineForm: {
+                    macInitialValue: undefined, //Mac基准值
+                    macAbovePer: undefined, //Mac最大阈值
+                    macBelowPer: undefined, //Mac最小阈值
+                    wxInitialValue: undefined, //微信基准值
+                    wxAbovePer: undefined, //微信最大阈值
+                    wxBelowPer: undefined, //微信最小阈值
+                },
                 // 编辑页
                 // editFormVisible: false,// 编辑界面是否显示
                 // 默认每页数据量:pageSize
@@ -361,6 +469,14 @@
                 totalCount: 1,
                 isShowCondition: false,
                 selectStrategy: null,//人群条件的选择策略
+                adjustDialog: false,
+                adjustChartdata: undefined, // 调整波动阀值图表数据
+                monitorDialog: false,
+                monitorRangeTime: undefined,
+                chartMonitorMacData: undefined, // 数据监控设备图表数据
+                chartMonitorWxData: undefined, // 数据监控设备图表数据
+                selectedRow: {},
+                monitorTab: 'mac',
                 showEstimate: false,
                 estimateValue: ['0'],
                 estimateItems: [],
@@ -407,6 +523,12 @@
         props: ["parentSource"],
         created() {
             this.loadData();
+            this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+        },
+        computed: {
+          isShowMonitorTab () {
+            return this.chartMonitorMacData && this.chartMonitorWxData
+          }
         },
         watch: {
             percent(val) {
@@ -598,7 +720,99 @@
                     case 'collect':
                         this.handlePushCollect(params)
                         break
+                    case 'adjust':
+                        this.handleAdjust(params)
+                        break
+                    case 'monitor':
+                        this.handleMonitor(params)
+                        break
                 }
+            },
+            handleFluctuationLaunch () {
+              const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+              const macInitialValue = crowdDefineForm.macInitialValue
+              const wxInitialValue = crowdDefineForm.wxInitialValue
+              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.replace(/,/g, '') : undefined
+              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.replace(/,/g, '') : undefined
+              this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
+                this.adjustDialog = fasle
+              })
+            },
+            /** 
+             * 千分位格式化
+            */
+            format_number(n) {
+              var b = parseInt(n).toString()
+              var len = b.length
+              if (len <= 3) { return b }
+              var r = len % 3
+              return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
+            },
+            handleAdjust (row) {
+               this.adjustDialog = true
+               this.selectedRow = row
+               this.$service.fluctuation({ launchCrowdId: row.launchCrowdId}).then((data) => {
+                 const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
+                 this.crowdDefineForm = {
+                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue), 
+                   macAbovePer: macAbovePer === null ? undefined : macAbovePer, 
+                   macBelowPer: macBelowPer === null ? undefined : macBelowPer, 
+                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue), 
+                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, 
+                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, 
+                 }
+                 this.adjustChartdata = {
+                   columns: ['日期', 'mac数量波动', '微信数量波动']
+                 }
+                 const rows = data.data.reduce((r, c) => {
+                   r.push({
+                     '日期': c.date,
+                     'mac数量波动': c.macTrendPer,
+                    '微信数量波动': c.wxTrendPer
+                   })
+                   return r
+                 }, [])
+                 this.adjustChartdata = {
+                   columns: ['日期', 'mac数量波动', '微信数量波动'],
+                   rows
+                 }
+               })
+            },
+            handleMonitor (row) {
+               this.monitorDialog = true
+               this.selectedRow = row
+               this.getDataMonitor()
+            },
+            setMonitorFormart (data) {
+              const columns = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+              const rows = data.reduce((r, c) => {
+                  r.push({
+                    'DMP收到的人群数量': c.rec_num,
+                    'SQL圈定的人群数量': c.cul_num,
+                    '日期': c.date,
+                  })
+                  return r
+                }, [])
+              return {
+                columns,
+                rows
+              }
+            },
+            getDataMonitor () {
+               const monitorRangeTime = this.monitorRangeTime
+               const startDate = monitorRangeTime[0]
+               const endDate = monitorRangeTime[1]
+               this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
+                 const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+                 this.monitorTab = data.mac ? 'mac' : 'wx'
+                 
+                 if (data.mac) {
+                   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
+                 }
+                 if (data.wx) {
+                   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
+                 }
+               })
             },
             divideAB (row) {
                 this.showDivide = true
@@ -714,6 +928,24 @@
     }
 </script>
 <style lang="stylus" scoped>
+    .inline-block
+        display inline-block
+    .one-line
+        position relative
+        span
+          color #c3bcbc
+          position absolute
+          left 0px
+          top 30px
+    .base-line
+      width 150px
+    .ratio 
+      width 130px
+    .monitor-time
+      margin-bottom 30px
+    .monitor-legend
+      text-align center
+      margin-bottom 30px
     .choose-tip
         margin 20px 0
         color red

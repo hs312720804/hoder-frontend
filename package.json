@@ -20,6 +20,7 @@
     "gateschema-form-vue": "^0.2.4",
     "lodash": "^4.17.15",
     "mddir": "^1.1.1",
+    "moment": "^2.27.0",
     "nprogress": "^0.2.0",
     "v-charts": "^1.19.0",
     "vue": "^2.6.10",
