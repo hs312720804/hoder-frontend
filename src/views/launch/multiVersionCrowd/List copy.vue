@@ -83,12 +83,7 @@
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
                 <template slot-scope="scope">
-                    <!-- 当投放中，人群波动，要显示红色-->
-                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
-                          :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
-                    >
-                        {{(launchStatusEnum[scope.row.history.status]).name}}
-                    </span>
+                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)">{{(launchStatusEnum[scope.row.history.status]).name}}</span>
                     <span v-else>
                           <el-tooltip placement="right-start">
                             <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
@@ -153,13 +148,12 @@
                                 >编辑
                                 </el-dropdown-item>
                                  <el-dropdown-item
-                                        v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
+                                        v-if="scope.row.isFxFullSql === 1"
                                         :command="['adjust',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
                                 </el-dropdown-item>
                                 <el-dropdown-item
-                                        v-if="scope.row.isFxFullSql === 1"
                                         :command="['monitor',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
@@ -359,8 +353,8 @@
           <ve-histogram v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量']}" :data="chartMonitorMacData"></ve-histogram>
           <ve-histogram v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId']}" :data="chartMonitorWxData"></ve-histogram>
         </el-dialog>
-        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1020px' : '80%'">
-            <ve-line :data="adjustChartdata" :settings="{ yAxisType: ['percent']}" :extend="adjustExtend"></ve-line>
+        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1050px' : '80%'">
+            <ve-line :data="adjustChartdata"></ve-line>
             <el-form :inline="true">
             <el-row>
              <el-col :span="7">
@@ -428,7 +422,7 @@
                  </el-row>
                </el-col>
             </el-row>
-            <el-row justify="end" v-if="selectedRow && selectedRow.history && selectedRow.history.status === 91">
+            <el-row justify="end">
                <el-col :span="4" :offset="20">
                <el-button @click="adjustDialog=false">取消</el-button>
                <el-button type="primary" @click="handleFluctuationLaunch">确定调整</el-button>
@@ -454,12 +448,6 @@
                 // 列表页
                 searchForm: {
                     launchName: ""
-                },
-                adjustExtend: {
-                  series: {
-                    smooth: false,
-                    type: 'line'
-                  }
                 },
                 screenWidth: undefined,
                 crowdDefineForm: {
@@ -752,7 +740,7 @@
                 this.adjustDialog = false
               })
             },
-            /**
+            /** 
              * 千分位格式化
             */
             format_number(n) {
@@ -768,12 +756,12 @@
                this.$service.fluctuation({ launchCrowdId: row.launchCrowdId}).then((data) => {
                  const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
                  this.crowdDefineForm = {
-                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue),
-                   macAbovePer: macAbovePer === null ? undefined : macAbovePer,
-                   macBelowPer: macBelowPer === null ? undefined : macBelowPer,
-                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue),
-                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer,
-                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer,
+                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue), 
+                   macAbovePer: macAbovePer === null ? undefined : macAbovePer, 
+                   macBelowPer: macBelowPer === null ? undefined : macBelowPer, 
+                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue), 
+                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, 
+                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, 
                  }
                  this.adjustChartdata = {
                    columns: ['日期', 'mac数量波动', '微信数量波动']
@@ -817,16 +805,15 @@
                const startDate = monitorRangeTime[0]
                const endDate = monitorRangeTime[1]
                this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
-                 // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+                 const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
                  this.monitorTab = data.mac ? 'mac' : 'wx'
-                 this.chartMonitorMacData = data.mac ? this.setMonitorFormart(data.mac) : undefined
-                 this.chartMonitorWxData = data.wx ? this.setMonitorFormart(data.wx) : undefined
-                 // if (data.mac) {
-                 //   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
-                 // }
-                 // if (data.wx) {
-                 //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
-                 // }
+                 
+                 if (data.mac) {
+                   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
+                 }
+                 if (data.wx) {
+                   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
+                 }
                })
             },
             divideAB (row) {
@@ -954,7 +941,7 @@
           top 30px
     .base-line
       width 150px
-    .ratio
+    .ratio 
       width 130px
     .monitor-time
       margin-bottom 30px
