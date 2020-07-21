@@ -154,6 +154,7 @@
                                 >调整波动阀值
                                 </el-dropdown-item>
                                 <el-dropdown-item
+                                        v-if="scope.row.isFxFullSql === 1"
                                         :command="['monitor',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
@@ -422,7 +423,7 @@
                  </el-row>
                </el-col>
             </el-row>
-            <el-row justify="end">
+            <el-row justify="end" v-if="selectedRow && selectedRow.history && selectedRow.history.status === 91">
                <el-col :span="4" :offset="20">
                <el-button @click="adjustDialog=false">取消</el-button>
                <el-button type="primary" @click="handleFluctuationLaunch">确定调整</el-button>
