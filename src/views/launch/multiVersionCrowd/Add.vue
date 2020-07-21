@@ -705,7 +705,6 @@
                         let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
                         macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
                         wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
-                        debugger
                         crowdForm.macInitialValue = macInitialValue
                         crowdForm.wxInitialValue = wxInitialValue
                         const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
