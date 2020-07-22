@@ -231,7 +231,8 @@ const children = [
                 meta: {
                     tagId:"myPolicy",
                     title: '我的人群',
-                    icon: 'el-icon-cc-file'
+                    icon: 'el-icon-cc-file',
+                    isCache: false
                 },
             },
             {
@@ -242,8 +243,7 @@ const children = [
                     title: '人群分割 投放',
                     tagId:"strategy",
                   //  hideInMenu: true,
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             },
             {
@@ -263,8 +263,7 @@ const children = [
                 meta: {
                     title: '人群多版本圈定',
                     tagId:"multiVersionCrowd",
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             },
             {
@@ -296,9 +295,7 @@ const children = [
                 meta: {
                     title: '投放验证',
                     tagId:"validate",
-                    //  hideInMenu: true,
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             },
             {
@@ -307,8 +304,7 @@ const children = [
                 component: anomalyEcharts,
                 meta: {
                     title: '异常监测',
-                    tagId:"anomalyEcharts",
-                    isCache: false
+                    tagId:"anomalyEcharts"
                 }
             },
             {
@@ -318,8 +314,7 @@ const children = [
                 meta: {
                     title: '投放中的投放监控',
                     tagId:"DeliveryMonitor",
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             },
             {
@@ -329,9 +324,7 @@ const children = [
                 meta: {
                     title: '用户标签查询',
                     tagId:"userTagsSearch",
-                    //  hideInMenu: true,
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             },
             {
@@ -341,8 +334,7 @@ const children = [
                 meta: {
                     title: '命中查询',
                     tagId:"hitSearch",
-                    isCache: false,
-                    icon: 'el-icon-cc-file',
+                    icon: 'el-icon-cc-file'
                 }
             }
         ]
