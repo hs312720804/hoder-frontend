@@ -96,39 +96,43 @@
                             ></el-time-picker>
                         </el-form-item>
                             </div>
-                       <el-form-item label="Mac数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-form-item label="" prop="macInitialValue" class="inline-block  base-line">
-                               <cc-input-thousands-int
-                                 v-model="crowdDefineForm.macInitialValue"
-                                 ref="inputThousandsInt"
-                                 >
-                               </cc-input-thousands-int>
-                               <!-- <el-input-number v-model="crowdDefineForm.macInitialValue" :precision="0"  :min="1"></el-input-number> -->
-                            </el-form-item>
-                            <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
-                               <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1" :max="100"></el-input-number>
-                            </el-form-item>&nbsp;&nbsp;%，则告警
-                             <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
-                               <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
-                            </el-form-item>&nbsp;&nbsp;%，则告警
-                             <span>请至少填写一组基准和环比阀值</span>
-                        </el-form-item>
-                         <el-form-item label="微信数量基准" class="one-line" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-form-item label="" prop="wxInitialValue" class="inline-block  base-line">
-                               <cc-input-thousands-int
-                                 v-model="crowdDefineForm.wxInitialValue"
-                                 >
-                               </cc-input-thousands-int>
-                            </el-form-item>
-                            <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
-                                <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1" :max="100"></el-input-number>
-                            </el-form-item>&nbsp;&nbsp;%，则告警
-                             <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
-                                <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="Mac数量基准" class="one-line" >
+                                  <el-form-item label="" prop="macInitialValue" class="inline-block  base-line">
+                                    <cc-input-thousands-int
+                                      v-model="crowdDefineForm.macInitialValue"
+                                      ref="inputThousandsInt"
+                                      @change="handleRule"
+                                      >
+                                    </cc-input-thousands-int>
+                                  </el-form-item>
+                                  <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
+                                    <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
+                                    <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <span>请至少填写一组基准和环比阀值</span>
+                              </el-form-item>
+                              <el-form-item label="微信数量基准" class="one-line">
+                                  <el-form-item label="" prop="wxInitialValue" class="inline-block  base-line">
+                                    <cc-input-thousands-int
+                                      v-model="crowdDefineForm.wxInitialValue"
+                                      >
+                                    </cc-input-thousands-int>
+                                  </el-form-item>
+                                  <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
+                                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
+                                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
 
-                            </el-form-item>&nbsp;&nbsp;%，则告警
-                              <span>请至少填写一组基准和环比阀值</span>
-                        </el-form-item>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                    <span>请至少填写一组基准和环比阀值</span>
+                              </el-form-item>
+                              <div class="basic-line-error">{{basicLineErrorText}}</div>
+                              
+                            </div>
                         <!-- <el-form-item label="微信数量" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="mac数量不少于" prop="minMacEstimateCount" class="inline-block">
                                 <el-input v-model="crowdDefineForm.minMacEstimateCount" type="number" placeholder="请输入mac数量的最小值"></el-input>
@@ -389,6 +393,7 @@
                 launchPlatform: [],
                 getStrategyCrowds: [],
                 title: "",
+                basicLineErrorText: '',
                 // 新增界面数据
                 crowdForm: {
                     abTest: false,
@@ -417,6 +422,7 @@
                     tagId: undefined,
                     abTest: undefined,
                     ratios: undefined,
+                    basicLine: undefined, // 数量基准验证用
                     macInitialValue: undefined, //Mac基准值
                     macAbovePer: undefined, //Mac最大阈值
                     macBelowPer: 5.00, //Mac最小阈值
@@ -433,6 +439,7 @@
                 abTestApart: undefined,
                 status: undefined,
                 crowdFormRules: {
+                   
                     launchName: [
                         { required: true, message: "请输入投放名称", trigger: "blur" }
                     ],
@@ -445,7 +452,7 @@
                     ],
                     autoLaunchTime: [
                         { required: true, message: "请选择每天更新时间点", trigger: "blur" }
-                    ],
+                    ]
                 },
                 crowdDefineFormRules: {
                     launchName: [
@@ -646,7 +653,6 @@
                 {
                   this.saveNormalCrowd()
                 }
-
             },
             saveNormalCrowd () {
                 this.$refs.crowdForm.validate(valid => {
@@ -671,6 +677,45 @@
                         return false
                     }
                 })
+            },
+            handleRule () {
+              debugger
+              let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+              let macInitialValue = crowdForm.macInitialValue
+              const macBelowPer = crowdForm.macBelowPer
+              let wxInitialValue = crowdForm.wxInitialValue
+              const wxBelowPer = crowdForm.wxBelowPer
+              macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
+              wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+              this.validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)
+            },
+            validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer) {
+              debugger
+              const macCondition = (macInitialValue === undefined || macInitialValue === '') && (macBelowPer === undefined || macBelowPer === '')
+              const wxCondition = (wxInitialValue === undefined || wxInitialValue === '') && (wxBelowPer === undefined || wxBelowPer === '')
+              if (macCondition && wxCondition) {
+                this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                return false
+              }
+              else if ((macInitialValue !== undefined && macInitialValue !== '') && (macBelowPer === undefined || macBelowPer === '')) {
+                this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                return false
+              }
+              else if ((macBelowPer !== undefined && macBelowPer !== '') && (macInitialValue === undefined || macInitialValue === '')) {
+                this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                return false
+              }
+              else if ((wxInitialValue !== undefined && wxInitialValue !== '') && (wxBelowPer === undefined || wxBelowPer === '')) {
+                this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                return false
+              }
+              else if ((wxBelowPer !== undefined && wxBelowPer !== '') && (wxInitialValue === undefined || wxInitialValue === '')) {
+                this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+                return false
+              } else {
+                this.basicLineErrorText = ''
+                return true
+              }
             },
             // 保存自定义人群
             saveDefineCrowd () {
@@ -707,55 +752,70 @@
                         wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
                         crowdForm.macInitialValue = macInitialValue
                         crowdForm.wxInitialValue = wxInitialValue
-                        const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
-                        const wxCondition = wxInitialValue !== undefined && wxInitialValue !== '' && wxBelowPer !== undefined && wxBelowPer !== ''
-                        if (!(macCondition || wxCondition)) {
-                          this.$message({
-                            type: 'error',
-                            message: '请至少填写一组基准和环比阀值'
-                          })
+                        if (crowdForm.autoVersion === 1 && !this.validateBasicLine(macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)) {
                           return
                         }
-                        if (macCondition) {
-                          if ((wxInitialValue !== undefined && wxInitialValue !== '')) {
-                             if (wxBelowPer === undefined || wxBelowPer === '') {
-                                this.$message({
-                                type: 'error',
-                                message: '请把微信数量环比低于这个选项填写完整'
-                              })
-                              return
-                             }
-                          }
-                          if ((wxBelowPer !== undefined && wxBelowPer !== '')) {
-                             if (wxInitialValue === undefined || wxInitialValue === '') {
-                                this.$message({
-                                type: 'error',
-                                message: '请把微信数量基准这个选项填写完整'
-                              })
-                              return
-                             }
-                          }
-                        }
-                        if (wxCondition) {
-                          if ((macInitialValue !== undefined && macInitialValue !== '')) {
-                             if (macBelowPer === undefined || macBelowPer === '') {
-                                this.$message({
-                                type: 'error',
-                                message: '请把Mac数量环比低于这个选项填写完整'
-                              })
-                              return
-                             }
-                          }
-                          if ((macBelowPer !== undefined && macBelowPer !== '')) {
-                             if (macInitialValue === undefined || macInitialValue === '') {
-                                this.$message({
-                                type: 'error',
-                                message: '请把Mac数量基准这个选项填写完整'
-                              })
-                              return
-                             }
-                          }
-                        }
+                        // const macCondition = (macInitialValue === undefined || macInitialValue === '') && (macBelowPer === undefined || macBelowPer === '')
+                        // const wxCondition = (wxInitialValue === undefined || wxInitialValue === '') && (wxBelowPer === undefined || wxBelowPer === '')
+                        // if (macCondition && wxCondition) {
+                        //   this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                        //   return
+                        // }
+                        // else if ((macInitialValue !== undefined && macInitialValue !== '') && (macBelowPer === undefined || macBelowPer === '')) {
+                        //   this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((macBelowPer !== undefined && macBelowPer !== '') && (macInitialValue === undefined || macInitialValue === '')) {
+                        //   this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((wxInitialValue !== undefined && wxInitialValue !== '') && (wxBelowPer === undefined || wxBelowPer === '')) {
+                        //   this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((wxBelowPer !== undefined && wxBelowPer !== '') && (wxInitialValue === undefined || wxInitialValue === '')) {
+                        //   this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+                        //   return
+                        // }
+                        // const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
+                        // const wxCondition = wxInitialValue !== undefined && wxInitialValue !== '' && wxBelowPer !== undefined && wxBelowPer !== ''
+                        // if (crowdForm.autoVersion === 1) {
+                        //   debugger
+                        //     if (!(macCondition || wxCondition)) {
+                        //       this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                        //       return
+                        //     }
+                        //     if (macCondition) {
+                        //       if ((wxInitialValue !== undefined && wxInitialValue !== '')) {
+                        //         if (wxBelowPer === undefined || wxBelowPer === '') {
+                        //           this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //       if ((wxBelowPer !== undefined && wxBelowPer !== '')) {
+                        //         if (wxInitialValue === undefined || wxInitialValue === '') {
+                        //            this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+            
+                        //           return
+                        //         }
+                        //       }
+                        //     }
+                        //     if (wxCondition) {
+                        //       if ((macInitialValue !== undefined && macInitialValue !== '')) {
+                        //         if (macBelowPer === undefined || macBelowPer === '') {
+                        //            this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //       if ((macBelowPer !== undefined && macBelowPer !== '')) {
+                        //         if (macInitialValue === undefined || macInitialValue === '') {
+                        //           this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //     }
+                        // }
+
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
@@ -831,6 +891,14 @@
     }
 </script>
 <style lang="stylus" scoped>
+  .basic-line
+    border 1px dashed #ccc
+    position relative
+    padding-top 10px
+    .basic-line-error
+      margin-left 35px
+      margin-bottom 10px
+      color red
   .horizontal-line
     display flex
   .multipleSelect
