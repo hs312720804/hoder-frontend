@@ -19,7 +19,12 @@
             <el-form-item label="策略名称" prop="policyName">
                 <el-input size="small" v-model="addForm.policyName" style="width: 80%"></el-input>
             </el-form-item>
-            <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签,蓝色为账号标签</div>
+            <div class="tags-tips">
+                注：<span class="checkbox--red">红色</span>为大数据标签,
+                <span class="checkbox--green">绿色</span>为自定义标签,
+                <span class="checkbox--blue">蓝色</span>为账号标签,
+                <span class="checkbox--yellow">黄色</span>为实时标签
+            </div>
             <el-form-item label="策略纬度" prop="conditionTagIds">
                 <el-tabs tab-position="top">
                     <div class="strategy-search">
@@ -34,7 +39,7 @@
                     </div>
                     <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
                         <el-checkbox v-for="(item,index) in conditionTagsFiltered"
-                                     :class="item.dataSource === 2 ? 'checkbox--red' : (item.dataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
+                                     :class="dataSourceColorClassEnum[item.dataSource]"
                                      :label="item.tagId"
                                      :key="item.tagId+'_'+index"
                                      @change="handleTagChange($event,item)"
@@ -61,7 +66,7 @@
             <el-form-item label="已选标签">
                 <el-tag v-for="item in tagList"
                         :key="item.tagId"
-                        :type= "item.dataSource === 1 ? 'success' : item.dataSource === 2 ? 'danger' : ''"
+                        :type="dataSourceColorEnum[item.dataSource]"
                         closable
                         @close="removeTag(item)"
                 >
@@ -97,7 +102,20 @@
                 initPageSize: 50,
                 tagsListTotal: 0,
                 initCurrentPage: 1,
-                currentTagParent: 0
+                currentTagParent: 0,
+                // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+                dataSourceColorClassEnum: {
+                    1: 'checkbox--green',
+                    2: 'checkbox--red',
+                    3: 'checkbox--blue',
+                    5: 'checkbox--yellow'
+                },
+                dataSourceColorEnum: {
+                    1: 'success',
+                    2: 'danger',
+                    3: '',
+                    5: 'warning'
+                }
             }
         },
         methods: {
@@ -298,13 +316,15 @@
     width 70%
     margin-right 20px
 .tags-tips
-    color red
+    color #000
     font-size 12px
     margin-left 100px
 .checkbox--red
-    color red
+    color #f56c6c
 .checkbox--green
-    color green
+    color #67c23a
 .checkbox--blue
-    color blue
+    color #409eff
+.checkbox--yellow
+    color #e6a23c
 </style>
