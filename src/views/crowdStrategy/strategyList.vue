@@ -80,13 +80,13 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="270px">
+      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签）" width="270px">
         <template slot-scope="scope">
           <el-tag
                   size="mini"
                   v-for="item in scope.row.tagsList"
                   :key="item.tagId"
-                  :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
+                  :type= "dataSourceColorEnum[item.dataSource]"
           >{{item.tagName}}</el-tag>
         </template>
       </el-table-column>
@@ -225,7 +225,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签,蓝色为账号标签</div>
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -245,7 +245,7 @@
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
                 <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="item.tDataSource === 2 ? 'checkbox--red' : (item.tDataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
+                             :class="dataSourceColorClassEnum[item.dataSource]"
                              :label="item.tagId"
                              :key="item.tagId"
                              @change="handleTagChange($event,item)"
@@ -436,7 +436,20 @@ export default {
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
       launchSource: 'strategy',
-      checkList: []
+      checkList: [],
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorClassEnum: {
+          1: 'checkbox--green',
+          2: 'checkbox--red',
+          3: 'checkbox--blue',
+          5: 'checkbox--yellow'
+      },
+      dataSourceColorEnum: {
+          1: 'success',
+          2: 'danger',
+          3: '',
+          5: 'warning'
+      }
     }
   },
   props: ["historyFilter","checkListFilter","parentSource"],
@@ -935,11 +948,13 @@ export default {
   height: 200px
   overflow: auto
 .checkbox--red
-  color red
+  color #f56c6c
 .checkbox--green
-  color green
+  color #67c23a
 .checkbox--blue
-  color blue
+  color #409eff
+.checkbox--yellow
+  color #e6a23c
 .strategy-search
   display flex
   margin-bottom 10px
