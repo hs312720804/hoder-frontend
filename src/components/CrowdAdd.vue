@@ -241,7 +241,7 @@
                           v-for="tagItem in tags"
                           :key="tagItem.tagItem"
                           @click.native="handleAddChildRule(crowd, item, tagItem)"
-                          :type="tagItem.dataSource === 2 ? 'danger' : (tagItem.dataSource === 1 ? 'success' : '')"
+                          :type="dataSourceColorEnum[tagItem.dataSource]"
                         >{{ tagItem.tagName }}</el-tag>
                       </div>
                     </div>
@@ -263,7 +263,7 @@
                       v-for="(item) in tags"
                       :key="item.tagName"
                       @click.native="handleAddRule(crowd, item)"
-                      :type="item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
+                      :type="dataSourceColorEnum[item.dataSource]"
                     >{{ item.tagName }}</el-tag>
                   </div>
                 </div>
@@ -337,6 +337,13 @@ export default {
         limitLaunchCount: [
           { required: true, message: '请输入大于0小于10万的限制数量', trigger: 'blur' }
         ]
+      },
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorEnum: {
+          1: 'success',
+          2: 'danger',
+          3: '',
+          5: 'warning'
       }
     }
   },

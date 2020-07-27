@@ -11,7 +11,7 @@
             size="mini"
             v-for="item in selectRow.tagsList"
             :key="item.tagId"
-            :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
+            :type= "dataSourceColorEnum[item.dataSource]"
           >{{item.tagName}}</el-tag>
         </div>
         <div class="right">
@@ -804,7 +804,14 @@ export default {
         canBatchEstimate: false,
         estimateType: undefined,
         showLimitLaunchDialog: false,
-        showLimitLaunchCount: undefined
+        showLimitLaunchCount: undefined,
+        // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+        dataSourceColorEnum: {
+            1: 'success',
+            2: 'danger',
+            3: '',
+            5: 'warning'
+        }
     }
   },
   props: ["selectRow"],

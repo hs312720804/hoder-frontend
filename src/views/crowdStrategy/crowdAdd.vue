@@ -191,7 +191,7 @@
                               v-for="tagItem in tags"
                               :key="tagItem.tagId+ '_' +tagItem.tagName"
                               @click.native="handleAddChildRule(item, tagItem)"
-                              :type= "tagItem.dataSource === 2 ? 'danger' : (tagItem.dataSource === 1 ? 'success' : '')"
+                              :type= "dataSourceColorEnum[tagItem.dataSource]"
                       >{{ tagItem.tagName }}</el-tag>
                     </div>
                   </div>
@@ -213,7 +213,7 @@
                           v-for="(item) in tags"
                           :key="item.tagId+ '_' +item.tagName"
                           @click.native="handleAddRule(item)"
-                          :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
+                          :type= "dataSourceColorEnum[item.dataSource]"
                   >{{ item.tagName }}</el-tag>
                 </div>
               </div>
@@ -320,7 +320,14 @@
                         return time.getTime() < Date.now() - 24*60*60*1000 || time.getTime() > dateRange
                     }
                 },
-                currentLaunchLimitCount: undefined
+                currentLaunchLimitCount: undefined,
+                // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+                dataSourceColorEnum: {
+                    1: 'success',
+                    2: 'danger',
+                    3: '',
+                    5: 'warning'
+                }
             };
         },
         props: ["policyId", "crowdId","limitLaunchDisabled"],
