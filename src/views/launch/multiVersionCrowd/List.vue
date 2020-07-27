@@ -344,11 +344,12 @@
         </el-dialog>
         <el-dialog title="数据监控" :visible.sync="monitorDialog">
             <el-date-picker
-                v-model="monitorRangeTime"
+              v-model="monitorRangeTime"
               type="daterange"
               align="right"
               @change="getDataMonitor"
               class="monitor-time"
+              value-format="yyyy-MM-dd"
             ></el-date-picker>
             <div class="monitor-legend" v-if="isShowMonitorTab">
             <el-radio-group v-model="monitorTab">
@@ -356,8 +357,18 @@
               <el-radio-button label="wx" >wxopenId</el-radio-button>
           </el-radio-group>
           </div>
-          <ve-histogram v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量']}" :data="chartMonitorMacData"></ve-histogram>
-          <ve-histogram v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)" :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId']}" :data="chartMonitorWxData"></ve-histogram>
+          <ve-histogram
+                  v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)"
+                  :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量'], xAxisType: ['value']}"
+                  :extend="chartExtend"
+                  :data="chartMonitorMacData">
+          </ve-histogram>
+          <ve-histogram
+                  v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)"
+                  :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId'], xAxisType: ['value']}"
+                  :extend="chartExtend"
+                  :data="chartMonitorWxData">
+          </ve-histogram>
         </el-dialog>
         <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1020px' : '80%'">
             <ve-line :data="adjustChartdata" :settings="{ yAxisType: ['percent']}" :extend="adjustExtend"></ve-line>
@@ -530,6 +541,16 @@
                 updateEnum: {
                     0: '否',
                     1: '是'
+                },
+                chartExtend: {
+                    xAxis: {
+                        axisLabel: {
+                            margin: 15,
+                            interval: 0,
+                            rotate: 45
+                        },
+                        triggerEvent: true
+                    }
                 }
             };
         },
