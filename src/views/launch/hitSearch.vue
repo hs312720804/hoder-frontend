@@ -39,7 +39,7 @@
             </el-form-item>
         </el-form>
         <div class="content" v-if="resultContent">
-            <pre><code>{{content}}</code></pre>
+            <pre><code>{{resultContent}}</code></pre>
         </div>
     </div>
 </template>
