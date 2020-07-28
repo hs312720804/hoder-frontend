@@ -995,7 +995,7 @@ export default {
     // 从服务器读取数据
     loadData () {
       this.$service.getListDimension({type: 2}).then(data => {
-          if (data) {
+          if (data.behaviorShow) {
               this.checkList = data.behaviorShow.split(',')
           }
       })

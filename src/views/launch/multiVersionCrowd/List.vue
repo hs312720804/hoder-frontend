@@ -627,7 +627,7 @@
             // 从服务器读取数据
             loadData () {
                 this.$service.getListDimension({type: 3}).then(data => {
-                    if (data) {
+                    if (data.behaviorShow) {
                         this.checkList = data.behaviorShow.split(',')
                     }
                 })

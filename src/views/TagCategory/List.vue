@@ -219,7 +219,7 @@ export default {
         },
         fetchData() {
             this.$service.getListDimension({type: 4}).then(data => {
-                if (data) {
+                if (data.behaviorShow) {
                     this.checkList = data.behaviorShow.split(',')
                 }
             })
