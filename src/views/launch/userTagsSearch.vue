@@ -86,7 +86,9 @@
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                 </el-form-item>
             </el-form>
-            <div class="content" v-if="content">{{content}}</div>
+            <div class="content" v-if="content">
+                <pre><code>{{content}}</code></pre>
+            </div>
         </div>
     </div>
 </template>

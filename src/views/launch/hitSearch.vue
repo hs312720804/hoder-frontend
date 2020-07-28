@@ -38,7 +38,9 @@
                 <el-button v-show="showNext" type="success" @click="handleNext">下一条</el-button>
             </el-form-item>
         </el-form>
-        <div class="content" v-if="resultContent">{{resultContent}}</div>
+        <div class="content" v-if="resultContent">
+            <pre><code>{{content}}</code></pre>
+        </div>
     </div>
 </template>
 
