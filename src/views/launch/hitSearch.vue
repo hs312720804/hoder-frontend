@@ -95,7 +95,12 @@
             handleSearch () {
                 const form = this.form
                 this.$service.getHitSearchData(form).then(data => {
-                    this.resultContent = data
+                    if (data) {
+                       this.resultContent = data
+                    } else {
+                        this.resultContent = '暂无数据'
+                    }
+
                 })
             },
             checkOutForm () {
@@ -151,7 +156,7 @@
     width 29%
 .first-form >>> .el-form-item--mini.el-form-item:nth-child(2),
 .first-form >>> .el-form-item--small.el-form-item:nth-child(2)
-    width 25%
+    width 26%
 .second-form >>> .el-form-item--mini.el-form-item:nth-child(odd),
 .second-form >>> .el-form-item--small.el-form-item:nth-child(odd)
     width 55%

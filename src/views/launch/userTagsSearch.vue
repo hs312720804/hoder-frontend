@@ -158,7 +158,11 @@
                     tagAttrId: types === 1 ? formData.tagAttrId : undefined
                 }
                 this.$service.getUserTagList(apiData).then(data => {
-                    this.content = data
+                    if (data) {
+                        this.content = data
+                    } else {
+                        this.content = '暂无数据'
+                    }
                 })
             }
         },
