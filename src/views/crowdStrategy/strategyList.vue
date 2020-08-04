@@ -245,7 +245,7 @@
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
                 <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="dataSourceColorClassEnum[item.dataSource]"
+                             :class="dataSourceColorClassEnum[item.tDataSource]"
                              :label="item.tagId"
                              :key="item.tagId"
                              @change="handleTagChange($event,item)"
@@ -282,7 +282,7 @@
             <!--</el-tag>-->
             <el-tag v-for="item in tagList"
                     :key="item.tagId"
-                    :type= "(item.dataSource||item.tDataSource) === 1 ? 'success' : ((item.dataSource||item.tDataSource) === 2 ? 'danger' : '')"
+                    :type="dataSourceColorEnum[item.tDataSource]"
                     closable
                     @close="removeTag(item)"
             >
