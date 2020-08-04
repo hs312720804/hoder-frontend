@@ -282,7 +282,7 @@
             <!--</el-tag>-->
             <el-tag v-for="item in tagList"
                     :key="item.tagId"
-                    :type="dataSourceColorEnum[item.tDataSource]"
+                    :type="dataSourceColorEnum[item.dataSource]"
                     closable
                     @close="removeTag(item)"
             >
