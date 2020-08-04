@@ -29,7 +29,7 @@
                       @click.native="getRouter(child.url)"
               >
                 <i v-if="child.icons" :class="child.icons"></i>
-                <span slot="title">{{ child.name }} </span>
+                <span slot="title">{{ child.name }}</span>
               </el-menu-item>
               <el-submenu v-else :key="idx" :index="index+'-'+idx">
                 <template slot="title">
@@ -116,7 +116,8 @@
   </el-container>
 </template>
 <script>
-    import { Breadcrumb, Menu, TagNav } from "admin-toolkit";
+    import { Breadcrumb, Menu } from "admin-toolkit";
+    import TagNav from './TagNav'
     export default {
         components: {
             Menu,
