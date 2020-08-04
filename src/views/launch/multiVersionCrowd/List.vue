@@ -359,13 +359,13 @@
           </div>
           <ve-histogram
                   v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)"
-                  :settings="{ yAxisType: ['KMB'], yAxisName: ['设备数量'], xAxisType: ['value']}"
+                  :settings="{ yAxisName: ['设备数量'], xAxisType: ['value']}"
                   :extend="chartExtend"
                   :data="chartMonitorMacData">
           </ve-histogram>
           <ve-histogram
                   v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)"
-                  :settings="{ yAxisType: ['KMB'], yAxisName: ['wxopenId'], xAxisType: ['value']}"
+                  :settings="{ yAxisName: ['wxopenId'], xAxisType: ['value']}"
                   :extend="chartExtend"
                   :data="chartMonitorWxData">
           </ve-histogram>
@@ -828,6 +828,8 @@
                   })
                   return r
                 }, [])
+                console.log(columns)
+                console.log(rows)
               return {
                 columns,
                 rows
