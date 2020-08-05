@@ -64,11 +64,12 @@ export default {
       return data.replace(/,/g, '')
     },
     format_number(n) {
-      var b = parseInt(n).toString()
-      var len = b.length
-      if (len <= 3) { return b }
+      var len = n.length
+      if (len <= 3) { return n }
       var r = len % 3
-      return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
+      const start = n.slice(0, r)
+      const end = n.slice(r).match(/\d{3}/g).join(',')
+      return r > 0 ? start + ',' + end : end
     }
   },
   created() {
