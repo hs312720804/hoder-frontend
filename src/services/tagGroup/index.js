@@ -126,3 +126,11 @@ export function cancelCollectTags(data) {
         url: 'api/collect/label?'+'tagId='+data.tagId
     })
 }
+// 标签列表之我的收藏
+export function collectTagsList(data) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/collect/label',
+        data
+    })
+}
