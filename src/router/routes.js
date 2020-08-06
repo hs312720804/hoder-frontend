@@ -49,6 +49,7 @@ import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 import groupImageInsight from '@/views/GroupImageInsight/Index'
 import userTagsSearch from  '@/views/launch/userTagsSearch'
 import hitSearch from  '@/views/launch/hitSearch'
+import labelSquare from '@/views/LabelSquare/Index'
 const children = [
     {
         name: 'homePage',
@@ -150,6 +151,16 @@ const children = [
                 meta: {
                     tagId: "tag",
                     title: '标签列表',
+                    icon: 'el-icon-cc-file'
+                }
+            },
+            {
+                name: 'labelSquare',
+                path: 'labelSquare',
+                component: labelSquare,
+                meta: {
+                    tagId: "labelSquare",
+                    title: '标签广场',
                     icon: 'el-icon-cc-file'
                 }
             },

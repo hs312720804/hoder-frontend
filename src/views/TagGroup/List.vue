@@ -1,6 +1,7 @@
 <template>
     <el-aside width="230" style="background-color: rgb(238, 241, 246)" v-permission="'hoder:label:group:index'">
         <div class="tag-category-list">
+            <el-button @click="handleRedirectLabelSquare">标签广场</el-button>
             <el-header class="tag-category-list__header">
                 分组
                 <el-button v-show="!showCheckBox" class="btn-add-category" v-permission="'hoder:label:group:modify'" type="text" @click="$refs.tagGroupCreate.showCreateDialog = true">新建</el-button>
@@ -131,7 +132,7 @@ export default {
         //     })
         // },
         fetchData() {
-            return this.$service.getParentIdList().then((data) => {
+            this.$service.getParentIdList().then((data) => {
                 this.treeData = data
             })
         },
@@ -222,6 +223,9 @@ export default {
         nodeCollapse(node){
             this.defaultExpanded = this.defaultExpanded.filter(item => item !== node.groupId)
         },
+        handleRedirectLabelSquare() {
+            this.$router.push({ name: 'labelSquare' })
+        }
     },
     created() {
         const activeId = this.$route.params.id
