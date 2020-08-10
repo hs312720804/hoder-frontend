@@ -1,31 +1,46 @@
 <template>
     <div class="label-zone">
-        <div
-                v-for="item in treeData"
-                :key="item.parentId"
-                class="tab-content"
-        >
-            <div class="title">{{item.parentName}}</div>
-            <el-tabs
-                    v-model="activeTab"
-                    @tab-click="handleTabClick"
+        <div v-if="tagName === undefined || tagName === ''">
+            <div
+                    v-for="item in treeData"
+                    :key="item.parentId"
+                    class="tab-content"
             >
-                <el-tab-pane
-                        v-for="childItem in item.children"
-                        :label="childItem.groupName"
-                        :key="childItem.groupId"
-                        :name="childItem.groupId"
+                <div class="title">{{item.parentName}}</div>
+                <el-tabs
+                        v-model="activeTab"
+                        @tab-click="handleTabClick"
                 >
-                    <tag-list
-                            v-if="activeTab == childItem.groupId"
-                            :data-list="dataList"
-                            :data-source-enum="dataSourceEnum"
-                            :type-enum="typeEnum"
-                            @fetch-data="fetchTagList"
+                    <el-tab-pane
+                            v-for="childItem in item.children"
+                            :label="childItem.groupName"
+                            :key="childItem.groupId"
+                            :name="childItem.groupId"
                     >
-                    </tag-list>
-                </el-tab-pane>
-            </el-tabs>
+                        <tag-list
+                                v-if="activeTab == childItem.groupId"
+                                :data-list="dataList"
+                                :data-source-enum="dataSourceEnum"
+                                :type-enum="typeEnum"
+                                :check-list-parent="checkList"
+                                @fetch-data="fetchTagList"
+                                @change-checkList="handleCheckListChange"
+                        >
+                        </tag-list>
+                    </el-tab-pane>
+                </el-tabs>
+            </div>
+        </div>
+        <div v-else>
+            <tag-list
+                    :data-list="dataList"
+                    :data-source-enum="dataSourceEnum"
+                    :type-enum="typeEnum"
+                    :check-list-parent="checkList"
+                    @fetch-data="fetchTagAllList"
+                    @change-checkList="handleCheckListChange"
+            >
+            </tag-list>
         </div>
     </div>
 </template>
@@ -37,6 +52,14 @@
         components: {
             tagList
         },
+        props: {
+            tagName: {
+                type: String
+            },
+            checkList: {
+                type: Array
+            }
+        },
         data () {
             return {
                 treeData: [],
@@ -45,16 +68,27 @@
                 filter: {
                     pageNum: 1,
                     pageSize: 300,
-                    groupId: undefined
+                    groupId: undefined,
+                    tagName: undefined
                 },
                 dataSourceEnum: {},
                 typeEnum: {}
             }
         },
+        watch: {
+            'tagName': function (val) {
+                if (val !== undefined && val !== '') {
+                    this.filter.tagName = val
+                    this.fetchTagAllList()
+                }else {
+                    this.filter.tagName = val
+                    this.fetchTagList()
+                }
+            }
+        },
         methods: {
             fetchData() {
                 this.$service.getParentIdList().then((data) => {
-                    console.log('我是标签广场里的data', data)
                     const result = []
                     data.forEach(item => {
                         item.children.forEach(secondChild => {
@@ -64,7 +98,6 @@
                             result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
                         })
                     })
-                    console.log(result)
                     this.treeData = result
                     // this.activeTab = result[0].children[0].groupId
                     // this.filter.groupId = this.activeTab
@@ -81,9 +114,25 @@
                     })
                 }
             },
+            fetchTagAllList () {
+                const filter = JSON.parse(JSON.stringify(this.filter))
+                filter.groupId = 0
+                this.$service.getTagGroupTreeList(filter).then((data) => {
+                    this.dataList = data.pageInfo.list
+                    this.dataSourceEnum = data.lableDataSourceEnum
+                    this.typeEnum = data.tagsTypeEnum
+                })
+            },
             handleTabClick () {
                 this.filter.groupId = this.activeTab
+                // 切换tab清空搜索框的值
+                this.filter.tagName = undefined
+                this.dataList = []
+                this.$emit('clear-search')
                 this.fetchTagList()
+            },
+            handleCheckListChange (val) {
+                this.$emit('change-checkList',val)
             }
         },
         created () {
@@ -94,9 +143,9 @@
 
 <style lang="stylus" scoped>
 .tab-content
-    padding 15px
+    padding 12px
     border 1px dashed #ccc
-    margin-bottom 10px
+    margin-bottom 5px
 .label-zone >>> .el-icon-cc-star-fill
     color #E6A13C
 .label-zone >>> .el-button-group

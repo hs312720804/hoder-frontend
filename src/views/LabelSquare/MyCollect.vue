@@ -4,7 +4,9 @@
         :data-list="dataList"
         :data-source-enum="dataSourceEnum"
         :type-enum="typeEnum"
+        :check-list-parent="checkList"
         @fetch-data="fetchData"
+        @change-checkList="handleCheckListChange"
       >
       </tag-list>
   </div>
@@ -17,12 +19,29 @@
         components: {
             tagList
         },
+        props: {
+            tagName: {
+                type: String
+            },
+            checkList: {
+                type: Array
+            }
+        },
+        watch: {
+            'tagName': function (val) {
+                if (val !== undefined) {
+                    this.filter.tagName = val
+                    this.fetchData()
+                }
+            }
+        },
         data () {
             return {
                 dataList: [],
                 filter: {
                     pageNum: 1,
-                    pageSize: 300
+                    pageSize: 300,
+                    tagName: undefined
                 },
                 dataSourceEnum: {},
                 typeEnum: {},
@@ -33,13 +52,15 @@
             fetchData () {
                 const filter = this.filter
                 this.$service.collectTagsList(filter).then(data => {
-                    console.log(data)
                     const result = data.data
                     this.dataList = result.pageInfo.list
                     this.dataSourceEnum = result.lableDataSourceEnum
                     this.typeEnum = result.tagsTypeEnum
                 })
             },
+            handleCheckListChange (val) {
+                this.$emit('change-checkList',val)
+            }
 
         },
         created () {

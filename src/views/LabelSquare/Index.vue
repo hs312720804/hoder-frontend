@@ -1,18 +1,33 @@
 <template>
     <div class="label-content">
-        <el-tabs v-model="activeName">
+        <el-tabs
+                v-model="activeName"
+                @tab-click="handldTabChange"
+                v-if="checkList.length > 0"
+        >
             <el-tab-pane label="标签专区" name="labelZone">
-                <label-zone></label-zone>
+                <label-zone
+                        :tagName="labelZoneTagName"
+                        @clear-search="handleClearSearch"
+                        :checkList="checkList"
+                        @change-checkList="handleCheckListChange"
+                >
+                </label-zone>
             </el-tab-pane>
             <el-tab-pane label="我的收藏" name="myCollect">
-                <my-collect></my-collect>
+                <my-collect
+                        :tagName="myCollectTagName"
+                        :checkList="checkList"
+                        @clear-search="handleClearSearch"
+                        @change-checkList="handleCheckListChange"
+                >
+                </my-collect>
             </el-tab-pane>
         </el-tabs>
         <div class="search-input">
             <el-input
                     v-model="searchVal"
                     placeholder="支持按标签名、Code、描述搜索"
-                    clearable
             >
             </el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
@@ -32,13 +47,44 @@
         data () {
             return {
                 activeName: 'labelZone',
-                searchVal: ''
+                searchVal: '',
+                labelZoneTagName: undefined,
+                myCollectTagName: undefined,
+                checkList: []
             }
         },
         methods: {
             handleSearch () {
-                console.log('我在搜索')
+                // 全局搜索
+                if(this.activeName === 'labelZone') {
+                    this.labelZoneTagName = this.searchVal
+                } else {
+                    this.myCollectTagName = this.searchVal
+                }
+            },
+            handleClearSearch () {
+                this.searchVal = undefined
+                this.labelZoneTagName = undefined
+                this.myCollectTagName = undefined
+            },
+            fetchCheckListData () {
+                this.$service.getListDimension({type: 4}).then(data => {
+                    if (data.behaviorShow) {
+                        this.checkList = data.behaviorShow.split(',')
+                    } else {
+                        this.checkList = ['defineRemark']
+                    }
+                })
+            },
+            handleCheckListChange (val) {
+                this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
+            },
+            handldTabChange () {
+                this.fetchCheckListData()
             }
+        },
+        created () {
+            this.fetchCheckListData()
         }
     }
 </script>

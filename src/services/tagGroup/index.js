@@ -127,10 +127,10 @@ export function cancelCollectTags(data) {
     })
 }
 // 标签列表之我的收藏
-export function collectTagsList(data) {
+export function collectTagsList(params) {
     return this.fetch({
         method: 'get',
         url: 'api/collect/label',
-        data
+        params
     })
 }

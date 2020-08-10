@@ -6,10 +6,10 @@
                 :data="dataList"
                 @selection-change="handleSelectionChange"
         >
-            <el-table-column
-                    type="selection"
-                    width="55">
-            </el-table-column>
+            <!--<el-table-column-->
+                    <!--type="selection"-->
+                    <!--width="55">-->
+            <!--</el-table-column>-->
             <el-table-column prop="tagId" label="ID">
             </el-table-column>
             <el-table-column prop="tagName" label="名称">
@@ -118,6 +118,9 @@
             },
             typeEnum: {
                 type: Object
+            },
+            checkListParent: {
+                type: Array
             }
         },
         components: {
@@ -126,27 +129,21 @@
         data () {
             return {
                 multipleSelection: [],
-                checkList: [],
-                tagId: undefined
+                tagId: undefined,
+                checkList: []
+            }
+        },
+        watch: {
+            checkListParent: function (val) {
+                this.checkList = val
             }
         },
         methods: {
             handleSelectionChange(val) {
                 this.multipleSelection = val
-                console.log(this.multipleSelection)
             },
             handleCheckListChange (val) {
-                this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
-            },
-            fetchCheckListData () {
-                console.log('我执行了一次------')
-                this.$service.getListDimension({type: 4}).then(data => {
-                    if (data.behaviorShow) {
-                        this.checkList = data.behaviorShow.split(',')
-                    } else {
-                        this.checkList = ['defineRemark']
-                    }
-                })
+                this.$emit('change-checkList',val)
             },
             handleSeeTagCategoryDetail (row) {
                 this.tagId = row.tagId
@@ -171,7 +168,7 @@
             }
         },
         created () {
-            this.fetchCheckListData()
+            this.checkList = this.checkListParent
         }
     }
 </script>
