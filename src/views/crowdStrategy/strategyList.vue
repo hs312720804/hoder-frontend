@@ -45,18 +45,19 @@
                 ref="searchForm"
                 @submit.native.prevent="submitForm"
         >
-          <el-select v-model="searchForm.constType">
-            <el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>
-            <el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>
-            <el-option label="策略维度方式查询" value="TAG_NAME"></el-option>
-            <el-option label="创建人名称模糊查询" value="CREATOR_NAME"></el-option>
-            <el-option label="创建人部门名称模糊查询" value="OFFICE_NAME"></el-option>
-            <el-option label="人群ID匹配查询" value="CROWD_ID"></el-option>
-          </el-select>
+          <!--<el-select v-model="searchForm.constType">-->
+            <!--<el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>-->
+            <!--<el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>-->
+            <!--<el-option label="策略维度方式查询" value="TAG_NAME"></el-option>-->
+            <!--<el-option label="创建人名称模糊查询" value="CREATOR_NAME"></el-option>-->
+            <!--<el-option label="创建人部门名称模糊查询" value="OFFICE_NAME"></el-option>-->
+            <!--<el-option label="人群ID匹配查询" value="CROWD_ID"></el-option>-->
+          <!--</el-select>-->
           <el-form-item>
             <el-input
                     v-model="searchForm.policyName"
-                    style="width: 200px" :placeholder="policyNameHolder"
+                    style="width: 350px"
+                    placeholder="支持按策略、人群、维度、创建人、部门搜索"
                     :clearable='true'
                     @keyup.enter.native="submitForm"
             ></el-input>
@@ -374,10 +375,10 @@ export default {
       initCurrentPage: 1,
       // 列表页
       searchForm: {
-        policyName: "",
-        constType: 'POLICY_NAME'
+        policyName: ""
+        // constType: 'POLICY_NAME'
       },
-      policyNameHolder: '请输入策略名称',
+      // policyNameHolder: '请输入策略名称',
       title: "",
       showConfiguration: false,
       showStatistics: false,
@@ -469,9 +470,9 @@ export default {
       //         this.loadData()
       //     }
       // },
-      'searchForm.constType': function (val) {
-          this.policyNameHolder = this.placeHolderInputObject[val]
-      },
+      // 'searchForm.constType': function (val) {
+      //     this.policyNameHolder = this.placeHolderInputObject[val]
+      // },
       time(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
               if(this.setDataInMonth(val[0],val[1])){
@@ -640,8 +641,8 @@ export default {
           if(this.historyFilter != null) {
               this.criteria = this.historyFilter
               this.searchForm = {
-                  policyName: this.historyFilter.policyName,
-                  constType: this.historyFilter.constType || 'POLICY_NAME'
+                  policyName: this.historyFilter.policyName
+                  // constType: this.historyFilter.constType || 'POLICY_NAME'
               },
               this.currentPage = this.historyFilter.pageNum || this.currentPage
               this.pageSize = this.historyFilter.pageSize || this.pageSize
@@ -692,7 +693,7 @@ export default {
     // 重置
     handleReset: function() {
         this.searchForm.policyName = ''
-        this.searchForm.constType = 'POLICY_NAME'
+        // this.searchForm.constType = 'POLICY_NAME'
         this.criteria = {}
         this.loadData()
       // this.$refs.searchForm.resetFields();
