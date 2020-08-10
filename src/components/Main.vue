@@ -131,7 +131,7 @@
                 breadcrumb: [],
                 isCollapseMenu: false,
                 routerMap: {
-                    "label/index": "tag-group-read",
+                    "label/index": "labelSquare",
                     // "label/index": "tag",
                     "launchHelp/index": "validate",
                     "launchCrowd/index": "crowd",
