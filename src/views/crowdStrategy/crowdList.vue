@@ -85,16 +85,16 @@
           @submit.native.prevent="submitForm"
           shiro:hasPermission="sysAdministrative:role:search"
         >
-          <el-form-item label="人群上下架状态" prop="putway">
-              <el-select v-model="searchForm.putway">
-                  <el-option
-                          v-for="item in putwayOptions"
-                          :key="item.value"
-                          :label="item.label"
-                          :value="item.value">
-                  </el-option>
-              </el-select>
-          </el-form-item>
+          <!--<el-form-item label="人群上下架状态" prop="putway">-->
+              <!--<el-select v-model="searchForm.putway">-->
+                  <!--<el-option-->
+                          <!--v-for="item in putwayOptions"-->
+                          <!--:key="item.value"-->
+                          <!--:label="item.label"-->
+                          <!--:value="item.value">-->
+                  <!--</el-option>-->
+              <!--</el-select>-->
+          <!--</el-form-item>-->
           <el-form-item label prop="crowdName">
             <el-input v-model="searchForm.crowdName" style="width: 200px" placeholder="请输入人群名称"></el-input>
           </el-form-item>
@@ -687,7 +687,7 @@ export default {
       },
       searchForm: {
         crowdName: "",
-        putway: ''
+        // putway: ''
       },
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
@@ -1033,6 +1033,7 @@ export default {
     // 重置
     handleReset () {
       this.$refs.searchForm.resetFields()
+        this.loadData()
     },
       // 通用多线性参数设置
       setLinesEchart (element,title,xData,yData,legend) {

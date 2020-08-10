@@ -51,7 +51,7 @@
                         @submit.native.prevent="submitForm"
                 >
                     <el-form-item label prop="launchName">
-                        <el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称"></el-input>
+                        <el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称或ID"></el-input>
                     </el-form-item>
                     <el-form-item>
                         <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
