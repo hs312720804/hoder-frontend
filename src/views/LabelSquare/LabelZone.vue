@@ -18,7 +18,7 @@
                             :name="childItem.groupId"
                     >
                         <tag-list
-                                v-if="activeTab == childItem.groupId"
+                                v-show="toggleShow"
                                 :data-list="dataList"
                                 :data-source-enum="dataSourceEnum"
                                 :type-enum="typeEnum"
@@ -72,7 +72,8 @@
                     tagName: undefined
                 },
                 dataSourceEnum: {},
-                typeEnum: {}
+                typeEnum: {},
+                toggleShow: false
             }
         },
         watch: {
@@ -124,7 +125,14 @@
                 })
             },
             handleTabClick () {
-                this.filter.groupId = this.activeTab
+                // 当前tab再次点击收缩表格
+                if (this.filter.groupId !== this.activeTab) {
+                    this.toggleShow = true
+                    this.filter.groupId = this.activeTab
+                } else {
+                    this.toggleShow = !this.toggleShow
+                    return
+                }
                 // 切换tab清空搜索框的值
                 this.filter.tagName = undefined
                 this.dataList = []
