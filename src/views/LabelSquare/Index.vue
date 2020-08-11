@@ -29,6 +29,7 @@
             <el-input
                     v-model="searchVal"
                     placeholder="支持按标签名、Code、描述搜索"
+                    @keyup.enter.native="handleSearch"
             >
             </el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>

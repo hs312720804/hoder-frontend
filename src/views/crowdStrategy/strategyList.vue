@@ -57,7 +57,7 @@
             <el-input
                     v-model="searchForm.policyName"
                     style="width: 350px"
-                    placeholder="支持按策略、人群、维度、创建人、部门搜索"
+                    placeholder="支持按策略、人群、创建人、部门搜索"
                     :clearable='true'
                     @keyup.enter.native="submitForm"
             ></el-input>
