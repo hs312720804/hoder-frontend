@@ -31,7 +31,8 @@
                 </el-tabs>
             </div>
         </div>
-        <div v-else>
+        <div    class="other-form"
+                v-else>
             <tag-list
                     :data-list="dataList"
                     :data-source-enum="dataSourceEnum"
@@ -137,6 +138,7 @@
                 this.filter.tagName = undefined
                 this.dataList = []
                 this.$emit('clear-search')
+                this.$emit('fetch-checkList')
                 this.fetchTagList()
             },
             handleCheckListChange (val) {
@@ -154,6 +156,8 @@
     padding 12px
     border 1px dashed #ccc
     margin-bottom 5px
+    position relative
+    z-index 1
     &:first-child
         margin-top 50px
 .label-zone >>> .el-icon-cc-star-fill
@@ -172,4 +176,18 @@
     background none
 .label-zone .tab-content >>> .el-tabs__header
    position relative
+.label-zone >>> .el-tabs__nav
+    white-space normal
+.label-zone >>> .el-tabs--bottom .el-tabs__item.is-bottom:nth-child(2),
+.label-zone >>> .el-tabs--bottom .el-tabs__item.is-top:nth-child(2),
+.label-zone >>> .el-tabs--top .el-tabs__item.is-bottom:nth-child(2),
+.label-zone >>> .el-tabs--top .el-tabs__item.is-top:nth-child(2)
+    padding 0 20px
+.other-form
+    margin-top 50px
+.label-zone >>> .el-tabs__active-bar
+    display none
+.label-zone .tab-content >>> .el-tabs__nav-wrap
+    background none
+    z-index -9999
 </style>

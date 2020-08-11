@@ -11,6 +11,7 @@
                         @clear-search="handleClearSearch"
                         :checkList="checkList"
                         @change-checkList="handleCheckListChange"
+                        @fetch-checkList="fetchCheckListData"
                 >
                 </label-zone>
             </el-tab-pane>
@@ -93,10 +94,11 @@
 .label-content
     position relative
 .search-input
-    position absolute
-    top 0
-    right 10px
+    position fixed
+    top 118px
+    right 35px
     width 20%
+    z-index 999
     .icon-fixed
         position absolute
         top 8px
@@ -104,5 +106,8 @@
 .label-content >>> .el-tabs__header
     position fixed
     width 100%
+    z-index 999
+.label-content >>> .el-tabs__nav-wrap
+    background #fff
     z-index 999
 </style>
