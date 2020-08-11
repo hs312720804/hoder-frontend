@@ -146,6 +146,7 @@
             }
         },
         created () {
+            this.$root.$on('label-zone-list-refresh', this.fetchData)
             this.fetchData()
         }
     }

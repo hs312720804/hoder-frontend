@@ -64,6 +64,7 @@
 
         },
         created () {
+            this.$root.$on('my-collect-list-refresh', this.fetchData)
             this.fetchData()
         }
     }

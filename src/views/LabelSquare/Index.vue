@@ -82,6 +82,13 @@
             },
             handldTabChange () {
                 this.fetchCheckListData()
+                if (this.activeName === 'labelZone') {
+                //    刷新标签广场页
+                    this.$root.$emit('label-zone-list-refresh')
+                } else {
+                //    刷新我的收藏
+                    this.$root.$emit('my-collect-list-refresh')
+                }
             }
         },
         created () {
