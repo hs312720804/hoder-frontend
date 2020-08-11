@@ -77,4 +77,6 @@
         align-items center
         .el-button
             margin 0 5px
+    .my-collect
+        margin-top 50px
 </style>

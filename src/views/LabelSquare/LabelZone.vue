@@ -154,6 +154,8 @@
     padding 12px
     border 1px dashed #ccc
     margin-bottom 5px
+    &:first-child
+        margin-top 50px
 .label-zone >>> .el-icon-cc-star-fill
     color #E6A13C
 .label-zone >>> .el-button-group
@@ -168,4 +170,6 @@
     margin-bottom 20px
 .label-zone >>> .el-tabs__nav-wrap::after
     background none
+.label-zone .tab-content >>> .el-tabs__header
+   position relative
 </style>
