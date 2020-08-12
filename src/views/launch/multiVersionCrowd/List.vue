@@ -99,12 +99,12 @@
                     <!--<span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status].name}}</span>-->
                 </template>
             </el-table-column>
-            <el-table-column prop="expiryTime" label="人群有效期" width="180">
-                <template slot-scope="scope">
-                    <el-icon name="time"></el-icon>
-                    <span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>
-                </template>
-            </el-table-column>
+            <!--<el-table-column prop="expiryTime" label="人群有效期" width="180">-->
+                <!--<template slot-scope="scope">-->
+                    <!--<el-icon name="time"></el-icon>-->
+                    <!--<span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>-->
+                <!--</template>-->
+            <!--</el-table-column>-->
             <el-table-column label="人群类型">
                 <template slot-scope="scope">
                     {{crowdType[scope.row.isFxFullSql]}}

@@ -36,20 +36,20 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="数据有效期" prop="expiryDay">
-                            <el-select
-                                    v-model="crowdDefineForm.expiryDay"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            >
-                                <el-option
-                                        v-for="(item,index) in effectTimeList"
-                                        :key="index"
-                                        :label="item.label"
-                                        :value="item.value"
-                                >
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
+                        <!--<el-form-item label="数据有效期" prop="expiryDay">-->
+                            <!--<el-select-->
+                                    <!--v-model="crowdDefineForm.expiryDay"-->
+                                    <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
+                            <!--&gt;-->
+                                <!--<el-option-->
+                                        <!--v-for="(item,index) in effectTimeList"-->
+                                        <!--:key="index"-->
+                                        <!--:label="item.label"-->
+                                        <!--:value="item.value"-->
+                                <!--&gt;-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</el-form-item>-->
                         <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
@@ -131,7 +131,7 @@
                                     <span>请至少填写一组基准和环比阀值</span>
                               </el-form-item>
                               <div class="basic-line-error">{{basicLineErrorText}}</div>
-                              
+
                             </div>
                         <!-- <el-form-item label="微信数量" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="mac数量不少于" prop="minMacEstimateCount" class="inline-block">
@@ -276,20 +276,20 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
-                <el-form-item label="数据有效期" prop="expiryDay">
-                    <el-select
-                            v-model="crowdForm.expiryDay"
-                            :disabled="status!==undefined && (status === 2 || status === 3)"
-                    >
-                        <el-option
-                                v-for="(item,index) in effectTimeList"
-                                :key="index"
-                                :label="item.label"
-                                :value="item.value"
-                        >
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item label="数据有效期" prop="expiryDay">-->
+                    <!--<el-select-->
+                            <!--v-model="crowdForm.expiryDay"-->
+                            <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
+                    <!--&gt;-->
+                        <!--<el-option-->
+                                <!--v-for="(item,index) in effectTimeList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value"-->
+                        <!--&gt;-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item label="每天是否更新" prop="autoVersion">
                     <el-select
                             v-model="crowdForm.autoVersion"
@@ -404,7 +404,7 @@
                     //      dataSource: 2,
                     policyIds: [],
                     policyCrowdIds: [],
-                    expiryDay: 7,
+                    // expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined
                 },
@@ -414,7 +414,7 @@
                     launchName: "", //投放名称
                     biIds: "", //投放平台ID
                     crowdSql: '',
-                    expiryDay: 7,
+                    // expiryDay: 7,
                     autoVersion: 0,
                     calType: ['0'],
                     proTempTag: false,
@@ -439,7 +439,7 @@
                 abTestApart: undefined,
                 status: undefined,
                 crowdFormRules: {
-                   
+
                     launchName: [
                         { required: true, message: "请输入投放名称", trigger: "blur" }
                     ],
@@ -546,7 +546,7 @@
                                 launchName: row.launchName,
                                 biIds: biIds,
                                 crowdSql: row.crowdSql,
-                                expiryDay: row.expiryDay,
+                                // expiryDay: row.expiryDay,
                                 autoVersion: row.autoVersion,
                                 calType: row.calType.split(","),
                                 proTempTag: row.proTempTag,
@@ -590,7 +590,7 @@
                         this.crowdForm.biIds = data.launchCrowdBiIds
                         this.crowdForm.remark = row.remark
                         this.crowdForm.dataSource = row.dataSource
-                        this.crowdForm.expiryDay = row.expiryDay
+                        // this.crowdForm.expiryDay = row.expiryDay
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         this.crowdForm.abTest = row.abTest
@@ -795,7 +795,7 @@
                         //       if ((wxBelowPer !== undefined && wxBelowPer !== '')) {
                         //         if (wxInitialValue === undefined || wxInitialValue === '') {
                         //            this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
-            
+
                         //           return
                         //         }
                         //       }
