@@ -5,20 +5,20 @@
       <el-form-item label="人群用途" prop="purpose">
         <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
       </el-form-item>
-      <el-form-item label="人群有效期" prop="crowdExp">
-        <el-date-picker
-                v-model="form.crowdExp"
-                type="datetimerange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd HH:mm"
-                format="yyyy-MM-dd HH:mm"
-                :picker-options="pickerOptions"
-                :default-time="['00:00:00', '23:59:59']"
-        >
-        </el-date-picker>
-      </el-form-item>
+      <!--<el-form-item label="人群有效期" prop="crowdExp">-->
+        <!--<el-date-picker-->
+                <!--v-model="form.crowdExp"-->
+                <!--type="datetimerange"-->
+                <!--range-separator="至"-->
+                <!--start-placeholder="开始日期"-->
+                <!--end-placeholder="结束日期"-->
+                <!--value-format="yyyy-MM-dd HH:mm"-->
+                <!--format="yyyy-MM-dd HH:mm"-->
+                <!--:picker-options="pickerOptions"-->
+                <!--:default-time="['00:00:00', '23:59:59']"-->
+        <!--&gt;-->
+        <!--</el-date-picker>-->
+      <!--</el-form-item>-->
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
@@ -55,11 +55,11 @@ export default {
                         'limitLaunchCount': undefined
                     }
                 ],
-                crowdExp: []
+                // crowdExp: []
             },
             formRules: {
                 purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
-                crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
+                // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
             },
             pickerOptions: {
                 disabledDate(time) {
@@ -149,8 +149,8 @@ export default {
                     e.purpose = form.purpose
                     e.tagIds = e.tagIds.join(',')
                     e.rulesJson = JSON.stringify(e.rulesJson)
-                    e.crowdValidFrom = form.crowdExp[0]
-                    e.crowdValidTo = form.crowdExp[1]
+                    // e.crowdValidFrom = form.crowdExp[0]
+                    // e.crowdValidTo = form.crowdExp[1]
                     e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
                     return e
                 })
@@ -175,16 +175,16 @@ export default {
     handleEdit () {
       const recordId = this.recordId
       let purpose = undefined
-      let crowdExp = []
+      // let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then((data) => {
         data = data.map((e, index) => {
           if (index === 0) {
             purpose = e.purpose
-              if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
-              else {
-                  crowdExp[0] = e.crowdValidFrom === null ? '' : e.crowdValidFrom
-                  crowdExp[1] = e.crowdValidTo === null ? '' : e.crowdValidTo
-              }
+              // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
+              // else {
+              //     crowdExp[0] = e.crowdValidFrom === null ? '' : e.crowdValidFrom
+              //     crowdExp[1] = e.crowdValidTo === null ? '' : e.crowdValidTo
+              // }
           }
           e.tagIds = e.tagIds.split(",")
           e.rulesJson = JSON.parse(e.rulesJson)
@@ -193,7 +193,7 @@ export default {
         this.form = {
           purpose,
           rulesJson: data,
-          crowdExp
+          // crowdExp
         }
       })
     },

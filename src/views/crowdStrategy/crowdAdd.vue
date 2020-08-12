@@ -219,20 +219,20 @@
               </div>
             </div>
           </el-form-item>
-          <el-form-item label="人群有效期" prop="crowdExp">
-            <el-date-picker
-             v-model="form.crowdExp"
-             type="datetimerange"
-             range-separator="至"
-             start-placeholder="开始日期"
-             end-placeholder="结束日期"
-             value-format="yyyy-MM-dd HH:mm"
-             format="yyyy-MM-dd HH:mm"
-             :picker-options="pickerOptions"
-             :default-time="['00:00:00', '23:59:59']"
-            >
-            </el-date-picker>
-          </el-form-item>
+          <!--<el-form-item label="人群有效期" prop="crowdExp">-->
+            <!--<el-date-picker-->
+             <!--v-model="form.crowdExp"-->
+             <!--type="datetimerange"-->
+             <!--range-separator="至"-->
+             <!--start-placeholder="开始日期"-->
+             <!--end-placeholder="结束日期"-->
+             <!--value-format="yyyy-MM-dd HH:mm"-->
+             <!--format="yyyy-MM-dd HH:mm"-->
+             <!--:picker-options="pickerOptions"-->
+             <!--:default-time="['00:00:00', '23:59:59']"-->
+            <!--&gt;-->
+            <!--</el-date-picker>-->
+          <!--</el-form-item>-->
           <el-form-item label="是否限制投放数量" prop="limitLaunch">
             <el-radio-group v-model="form.limitLaunch" :disabled="limitLaunchDisabled">
               <el-radio  :label="false">否</el-radio>
@@ -298,13 +298,13 @@
                     name: "",
                     policyId: null,
                     remark: "",
-                    crowdExp: [],
+                    // crowdExp: [],
                     limitLaunch: false,
                     limitLaunchCount: undefined
                 },
                 formRules: {
                     name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
-                    crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
+                    // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
                     limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
                 },
                 pickerOptions: {
@@ -551,8 +551,8 @@
                             rulesJson: JSON.stringify(ruleJson),
                             remark: form.remark,
                             policyId: form.policyId,
-                            crowdValidFrom: form.crowdExp[0],
-                            crowdValidTo: form.crowdExp[1],
+                            // crowdValidFrom: form.crowdExp[0],
+                            // crowdValidTo: form.crowdExp[1],
                             limitLaunch: form.limitLaunch,
                             limitLaunchCount: form.limitLaunch ? form.limitLaunchCount : undefined
                         }
@@ -636,12 +636,12 @@
                     this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     const dateArr = []
-                    if (policyData.crowdValidFrom === null && policyData.crowdValidTo === null) {this.form.crowdExp = []}
-                    else {
-                        dateArr[0] = policyData.crowdValidFrom === null ? '' : policyData.crowdValidFrom
-                        dateArr[1] = policyData.crowdValidTo === null ? '' : policyData.crowdValidTo
-                        this.form.crowdExp = dateArr
-                    }
+                    // if (policyData.crowdValidFrom === null && policyData.crowdValidTo === null) {this.form.crowdExp = []}
+                    // else {
+                    //     dateArr[0] = policyData.crowdValidFrom === null ? '' : policyData.crowdValidFrom
+                    //     dateArr[1] = policyData.crowdValidTo === null ? '' : policyData.crowdValidTo
+                    //     this.form.crowdExp = dateArr
+                    // }
                     let ruleJsonData = JSON.parse(policyData.rulesJson)
                     var cacheIds = []
                     ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {

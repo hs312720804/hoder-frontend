@@ -67,10 +67,10 @@
                   <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                       <el-checkbox label="createTime">创建时间</el-checkbox>
                       <el-checkbox label="creatorName">创建人</el-checkbox>
-                      <el-checkbox label="apiStatus">是否生效</el-checkbox>
+                      <!--<el-checkbox label="apiStatus">是否生效</el-checkbox>-->
                       <el-checkbox label="department">业务部门</el-checkbox>
                       <el-checkbox label="remark">备注</el-checkbox>
-                      <el-checkbox label="crowdValidStatus">是否有效期内</el-checkbox>
+                      <!--<el-checkbox label="crowdValidStatus">是否有效期内</el-checkbox>-->
                   </el-checkbox-group>
               </div>
               <el-button slot="reference">选择列表展示维度</el-button>
@@ -171,34 +171,34 @@
           </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
-      <el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">
-        <template slot-scope="scope">
-          <span v-if="scope.row.apiStatus === 1">已生效</span>
-          <span v-if="scope.row.apiStatus === 0">
-              <el-tooltip placement="right-start">
-                <div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>
-                <div v-else slot="content">{{unActiveTips(scope.row.crowdValidStatus)}}</div>
-                <!--<div v-else>-->
-                   <!--&lt;!&ndash;<div v-if="scope.row.crowdValidStatus === 1" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件未生效</div>&ndash;&gt;-->
-                   <!--<div v-if="scope.row.crowdValidStatus === 3" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件已过期</div>-->
-                   <!--<div v-else slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为未点击该策略的"同步按钮"</div>-->
-                <!--</div>-->
-                <span class="uneffective">未生效<span>?</span></span>
-              </el-tooltip>
-          </span>
-        </template>
-      </el-table-column>
+      <!--<el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">-->
+        <!--<template slot-scope="scope">-->
+          <!--<span v-if="scope.row.apiStatus === 1">已生效</span>-->
+          <!--<span v-if="scope.row.apiStatus === 0">-->
+              <!--<el-tooltip placement="right-start">-->
+                <!--<div v-if="scope.row.putway === 0" slot="content">人群未生效，因为该人群条件已下架</div>-->
+                <!--<div v-else slot="content">{{unActiveTips(scope.row.crowdValidStatus)}}</div>-->
+                <!--&lt;!&ndash;<div v-else>&ndash;&gt;-->
+                   <!--&lt;!&ndash;&lt;!&ndash;<div v-if="scope.row.crowdValidStatus === 1" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件未生效</div>&ndash;&gt;&ndash;&gt;-->
+                   <!--&lt;!&ndash;<div v-if="scope.row.crowdValidStatus === 3" slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为该人群条件已过期</div>&ndash;&gt;-->
+                   <!--&lt;!&ndash;<div v-else slot="content">{{ scope.row.crowdValidStatus }}人群未生效，因为未点击该策略的"同步按钮"</div>&ndash;&gt;-->
+                <!--&lt;!&ndash;</div>&ndash;&gt;-->
+                <!--<span class="uneffective">未生效<span>?</span></span>-->
+              <!--</el-tooltip>-->
+          <!--</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column prop="putway" label="上/下架" width="70px">
         <template slot-scope="scope">
-          <span v-if="scope.row.putway === 1">上架中</span>
+          <span v-if="scope.row.putway === 1">生效中</span>
           <span v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
-      <el-table-column v-if="(checkList.indexOf('crowdValidStatus') > -1)" prop="crowdValidStatus" label="是否有效期内" width="100px">
-        <template slot-scope="scope">
-            {{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}
-        </template>
-      </el-table-column>
+      <!--<el-table-column v-if="(checkList.indexOf('crowdValidStatus') > -1)" prop="crowdValidStatus" label="是否有效期内" width="100px">-->
+        <!--<template slot-scope="scope">-->
+            <!--{{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}-->
+        <!--</template>-->
+      <!--</el-table-column>-->
       <el-table-column label="是否AB测试" width="100px">
           <template slot-scope="scope">
               {{abStatusEnum[scope.row.abstatus]}}
@@ -797,7 +797,7 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
-        checkList: ['apiStatus','crowdValidStatus'],
+        checkList: ['creatorName'],
         downloadUrl: undefined,
         launchedExportUrl: undefined,
         crowdValidEnum: {},
