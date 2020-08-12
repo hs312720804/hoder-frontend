@@ -22,6 +22,7 @@
                                 :data-list="dataList"
                                 :data-source-enum="dataSourceEnum"
                                 :type-enum="typeEnum"
+                                :loading="loading"
                                 :check-list-parent="checkList"
                                 @fetch-data="fetchTagList"
                                 @change-checkList="handleCheckListChange"
@@ -37,6 +38,7 @@
                     :data-list="dataList"
                     :data-source-enum="dataSourceEnum"
                     :type-enum="typeEnum"
+                    :loading="loading"
                     :check-list-parent="checkList"
                     @fetch-data="fetchTagAllList"
                     @change-checkList="handleCheckListChange"
@@ -74,7 +76,8 @@
                 },
                 dataSourceEnum: {},
                 typeEnum: {},
-                toggleShow: false
+                toggleShow: false,
+                loading: true
             }
         },
         watch: {
@@ -113,6 +116,7 @@
                         this.dataList = data.pageInfo.list
                         this.dataSourceEnum = data.lableDataSourceEnum
                         this.typeEnum = data.tagsTypeEnum
+                        this.loading = false
                     })
                 }
             },
@@ -130,13 +134,14 @@
                 if (this.filter.groupId !== this.activeTab) {
                     this.toggleShow = true
                     this.filter.groupId = this.activeTab
+                    this.loading = true
                 } else {
                     this.toggleShow = !this.toggleShow
                     return
                 }
                 // 切换tab清空搜索框的值
                 this.filter.tagName = undefined
-                this.dataList = []
+                // this.dataList = []
                 this.$emit('clear-search')
                 this.$emit('fetch-checkList')
                 this.fetchTagList()

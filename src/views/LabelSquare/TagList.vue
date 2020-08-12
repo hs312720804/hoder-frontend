@@ -2,6 +2,9 @@
     <div class="tag-list">
         <el-table
                 v-show="!tagId"
+                v-loading="loading"
+                element-loading-text="拼命加载中"
+                element-loading-spinner="el-icon-loading"
                 border
                 :data="dataList"
                 @selection-change="handleSelectionChange"
@@ -121,6 +124,9 @@
             },
             checkListParent: {
                 type: Array
+            },
+            loading: {
+                type: Boolean
             }
         },
         components: {
