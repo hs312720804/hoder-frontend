@@ -828,8 +828,6 @@
                   })
                   return r
                 }, [])
-                console.log(columns)
-                console.log(rows)
               return {
                 columns,
                 rows

@@ -679,7 +679,6 @@
                 })
             },
             handleRule () {
-              debugger
               let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
               let macInitialValue = crowdForm.macInitialValue
               const macBelowPer = crowdForm.macBelowPer
@@ -690,7 +689,6 @@
               this.validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)
             },
             validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer) {
-              debugger
               const macCondition = (macInitialValue === undefined || macInitialValue === '') && (macBelowPer === undefined || macBelowPer === '')
               const wxCondition = (wxInitialValue === undefined || wxInitialValue === '') && (wxBelowPer === undefined || wxBelowPer === '')
               if (macCondition && wxCondition) {
@@ -747,7 +745,8 @@
                             })
                             crowdForm.ratios = oldRatio
                         }
-                        let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
+                        // let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
+                        let { macInitialValue, macBelowPer, wxInitialValue, wxBelowPer } = crowdForm
                         macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
                         wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
                         crowdForm.macInitialValue = macInitialValue
@@ -780,7 +779,6 @@
                         // const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
                         // const wxCondition = wxInitialValue !== undefined && wxInitialValue !== '' && wxBelowPer !== undefined && wxBelowPer !== ''
                         // if (crowdForm.autoVersion === 1) {
-                        //   debugger
                         //     if (!(macCondition || wxCondition)) {
                         //       this.basicLineErrorText = '请至少填写一组基准和环比阀值'
                         //       return
