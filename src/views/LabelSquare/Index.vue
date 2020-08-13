@@ -71,8 +71,10 @@
             },
             fetchCheckListData () {
                 this.$service.getListDimension({type: 4}).then(data => {
-                    if (data.behaviorShow) {
-                        this.checkList = data.behaviorShow.split(',')
+                    if (data) {
+                        if (data.behaviorShow) {
+                            this.checkList = data.behaviorShow.split(',')
+                        }
                     } else {
                         this.checkList = ['defineRemark']
                     }

@@ -632,8 +632,10 @@ export default {
     // 从服务器读取数据
     loadData () {
      this.$service.getListDimension({type: 1}).then(data => {
-         if (data.behaviorShow) {
-             this.checkList = data.behaviorShow.split(',')
+         if (data) {
+             if (data.behaviorShow) {
+                 this.checkList = data.behaviorShow.split(',')
+             }
          }
      })
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
