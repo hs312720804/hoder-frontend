@@ -36,20 +36,20 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <!--<el-form-item label="数据有效期" prop="expiryDay">-->
-                            <!--<el-select-->
-                                    <!--v-model="crowdDefineForm.expiryDay"-->
-                                    <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
-                            <!--&gt;-->
-                                <!--<el-option-->
-                                        <!--v-for="(item,index) in effectTimeList"-->
-                                        <!--:key="index"-->
-                                        <!--:label="item.label"-->
-                                        <!--:value="item.value"-->
-                                <!--&gt;-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                        <!--</el-form-item>-->
+                        <el-form-item label="数据有效期" prop="expiryDay">
+                            <el-select
+                                    v-model="crowdDefineForm.expiryDay"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
+                                <el-option
+                                        v-for="(item,index) in effectTimeList"
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
+                                >
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
                         <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
@@ -414,7 +414,7 @@
                     launchName: "", //投放名称
                     biIds: "", //投放平台ID
                     crowdSql: '',
-                    // expiryDay: 7,
+                    expiryDay: 7,
                     autoVersion: 0,
                     calType: ['0'],
                     proTempTag: false,
@@ -546,7 +546,7 @@
                                 launchName: row.launchName,
                                 biIds: biIds,
                                 crowdSql: row.crowdSql,
-                                // expiryDay: row.expiryDay,
+                                expiryDay: row.expiryDay,
                                 autoVersion: row.autoVersion,
                                 calType: row.calType.split(","),
                                 proTempTag: row.proTempTag,
