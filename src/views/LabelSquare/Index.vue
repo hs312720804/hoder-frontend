@@ -3,7 +3,6 @@
         <el-tabs
                 v-model="activeName"
                 @tab-click="handldTabChange"
-                v-if="checkList.length > 0"
         >
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
@@ -74,6 +73,8 @@
                     if (data) {
                         if (data.behaviorShow) {
                             this.checkList = data.behaviorShow.split(',')
+                        } else {
+                            this.checkList = ['defineRemark']
                         }
                     } else {
                         this.checkList = ['defineRemark']
