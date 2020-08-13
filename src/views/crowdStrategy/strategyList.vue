@@ -173,7 +173,7 @@
             <el-button
                     size="small"
                     :type= "scope.row.status === 1 ? 'success' : 'danger'"
-                    v-permission="'hoder:policy:add'"
+                    v-permission="'hoder:policy:sync'"
                     @click="freshCache(scope.row)"
             >
               <span v-if="scope.row.status === 1">未同步</span>
