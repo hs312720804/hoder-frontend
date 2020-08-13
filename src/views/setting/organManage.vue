@@ -171,6 +171,7 @@
 </template>
 <script>
 export default {
+  name: 'organManageAA',
   data() {
     return {
       // 表格当前页数据

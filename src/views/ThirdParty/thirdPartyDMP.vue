@@ -8,6 +8,7 @@
 
 <script>
     export default {
+        name: 'thirdPartyDMPAA',
         data () {
             return {
                 // pageSrc: 'https://www.getui.com/cn/'

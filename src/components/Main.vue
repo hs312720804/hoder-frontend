@@ -107,7 +107,7 @@
       </el-header>
       <TagNav ref="tag" :init-tags="initTags" class="tagNav"/>
       <el-main>
-        <keep-alive>
+        <keep-alive :exclude="noCacheMenu">
           <router-view v-if="isKeepAlive"/>
         </keep-alive>
         <router-view v-if="!isKeepAlive"/>
@@ -182,7 +182,8 @@
                 },
                 unReadMessage: 0,
                 showMoreUpdate: false,
-                showMoreSystem: false
+                showMoreSystem: false,
+                noCacheMenu: []
             };
         },
         computed: {
@@ -222,7 +223,15 @@
         },
         methods: {
             getRouter(url){
-                this.$router.push({name:this.routerMap[url]});
+                const name = this.routerMap[url] + 'AA'
+                console.log(name)
+                this.noCacheMenu.push(name)
+                console.log('this.noCacheMenu',this.noCacheMenu)
+                this.$router.push({name:this.routerMap[url]})
+                this.$nextTick(() => {
+                    this.noCacheMenu = []
+                    console.log('this.noCacheMenu-----nextTick',this.noCacheMenu)
+                })
             },
             handleDropdownCommand(command) {
                 if (command === "logout") {

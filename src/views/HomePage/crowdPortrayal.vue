@@ -7,6 +7,7 @@
 
 <script>
     export default {
+        name: 'crowdPortrayalAA',
         data () {
             return {
             }

@@ -10,6 +10,7 @@
 import MenuList from "./menuSetting"
 import Icon from "./icon"
 export default {
+  name: 'menuSettingAA',
   data() {
     return {
       isShowMenuList: true,

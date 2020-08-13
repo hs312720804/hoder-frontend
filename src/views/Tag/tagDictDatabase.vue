@@ -27,7 +27,7 @@
     import _ from 'gateschema'
     import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
-        name: "tagDictDatabase",
+        name: "tagDictDatabaseAA",
         components: {
             ContentWrapper,
             Table

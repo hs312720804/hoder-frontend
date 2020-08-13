@@ -261,6 +261,7 @@
 </template>
 <script>
 export default {
+  name: 'personManageAA',
   data() {
     return {
       // 表格当前页数据

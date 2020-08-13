@@ -79,6 +79,7 @@
 </template>
 <script>
 export default {
+    name: 'operateLogAA',
     data(){
         return{
             // 表格当前页数据

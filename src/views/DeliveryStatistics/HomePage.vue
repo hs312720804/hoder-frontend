@@ -306,7 +306,7 @@
     import { ContentWrapper, Table} from 'admin-toolkit'
     import veWordcloud from 'v-charts/lib/wordcloud'
     export default {
-        name: "StatisticsHomePage",
+        name: "statisticsHomePageAA",
         components: {
             ContentWrapper,
             Table,

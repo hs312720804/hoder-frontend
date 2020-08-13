@@ -17,7 +17,7 @@
     import pullList from './strategy/List'
     import pushList from './multiVersionCrowd/Index'
     export default {
-        name: "LaunchTabList",
+        name: "launchTabListAA",
         components: {
             pullList,
             pushList

@@ -95,7 +95,7 @@
 
 <script>
     export default {
-        name: "userTagsSearch",
+        name: "userTagsSearchAA",
         data () {
             return {
                 formData: {

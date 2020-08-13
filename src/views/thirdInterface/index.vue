@@ -9,7 +9,7 @@
     import thirdInterfaceList from './list'
     import thirdInterfaceAdd from './add'
     export default {
-        name: "thirdInterfaceIndex",
+        name: "thirdInterfaceAA",
         components: {
             thirdInterfaceAdd,
             thirdInterfaceList

@@ -167,6 +167,7 @@
 </template>
 <script>
 export default {
+  name: 'emailNoticeAA',
   data() {
     var validatePass = (rule, value, callback) => {
       var c = value.indexOf("@coocaa.com");

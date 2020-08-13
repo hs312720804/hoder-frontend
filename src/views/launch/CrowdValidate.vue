@@ -68,7 +68,7 @@
 
 <script>
     export default {
-        name: "CrowdValidate",
+        name: "CrowdValidateAA",
         data () {
             return {
                 form: {

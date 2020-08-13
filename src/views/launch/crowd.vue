@@ -8,6 +8,7 @@
 import List from "./crowd/list";
 import Add from "./crowd/add";
 export default {
+  name: 'crowdAA',
   data() {
     return {
       isShowList: true,

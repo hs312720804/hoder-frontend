@@ -8,6 +8,7 @@
 
 <script>
     export default {
+        name: 'OverallDeliveryStatisticsAA',
         data () {
             return {
                 // pageSrc: 'http://bi.skysrt.com'

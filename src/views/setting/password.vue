@@ -24,6 +24,7 @@
 </template>
 <script>
 export default {
+  name: 'passwordAA',
   data() {
     var validateOldPass = (rule, value, callback) => {
       if (value === "") {

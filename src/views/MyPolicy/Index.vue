@@ -15,7 +15,7 @@
 import policyList from '../crowdStrategy/index'
 import launchList from '../launch/LaunchTabList'
     export default {
-        name: "Index",
+        name: "myPolicyAA",
         components: {
             policyList,
             launchList

@@ -83,7 +83,7 @@
 
 <script>
     export default {
-        name: "launchSetting",
+        name: "launchSettingsAA",
         data () {
             return {
                 tableData: [],

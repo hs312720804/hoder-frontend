@@ -11,7 +11,7 @@
     import groupImageAdd from './Add'
     import deviceEcharts from './deviceEcharts'
     export default {
-        name: "Index",
+        name: "groupImageInsightAA",
         components: {
             groupImageList,
             groupImageAdd,

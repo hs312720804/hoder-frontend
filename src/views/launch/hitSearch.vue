@@ -46,7 +46,7 @@
 
 <script>
     export default {
-        name: "hitSearch",
+        name: "hitSearchAA",
         data () {
             return {
                 form: this.genForm(),

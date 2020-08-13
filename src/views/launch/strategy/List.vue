@@ -81,6 +81,7 @@
 <script>
     import { ContentWrapper, Table, utils} from 'admin-toolkit'
     export default {
+        name: 'strategyAA',
         components: {
             ContentWrapper,
             Table

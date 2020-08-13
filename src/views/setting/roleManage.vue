@@ -236,6 +236,7 @@
 <script>
 import _ from "lodash";
 export default {
+  name: 'roleManageAA',
   data() {
     return {
       // 表格当前页数据

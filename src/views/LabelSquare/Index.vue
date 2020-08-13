@@ -40,7 +40,7 @@
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
     export default {
-        name: "Index",
+        name: "labelSquareAA",
         components: {
             labelZone,
             myCollect

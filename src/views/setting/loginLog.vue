@@ -53,6 +53,7 @@
 </template>
 <script>
 export default {
+    name: 'loginLogAA',
     data(){
         return{
             // 表格当前页数据

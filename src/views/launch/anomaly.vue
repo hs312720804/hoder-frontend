@@ -56,7 +56,7 @@
 
 <script>
     export default {
-        name: "anomaly",
+        name: "anomalyEchartsAA",
         data () {
             return {
                 time: [],

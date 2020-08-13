@@ -24,6 +24,7 @@
 </template>
 <script>
 export default {
+    name: 'personalInformationAA',
     data(){
         return{
             labelPosition: 'right',

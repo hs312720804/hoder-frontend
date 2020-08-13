@@ -9,7 +9,7 @@
     import ipManageList from './list'
     import ipManageAdd from './add'
     export default {
-        name: "index",
+        name: "ipManageAA",
         components: {
             ipManageList,
             ipManageAdd

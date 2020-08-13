@@ -18,7 +18,7 @@
 
 <script>
     export default {
-        name: "clearCacheIndex",
+        name: "clearCacheAA",
         data () {
             return {
                 deviceMsg: ''
