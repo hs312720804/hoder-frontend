@@ -218,19 +218,22 @@
             //   return items;
             // },
             initTags() {
-                return this.$appState.$get("tags") || [];
+                const tagsInfo = this.$appState.$get("tags")
+                if (tagsInfo && tagsInfo.userName === this.$appState.user.name) {
+                    return tagsInfo.tags
+                } else {
+                    return []
+                }
+                // return this.$appState.$get("tags") || [];
             }
         },
         methods: {
             getRouter(url){
                 const name = this.routerMap[url] + 'AA'
-                console.log(name)
                 this.noCacheMenu.push(name)
-                console.log('this.noCacheMenu',this.noCacheMenu)
                 this.$router.push({name:this.routerMap[url]})
                 this.$nextTick(() => {
                     this.noCacheMenu = []
-                    console.log('this.noCacheMenu-----nextTick',this.noCacheMenu)
                 })
             },
             handleDropdownCommand(command) {
@@ -246,7 +249,7 @@
                 this.isCollapseMenu = isCollapseMenu;
             },
             saveTags() {
-                const tags = this.$refs.tag.tags;
+                const tags = {tags: this.$refs.tag.tags, userName: this.$appState.user.name};
                 this.$appState.$set("tags", tags);
             },
             setMetaTitle() {
