@@ -130,7 +130,7 @@
                         >投放</el-button>
                         <!-- 取消投放显示的状态：3投放中 -->
                         <el-button
-                                v-if="(launchStatusEnum[scope.row.history.status]).code === 3"
+                                v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
                                 v-permission="'hoder:launch:crowd:ver:cancel'"
                                 size="small"
                                 type="warning"
