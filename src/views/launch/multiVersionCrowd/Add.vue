@@ -721,7 +721,7 @@
                     if (valid) {
                         let crowdForm = JSON.stringify(this.crowdDefineForm)
                         crowdForm = JSON.parse(crowdForm)
-                        crowdForm.biIds = crowdForm.biIds.join(",")
+                        // crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
                         crowdForm.crowdSql = crowdForm.crowdSql.trim()
                         // 校验当区分视频源时，是否勾选内容源
