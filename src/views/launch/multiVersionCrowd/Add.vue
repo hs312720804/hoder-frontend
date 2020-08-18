@@ -24,32 +24,32 @@
                                       v-model="crowdDefineForm.crowdSql">
                             </el-input>
                         </el-form-item>
-                        <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                            <el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">
-                                <el-option
-                                        v-for="(item,index) in launchPlatform"
-                                        :key="index"
-                                        :label="item.biName"
-                                        :value="item.biId+''"
-                                >
-                                    <!-- {{item.biName}} -->
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="数据有效期" prop="expiryDay">
-                            <el-select
-                                    v-model="crowdDefineForm.expiryDay"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            >
-                                <el-option
-                                        v-for="(item,index) in effectTimeList"
-                                        :key="index"
-                                        :label="item.label"
-                                        :value="item.value"
-                                >
-                                </el-option>
-                            </el-select>
-                        </el-form-item>
+                        <!--<el-form-item label="投放平台" class="multipleSelect" prop="biIds">-->
+                            <!--<el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">-->
+                                <!--<el-option-->
+                                        <!--v-for="(item,index) in launchPlatform"-->
+                                        <!--:key="index"-->
+                                        <!--:label="item.biName"-->
+                                        <!--:value="item.biId+''"-->
+                                <!--&gt;-->
+                                    <!--&lt;!&ndash; {{item.biName}} &ndash;&gt;-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</el-form-item>-->
+                        <!--<el-form-item label="数据有效期" prop="expiryDay">-->
+                            <!--<el-select-->
+                                    <!--v-model="crowdDefineForm.expiryDay"-->
+                                    <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
+                            <!--&gt;-->
+                                <!--<el-option-->
+                                        <!--v-for="(item,index) in effectTimeList"-->
+                                        <!--:key="index"-->
+                                        <!--:label="item.label"-->
+                                        <!--:value="item.value"-->
+                                <!--&gt;-->
+                                <!--</el-option>-->
+                            <!--</el-select>-->
+                        <!--</el-form-item>-->
                         <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
