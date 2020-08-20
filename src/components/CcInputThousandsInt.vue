@@ -64,6 +64,9 @@ export default {
       return data.replace(/,/g, '')
     },
     format_number(n) {
+      if(typeof n !== String) {
+          n = n.toString()
+      }
       var len = n.length
       if (len <= 3) { return n }
       var r = len % 3
