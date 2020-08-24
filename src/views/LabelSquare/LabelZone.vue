@@ -127,6 +127,7 @@
                     this.dataList = data.pageInfo.list
                     this.dataSourceEnum = data.lableDataSourceEnum
                     this.typeEnum = data.tagsTypeEnum
+                    this.loading = false
                 })
             },
             handleTabClick () {
