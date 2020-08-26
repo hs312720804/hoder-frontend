@@ -134,3 +134,11 @@ export function collectTagsList(params) {
         params
     })
 }
+// 临时人群列表
+export function getTempCrowdList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/tempCrowd/index',
+        params
+    })
+}

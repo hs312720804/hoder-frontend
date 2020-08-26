@@ -4,6 +4,9 @@
                 v-model="activeName"
                 @tab-click="handldTabChange"
         >
+            <el-tab-pane label="临时标签" name="tempLabel">
+                <temp-label></temp-label>
+            </el-tab-pane>
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
                         :tagName="labelZoneTagName"
@@ -24,7 +27,7 @@
                 </my-collect>
             </el-tab-pane>
         </el-tabs>
-        <div class="search-input">
+        <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
             <el-input
                     v-model="searchVal"
                     placeholder="支持按标签名、Code、描述搜索"
@@ -39,11 +42,13 @@
 <script>
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
+    import tempLabel from './TempLabel'
     export default {
         name: "labelSquareAA",
         components: {
             labelZone,
-            myCollect
+            myCollect,
+            tempLabel
         },
         data () {
             return {
