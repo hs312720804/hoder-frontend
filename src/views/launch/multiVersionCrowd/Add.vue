@@ -36,20 +36,20 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <!--<el-form-item label="数据有效期" prop="expiryDay">-->
-                            <!--<el-select-->
-                                    <!--v-model="crowdDefineForm.expiryDay"-->
-                                    <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
-                            <!--&gt;-->
-                                <!--<el-option-->
-                                        <!--v-for="(item,index) in effectTimeList"-->
-                                        <!--:key="index"-->
-                                        <!--:label="item.label"-->
-                                        <!--:value="item.value"-->
-                                <!--&gt;-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                        <!--</el-form-item>-->
+                        <el-form-item label="数据有效期" prop="expiryDay">
+                            <el-select
+                                    v-model="crowdDefineForm.expiryDay"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
+                                <el-option
+                                        v-for="(item,index) in effectTimeList"
+                                        :key="index"
+                                        :label="item.label"
+                                        :value="item.value"
+                                >
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
                         <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
@@ -276,20 +276,20 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
-                <!--<el-form-item label="数据有效期" prop="expiryDay">-->
-                    <!--<el-select-->
-                            <!--v-model="crowdForm.expiryDay"-->
-                            <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
-                    <!--&gt;-->
-                        <!--<el-option-->
-                                <!--v-for="(item,index) in effectTimeList"-->
-                                <!--:key="index"-->
-                                <!--:label="item.label"-->
-                                <!--:value="item.value"-->
-                        <!--&gt;-->
-                        <!--</el-option>-->
-                    <!--</el-select>-->
-                <!--</el-form-item>-->
+                <el-form-item label="数据有效期" prop="expiryDay">
+                    <el-select
+                            v-model="crowdForm.expiryDay"
+                            :disabled="status!==undefined && (status === 2 || status === 3)"
+                    >
+                        <el-option
+                                v-for="(item,index) in effectTimeList"
+                                :key="index"
+                                :label="item.label"
+                                :value="item.value"
+                        >
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <el-form-item label="每天是否更新" prop="autoVersion">
                     <el-select
                             v-model="crowdForm.autoVersion"
@@ -404,7 +404,7 @@
                     //      dataSource: 2,
                     policyIds: [],
                     policyCrowdIds: [],
-                    // expiryDay: 7,
+                    expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined
                 },
@@ -590,7 +590,7 @@
                         this.crowdForm.biIds = data.launchCrowdBiIds
                         this.crowdForm.remark = row.remark
                         this.crowdForm.dataSource = row.dataSource
-                        // this.crowdForm.expiryDay = row.expiryDay
+                        this.crowdForm.expiryDay = row.expiryDay
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         this.crowdForm.abTest = row.abTest
