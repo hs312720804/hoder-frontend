@@ -4,9 +4,9 @@
                 v-model="activeName"
                 @tab-click="handldTabChange"
         >
-            <el-tab-pane label="临时标签" name="tempLabel">
-                <temp-label></temp-label>
-            </el-tab-pane>
+            <!--<el-tab-pane label="临时标签" name="tempLabel">-->
+                <!--<temp-label></temp-label>-->
+            <!--</el-tab-pane>-->
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
                         :tagName="labelZoneTagName"
