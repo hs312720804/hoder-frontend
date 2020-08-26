@@ -24,18 +24,18 @@
                                       v-model="crowdDefineForm.crowdSql">
                             </el-input>
                         </el-form-item>
-                        <!--<el-form-item label="投放平台" class="multipleSelect" prop="biIds">-->
-                            <!--<el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">-->
-                                <!--<el-option-->
-                                        <!--v-for="(item,index) in launchPlatform"-->
-                                        <!--:key="index"-->
-                                        <!--:label="item.biName"-->
-                                        <!--:value="item.biId+''"-->
-                                <!--&gt;-->
-                                    <!--&lt;!&ndash; {{item.biName}} &ndash;&gt;-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                        <!--</el-form-item>-->
+                        <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
+                            <el-select v-model="crowdDefineForm.biIds" multiple placeholder="请选择投放平台">
+                                <el-option
+                                        v-for="(item,index) in launchPlatform"
+                                        :key="index"
+                                        :label="item.biName"
+                                        :value="item.biId+''"
+                                >
+                                    <!-- {{item.biName}} -->
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
                         <!--<el-form-item label="数据有效期" prop="expiryDay">-->
                             <!--<el-select-->
                                     <!--v-model="crowdDefineForm.expiryDay"-->
@@ -50,30 +50,30 @@
                                 <!--</el-option>-->
                             <!--</el-select>-->
                         <!--</el-form-item>-->
-                        <!--<div class="horizontal-line">-->
-                        <!--<el-form-item label="是否生成临时标签" prop="proTempTag">-->
-                            <!--<el-radio-group v-model="crowdDefineForm.proTempTag">-->
-                                <!--<el-radio :label="false">否</el-radio>-->
-                                <!--<el-radio :label="true">是</el-radio>-->
-                            <!--</el-radio-group>-->
-                        <!--</el-form-item>-->
-                        <!--<el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">-->
-                            <!--<el-select-->
-                                    <!--v-model="crowdDefineForm.tagId"-->
-                                    <!--filterable-->
-                                    <!--class="select-tag"-->
-                                    <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
-                            <!--&gt;-->
-                                <!--<el-option-->
-                                    <!--v-for="item in tagsList"-->
-                                    <!--:key="item.tagId"-->
-                                    <!--:label="item.tagName"-->
-                                    <!--:value="item.tagId"-->
-                                <!--&gt;-->
-                                <!--</el-option>-->
-                            <!--</el-select>-->
-                        <!--</el-form-item>-->
-                        <!--</div>-->
+                        <div class="horizontal-line">
+                        <el-form-item label="是否生成临时标签" prop="proTempTag">
+                            <el-radio-group v-model="crowdDefineForm.proTempTag">
+                                <el-radio :label="false">否</el-radio>
+                                <el-radio :label="true">是</el-radio>
+                            </el-radio-group>
+                        </el-form-item>
+                        <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
+                            <el-select
+                                    v-model="crowdDefineForm.tagId"
+                                    filterable
+                                    class="select-tag"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
+                                <el-option
+                                    v-for="item in tagsList"
+                                    :key="item.tagId"
+                                    :label="item.tagName"
+                                    :value="item.tagId"
+                                >
+                                </el-option>
+                            </el-select>
+                        </el-form-item>
+                        </div>
                             <div class="horizontal-line">
                         <el-form-item label="每天是否更新" prop="autoVersion">
                            <el-radio-group v-model="crowdDefineForm.autoVersion"  :disabled="status!==undefined && (status === 2 || status === 3)">
@@ -417,9 +417,9 @@
                     expiryDay: 7,
                     autoVersion: 0,
                     calType: ['0'],
-                    // proTempTag: false,
+                    proTempTag: false,
                     autoLaunchTime: undefined,
-                    // tagId: undefined,
+                    tagId: undefined,
                     abTest: undefined,
                     ratios: undefined,
                     basicLine: undefined, // 数量基准验证用
@@ -464,18 +464,18 @@
                     crowdSql: [
                         { required: true, message: "请输入SQL语句", trigger: "blur" }
                     ],
-                    // proTempTag: [
-                    //     { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
-                    // ],
+                    proTempTag: [
+                        { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
+                    ],
                     autoVersion: [
                         { required: true, message: "请选择每天是否更新", trigger: "blur" }
                     ],
                     autoLaunchTime: [
                         { required: true, message: "请选择每天更新时间点", trigger: "blur" }
                     ],
-                    // tagId: [
-                    //     { required: true, message: "请选择标签", trigger: "blur" }
-                    // ],
+                    tagId: [
+                        { required: true, message: "请选择标签", trigger: "blur" }
+                    ],
                     maxMacEstimateCount: [
                         { required: false,validator: checkMaxMac, trigger: "blur"}
                     ],
@@ -549,9 +549,9 @@
                                 expiryDay: row.expiryDay,
                                 autoVersion: row.autoVersion,
                                 calType: row.calType.split(","),
-                                // proTempTag: row.proTempTag,
+                                proTempTag: row.proTempTag,
                                 autoLaunchTime: row.autoLaunchTime,
-                                // tagId: row.tagId,
+                                tagId: row.tagId,
                                 abTest: row.abTest,
                                 ratios: abTestRatio,
                                 macInitialValue: macInitialValue === null ? undefined : macInitialValue, //Mac基准值
@@ -721,7 +721,7 @@
                     if (valid) {
                         let crowdForm = JSON.stringify(this.crowdDefineForm)
                         crowdForm = JSON.parse(crowdForm)
-                        // crowdForm.biIds = crowdForm.biIds.join(",")
+                        crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
                         crowdForm.crowdSql = crowdForm.crowdSql.trim()
                         // 校验当区分视频源时，是否勾选内容源
