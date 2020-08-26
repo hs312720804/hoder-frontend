@@ -4,9 +4,9 @@
                 v-model="activeName"
                 @tab-click="handldTabChange"
         >
-            <!--<el-tab-pane label="临时标签" name="tempLabel">-->
-                <!--<temp-label></temp-label>-->
-            <!--</el-tab-pane>-->
+            <el-tab-pane label="临时标签" name="tempLabel">
+                <temp-label></temp-label>
+            </el-tab-pane>
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
                         :tagName="labelZoneTagName"
@@ -90,13 +90,20 @@
                 this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
             },
             handldTabChange () {
-                this.fetchCheckListData()
-                if (this.activeName === 'labelZone') {
-                //    刷新标签广场页
-                    this.$root.$emit('label-zone-list-refresh')
-                } else {
-                //    刷新我的收藏
-                    this.$root.$emit('my-collect-list-refresh')
+                switch (this.activeName) {
+                    case 'labelZone':
+                        //    刷新标签广场页
+                        this.fetchCheckListData()
+                        this.$root.$emit('label-zone-list-refresh')
+                        break
+                    case 'myCollect':
+                        //    刷新我的收藏
+                        this.fetchCheckListData()
+                        this.$root.$emit('my-collect-list-refresh')
+                        break
+                    case 'tempLabel':
+                        this.$root.$emit('temp-label-list-refresh')
+                        break
                 }
             }
         },

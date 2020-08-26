@@ -23,16 +23,41 @@
                             >
                                 监控
                             </el-button>
-                            <el-button
-                                    type="text"
-                                    @click="more(scope.row)"
-                            >
-                                更多
-                            </el-button>
+                            <el-dropdown @command="handleCommandOpreate">
+                                <el-button size="small" type="text">
+                                    操作
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item
+                                            :command="['edit',scope.row]"
+                                    >编辑
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                            :command="['monitor',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:index'"
+                                    >数据监控
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                            :command="['del',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:delete'"
+                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                    >删除
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown>
                         </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
+            <div align="right">
+                <pagination
+                        :currentpage="currentPage"
+                        :pagesize="pageSize"
+                        :totalcount="totalCount"
+                        @handle-size-change="handleSizeChange"
+                        @handle-current-change="handleCurrentChange"
+                ></pagination>
+            </div>
         </div>
     </div>
 </template>
@@ -43,23 +68,56 @@
         data () {
             return {
                 tableData: [],
-                filter: {
-                    pageNum: 1,
-                    pageSize: 5,
-                    launchName: undefined
-                }
+                filter: {},
+                launchName: undefined,
+                launchStatusEnum: {},
+                pageSize: 10,
+                currentPage: 1,
+                totalCount: 1
             }
         },
         created () {
+            this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
         },
         methods: {
             fetchData () {
-                const filter = this.filter
+                const filter = {
+                    pageNum: this.currentPage,
+                    pageSize: this.pageSize,
+                    launchName: this.launchName
+                }
                 this.$service.getTempCrowdList(filter).then(data => {
                     console.log(data)
+                    this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
+                    this.totalCount = data.pageInfo.total
                 })
+            },
+            handleCommandOpreate(scope) {
+                const type = scope[0]
+                const params = scope[1]
+                switch (type) {
+                    case 'edit':
+                        this.handleEdit(params)
+                        break
+                    case 'del':
+                        this.del(params)
+                        break
+                    case 'monitor':
+                        this.handleMonitor(params)
+                        break
+                }
+            },
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+            handleSizeChange (val) {
+                this.pageSize = val
+                this.fetchData()
+            },
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleCurrentChange (val) {
+                this.currentPage = val
+                this.fetchData()
             },
             handleSeeCrowdCondition (row) {},
             minitor (row) {},
