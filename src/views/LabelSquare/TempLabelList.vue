@@ -29,7 +29,7 @@
                         <el-button-group>
                             <el-button
                                     type="text"
-                                    @click="handleSeeCrowdCondition(scope.row)"
+                                    @click="condition(scope.row)"
                             >
                                 人群条件
                             </el-button>
@@ -75,6 +75,20 @@
                 ></pagination>
             </div>
         </div>
+        <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+            <el-form v-if="launchType === 0">
+                <el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">
+                    <el-checkbox
+                            v-model="v.choosed"
+                            v-for="v in item.childs"
+                            :key="v.crowdId"
+                            disabled
+                    >{{v.crowdName}}
+                    </el-checkbox>
+                </el-form-item>
+            </el-form>
+            <div v-if="launchType === 1">{{selectStrategy}}</div>
+        </el-dialog>
     </div>
 </template>
 
@@ -89,7 +103,11 @@
                 launchStatusEnum: {},
                 pageSize: 10,
                 currentPage: 1,
-                totalCount: 1
+                totalCount: 1,
+                isShowCondition: false,
+                launchType: undefined,
+                launchTitle: '',
+                selectStrategy: null,//人群条件的选择策略
             }
         },
         created () {
@@ -137,7 +155,22 @@
                 this.currentPage = val
                 this.fetchData()
             },
-            handleSeeCrowdCondition (row) {},
+            condition(row) {
+                this.isShowCondition = true
+                this.$service
+                .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
+                .then(data => {
+                    this.launchType = data.type
+                    if ( data.type === 1) {
+                        this.launchTitle = '人群条件'
+                        this.selectStrategy = data.sqlRule
+                    }
+                    else {
+                        this.launchTitle = '选择的策略'
+                        this.selectStrategy = data.respcl
+                    }
+                })
+            },
             minitor (row) {},
             more (row) {},
             handleAdd () {
