@@ -5,7 +5,7 @@
                 @tab-click="handldTabChange"
         >
             <el-tab-pane label="临时标签" name="tempLabel">
-                <temp-label></temp-label>
+                <temp-label-index></temp-label-index>
             </el-tab-pane>
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
@@ -42,13 +42,13 @@
 <script>
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
-    import tempLabel from './TempLabel'
+    import tempLabelIndex from './TempLabelIndex'
     export default {
         name: "labelSquareAA",
         components: {
             labelZone,
             myCollect,
-            tempLabel
+            tempLabelIndex
         },
         data () {
             return {
@@ -126,6 +126,7 @@
         position absolute
         top 8px
         right 10px
+        transform rotate(-90deg)
 .label-content >>> .el-tabs__header
     position fixed
     width 100%

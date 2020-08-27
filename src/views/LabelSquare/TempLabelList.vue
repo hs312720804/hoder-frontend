@@ -1,5 +1,21 @@
 <template>
-    <div class="temp-label">
+    <div class="temp-label-list">
+        <div class="header">
+            <el-button
+                    @click="handleAdd"
+                    type="primary">
+                新建
+            </el-button>
+            <div class="search-input">
+                <el-input
+                        placeholder="支持按人群名、ID搜索"
+                        class="header-input"
+                        v-model="launchName"
+                        @keyup.enter.native="fetchData"
+                ></el-input>
+                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+            </div>
+        </div>
         <div>
             <el-table :data="tableData" border>
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
@@ -112,6 +128,8 @@
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
             handleSizeChange (val) {
                 this.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.currentPage = 1
                 this.fetchData()
             },
             // 页码变更, 如第1页变成第2页时,val=2
@@ -121,17 +139,33 @@
             },
             handleSeeCrowdCondition (row) {},
             minitor (row) {},
-            more (row) {}
+            more (row) {},
+            handleAdd () {
+                this.$emit('show-add')
+            }
         }
     }
 </script>
 
 <style lang="stylus" scoped>
-.temp-label
-    margin-top 50px
-.temp-label >>> .el-button-group
-    display flex
-    align-items center
-    .el-button
-        margin 0 5px
+    .temp-label-list
+        margin-top 50px
+    .temp-label-list >>> .el-button-group
+        display flex
+        align-items center
+        .el-button
+            margin 0 5px
+    .header
+        display flex
+        justify-content space-between
+        margin 10px 0
+    .search-input
+        position relative
+        display flex
+        width 30%
+    .icon-fixed
+        position absolute
+        top 8px
+        right 10px
+        transform rotate(-90deg)
 </style>
