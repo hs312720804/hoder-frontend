@@ -2,11 +2,13 @@
     <div class="temp-label">
         <temp-label-list
             v-show="showList"
-            @show-add="showList = false"
+            @show-add="handleShowAdd"
         >
         </temp-label-list>
         <temp-label-add
             v-if="!showList"
+            :editLaunchCrowdId="editLaunchCrowdId"
+            :editStatus="editStatus"
             @cancel-add = "showList = true"
         >
         </temp-label-add>
@@ -24,13 +26,19 @@
         },
         data () {
             return {
-                showList: true
+                showList: true,
+                editLaunchCrowdId: undefined,
+                editStatus: undefined
             }
         },
         created () {
         },
         methods: {
-
+            handleShowAdd (id, code) {
+                this.showList = false
+                this.editLaunchCrowdId = id
+                this.editStatus = code
+            }
         }
     }
 </script>

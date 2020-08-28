@@ -182,7 +182,7 @@
                 videoSourceList: []
             }
         },
-        props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
+        props: ["editLaunchCrowdId", "model","editStatus"],
         watch: {
             'crowdForm.abTest': function (val, oldVal) {
                 // 根第一次加载的时候不判断，当值变的时候再触发

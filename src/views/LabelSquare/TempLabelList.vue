@@ -171,8 +171,29 @@
                     }
                 })
             },
+            // 删除
+            del(row) {
+                var id = row.launchCrowdId
+                this.$confirm("确定要删除吗?", "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                })
+                .then(() => {
+                    this.$service.delMultiVersionCrowd(id, "删除成功").then(() => {
+                        this.callback()
+                    })
+                })
+                .catch(() => {
+                })
+            },
+            // 编辑
+            handleEdit(launchCrowdItem) {
+                this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+            },
             minitor (row) {},
             more (row) {},
+            // 新增
             handleAdd () {
                 this.$emit('show-add')
             }
