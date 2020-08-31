@@ -240,7 +240,7 @@
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
             <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
-            <el-checkbox-group v-model="estimateValue" aria-required="true">
+            <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
             </el-checkbox-group>
             <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
@@ -551,7 +551,8 @@
                         },
                         triggerEvent: true
                     }
-                }
+                },
+                accountDefine: false
             };
         },
         props: ["parentSource"],
@@ -689,6 +690,14 @@
             lanuch (index, row) {
                 this.currentLaunchId = row.launchCrowdId
                 this.showEstimate = true
+                // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                if (row.setCalculate) {
+                    this.accountDefine = true
+                    this.estimateValue = ['0','1','2','3']
+                } else {
+                    this.accountDefine = false
+                    this.estimateValue = ['0']
+                }
                 this.$service.getEstimateType().then((data) => {
                     this.estimateItems = data
                 })

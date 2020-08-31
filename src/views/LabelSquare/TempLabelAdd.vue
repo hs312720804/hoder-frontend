@@ -371,7 +371,7 @@
                 this.$emit("cancel-add")
             },
             getAddList () {
-                    this.$service.addMultiVersionCrowd(this.model).then(data => {
+                    this.$service.addMultiVersionCrowd(1).then(data => {
                         this.launchPlatform = data.biLists
                         this.effectTimeList = data.efTime.map(item => {
                             return { label: item + '天',value: item }
