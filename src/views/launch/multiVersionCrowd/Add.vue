@@ -622,8 +622,6 @@
                             })
                         })
                         this.firstTimeLoad = true
-                        console.log(this.crowdForm.policyIds)
-                        console.log(this.crowdForm.policyCrowdIds)
                     }
                 })
             } else {
