@@ -196,7 +196,7 @@
         <!--新增投放-->
         <div v-else>
             <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="100px">
-                <el-form-item label="投放名称" prop="launchName">
+                <el-form-item label="投放名称" prop="launchName" class="form-width">
                     <el-input size="small"
                               v-model="crowdForm.launchName"
                               placeholder="投放名称"
@@ -204,7 +204,13 @@
                     ></el-input>
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                    <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                    <el-select
+                            v-model="crowdForm.biIds"
+                            @change="handleBiIdChange"
+                            multiple
+                            placeholder="请选择投放平台"
+                            style="width: 56%"
+                    >
                         <el-option
                                 v-for="item in launchPlatform"
                                 :key="item.biId+''"
@@ -214,21 +220,27 @@
                             <!-- {{item.biName}} -->
                         </el-option>
                     </el-select>
+                    <el-checkbox
+                            v-if="showAccountRelative"
+                            v-model="crowdForm.setCalculate"
+                            style="margin-left: 20px">
+                        账号关联去重
+                    </el-checkbox>
                 </el-form-item>
-                <el-form-item label="数据来源" prop="dataSource">
+                <el-form-item label="数据来源" prop="dataSource" class="form-width">
                     <input type="hidden" value="2" v-model="crowdForm.dataSource">
                     <el-input size="small" readonly value="大数据"></el-input>
                 </el-form-item>
-                <el-form-item label="备注" prop="remark">
+                <el-form-item label="备注" prop="remark" class="form-width">
                     <el-input size="small" v-model="crowdForm.remark"></el-input>
                 </el-form-item>
-                <el-form-item label="是否做abTest">
+                <el-form-item label="是否做abTest" class="form-width">
                     <el-radio-group v-model="crowdForm.abTest">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
+                <el-form-item label="选择策略" prop="policyIds" class="multipleSelect form-width">
                     <el-select
                             filterable
                             v-model="crowdForm.policyIds"
@@ -276,7 +288,7 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
-                <el-form-item label="数据有效期" prop="expiryDay">
+                <el-form-item label="数据有效期" prop="expiryDay" class="form-width">
                     <el-select
                             v-model="crowdForm.expiryDay"
                             :disabled="status!==undefined && (status === 2 || status === 3)"
@@ -290,7 +302,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="每天是否更新" prop="autoVersion">
+                <el-form-item label="每天是否更新" prop="autoVersion" class="form-width">
                     <el-select
                             v-model="crowdForm.autoVersion"
                             :disabled="status!==undefined && (status === 2 || status === 3)"
@@ -299,7 +311,7 @@
                         <el-option label="否" :value="0"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1" class="form-width">
                     <el-time-picker
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
@@ -406,7 +418,8 @@
                     policyCrowdIds: [],
                     expiryDay: 7,
                     autoVersion: 0,
-                    autoLaunchTime: undefined
+                    autoLaunchTime: undefined,
+                    setCalculate: false //，当投放平台只有消息触达时，设置账号关联相关
                 },
                 // 新增自定义人群
                 crowdDefineForm: {
@@ -500,7 +513,8 @@
                 percent: [],
                 copiesItem: [],
                 percentTotal: 0,
-                videoSourceList: []
+                videoSourceList: [],
+                showAccountRelative: false
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
@@ -583,7 +597,7 @@
                             this.status = this.editStatus
                     } else {
                         this.launchPlatform = data.biLists
-                        this.strategyPlatform = data.policies
+                        // this.strategyPlatform = data.policies
                         this.crowdForm.launchCrowdId = row.launchCrowdId
                         this.crowdForm.dmpCrowdId = row.dmpCrowdId
                         this.crowdForm.launchName = row.launchName
@@ -594,6 +608,10 @@
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         this.crowdForm.abTest = row.abTest
+                        if (this.crowdForm.biIds.join(',') === '7') {
+                            this.showAccountRelative = true
+                        }
+                        this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
                         this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                         this.getCrowd()
@@ -604,6 +622,8 @@
                             })
                         })
                         this.firstTimeLoad = true
+                        console.log(this.crowdForm.policyIds)
+                        console.log(this.crowdForm.policyCrowdIds)
                     }
                 })
             } else {
@@ -884,6 +904,20 @@
                 this.$service.getVideoSourceList().then(data => {
                     this.videoSourceList = data
                 })
+            },
+            handleBiIdChange (val) {
+                if (val) {
+                    if(val.join(',') === '7') {
+                        this.showAccountRelative = true
+                    } else {
+                        this.showAccountRelative = false
+                        this.crowdForm.setCalculate = false
+                    }
+                } else {
+                    this.showAccountRelative = false
+                    this.crowdForm.setCalculate = false
+                }
+
             }
         }
     }
@@ -925,6 +959,8 @@
     width 180px
   .ratio
     width 230px
+  .form-width
+    width 60%
 </style>
 
 
