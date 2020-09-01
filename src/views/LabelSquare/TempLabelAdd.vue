@@ -101,6 +101,11 @@
                                 <el-checkbox v-for="(item,index) in videoSourceList" :key="index" :label="item.tagValueId">{{item.tagValue}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
+                        <el-form-item label="数据类型">
+                            <el-checkbox-group v-model="crowdDefineForm.calType" aria-required="true">
+                                <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+                            </el-checkbox-group>
+                        </el-form-item>
                     </el-form>
                 </el-col>
             </el-row>
@@ -133,7 +138,7 @@
                     expiryDay: 7,
                     autoVersion: 0,
                     calType: ['0'],
-                    proTempTag: false,
+                    // proTempTag: false,
                     autoLaunchTime: undefined,
                     basicLine: undefined, // 数量基准验证用
                     macInitialValue: undefined, //Mac基准值
@@ -149,7 +154,7 @@
                     videoSource: '0',
                     videoSourceIds: []
                 },
-                abTestApart: undefined,
+                // abTestApart: undefined,
                 status: undefined,
                 crowdDefineFormRules: {
                     launchName: [
@@ -158,9 +163,9 @@
                     crowdSql: [
                         { required: true, message: "请输入SQL语句", trigger: "blur" }
                     ],
-                    proTempTag: [
-                        { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
-                    ],
+                    // proTempTag: [
+                    //     { required: true, message: "请选择是否生成临时标签", trigger: "blur" }
+                    // ],
                     autoVersion: [
                         { required: true, message: "请选择每天是否更新", trigger: "blur" }
                     ],
@@ -178,30 +183,30 @@
                 alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
                 percent: [],
                 copiesItem: [],
-                percentTotal: 0,
+                // percentTotal: 0,
                 videoSourceList: []
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus"],
         watch: {
-            'crowdForm.abTest': function (val, oldVal) {
-                // 根第一次加载的时候不判断，当值变的时候再触发
-                if (oldVal && this.firstTimeLoad) {
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.crowdData = []
-                    this.firstTimeLoad = false
-                }
-                if (val && !this.firstTimeLoad) {
-                    this.crowdData = []
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.firstTimeLoad = true
-                }
-            },
-            percent(val) {
-                this.percentTotal = val.reduce((prev ,cur) => {
-                    return prev + cur
-                })
-            },
+            // 'crowdForm.abTest': function (val, oldVal) {
+            //     // 根第一次加载的时候不判断，当值变的时候再触发
+            //     if (oldVal && this.firstTimeLoad) {
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         this.crowdData = []
+            //         this.firstTimeLoad = false
+            //     }
+            //     if (val && !this.firstTimeLoad) {
+            //         this.crowdData = []
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         this.firstTimeLoad = true
+            //     }
+            // },
+            // percent(val) {
+            //     this.percentTotal = val.reduce((prev ,cur) => {
+            //         return prev + cur
+            //     })
+            // },
             'crowdDefineForm.videoSource': function (val) {
                 if (val === '0') {
                     this.crowdDefineForm.videoSourceIds = []
@@ -213,9 +218,11 @@
             this.handleGetVideoList()
             if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
                 this.title = "编辑临时人群"
-                this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
-                    let row = data.launchCrowd
-                    let abTestRatio = data.ratio || {}
+                // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
+                this.$service.getTempCrowd({launchCrowdId: this.editLaunchCrowdId}).then(data => {
+                    let row = data
+                    console.log('编辑回显的数据----',data)
+                    // let abTestRatio = data.ratio || {}
                         let {macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer} = row
                         this.crowdDefineForm = {
                             launchCrowdId: row.launchCrowdId,
@@ -224,10 +231,10 @@
                             expiryDay: row.expiryDay,
                             autoVersion: row.autoVersion,
                             calType: row.calType.split(","),
-                            proTempTag: row.proTempTag,
+                            // proTempTag: row.proTempTag,
                             autoLaunchTime: row.autoLaunchTime,
-                            abTest: row.abTest,
-                            ratios: abTestRatio,
+                            // abTest: row.abTest,
+                            // ratios: abTestRatio,
                             macInitialValue: macInitialValue === null ? undefined : macInitialValue, //Mac基准值
                             macAbovePer: macAbovePer === null ? undefined : macAbovePer, //Mac最大阈值
                             macBelowPer: macBelowPer === null ? undefined : macBelowPer, //Mac最小阈值
@@ -252,29 +259,6 @@
                     if(v.split("_")[0]!=policyId)
                         return v
                 })
-            },
-            getCrowd () {
-                let policyId = null
-                if (this.crowdForm.abTest) {
-                    policyId = this.crowdForm.policyIds
-                } else {
-                    policyId = this.crowdForm.policyIds.join(",")
-                }
-                this.$service
-                .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-                .then(data => {
-                    if(this.crowdForm.abTest) {
-                        let newDataForm = []
-                        const pid = Object.keys(data[0].childs)
-                        pid.forEach((item) => {
-                            newDataForm.push({Pid: item, childs: data[0].childs[item]})
-                        })
-                        this.crowdData = newDataForm
-                    }else {
-                        this.crowdData = data
-                    }
-                })
-                .catch(() => {})
             },
             // 新增
             handleRule () {
@@ -319,7 +303,7 @@
                     if (valid) {
                         let crowdForm = JSON.stringify(this.crowdDefineForm)
                         crowdForm = JSON.parse(crowdForm)
-                        crowdForm.biIds = crowdForm.biIds.join(",")
+                        // crowdForm.biIds = crowdForm.biIds.join(",")
                         crowdForm.calType = crowdForm.calType.join(",")
                         crowdForm.crowdSql = crowdForm.crowdSql.trim()
                         // 校验当区分视频源时，是否勾选内容源
@@ -332,17 +316,17 @@
                             }
                         }
                         // ab划分对保存的数据进行处理
-                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined && crowdForm.abTest ) {
-                            if (this.percentTotal !== 100) {
-                                this.$message.error('划分的所有比例总和必须等于100%，请调整比例再保存！')
-                                return
-                            }
-                            let oldRatio = crowdForm.ratios
-                            Object.keys(oldRatio).forEach((key, index) => {
-                                oldRatio[key] = this.percent[index]
-                            })
-                            crowdForm.ratios = oldRatio
-                        }
+                        // if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+                        //     if (this.percentTotal !== 100) {
+                        //         this.$message.error('划分的所有比例总和必须等于100%，请调整比例再保存！')
+                        //         return
+                        //     }
+                        //     let oldRatio = crowdForm.ratios
+                        //     Object.keys(oldRatio).forEach((key, index) => {
+                        //         oldRatio[key] = this.percent[index]
+                        //     })
+                        //     crowdForm.ratios = oldRatio
+                        // }
                         // let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
                         let { macInitialValue, macBelowPer, wxInitialValue, wxBelowPer } = crowdForm
                         macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
@@ -353,11 +337,17 @@
                             return
                         }
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
+                            // this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
+                            //     this.callback()
+                            // })
+                            this.$service.updateTempCrowd(crowdForm,"编辑成功").then(() => {
                                 this.callback()
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: this.model, data: crowdForm},"新增成功").then(() => {
+                            // this.$service.saveAddMultiVersionCrowd({data: crowdForm},"新增成功").then(() => {
+                            //     this.callback()
+                            // })
+                            this.$service.addTempCrowd(crowdForm,"新增成功").then(() => {
                                 this.callback()
                             })
                         }
@@ -400,6 +390,7 @@
             handleGetVideoList () {
                 this.$service.getVideoSourceList().then(data => {
                     this.videoSourceList = data
+                    console.log('data-----',data)
                 })
             }
         }

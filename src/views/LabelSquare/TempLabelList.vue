@@ -24,21 +24,27 @@
                 <el-table-column prop="" label="使用次数"></el-table-column>
                 <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
                 <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
-                <el-table-column label="操作">
+                <el-table-column label="操作" width="200">
                     <template slot-scope="scope">
                         <el-button-group>
                             <el-button
                                     type="text"
-                                    @click="condition(scope.row)"
+                                    @click="calculate(scope.row)"
                             >
-                                人群条件
+                                计算
                             </el-button>
                             <el-button
                                     type="text"
-                                    @click="minitor(scope.row)"
+                                    @click="condition(scope.row)"
                             >
-                                监控
+                                标签条件
                             </el-button>
+                            <!--<el-button-->
+                                    <!--type="text"-->
+                                    <!--@click="minitor(scope.row)"-->
+                            <!--&gt;-->
+                                <!--监控-->
+                            <!--</el-button>-->
                             <el-dropdown @command="handleCommandOpreate">
                                 <el-button size="small" type="text">
                                     操作
@@ -76,18 +82,19 @@
             </div>
         </div>
         <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
-            <el-form v-if="launchType === 0">
-                <el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">
-                    <el-checkbox
-                            v-model="v.choosed"
-                            v-for="v in item.childs"
-                            :key="v.crowdId"
-                            disabled
-                    >{{v.crowdName}}
-                    </el-checkbox>
-                </el-form-item>
-            </el-form>
-            <div v-if="launchType === 1">{{selectStrategy}}</div>
+            <!--<el-form v-if="launchType === 0">-->
+                <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
+                    <!--<el-checkbox-->
+                            <!--v-model="v.choosed"-->
+                            <!--v-for="v in item.childs"-->
+                            <!--:key="v.crowdId"-->
+                            <!--disabled-->
+                    <!--&gt;{{v.crowdName}}-->
+                    <!--</el-checkbox>-->
+                <!--</el-form-item>-->
+            <!--</el-form>-->
+            <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
+            <div>{{selectStrategy}}</div>
         </el-dialog>
     </div>
 </template>
@@ -95,6 +102,11 @@
 <script>
     export default {
         name: "TempLabel",
+        props: {
+            'refreshFlag': {
+                type: Boolean
+            }
+        },
         data () {
             return {
                 tableData: [],
@@ -105,7 +117,7 @@
                 currentPage: 1,
                 totalCount: 1,
                 isShowCondition: false,
-                launchType: undefined,
+                // launchType: undefined,
                 launchTitle: '',
                 selectStrategy: null,//人群条件的选择策略
             }
@@ -113,6 +125,13 @@
         created () {
             this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
+        },
+        watch: {
+            'refreshFlag': function (val) {
+                if (val) {
+                    this.fetchData()
+                }
+            }
         },
         methods: {
             fetchData () {
@@ -158,30 +177,26 @@
             condition(row) {
                 this.isShowCondition = true
                 this.$service
-                .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
+                .getTempCrowd({ launchCrowdId: row.launchCrowdId })
                 .then(data => {
-                    this.launchType = data.type
-                    if ( data.type === 1) {
-                        this.launchTitle = '人群条件'
-                        this.selectStrategy = data.sqlRule
-                    }
-                    else {
-                        this.launchTitle = '选择的策略'
-                        this.selectStrategy = data.respcl
-                    }
+                    console.log(data)
+                    // this.launchType = data.type
+                    this.launchTitle = '人群条件'
+                    this.selectStrategy = data.crowdSql
+
                 })
             },
             // 删除
             del(row) {
-                var id = row.launchCrowdId
+                const launchCrowdId = row.launchCrowdId
                 this.$confirm("确定要删除吗?", "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning"
                 })
                 .then(() => {
-                    this.$service.delMultiVersionCrowd(id, "删除成功").then(() => {
-                        this.callback()
+                    this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
+                        this.fetchData()
                     })
                 })
                 .catch(() => {
@@ -191,8 +206,10 @@
             handleEdit(launchCrowdItem) {
                 this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
             },
-            minitor (row) {},
+            // minitor (row) {},
             more (row) {},
+            // 计算
+            calculate () {},
             // 新增
             handleAdd () {
                 this.$emit('show-add')

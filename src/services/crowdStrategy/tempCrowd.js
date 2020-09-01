@@ -11,6 +11,7 @@ export function addTempCrowd(data) {
     return this.fetch({
         method: 'post',
         url: 'api/tempCrowd',
+        isJSON: true,
         data
     })
 }
@@ -19,6 +20,7 @@ export function updateTempCrowd(data) {
     return this.fetch({
         method: 'put',
         url: 'api/tempCrowd',
+        isJSON: true,
         data
     })
 }

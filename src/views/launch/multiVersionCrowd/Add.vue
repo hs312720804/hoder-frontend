@@ -618,8 +618,10 @@
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
                     console.log('row----',row)
+                    console.log('model----',this.model)
+                    console.log('row.tempCrowdId----',row.tempCrowdId)
                     let abTestRatio = data.ratio || {}
-                    if (this.model == 1) {
+                    if (this.model == 1 && !row.tempCrowdId) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
                             let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row

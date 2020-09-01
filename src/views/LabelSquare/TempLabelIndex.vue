@@ -3,6 +3,7 @@
         <temp-label-list
             v-show="showList"
             @show-add="handleShowAdd"
+            :refresh="refreshFlag"
         >
         </temp-label-list>
         <temp-label-add
@@ -10,6 +11,7 @@
             :editLaunchCrowdId="editLaunchCrowdId"
             :editStatus="editStatus"
             @cancel-add = "showList = true"
+            @changeStatus = "handleRefreshList"
         >
         </temp-label-add>
     </div>
@@ -28,7 +30,8 @@
             return {
                 showList: true,
                 editLaunchCrowdId: undefined,
-                editStatus: undefined
+                editStatus: undefined,
+                refreshFlag: false
             }
         },
         created () {
@@ -38,6 +41,9 @@
                 this.showList = false
                 this.editLaunchCrowdId = id
                 this.editStatus = code
+            },
+            handleRefreshList () {
+                this.refreshFlag = true
             }
         }
     }
