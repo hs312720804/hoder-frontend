@@ -159,7 +159,7 @@
                                 >调整波动阀值
                                 </el-dropdown-item>
                                 <el-dropdown-item
-                                        v-if="scope.row.isFxFullSql === 1"
+                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
                                         :command="['monitor',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
