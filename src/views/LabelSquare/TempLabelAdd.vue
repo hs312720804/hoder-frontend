@@ -91,7 +91,10 @@
 
                         </div>
                         <el-form-item label="该人群所属的视频源">
-                            <el-radio-group v-model="crowdDefineForm.videoSource">
+                            <el-radio-group
+                                    v-model="crowdDefineForm.videoSource"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
                                 <el-radio label="0">不区分</el-radio>
                                 <el-radio label="1">区分</el-radio>
                             </el-radio-group>
@@ -102,7 +105,11 @@
                             </el-checkbox-group>
                         </el-form-item>
                         <el-form-item label="数据类型">
-                            <el-checkbox-group v-model="crowdDefineForm.calType" aria-required="true">
+                            <el-checkbox-group
+                                    v-model="crowdDefineForm.calType"
+                                    aria-required="true"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
@@ -241,8 +248,8 @@
                             wxInitialValue: wxInitialValue === null ? undefined : wxInitialValue, //微信基准值
                             wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, //微信最大阈值
                             wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, //微信最小阈值
-                            videoSource: row.videoSource === null ? '0' : '1',
-                            videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(",")
+                            videoSource: row.videoSource === '0' ? '0' : '1',
+                            videoSourceIds: row.videoSource === '0' ? [] : row.videoSource.split(",")
                         }
                         this.status = this.editStatus
                 })

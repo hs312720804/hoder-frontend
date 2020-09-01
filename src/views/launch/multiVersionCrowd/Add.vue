@@ -7,7 +7,7 @@
         </el-row>
         <!--新增编辑界面-->
         <!--新增自定义人群-->
-        <div v-if="model == 1">
+        <div v-if="model == 1 && isTempCrowd">
             <el-row :gutter="40" >
                 <el-col :span="24">
                     <el-form :model="crowdDefineForm" :rules="crowdDefineFormRules" ref="crowdDefineForm" label-width="140px">
@@ -580,7 +580,8 @@
                 videoSourceList: [],
                 showAccountRelative: false,
                 tempCrowdList: [],
-                disabledCrowdType: false
+                disabledCrowdType: false,
+                isTempCrowd: false
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
@@ -617,10 +618,9 @@
                 this.title = "编辑"
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
-                    console.log('row----',row)
-                    console.log('model----',this.model)
-                    console.log('row.tempCrowdId----',row.tempCrowdId)
                     let abTestRatio = data.ratio || {}
+                    // 当row.tempCrowdId=0，就是普通人群
+                    this.isTempCrowd = !row.tempCrowdId
                     if (this.model == 1 && !row.tempCrowdId) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
@@ -768,7 +768,6 @@
                                 return v.split("_")[1]
                             }).join(",")
                         }
-                        console.log('crowdForm=========',crowdForm)
                         // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
                         // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
                         //     return v.split("_")[1]
@@ -1013,7 +1012,6 @@
                     pageSize: 100
                 }
                 this.$service.getTempCrowdList(filter).then(data => {
-                    console.log(data)
                     this.tempCrowdList = data.pageInfo.list
                     // this.launchStatusEnum = data.launchStatusEnum
                     // this.tableData = data.pageInfo.list

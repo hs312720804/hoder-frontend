@@ -21,7 +21,11 @@
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="jobEndTime" label="有效期"></el-table-column>
-                <el-table-column prop="" label="使用次数"></el-table-column>
+                <el-table-column prop="" label="使用次数">
+                    <!--<template slot-scope="scope">-->
+                        <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
+                    <!--</template>-->
+                </el-table-column>
                 <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
                 <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
                 <el-table-column label="操作" width="200">
@@ -54,11 +58,11 @@
                                             :command="['edit',scope.row]"
                                     >编辑
                                     </el-dropdown-item>
-                                    <el-dropdown-item
-                                            :command="['monitor',scope.row]"
-                                            v-permission="'hoder:launch:crowd:ver:index'"
-                                    >数据监控
-                                    </el-dropdown-item>
+                                    <!--<el-dropdown-item-->
+                                            <!--:command="['monitor',scope.row]"-->
+                                            <!--v-permission="'hoder:launch:crowd:ver:index'"-->
+                                    <!--&gt;数据监控-->
+                                    <!--</el-dropdown-item>-->
                                     <el-dropdown-item
                                             :command="['del',scope.row]"
                                             v-permission="'hoder:launch:crowd:ver:delete'"
@@ -102,11 +106,7 @@
 <script>
     export default {
         name: "TempLabel",
-        props: {
-            'refreshFlag': {
-                type: Boolean
-            }
-        },
+        props: ['refreshFlag'],
         data () {
             return {
                 tableData: [],
@@ -141,7 +141,6 @@
                     launchName: this.launchName
                 }
                 this.$service.getTempCrowdList(filter).then(data => {
-                    console.log(data)
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total
@@ -157,9 +156,9 @@
                     case 'del':
                         this.del(params)
                         break
-                    case 'monitor':
-                        this.handleMonitor(params)
-                        break
+                    // case 'monitor':
+                    //     this.handleMonitor(params)
+                    //     break
                 }
             },
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -179,11 +178,8 @@
                 this.$service
                 .getTempCrowd({ launchCrowdId: row.launchCrowdId })
                 .then(data => {
-                    console.log(data)
-                    // this.launchType = data.type
                     this.launchTitle = '人群条件'
                     this.selectStrategy = data.crowdSql
-
                 })
             },
             // 删除
@@ -207,9 +203,12 @@
                 this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
             },
             // minitor (row) {},
-            more (row) {},
             // 计算
-            calculate () {},
+            calculate (row) {
+                this.$service.calculateTempCrowd({launchCrowdId: row.launchCrowdId,calType: row.calType},'成功计算中').then(()=> {
+                    this.fetchData()
+                })
+            },
             // 新增
             handleAdd () {
                 this.$emit('show-add')

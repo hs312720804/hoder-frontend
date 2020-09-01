@@ -3,7 +3,7 @@
         <temp-label-list
             v-show="showList"
             @show-add="handleShowAdd"
-            :refresh="refreshFlag"
+            :refreshFlag="refreshFlag"
         >
         </temp-label-list>
         <temp-label-add
@@ -39,10 +39,12 @@
         methods: {
             handleShowAdd (id, code) {
                 this.showList = false
+                this.refreshFlag = false
                 this.editLaunchCrowdId = id
                 this.editStatus = code
             },
             handleRefreshList () {
+                this.showList = true
                 this.refreshFlag = true
             }
         }
