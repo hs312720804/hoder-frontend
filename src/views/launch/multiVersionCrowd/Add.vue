@@ -317,7 +317,7 @@
                                 v-for="item in tempCrowdList"
                                 :key="item.launchCrowdId+''"
                                 :label="item.launchName"
-                                :value="item.launchCrowdId+''"
+                                :value="item.launchCrowdId"
                         >{{item.launchName}}
                         </el-option>
                     </el-select>
@@ -686,6 +686,7 @@
                         this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
                         if (row.tempCrowdId) {
+                            this.crowdForm.tempCrowdId = row.tempCrowdId
                             this.crowdForm.policyIds = []
                             this.crowdForm.policyCrowdIds = []
                         } else {

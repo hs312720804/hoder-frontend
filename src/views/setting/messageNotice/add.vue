@@ -21,7 +21,12 @@
                     <el-select v-model="addForm.noticeType">
                         <el-option :value="1" label="升级消息"></el-option>
                         <el-option :value="2" label="系统通知"></el-option>
+                        <el-option :value="3" label="标签更新"></el-option>
                     </el-select>
+                    <el-radio-group>
+                        <el-radio :label="false">不发送</el-radio>
+                        <el-radio :label="true">发送</el-radio>
+                    </el-radio-group>
                 </el-form-item>
                 <el-form-item label="内容" prop="content">
                     <el-input type="textarea" :rows="6" v-model="addForm.content"></el-input>
