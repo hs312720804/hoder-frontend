@@ -180,7 +180,7 @@
                     'first': 1,
                     'second': 2
                 },
-                unReadMessage: 0,
+                unReadMessage: undefined,
                 showMoreUpdate: false,
                 showMoreSystem: false,
                 noCacheMenu: []
@@ -312,7 +312,7 @@
                 this.$service.getNoticeHeaderList({noticeType}).then((data) => {
                     let interfaceData = data['消息列表']
                     let statusData = data['消息状态']
-                    this.unReadMessage = data['未读数量']
+                    this.unReadMessage = data['未读数量'] > 0 ? data['未读数量'] : undefined
                     interfaceData.forEach((item,index)=> {
                         item.noticeStatus = statusData[index]
                     })

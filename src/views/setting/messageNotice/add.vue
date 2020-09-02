@@ -23,10 +23,16 @@
                         <el-option :value="2" label="系统通知"></el-option>
                         <el-option :value="3" label="标签更新"></el-option>
                     </el-select>
-                    <el-radio-group>
+                    <!-- 编辑的时候不显示 是否发送单选框 -->
+                    <el-radio-group v-if="!editId" v-model="addForm.sendEmail" style="margin: 0 20px">
                         <el-radio :label="false">不发送</el-radio>
                         <el-radio :label="true">发送</el-radio>
                     </el-radio-group>
+                    <span v-if="addForm.sendEmail">收件人：
+                        <el-select v-model="receive">
+                            <el-option value="all" label="全部DMP用户"></el-option>
+                        </el-select>
+                    </span>
                 </el-form-item>
                 <el-form-item label="内容" prop="content">
                     <el-input type="textarea" :rows="6" v-model="addForm.content"></el-input>
@@ -63,7 +69,8 @@
                     noticeTitle: '',
                     noticeType: 1,
                     content: '',
-                    noticeId: undefined
+                    noticeId: undefined,
+                    sendEmail: false
                 },
                 rules: {
                     noticeTitle: [
@@ -75,7 +82,8 @@
                     content: [
                         { required: true, message: '请输入消息内容',trigger: 'blur' }
                     ]
-                }
+                },
+                receive: 'all'
             }
         },
         watch: {
@@ -111,12 +119,14 @@
                             // 新增保存
                             this.$service.noticeAdd(this.addForm,'保存成功').then(() => {
                                 this.$emit('open-list-page')
+                                this.$root.$emit('refresh-notifications')
                             })
                         } else {
                             // 编辑保存
                             this.addForm.noticeId = this.editId
                             this.$service.noticeEdit(this.addForm,'修改成功').then(() => {
                                 this.$emit('open-list-page')
+                                this.$root.$emit('refresh-notifications')
                             })
                         }
                     } else {

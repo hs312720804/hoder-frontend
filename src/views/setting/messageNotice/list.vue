@@ -8,6 +8,10 @@
         >
             <div class="add-button">
                 <el-button @click="handleAdd" type="primary" v-permission="'sysSetup:notice:add'">新增</el-button>
+                <el-button @click="fetchData(0)">全部</el-button>
+                <el-button @click="fetchData(1)">升级通知</el-button>
+                <el-button @click="fetchData(2)">系统通知</el-button>
+                <el-button @click="fetchData(3)">标签通知</el-button>
             </div>
             <Table
                     :props="table.props"
@@ -36,7 +40,8 @@
             return {
                 noticeTypeEnum: {
                     1: "升级通知",
-                    2: "系统通知"
+                    2: "系统通知",
+                    3: "标签更新"
                 },
                 readStatusEnum: {
                     0: '未读',
@@ -214,8 +219,9 @@
                 }
                 return filter
             },
-            fetchData () {
+            fetchData (type) {
                 const filter = this.parseFilter()
+                filter.showType = type
                 this.$service.noticeList(filter).then((data) => {
                     let interfaceData = data.pageInfo.list
                     const statusData = data.noticeUserStatus

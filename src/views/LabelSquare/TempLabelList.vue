@@ -21,7 +21,7 @@
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="jobEndTime" label="有效期"></el-table-column>
-                <el-table-column prop="" label="使用次数">
+                <el-table-column prop="count" label="使用次数">
                     <!--<template slot-scope="scope">-->
                         <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
                     <!--</template>-->

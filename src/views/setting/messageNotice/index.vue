@@ -35,7 +35,6 @@
                 this.mode = mode
             },
             openListPage () {
-                this.$router.push({name: 'notice'})
                 this.showList = true
             }
         },
