@@ -100,11 +100,11 @@
                             </el-radio-group>
                         </el-form-item>
                         <el-form-item label="" v-show="crowdDefineForm.videoSource === '1'">
-                            <el-checkbox-group v-model="crowdDefineForm.videoSourceIds">
+                            <el-checkbox-group v-model="crowdDefineForm.videoSourceIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox v-for="(item,index) in videoSourceList" :key="index" :label="item.tagValueId">{{item.tagValue}}</el-checkbox>
                             </el-checkbox-group>
                         </el-form-item>
-                        <el-form-item label="数据类型">
+                        <el-form-item label="数据类型" prop="calType">
                             <el-checkbox-group
                                     v-model="crowdDefineForm.calType"
                                     aria-required="true"
@@ -178,6 +178,9 @@
                     ],
                     autoLaunchTime: [
                         { required: true, message: "请选择每天更新时间点", trigger: "blur" }
+                    ],
+                    calType: [
+                        { required: true, message: "请至少勾选一项数据类型", trigger: "blur" }
                     ]
                 },
                 filterText: "",
