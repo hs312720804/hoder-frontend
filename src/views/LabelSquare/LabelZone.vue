@@ -17,7 +17,7 @@
                             :key="childItem.groupId"
                             :name="childItem.groupId"
                     >
-                        <div class="button-add" v-if="activeTab == 229">
+                        <div class="button-add" v-if="childItem.groupName === '自定义标签'">
                             <el-button type="primary" @click="handleAddTagCategory">新增</el-button>
                         </div>
                         <tag-list
