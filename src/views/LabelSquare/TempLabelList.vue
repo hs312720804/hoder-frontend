@@ -26,17 +26,31 @@
                         <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
                     <!--</template>-->
                 </el-table-column>
+                <el-table-column label="状态">
+                    <template slot-scope="scope">
+                        <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+                            计算完成
+                        </div>
+                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                        >
+                            <el-button type="text" @click="calculate(scope.row)">计算</el-button>
+                        </div>
+                        <div v-else>
+                            {{(launchStatusEnum[scope.row.history.status]).name}}
+                        </div>
+                    </template>
+                </el-table-column>
                 <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
                 <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
                 <el-table-column label="操作" width="200">
                     <template slot-scope="scope">
                         <el-button-group>
-                            <el-button
-                                    type="text"
-                                    @click="calculate(scope.row)"
-                            >
-                                计算
-                            </el-button>
+                            <!--<el-button-->
+                                    <!--type="text"-->
+                                    <!--@click="calculate(scope.row)"-->
+                            <!--&gt;-->
+                                <!--计算-->
+                            <!--</el-button>-->
                             <el-button
                                     type="text"
                                     @click="condition(scope.row)"
