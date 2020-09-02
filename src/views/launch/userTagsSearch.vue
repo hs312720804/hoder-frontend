@@ -66,7 +66,7 @@
                     >
                         <el-option
                                 v-for="(tagItem,index) in tagAttrList"
-                                :label="tagItem.label"
+                                :label="'【'+tagItem.value+'】'+tagItem.label"
                                 :value="tagItem.value"
                                 :key="index"
                         >
