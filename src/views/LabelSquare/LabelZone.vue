@@ -17,6 +17,9 @@
                             :key="childItem.groupId"
                             :name="childItem.groupId"
                     >
+                        <div class="button-add" v-if="activeTab == 229">
+                            <el-button type="primary" @click="handleAddTagCategory">新增</el-button>
+                        </div>
                         <tag-list
                                 v-show="toggleShow"
                                 :data-list="dataList"
@@ -45,15 +48,24 @@
             >
             </tag-list>
         </div>
+        <TagCategoryUpsert
+                ref="tagCategoryUpsert"
+                :current-tag-category="tagCategory"
+                :type-enum="typeEnum"
+                :data-source-enum="dataSourceEnum"
+                @upsert-end="fetchTagList"
+        />
     </div>
 </template>
 
 <script>
     import tagList from './TagList'
+    import TagCategoryUpsert from '../TagCategory/Upsert.vue'
     export default {
         name: "LabelZone",
         components: {
-            tagList
+            tagList,
+            TagCategoryUpsert
         },
         props: {
             tagName: {
@@ -77,7 +89,8 @@
                 dataSourceEnum: {},
                 typeEnum: {},
                 toggleShow: false,
-                loading: true
+                loading: true,
+                tagCategory: {},
             }
         },
         watch: {
@@ -149,6 +162,10 @@
             },
             handleCheckListChange (val) {
                 this.$emit('change-checkList',val)
+            },
+            handleAddTagCategory() {
+                this.tagCategory = {}
+                this.$refs.tagCategoryUpsert.showCreateDialog = true
             }
         },
         created () {
@@ -197,4 +214,8 @@
 .label-zone .tab-content >>> .el-tabs__nav-wrap
     background none
     z-index -9999
+.button-add
+    display flex
+    justify-content flex-end
+    margin 0 10px 5px 0
 </style>
