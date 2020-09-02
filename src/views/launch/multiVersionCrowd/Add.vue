@@ -195,7 +195,7 @@
         </div>
         <!--新增投放-->
         <div v-else>
-            <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="100px">
+            <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="130px">
                 <el-form-item label="投放名称" prop="launchName" class="form-width">
                     <el-input size="small"
                               v-model="crowdForm.launchName"
@@ -203,13 +203,12 @@
                               :disabled="status!==undefined && (status === 2 || status === 3)"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
+                <el-form-item label="投放平台" class="multipleSelect form-width" prop="biIds">
                     <el-select
                             v-model="crowdForm.biIds"
                             @change="handleBiIdChange"
                             multiple
                             placeholder="请选择投放平台"
-                            style="width: 56%"
                     >
                         <el-option
                                 v-for="item in launchPlatform"
@@ -223,7 +222,7 @@
                     <el-checkbox
                             v-if="showAccountRelative"
                             v-model="crowdForm.setCalculate"
-                            style="margin-left: 20px">
+                            style="margin-left: 20px;position: absolute">
                         账号关联去重
                     </el-checkbox>
                 </el-form-item>
