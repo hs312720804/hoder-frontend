@@ -1035,4 +1035,6 @@
             line-height 12px
     .red-text
         color red
+    .popover-button
+        margin-left 10px
 </style>

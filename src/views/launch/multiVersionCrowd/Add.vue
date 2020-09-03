@@ -234,7 +234,7 @@
                     <!--<el-input size="small" v-model="crowdForm.remark"></el-input>-->
                 <!--</el-form-item>-->
                 <el-form-item label="是否做abTest" class="form-width" v-if="!crowdForm.crowdType">
-                    <el-radio-group v-model="crowdForm.abTest">
+                    <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
                     </el-radio-group>
@@ -361,7 +361,12 @@
                         <!--</el-option>-->
                     <!--</el-select>-->
                 <!--</el-form-item>-->
-                <el-form-item label="每天是否更新" prop="autoVersion" class="form-width">
+                <el-form-item
+                        label="每天是否更新"
+                        prop="autoVersion"
+                        class="form-width"
+                        v-if="!crowdForm.crowdType"
+                >
                     <el-select
                             v-model="crowdForm.autoVersion"
                             :disabled="status!==undefined && (status === 2 || status === 3)"
@@ -585,19 +590,20 @@
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
         watch: {
-            'crowdForm.abTest': function (val, oldVal) {
-                // 根第一次加载的时候不判断，当值变的时候再触发
-                if (oldVal && this.firstTimeLoad) {
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.crowdData = []
-                    this.firstTimeLoad = false
-                }
-                if (val && !this.firstTimeLoad) {
-                    this.crowdData = []
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.firstTimeLoad = true
-                }
-            },
+            // 'crowdForm.abTest': function (val, oldVal) {
+            //     debugger
+            //     // 根第一次加载的时候不判断，当值变的时候再触发
+            //     if (oldVal && this.firstTimeLoad) {
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         this.crowdData = []
+            //         // this.firstTimeLoad = false
+            //     }
+            //     if (val && !this.firstTimeLoad) {
+            //         this.crowdData = []
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         // this.firstTimeLoad = true
+            //     }
+            // },
             percent(val) {
                 this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
@@ -699,7 +705,7 @@
                                 })
                             })
                         }
-                        this.firstTimeLoad = true
+                        // this.firstTimeLoad = true
                     }
                 })
             } else {
@@ -1017,6 +1023,15 @@
                     // this.tableData = data.pageInfo.list
                     // this.totalCount = data.pageInfo.total
                 })
+            },
+            handleAbTestChange (val) {
+                if (val) {
+                    this.crowdForm.policyIds = ''
+                    this.crowdData = []
+                } else {
+                    this.crowdData = []
+                    this.crowdForm.policyIds = []
+                }
             }
         }
     }
