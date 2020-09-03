@@ -31,9 +31,12 @@
                         <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                             计算完成
                         </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
                         >
                             <el-button type="text" @click="calculate(scope.row)">计算</el-button>
+                        </div>
+                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
+                            计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
                         </div>
                         <div v-else>
                             {{(launchStatusEnum[scope.row.history.status]).name}}
