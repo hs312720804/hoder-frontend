@@ -54,6 +54,7 @@
                 :type-enum="typeEnum"
                 :data-source-enum="dataSourceEnum"
                 @upsert-end="fetchTagList"
+                :definedTagId="definedTagId"
         />
     </div>
 </template>
@@ -114,7 +115,6 @@
                             const childList = secondChild.children.map(childItem => {
                                 if (childItem.groupName === '自定义标签') {
                                     this.definedTagId = childItem.groupId
-                                    console.log('自定义标签ID-----',this.definedTagId)
                                 }
                                 return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
                             })
@@ -169,7 +169,9 @@
                 this.$emit('change-checkList',val)
             },
             handleAddTagCategory() {
-                this.tagCategory = {}
+                this.tagCategory = {
+                    groupId: this.definedTagId
+                }
                 this.$refs.tagCategoryUpsert.showCreateDialog = true
             }
         },
