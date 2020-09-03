@@ -48,4 +48,12 @@ export function calculateTempCrowd(params) {
         params
     })
 }
+// 获取标签树类型新接口
+export function getNewTreeList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/labelGroup/tree',
+        params
+    })
+}
 
