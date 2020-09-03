@@ -91,6 +91,7 @@
                 toggleShow: false,
                 loading: true,
                 tagCategory: {},
+                definedTagId: undefined
             }
         },
         watch: {
@@ -111,6 +112,10 @@
                     data.forEach(item => {
                         item.children.forEach(secondChild => {
                             const childList = secondChild.children.map(childItem => {
+                                if (childItem.groupName === '自定义标签') {
+                                    this.definedTagId = childItem.groupId
+                                    console.log('自定义标签ID-----',this.definedTagId)
+                                }
                                 return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
                             })
                             result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })

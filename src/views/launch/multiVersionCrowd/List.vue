@@ -12,14 +12,14 @@
                     >
                        新增投放
                     </el-button>
-                    <el-button
-                            type="primary"
-                            size="small"
-                            @click="handleCrowdDefineAdd"
-                            v-permission="'hoder:launch:crowd:ver:add'"
-                    >
-                        新增自定义人群
-                    </el-button>
+                    <!--<el-button-->
+                            <!--type="primary"-->
+                            <!--size="small"-->
+                            <!--@click="handleCrowdDefineAdd"-->
+                            <!--v-permission="'hoder:launch:crowd:ver:add'"-->
+                    <!--&gt;-->
+                        <!--新增自定义人群-->
+                    <!--</el-button>-->
                     <el-popover
                             placement="top"
                             trigger="click"
