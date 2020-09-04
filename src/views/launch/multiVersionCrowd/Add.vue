@@ -375,7 +375,7 @@
                         <el-option label="否" :value="0"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1" class="form-width">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && !crowdForm.crowdType" class="form-width">
                     <el-time-picker
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
@@ -386,7 +386,23 @@
             <div slot="footer" class="footer">
                 <el-button @click="cancelAdd">返回</el-button>
                 <el-button type="primary" @click="addSubmit">保存</el-button>
+                <el-button
+                        v-if="!(status!==undefined && (status === 2 || status === 3))"
+                        type="primary"
+                        @click="launchDirectly"
+                >直接投放</el-button>
             </div>
+            <!-- 投放提示估算弹窗 -->
+            <el-dialog :visible.sync="showEstimate">
+                <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
+                <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
+                    <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+                </el-checkbox-group>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="showEstimate = false">取 消</el-button>
+                <el-button type="primary" @click="handleEstimate(estimateValue)">投放</el-button>
+            </span>
+            </el-dialog>
         </div>
     </div>
 </template>
@@ -585,7 +601,11 @@
                 showAccountRelative: false,
                 tempCrowdList: [],
                 disabledCrowdType: false,
-                isTempCrowd: false
+                isTempCrowd: false,
+                showEstimate: false,
+                estimateValue: ['0'],
+                accountDefine: false,
+                currentLaunchId: undefined
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
@@ -747,7 +767,7 @@
             },
             // 新增
             addSubmit () {
-                if (this.model == 1)
+                if (this.model == 1 && this.isTempCrowd)
                  {
                    this.saveDefineCrowd()
                 }
@@ -783,7 +803,7 @@
                                 this.callback()
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then(() => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
                                 this.callback()
                             })
                         }
@@ -947,15 +967,15 @@
                 this.$emit("goBack")
             },
             getAddList (model) {
+                this.$service.getEstimateType().then((data) => {
+                    this.estimateItems = data
+                })
                 if (model === 1) {
                     this.$service.addMultiVersionCrowd(this.model).then(data => {
                         this.launchPlatform = data.biLists
                         this.effectTimeList = data.efTime.map(item => {
                             return { label: item + '天',value: item }
                         })
-                    })
-                    this.$service.getEstimateType().then((data) => {
-                        this.estimateItems = data
                     })
                     this.$service.searchTags().then(data=> {
                         this.tagsList = data
@@ -1032,6 +1052,74 @@
                     this.crowdData = []
                     this.crowdForm.policyIds = []
                 }
+            },
+            // 显示投放弹窗
+            launchDirectly () {
+                // 先进行保存校验
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        this.showEstimatePop()
+                    } else {
+                        return false
+                    }
+                })
+            },
+            showEstimatePop () {
+                this.showEstimate = true
+                // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                if (this.crowdForm.setCalculate) {
+                    this.accountDefine = true
+                    this.estimateValue = ['0','1','2','3']
+                } else {
+                    this.accountDefine = false
+                    this.estimateValue = ['0']
+                }
+            },
+            handleEstimate (calTypes) {
+                if (calTypes.length === 0) {
+                    this.$message.error('请至少选择一个要投放的人群')
+                    return
+                }
+                let calIdType = calTypes.map((item) => item).join(',')
+
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        let crowdForm = JSON.stringify(this.crowdForm)
+                        crowdForm = JSON.parse(crowdForm)
+                        crowdForm.biIds = crowdForm.biIds.join(",")
+                        // 选择的是临时人群
+                        if (crowdForm.crowdType) {
+                            crowdForm.abTest = false
+                            crowdForm.policyIds = undefined
+                            crowdForm.policyCrowdIds = undefined
+                        } else {
+                            crowdForm.tempCrowdId = 0
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
+                        }
+                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                                this.currentLaunchId = this.editLaunchCrowdId
+                                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+                                    this.showEstimate = false
+                                    this.callback()
+                                })
+                            })
+                        } else {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
+                                this.currentLaunchId = data.launchCrowdId
+                                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+                                    this.showEstimate = false
+                                    this.callback()
+                                })
+                            })
+                        }
+                    } else {
+                        return false
+                    }
+                })
             }
         }
     }

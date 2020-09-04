@@ -24,7 +24,8 @@
                         <el-option :value="3" label="标签更新"></el-option>
                     </el-select>
                     <!-- 编辑的时候不显示 是否发送单选框 -->
-                    <el-radio-group v-if="!editId" v-model="addForm.sendEmail" style="margin: 0 20px">
+                    <span style="margin: 0 20px">是否发送邮件：</span>
+                    <el-radio-group v-if="!editId" v-model="addForm.sendEmail">
                         <el-radio :label="false">不发送</el-radio>
                         <el-radio :label="true">发送</el-radio>
                     </el-radio-group>
