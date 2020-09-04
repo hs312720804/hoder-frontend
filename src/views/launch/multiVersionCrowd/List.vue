@@ -121,21 +121,54 @@
                 <template slot-scope="scope">
                     <el-button-group  class="button-group-position">
                         <!-- 投放按钮显示的状态：1未投放，4计算失败，5投放失败，7已过期 -->
-                        <el-button
-                                v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
-                                v-permission="'hoder:launch:crowd:ver:launch'"
-                                size="small"
-                                type="warning"
-                                @click="lanuch(scope.$index, scope.row)"
-                        >投放</el-button>
-                        <!-- 取消投放显示的状态：3投放中 -->
-                        <el-button
-                                v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
-                                v-permission="'hoder:launch:crowd:ver:cancel'"
-                                size="small"
-                                type="warning"
-                                @click="cancelLanuch(scope.row)"
-                        >取消投放</el-button>
+                        <span v-if="scope.row.isFxFullSql === 1 && scope.row.temprowdId > 0">
+                            <el-button
+                                    v-if="!scope.row.launchTempCrowdStatus"
+                                    v-permission="'hoder:launch:crowd:ver:launch'"
+                                    size="small"
+                                    type="warning"
+                                    @click="lanuch(scope.$index, scope.row)"
+                            >投放</el-button>
+                            <el-button
+                                    v-else
+                                    v-permission="'hoder:launch:crowd:ver:cancel'"
+                                    size="small"
+                                    type="warning"
+                                    @click="cancelLanuch(scope.row)"
+                            >取消投放</el-button>
+                        </span>
+                        <span v-else>
+                            <el-button
+                                    v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
+                                    v-permission="'hoder:launch:crowd:ver:launch'"
+                                    size="small"
+                                    type="warning"
+                                    @click="lanuch(scope.$index, scope.row)"
+                            >投放</el-button>
+                            <!-- 取消投放显示的状态：3投放中 -->
+                            <el-button
+                                    v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
+                                    v-permission="'hoder:launch:crowd:ver:cancel'"
+                                    size="small"
+                                    type="warning"
+                                    @click="cancelLanuch(scope.row)"
+                            >取消投放</el-button>
+                        </span>
+                        <!--<el-button-->
+                                <!--v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "-->
+                                <!--v-permission="'hoder:launch:crowd:ver:launch'"-->
+                                <!--size="small"-->
+                                <!--type="warning"-->
+                                <!--@click="lanuch(scope.$index, scope.row)"-->
+                        <!--&gt;投放</el-button>-->
+                        <!--&lt;!&ndash; 取消投放显示的状态：3投放中 &ndash;&gt;-->
+                        <!--<el-button-->
+                                <!--v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"-->
+                                <!--v-permission="'hoder:launch:crowd:ver:cancel'"-->
+                                <!--size="small"-->
+                                <!--type="warning"-->
+                                <!--@click="cancelLanuch(scope.row)"-->
+                        <!--&gt;取消投放</el-button>-->
                         <el-button
                                 size="small"
                                 type="success"
