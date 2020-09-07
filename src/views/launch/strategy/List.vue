@@ -6,22 +6,39 @@
                 :pagination="pagination"
                 @filter-change="handleFilterChange"
         >
-            <div class="button-group">
-                <div>
-                <el-button
-                        type="primary"
-                        size="small"
-                        @click="handleAdd"
-                        v-permission="'hoder:launch:policy:save'"
-                >新增投放</el-button>
-                <a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-fen-ge-tou-fang.html" target="_blank">操作指南</a>
+            <div class="header">
+                <div class="header-left">
+                    <div class="search-input">
+                        <el-input
+                                v-model="filter.search"
+                                style="width: 350px"
+                                placeholder="请输入策略名称或ID"
+                                :clearable='true'
+                                @keyup.enter.native="handleSearch"
+                        ></el-input>
+                        <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+                    </div>
                 </div>
-                <div class="search-form">
-                    <el-input v-model="filter.search" placeholder="请输入策略名称或ID"></el-input>
-                    <el-button size="small" @click="handleSearch" type="primary">查询</el-button>
-                    <el-button size="small" @click="handleFilterReset">重置</el-button>
+                <div class="header-right">
+                    <div>
+                        <el-button
+                                type="primary"
+                                size="small"
+                                @click="handleAdd"
+                                v-permission="'hoder:launch:policy:save'"
+                        >新增投放</el-button>
+                        <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-fen-ge-tou-fang.html" target="_blank">操作指南</a>-->
+                    </div>
                 </div>
             </div>
+            <!--<div class="button-group">-->
+                <!---->
+                <!--<div class="search-form">-->
+                    <!--<el-input v-model="filter.search" placeholder="请输入策略名称或ID"></el-input>-->
+                    <!--<el-button size="small" @click="handleSearch" type="primary">查询</el-button>-->
+                    <!--<el-button size="small" @click="handleFilterReset">重置</el-button>-->
+                <!--</div>-->
+            <!--</div>-->
             <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
                 <el-tab-pane
                         v-for="item in launchPlatformData"
@@ -278,13 +295,29 @@
         display flex
         align-items center
         justify-content space-between
-    .search-form
+    /*.search-form*/
+        /*display flex*/
+        /*width 80%*/
+        /*justify-content flex-end*/
+        /*.el-input*/
+            /*width 20%*/
+            /*margin-right 20px*/
+    /*.manual*/
+        /*margin-left 8px*/
+    .search-input
+        position relative
+        margin 0 10px
+    .icon-fixed
+        position absolute
+        top 8px
+        right 20px
+        transform rotate(-90deg)
+    .header
+        width 100%
         display flex
-        width 80%
-        justify-content flex-end
-        .el-input
-            width 20%
-            margin-right 20px
-    .manual
-        margin-left 8px
+        justify-content space-between
+        margin-bottom 10px
+        .header-right
+            display flex
+            align-items center
 </style>

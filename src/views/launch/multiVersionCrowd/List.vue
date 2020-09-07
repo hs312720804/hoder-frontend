@@ -1,24 +1,53 @@
 <template>
     <div class="launch-list">
         <!-- authority -->
-        <div class="TopNav">
-            <div class="left">
-                <el-button-group class="button-list">
+        <div class="header">
+            <div class="header-left">
+                <div class="search-input">
+                    <el-input
+                            v-model="searchForm.launchName"
+                            style="width: 350px"
+                            placeholder="请输入投放名称或ID"
+                            :clearable='true'
+                            @keyup.enter.native="handleSearch"
+                    ></el-input>
+                    <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- form search -->
+                <!--<el-form-->
+                        <!--:inline="true"-->
+                        <!--:model="searchForm"-->
+                        <!--ref="searchForm"-->
+                        <!--@submit.native.prevent="submitForm"-->
+                <!--&gt;-->
+                    <!--<el-form-item label prop="launchName">-->
+                        <!--<el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称或ID"></el-input>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item>-->
+                        <!--<el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>-->
+                        <!--<el-button type="primary" size="small" @click="handleReset">-->
+                            <!--<a class="fa fa-refresh" style="color: white;"></a> 重置-->
+                        <!--</el-button>-->
+                    <!--</el-form-item>-->
+                <!--</el-form>-->
+                <div class="button-list">
                     <el-button
                             type="primary"
                             size="small"
                             @click="handleAdd"
                             v-permission="'hoder:launch:crowd:ver:add'"
                     >
-                       新增投放
+                        新增投放
                     </el-button>
                     <!--<el-button-->
-                            <!--type="primary"-->
-                            <!--size="small"-->
-                            <!--@click="handleCrowdDefineAdd"-->
-                            <!--v-permission="'hoder:launch:crowd:ver:add'"-->
+                    <!--type="primary"-->
+                    <!--size="small"-->
+                    <!--@click="handleCrowdDefineAdd"-->
+                    <!--v-permission="'hoder:launch:crowd:ver:add'"-->
                     <!--&gt;-->
-                        <!--新增自定义人群-->
+                    <!--新增自定义人群-->
                     <!--</el-button>-->
                     <el-popover
                             placement="top"
@@ -37,29 +66,15 @@
                                 <el-checkbox label="totalCoocaaOpenid">酷开openId数量</el-checkbox>
                             </el-checkbox-group>
                         </div>
-                        <el-button slot="reference">选择列表展示维度</el-button>
+                        <i
+                                class="el-icon-cc-setting operate"
+                                slot="reference"
+                        >
+                        </i>
+                        <!--<el-button slot="reference">选择列表展示维度</el-button>-->
                     </el-popover>
                     <!--<a href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-quan-ding.html" target="_blank">操作指南</a>-->
-                </el-button-group>
-            </div>
-            <div class="right">
-                <!-- form search -->
-                <el-form
-                        :inline="true"
-                        :model="searchForm"
-                        ref="searchForm"
-                        @submit.native.prevent="submitForm"
-                >
-                    <el-form-item label prop="launchName">
-                        <el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称或ID"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-                        <el-button type="primary" size="small" @click="handleReset">
-                            <a class="fa fa-refresh" style="color: white;"></a> 重置
-                        </el-button>
-                    </el-form-item>
-                </el-form>
+                </div>
             </div>
         </div>
         <!-- talbe -->
@@ -126,14 +141,14 @@
                                     v-if="!scope.row.launchTempCrowdStatus"
                                     v-permission="'hoder:launch:crowd:ver:launch'"
                                     size="small"
-                                    type="warning"
+                                    type="text"
                                     @click="lanuch(scope.$index, scope.row)"
                             >投放</el-button>
                             <el-button
                                     v-else
                                     v-permission="'hoder:launch:crowd:ver:cancel'"
                                     size="small"
-                                    type="warning"
+                                    type="text"
                                     @click="cancelLanuch(scope.row)"
                             >取消投放</el-button>
                         </span>
@@ -142,7 +157,7 @@
                                     v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
                                     v-permission="'hoder:launch:crowd:ver:launch'"
                                     size="small"
-                                    type="warning"
+                                    type="text"
                                     @click="lanuch(scope.$index, scope.row)"
                             >投放</el-button>
                             <!-- 取消投放显示的状态：3投放中 -->
@@ -150,7 +165,7 @@
                                     v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
                                     v-permission="'hoder:launch:crowd:ver:cancel'"
                                     size="small"
-                                    type="warning"
+                                    type="text"
                                     @click="cancelLanuch(scope.row)"
                             >取消投放</el-button>
                         </span>
@@ -171,12 +186,12 @@
                         <!--&gt;取消投放</el-button>-->
                         <el-button
                                 size="small"
-                                type="success"
+                                type="text"
                                 v-permission="'hoder:launch:crowd:ver:detail'"
                                 @click="condition(scope.row) "
                         >人群条件</el-button>
                         <el-dropdown @command="handleCommandOpreate">
-                            <el-button size="small" type="primary">
+                            <el-button size="small" type="text">
                                 操作
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -231,7 +246,7 @@
                         <el-button
                                 v-if="(launchStatusEnum[scope.row.history.status]).code !== 1"
                                 size="small"
-                                type="danger"
+                                type="text"
                                 @click="handleGetLaunchDetail(scope.row)"
                         >投放详情</el-button>
                         <!--<el-button-->
@@ -694,25 +709,29 @@
                 this.loadData()
             },
             // 搜索,提交表单
-            submitForm: function() {
-                // var _this = this
-                // this.$refs.searchForm.validate(function(result) {
-                //     if (result) {
-                //         _this.criteria = _this.searchForm;
-                //         _this.loadData()
-                //     } else {
-                //         return false
-                //     }
-                // });
-                this.$refs.searchForm.validate((result) => {
-                    if (result) {
-                       this.criteria = this.searchForm
-                       this.loadData()
-                    } else {
-                        return false
-                    }
-                })
+            handleSearch () {
+                this.criteria = this.searchForm
+                this.loadData()
             },
+            // submitForm: function() {
+            //     // var _this = this
+            //     // this.$refs.searchForm.validate(function(result) {
+            //     //     if (result) {
+            //     //         _this.criteria = _this.searchForm;
+            //     //         _this.loadData()
+            //     //     } else {
+            //     //         return false
+            //     //     }
+            //     // });
+            //     this.$refs.searchForm.validate((result) => {
+            //         if (result) {
+            //            this.criteria = this.searchForm
+            //            this.loadData()
+            //         } else {
+            //             return false
+            //         }
+            //     })
+            // },
             // 重置
             handleReset () {
                 this.searchForm.launchName = ''
@@ -1070,4 +1089,29 @@
         color red
     .popover-button
         margin-left 10px
+    .operate
+        position relative
+        z-index 0
+        font-size 20px
+        cursor pointer
+        margin-left 10px
+    .search-input
+        position relative
+        margin 0 10px
+    .icon-fixed
+        position absolute
+        top 8px
+        right 20px
+        transform rotate(-90deg)
+    .header
+        width 100%
+        display flex
+        justify-content space-between
+        margin-bottom 10px
+        .header-right
+            display flex
+            align-items center
+    .el-button-group >>> .el-button
+        float none
+        margin 0 3px
 </style>
