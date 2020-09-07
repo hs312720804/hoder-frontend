@@ -16,6 +16,10 @@
             <el-table-column prop="tagId" label="ID">
             </el-table-column>
             <el-table-column prop="tagName" label="名称">
+                <template slot-scope="scope">
+                    {{scope.row.tagName}}
+                    <span v-if="scope.row.newOrUpdate" class="red-new">{{scope.row.newOrUpdate}}</span>
+                </template>
             </el-table-column>
             <el-table-column prop="dataSource" label="数据来源" >
                 <template slot-scope="scope">
@@ -190,4 +194,8 @@
     .operate
         margin-left 20px
         cursor pointer
+    .red-new
+        color #ff0000
+        position absolute
+        top 0
 </style>

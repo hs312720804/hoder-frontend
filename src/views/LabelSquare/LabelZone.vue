@@ -6,17 +6,17 @@
                     :key="item.parentId"
                     class="tab-content"
             >
-                <div class="title">{{item.parentName}}</div>
+                <div class="title">{{item.parentName}}<span v-if="item.newOrUpdateCount" class="small-red">·</span></div>
                 <el-tabs
                         v-model="activeTab"
                         @tab-click="handleTabClick"
                 >
                     <el-tab-pane
                             v-for="childItem in item.children"
-                            :label="childItem.groupName"
                             :key="childItem.groupId"
                             :name="childItem.groupId"
                     >
+                        <span slot="label">{{childItem.groupName}}<span v-if="childItem.newOrUpdateCount" class="small-red">·</span></span>
                         <div class="button-add" v-if="childItem.groupName === '自定义标签'">
                             <el-button type="primary" @click="handleAddTagCategory">新增</el-button>
                         </div>
@@ -108,7 +108,8 @@
         },
         methods: {
             fetchData() {
-                this.$service.getParentIdList().then((data) => {
+                this.$service.getNewTreeList().then(data => {
+                    console.log(data)
                     const result = []
                     data.forEach(item => {
                         item.children.forEach(secondChild => {
@@ -116,16 +117,35 @@
                                 if (childItem.groupName === '自定义标签') {
                                     this.definedTagId = childItem.groupId
                                 }
-                                return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
+                                return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
                             })
-                            result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
+                            result.push({ parentName:secondChild.groupName,newOrUpdateCount: secondChild.newOrUpdateCount,parentId: secondChild.groupId, children: childList })
                         })
                     })
+                    console.log('result----',result)
                     this.treeData = result
                     // this.activeTab = result[0].children[0].groupId
                     // this.filter.groupId = this.activeTab
                     this.fetchTagList()
                 })
+                // this.$service.getParentIdList().then((data) => {
+                //     const result = []
+                //     data.forEach(item => {
+                //         item.children.forEach(secondChild => {
+                //             const childList = secondChild.children.map(childItem => {
+                //                 if (childItem.groupName === '自定义标签') {
+                //                     this.definedTagId = childItem.groupId
+                //                 }
+                //                 return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
+                //             })
+                //             result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
+                //         })
+                //     })
+                //     this.treeData = result
+                //     // this.activeTab = result[0].children[0].groupId
+                //     // this.filter.groupId = this.activeTab
+                //     this.fetchTagList()
+                // })
             },
             fetchTagList () {
                 const filter = this.filter
@@ -174,6 +194,27 @@
                 }
                 this.$refs.tagCategoryUpsert.showCreateDialog = true
             }
+            // getNewTree () {
+            //     this.$service.getNewTreeList().then(data => {
+            //         console.log(data)
+            //         const result = []
+            //         data.forEach(item => {
+            //             item.children.forEach(secondChild => {
+            //                 const childList = secondChild.children.map(childItem => {
+            //                     if (childItem.groupName === '自定义标签') {
+            //                         this.definedTagId = childItem.groupId
+            //                     }
+            //                     return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
+            //                 })
+            //                 result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
+            //             })
+            //         })
+            //         this.treeData = result
+            //         // this.activeTab = result[0].children[0].groupId
+            //         // this.filter.groupId = this.activeTab
+            //         this.fetchTagList()
+            //     })
+            // }
         },
         created () {
             this.$root.$on('label-zone-list-refresh', this.fetchData)
@@ -225,4 +266,9 @@
     display flex
     justify-content flex-end
     margin 0 10px 5px 0
+.small-red
+    color #ff0000
+    font-size 28px
+    position absolute
+    top 0
 </style>

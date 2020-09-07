@@ -142,7 +142,6 @@
         created () {
             this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
-            this.getNewTree()
         },
         watch: {
             'refreshFlag': function (val) {
@@ -230,11 +229,6 @@
             // 新增
             handleAdd () {
                 this.$emit('show-add')
-            },
-            getNewTree () {
-                this.$service.getNewTreeList().then(data => {
-                    console.log(data)
-                })
             }
         }
     }
