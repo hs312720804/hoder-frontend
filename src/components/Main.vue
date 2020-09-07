@@ -16,7 +16,7 @@
               :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
-          <el-submenu v-if="item.child" :key="index" :index="index+''">
+          <el-submenu v-if="item.child" :key="index" :index="index+''" @click.native="getRouter(item.url)">
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
               <span>{{ item.name }}</span>
