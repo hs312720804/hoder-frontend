@@ -16,7 +16,17 @@
               :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
-          <el-submenu v-if="item.child" :key="index" :index="index+''" @click.native="getRouter(item.url)">
+          <el-menu-item
+                  v-if="item.child.length === 0"
+                  :index="routerMap[item.url]"
+                  @click.native="getRouter(item.url)"
+                  class="no-child-menu"
+          >{{item.name}}</el-menu-item>
+          <el-submenu
+                  v-else
+                  :key="index"
+                  :index="'index'"
+          >
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
               <span>{{ item.name }}</span>
@@ -499,4 +509,8 @@
       font-size 14px
       margin 15px 0
       cursor pointer
+  .no-child-menu
+      color #fff
+  .no-child-menu.is-active
+      color: #409EFF
 </style>
