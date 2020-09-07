@@ -19,6 +19,7 @@
         <div>
             <el-table :data="tableData" border>
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
+                <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
                 <el-table-column prop="count" label="使用次数">
