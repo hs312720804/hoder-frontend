@@ -1,75 +1,68 @@
 <template>
   <div>
     <div class="TopNav">
-      <div class="left">
-        <div>
-          <el-button
-                  type="primary"
-                  size="small"
-                  @click="handleAdd"
-                  v-permission="'hoder:policy:add'"
-          >
-            <a class="fa fa-plus" style="color: white;"></a>新增
-          </el-button>
-          <el-button
-                  type="primary"
-                  size="small"
-                  @click="freshService"
-                  v-permission="'hoder:policy:add'"
-          >
-            <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
-          </el-button>
-          <el-popover
-                  placement="top"
-                  trigger="click"
-                  class="popover-button"
-          >
-            <div>
-              <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                <el-checkbox label="createTime">创建时间</el-checkbox>
-                <el-checkbox label="creatorName">创建人</el-checkbox>
-                <el-checkbox label="useStatus">投放状态</el-checkbox>
-                <el-checkbox label="department">业务部门</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <el-button slot="reference">选择列表展示维度</el-button>
-          </el-popover>
-          <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
+      <div class="header">
+        <div class="header-left">
+          <el-radio-group v-model="showAll" @change="handleShowAllChange">
+            <el-radio :label="true">全部</el-radio>
+            <el-radio :label="false">我的</el-radio>
+          </el-radio-group>
         </div>
-      </div>
-      <div class="right">
-        <!-- form search -->
-        <el-form
-                :inline="true"
-                :model="searchForm"
-                ref="searchForm"
-                @submit.native.prevent="submitForm"
-        >
-          <!--<el-select v-model="searchForm.constType">-->
-            <!--<el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>-->
-            <!--<el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>-->
-            <!--<el-option label="策略维度方式查询" value="TAG_NAME"></el-option>-->
-            <!--<el-option label="创建人名称模糊查询" value="CREATOR_NAME"></el-option>-->
-            <!--<el-option label="创建人部门名称模糊查询" value="OFFICE_NAME"></el-option>-->
-            <!--<el-option label="人群ID匹配查询" value="CROWD_ID"></el-option>-->
-          <!--</el-select>-->
-          <el-form-item>
+        <div class="header-right">
+          <div class="search-input">
             <el-input
                     v-model="searchForm.policyName"
                     style="width: 350px"
                     placeholder="支持按策略、人群、创建人、部门搜索"
                     :clearable='true'
-                    @keyup.enter.native="submitForm"
+                    @keyup.enter.native="handleSearch"
             ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-            <el-button type="primary" size="small" @click="handleReset">
-              <a class="fa fa-refresh" style="color: white;"></a> 重置
+            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          </div>
+          <div>
+            <el-button
+                    type="primary"
+                    size="small"
+                    @click="handleAdd"
+                    v-permission="'hoder:policy:add'"
+            >
+              <a class="fa fa-plus" style="color: white;"></a>新增
             </el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+            <!--<el-button-->
+                    <!--type="primary"-->
+                    <!--size="small"-->
+                    <!--@click="freshService"-->
+                    <!--v-permission="'hoder:policy:add'"-->
+            <!--&gt;-->
+              <!--<a class="fa fa-plus" style="color: white;"></a>刷新策略服务-->
+            <!--</el-button>-->
+          <div>
+            <el-popover
+                    placement="top"
+                    trigger="click"
+                    class="popover-button"
+            >
+              <div>
+                <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                  <el-checkbox label="createTime">创建时间</el-checkbox>
+                  <el-checkbox label="creatorName">创建人</el-checkbox>
+                  <el-checkbox label="useStatus">投放状态</el-checkbox>
+                  <el-checkbox label="department">业务部门</el-checkbox>
+                </el-checkbox-group>
+              </div>
+              <i
+                      class="el-icon-cc-setting operate"
+                      slot="reference"
+              >
+              </i>
+              <!--<el-button slot="reference">选择列表展示维度</el-button>-->
+            </el-popover>
+            <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
+          </div>
+        </div>
       </div>
+
     </div>
     <!-- talbe -->
     <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
@@ -81,17 +74,33 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签）" width="270px">
+      <el-table-column prop="tagsList" width="300px">
+        <template
+                slot="header"
+                slot-scope="{ column, $index }"
+        >
+          策略纬度（
+          <span class="checkbox--red">红色</span>为大数据标签,
+          <span class="checkbox--green">绿色</span>为自定义标签,
+          <span class="checkbox--blue">蓝色</span>为账号标签,
+          <span class="checkbox--yellow">黄色</span>为实时标签）
+        </template>
         <template slot-scope="scope">
-          <el-tag
-                  size="mini"
-                  v-for="item in scope.row.tagsList"
-                  :key="item.tagId"
-                  :type= "dataSourceColorEnum[item.dataSource]"
-          >{{item.tagName}}</el-tag>
+          <span v-for="item in scope.row.tagsList"
+                :key="item.tagId"
+                style="margin: 0 2px"
+                :class="dataSourceColorClassEnum[item.dataSource]">
+            {{item.tagName}}
+          </span>
+          <!--<el-tag-->
+                  <!--size="mini"-->
+                  <!--v-for="item in scope.row.tagsList"-->
+                  <!--:key="item.tagId"-->
+                  <!--:type= "dataSourceColorEnum[item.dataSource]"-->
+          <!--&gt;{{item.tagName}}</el-tag>-->
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>
+      <!--<el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>-->
       <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
         <template slot-scope="scope">
           <el-icon name="time"></el-icon>
@@ -108,12 +117,12 @@
       </el-table-column>
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
-          <el-button-group>
-            <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
-            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="warning" @click="handleLaunch(scope.row)">投放策略</el-button>
+          <div class="el-button-group">
+            <el-button size="small" type="text" @click="crowdList(scope.row)">查看人群</el-button>
+            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
             <el-dropdown @command="handleCommand">
-              <el-button size="small" type="primary">
-                操作
+              <el-button size="small" type="text">
+                更多
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -139,18 +148,21 @@
                         v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
                         :command="['collect',scope.row]"
                 >从'我的'删除</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-dropdown @command="handleCommandStastic" >
-              <el-button size="small" type="primary">
-                统计
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                         :command="['detail',scope.row]"
-                >使用情况</el-dropdown-item>
+                >调用统计</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <!--<el-dropdown @command="handleCommandStastic">-->
+              <!--<el-button size="small" type="text">-->
+                <!--统计-->
+              <!--</el-button>-->
+              <!--<el-dropdown-menu slot="dropdown">-->
+                <!--<el-dropdown-item-->
+                        <!--:command="['detail',scope.row]"-->
+                <!--&gt;使用情况</el-dropdown-item>-->
+              <!--</el-dropdown-menu>-->
+            <!--</el-dropdown>-->
             <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
                 <!--<div>操作</div>-->
                 <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
@@ -170,16 +182,17 @@
                   <!--</li>-->
                 <!--</ul>-->
             <!--</el-button>-->
-            <el-button
-                    size="small"
-                    :type= "scope.row.status === 1 ? 'success' : 'danger'"
-                    v-permission="'hoder:policy:sync'"
-                    @click="freshCache(scope.row)"
-            >
-              <span v-if="scope.row.status === 1">未同步</span>
-              <span v-if="scope.row.status === 2">已同步</span>
-            </el-button>
-          </el-button-group>
+            <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="text"-->
+                    <!--:class="scope.row.status === 1 ? 'checkbox-green' : 'checkbox-red'"-->
+                    <!--v-permission="'hoder:policy:sync'"-->
+                    <!--@click="freshCache(scope.row)"-->
+            <!--&gt;-->
+              <!--<span v-if="scope.row.status === 1">未同步</span>-->
+              <!--<span v-if="scope.row.status === 2">已同步</span>-->
+            <!--</el-button>-->
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -450,10 +463,11 @@ export default {
           2: 'danger',
           3: '',
           5: 'warning'
-      }
+      },
+      showAll: true
     }
   },
-  props: ["historyFilter","checkListFilter","parentSource"],
+  props: ["historyFilter","checkListFilter","parentSource","showAllParent"],
   created() {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
@@ -606,7 +620,7 @@ export default {
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
-      this.$emit("openCrowdPage", row, this.criteria, this.checkList)
+      this.$emit("openCrowdPage", row, this.criteria, this.checkList, this.showAll)
     },
     del(row) {
       var id = row.policyId;
@@ -649,24 +663,29 @@ export default {
               this.currentPage = this.historyFilter.pageNum || this.currentPage
               this.pageSize = this.historyFilter.pageSize || this.pageSize
           }
+          if(this.showAllParent) {
+              this.showAll = this.showAllParent
+          } else {
+              this.showAll = false
+          }
           this.reloadHistory = false
       }
       // this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
       // 如果是【我的人群】模块进入
-      if (this.parentSource){
+      if (!this.showAll){
           this.$service.getMyCrowdList(this.criteria).then(data => {
               this.tableData = data.pageInfo.list;
               this.totalCount = data.pageInfo.total;
           });
-          this.$appState.$set('GlobalStrategySource', this.parentSource)
+          // this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
           this.$service.policyList(this.criteria).then(data => {
               this.tableData = data.pageInfo.list;
               this.totalCount = data.pageInfo.total;
           });
-          this.$appState.$set('GlobalStrategySource', '')
+          // this.$appState.$set('GlobalStrategySource', '')
       }
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -680,20 +699,14 @@ export default {
       this.loadData();
     },
     // 搜索,提交表单
-    submitForm: function() {
-      this.$refs.searchForm.validate((result) => {
-        if (result) {
-          this.criteria = this.searchForm
-          // pageNum重置为1
-          this.currentPage = 1
-          this.loadData()
-        } else {
-          return false
-        }
-      })
+    handleSearch () {
+       this.criteria = this.searchForm
+       // pageNum重置为1
+       this.currentPage = 1
+       this.loadData()
     },
     // 重置
-    handleReset: function() {
+    handleReset () {
         this.searchForm.policyName = ''
         // this.searchForm.constType = 'POLICY_NAME'
         this.criteria = {}
@@ -753,6 +766,14 @@ export default {
             this.seeDevDetail(params)
         } else if (type === 'collect') {
             this.handlePolicyCollect(params)
+        } else if(type === 'detail') {
+            this.currentPid = scope[1].policyId
+            this.showStatistics = true
+            // 重置时间
+            this.time = [this.startDate,this.endDate]
+            this.time1 = [this.startDate,this.endDate]
+            this.drawPie(this.currentPid,this.startDate,this.endDate)
+            this.drawLines(this.currentPid,this.startDate,this.endDate)
         }
     },
       // 通用多线性参数设置
@@ -936,6 +957,9 @@ export default {
     },
     handleCheckListChange (val) {
         this.$service.saveListDimension({type: 1,behaviorShow: val.join(',')})
+    },
+    handleShowAllChange () {
+        this.loadData()
     }
   }
 }
@@ -982,6 +1006,9 @@ export default {
 .operate
   position relative
   z-index 0
+  font-size 20px
+  cursor pointer
+  margin-left 10px
 .more-operate
   position absolute
   z-index 999
@@ -1022,7 +1049,23 @@ ul > li
   margin-left 20px
 .manual
   margin 20px
-.left
-  >>> .el-button + .el-button
-    margin-right 10px
+.search-input
+  position relative
+  margin 0 10px
+.icon-fixed
+  position absolute
+  top 8px
+  right 20px
+  transform rotate(-90deg)
+.header
+  width 100%
+  display flex
+  justify-content space-between
+  margin-bottom 10px
+  .header-right
+    display flex
+    align-items center
+.el-button-group >>> .el-button
+  float none
+  margin 0 3px
 </style>

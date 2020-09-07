@@ -20,8 +20,8 @@
       </div>
     </fieldset>
     <!-- authority -->
-    <div class="TopNav">
-      <div class="left">
+    <div class="header">
+      <div class="header-left">
         <el-button-group>
           <!-- <el-button
             type="primary"
@@ -31,14 +31,6 @@
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
           </el-button> -->
-          <el-button
-            type="primary"
-            size="small"
-            @click="handleAdd"
-            v-permission="'hoder:crowd:add'"
-          >
-            <a class="fa fa-plus" style="color: white"></a>新增人群
-          </el-button>
           <el-tooltip placement="top-start">
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective">
@@ -58,53 +50,69 @@
           <!--</el-button>-->
           <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
+      </div>
+      <div class="header-right">
+        <!-- form search -->
+        <div class="search-input">
+          <el-input
+                  v-model="searchForm.crowdName"
+                  style="width: 350px"
+                  placeholder="请输入人群名称"
+                  :clearable='true'
+                  @keyup.enter.native="handleSearch"
+          ></el-input>
+          <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+        </div>
+        <div>
+          <el-button
+                  type="primary"
+                  size="small"
+                  @click="handleAdd"
+                  v-permission="'hoder:crowd:add'"
+          >
+            <a class="fa fa-plus" style="color: white"></a>新增人群
+          </el-button>
+        </div>
+        <div>
           <el-popover
                   placement="top"
                   trigger="click"
                   class="popover-button"
           >
-              <div>
-                  <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                      <el-checkbox label="createTime">创建时间</el-checkbox>
-                      <el-checkbox label="creatorName">创建人</el-checkbox>
-                      <!--<el-checkbox label="apiStatus">是否生效</el-checkbox>-->
-                      <el-checkbox label="department">业务部门</el-checkbox>
-                      <el-checkbox label="remark">备注</el-checkbox>
-                      <!--<el-checkbox label="crowdValidStatus">是否有效期内</el-checkbox>-->
-                  </el-checkbox-group>
-              </div>
-              <el-button slot="reference">选择列表展示维度</el-button>
+            <div>
+              <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                <el-checkbox label="createTime">创建时间</el-checkbox>
+                <el-checkbox label="creatorName">创建人</el-checkbox>
+                <!--<el-checkbox label="apiStatus">是否生效</el-checkbox>-->
+                <el-checkbox label="department">业务部门</el-checkbox>
+                <el-checkbox label="remark">备注</el-checkbox>
+                <!--<el-checkbox label="crowdValidStatus">是否有效期内</el-checkbox>-->
+              </el-checkbox-group>
+            </div>
+            <i
+                    class="el-icon-cc-setting operate"
+                    slot="reference"
+            >
+            </i>
           </el-popover>
-      </div>
-      <div class="right">
-        <!-- form search -->
-        <el-form
-          :inline="true"
-          :model="searchForm"
-          ref="searchForm"
-          @submit.native.prevent="submitForm"
-          shiro:hasPermission="sysAdministrative:role:search"
-        >
-          <!--<el-form-item label="人群上下架状态" prop="putway">-->
-              <!--<el-select v-model="searchForm.putway">-->
-                  <!--<el-option-->
-                          <!--v-for="item in putwayOptions"-->
-                          <!--:key="item.value"-->
-                          <!--:label="item.label"-->
-                          <!--:value="item.value">-->
-                  <!--</el-option>-->
-              <!--</el-select>-->
+        </div>
+        <!--<el-form-->
+          <!--:inline="true"-->
+          <!--:model="searchForm"-->
+          <!--ref="searchForm"-->
+          <!--@submit.native.prevent="submitForm"-->
+          <!--shiro:hasPermission="sysAdministrative:role:search"-->
+        <!--&gt;-->
+          <!--<el-form-item label prop="crowdName">-->
+            <!--<el-input v-model="searchForm.crowdName" style="width: 200px" placeholder="请输入人群名称"></el-input>-->
           <!--</el-form-item>-->
-          <el-form-item label prop="crowdName">
-            <el-input v-model="searchForm.crowdName" style="width: 200px" placeholder="请输入人群名称"></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-            <el-button type="primary" size="small" @click="handleReset">
-              <a class="fa fa-refresh" style="color: white"></a> 重置
-            </el-button>
-          </el-form-item>
-        </el-form>
+          <!--<el-form-item>-->
+            <!--<el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>-->
+            <!--<el-button type="primary" size="small" @click="handleReset">-->
+              <!--<a class="fa fa-refresh" style="color: white"></a> 重置-->
+            <!--</el-button>-->
+          <!--</el-form-item>-->
+        <!--</el-form>-->
       </div>
     </div>
     <!-- talbe -->
@@ -166,6 +174,17 @@
            </template>
       </el-table-column>
       <el-table-column prop="priority" label="优先级" width="100">
+          <template slot="header">
+            优先级
+            <el-popover
+                    placement="top"
+                    trigger="hover"
+                    class="popover-button"
+            >
+              <div>数字越大，优先级越高</div>
+            <span class="priority-tip" slot="reference">!</span>
+            </el-popover>
+          </template>
           <template slot-scope="scope">
               <priorityEdit :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
           </template>
@@ -188,7 +207,7 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="putway" label="上/下架" width="70px">
+      <el-table-column prop="putway" label="状态" width="70px">
         <template slot-scope="scope">
           <span v-if="scope.row.putway === 1">生效中</span>
           <span v-if="scope.row.putway === 0">已下架</span>
@@ -199,7 +218,7 @@
             <!--{{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column label="是否AB测试" width="100px">
+      <el-table-column label="AB测试" width="100px">
           <template slot-scope="scope">
               {{abStatusEnum[scope.row.abstatus]}}
               <!--<span v-if="scope.row.abMainCrowd === 1">是</span>-->
@@ -230,10 +249,43 @@
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
-          <el-button-group>
+          <div class="el-button-group">
+            <el-button
+                    size="small"
+                    type="text"
+                    @click="handleClickEstimate(scope.row)"
+                    :disabled="scope.row.putway === 0"
+            >估算</el-button>
+            <el-dropdown @command="handleCommandStastic">
+              <el-button size="small" type="text">
+                统计
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['estimatedDetail',scope.row]"
+                        v-if="scope.row.forcastStatus == 3"
+                >估算画像</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >投后效果</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['homepageData',scope.row]"
+                >看主页数据</el-dropdown-item>
+                <!--<el-dropdown-item-->
+                <!--:command="['redirectCrowd',scope.row]"-->
+                <!--&gt;重定向数据</el-dropdown-item>-->
+              </el-dropdown-menu>
+            </el-dropdown>
+            <el-button
+                    v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
+                    size="small"
+                    type="text"
+                    @click="divideAB(scope.row,'addABTest')"
+            >AB实验
+            </el-button>
             <el-dropdown @command="handleCommandOpreate">
-              <el-button size="small" type="primary">
-                操作
+              <el-button size="small" type="text">
+                更多
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -267,46 +319,13 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-            <el-button
-              size="small"
-              type="warning"
-              @click="handleClickEstimate(scope.row)"
-              :disabled="scope.row.putway === 0"
-            >估算</el-button>
             <!--<el-button-->
                     <!--size="small"-->
                     <!--type="primary"-->
                     <!--@click="handleClickRedirectWithId(scope.row)"-->
                     <!--v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"-->
             <!--&gt;新增重定向投放</el-button>-->
-              <el-button
-                      v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
-                      size="small"
-                      type="success"
-                      @click="divideAB(scope.row,'addABTest')"
-              >AB实验
-              </el-button>
-            <el-dropdown @command="handleCommandStastic">
-              <el-button size="small" type="danger">
-                统计
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                        :command="['estimatedDetail',scope.row]"
-                        v-if="scope.row.forcastStatus == 3"
-                >估算画像</el-dropdown-item>
-                <el-dropdown-item
-                        :command="['detail',scope.row]"
-                >投后效果</el-dropdown-item>
-                <el-dropdown-item
-                        :command="['homepageData',scope.row]"
-                >看主页数据</el-dropdown-item>
-                <!--<el-dropdown-item-->
-                        <!--:command="['redirectCrowd',scope.row]"-->
-                <!--&gt;重定向数据</el-dropdown-item>-->
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-button-group>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -648,8 +667,8 @@
               <el-table-column prop="count" label="数量"></el-table-column>
               <el-table-column label="操作" width="250">
                   <template slot-scope="scope">
-                      <el-button type="danger" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                      <el-button type="primary" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                      <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                      <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
                   </template>
               </el-table-column>
           </el-table>
@@ -1022,15 +1041,19 @@ export default {
       this.loadData()
     },
     // 搜索,提交表单
-    submitForm () {
-      this.$refs.searchForm.validate((result) => {
-        if (result) {
-          this.criteria = this.searchForm
-          this.loadData()
-        } else {
-          return false
-        }
-      })
+    // submitForm () {
+    //   this.$refs.searchForm.validate((result) => {
+    //     if (result) {
+    //       this.criteria = this.searchForm
+    //       this.loadData()
+    //     } else {
+    //       return false
+    //     }
+    //   })
+    // },
+    handleSearch () {
+        this.criteria = this.searchForm
+        this.loadData()
     },
     // 重置
     handleReset () {
@@ -2069,13 +2092,45 @@ fieldset>div
 .estimate-tips
     margin 10px 0
     color red
-.left div
-    margin-right 25px
 .export-button
     display flex
     justify-content flex-end
-.crowd-list >>> .el-button-group > .el-button
-    float none
 .blue-tip
     color #0086b3
+.operate
+  position relative
+  z-index 0
+  font-size 20px
+  cursor pointer
+  margin-left 10px
+.header
+  width 100%
+  display flex
+  justify-content space-between
+  margin-bottom 10px
+  .header-right
+    display flex
+    align-items center
+.el-button-group >>> .el-button
+  float none
+  margin 0 3px
+.search-input
+  position relative
+  margin 0 10px
+.icon-fixed
+  position absolute
+  top 8px
+  right 20px
+  transform rotate(-90deg)
+.priority-tip
+  display inline-block
+  cursor pointer
+  width 20px
+  height 20px
+  line-height 20px
+  background #ccc
+  color #fff
+  border-radius 50%
+  text-align center
+  font-size 14px
 </style>

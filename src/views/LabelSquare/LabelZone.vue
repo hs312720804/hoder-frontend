@@ -109,7 +109,6 @@
         methods: {
             fetchData() {
                 this.$service.getNewTreeList().then(data => {
-                    console.log(data)
                     const result = []
                     data.forEach(item => {
                         item.children.forEach(secondChild => {
@@ -122,7 +121,6 @@
                             result.push({ parentName:secondChild.groupName,newOrUpdateCount: secondChild.newOrUpdateCount,parentId: secondChild.groupId, children: childList })
                         })
                     })
-                    console.log('result----',result)
                     this.treeData = result
                     // this.activeTab = result[0].children[0].groupId
                     // this.filter.groupId = this.activeTab
