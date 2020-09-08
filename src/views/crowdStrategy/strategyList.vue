@@ -120,6 +120,15 @@
           <div class="el-button-group">
             <el-button size="small" type="text" @click="crowdList(scope.row)">查看人群</el-button>
             <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
+            <el-button
+                    size="small"
+                    type="text"
+                    v-permission="'hoder:policy:sync'"
+                    @click="freshCache(scope.row)"
+            >
+              <span v-if="scope.row.status === 1">未同步</span>
+              <span v-if="scope.row.status === 2">已同步</span>
+            </el-button>
             <el-dropdown @command="handleCommand">
               <el-button size="small" type="text">
                 更多
@@ -181,16 +190,6 @@
                     <!--删除-->
                   <!--</li>-->
                 <!--</ul>-->
-            <!--</el-button>-->
-            <!--<el-button-->
-                    <!--size="small"-->
-                    <!--type="text"-->
-                    <!--:class="scope.row.status === 1 ? 'checkbox-green' : 'checkbox-red'"-->
-                    <!--v-permission="'hoder:policy:sync'"-->
-                    <!--@click="freshCache(scope.row)"-->
-            <!--&gt;-->
-              <!--<span v-if="scope.row.status === 1">未同步</span>-->
-              <!--<span v-if="scope.row.status === 2">已同步</span>-->
             <!--</el-button>-->
           </div>
         </template>
