@@ -1,5 +1,9 @@
 <template>
-    <el-dialog :title="tag.attrId ? '编辑标签' : '新建标签'" :visible.sync="showCreateDialog">
+    <el-dialog
+            :title="tag.attrId ? '编辑标签' : '新建标签'"
+            :visible.sync="showCreateDialog"
+            :append-to-body='true'
+    >
         <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
         </GateSchemaForm>
     </el-dialog>

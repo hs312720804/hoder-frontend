@@ -1,7 +1,9 @@
 <template>
     <el-dialog
             :title="tag.attrId ? '编辑批量上传' : '新建批量上传'"
-            :visible.sync="showBatchDialog">
+            :visible.sync="showBatchDialog"
+            :append-to-body='true'
+    >
           <el-form :model="tag" :rules="rules" ref="gForm" label-width="100px">
               <el-form-item label="选择文件">
                   <input @change="handleSelectFile" type="file"></input>
