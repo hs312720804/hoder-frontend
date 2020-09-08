@@ -178,7 +178,12 @@
                 launchStatusEnum: { "1": "投放中" },
             }
         },
-        props: ["parentSource"],
+        props: ["parentSource","showAllParent"],
+        watch: {
+            'showAllParent': function () {
+                this.fetchData(this.biId)
+            }
+        },
         methods: {
             getPolicyList() {
                 this.$service.launchPolicyIndex().then(data => {
@@ -221,7 +226,7 @@
                 const pageNum = this.pagination.currentPage
                 const pageSize = this.pagination.pageSize
                 const search = this.filter.search
-                if (this.parentSource) {
+                if (this.showAllParent) {
                     this.$service.getMyCrowdLaunchList({ tabIndex , pageNum, pageSize, search}).then((data)=> {
                         this.table.data = data.list
                         this.pagination.total = data.total
@@ -235,7 +240,7 @@
             },
             handleAdd() {
                 this.showAddDialog = true
-                if (this.parentSource) {
+                if (this.showAllParent) {
                     this.$service.getAddMyCrowdData().then((data) => {
                         this.Platforms = data.biLists
                         this.strategyData = data.polices

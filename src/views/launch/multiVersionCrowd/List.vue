@@ -603,7 +603,7 @@
                 accountDefine: false
             };
         },
-        props: ["parentSource"],
+        props: ["parentSource","showAllParent"],
         created() {
             this.screenWidth = window.screen.width
             this.loadData();
@@ -619,6 +619,9 @@
                 this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
                 })
+            },
+            showAllParent () {
+                this.loadData()
             }
         },
         methods: {
@@ -684,7 +687,7 @@
                 })
                 this.criteria["pageNum"] = this.currentPage
                 this.criteria["pageSize"] = this.pageSize
-                if(this.parentSource) {
+                if(this.showAllParent) {
                     this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
                         this.launchStatusEnum = data.launchStatusEnum
                         this.tableData = data.pageInfo.list

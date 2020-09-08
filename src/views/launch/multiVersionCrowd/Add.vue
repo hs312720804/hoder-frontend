@@ -608,7 +608,7 @@
                 currentLaunchId: undefined
             }
         },
-        props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
+        props: ["editLaunchCrowdId", "model","editStatus","parentSource","showAllParent"],
         watch: {
             // 'crowdForm.abTest': function (val, oldVal) {
             //     debugger
@@ -982,7 +982,7 @@
                     })
                 }
                 else {
-                    if (this.parentSource) {
+                    if (this.showAllParent) {
                         this.$service.addMyMultiVersionCrowd(this.model).then(data => {
                             this.launchPlatform = data.biLists
                             this.strategyPlatform = data.policies

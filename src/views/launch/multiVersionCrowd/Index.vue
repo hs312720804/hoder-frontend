@@ -1,10 +1,16 @@
 <template>
     <div>
-        <list v-show="isShowList" :parentSource="parentSource" @changeStatus="changeStatus" ref="list"></list>
+        <list v-show="isShowList"
+              :parentSource="parentSource"
+              :showAllParent="showAllParent"
+              @changeStatus="changeStatus"
+              ref="list">
+        </list>
         <add v-if="!isShowList"
              @changeStatus="changeStatus"
              :model="addModel"
              @goBack="goBack"
+             :showAllParent="showAllParent"
              :editLaunchCrowdId="editLaunchCrowdId"
              :editStatus="editStatus"
              :parentSource="parentSource"
@@ -24,7 +30,7 @@
                 editStatus: null
             }
         },
-        props: ["parentSource"],
+        props: ["parentSource","showAllParent"],
         components: {
             List,
             Add
