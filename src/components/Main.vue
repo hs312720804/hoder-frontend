@@ -25,7 +25,7 @@
           <el-submenu
                   v-else
                   :key="index"
-                  :index="'index'"
+                  :index="index+''"
           >
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
