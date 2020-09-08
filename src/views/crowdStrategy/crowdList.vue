@@ -38,7 +38,7 @@
             <span class="uneffective">
               <el-button
                     type="text"
-                    size="small"
+                    size="medium"
                     @click="handleBatchEstimate"
                     :disabled="canBatchEstimate"
             >
