@@ -3,8 +3,13 @@
   <div class="crowd-list">
     <fieldset>
       <legend>{{selectRow.policyName}}</legend>
-      <div>
-        <div class="left">
+      <div class="crowd-top">
+        <div class="crowd-top-back">
+          <el-button type="text" @click="goBack">
+            <i class="el-icon-cc-left"></i>返回
+          </el-button>
+        </div>
+        <div>
           策略ID：{{selectRow.policyId}}
           策略纬度:
           <el-tag
@@ -13,9 +18,6 @@
             :key="item.tagId"
             :type= "dataSourceColorEnum[item.dataSource]"
           >{{item.tagName}}</el-tag>
-        </div>
-        <div class="right">
-          <el-button size="small" type="success" @click="goBack">返回</el-button>
         </div>
       </div>
     </fieldset>
@@ -35,7 +37,7 @@
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective">
               <el-button
-                    type="success"
+                    type="text"
                     size="small"
                     @click="handleBatchEstimate"
                     :disabled="canBatchEstimate"
@@ -2133,4 +2135,12 @@ fieldset>div
   border-radius 50%
   text-align center
   font-size 14px
+.crowd-top
+  display flex
+  justify-content flex-start
+  align-items center
+.crowd-top-back
+  margin-right 20px
+  .el-button
+    font-size 16px
 </style>
