@@ -98,17 +98,23 @@
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
                 <template slot-scope="scope">
-                    <!-- 当投放中，人群波动，要显示红色-->
-                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
-                          :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
-                    >
-                        {{(launchStatusEnum[scope.row.history.status]).name}}
+                    <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                        <span v-if="scope.row.launchTempCrowdStatus">投放中</span>
+                        <span v-else>待投放</span>
                     </span>
                     <span v-else>
-                          <el-tooltip placement="right-start">
-                            <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
-                              <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
-                          </el-tooltip>
+                         <!-- 当投放中，人群波动，要显示红色-->
+                        <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
+                              :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
+                        >
+                            {{(launchStatusEnum[scope.row.history.status]).name}}
+                        </span>
+                        <span v-else>
+                              <el-tooltip placement="right-start">
+                                <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
+                                  <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
+                              </el-tooltip>
+                        </span>
                     </span>
                     <!--<el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>-->
                     <!--<span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status].name}}</span>-->
@@ -212,12 +218,23 @@
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
                                 </el-dropdown-item>
-                                <el-dropdown-item
-                                        :command="['del',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                                >删除
-                                </el-dropdown-item>
+                                <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                                    <span v-if="!scope.row.launchTempCrowdStatus">
+                                        <el-dropdown-item
+                                                :command="['del',scope.row]"
+                                                v-permission="'hoder:launch:crowd:ver:delete'"
+                                        >删除
+                                        </el-dropdown-item>
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    <el-dropdown-item
+                                            :command="['del',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:delete'"
+                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                    >删除
+                                    </el-dropdown-item>
+                                </span>
                                 <el-dropdown-item
                                         :command="['divide',scope.row]"
                                         v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && (launchStatusEnum[scope.row.history.status]).code === 1"
