@@ -74,7 +74,7 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList">
+      <el-table-column prop="tagsList" width="400px">
         <template
                 slot="header"
                 slot-scope="{ column, $index }"
