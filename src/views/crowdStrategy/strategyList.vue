@@ -74,7 +74,7 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" width="300px">
+      <el-table-column prop="tagsList">
         <template
                 slot="header"
                 slot-scope="{ column, $index }"
@@ -158,7 +158,7 @@
                         :command="['collect',scope.row]"
                 >从'我的'删除</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['detail',scope.row]"
+                        :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -765,7 +765,7 @@ export default {
             this.seeDevDetail(params)
         } else if (type === 'collect') {
             this.handlePolicyCollect(params)
-        } else if(type === 'detail') {
+        } else if(type === 'statics') {
             this.currentPid = scope[1].policyId
             this.showStatistics = true
             // 重置时间

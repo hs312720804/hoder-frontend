@@ -136,7 +136,7 @@
                 <template slot-scope="scope">
                     <el-button-group  class="button-group-position">
                         <!-- 投放按钮显示的状态：1未投放，4计算失败，5投放失败，7已过期 -->
-                        <span v-if="scope.row.isFxFullSql === 1 && scope.row.temprowdId > 0">
+                        <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
                             <el-button
                                     v-if="!scope.row.launchTempCrowdStatus"
                                     v-permission="'hoder:launch:crowd:ver:launch'"
