@@ -2,14 +2,12 @@
     <div class="launch-tab-list">
         <el-tabs v-model="tabsValue" type="card">
             <el-tab-pane name="pull" label="人群分割投放（pull：针对主页产品包、广告、活动、弹窗、媒资）">
-                <!--<div class="tips">备注：pull模式（针对主页产品包、广告、活动、弹窗、媒资）</div>-->
                 <pull-list
                         :parentSource="source"
                         :showAllParent="showAll">
                 </pull-list>
             </el-tab-pane>
             <el-tab-pane name="push" label="人群圈定投放（push：用于消息、微信圈定人群）">
-                <!--<div class="tips">备注：push模式（用于消息、微信圈定人群）</div>-->
                 <push-list
                         :parentSource="source"
                         :showAllParent = "showAll"

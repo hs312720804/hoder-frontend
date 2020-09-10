@@ -300,15 +300,8 @@
         display flex
         align-items center
         justify-content space-between
-    /*.search-form*/
-        /*display flex*/
-        /*width 80%*/
-        /*justify-content flex-end*/
-        /*.el-input*/
-            /*width 20%*/
-            /*margin-right 20px*/
-    /*.manual*/
-        /*margin-left 8px*/
+    .strategy >>> .content-list
+        margin-top 0
     .search-input
         position relative
         margin 0 10px
