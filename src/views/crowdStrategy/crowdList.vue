@@ -362,7 +362,7 @@
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
        <div>设备：{{totalUser}}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
-       <div>手机号：{{total1 === undefined ? '暂无数据':total1}}</div>
+       <div>手机号：{{total1 === undefined ? '暂无数据': cc_format_number(total1)}}</div>
        <div>酷开openId：{{total2}}</div>
        <div>微信openId：{{total3}}</div>
    </el-dialog>
@@ -666,7 +666,11 @@
                       {{scope.row.ratio}}%
                   </template>
               </el-table-column>
-              <el-table-column prop="count" label="数量"></el-table-column>
+              <el-table-column prop="count" label="数量">
+                <template slot-scope="scope">
+                  {{cc_format_number(scope.row.count)}}
+                </template>
+              </el-table-column>
               <el-table-column label="操作" width="250">
                   <template slot-scope="scope">
                       <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
@@ -1007,10 +1011,10 @@ export default {
               this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
               const {total1,total2,total3,totalUser} = data[0] || {}
               // const {totalUser} = data[0] || {}
-              this.total1 = total1 || '暂无数据'
-              this.total2 = total2 || '暂无数据'
-              this.total3 = total3 || '暂无数据'
-              this.totalUser = totalUser || '暂无数据'
+              this.total1 = this.cc_format_number(total1) || '暂无数据'
+              this.total2 = this.cc_format_number(total2) || '暂无数据'
+              this.total3 = this.cc_format_number(total3) || '暂无数据'
+              this.totalUser = this.cc_format_number(totalUser) || '暂无数据'
           })
       },
     // 从服务器读取数据

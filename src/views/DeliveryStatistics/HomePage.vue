@@ -28,7 +28,7 @@
                         <div class="unit-content">
                             <div class="crowd-all-item-container">
                                 <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
-                                    <div class="crowd-all-item--number">{{cc_format_number(item.value)}}</div>
+                                    <div class="crowd-all-item--number">{{item.value}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
