@@ -28,7 +28,7 @@
                         <div class="unit-content">
                             <div class="crowd-all-item-container">
                                 <div class="crowd-all-item" v-for="(item,index) in crowdAllData" :key="index">
-                                    <div class="crowd-all-item--number">{{item.value}}</div>
+                                    <div class="crowd-all-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -58,7 +58,7 @@
                         <div class="unit-content">
                             <div class="home-page-recommend">
                                 <div class="home-page-recommend-item" v-for="(item,index) in homePageRecommendation" :key="index">
-                                    <div class="home-page-recommend-item--number">{{item.value}}</div>
+                                    <div class="home-page-recommend-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                         <div class="unit-content">
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagAllData" :key="index">
-                                    <div class="tag-all-item--number">{{item.count}}</div>
+                                    <div class="tag-all-item--number">{{cc_format_number(item.count)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -99,7 +99,7 @@
                         <div class="unit-content">
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
-                                    <div class="tag-all-item--number">{{item.value}}</div>
+                                    <div class="tag-all-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -124,7 +124,7 @@
                         <div class="unit-content">
                             <div class="launch-all-item-container">
                                 <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
-                                    <div class="launch-all-item--number">{{item.count}}</div>
+                                    <div class="launch-all-item--number">{{cc_format_number(item.count)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -136,7 +136,7 @@
                                 <div class="unit-header clearfix">业务人群使用情况</div>
                                 <div class="unit-content">
                                     <div class="business-use-text">
-                                        <div class="number">{{businessUseCrowdData.count}}</div>
+                                        <div class="number">{{cc_format_number(businessUseCrowdData.count)}}</div>
                                         <div class="name">{{businessUseCrowdData.name}}</div>
                                     </div>
                                 </div>
