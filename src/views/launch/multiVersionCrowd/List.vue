@@ -131,10 +131,65 @@
                     {{crowdType[scope.row.isFxFullSql]}}
                 </template>
             </el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalUser') > -1)" prop="history.totalUser" label="设备数量" width="80"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalPhone') > -1)" prop="history.totalPhone" label="手机号数量" width="90"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalWxOpenid') > -1)" prop="history.totalWxOpenid" label="微信openId数量" width="110"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalCoocaaOpenid') > -1)" prop="history.totalCoocaaOpenid" label="酷开openId数量" width="110"></el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalUser') > -1)"
+                    label="设备数量"
+                    width="80"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalUser">
+                        {{cc_format_number(scope.row.history.totalUser)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalUser}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalPhone') > -1)"
+                    prop="history.totalPhone"
+                    label="手机号数量"
+                    width="90"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalPhone">
+                        {{cc_format_number(scope.row.history.totalPhone)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalPhone}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalWxOpenid') > -1)"
+                    prop="history.totalWxOpenid"
+                    label="微信openId数量"
+                    width="110"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalWxOpenid">
+                        {{cc_format_number(scope.row.history.totalWxOpenid)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalWxOpenid}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalCoocaaOpenid') > -1)"
+                    prop="history.totalCoocaaOpenid"
+                    label="酷开openId数量"
+                    width="110"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalCoocaaOpenid">
+                        {{cc_format_number(scope.row.history.totalCoocaaOpenid)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalCoocaaOpenid}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门"></el-table-column>
