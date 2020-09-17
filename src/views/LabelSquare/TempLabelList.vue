@@ -58,7 +58,11 @@
                 </el-table-column>
                 <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
                 <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
-                <el-table-column label="操作" width="200">
+                <el-table-column
+                        label="操作"
+                        width="200"
+                        v-if="!showSelection"
+                >
                     <template slot-scope="scope">
                         <el-button-group>
                             <!--<el-button-->
