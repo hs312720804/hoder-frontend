@@ -2,9 +2,9 @@
   <div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :recordId="recordId" />
-      <el-form-item label="人群用途" prop="purpose">
-        <el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>
-      </el-form-item>
+      <!--<el-form-item label="人群用途" prop="purpose">-->
+        <!--<el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>-->
+      <!--</el-form-item>-->
       <!--<el-form-item label="人群有效期" prop="crowdExp">-->
         <!--<el-date-picker-->
                 <!--v-model="form.crowdExp"-->
@@ -37,14 +37,14 @@ export default {
         return {
             activeName: 0,
             form: {
-                purpose: undefined,
+                // purpose: undefined,
                 rulesJson: [
                     {
                         'recordId': this.getRecordId(),
                         'tempCrowdId': undefined,
                         'crowdName': undefined,
                         'tagIds': [],
-                        'purpose': undefined,
+                        // 'purpose': undefined,
                         'remark': undefined,
                         'crowdOrder': 0,
                         'rulesJson': {
@@ -58,7 +58,7 @@ export default {
                 // crowdExp: []
             },
             formRules: {
-                purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
+                // purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
                 // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
             },
             pickerOptions: {
@@ -146,7 +146,7 @@ export default {
                     return
                 }
                 form.rulesJson = form.rulesJson.map((e) => {
-                    e.purpose = form.purpose
+                    // e.purpose = form.purpose
                     e.tagIds = e.tagIds.join(',')
                     e.rulesJson = JSON.stringify(e.rulesJson)
                     // e.crowdValidFrom = form.crowdExp[0]
@@ -174,24 +174,24 @@ export default {
     },
     handleEdit () {
       const recordId = this.recordId
-      let purpose = undefined
+      // let purpose = undefined
       // let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then((data) => {
         data = data.map((e, index) => {
-          if (index === 0) {
-            purpose = e.purpose
+          // if (index === 0) {
+            // purpose = e.purpose
               // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
               // else {
               //     crowdExp[0] = e.crowdValidFrom === null ? '' : e.crowdValidFrom
               //     crowdExp[1] = e.crowdValidTo === null ? '' : e.crowdValidTo
               // }
-          }
+          // }
           e.tagIds = e.tagIds.split(",")
           e.rulesJson = JSON.parse(e.rulesJson)
           return e
         })
         this.form = {
-          purpose,
+          // purpose,
           rulesJson: data,
           // crowdExp
         }

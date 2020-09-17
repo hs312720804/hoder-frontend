@@ -2,10 +2,15 @@
     <div class="label-content">
         <el-tabs
                 v-model="activeName"
-                @tab-click="handldTabChange"
+                @tab-click="handleTabChange"
         >
             <el-tab-pane label="临时标签" name="tempLabel">
-                <temp-label-index></temp-label-index>
+                <temp-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        @get-table-selected="handleGetTableSelectedData"
+                >
+                </temp-label-index>
             </el-tab-pane>
             <el-tab-pane label="标签专区" name="labelZone">
                 <label-zone
@@ -14,6 +19,9 @@
                         :checkList="checkList"
                         @change-checkList="handleCheckListChange"
                         @fetch-checkList="fetchCheckListData"
+                        @get-table-selected="handleGetTableSelectedData"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
                 >
                 </label-zone>
             </el-tab-pane>
@@ -23,6 +31,9 @@
                         :checkList="checkList"
                         @clear-search="handleClearSearch"
                         @change-checkList="handleCheckListChange"
+                        @get-table-selected="handleGetTableSelectedData"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
                 >
                 </my-collect>
             </el-tab-pane>
@@ -35,6 +46,17 @@
             >
             </el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+        </div>
+        <div v-if="showSelection">
+            <div>已选标签：</div>
+            <el-tag v-for="(item,index) in tagList"
+                    :key="item.tagId+'_'+index"
+                    :type="dataSourceColorEnum[item.dataSource]"
+                    closable
+                    @close="removeTag(item)"
+            >
+                {{item.tagName}}
+            </el-tag>
         </div>
     </div>
 </template>
@@ -56,7 +78,15 @@
                 searchVal: '',
                 labelZoneTagName: undefined,
                 myCollectTagName: undefined,
-                checkList: []
+                checkList: [],
+                tagList: [],
+                dataSourceColorEnum: {
+                    1: 'success',
+                    2: 'danger',
+                    3: '',
+                    5: 'warning'
+                },
+                showSelection: false
             }
         },
         methods: {
@@ -89,7 +119,7 @@
             handleCheckListChange (val) {
                 this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
             },
-            handldTabChange () {
+            handleTabChange () {
                 switch (this.activeName) {
                     case 'labelZone':
                         //    刷新标签广场页
@@ -105,6 +135,28 @@
                         this.$root.$emit('temp-label-list-refresh')
                         break
                 }
+            },
+            handleGetTableSelectedData (val,mode) {
+                const tagList = this.tagList
+                if(mode === 'add') {
+                    this.tagList.push(val)
+                } else {
+                    // 取消选中的则删除这一项
+                    let index = -1
+                    for (var i=0; i < tagList.length;i++) {
+                        if (tagList[i].tagId === val.tagId) {
+                            index = i
+                            this.tagList.splice(index,1)
+                            return
+                        }
+                    }
+                    // this.tagList.splice(this.tagList.indexOf(val),1)
+                }
+            },
+            removeTag(tag) {
+                // const addForm = this.addForm
+                // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+                this.tagList.splice(this.tagList.indexOf(tag),1)
             }
         },
         created () {

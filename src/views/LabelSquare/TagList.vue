@@ -1,18 +1,21 @@
 <template>
     <div class="tag-list">
         <el-table
+                ref="changeTable"
                 v-show="!tagId"
                 v-loading="loading"
                 element-loading-text="拼命加载中"
                 element-loading-spinner="el-icon-loading"
                 border
                 :data="dataList"
-                @selection-change="handleSelectionChange"
+                @select="handleSelectOrCancel"
         >
-            <!--<el-table-column-->
-                    <!--type="selection"-->
-                    <!--width="55">-->
-            <!--</el-table-column>-->
+            <el-table-column
+                    type="selection"
+                    width="55"
+                    v-if="showSelection"
+            >
+            </el-table-column>
             <el-table-column prop="tagId" label="ID">
             </el-table-column>
             <el-table-column prop="tagName" label="名称">
@@ -59,7 +62,11 @@
                     label="备注"
             >
             </el-table-column>
-            <el-table-column prop="operation" label="操作">
+            <el-table-column
+                    prop="operation"
+                    label="操作"
+                    v-if="!showSelection"
+            >
                 <template
                         slot="header"
                         slot-scope="{ column, $index }"
@@ -131,6 +138,12 @@
             },
             loading: {
                 type: Boolean
+            },
+            showSelection: {
+                type: Boolean
+            },
+            currentSelectedTags: {
+                type: Array
             }
         },
         components: {
@@ -146,12 +159,11 @@
         watch: {
             checkListParent: function (val) {
                 this.checkList = val
-            }
+            },
+            'dataList': 'updateTableSelected',
+            'currentSelectedTags': 'updateTableSelected'
         },
         methods: {
-            handleSelectionChange(val) {
-                this.multipleSelection = val
-            },
             handleCheckListChange (val) {
                 this.$emit('change-checkList',val)
             },
@@ -174,6 +186,39 @@
                     this.$service.collectTags({tagId},'已成功收藏！').then(() => {
                         this.$emit('fetch-data')
                     })
+                }
+            },
+            updateTableSelected () {
+                const arr = []
+                const currentSelectRows = this.currentSelectedTags
+                this.dataList.forEach((item, index) => {
+                    currentSelectRows.forEach((i) => {
+                        if (item.tagId === i.tagId) {
+                            arr.push(this.dataList[index])
+                        }
+                    })
+                })
+                if (arr) {
+                    // 如果存在，则先清空选中，再赋值
+                    this.$nextTick(() => {
+                        this.$refs.changeTable.clearSelection()
+                        arr.forEach(row => {
+                            this.$refs.changeTable.toggleRowSelection(row,true)
+                        })
+                    })
+                } else {
+                    this.$refs.changeTable.clearSelection()
+                }
+            },
+            handleSelectOrCancel (select, row) {
+                const selectedFlag = select.length && select.indexOf(row) !== -1
+                // true就是选中，0或者false是取消选中
+                if (selectedFlag) {
+                    this.$refs.changeTable.toggleRowSelection(row,true)
+                    this.$emit('table-selected',row, 'add')
+                } else {
+                    this.$refs.changeTable.toggleRowSelection(row,false)
+                    this.$emit('table-selected',row, 'del')
                 }
             }
         },

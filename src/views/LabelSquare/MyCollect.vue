@@ -7,6 +7,9 @@
         :check-list-parent="checkList"
         @fetch-data="fetchData"
         @change-checkList="handleCheckListChange"
+        @table-selected="handleTableSelected"
+        :current-selected-tags="currentSelectTag"
+        :show-selection="showSelection"
       >
       </tag-list>
   </div>
@@ -25,6 +28,12 @@
             },
             checkList: {
                 type: Array
+            },
+            currentSelectTag: {
+                type: Array
+            },
+            showSelection: {
+                type: Boolean
             }
         },
         watch: {
@@ -60,8 +69,10 @@
             },
             handleCheckListChange (val) {
                 this.$emit('change-checkList',val)
+            },
+            handleTableSelected (val, mode) {
+                this.$emit('get-table-selected',val,mode)
             }
-
         },
         created () {
             this.$root.$on('my-collect-list-refresh', this.fetchData)

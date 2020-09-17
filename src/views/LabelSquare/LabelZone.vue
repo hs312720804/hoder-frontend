@@ -20,17 +20,23 @@
                         <div class="button-add" v-if="childItem.groupName === '自定义标签'">
                             <el-button type="primary" @click="handleAddTagCategory">新增</el-button>
                         </div>
-                        <tag-list
-                                v-show="toggleShow"
-                                :data-list="dataList"
-                                :data-source-enum="dataSourceEnum"
-                                :type-enum="typeEnum"
-                                :loading="loading"
-                                :check-list-parent="checkList"
-                                @fetch-data="fetchTagList"
-                                @change-checkList="handleCheckListChange"
-                        >
-                        </tag-list>
+                        <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
+                        <template v-if="activeTab === childItem.groupId">
+                            <tag-list
+                                    v-if="toggleShow"
+                                    :data-list="dataList"
+                                    :data-source-enum="dataSourceEnum"
+                                    :type-enum="typeEnum"
+                                    :loading="loading"
+                                    :check-list-parent="checkList"
+                                    :show-selection="showSelection"
+                                    @fetch-data="fetchTagList"
+                                    @change-checkList="handleCheckListChange"
+                                    @table-selected="handleTableSelected"
+                                    :current-selected-tags="currentSelectTag"
+                            >
+                            </tag-list>
+                        </template>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -43,8 +49,11 @@
                     :type-enum="typeEnum"
                     :loading="loading"
                     :check-list-parent="checkList"
+                    :show-selection="showSelection"
                     @fetch-data="fetchTagAllList"
                     @change-checkList="handleCheckListChange"
+                    @table-selected="handleTableSelected"
+                    :current-selected-tags="currentSelectTag"
             >
             </tag-list>
         </div>
@@ -73,6 +82,12 @@
                 type: String
             },
             checkList: {
+                type: Array
+            },
+            showSelection: {
+                type: Boolean
+            },
+            currentSelectTag: {
                 type: Array
             }
         },
@@ -191,6 +206,9 @@
                     groupId: this.definedTagId
                 }
                 this.$refs.tagCategoryUpsert.showCreateDialog = true
+            },
+            handleTableSelected (val, mode) {
+                this.$emit('get-table-selected',val, mode)
             }
             // getNewTree () {
             //     this.$service.getNewTreeList().then(data => {

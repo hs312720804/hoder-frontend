@@ -3,7 +3,9 @@
         <div class="header">
             <el-button
                     @click="handleAdd"
-                    type="primary">
+                    type="primary"
+                    v-if="!showSelection"
+            >
                 新建
             </el-button>
             <div class="search-input">
@@ -17,7 +19,17 @@
             </div>
         </div>
         <div>
-            <el-table :data="tableData" border>
+            <el-table
+                    ref="tempChangeTable"
+                    :data="tableData"
+                    border
+                    @select="handleSelectOrCancel"
+            >
+                <el-table-column
+                        type="selection"
+                        width="55"
+                        v-if="showSelection"
+                ></el-table-column>
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
                 <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
@@ -124,7 +136,17 @@
 <script>
     export default {
         name: "TempLabel",
-        props: ['refreshFlag'],
+        props: {
+            refreshFlag: {
+                type: Boolean
+            },
+            showSelection: {
+                type: Boolean
+            },
+            currentSelectTag: {
+                type: Array
+            }
+        },
         data () {
             return {
                 tableData: [],
@@ -149,7 +171,8 @@
                 if (val) {
                     this.fetchData()
                 }
-            }
+            },
+            'currentSelectTag': 'updateTableSelected'
         },
         methods: {
             fetchData () {
@@ -162,6 +185,9 @@
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total
+                    if (this.showSelection) {
+                        this.updateTableSelected()
+                    }
                 })
             },
             handleCommandOpreate(scope) {
@@ -230,6 +256,39 @@
             // 新增
             handleAdd () {
                 this.$emit('show-add')
+            },
+            handleSelectOrCancel (select, row) {
+                const selectedFlag = select.length && select.indexOf(row) !== -1
+                // true就是选中，0或者false是取消选中
+                if (selectedFlag) {
+                    this.$refs.tempChangeTable.toggleRowSelection(row,true)
+                    this.$emit('table-selected',row, 'add')
+                } else {
+                    this.$refs.tempChangeTable.toggleRowSelection(row,false)
+                    this.$emit('table-selected',row, 'del')
+                }
+            },
+            updateTableSelected () {
+                const arr = []
+                const currentSelectRows = this.currentSelectTag
+                this.tableData.forEach((item, index) => {
+                    currentSelectRows.forEach((i) => {
+                        if (item.tagId === i.tagId) {
+                            arr.push(this.tableData[index])
+                        }
+                    })
+                })
+                if (arr) {
+                    // 如果存在，则先清空选中，再赋值
+                    this.$nextTick(() => {
+                        this.$refs.tempChangeTable.clearSelection()
+                        arr.forEach(row => {
+                            this.$refs.tempChangeTable.toggleRowSelection(row,true)
+                        })
+                    })
+                } else {
+                    this.$refs.tempChangeTable.clearSelection()
+                }
             }
         }
     }

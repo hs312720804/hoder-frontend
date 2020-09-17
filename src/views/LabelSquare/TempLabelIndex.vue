@@ -4,6 +4,9 @@
             v-show="showList"
             @show-add="handleShowAdd"
             :refreshFlag="refreshFlag"
+            :show-selection="showSelection"
+            :currentSelectTag="currentSelectTag"
+            @table-selected="handleTableSelected"
         >
         </temp-label-list>
         <temp-label-add
@@ -26,6 +29,14 @@
             tempLabelList,
             tempLabelAdd
         },
+        props: {
+            showSelection: {
+                type: Boolean
+            },
+            currentSelectTag: {
+                type: Array
+            }
+        },
         data () {
             return {
                 showList: true,
@@ -46,6 +57,9 @@
             handleRefreshList () {
                 this.showList = true
                 this.refreshFlag = true
+            },
+            handleTableSelected (val, mode) {
+                this.$emit('get-table-selected',val, mode)
             }
         }
     }

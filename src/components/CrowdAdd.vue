@@ -281,7 +281,7 @@
             <el-form-item label="备注" :prop="formProp('remark')">
               <el-input v-model="crowd.remark" placeholder="备注"></el-input>
             </el-form-item>
-            <el-form-item label="排序" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
+            <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
               <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
             </el-form-item>
           </el-collapse-item>
@@ -506,8 +506,33 @@ export default {
     },
     setInputValue (val) {
       if (val !== this.inputValue) {
-        this.inputValue = val
-        this.setSeq()
+          if (val.length > 0) {
+              this.inputValue = val
+              this.setSeq()
+          }else {
+              if (this.inputValue.length > 0) {
+                  return
+              }
+              this.inputValue.push(
+                  {
+                      'recordId': this.getRecordId(),
+                      'tempCrowdId': undefined,
+                      'crowdName': undefined,
+                      'tagIds': [],
+                      'purpose': undefined,
+                      'remark': undefined,
+                      'crowdOrder': length + 1,
+                      'rulesJson': {
+                          condition: 'OR',
+                          rules: []
+                      },
+                      'limitLaunch': false,
+                      'limitLaunchCount': undefined,
+                      total0: undefined
+                  }
+              )
+              this.setSeq()
+          }
       }
     },
     emitInputValue () {
@@ -595,10 +620,10 @@ export default {
   },
   created () {
     if (this.value) {
-      this.setInputValue(this.value)
-      this.$service.tagInfoNew(this.recordId).then(data => {
-        this.tags = data
-      })
+        this.setInputValue(this.value)
+        this.$service.tagInfoNew(this.recordId).then(data => {
+            this.tags = data
+        })
     }
     this.$watch('inputValue', this.emitInputValue, {
       deep: true
