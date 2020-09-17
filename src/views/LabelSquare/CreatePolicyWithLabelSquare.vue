@@ -8,7 +8,10 @@
         <temp-label-index
                 :show-selection="showSelection"
                 :currentSelectTag="tagList"
+                :checkList="tempCheckList"
                 @get-table-selected="handleGetTableSelectedData"
+                @change-checkList="handleTempCheckListChange"
+                @fetch-checkList="fetchTempCheckListData"
         >
         </temp-label-index>
       </el-tab-pane>
@@ -108,6 +111,7 @@
                         { required: true, message: "请填写策略名称", trigger: "blur" }
                     ]
                 },
+                tempCheckList: []
             }
         },
         methods: {
@@ -147,6 +151,22 @@
             handleCheckListChange (val) {
                 this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
             },
+            fetchTempCheckListData () {
+                this.$service.getListDimension({type: 5}).then(data => {
+                    if (data) {
+                        if (data.behaviorShow) {
+                            this.tempCheckList = data.behaviorShow.split(',')
+                        } else {
+                            this.tempCheckList = ['defineRemark']
+                        }
+                    } else {
+                        this.tempCheckList = ['defineRemark']
+                    }
+                })
+            },
+            handleTempCheckListChange (val) {
+                this.$service.saveListDimension({type: 5,behaviorShow: val.join(',')})
+            },
             handleTabChange () {
                 switch (this.activeName) {
                     case 'labelZone':
@@ -160,6 +180,7 @@
                         this.$root.$emit('my-collect-list-refresh')
                         break
                     case 'tempLabel':
+                        this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh')
                         break
                 }
@@ -290,6 +311,7 @@
         },
         created () {
             this.fetchCheckListData()
+            this.fetchTempCheckListData()
             if (this.recordId) {
                 this.getPolicyDetail()
                 this.tagList = this.initTagList

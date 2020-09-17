@@ -1,13 +1,33 @@
 <template>
     <div class="temp-label-list">
         <div class="header">
-            <el-button
-                    @click="handleAdd"
-                    type="primary"
-                    v-if="!showSelection"
-            >
-                新建
-            </el-button>
+            <div v-if="!showSelection">
+                <el-button
+                        @click="handleAdd"
+                        type="primary"
+                >
+                    新建
+                </el-button>
+                    <el-popover
+                            placement="top"
+                            trigger="click"
+                            class="popover-button"
+                    >
+                        <div>
+                            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                                <el-checkbox label="creatorName">创建人</el-checkbox>
+                                <el-checkbox label="createTime">创建时间</el-checkbox>
+                                <el-checkbox label="status">投放状态</el-checkbox>
+                                <el-checkbox label="department">业务部门</el-checkbox>
+                            </el-checkbox-group>
+                        </div>
+                        <i
+                                class="el-icon-cc-setting operate"
+                                slot="reference"
+                        >
+                        </i>
+                    </el-popover>
+            </div>
             <div class="search-input">
                 <el-input
                         placeholder="支持按人群名、ID搜索"
@@ -39,7 +59,10 @@
                         <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
                     <!--</template>-->
                 </el-table-column>
-                <el-table-column label="状态">
+                <el-table-column
+                        label="状态"
+                        v-if="(checkList.indexOf('status') > -1)"
+                >
                     <template slot-scope="scope">
                         <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                             计算完成
@@ -55,6 +78,21 @@
                             {{(launchStatusEnum[scope.row.history.status]).name}}
                         </div>
                     </template>
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('creatorName') > -1)"
+                        label="创建人"
+                        prop="creatorName">
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('createTime') > -1)"
+                        label="创建时间"
+                        prop="history.createTime">
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('department') > -1)"
+                        label="业务部门"
+                        prop="department">
                 </el-table-column>
                 <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
                 <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
@@ -149,6 +187,9 @@
             },
             currentSelectTag: {
                 type: Array
+            },
+            checkListParent: {
+                type: Array
             }
         },
         data () {
@@ -164,6 +205,7 @@
                 // launchType: undefined,
                 launchTitle: '',
                 selectStrategy: null,//人群条件的选择策略
+                checkList: []
             }
         },
         created () {
@@ -176,7 +218,10 @@
                     this.fetchData()
                 }
             },
-            'currentSelectTag': 'updateTableSelected'
+            'currentSelectTag': 'updateTableSelected',
+            checkListParent: function (val) {
+                this.checkList = val
+            }
         },
         methods: {
             fetchData () {
@@ -293,6 +338,9 @@
                 } else {
                     this.$refs.tempChangeTable.clearSelection()
                 }
+            },
+            handleCheckListChange (val) {
+                this.$emit('change-checkList',val)
             }
         }
     }
@@ -319,4 +367,7 @@
         top 8px
         right 10px
         transform rotate(-90deg)
+    .operate
+        margin-left 20px
+        cursor pointer
 </style>

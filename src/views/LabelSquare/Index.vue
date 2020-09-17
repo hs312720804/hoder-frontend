@@ -8,7 +8,10 @@
                 <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
                         @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        @fetch-checkList="fetchTempCheckListData"
                 >
                 </temp-label-index>
             </el-tab-pane>
@@ -86,7 +89,8 @@
                     3: '',
                     5: 'warning'
                 },
-                showSelection: false
+                showSelection: false,
+                tempCheckList: []
             }
         },
         methods: {
@@ -132,6 +136,7 @@
                         this.$root.$emit('my-collect-list-refresh')
                         break
                     case 'tempLabel':
+                        this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh')
                         break
                 }
@@ -157,10 +162,27 @@
                 // const addForm = this.addForm
                 // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
                 this.tagList.splice(this.tagList.indexOf(tag),1)
+            },
+            fetchTempCheckListData () {
+                this.$service.getListDimension({type: 5}).then(data => {
+                    if (data) {
+                        if (data.behaviorShow) {
+                            this.tempCheckList = data.behaviorShow.split(',')
+                        } else {
+                            this.tempCheckList = ['defineRemark']
+                        }
+                    } else {
+                        this.tempCheckList = ['defineRemark']
+                    }
+                })
+            },
+            handleTempCheckListChange (val) {
+                this.$service.saveListDimension({type: 5,behaviorShow: val.join(',')})
             }
         },
         created () {
             this.fetchCheckListData()
+            this.fetchTempCheckListData()
         }
     }
 </script>

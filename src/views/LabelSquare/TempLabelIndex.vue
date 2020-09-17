@@ -7,6 +7,8 @@
             :show-selection="showSelection"
             :currentSelectTag="currentSelectTag"
             @table-selected="handleTableSelected"
+            :check-list-parent="checkList"
+            @change-checkList="handleCheckListChange"
         >
         </temp-label-list>
         <temp-label-add
@@ -35,6 +37,9 @@
             },
             currentSelectTag: {
                 type: Array
+            },
+            checkList: {
+                type: Array
             }
         },
         data () {
@@ -60,6 +65,9 @@
             },
             handleTableSelected (val, mode) {
                 this.$emit('get-table-selected',val, mode)
+            },
+            handleCheckListChange (val) {
+                this.$emit('change-checkList',val)
             }
         }
     }
