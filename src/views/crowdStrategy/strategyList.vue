@@ -675,14 +675,36 @@ export default {
       // 如果是【我的人群】模块进入
       if (!this.showAll){
           this.$service.getMyCrowdList(this.criteria).then(data => {
-              this.tableData = data.pageInfo.list;
-              this.totalCount = data.pageInfo.total;
+              const originalTableData = data.pageInfo.list
+              this.totalCount = data.pageInfo.total
+              // 单独获得策略标签维度
+              const currentStrategyIds = []
+              originalTableData.forEach(item => {
+                  currentStrategyIds.push(item.policyId)
+              })
+              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
+                  originalTableData.forEach((item) => {
+                      item.tagsList = tagList[item.policyId]
+                  })
+                  this.tableData = originalTableData
+              })
           });
           // this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
           this.$service.policyList(this.criteria).then(data => {
-              this.tableData = data.pageInfo.list;
-              this.totalCount = data.pageInfo.total;
+              const originalTableData = data.pageInfo.list
+              this.totalCount = data.pageInfo.total
+              // 单独获得策略标签维度
+              const currentStrategyIds = []
+              originalTableData.forEach(item => {
+                  currentStrategyIds.push(item.policyId)
+              })
+              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
+                  originalTableData.forEach((item) => {
+                      item.tagsList = tagList[item.policyId]
+                  })
+                  this.tableData = originalTableData
+              })
           });
           // this.$appState.$set('GlobalStrategySource', '')
       }

@@ -563,3 +563,12 @@ export function removeCollectPolicy(params) {
         url: '/api/collect/policy?policyId='+params.policyId
     })
 }
+
+// 策略列表根据id单独获取策略维度
+export function getSrtategyTagsList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/policyUsedTag',
+        params
+    })
+}
