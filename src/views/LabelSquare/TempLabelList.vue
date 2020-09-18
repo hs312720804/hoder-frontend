@@ -237,6 +237,9 @@
                     if (this.showSelection) {
                         this.updateTableSelected()
                     }
+                    this.tableData.forEach(item => {
+                        item.dataSource = 1
+                    })
                 })
             },
             handleCommandOpreate(scope) {
@@ -327,7 +330,7 @@
                         }
                     })
                 })
-                if (arr) {
+                if (arr.length > 0) {
                     // 如果存在，则先清空选中，再赋值
                     this.$nextTick(() => {
                         this.$refs.tempChangeTable.clearSelection()

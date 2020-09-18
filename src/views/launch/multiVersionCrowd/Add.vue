@@ -1037,7 +1037,7 @@
                     pageNum: 1,
                     pageSize: 100
                 }
-                this.$service.getTempCrowdList(filter).then(data => {
+                this.$service.getCalculatedTempCrowdList(filter).then(data => {
                     this.tempCrowdList = data.pageInfo.list
                     // this.launchStatusEnum = data.launchStatusEnum
                     // this.tableData = data.pageInfo.list

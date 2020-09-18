@@ -198,7 +198,7 @@
                         }
                     })
                 })
-                if (arr) {
+                if (arr.length > 0) {
                     // 如果存在，则先清空选中，再赋值
                     this.$nextTick(() => {
                         this.$refs.changeTable.clearSelection()
