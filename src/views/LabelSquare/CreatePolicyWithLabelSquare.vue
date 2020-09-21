@@ -323,10 +323,15 @@
 <style lang="stylus" scoped>
   .label-content
     position relative
+    padding 0 20px
+    >>> .tab-content
+      margin-top 0
+      .el-tabs__nav-wrap
+        z-index 1
   .search-input
-    position fixed
-    top 210px
-    right 35px
+    position absolute
+    top 0
+    right 18px
     width 20%
     z-index 999
     .icon-fixed
@@ -334,10 +339,10 @@
       top 8px
       right 10px
       transform rotate(-90deg)
-  .label-content >>> .el-tabs__header
-    position fixed
-    width 100%
-    z-index 999
+  /*.label-content >>> .el-tabs__header*/
+    /*position fixed*/
+    /*width 100%*/
+    /*z-index 999*/
   .label-content >>> .el-tabs__nav-wrap
     background #fff
     z-index 999
