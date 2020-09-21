@@ -337,6 +337,10 @@
       margin-top 0
       .el-tabs__nav-wrap
         z-index 1
+    >>> .my-collect
+        margin-top 0
+    >>> .temp-label-list
+        margin-top 0
   .search-input
     position absolute
     top 0

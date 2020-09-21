@@ -364,8 +364,8 @@
 </script>
 
 <style lang="stylus" scoped>
-    /*.temp-label-list*/
-        /*margin-top 50px*/
+    .temp-label-list
+        margin-top 50px
     .temp-label-list >>> .el-button-group
         display flex
         align-items center
