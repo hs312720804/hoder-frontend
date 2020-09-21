@@ -186,11 +186,21 @@
                 }
             },
             handleGetTableSelectedData (val,mode) {
+                // 只支持单数组，多数组要多次调用这个
                 const tagList = this.tagList
-                const addForm = this.addForm
                 if(mode === 'add') {
-                    this.tagList.push(val)
-                    addForm.conditionTagIds.push(val.tagId)
+                    // 如果有匹配的，就直接return
+                    let firstIndex = -1
+                    for (var i=0; i < tagList.length;i++) {
+                        if (tagList[i].tagId === val.tagId) {
+                            firstIndex = i
+                            return
+                        }
+                    }
+                    // 如果没有匹配的，就执行新增
+                    if (firstIndex === -1) {
+                        this.tagList.push(val)
+                    }
                 } else {
                     // 取消选中的则删除这一项
                     let index = -1
@@ -198,7 +208,6 @@
                         if (tagList[i].tagId === val.tagId) {
                             index = i
                             this.tagList.splice(index,1)
-                            addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
                             return
                         }
                     }

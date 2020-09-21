@@ -9,6 +9,7 @@
                 border
                 :data="dataList"
                 @select="handleSelectOrCancel"
+                @select-all="handleSelectAllOrCancel"
         >
             <el-table-column
                     type="selection"
@@ -219,6 +220,19 @@
                 } else {
                     this.$refs.changeTable.toggleRowSelection(row,false)
                     this.$emit('table-selected',row, 'del')
+                }
+            },
+            handleSelectAllOrCancel (select) {
+                // 当select长度为0，则是取消全选，否则是全选
+                const data = this.dataList
+                if (select.length === 0) {
+                    for (var i=0;i<data.length;i++) {
+                        this.$emit('table-selected',data[i], 'del')
+                    }
+                } else {
+                    for (var i=0;i<data.length;i++) {
+                        this.$emit('table-selected',data[i], 'add')
+                    }
                 }
             }
         },

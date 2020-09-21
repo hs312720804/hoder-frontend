@@ -44,6 +44,7 @@
                     :data="tableData"
                     border
                     @select="handleSelectOrCancel"
+                    @select-all="handleSelectAllOrCancel"
             >
                 <el-table-column
                         type="selection"
@@ -320,6 +321,19 @@
                     this.$emit('table-selected',row, 'del')
                 }
             },
+            handleSelectAllOrCancel (select) {
+                // 当select长度为0，则是取消全选，否则是全选
+                const data = this.tableData
+                if (select.length === 0) {
+                    for (var i=0;i<data.length;i++) {
+                        this.$emit('table-selected',data[i], 'del')
+                    }
+                } else {
+                    for (var i=0;i<data.length;i++) {
+                        this.$emit('table-selected',data[i], 'add')
+                    }
+                }
+            },
             updateTableSelected () {
                 const arr = []
                 const currentSelectRows = this.currentSelectTag
@@ -350,8 +364,8 @@
 </script>
 
 <style lang="stylus" scoped>
-    .temp-label-list
-        margin-top 50px
+    /*.temp-label-list*/
+        /*margin-top 50px*/
     .temp-label-list >>> .el-button-group
         display flex
         align-items center
