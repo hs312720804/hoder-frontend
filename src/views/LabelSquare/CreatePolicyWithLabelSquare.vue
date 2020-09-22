@@ -396,7 +396,7 @@
     bottom 0
     background-color #fff
     width 90%
-    z-index 9999
+    z-index 999
   .table-list
     width 100%
     height 100%
