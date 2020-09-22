@@ -352,7 +352,7 @@
 <style lang="stylus" scoped>
   .label-content
     position relative
-    padding 0 20px
+    padding 0 30px
     >>> .tab-content
       margin-top 0
       .el-tabs__nav-wrap
@@ -364,7 +364,7 @@
   .search-input
     position absolute
     top 0
-    right 18px
+    right 30px
     width 20%
     z-index 999
     .icon-fixed
