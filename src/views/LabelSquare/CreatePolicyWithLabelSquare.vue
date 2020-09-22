@@ -200,6 +200,7 @@
                     // 如果没有匹配的，就执行新增
                     if (firstIndex === -1) {
                         this.tagList.push(val)
+                        this.addForm.conditionTagIds.push(val.tagId)
                     }
                 } else {
                     // 取消选中的则删除这一项
@@ -208,6 +209,7 @@
                         if (tagList[i].tagId === val.tagId) {
                             index = i
                             this.tagList.splice(index,1)
+                            this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
                             return
                         }
                     }
