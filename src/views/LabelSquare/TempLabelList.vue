@@ -95,8 +95,16 @@
                         label="业务部门"
                         prop="department">
                 </el-table-column>
-                <el-table-column prop="history.totalUser" label="设备数量"></el-table-column>
-                <el-table-column prop="history.totalWxOpenid" label="微信数量"></el-table-column>
+                <el-table-column label="设备数量">
+                    <template slot-scope="scope">
+                        {{cc_format_number(scope.row.history.totalUser)}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="微信数量">
+                    <template slot-scope="scope">
+                        {{cc_format_number(scope.row.history.totalWxOpenid)}}
+                    </template>
+                </el-table-column>
                 <el-table-column
                         label="操作"
                         width="200"
@@ -329,8 +337,8 @@
                         this.$emit('table-selected',data[i], 'del')
                     }
                 } else {
-                    for (var i=0;i<data.length;i++) {
-                        this.$emit('table-selected',data[i], 'add')
+                    for (var j=0;j<data.length;j++) {
+                        this.$emit('table-selected',data[j], 'add')
                     }
                 }
             },

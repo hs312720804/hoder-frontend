@@ -1,10 +1,10 @@
 import Vue from 'vue'
 Vue.prototype.cc_format_number = function(n) {
     // 如果不是字符或者数字，则直接返回
-    if (typeof n !== String || typeof n !== Number) {
+    if (typeof n !== 'string' && typeof n !== 'number') {
         return n
     }
-    if(typeof n !== String) {
+    if(typeof n !== 'string') {
         n = n.toString()
     }
     var len = n.length

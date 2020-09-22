@@ -230,8 +230,8 @@
                         this.$emit('table-selected',data[i], 'del')
                     }
                 } else {
-                    for (var i=0;i<data.length;i++) {
-                        this.$emit('table-selected',data[i], 'add')
+                    for (var j=0;j<data.length;j++) {
+                        this.$emit('table-selected',data[j], 'add')
                     }
                 }
             }
