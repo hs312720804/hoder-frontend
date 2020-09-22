@@ -311,7 +311,10 @@
                         prop="tempCrowdId"
                         v-if="crowdForm.crowdType"
                 >
-                    <el-select v-model="crowdForm.tempCrowdId">
+                    <el-select
+                            filterable
+                            v-model="crowdForm.tempCrowdId"
+                    >
                         <el-option
                                 v-for="item in tempCrowdList"
                                 :key="item.launchCrowdId+''"
@@ -803,7 +806,7 @@
                                 this.callback()
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then(() => {
                                 this.callback()
                             })
                         }

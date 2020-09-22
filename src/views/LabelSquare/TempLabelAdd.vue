@@ -231,7 +231,6 @@
                 // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                 this.$service.getTempCrowd({launchCrowdId: this.editLaunchCrowdId}).then(data => {
                     let row = data
-                    console.log('编辑回显的数据----',data)
                     // let abTestRatio = data.ratio || {}
                         let {macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer} = row
                         this.crowdDefineForm = {
@@ -400,7 +399,6 @@
             handleGetVideoList () {
                 this.$service.getVideoSourceList().then(data => {
                     this.videoSourceList = data
-                    console.log('data-----',data)
                 })
             }
         }
@@ -424,6 +422,7 @@
         border: 1px solid #ebeef5
         padding: 20px
         border-radius: 4px
+        margin-top 50px
     .title
         font-size: 18px
         margin-bottom: 30px
