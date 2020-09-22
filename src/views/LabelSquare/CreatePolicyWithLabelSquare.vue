@@ -352,7 +352,7 @@
 <style lang="stylus" scoped>
   .label-content
     position relative
-    padding 0 30px
+    padding 0 130px
     >>> .tab-content
       margin-top 0
       .el-tabs__nav-wrap
