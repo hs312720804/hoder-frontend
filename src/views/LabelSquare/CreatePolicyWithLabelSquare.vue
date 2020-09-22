@@ -1,46 +1,48 @@
 <template>
   <div class="label-content">
-    <el-tabs
-            v-model="activeName"
-            @tab-click="handleTabChange"
-    >
-      <el-tab-pane label="临时标签" name="tempLabel">
-        <temp-label-index
-                :show-selection="showSelection"
-                :currentSelectTag="tagList"
-                :checkList="tempCheckList"
-                @get-table-selected="handleGetTableSelectedData"
-                @change-checkList="handleTempCheckListChange"
-                @fetch-checkList="fetchTempCheckListData"
+    <div class="table-list" :style="{marginBottom: bottomHeight}">
+        <el-tabs
+                v-model="activeName"
+                @tab-click="handleTabChange"
         >
-        </temp-label-index>
-      </el-tab-pane>
-      <el-tab-pane label="标签专区" name="labelZone">
-        <label-zone
-                :tagName="labelZoneTagName"
-                @clear-search="handleClearSearch"
-                :checkList="checkList"
-                @change-checkList="handleCheckListChange"
-                @fetch-checkList="fetchCheckListData"
-                @get-table-selected="handleGetTableSelectedData"
-                :show-selection="showSelection"
-                :currentSelectTag="tagList"
-        >
-        </label-zone>
-      </el-tab-pane>
-      <el-tab-pane label="我的收藏" name="myCollect">
-        <my-collect
-                :tagName="myCollectTagName"
-                :checkList="checkList"
-                @clear-search="handleClearSearch"
-                @change-checkList="handleCheckListChange"
-                @get-table-selected="handleGetTableSelectedData"
-                :show-selection="showSelection"
-                :currentSelectTag="tagList"
-        >
-        </my-collect>
-      </el-tab-pane>
-    </el-tabs>
+          <el-tab-pane label="临时标签" name="tempLabel">
+            <temp-label-index
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    :checkList="tempCheckList"
+                    @get-table-selected="handleGetTableSelectedData"
+                    @change-checkList="handleTempCheckListChange"
+                    @fetch-checkList="fetchTempCheckListData"
+            >
+            </temp-label-index>
+          </el-tab-pane>
+          <el-tab-pane label="标签专区" name="labelZone">
+            <label-zone
+                    :tagName="labelZoneTagName"
+                    @clear-search="handleClearSearch"
+                    :checkList="checkList"
+                    @change-checkList="handleCheckListChange"
+                    @fetch-checkList="fetchCheckListData"
+                    @get-table-selected="handleGetTableSelectedData"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+            >
+            </label-zone>
+          </el-tab-pane>
+          <el-tab-pane label="我的收藏" name="myCollect">
+            <my-collect
+                    :tagName="myCollectTagName"
+                    :checkList="checkList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+            >
+            </my-collect>
+          </el-tab-pane>
+        </el-tabs>
+    </div>
     <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
       <el-input
               v-model="searchVal"
@@ -50,7 +52,13 @@
       </el-input>
       <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
     </div>
-    <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+    <el-form
+            :model="addForm"
+            :rules="addFormRules"
+            ref="addForm"
+            label-width="100px"
+            class="fix-bottom-form"
+    >
       <el-form-item label="已选标签">
         <el-tag v-for="(item,index) in tagList"
                 :key="item.tagId+'_'+index"
@@ -111,7 +119,8 @@
                         { required: true, message: "请填写策略名称", trigger: "blur" }
                     ]
                 },
-                tempCheckList: []
+                tempCheckList: [],
+                bottomHeight: 169+'px'
             }
         },
         methods: {
@@ -201,6 +210,7 @@
                     if (firstIndex === -1) {
                         this.tagList.push(val)
                         this.addForm.conditionTagIds.push(val.tagId)
+                        this.setContentBottomMargin()
                     }
                 } else {
                     // 取消选中的则删除这一项
@@ -210,15 +220,23 @@
                             index = i
                             this.tagList.splice(index,1)
                             this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
+                            this.setContentBottomMargin()
                             return
                         }
                     }
                 }
             },
+            setContentBottomMargin () {
+                this.$nextTick(() => {
+                    const bottomMargin = document.getElementsByClassName('fix-bottom-form')[0].offsetHeight
+                    this.bottomHeight = bottomMargin + 'px'
+                })
+            },
             removeTag(tag) {
                 const addForm = this.addForm
                 addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
                 this.tagList.splice(this.tagList.indexOf(tag),1)
+                this.setContentBottomMargin()
             },
             saveAndNext(mode) {
                 this.$refs.addForm.validate(valid => {
@@ -373,4 +391,13 @@
     color #409eff
   .checkbox--yellow
     color #e6a23c
+  .fix-bottom-form
+    position fixed
+    bottom 0
+    background-color #fff
+    width 90%
+    z-index 9999
+  .table-list
+    width 100%
+    height 100%
 </style>
