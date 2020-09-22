@@ -17,7 +17,7 @@
                             <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                                 <el-checkbox label="creatorName">创建人</el-checkbox>
                                 <el-checkbox label="createTime">创建时间</el-checkbox>
-                                <el-checkbox label="status">投放状态</el-checkbox>
+                                <!--<el-checkbox label="status">投放状态</el-checkbox>-->
                                 <el-checkbox label="department">业务部门</el-checkbox>
                             </el-checkbox-group>
                         </div>
@@ -62,7 +62,6 @@
                 </el-table-column>
                 <el-table-column
                         label="状态"
-                        v-if="(checkList.indexOf('status') > -1)"
                 >
                     <template slot-scope="scope">
                         <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
