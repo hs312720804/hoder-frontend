@@ -424,7 +424,7 @@
                     tooltip: {
                         trigger: 'item',
                         formatter:function (a) {
-                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                            return a.name + ':' + _this.cc_format_number(a.value)
                         }
                     }
                 }
@@ -640,7 +640,7 @@
             },
             // 通用雷达图
             setRadarEcharts(element,title,legend,data,insideChildData){
-                const _this = this
+                // const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -649,10 +649,11 @@
                     },
                     // 可能不需要tooltip
                     tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
-                        }
+                        trigger: 'item'
+                        // formatter:function (a,b) {
+                        //     debugger
+                        //     return a.name + ':' + _this.cc_format_number(a.data.value)
+                        // }
                         // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
                     // tooltip: {
