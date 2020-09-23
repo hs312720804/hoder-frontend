@@ -1068,14 +1068,21 @@ export default {
     },
       // 通用多线性参数设置
       setLinesEchart (element,title,xData,yData,legend) {
+          const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
               title: {
                   text: title
               },
+              // tooltip: {
+              //     trigger: 'axis'
+              // },
               tooltip: {
-                  trigger: 'axis'
+                  trigger: 'item',
+                  formatter:function (a) {
+                      return _this.cc_format_number(a.data)
+                  }
               },
               legend: {
                   data: legend
@@ -1111,14 +1118,21 @@ export default {
       },
       // 通用柱状图参数设置
       setBarEchart (element,title,xData,yData) {
+          const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
               title: {
                   text: title
               },
+              // tooltip: {
+              //     trigger: 'axis'
+              // },
               tooltip: {
-                  trigger: 'axis'
+                  trigger: 'item',
+                  formatter:function (a) {
+                      return _this.cc_format_number(a.data)
+                  }
               },
               xAxis: {
                   type: 'category',
@@ -1155,6 +1169,7 @@ export default {
       },
       // 圆饼图
       setCircleEcharts(element,title,legend,data,showDetail){
+          const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
@@ -1162,9 +1177,15 @@ export default {
                   text: title,
                   left: 'center'
               },
+              // tooltip: {
+              //     trigger: 'item',
+              //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+              // },
               tooltip: {
                   trigger: 'item',
-                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+                  formatter:function (a) {
+                      return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                  }
               },
               legend: {
                   orient: 'vertical',
@@ -1290,6 +1311,7 @@ export default {
       // },
       // 中国地图
       setMapEcharts (element,title,data,minValue,maxValue) {
+          const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           // 中国地图
@@ -1299,9 +1321,15 @@ export default {
                   // subtext: '副标题',
                   left: 'center'
               },
-              tooltip : {
+              // tooltip : {
+              //     trigger: 'item',
+              //     formatter: '{b}<br/>({c})'
+              // },
+              tooltip: {
                   trigger: 'item',
-                  formatter: '{b}<br/>({c})'
+                  formatter:function (a) {
+                      return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                  }
               },
               visualMap: {
                   min: minValue ? minValue : 0,
