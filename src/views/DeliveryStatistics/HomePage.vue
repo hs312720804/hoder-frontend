@@ -41,7 +41,7 @@
                         <div class="unit-content">
                             <el-row :gutter="20">
                                 <el-col :span="12">
-                                    <ve-wordcloud :data="chartData" :settings="chartSettings" height="300px"></ve-wordcloud>
+                                    <ve-wordcloud :data="chartData" :settings="chartSettings" :extend="setWordCloudExtend()" height="300px"></ve-wordcloud>
                                 </el-col>
                                 <el-col :span="12">
                                     <div class="main" ref="useScene"></div>
@@ -417,16 +417,34 @@
             }
         },
         methods: {
+            setWordCloudExtend () {
+                const _this = this
+                return {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                        }
+                    }
+                }
+            },
             // 通用单线性参数设置
             setLineEchart (element,title,xData,yData) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data.value)
+                        }
                     },
                     xAxis: {
                         type: 'category',
@@ -462,6 +480,7 @@
             },
             // 通用圆饼图
             setCircleEcharts(element,title,legend,data,circleType){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -470,7 +489,9 @@
                     },
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
                     },
                     legend: {
                         orient: 'vertical',
@@ -509,6 +530,7 @@
             },
             // 通用嵌套环形图
             setCircleDoubleEcharts(element,title,legend,dataTotal,dataChild){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -517,9 +539,16 @@
                     },
                     tooltip: {
                         trigger: 'item',
-                        // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                        formatter: "{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
+                    // tooltip: {
+                    //     trigger: 'item',
+                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    //     formatter: "{b}: {c} ({d}%)"
+                    // },
                     legend: {
                         orient: 'vertical',
                         x: 'right',
@@ -610,16 +639,25 @@
             },
             // 通用雷达图
             setRadarEcharts(element,title,legend,data,insideChildData){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // 可能不需要tooltip
                     tooltip: {
-                        // trigger: 'item',
-                        // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
+                    // tooltip: {
+                    //     // trigger: 'item',
+                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    // },
                     legend: {
                         orient: 'vertical',
                         x: 'left',
@@ -668,14 +706,22 @@
             },
             // 通用多线性参数设置
             setLinesEchart (element,title,xData,yData,legend) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data.value)
+                        }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
                     legend: {
                         data: legend
@@ -711,6 +757,7 @@
             },
             // 通用柱状图参数设置
             setBarEchart (element,title,xData,yData) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -718,8 +765,14 @@
                         text: title
                     },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data.value)
+                        }
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     xAxis: {
                         type: 'category',
                         data: xData,
@@ -799,6 +852,7 @@
                 })
             },
             setMapEcharts (element,title,data) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 // 中国地图
@@ -808,10 +862,16 @@
                         // subtext: '纯属虚构',
                         left: 'center'
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
-                        formatter: '{b}<br/>{c}'
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                        }
                     },
+                    // tooltip : {
+                    //     trigger: 'item',
+                    //     formatter: '{b}<br/>{c}'
+                    // },
                     // legend: {
                     //     orient: 'vertical',
                     //     left: 'left',
