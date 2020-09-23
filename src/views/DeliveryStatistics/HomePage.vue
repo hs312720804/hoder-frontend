@@ -99,7 +99,8 @@
                         <div class="unit-content">
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
-                                    <div class="tag-all-item--number">{{cc_format_number(item.value)}}</div>
+                                    <div v-if="item.name === '标签使用率'" class="tag-all-item--number">{{item.value}}</div>
+                                    <div v-else class="tag-all-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -443,7 +444,7 @@
                     tooltip: {
                         trigger: 'item',
                         formatter:function (a) {
-                            return _this.cc_format_number(a.data.value)
+                            return _this.cc_format_number(a.data)
                         }
                     },
                     xAxis: {
@@ -719,7 +720,7 @@
                     tooltip: {
                         trigger: 'item',
                         formatter:function (a) {
-                            return _this.cc_format_number(a.data.value)
+                            return _this.cc_format_number(a.data)
                         }
                         // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
@@ -767,7 +768,7 @@
                     tooltip: {
                         trigger: 'item',
                         formatter:function (a) {
-                            return _this.cc_format_number(a.data.value)
+                            return _this.cc_format_number(a.data)
                         }
                     },
                     // tooltip: {
