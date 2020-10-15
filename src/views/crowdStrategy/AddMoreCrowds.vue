@@ -102,8 +102,8 @@ export default {
                 }
             }
         }
-        const rulesJsonData = rulesJson[index].rulesJson
-        const rules = rulesJsonData.rules
+        const rulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].rulesJson))
+        const rules = JSON.parse(JSON.stringify(rulesJsonData.rules))
         const ruleLength = rules.length
         let i, j = 0
         // 判断是否有未填写的项
@@ -127,6 +127,9 @@ export default {
                 flag = false
                 break
               }
+            } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                rulesItem.operator = '='
+                console.log('我是字符串选空的item---',rulesItem)
             }
           }
         }

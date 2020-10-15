@@ -33,6 +33,7 @@
                           name="oxve"
                           v-model="childItem.operator"
                           class="input-inline"
+                          @change="handleOperatorChange(childItem)"
                           v-show="!(childItem.tagType === 'time' && childItem.isDynamicTime === 3)"
                         >
                           <template v-if="childItem.tagType === 'number'">
@@ -55,6 +56,7 @@
                             <el-option value="=" label="是"></el-option>
                             <el-option value="!=" label="不是"></el-option>
                             <el-option value="like" label="包含"></el-option>
+                            <el-option value="null" label="为空"></el-option>
                           </template>
                           <template v-if="childItem.tagType === 'boolean'">
                             <el-option value="=" label="="></el-option>
@@ -127,6 +129,14 @@
                           v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]"
                         >
                           <el-select
+                                  v-if="childItem.tagType==='string' && childItem.operator === 'null'"
+                                  v-model="childItem.value"
+                                  disabled
+                          >
+                            <el-option label="空" value="nil"></el-option>
+                          </el-select>
+                          <el-select
+                            v-else
                             v-model="childItem.value"
                             class="inline-input"
                             filterable
@@ -616,7 +626,15 @@ export default {
                 this.$set(formData,'total0',data)
             }
         })
+    },
+    handleOperatorChange (item) {
+        if(item.tagType === 'string' && item.operator === 'null') {
+            item.value = 'nil'
+        } else {
+            item.value = ''
+        }
     }
+
   },
   created () {
     if (this.value) {

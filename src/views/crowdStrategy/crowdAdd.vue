@@ -30,6 +30,7 @@
                         name="oxve"
                         v-model="childItem.operator"
                         class="input-inline"
+                        @change="handleOperatorChange(childItem)"
                         v-show="!(childItem.tagType === 'time' && childItem.isDynamicTime === 3)"
                       >
                         <template
@@ -52,6 +53,7 @@
                           <el-option value="=" label="是"></el-option>
                           <el-option value="!=" label="不是"></el-option>
                           <el-option value="like" label="包含"></el-option>
+                          <el-option value="null" label="为空"></el-option>
                         </template>
                         <template v-if="childItem.tagType === 'boolean'">
                           <el-option value="=" label="="></el-option>
@@ -94,7 +96,15 @@
                         </template>
                     </span>
                      <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
-                          <el-select
+                       <el-select
+                               v-if="childItem.tagType==='string' && childItem.operator === 'null'"
+                               v-model="childItem.value"
+                               disabled
+                       >
+                         <el-option label="空" value="nil"></el-option>
+                       </el-select>
+                       <el-select
+                                  v-else
                                   v-model="childItem.value"
                                   class="inline-input"
                                   filterable
@@ -533,6 +543,9 @@
                                         this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的整数且不能超过4位数')
                                         return
                                     }
+                                } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                                    rulesItem.operator = '='
+                                    console.log('我是字符串选空的item---',rulesItem)
                                 }
                             }
                         }
@@ -616,6 +629,13 @@
                         item.value = startDay + '-' + endDay
                     }
                 }else{ item.value = '' }
+            },
+            handleOperatorChange (item) {
+                if(item.tagType === 'string' && item.operator === 'null') {
+                    item.value = 'nil'
+                } else {
+                    item.value = ''
+                }
             }
         },
         created() {
@@ -648,6 +668,10 @@
                         itemParent.rules.forEach(item => {
                             if(item.tagType === 'string' || item.tagType === 'collect') {
                                 cacheIds.push(item.tagId)
+                            }
+                            if (item.tagType === 'string' && item.value === 'nil') {
+                                item.operator = 'null'
+                                console.log('修改操作符之后的item----',item)
                             }
                             if(item.tagType === 'time' && item.isDynamicTime === 3){
                                 const value = item.value.split('-')
