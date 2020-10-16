@@ -126,24 +126,24 @@
                           </template>
                         </span>
                         <template
-                          v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]"
-                        >
-                          <el-select
+                          v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
+                            <el-select
                                   v-if="childItem.tagType==='string' && childItem.operator === 'null'"
                                   v-model="childItem.value"
+                                  :key="'null'"
                                   disabled
-                          >
+                            >
                             <el-option label="空" value="nil"></el-option>
                           </el-select>
+                          <template v-else>
                           <el-select
-                            v-else
-                            v-model="childItem.value"
-                            class="inline-input"
-                            filterable
-                            :key="index+'select'"
-                            default-first-option
-                            placeholder="请输入或选择"
-                            :disabled="cache[childItem.tagId].select"
+                                v-model="childItem.value"
+                                class="inline-input"
+                                filterable
+                                :key="index+'select'"
+                                default-first-option
+                                placeholder="请输入或选择"
+                                :disabled="cache[childItem.tagId].select"
                           >
                             <el-option
                               v-for="item in cache[childItem.tagId].list"
@@ -152,6 +152,7 @@
                               :value="item.attrValue"
                             ></el-option>
                           </el-select>
+                          </template>
                         </template>
                         <el-input-number
                           v-else-if="childItem.tagType==='number'"
@@ -159,9 +160,18 @@
                           v-model="childItem.value"
                           placeholder="请输入内容"
                         ></el-input-number>
-                        <el-select v-else v-model="childItem.value">
-                          <el-option value="true" label="是"></el-option>
-                          <el-option value="false" label="否"></el-option>
+                        <el-select
+                                v-else
+                                v-model="childItem.value"
+                                :disabled="childItem.tagType==='string' && childItem.operator === 'null'"
+                        >
+                          <template v-if="childItem.tagType==='string' && childItem.operator === 'null'">
+                            <el-option label="空" value="nil"></el-option>
+                          </template>
+                          <template v-else>
+                              <el-option value="true" label="是"></el-option>
+                              <el-option value="false" label="否"></el-option>
+                          </template>
                         </el-select>
                       </span>
                       <span v-if="childItem.tagType === 'time'">

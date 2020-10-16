@@ -127,9 +127,6 @@ export default {
                 flag = false
                 break
               }
-            } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-                rulesItem.operator = '='
-                console.log('我是字符串选空的item---',rulesItem)
             }
           }
         }
@@ -151,6 +148,14 @@ export default {
                 form.rulesJson = form.rulesJson.map((e) => {
                     // e.purpose = form.purpose
                     e.tagIds = e.tagIds.join(',')
+                    e.rulesJson.rules = e.rulesJson.rules.map(item => {
+                        item.rules.forEach(rulesItem => {
+                            if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                                rulesItem.operator = '='
+                            }
+                        })
+                        return item
+                    })
                     e.rulesJson = JSON.stringify(e.rulesJson)
                     // e.crowdValidFrom = form.crowdExp[0]
                     // e.crowdValidTo = form.crowdExp[1]
@@ -191,6 +196,13 @@ export default {
           // }
           e.tagIds = e.tagIds.split(",")
           e.rulesJson = JSON.parse(e.rulesJson)
+            e.rulesJson.rules.forEach(ruleItem => {
+                ruleItem.rules.forEach(rulesEachItem => {
+                    if (rulesEachItem.tagType === 'string' && rulesEachItem.value === 'nil') {
+                        rulesEachItem.operator = 'null'
+                    }
+                })
+            })
           return e
         })
         this.form = {
