@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="strategy-list">
     <div class="TopNav">
       <div class="header">
         <div class="header-left">
@@ -83,7 +83,8 @@
           <span class="checkbox--red">红色</span>为大数据标签,
           <span class="checkbox--green">绿色</span>为自定义标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
-          <span class="checkbox--yellow">黄色</span>为实时标签）
+          <span class="checkbox--yellow">黄色</span>为实时标签,
+          <span class="checkbox--orange">橙色</span>为特定标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -238,7 +239,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签</div>
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签,橙色为特定标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -295,7 +296,7 @@
             <!--</el-tag>-->
             <el-tag v-for="item in tagList"
                     :key="item.tagId"
-                    :type="dataSourceColorEnum[item.dataSource]"
+                    :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
                     closable
                     @close="removeTag(item)"
             >
@@ -455,13 +456,15 @@ export default {
           1: 'checkbox--green',
           2: 'checkbox--red',
           3: 'checkbox--blue',
-          5: 'checkbox--yellow'
+          5: 'checkbox--yellow',
+          6: 'checkbox--orange'
       },
       dataSourceColorEnum: {
           1: 'success',
           2: 'danger',
           3: '',
-          5: 'warning'
+          5: 'warning',
+          6: 'warningOrange'
       },
       showAll: true
     }
@@ -1017,6 +1020,8 @@ export default {
   color #409eff
 .checkbox--yellow
   color #e6a23c
+.checkbox--orange
+  color #ff6100
 .strategy-search
   display flex
   margin-bottom 10px
@@ -1103,4 +1108,11 @@ ul > li
 .el-button-group >>> .el-button
   float none
   margin 0 3px
+.strategy-list
+  >>> .el-tag--warningOrange
+    color #ff6100
+    background-color #fdf6e0
+    border-color #faecd8
+    .el-tag__close
+      color #ff6100
 </style>

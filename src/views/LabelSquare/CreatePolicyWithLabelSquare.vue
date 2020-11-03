@@ -73,7 +73,8 @@
         注：<span class="checkbox--red">红色</span>为大数据标签,
         <span class="checkbox--green">绿色</span>为自定义标签,
         <span class="checkbox--blue">蓝色</span>为账号标签,
-        <span class="checkbox--yellow">黄色</span>为实时标签
+        <span class="checkbox--yellow">黄色</span>为实时标签,
+        <span class="checkbox--orange">橙色</span>为特定标签
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -110,7 +111,8 @@
                     1: 'success',
                     2: 'danger',
                     3: '',
-                    5: 'warning'
+                    5: 'warning',
+                    6: 'warningOrange'
                 },
                 showSelection: true,
                 addForm: this.genDefaultForm(),
@@ -215,9 +217,9 @@
                 } else {
                     // 取消选中的则删除这一项
                     let index = -1
-                    for (var i=0; i < tagList.length;i++) {
-                        if (tagList[i].tagId === val.tagId) {
-                            index = i
+                    for (var j=0; j < tagList.length;j++) {
+                        if (tagList[j].tagId === val.tagId) {
+                            index = j
                             this.tagList.splice(index,1)
                             this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
                             this.setContentBottomMargin()
@@ -314,7 +316,6 @@
                                     // this.$root.$emit('stratege-list-refresh')
                                     // this.$router.push({path: 'launch/strategyList'})
                                     this.$emit('handleDirectStrategyList')
-                                    this.resetForm()
                                     this.$emit('resetFormData')
                                 }
                             })
@@ -361,6 +362,12 @@
         margin-top 0
     >>> .temp-label-list
         margin-top 0
+    >>> .el-tag--warningOrange
+        color #ff6100
+        background-color #fdf6e0
+        border-color #faecd8
+        .el-tag__close
+          color #ff6100
   .search-input
     position absolute
     top 0
@@ -391,6 +398,8 @@
     color #409eff
   .checkbox--yellow
     color #e6a23c
+  .checkbox--orange
+    color #ff6100
   .fix-bottom-form
     position fixed
     bottom 0
