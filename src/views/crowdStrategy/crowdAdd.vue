@@ -540,7 +540,7 @@
                 },
                 // usedTags: [[${usedTags}]] || {},
                 rulesJson: { condition: "OR", rules: [] },
-                dynamicPolicyJson: { condition: "OR", rules: []  },
+                dynamicPolicyJson: { condition: "AND", rules: []  },
                 suggestions: {},
                 suggestionsNew: [],
                 priority: "",
@@ -612,7 +612,6 @@
             },
             handleConditionChange () {
                 this.condition = this.condition === '且' ? '或' : '且'
-                console.log('this.condition===', this.condition)
                 this.dynamicPolicyJson.condition = this.condition === '且' ? 'AND' : 'OR'
             },
             /*添加一级标签 */
@@ -706,7 +705,6 @@
                         }
                     ]
                 })
-                console.log('this.dynamicPolicyJson===',this.dynamicPolicyJson)
             },
             handleAddSpecialChildRule(rule, tag) {
                 if (rule.rules.length > 50) {
@@ -731,7 +729,6 @@
                         version: ''
                     }
                 })
-                console.log('rules---', rule.rules)
             },
             fetchTagSuggestions(tagId) {
                 this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
@@ -781,37 +778,95 @@
                         const form = JSON.parse(JSON.stringify(this.form))
                         const tagIds = []
                         const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
+                        const dynamicPolicyJson = JSON.parse(JSON.stringify(this.dynamicPolicyJson))
                         const rules = ruleJson.rules
                         const ruleLength = rules.length
+                        const dynamicPolicyRules = dynamicPolicyJson.rules
+                        const dynamicPolicyRulesLength = dynamicPolicyRules.length
                         let i, j = 0
+                        // 如果设置标签和动态因子都没有选rules则报错
+                        if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
+                            this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+                            return
+                        }
                         if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
                             if (this.currentLaunchLimitCount > form.limitLaunchCount) {
                                 this.$message.error('投放数量不能小于上一次设置的限制数量')
                                 return
                             }
                         }
-                        // 判断是否有未填写的项
-                        for (i=0; i<ruleLength; i++){
-                            for (j=0; j< rules[i].rules.length; j++) {
-                                let rulesItem = rules[i].rules[j]
-                                if(rulesItem.value === ''){
-                                    this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
-                                    return
-                                }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
-                                    if(this.checkNumMostFour(rulesItem.startDay) && this.checkNumMostFour(rulesItem.endDay)) {
-                                        if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                                            rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                        // 判断设置标签里是否有未填写的项
+                        const validateJsonRules = (showError) => {
+                            for (i=0; i<ruleLength; i++){
+                                for (j=0; j< rules[i].rules.length; j++) {
+                                    let rulesItem = rules[i].rules[j]
+                                    if(rulesItem.value === ''){
+                                        if (showError) {
+                                            this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
                                         }
-                                        else {
-                                            this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
-                                            return
+                                        return false
+                                    }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
+                                        if(this.checkNumMostFour(rulesItem.startDay) && this.checkNumMostFour(rulesItem.endDay)) {
+                                            if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                                                rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                                            }
+                                            else {
+                                                if (showError) {
+                                                    this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
+                                                }
+                                                return false
+                                            }
+                                        }else {
+                                            if (showError) {
+                                                this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的整数且不能超过4位数')
+                                            }
+                                            return false
                                         }
-                                    }else {
-                                        this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的整数且不能超过4位数')
-                                        return
+                                    } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                                        rulesItem.operator = '='
                                     }
-                                } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-                                    rulesItem.operator = '='
+                                }
+                            }
+                            // 全部执行完毕，没有报错就返回true
+                            return true
+                        }
+                        //判断动态因子里面是否有未填的
+                        const validateDynamicPolicyRules = (showError) => {
+                            for (i=0; i<dynamicPolicyRulesLength; i++){
+                                for (j=0; j< dynamicPolicyRules[i].rules.length; j++) {
+                                    let rulesItem = dynamicPolicyRules[i].rules[j]
+                                    if(rulesItem.value === '' || rulesItem.dynamic.version === ''){
+                                        if (showError) {
+                                            this.$message.error('请正确填写第'+(i+1)+'动态因子里面的第'+(j+1)+'行的值！')
+                                        }
+                                        return false
+                                    }
+                                }
+                            }
+                            return true
+                        }
+                        // 如果外层条件是且，则设置标签和动态因子都是必填，如果是或则选填
+                        if (dynamicPolicyJson.condition === 'AND') {
+                            if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
+                                this.$message.error('因为动态因子上面的条件为且，所以请填写至少一个标签块内容和一个动态因子完整的内容！')
+                                return
+                            }
+                            if (!validateJsonRules(true) || !validateDynamicPolicyRules(true)) {
+                                return
+                            }
+                        } else {
+                        //    或的时候校验一个是否已填
+                            if (!validateJsonRules(false) && !validateDynamicPolicyRules(false)) {
+                                this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+                                return
+                            } else {
+                                if (!validateJsonRules(false)) {
+                                    const dynamicFlag = validateDynamicPolicyRules(true)
+                                    if (!dynamicFlag) {return}
+                                }
+                                if (!validateDynamicPolicyRules(false)) {
+                                    const rulesFlag = validateJsonRules(true)
+                                    if (!rulesFlag) {return}
                                 }
                             }
                         }
@@ -828,6 +883,7 @@
                             crowdName: form.name,
                             tagIds: tagIds.join(","),
                             rulesJson: JSON.stringify(ruleJson),
+                            dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
                             remark: form.remark,
                             policyId: form.policyId,
                             // crowdValidFrom: form.crowdExp[0],
@@ -931,13 +987,6 @@
                     this.form.limitLaunch = policyData.limitLaunch
                     this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
-                    // const dateArr = []
-                    // if (policyData.crowdValidFrom === null && policyData.crowdValidTo === null) {this.form.crowdExp = []}
-                    // else {
-                    //     dateArr[0] = policyData.crowdValidFrom === null ? '' : policyData.crowdValidFrom
-                    //     dateArr[1] = policyData.crowdValidTo === null ? '' : policyData.crowdValidTo
-                    //     this.form.crowdExp = dateArr
-                    // }
                     let ruleJsonData = JSON.parse(policyData.rulesJson)
                     var cacheIds = []
                     ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
@@ -960,6 +1009,10 @@
                         return itemParent
                     })
                     this.rulesJson = ruleJsonData
+                    if (policyData.dynamicPolicyJson) {
+                        this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
+                        this.condition = this.dynamicPolicyJson.condition === 'AND' ? '且' : '或'
+                    }
                     cacheIds = this.distinct(cacheIds,[])
                     if(cacheIds.length !== 0){
                         cacheIds.forEach(this.fetchTagSuggestions)}
