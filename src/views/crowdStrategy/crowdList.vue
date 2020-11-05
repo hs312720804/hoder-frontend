@@ -161,6 +161,40 @@
                 </div>
               </div>
             </el-form-item>
+            <el-form-item label="动态标签:">
+              <div
+                      v-for="(item, index) in JSON.parse(props.row.dynamicPolicyJson).rules"
+                      :key="index"
+                      class="detail"
+              >
+                <div v-if="index>0" class="label-or-space">或</div>
+
+                <div class="label-ground">(
+                  <div
+                          v-for="(childItem,childItemIndex) in item.rules"
+                          :key="childItem.tagId+childItemIndex"
+                          class="label-item"
+                  >
+                    <div v-if="childItemIndex>0" class="label-or-space">且</div>
+                    <span class="txt">{{ childItem.categoryName }}</span>
+                    <span class="sel">{{ childItem.operator }}</span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                    <span class="in">
+                      <!-- <el-date-picker
+                        v-if="childItem.tagType === 'time'"
+                        class="datetime-format"
+                        v-model="childItem.tagCode"
+                        type="date"
+                        placeholder="选择日期"
+                      ></el-date-picker> -->
+                      <span >{{ childItem.value }}</span>
+                    </span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                  </div>)
+                </div>
+              </div>
+            </el-form-item>
             <el-form-item label="人群状态">
                 <crowdStatusItem :crowd-id="props.row.crowdId" :key="props.row.crowdId"></crowdStatusItem>
             </el-form-item>
