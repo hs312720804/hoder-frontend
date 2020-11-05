@@ -16,11 +16,37 @@
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
               <el-input v-model="crowd.crowdName" placeholder="投放名称"></el-input>
             </el-form-item>
+            <div style="position: relative">
             <el-form-item label="设置标签" class="multipleSelect" required>
               <div class="label-container">
+                <div
+                        v-show="crowd.rulesJson.rules.length > 1"
+                        class="label-or-space"
+                        :key="i+'or'"
+                >
+                  <el-button
+                          type="success"
+                          round
+                          :key="'button2'+'_'+i"
+                          @click="handleRulesConditionChange(crowd.rulesJson)"
+                  >
+                    {{crowd.rulesJson.condition === 'AND' ? '且' : '或'}}
+                  </el-button>
+                </div>
                 <template v-for="(item, index) in crowd.rulesJson.rules">
-                  <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
                   <div class="label-ground" :key="index">
+                    <div class="tag-condition--parent">
+                      <div class="tag-condition">
+                        <el-button
+                                type="warning"
+                                @click="handleRulesConditionChange(item)"
+                                round
+                                size="small"
+                                :key="'button'+index+'_'+i"
+                        >
+                          {{item.condition === 'AND' ? '且' : '或'}}
+                        </el-button>
+                      </div>
                     <div
                       v-for="(childItem,n) in item.rules"
                       :key="index+'tagId'+n"
@@ -252,7 +278,6 @@
                           <el-button type="text">提示</el-button>
                         </el-tooltip>
                       </span>
-                      <el-button type="success" v-if="n>0" round class="and">且</el-button>
                     </div>
                     <div class="label-add">
                       <div class="optional-condition">
@@ -266,6 +291,7 @@
                       </div>
                     </div>
                   </div>
+                  </div>
                 </template>
                 <div class="label-or">
                   <div
@@ -273,11 +299,6 @@
                     v-if="tags.length"
                     :style="{'padding-top': crowd.rulesJson.rules.length > 0 ? '10px' : 0}"
                   >
-                    <span
-                      v-show="crowd.rulesJson.rules.length"
-                      class="label-and-txt"
-                      style="display: inline"
-                    >或者&nbsp;</span>
                     <el-tag
                       class="oc-item"
                       v-for="(item) in tags"
@@ -289,6 +310,184 @@
                 </div>
               </div>
             </el-form-item>
+            <div class="outer-and">
+              <el-button
+                      type="danger"
+                      v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
+                      @click="handleConditionChange(crowd)"
+                      round
+
+                      :key="i+'condition'"
+              >{{crowd.dynamicPolicyJson.condition === 'OR' ? '或' : '且'}}</el-button>
+            </div>
+            <el-form-item label="动态因子" v-if="specialTags.length > 0">
+              <div class="label-container">
+                  <div
+                          v-show="crowd.dynamicPolicyJson.rules.length > 1"
+                          class="label-or-space"
+                          :key="i+'_or'"
+                  >
+                    <el-button
+                            type="success"
+                            round
+                            :key="'button3'+'_'+i"
+                            @click="handleRulesConditionChange(crowd.dynamicPolicyJson)"
+                    >
+                      {{crowd.dynamicPolicyJson.condition === 'AND' ? '且' : '或'}}
+                    </el-button>
+                  </div>
+                <template v-for="(item, index) in crowd.dynamicPolicyJson.rules">
+                  <div class="label-ground" :key="index">
+                    <div class="tag-condition--parent">
+                      <div class="tag-condition">
+                        <el-button
+                                type="warning"
+                                @click="handleRulesConditionChange(item)"
+                                round
+                                size="small"
+                                :key="'button'+index+'_'+i"
+                        >
+                          {{item.condition === 'AND' ? '且' : '或'}}
+                        </el-button>
+                      </div>
+                    <div
+                            v-for="(childItem,n) in item.rules"
+                            :key="index+'tagId'+n"
+                            :class="{'label-item':true,'paddingTop':n>0}"
+                    >
+                      <template v-if="childItem.tagType === 'number'">
+                        <div class="flex-item">
+                          <div>位置类型</div>
+                          <div>
+                            <el-select v-model="childItem.dynamic.type" style="width: 80px">
+                              <el-option label="版面" :value="1"></el-option>
+                              <el-option label="版块" :value="2"></el-option>
+                            </el-select>
+                          </div>
+                        </div>
+                        <div class="flex-item">
+                          <div>位置ID </div>
+                          <el-input v-model="childItem.dynamic.version" style="width: 150px"></el-input>
+                        </div>
+                      </template>
+                      <span :class="childItem.tagType === 'number' ? '' : 'txt'">{{ childItem.categoryName }}</span>
+                      <span :class="childItem.tagType === 'number' ? '' : 'sel'">
+                        <el-select
+                                style="width: 80px"
+                                name="oxve"
+                                v-model="childItem.operator"
+                                class="input-inline"
+                                @change="handleOperatorChange(childItem)"
+                                v-show="!(childItem.tagType === 'time' && childItem.isDynamicTime === 3)"
+                        >
+                        <template
+                                v-if="childItem.tagType === 'number'"
+                        >
+                          <el-option value="="></el-option>
+                          <el-option value=">="></el-option>
+                          <el-option value="<="></el-option>
+                          <el-option value=">"></el-option>
+                          <el-option value="<"></el-option>
+                        </template>
+                        </el-select>
+                    </span>
+                      <span class="in">
+                      <span v-if="childItem.tagType === 'time'">
+                        <template v-if="childItem.isDynamicTime === 2">
+                          <el-select class="time-dot-select" :key="n+'timeKey'" v-model="childItem.dynamicTimeType">
+                              <el-option :value='1' label="在当日之前"></el-option>
+                              <el-option :value='2' label="在当日之后"></el-option>
+                          </el-select>
+                          <span><el-input class="time-dot-input" v-model="childItem.value" @blur="checkNum(childItem.value)"></el-input>天</span>
+                        </template>
+                        <template v-if="childItem.isDynamicTime === 1">
+                          <el-date-picker
+                                  v-model="childItem.value"
+                                  type="date"
+                                  placeholder="选择日期"
+                                  format="yyyy-MM-dd"
+                                  value-format="yyyy-MM-dd"
+                                  :key="index+'key'"
+                          ></el-date-picker>
+                        </template>
+                        <template v-if="childItem.isDynamicTime === 3">
+                          <span><el-input class="time-dot-input" style="width: 60px" v-model="childItem.startDay" @blur="checkNumMostFour(childItem.startDay)"></el-input>天~</span>
+                          <span><el-input class="time-dot-input" style="width: 106px" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
+                        </template>
+                    </span>
+                     <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
+                       <el-select
+                               v-if="childItem.tagType==='string' && childItem.operator === 'null'"
+                               v-model="childItem.value"
+                               disabled
+                       >
+                         <el-option label="空" value="nil"></el-option>
+                       </el-select>
+                       <el-select
+                               v-else
+                               v-model="childItem.value"
+                               class="inline-input"
+                               filterable
+                               :key="index+'select'"
+                               default-first-option
+                               placeholder="请输入或选择"
+                               :disabled="cache[childItem.tagId].select"
+                       >
+                                <el-option
+                                        v-for="item in cache[childItem.tagId].list"
+                                        :key="index+item.attrValue+item.attrId"
+                                        :label="item.attrName"
+                                        :value="item.attrValue"
+                                ></el-option>
+                          </el-select>
+                      </template>
+                      <el-input-number
+                              v-if="childItem.tagType==='number'"
+                              :key="index+'input'"
+                              v-model="childItem.value"
+                              placeholder="请输入内容"
+                      ></el-input-number>
+                      <el-select v-else v-model="childItem.value">
+                        <el-option value="true" label="是"></el-option>
+                        <el-option value="false" label="否"></el-option>
+                      </el-select>
+                    </span>
+                      <span class="i" @click="handleRemoveSpecialRule(crowd, item, childItem)">
+                      <i class="icon iconfont el-icon-cc-delete"></i>
+                    </span>
+                    </div>
+                    <div class="label-add">
+                      <div class="optional-condition">
+                        <el-tag
+                                class="oc-item"
+                                v-for="tagItem in specialTags"
+                                :key="tagItem.tagId+ '_' +tagItem.tagName"
+                                @click.native="handleAddSpecialChildRule(crowd, item, tagItem)"
+                                :type= "dataSourceColorEnum[tagItem.dataSource]"
+                        >{{ tagItem.tagName }}</el-tag>
+                      </div>
+                    </div>
+                  </div>
+                  </div>
+                </template>
+                <div class="label-or">
+                  <div
+                          class="optional-condition"
+                          v-if="specialTags.length"
+                          :style="{'padding-top': crowd.dynamicPolicyJson.rules.length > 0 ? '10px' : 0}"
+                  >
+                    <el-tag
+                            class="oc-item"
+                            v-for="(item) in specialTags"
+                            :key="item.tagId+ '_' +item.tagName"
+                            @click.native="handleAddSpecialRule(crowd, item)"
+                            :type= "dataSourceColorEnum[item.dataSource]"
+                    >{{ item.tagName }}</el-tag>
+                  </div>
+                </div>
+              </div>
+            </el-form-item>
+            </div>
             <el-form-item label="是否限制投放数量" prop="limitLaunch">
               <el-radio-group v-model="crowd.limitLaunch">
                 <el-radio  :label="false">否</el-radio>
@@ -330,6 +529,7 @@ export default {
     // }
     return {
       tags: [],
+      specialTags: [],
       cache: {},
       tagSelectMoreShow: false,
       showMoreTags: false,
@@ -363,7 +563,8 @@ export default {
           1: 'success',
           2: 'danger',
           3: '',
-          5: 'warning'
+          5: 'warning',
+          6: 'warningOrange'
       }
     }
   },
@@ -440,6 +641,15 @@ export default {
         })
       }
     },
+      handleRemoveSpecialRule (crowd, rule, childRule) {
+          const rulesJson = crowd.dynamicPolicyJson
+          rule.rules.splice(rule.rules.indexOf(childRule), 1)
+          if (rule.rules.length === 0) {
+              rulesJson.rules = rulesJson.rules.filter(function(item) {
+                  return item !== rule
+              })
+          }
+      },
     /*添加一级标签 */
     /**
      * tag 为标签
@@ -515,6 +725,60 @@ export default {
         endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined
       })
     },
+      handleAddSpecialRule (crowd, tag) {
+          if (crowd.dynamicPolicyJson.rules.length > 50) {
+              this.$message.warning("已达最大数量")
+              return
+          }
+          crowd.dynamicPolicyJson.rules.push({
+              condition: "AND",
+              rules: [
+                  {
+                      operator: "=",
+                      tagCode: tag.tagKey,
+                      tagName: tag.tagName,
+                      dataSource: tag.dataSource,
+                      value: "",
+                      tagId: tag.tagId,
+                      tagType: tag.tagType,
+                      categoryName: tag.tagName,
+                      categoryCode: tag.tagKey,
+                      dynamic: {
+                          type: 1,
+                          version: ''
+                      }
+                  }
+              ]
+          })
+      },
+      handleAddSpecialChildRule(crowd, rule, tag) {
+          if (rule.rules.length > 50) {
+              this.$message.warning("已达最大数量")
+              return;
+          }
+          // if(tag.tagType==='string' || tag.tagType === 'collect'){
+          //     if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
+          // }
+          if (!crowd.tagIds.includes(tag.tagId)) {
+              crowd.tagIds.push(tag.tagId)
+          }
+          rule.rules.push({
+              operator: "=",
+              tagCode: tag.tagKey,
+              tagName: tag.tagName,
+              dataSource: tag.dataSource,
+              value: "",
+              tagId: tag.tagId,
+              tagType: tag.tagType,
+              categoryName: tag.tagName,
+              categoryCode: tag.tagKey,
+              dynamic: {
+                  type: 1,
+                  version: ''
+              }
+          })
+          console.log('crowd====', crowd)
+      },
     changeSeq () {
       this.inputValue.sort(function (x, y) {
         return x.crowdOrder - y.crowdOrder
@@ -546,6 +810,10 @@ export default {
                           condition: 'OR',
                           rules: []
                       },
+                      'dynamicPolicyJson': {
+                          condition: 'OR',
+                          rules: []
+                      },
                       'limitLaunch': false,
                       'limitLaunchCount': undefined,
                       total0: undefined
@@ -554,6 +822,7 @@ export default {
               this.setSeq()
           }
       }
+      console.log('this.inputValue', this.inputValue)
     },
     emitInputValue () {
       this.$emit('input', this.inputValue)
@@ -581,6 +850,10 @@ export default {
             condition: 'OR',
             rules: []
           },
+          'dynamicPolicyJson': {
+              condition: 'OR',
+              rules: []
+          },
           'limitLaunch': false,
           'limitLaunchCount': undefined,
           total0: undefined
@@ -595,6 +868,12 @@ export default {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
+        if (e.dynamicPolicyJson) {
+            e.dynamicPolicyJson = {
+                condition: 'OR',
+                rules: []
+            }
+        }
         return e
       })
     },
@@ -643,14 +922,47 @@ export default {
         } else {
             item.value = ''
         }
+    },
+    handleConditionChange (crowd) {
+        crowd.dynamicPolicyJson.condition = crowd.dynamicPolicyJson.condition === 'AND' ? 'OR' : 'AND'
+    },
+    handleRulesConditionChange (item) {
+      item.condition = item.condition === 'AND' ? 'OR' : 'AND'
+      console.log(item.condition)
     }
-
   },
   created () {
+    console.log('this.value', this.value)
     if (this.value) {
-        this.setInputValue(this.value)
         this.$service.tagInfoNew(this.recordId).then(data => {
-            this.tags = data
+            // this.tags = data
+            console.log(data)
+            const normalTags = []
+            const specialTags = []
+            data.forEach(item => {
+                if (item.dataSource === 6) {
+                    specialTags.push(item)
+                } else {
+                    normalTags.push(item)
+                }
+            })
+            this.tags = normalTags
+            this.specialTags = specialTags
+            if (specialTags.length > 0) {
+                this.value.forEach((e) => {
+                    if (e.dynamicPolicyJson) {
+                        console.log('每一天爱啥啥看几点')
+                        e.dynamicPolicyJson = {
+                            condition: 'OR',
+                            rules: []
+                        }
+                        // this.$set(e,'dynamicPolicyJson.condition','OR')
+                        // this.$set(e,'dynamicPolicyJson.rules',[])
+                    }
+                })
+            }
+            console.log('value2', this.value)
+            this.setInputValue(this.value)
         })
     }
     this.$watch('inputValue', this.emitInputValue, {
@@ -709,6 +1021,7 @@ export default {
 .label-ground
   border 1px dashed #ccc
   padding 10px
+  margin 10px 0
 .label-item
   display flex
   position relative
@@ -757,4 +1070,67 @@ i
 .items >>> .count-tips
   color red
   font-size 12px
+.outer-and
+  position absolute
+  top 10px
+  right 0
+  bottom 3px
+  left 0
+  width 3px
+  height auto
+  margin auto 10px
+  border 1px dashed red
+  border-right 0
+  z-index 999
+  display flex
+  align-items center
+  justify-content center
+.el-collapse
+  >>> .el-tag--warningOrange
+    color #ff6100
+    background-color #fdf6e0
+    border-color #faecd8
+    .el-tag__close
+      color #ff6100
+.flex-item
+  display flex
+  margin-right 10px
+  div+div
+    margin-left 10px
+.tag-condition--parent
+  position relative
+  z-index 1
+.tag-condition
+  position absolute
+  top 10px
+  right 0
+  bottom 3px
+  left 0
+  width 3px
+  height auto
+  margin auto 0
+  border 1px dashed #E6A23C
+  border-right 0
+  z-index 999
+  display flex
+  align-items center
+  justify-content center
+.label-container
+  position relative
+  z-index 1
+.label-or-space
+  position absolute
+  top 10px
+  right 0
+  bottom 5px
+  left -40px
+  width 3px
+  height auto
+  margin auto 0
+  border 1px dashed #67C23A
+  border-right 0
+  z-index 999
+  display flex
+  align-items center
+  justify-content center
 </style>

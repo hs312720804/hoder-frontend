@@ -13,11 +13,36 @@
           <el-form-item label="人群名称" prop="name">
             <el-input size="small" v-model="form.name" placeholder="投放名称"></el-input>
           </el-form-item>
+          <div style="position: relative">
           <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
             <div class="label-container">
+              <div
+                 v-show="rulesJson.rules.length > 1"
+                 class="label-or-space"
+              >
+                  <el-button
+                       type="success"
+                       round
+                       :key="'button2'+'_'"
+                       @click="handleRulesConditionChange(rulesJson)"
+                  >
+                      {{rulesJson.condition === 'AND' ? '且' : '或'}}
+                  </el-button>
+              </div>
               <template v-for="(item, index) in rulesJson.rules">
-                <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
                 <div class="label-ground" :key="index">
+                  <div class="tag-condition--parent">
+                      <div class="tag-condition">
+                          <el-button
+                                  type="warning"
+                                  @click="handleRulesConditionChange(item)"
+                                  round
+                                  size="small"
+                                  :key="'button'+index+'_'"
+                          >
+                            {{item.condition === 'AND' ? '且' : '或'}}
+                          </el-button>
+                      </div>
                   <div
                     v-for="(childItem,n) in item.rules"
                     :key="index+'tagId'+n"
@@ -192,7 +217,7 @@
                         <el-button type="text">提示</el-button>
                     </el-tooltip>
                     </span>
-                    <el-button type="success" v-if="n>0" round class="and">且</el-button>
+                  </div>
                   </div>
                   <div class="label-add">
                     <div class="optional-condition">
@@ -243,14 +268,17 @@
             <!--&gt;-->
             <!--</el-date-picker>-->
           <!--</el-form-item>-->
-          <el-button
-                  type="success"
-                  v-if="specialTags.length > 0 && tags.length > 0"
-                  @click="handleConditionChange"
-                  round
-                  class="outer-and"
-          >{{condition}}</el-button>
-          <el-form-item label="动态因子">
+          <div class="outer-and">
+             <el-button
+                 type="danger"
+                 v-if="(specialTags.length > 0 && tags.length > 0) && dynamicPolicyJson"
+                 @click="handleConditionChange()"
+                 round
+                 :key="'condition'"
+              >{{dynamicPolicyJson.condition === 'OR' ? '或' : '且'}}
+             </el-button>
+          </div>
+          <el-form-item label="动态因子" v-if="specialTags.length > 0">
             <div class="label-container">
               <template v-for="(item, index) in dynamicPolicyJson.rules">
                 <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
@@ -444,7 +472,6 @@
                         <el-button type="text">提示</el-button>
                     </el-tooltip>
                     </span>
-                    <el-button type="success" v-if="n>0" round class="and">且</el-button>
                   </div>
                   <div class="label-add">
                     <div class="optional-condition">
@@ -481,6 +508,7 @@
               </div>
             </div>
           </el-form-item>
+          </div>
           <el-form-item label="是否限制投放数量" prop="limitLaunch">
             <el-radio-group v-model="form.limitLaunch" :disabled="limitLaunchDisabled">
               <el-radio  :label="false">否</el-radio>
@@ -578,8 +606,7 @@
                     3: '',
                     5: 'warning',
                     6: 'warningOrange'
-                },
-                condition: '且'
+                }
             };
         },
         props: ["policyId", "crowdId","limitLaunchDisabled"],
@@ -609,10 +636,6 @@
                         return item !== rule
                     })
                 }
-            },
-            handleConditionChange () {
-                this.condition = this.condition === '且' ? '或' : '且'
-                this.dynamicPolicyJson.condition = this.condition === '且' ? 'AND' : 'OR'
             },
             /*添加一级标签 */
             /**
@@ -796,80 +819,77 @@
                             }
                         }
                         // 判断设置标签里是否有未填写的项
-                        const validateJsonRules = (showError) => {
-                            for (i=0; i<ruleLength; i++){
-                                for (j=0; j< rules[i].rules.length; j++) {
-                                    let rulesItem = rules[i].rules[j]
-                                    if(rulesItem.value === ''){
-                                        if (showError) {
-                                            this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
+                        let rulesFlag = true
+                        for (i=0; i<ruleLength; i++){
+                            for (j=0; j< rules[i].rules.length; j++) {
+                                let rulesItem = rules[i].rules[j]
+                                if(rulesItem.value === ''){
+                                    this.$message.error('请正确填写第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值！')
+                                    rulesFlag = false
+                                    break
+                                }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
+                                    if(this.checkNumMostFour(rulesItem.startDay) && this.checkNumMostFour(rulesItem.endDay)) {
+                                        if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                                            rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
                                         }
-                                        return false
-                                    }else if(rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3){
-                                        if(this.checkNumMostFour(rulesItem.startDay) && this.checkNumMostFour(rulesItem.endDay)) {
-                                            if(parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                                                rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-                                            }
-                                            else {
-                                                if (showError) {
-                                                    this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
-                                                }
-                                                return false
-                                            }
-                                        }else {
-                                            if (showError) {
-                                                this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的整数且不能超过4位数')
-                                            }
-                                            return false
+                                        else {
+                                            this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的天数值后面的值必须大于前面的')
+                                            rulesFlag = false
+                                            break
                                         }
-                                    } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-                                        rulesItem.operator = '='
+                                    }else {
+                                        this.$message.error('第'+(i+1)+'设置标签块里面的第'+(j+1)+'行的值是大于等于0的整数且不能超过4位数')
+                                        rulesFlag = false
+                                        break
                                     }
+                                } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                                    rulesItem.operator = '='
                                 }
+                                if (!rulesFlag) break
                             }
-                            // 全部执行完毕，没有报错就返回true
-                            return true
+                            if (!rulesFlag) break
                         }
+                        if (!rulesFlag) return
                         //判断动态因子里面是否有未填的
-                        const validateDynamicPolicyRules = (showError) => {
-                            for (i=0; i<dynamicPolicyRulesLength; i++){
-                                for (j=0; j< dynamicPolicyRules[i].rules.length; j++) {
-                                    let rulesItem = dynamicPolicyRules[i].rules[j]
-                                    if(rulesItem.value === '' || rulesItem.dynamic.version === ''){
-                                        if (showError) {
-                                            this.$message.error('请正确填写第'+(i+1)+'动态因子里面的第'+(j+1)+'行的值！')
-                                        }
-                                        return false
+                        let dynamicPolicyFlag = true
+                        for (i=0; i<dynamicPolicyRulesLength; i++){
+                            for (j=0; j< dynamicPolicyRules[i].rules.length; j++) {
+                                let rulesItem = dynamicPolicyRules[i].rules[j]
+                                if(rulesItem.value === '' || rulesItem.dynamic.version === ''){
+                                    this.$message.error('请正确填写第'+(i+1)+'动态因子里面的第'+(j+1)+'行的值！')
+                                    dynamicPolicyFlag = false
+                                    break
                                     }
+                                    if (!dynamicPolicyFlag) break
                                 }
-                            }
-                            return true
+                            if (!dynamicPolicyFlag) break
                         }
+                        if (!dynamicPolicyFlag) return
                         // 如果外层条件是且，则设置标签和动态因子都是必填，如果是或则选填
-                        if (dynamicPolicyJson.condition === 'AND') {
-                            if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
-                                this.$message.error('因为动态因子上面的条件为且，所以请填写至少一个标签块内容和一个动态因子完整的内容！')
-                                return
-                            }
-                            if (!validateJsonRules(true) || !validateDynamicPolicyRules(true)) {
-                                return
-                            }
-                        } else {
-                        //    或的时候校验一个是否已填
-                            if (!validateJsonRules(false) && !validateDynamicPolicyRules(false)) {
-                                this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
-                                return
-                            } else {
-                                if (!validateJsonRules(false)) {
-                                    const dynamicFlag = validateDynamicPolicyRules(true)
-                                    if (!dynamicFlag) {return}
-                                }
-                                if (!validateDynamicPolicyRules(false)) {
-                                    const rulesFlag = validateJsonRules(true)
-                                    if (!rulesFlag) {return}
-                                }
-                            }
-                        }
+                        // if (dynamicPolicyJson.condition === 'AND') {
+                        //     if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
+                        //         this.$message.error('因为动态因子上面的条件为且，所以请填写至少一个标签块内容和一个动态因子完整的内容！')
+                        //         return
+                        //     }
+                        //     if (!validateJsonRules(true) || !validateDynamicPolicyRules(true)) {
+                        //         return
+                        //     }
+                        // } else {
+                        // //    或的时候校验一个是否已填
+                        //     if (!validateJsonRules(false) && !validateDynamicPolicyRules(false)) {
+                        //         this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+                        //         return
+                        //     } else {
+                        //         if (!validateJsonRules(false)) {
+                        //             const dynamicFlag = validateDynamicPolicyRules(true)
+                        //             if (!dynamicFlag) {return}
+                        //         }
+                        //         if (!validateDynamicPolicyRules(false)) {
+                        //             const rulesFlag = validateJsonRules(true)
+                        //             if (!rulesFlag) {return}
+                        //         }
+                        //     }
+                        // }
                         rules.forEach(function(item) {
                             item.rules.forEach(function(childItem) {
                                 if (tagIds.indexOf(childItem.tagId) === -1) {
@@ -958,6 +978,13 @@
                 } else {
                     item.value = ''
                 }
+            },
+            handleRulesConditionChange (item) {
+                  item.condition = item.condition === 'AND' ? 'OR' : 'AND'
+                  console.log(item.condition)
+            },
+            handleConditionChange () {
+                 this.dynamicPolicyJson.condition = this.dynamicPolicyJson.condition === 'AND' ? 'OR' : 'AND'
             }
         },
         created() {
@@ -1011,7 +1038,6 @@
                     this.rulesJson = ruleJsonData
                     if (policyData.dynamicPolicyJson) {
                         this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
-                        this.condition = this.dynamicPolicyJson.condition === 'AND' ? '且' : '或'
                     }
                     cacheIds = this.distinct(cacheIds,[])
                     if(cacheIds.length !== 0){
@@ -1093,6 +1119,57 @@
   .outer-and
     position relative
     margin-left 70px
+  .tag-condition--parent
+    position relative
+    z-index 1
+  .tag-condition
+      position absolute
+      top 10px
+      right 0
+      bottom 3px
+      left 0
+      width 3px
+      height auto
+      margin auto 0
+      border 1px dashed #E6A23C
+      border-right 0
+      z-index 999
+      display flex
+      align-items center
+      justify-content center
+  .label-container
+      position relative
+      z-index 1
+  .label-or-space
+      position absolute
+      top 10px
+      right 0
+      bottom 5px
+      left -40px
+      width 3px
+      height auto
+      margin auto 0
+      border 1px dashed #67C23A
+      border-right 0
+      z-index 999
+      display flex
+      align-items center
+      justify-content center
+  .outer-and
+    position absolute
+    top 10px
+    right 0
+    bottom 3px
+    left 0
+    width 3px
+    height auto
+    margin auto 10px
+    border 1px dashed red
+    border-right 0
+    z-index 999
+    display flex
+    align-items center
+    justify-content center
 </style>
 
 

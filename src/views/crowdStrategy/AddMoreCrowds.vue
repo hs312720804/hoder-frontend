@@ -82,6 +82,10 @@ export default {
           return this.recordId
       },
     validateForm (rulesJson) {
+      if (rulesJson.length === 0) {
+          this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+          return
+      }
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
         if (!rulesJson[index].crowdName) {
@@ -130,7 +134,24 @@ export default {
             }
           }
         }
-        if(!flag) break
+          if(!flag) break
+          const dynamicPolicyJson = JSON.parse(JSON.stringify(rulesJson[index].dynamicPolicyJson))
+          const dynamicPolicyJsonRules = JSON.parse(JSON.stringify(dynamicPolicyJson.rules))
+          const dynamicPolicyJsonRulesLength = dynamicPolicyJsonRules.length
+          // 判断是否有未填写的项
+          let n, m = 0
+          for (n = 0; n < dynamicPolicyJsonRulesLength; n++) {
+              for (m = 0; m < dynamicPolicyJsonRules[n].rules.length; m++) {
+                  let rulesItem = dynamicPolicyJsonRules[n].rules[m]
+                  if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
+                      this.$message.error('请正确填写第'+(index + 1)+'人群里第'+(n+1)+'动态因子块里面的第'+(m+1)+'行的值！')
+                      flag = false
+                      break
+                  }
+                  if(!flag) break
+              }
+              if(!flag) break
+          }
       }
       return flag
     },
@@ -157,6 +178,7 @@ export default {
                         return item
                     })
                     e.rulesJson = JSON.stringify(e.rulesJson)
+                    e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
                     // e.crowdValidFrom = form.crowdExp[0]
                     // e.crowdValidTo = form.crowdExp[1]
                     e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
@@ -185,7 +207,8 @@ export default {
       // let purpose = undefined
       // let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then((data) => {
-        data = data.map((e, index) => {
+          console.log(data)
+        data = data.map((e) => {
           // if (index === 0) {
             // purpose = e.purpose
               // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
@@ -195,6 +218,7 @@ export default {
               // }
           // }
           e.tagIds = e.tagIds.split(",")
+          e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
           e.rulesJson = JSON.parse(e.rulesJson)
             e.rulesJson.rules.forEach(ruleItem => {
                 ruleItem.rules.forEach(rulesEachItem => {
