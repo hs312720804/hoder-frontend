@@ -868,12 +868,12 @@ export default {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
-        if (e.dynamicPolicyJson) {
-            e.dynamicPolicyJson = {
-                condition: 'OR',
-                rules: []
-            }
-        }
+        // if (e.dynamicPolicyJson) {
+        //     e.dynamicPolicyJson = {
+        //         condition: 'OR',
+        //         rules: []
+        //     }
+        // }
         return e
       })
     },
@@ -948,20 +948,20 @@ export default {
             })
             this.tags = normalTags
             this.specialTags = specialTags
-            if (specialTags.length > 0) {
-                this.value.forEach((e) => {
-                    if (e.dynamicPolicyJson) {
-                        console.log('每一天爱啥啥看几点')
-                        e.dynamicPolicyJson = {
-                            condition: 'OR',
-                            rules: []
-                        }
-                        // this.$set(e,'dynamicPolicyJson.condition','OR')
-                        // this.$set(e,'dynamicPolicyJson.rules',[])
-                    }
-                })
-            }
-            console.log('value2', this.value)
+            // if (specialTags.length > 0) {
+            //     this.value.forEach((e) => {
+            //         if (e.dynamicPolicyJson) {
+            //             console.log('每一天爱啥啥看几点')
+            //             e.dynamicPolicyJson = {
+            //                 condition: 'OR',
+            //                 rules: []
+            //             }
+            //             // this.$set(e,'dynamicPolicyJson.condition','OR')
+            //             // this.$set(e,'dynamicPolicyJson.rules',[])
+            //         }
+            //     })
+            // }
+            // console.log('value2', this.value)
             this.setInputValue(this.value)
         })
     }

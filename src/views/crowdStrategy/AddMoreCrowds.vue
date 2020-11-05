@@ -51,6 +51,10 @@ export default {
                             condition: 'OR',
                             rules: []
                         },
+                        'dynamicPolicyJson': {
+                            condition: 'OR',
+                            rules: []
+                        },
                         'limitLaunch': false,
                         'limitLaunchCount': undefined
                     }
