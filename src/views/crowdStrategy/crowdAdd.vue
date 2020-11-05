@@ -32,7 +32,7 @@
               <template v-for="(item, index) in rulesJson.rules">
                 <div class="label-ground" :key="index">
                   <div class="tag-condition--parent">
-                      <div class="tag-condition">
+                      <div class="tag-condition" v-show="item.rules.length > 1">
                           <el-button
                                   type="warning"
                                   @click="handleRulesConditionChange(item)"
@@ -297,7 +297,7 @@
               <template v-for="(item, index) in dynamicPolicyJson.rules">
                 <div class="label-ground" :key="index">
                   <div class="tag-condition--parent">
-                    <div class="tag-condition">
+                    <div class="tag-condition" v-show="item.rules.length > 1">
                       <el-button
                               type="warning"
                               @click="handleRulesConditionChange(item)"
