@@ -238,11 +238,11 @@
                         v-if="tags.length"
                         :style="{'padding-top': rulesJson.rules.length > 0 ? '10px' : 0}"
                 >
-                  <span
-                          v-show="rulesJson.rules.length"
-                          class="label-and-txt"
-                          style="display: inline"
-                  >或者&nbsp;</span>
+                  <!--<span-->
+                          <!--v-show="rulesJson.rules.length"-->
+                          <!--class="label-and-txt"-->
+                          <!--style="display: inline"-->
+                  <!--&gt;或者&nbsp;</span>-->
                   <el-tag
                           class="oc-item"
                           v-for="(item) in tags"
@@ -280,9 +280,34 @@
           </div>
           <el-form-item label="动态因子" v-if="specialTags.length > 0">
             <div class="label-container">
+              <div
+                      v-show="dynamicPolicyJson.rules.length > 1"
+                      class="label-or-space"
+                      :key="'_or'"
+              >
+                <el-button
+                        type="success"
+                        round
+                        :key="'button3'+'_'"
+                        @click="handleRulesConditionChange(dynamicPolicyJson)"
+                >
+                  {{dynamicPolicyJson.condition === 'AND' ? '且' : '或'}}
+                </el-button>
+              </div>
               <template v-for="(item, index) in dynamicPolicyJson.rules">
-                <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
                 <div class="label-ground" :key="index">
+                  <div class="tag-condition--parent">
+                    <div class="tag-condition">
+                      <el-button
+                              type="warning"
+                              @click="handleRulesConditionChange(item)"
+                              round
+                              size="small"
+                              :key="'button'+index+'_'"
+                      >
+                        {{item.condition === 'AND' ? '且' : '或'}}
+                      </el-button>
+                    </div>
                   <div
                           v-for="(childItem,n) in item.rules"
                           :key="index+'tagId'+n"
@@ -484,6 +509,7 @@
                       >{{ tagItem.tagName }}</el-tag>
                     </div>
                   </div>
+                  </div>
                 </div>
               </template>
               <div class="label-or">
@@ -492,11 +518,11 @@
                         v-if="specialTags.length"
                         :style="{'padding-top': dynamicPolicyJson.rules.length > 0 ? '10px' : 0}"
                 >
-                  <span
-                          v-show="dynamicPolicyJson.rules.length"
-                          class="label-and-txt"
-                          style="display: inline"
-                  >或者&nbsp;</span>
+                  <!--<span-->
+                          <!--v-show="dynamicPolicyJson.rules.length"-->
+                          <!--class="label-and-txt"-->
+                          <!--style="display: inline"-->
+                  <!--&gt;或者&nbsp;</span>-->
                   <el-tag
                           class="oc-item"
                           v-for="(item) in specialTags"
@@ -981,7 +1007,6 @@
             },
             handleRulesConditionChange (item) {
                   item.condition = item.condition === 'AND' ? 'OR' : 'AND'
-                  console.log(item.condition)
             },
             handleConditionChange () {
                  this.dynamicPolicyJson.condition = this.dynamicPolicyJson.condition === 'AND' ? 'OR' : 'AND'
@@ -1061,8 +1086,9 @@
     display: flex
     justify-content: flex-end
   .label-ground
-    border: 1px dashed #ccc
-    padding: 10px
+    border 1px dashed #ccc
+    padding 10px
+    margin 10px 0
   .label-item
     display: flex
     position: relative

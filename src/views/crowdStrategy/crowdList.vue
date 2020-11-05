@@ -835,7 +835,8 @@ export default {
             1: 'success',
             2: 'danger',
             3: '',
-            5: 'warning'
+            5: 'warning',
+            6: 'warningOrange'
         }
     }
   },
@@ -1765,7 +1766,6 @@ export default {
                   values.push({value: item.value, name: item.name})
                   // dataCount += parseInt(item.value)
               })
-              // console.log('非会员总数======'+dataCount)
               this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
@@ -1776,7 +1776,6 @@ export default {
                   values.push({value: item.value, name: item.name})
                   // dataCount += parseInt(item.value)
               })
-              // console.log('有效期会员总数======'+dataCount)
               this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
           })
           this.$service.getCrowdCountMap({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
@@ -1787,7 +1786,6 @@ export default {
                   values.push({value: item.value, name: item.name})
                   // dataCount += parseInt(item.value)
               })
-              // console.log('过期会员总数======'+dataCount)
               this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
           })
         // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
@@ -2175,4 +2173,11 @@ fieldset>div
   margin-right 20px
   .el-button
     font-size 16px
+.crowd-top
+  >>> .el-tag--warningOrange
+    color #ff6100
+    background-color #fdf6e0
+    border-color #faecd8
+    .el-tag__close
+      color #ff6100
 </style>
