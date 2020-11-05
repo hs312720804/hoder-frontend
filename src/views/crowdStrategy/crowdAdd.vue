@@ -275,7 +275,7 @@
                  @click="handleConditionChange()"
                  round
                  :key="'condition'"
-              >{{dynamicPolicyJson.condition === 'OR' ? '或' : '且'}}
+              >{{dynamicPolicyJson.link === 'OR' ? '或' : '且'}}
              </el-button>
           </div>
           <el-form-item label="动态因子" v-if="specialTags.length > 0">
@@ -594,7 +594,7 @@
                 },
                 // usedTags: [[${usedTags}]] || {},
                 rulesJson: { condition: "OR", rules: [] },
-                dynamicPolicyJson: { condition: "AND", rules: []  },
+                dynamicPolicyJson: { link : 'AND', condition: "OR", rules: []  },
                 suggestions: {},
                 suggestionsNew: [],
                 priority: "",
@@ -1009,7 +1009,7 @@
                   item.condition = item.condition === 'AND' ? 'OR' : 'AND'
             },
             handleConditionChange () {
-                 this.dynamicPolicyJson.condition = this.dynamicPolicyJson.condition === 'AND' ? 'OR' : 'AND'
+                 this.dynamicPolicyJson.link = this.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
             }
         },
         created() {

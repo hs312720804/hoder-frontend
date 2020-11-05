@@ -52,6 +52,7 @@ export default {
                             rules: []
                         },
                         'dynamicPolicyJson': {
+                            link: 'AND',
                             condition: 'OR',
                             rules: []
                         },

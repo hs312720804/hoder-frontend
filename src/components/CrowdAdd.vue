@@ -316,9 +316,8 @@
                       v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
                       @click="handleConditionChange(crowd)"
                       round
-
                       :key="i+'condition'"
-              >{{crowd.dynamicPolicyJson.condition === 'OR' ? '或' : '且'}}</el-button>
+              >{{crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且'}}</el-button>
             </div>
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <div class="label-container">
@@ -811,6 +810,7 @@ export default {
                           rules: []
                       },
                       'dynamicPolicyJson': {
+                          link: 'AND',
                           condition: 'AND',
                           rules: []
                       },
@@ -851,6 +851,7 @@ export default {
             rules: []
           },
           'dynamicPolicyJson': {
+              link: 'AND',
               condition: 'OR',
               rules: []
           },
@@ -924,7 +925,7 @@ export default {
         }
     },
     handleConditionChange (crowd) {
-        crowd.dynamicPolicyJson.condition = crowd.dynamicPolicyJson.condition === 'AND' ? 'OR' : 'AND'
+        crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
     },
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
