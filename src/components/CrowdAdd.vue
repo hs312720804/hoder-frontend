@@ -811,7 +811,7 @@ export default {
                           rules: []
                       },
                       'dynamicPolicyJson': {
-                          condition: 'OR',
+                          condition: 'AND',
                           rules: []
                       },
                       'limitLaunch': false,
