@@ -84,7 +84,7 @@
           <span class="checkbox--green">绿色</span>为自定义标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
           <span class="checkbox--yellow">黄色</span>为实时标签,
-          <span class="checkbox--orange">橙色</span>为特定标签）
+          <span class="checkbox--orange">紫色</span>为特定标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -239,7 +239,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签,橙色为特定标签</div>
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签,紫色为特定标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -1021,7 +1021,7 @@ export default {
 .checkbox--yellow
   color #e6a23c
 .checkbox--orange
-  color #ff6100
+  color #512DA8
 .strategy-search
   display flex
   margin-bottom 10px
@@ -1110,9 +1110,9 @@ ul > li
   margin 0 3px
 .strategy-list
   >>> .el-tag--warningOrange
-    color #ff6100
-    background-color #fdf6e0
-    border-color #faecd8
+    color #512DA8
+    background-color rgba(119, 81, 200, .58)
+    border-color #7751C8
     .el-tag__close
-      color #ff6100
+      color #512DA8
 </style>

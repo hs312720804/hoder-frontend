@@ -1132,11 +1132,11 @@
     width 90px
   .add
     >>> .el-tag--warningOrange
-      color #ff6100
-      background-color #fdf6e0
-      border-color #faecd8
+      color #512DA8
+      background-color rgba(119, 81, 200, .58)
+      border-color #7751C8
       .el-tag__close
-        color #ff6100
+        color #512DA8
   .flex-item
     display flex
     margin-right 10px

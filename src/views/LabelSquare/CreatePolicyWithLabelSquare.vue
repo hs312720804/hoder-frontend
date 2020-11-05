@@ -74,7 +74,7 @@
         <span class="checkbox--green">绿色</span>为自定义标签,
         <span class="checkbox--blue">蓝色</span>为账号标签,
         <span class="checkbox--yellow">黄色</span>为实时标签,
-        <span class="checkbox--orange">橙色</span>为特定标签
+        <span class="checkbox--orange">紫色</span>为特定标签
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -363,11 +363,11 @@
     >>> .temp-label-list
         margin-top 0
     >>> .el-tag--warningOrange
-        color #ff6100
-        background-color #fdf6e0
-        border-color #faecd8
+        color #512DA8
+        background-color rgba(119, 81, 200, .58)
+        border-color #7751C8
         .el-tag__close
-          color #ff6100
+          color #512DA8
   .search-input
     position absolute
     top 0
@@ -399,7 +399,7 @@
   .checkbox--yellow
     color #e6a23c
   .checkbox--orange
-    color #ff6100
+    color #512DA8
   .fix-bottom-form
     position fixed
     bottom 0
