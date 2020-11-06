@@ -161,7 +161,7 @@
                 </div>
               </div>
             </el-form-item>
-            <el-form-item label="动态标签:">
+            <el-form-item label="动态标签:" v-if="props.row.dynamicPolicyJson">
               <div
                       v-for="(item, index) in JSON.parse(props.row.dynamicPolicyJson).rules"
                       :key="index"

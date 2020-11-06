@@ -310,7 +310,7 @@
                 </div>
               </div>
             </el-form-item>
-            <div class="outer-and">
+            <div class="outer-and" v-if="specialTags.length > 0">
               <el-button
                       type="danger"
                       v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
