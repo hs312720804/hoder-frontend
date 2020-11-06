@@ -1089,8 +1089,8 @@ i
 .el-collapse
   >>> .el-tag--warningOrange
     color #512DA8
-    background-color rgba(119, 81, 200, .58)
-    border-color #7751C8
+    background-color rgba(119, 81, 200, .4)
+    border-color rgba(81, 45, 168, .45)
     .el-tag__close
       color #512DA8
 .flex-item
