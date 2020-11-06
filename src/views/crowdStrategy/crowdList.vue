@@ -133,7 +133,7 @@
                 :key="index"
                 class="detail"
               >
-                <div v-if="index>0" class="label-or-space">或</div>
+                <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(props.row.rulesJson).condition] }}</div>
 
                 <div class="label-ground">(
                   <div
@@ -141,7 +141,7 @@
                     :key="childItem.tagId+childItemIndex"
                     class="label-item"
                   >
-                    <div v-if="childItemIndex>0" class="label-or-space">且</div>
+                    <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                     <span class="txt">{{ childItem.categoryName }}</span>
                     <span class="sel">{{ childItem.operator }}</span>
                     <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
@@ -167,7 +167,7 @@
                       :key="index"
                       class="detail"
               >
-                <div v-if="index>0" class="label-or-space">或</div>
+                <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(props.row.dynamicPolicyJson).condition] }}</div>
 
                 <div class="label-ground">(
                   <div
@@ -175,7 +175,7 @@
                           :key="childItem.tagId+childItemIndex"
                           class="label-item"
                   >
-                    <div v-if="childItemIndex>0" class="label-or-space">且</div>
+                    <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                     <span class="txt">{{ childItem.categoryName }}</span>
                     <span class="sel">{{ childItem.operator }}</span>
                     <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
@@ -871,7 +871,11 @@ export default {
             3: '',
             5: 'warning',
             6: 'warningOrange'
-        }
+        },
+        conditionEnum: {
+          'AND': '且',
+          'OR': '或'
+        },
     }
   },
   props: ["selectRow"],
