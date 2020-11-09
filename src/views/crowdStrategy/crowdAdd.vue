@@ -498,7 +498,6 @@
     <el-dialog
             title="显示更多标签"
             :append-to-body='true'
-            :key="currentChildItem.tagId+ '_'+ Math.random()"
             :visible.sync="showMoreTags"
             class="showMoreTags"
     >

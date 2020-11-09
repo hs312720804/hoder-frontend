@@ -517,7 +517,6 @@
             title="显示更多标签"
             :visible.sync="showMoreTags"
             :append-to-body='true'
-            :key="currentChildItem.tagId+ '_'+ Math.random()"
             class="showMoreTags"
     >
       <el-form :inline="true" :model="formInline" class="demo-form-inline">
