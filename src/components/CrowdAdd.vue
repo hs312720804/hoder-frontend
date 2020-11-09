@@ -646,8 +646,9 @@ export default {
       this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
-      this.showMoreTags = true
+      // this.showMoreTags = true
       this.$service.getTagAttr({ tagId: child.tagId, pageSize: this.initPageSize, pageNum: this.initCurrentPage }).then(data => {
+        this.showMoreTags = true
         this.tagList = data.pageInfo.list
         this.tagsListTotal = data.pageInfo.total
       });
