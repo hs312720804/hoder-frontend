@@ -167,42 +167,11 @@
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
-                          <el-button :key="childItem.tagId + n" @click="handleSelectMore(childItem)">
+                          <el-button :key="childItem.tagId+'_' + index +'_'+ n +'type1'" @click="handleSelectMore(childItem)">
                             点击选择更多
                           </el-button>
                         </span>
                     </template>
-                    <el-dialog title="显示更多标签" :visible.sync="showMoreTags" class="showMoreTags">
-                      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-                        <el-form-item label="标签名称">
-                          <el-input v-model="formInline.attrName" placeholder="标签名称" @keyup.enter.native="onSubmit"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                          <el-button type="primary" @click="onSubmit">查询</el-button>
-                        </el-form-item>
-                      </el-form>
-                      <div>
-                        <el-radio-group v-model="checkboxValue">
-                          <el-radio v-for="(tag,index) in tagList" :label="tag.attrValue" :key="tag.attrId+index">{{tag.attrName}}</el-radio>
-                        </el-radio-group>
-                      </div>
-                      <el-pagination
-                              small
-                              class="pagination"
-                              layout="prev,pager,next"
-                              :total="tagsListTotal"
-                              :page-size="initPageSize"
-                              :current-page="initCurrentPage"
-                              @current-change="handleCurrentChange"
-                              @prev-click="handleCurrentChange"
-                              @next-click="handleCurrentChange"
-                      >
-                      </el-pagination>
-                      <span slot="footer" class="dialog-footer">
-                        <el-button @click="showMoreTags = false">取 消</el-button>
-                        <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
-                      </span>
-                    </el-dialog>
                     <span class="i" @click="handleRemoveRule(item, childItem)">
                       <i class="icon iconfont el-icon-cc-delete"></i>
                     </span>
@@ -447,42 +416,11 @@
                     </span>
                     <template v-if="cache[childItem.tagId]">
                         <span v-if="cache[childItem.tagId].select && (childItem.tagType === 'string' || childItem.tagType === 'collect')">
-                          <el-button :key="childItem.tagId + n" @click="handleSelectMore(childItem)">
+                          <el-button :key="childItem.tagId+'_'+index+'_'+n+'type2'" @click="handleSelectMore(childItem)">
                             点击选择更多
                           </el-button>
                         </span>
                     </template>
-                    <el-dialog title="显示更多标签" :visible.sync="showMoreTags" class="showMoreTags">
-                      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-                        <el-form-item label="标签名称">
-                          <el-input v-model="formInline.attrName" placeholder="标签名称" @keyup.enter.native="onSubmit"></el-input>
-                        </el-form-item>
-                        <el-form-item>
-                          <el-button type="primary" @click="onSubmit">查询</el-button>
-                        </el-form-item>
-                      </el-form>
-                      <div>
-                        <el-radio-group v-model="checkboxValue">
-                          <el-radio v-for="(tag,index) in tagList" :label="tag.attrValue" :key="tag.attrId+index">{{tag.attrName}}</el-radio>
-                        </el-radio-group>
-                      </div>
-                      <el-pagination
-                              small
-                              class="pagination"
-                              layout="prev,pager,next"
-                              :total="tagsListTotal"
-                              :page-size="initPageSize"
-                              :current-page="initCurrentPage"
-                              @current-change="handleCurrentChange"
-                              @prev-click="handleCurrentChange"
-                              @next-click="handleCurrentChange"
-                      >
-                      </el-pagination>
-                      <span slot="footer" class="dialog-footer">
-                        <el-button @click="showMoreTags = false">取 消</el-button>
-                        <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
-                      </span>
-                    </el-dialog>
                     <span class="i" @click="handleRemoveSpecialRule(item, childItem)">
                       <i class="icon iconfont el-icon-cc-delete"></i>
                     </span>
@@ -557,6 +495,43 @@
       <el-button @click="cancelAdd">返回</el-button>
       <el-button type="primary" @click="handleSave">保存</el-button>
     </div>
+    <el-dialog
+            title="显示更多标签"
+            :append-to-body='true'
+            :key="currentChildItem.tagId+ '_'+ Math.random()"
+            :visible.sync="showMoreTags"
+            class="showMoreTags"
+    >
+      <el-form :inline="true" :model="formInline" class="demo-form-inline">
+        <el-form-item label="标签名称">
+          <el-input v-model="formInline.attrName" placeholder="标签名称" @keyup.enter.native="onSubmit"></el-input>
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="onSubmit">查询</el-button>
+        </el-form-item>
+      </el-form>
+      <div>
+        <el-radio-group v-model="checkboxValue">
+          <el-radio v-for="(tag,index) in tagList" :label="tag.attrValue" :key="tag.attrId+index">{{tag.attrName}}</el-radio>
+        </el-radio-group>
+      </div>
+      <el-pagination
+              small
+              class="pagination"
+              layout="prev,pager,next"
+              :total="tagsListTotal"
+              :page-size="initPageSize"
+              :current-page="initCurrentPage"
+              @current-change="handleCurrentChange"
+              @prev-click="handleCurrentChange"
+              @next-click="handleCurrentChange"
+      >
+      </el-pagination>
+      <span slot="footer" class="dialog-footer">
+                        <el-button @click="showMoreTags = false">取 消</el-button>
+                        <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
+                      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
