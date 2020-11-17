@@ -25,14 +25,6 @@
     <div class="header">
       <div class="header-left">
         <el-button-group>
-          <!-- <el-button
-            type="primary"
-            size="small"
-            @click="handleAdd"
-            v-permission="'hoder:crowd:add'"
-          >
-            <a class="fa fa-plus" style="color: white"></a>新增人群
-          </el-button> -->
           <el-tooltip placement="top-start">
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective">
@@ -47,10 +39,6 @@
               <!--<span>?</span>-->
             </span>
           </el-tooltip>
-          <!--<el-button type="primary" @click="handleClickRedirect">-->
-            <!--新增重定向人群-->
-          <!--</el-button>-->
-          <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li/ren-qun-lie-biao.html" target="_blank">操作指南</a>-->
         </el-button-group>
       </div>
       <div class="header-right">
@@ -98,23 +86,6 @@
             </i>
           </el-popover>
         </div>
-        <!--<el-form-->
-          <!--:inline="true"-->
-          <!--:model="searchForm"-->
-          <!--ref="searchForm"-->
-          <!--@submit.native.prevent="submitForm"-->
-          <!--shiro:hasPermission="sysAdministrative:role:search"-->
-        <!--&gt;-->
-          <!--<el-form-item label prop="crowdName">-->
-            <!--<el-input v-model="searchForm.crowdName" style="width: 200px" placeholder="请输入人群名称"></el-input>-->
-          <!--</el-form-item>-->
-          <!--<el-form-item>-->
-            <!--<el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>-->
-            <!--<el-button type="primary" size="small" @click="handleReset">-->
-              <!--<a class="fa fa-refresh" style="color: white"></a> 重置-->
-            <!--</el-button>-->
-          <!--</el-form-item>-->
-        <!--</el-form>-->
       </div>
     </div>
     <!-- talbe -->
@@ -249,16 +220,9 @@
           <span v-if="scope.row.putway === 0">已下架</span>
         </template>
       </el-table-column>
-      <!--<el-table-column v-if="(checkList.indexOf('crowdValidStatus') > -1)" prop="crowdValidStatus" label="是否有效期内" width="100px">-->
-        <!--<template slot-scope="scope">-->
-            <!--{{crowdValidEnum[scope.row.crowdValidStatus] || '暂无数据'}}-->
-        <!--</template>-->
-      <!--</el-table-column>-->
       <el-table-column label="AB测试" width="100px">
           <template slot-scope="scope">
               {{abStatusEnum[scope.row.abstatus]}}
-              <!--<span v-if="scope.row.abMainCrowd === 1">是</span>-->
-              <!--<span v-if="scope.row.abMainCrowd === 0">否</span>-->
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
@@ -912,17 +876,6 @@ export default {
       // }
   },
   methods: {
-      // genDefaultDivideForm (preset) {
-      //     return {
-      //         crowdId: undefined,
-      //         crowdName: undefined,
-      //         pct: [],
-      //         // remark: '',
-      //         priority: undefined,
-      //         validityTime: '',
-      //         ...preset
-      //     }
-      // },
       handleInputTime (index, val, method) {
           const key = 'time' + index
           const oldVal = this[key]
@@ -935,11 +888,6 @@ export default {
               }
           }
       },
-      // createTimeWatcher(index, method) {
-      //     return (val) => {
-      //         this.handleInputTime(index, val, method)
-      //     }
-      // },
     goBack() {
       this.$emit("goBack")
     },
@@ -1019,12 +967,6 @@ export default {
                     this.loadData()
                 }
             )
-            // this.$service.singleCrowdEstimate(formData,"提交估算成功").then(
-            //     () => {
-            //         this.showEstimate = false
-            //         this.loadData()
-            //     }
-            // )
         } else {
             this.$service.batchCrowdEstimate(formData,"提交估算成功").then(
                 () => {
@@ -1085,17 +1027,6 @@ export default {
       this.currentPage = val
       this.loadData()
     },
-    // 搜索,提交表单
-    // submitForm () {
-    //   this.$refs.searchForm.validate((result) => {
-    //     if (result) {
-    //       this.criteria = this.searchForm
-    //       this.loadData()
-    //     } else {
-    //       return false
-    //     }
-    //   })
-    // },
     handleSearch () {
         this.criteria = this.searchForm
         this.loadData()
