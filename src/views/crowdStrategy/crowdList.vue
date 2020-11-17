@@ -209,7 +209,7 @@
                <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
-      <el-table-column prop="priority" label="优先级" width="100">
+      <el-table-column prop="priority" label="优先级" width="110" sortable>
           <template slot="header">
             优先级
             <el-popover
@@ -2195,14 +2195,14 @@ fieldset>div
 .priority-tip
   display inline-block
   cursor pointer
-  width 20px
-  height 20px
-  line-height 20px
+  width 14px
+  height 14px
+  line-height 14px
   background #ccc
   color #fff
   border-radius 50%
   text-align center
-  font-size 14px
+  font-size 12px
 .crowd-top
   display flex
   justify-content flex-start
