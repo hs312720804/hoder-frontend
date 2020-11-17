@@ -13,6 +13,17 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="选择日期：" v-if="formData.type === 2">
+                    <el-date-picker
+                            v-model="formData.tagVersionDate"
+                            type="date"
+                            placeholder="选择日期"
+                            value-format="yyyy-MM-dd"
+                            value="yyyy-MM-dd"
+                            :picker-options="dateRange"
+                    >
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item v-if="formData.type === 2">
                     <el-input
                             v-model="formData.mac"
@@ -105,7 +116,8 @@
                     thirdUserId: undefined,
                     tagId: undefined,
                     tagAttrId: undefined,
-                    tempMac: undefined
+                    tempMac: undefined,
+                    tagVersionDate: undefined
                 },
                 typeEnum: {
                     1 : '临时标签',
@@ -115,7 +127,12 @@
                 typeEnumArr: [],
                 tagList: [],
                 tagAttrList: [],
-                content: undefined
+                content: undefined,
+                dateRange: {
+                    disabledDate (time) {
+                        return time.getTime() > Date.now() || time.getTime() < new Date().getTime() - 15*24*60*60*1000
+                    }
+                }
             }
         },
         methods: {
@@ -155,7 +172,8 @@
                     cOpenid: types === 3 ? formData.cOpenid : undefined,
                     thirdUserId: types === 3 ? formData.thirdUserId : undefined,
                     tagId:types === 1 ? formData.tagId : undefined,
-                    tagAttrId: types === 1 ? formData.tagAttrId : undefined
+                    tagAttrId: types === 1 ? formData.tagAttrId : undefined,
+                    tagVersionDate: types === 2 ? formData.tagVersionDate : undefined
                 }
                 this.$service.getUserTagList(apiData).then(data => {
                     if (data) {
