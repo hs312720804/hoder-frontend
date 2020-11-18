@@ -89,8 +89,13 @@
       </div>
     </div>
     <!-- talbe -->
-    <el-table ref="myTable" :data="tableData" style="width: 100%" stripe border
-      :row-class-name="tableRowClassName"
+    <el-table
+            ref="myTable"
+            :data="tableData"
+            style="width: 100%"
+            stripe
+            border
+            :row-class-name="tableRowClassName"
     >
       <el-table-column type="expand">
         <template slot-scope="props">
@@ -98,7 +103,7 @@
             <el-form-item label="人群名称:">
               <span>{{ props.row.crowdName }}</span>
             </el-form-item>
-            <el-form-item label="标签:">
+            <el-form-item label="人群规则:">
               <div
                 v-for="(item, index) in JSON.parse(props.row.rulesJson).rules"
                 :key="index"
@@ -167,7 +172,7 @@
               </div>
             </el-form-item>
             <el-form-item label="人群状态">
-                <crowdStatusItem :crowd-id="props.row.crowdId" :key="props.row.crowdId"></crowdStatusItem>
+                <crowdStatusResource :crowd-id="props.row.crowdId" :key="props.row.crowdId"></crowdStatusResource>
             </el-form-item>
           </el-form>
         </template>
@@ -247,7 +252,7 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
-      <el-table-column label="操作" fixed="right">
+      <el-table-column label="操作">
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button
@@ -691,13 +696,14 @@
 <script>
 import { Table} from 'admin-toolkit'
 import priorityEdit from '../../components/PriorityEdit'
-import crowdStatusItem from './CrowdStatusItem'
+// import crowdStatusItem from './CrowdStatusItem'
+import crowdStatusResource from './CrowdStatusResource'
 import CommitHistoryDialog from '@/components/CommitHistory'
 export default {
   components: {
       Table,
       priorityEdit,
-      crowdStatusItem,
+      crowdStatusResource,
       CommitHistoryDialog
   },
   data() {
