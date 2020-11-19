@@ -15,7 +15,7 @@
                 </el-form-item>
                 <el-form-item label="选择日期：" v-if="formData.type === 2">
                     <el-date-picker
-                            v-model="formData.tagVersionDate"
+                            v-model="formData.date"
                             type="date"
                             placeholder="选择日期"
                             value-format="yyyy-MM-dd"
@@ -117,7 +117,7 @@
                     tagId: undefined,
                     tagAttrId: undefined,
                     tempMac: undefined,
-                    tagVersionDate: undefined
+                    date: undefined
                 },
                 typeEnum: {
                     1 : '临时标签',
@@ -173,15 +173,29 @@
                     thirdUserId: types === 3 ? formData.thirdUserId : undefined,
                     tagId:types === 1 ? formData.tagId : undefined,
                     tagAttrId: types === 1 ? formData.tagAttrId : undefined,
-                    tagVersionDate: types === 2 ? formData.tagVersionDate : undefined
+                    date: types === 2 ? formData.date : undefined
                 }
-                this.$service.getUserTagList(apiData).then(data => {
-                    if (data) {
-                        this.content = data
-                    } else {
-                        this.content = '暂无数据'
+                if (types !== 2) {
+                    this.$service.getUserTagList(apiData).then(data => {
+                        if (data) {
+                            this.content = data
+                        } else {
+                            this.content = '暂无数据'
+                        }
+                    })
+                } else {
+                    const bigDataApi = {
+                        id: formData.mac,
+                        date: formData.date
                     }
-                })
+                    this.$service.getBigDataUserTagList(bigDataApi).then(data => {
+                        if (data) {
+                            this.content = data
+                        } else {
+                            this.content = '暂无数据'
+                        }
+                    })
+                }
             }
         },
         created() {

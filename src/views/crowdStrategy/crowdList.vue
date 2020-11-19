@@ -1964,6 +1964,8 @@ fieldset>div
   justify-content: space-between
 .label-ground, .label-item, .detail
   display: flex
+.detail
+  overflow scroll
 .demo-table-expand >>> .el-form-item__content
   display: flex
 .label-or-space

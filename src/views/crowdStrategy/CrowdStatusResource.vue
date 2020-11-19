@@ -58,8 +58,40 @@
                 </div>
                 <div v-else>暂无数据</div>
             </div>
-            <div class="normal part">
+            <div class="normal part" v-if="formData">
                 <div class="title">设备命中查询</div>
+                <div
+                        v-for="(item,index) in formData.biTrack"
+                        :key="index"
+                        class="hit-search-item"
+                >
+                    <div v-if="item.list">
+                        <div
+                                v-for="(child,childIndex) in item.list"
+                                :key="'hit_search_child_'+childIndex"
+                                class="hit-search-child-wrapper"
+                        >
+                            <div style="display: flex">
+                                <div>
+                                    ID类型
+                                    <el-select v-model="searchForm.type" class="small-input">
+                                        <el-option label="Mac地址" value="mac"></el-option>
+                                    </el-select>
+                                </div>
+                                <div>
+                                    ID
+                                    <el-input v-model="searchForm.value" class="small-input"></el-input>
+                                </div>
+                                <div>
+                                    <el-button type="primary" size="mini" @click="handleSearch(child.schemeId)">查询</el-button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div v-else>
+                        暂无数据
+                    </div>
+                </div>
             </div>
         </div>
     </div>
@@ -69,7 +101,11 @@
     export default {
         data() {
             return {
-                formData: undefined
+                formData: undefined,
+                searchForm: {
+                    type: undefined,
+                    value: undefined
+                }
             }
         },
         props: ['crowdId'],
@@ -79,24 +115,10 @@
                 this.$service.getCrowdStatus({crowdId: crowdId}).then((data) => {
                     console.log('data====', data)
                     this.formData = data
-                    // this.content = data.map(item => {
-                    //     return {
-                    //         isCreate: '',
-                    //         createTime: '',
-                    //         isSync: '',
-                    //         syncTime: '',
-                    //         isLaunch: '',
-                    //         launchTime: '',
-                    //         isHit: '',
-                    //         ...item
-                    //     }
-                    // })
-                    // if (data.length > 5) {
-                    //     for (let i=0;i < data.length - 4;i++){
-                    //         this.hitMap.push(i+3)
-                    //     }
-                    // }
                 })
+            },
+            handleSearch (id) {
+                console.log('id======',id)
             }
         },
         created () {
@@ -112,9 +134,9 @@
     border-bottom 1px dashed #ccc
     font-size 14px
     .normal
-        width 70%
+        width 770px
     .part
-        width 30%
+        width calc(100% - 770px)
         border-left 1px dashed #ccc
 .title
     font-size 18px
@@ -132,7 +154,7 @@
     display flex
     align-items center
     justify-content center
-    width 50px
+    width 20px
     border-bottom 1px dashed #ccc
     border-right 1px dashed #ccc
 .child-item
@@ -154,7 +176,6 @@
     height 120px
     border-left 1px dashed #ccc
     border-bottom 1px dashed #ccc
-    /*border-right 1px dashed #ccc*/
     left 350px
     top 0
     display flex
@@ -183,7 +204,7 @@
     height 120px
     width 2px
     background #409EFF
-    top 11px
+    top -107px
     left -13px
 .step-flex
     flex-basis 0
@@ -200,14 +221,15 @@
         border 2px solid
         border-radius 50%
         margin auto
+        color #409EFF
         &:before
             content ''
             position absolute
             height 2px
-            width 102px
+            width 103px
             background #409EFF
             top 9px
-            left -102px
+            left -103px
         &:after
             content ''
             position absolute
@@ -216,9 +238,21 @@
             background #409EFF
             top 9px
             left 22px
+    &:last-child
+        .step-define--number
+            color #1ac71c
     .step-define--title
         text-align center
-.track-item:last-child .hit-step
+.track-item:first-child .child-wrapper:first-child .hit-step
     &:before
-        background red
+        background transparent
+.hit-search-child-wrapper
+    height 120px
+    border-bottom 1px dashed #ccc
+    width 100%
+    overflow-x auto
+    font-size 12px
+.small-input
+    display inline-block
+    width 90px
 </style>

@@ -19,7 +19,14 @@ export function getUserTagList(params) {
         params
     })
 }
-
+// 大数据命中标签查询
+export function getBigDataUserTagList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/mac/tagInfo',
+        params
+    })
+}
 // 命中查询
 //查询
 export function getHitSearchData(params) {
