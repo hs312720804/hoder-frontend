@@ -71,21 +71,7 @@
                                 :key="'hit_search_child_'+childIndex"
                                 class="hit-search-child-wrapper"
                         >
-                            <div style="display: flex">
-                                <div>
-                                    ID类型
-                                    <el-select v-model="searchForm.type" class="small-input">
-                                        <el-option label="Mac地址" value="mac"></el-option>
-                                    </el-select>
-                                </div>
-                                <div>
-                                    ID
-                                    <el-input v-model="searchForm.value" class="small-input"></el-input>
-                                </div>
-                                <div>
-                                    <el-button type="primary" size="mini" @click="handleSearch(child.schemeId)">查询</el-button>
-                                </div>
-                            </div>
+                            <hit-search-item :childItem="child"></hit-search-item>
                         </div>
                     </div>
                     <div v-else>
@@ -98,14 +84,14 @@
 </template>
 
 <script>
+    import HitSearchItem from './HitSearchItem'
     export default {
+        components: {
+            HitSearchItem
+        },
         data() {
             return {
-                formData: undefined,
-                searchForm: {
-                    type: undefined,
-                    value: undefined
-                }
+                formData: undefined
             }
         },
         props: ['crowdId'],
@@ -116,9 +102,6 @@
                     console.log('data====', data)
                     this.formData = data
                 })
-            },
-            handleSearch (id) {
-                console.log('id======',id)
             }
         },
         created () {
@@ -252,7 +235,4 @@
     width 100%
     overflow-x auto
     font-size 12px
-.small-input
-    display inline-block
-    width 90px
 </style>

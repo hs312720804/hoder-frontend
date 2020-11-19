@@ -1965,7 +1965,7 @@ fieldset>div
 .label-ground, .label-item, .detail
   display: flex
 .detail
-  overflow scroll
+  overflow auto
 .demo-table-expand >>> .el-form-item__content
   display: flex
 .label-or-space
