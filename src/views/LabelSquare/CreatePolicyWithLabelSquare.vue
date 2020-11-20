@@ -5,7 +5,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-          <el-tab-pane label="临时标签" name="tempLabel">
+          <el-tab-pane label="临时人群" name="tempLabel">
             <temp-label-index
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"

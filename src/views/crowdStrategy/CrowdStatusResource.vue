@@ -71,10 +71,10 @@
                                 :key="'hit_search_child_'+childIndex"
                                 class="hit-search-child-wrapper"
                         >
-                            <hit-search-item :childItem="child"></hit-search-item>
+                            <hit-search-item :childItem="child" :crowdId="crowdId"></hit-search-item>
                         </div>
                     </div>
-                    <div v-else>
+                    <div class="no-data-tips" v-else>
                         暂无数据
                     </div>
                 </div>
@@ -115,11 +115,11 @@
     justify-content center
     border-top 1px dashed #ccc
     border-bottom 1px dashed #ccc
-    font-size 14px
+    font-size 12px
     .normal
-        width 770px
+        width 730px
     .part
-        width calc(100% - 770px)
+        width calc(100% - 730px)
         border-left 1px dashed #ccc
 .title
     font-size 18px
@@ -141,7 +141,7 @@
     border-bottom 1px dashed #ccc
     border-right 1px dashed #ccc
 .child-item
-    width 100px
+    width 90px
     height 120px
     border-bottom 1px dashed #ccc
     border-right 1px dashed #ccc
@@ -155,11 +155,11 @@
     position relative
 .hit-step
     position absolute
-    width 400px
+    width 380px
     height 120px
     border-left 1px dashed #ccc
     border-bottom 1px dashed #ccc
-    left 350px
+    left 340px
     top 0
     display flex
 .search-hit
@@ -209,15 +209,15 @@
             content ''
             position absolute
             height 2px
-            width 103px
+            width 98px
             background #409EFF
             top 9px
-            left -103px
+            left -98px
         &:after
             content ''
             position absolute
             height 2px
-            width 75px
+            width 70px
             background #409EFF
             top 9px
             left 22px
@@ -235,4 +235,6 @@
     width 100%
     overflow-x auto
     font-size 12px
+.no-data-tips
+    text-align center
 </style>

@@ -572,3 +572,12 @@ export function getSrtategyTagsList(params) {
         params
     })
 }
+
+// 设备命中查询
+export function searchHitCrowd ({crowdId,params}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/dataSearcher/macCrowdTagValue/'+crowdId,
+        params
+    })
+}

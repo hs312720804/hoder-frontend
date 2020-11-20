@@ -1150,7 +1150,7 @@ i
   top 10px
   right 0
   bottom 3px
-  left 0
+  left -17px
   width 3px
   height auto
   margin auto 0
