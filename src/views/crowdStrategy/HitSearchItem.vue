@@ -76,11 +76,11 @@
         },
         methods: {
             handleSearch () {
-                this.showResult = true
                 console.log('childItem======',this.childItem)
                 const searchApi = JSON.parse(JSON.stringify(this.searchForm))
                 this.$service.searchHitCrowd({crowdId: this.crowdId, params: searchApi}).then(data => {
                     console.log('data======', data)
+                    this.showResult = true
                     this.hitResult = JSON.stringify(data)
                 })
             },
