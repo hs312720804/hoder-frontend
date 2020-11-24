@@ -3,12 +3,12 @@
     <div class="TopNav">
       <div class="header">
         <div class="header-left">
-          <el-radio-group v-model="showAll" @change="handleShowAllChange">
-            <el-radio :label="true">全部</el-radio>
-            <el-radio :label="false">我的</el-radio>
-          </el-radio-group>
-        </div>
-        <div class="header-right">
+          <div>
+            <el-radio-group v-model="showAll" @change="handleShowAllChange">
+              <el-radio :label="true">全部</el-radio>
+              <el-radio :label="false">我的</el-radio>
+            </el-radio-group>
+          </div>
           <div class="search-input">
             <el-input
                     v-model="searchForm.policyName"
@@ -19,6 +19,18 @@
             ></el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
           </div>
+        </div>
+        <div class="header-right">
+          <!--<div class="search-input">-->
+            <!--<el-input-->
+                    <!--v-model="searchForm.policyName"-->
+                    <!--style="width: 350px"-->
+                    <!--placeholder="支持按策略、人群、创建人、部门搜索"-->
+                    <!--:clearable='true'-->
+                    <!--@keyup.enter.native="handleSearch"-->
+            <!--&gt;</el-input>-->
+            <!--<i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>-->
+          <!--</div>-->
           <div>
             <el-button
                     type="primary"
@@ -1091,11 +1103,11 @@ ul > li
   margin 20px
 .search-input
   position relative
-  margin 0 10px
+  margin 0 15px
 .icon-fixed
   position absolute
   top 8px
-  right 20px
+  right 28px
   transform rotate(-90deg)
 .header
   width 100%
@@ -1115,4 +1127,7 @@ ul > li
     border-color rgba(81, 45, 168, .45)
     .el-tag__close
       color #512DA8
+.header-left
+  display flex
+  align-items center
 </style>
