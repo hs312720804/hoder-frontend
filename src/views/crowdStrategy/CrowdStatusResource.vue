@@ -33,14 +33,14 @@
                                                 <div class="step-define--title">首条请求</div>
                                                 <div>{{child.firstResp.firstTime}}</div>
                                                 <div>ID:{{child.firstResp.mac}}  {{child.firstResp.province}} {{child.firstResp.city}}</div>
-                                                <div>累计:123444 <el-button type="text">详情</el-button></div>
+                                                <div>累计:{{child.firstResp.total}} <el-button type="text">详情</el-button></div>
                                             </div>
                                             <div class="step-define" v-if="child.firstHit">
                                                 <div class="step-define--number">4</div>
                                                 <div class="step-define--title">首条命中</div>
                                                 <div>{{child.firstHit.firstTime}}</div>
                                                 <div>ID:{{child.firstHit.mac}}  {{child.firstHit.province}} {{child.firstHit.city}}</div>
-                                                <div>累计:123444 <el-button type="text">详情</el-button></div>
+                                                <div>累计:{{child.firstResp.total}}<el-button type="text">详情</el-button></div>
                                             </div>
                                         <!--</div>-->
                                     </div>
@@ -56,27 +56,29 @@
                         </el-steps>
                     </div>
                 </div>
-                <div v-else>暂无数据</div>
+                <div class="no-data-tips" v-else>暂无数据</div>
             </div>
             <div class="normal part" v-if="formData">
                 <div class="title">设备命中查询</div>
-                <div
-                        v-for="(item,index) in formData.biTrack"
-                        :key="index"
-                        class="hit-search-item"
-                >
-                    <div v-if="item.list">
-                        <div
-                                v-for="(child,childIndex) in item.list"
-                                :key="'hit_search_child_'+childIndex"
-                                class="hit-search-child-wrapper"
-                        >
-                            <hit-search-item :childItem="child" :crowdId="crowdId"></hit-search-item>
+                <div v-if="formData.biTrack.length > 0">
+                    <div
+                            v-for="(item,index) in formData.biTrack"
+                            :key="index"
+                            class="hit-search-item"
+                    >
+                        <div v-if="item.list">
+                            <div
+                                    v-for="(child,childIndex) in item.list"
+                                    :key="'hit_search_child_'+childIndex"
+                                    class="hit-search-child-wrapper"
+                            >
+                                <hit-search-item :childItem="child" :crowdId="crowdId"></hit-search-item>
+                            </div>
                         </div>
                     </div>
-                    <div class="no-data-tips" v-else>
-                        暂无数据
-                    </div>
+                </div>
+                <div class="no-data-tips" v-else>
+                    暂无数据
                 </div>
             </div>
         </div>
@@ -130,9 +132,9 @@
         font-size 12px
 .track-item
     display flex
-    &:last-child
-        .hit-step:before
-            background #fff
+    /*&:last-child*/
+        /*.hit-step:before*/
+            /*background #fff*/
 .business-name
     display flex
     align-items center
@@ -169,10 +171,10 @@
     content ''
     position absolute
     height 2px
-    width 53px
+    width 86px
     background #409EFF
     top 11px
-    left 70px
+    left 59px
 .line-before:before
     content ''
     position absolute
