@@ -33,14 +33,14 @@
                                                 <div class="step-define--title">首条请求</div>
                                                 <div>{{child.firstResp.firstTime}}</div>
                                                 <div>ID:{{child.firstResp.mac}}  {{child.firstResp.province}} {{child.firstResp.city}}</div>
-                                                <div>累计:{{child.firstResp.total}} <el-button type="text">详情</el-button></div>
+                                                <div>累计:{{child.firstResp.total}} <el-button type="text" @click="handleSeeDetail(child.schemeId,false,item.biId)">详情</el-button></div>
                                             </div>
                                             <div class="step-define" v-if="child.firstHit">
                                                 <div class="step-define--number">4</div>
                                                 <div class="step-define--title">首条命中</div>
                                                 <div>{{child.firstHit.firstTime}}</div>
                                                 <div>ID:{{child.firstHit.mac}}  {{child.firstHit.province}} {{child.firstHit.city}}</div>
-                                                <div>累计:{{child.firstResp.total}}<el-button type="text">详情</el-button></div>
+                                                <div>累计:{{child.firstHit.total}}<el-button type="text" @click="handleSeeDetail(child.schemeId,true,item.biId)">详情</el-button></div>
                                             </div>
                                         <!--</div>-->
                                     </div>
@@ -82,18 +82,44 @@
                 </div>
             </div>
         </div>
+        <el-dialog :visible.sync="showDetailDialog" :title="detailDialogTitle">
+            <div>
+                <search-input
+                        :placeHolderText="'请输入MAC'"
+                        @handle-search="handleDetailSearch"
+                        ref="searchInputRef"
+                ></search-input>
+            </div>
+            <el-table
+                    :data="tableData"
+                    border
+                    stripe
+                    class="table"
+            >
+                <el-table-column label="时间" prop="time"></el-table-column>
+                <el-table-column label="ID" prop="mac"></el-table-column>
+                <el-table-column label="子人群归属" prop="crowdId"></el-table-column>
+            </el-table>
+            <div class="detail-tips">注：仅显示最新的100条</div>
+        </el-dialog>
     </div>
 </template>
 
 <script>
     import HitSearchItem from './HitSearchItem'
+    import searchInput from '@/components/SearchInput'
     export default {
         components: {
-            HitSearchItem
+            HitSearchItem,
+            searchInput
         },
         data() {
             return {
-                formData: undefined
+                formData: undefined,
+                showDetailDialog: false,
+                detailDialogTitle: '',
+                tableData: [],
+                apiTableData: []
             }
         },
         props: ['crowdId'],
@@ -101,9 +127,51 @@
             handleGetContent() {
                 const crowdId = this.crowdId
                 this.$service.getCrowdStatus({crowdId: crowdId}).then((data) => {
-                    console.log('data====', data)
                     this.formData = data
                 })
+            },
+            handleSeeDetail (schemalId,flag,bId) {
+                this.detailDialogTitle = flag ? '命中详情' : '请求详情'
+                // flag为true则是命中详情查询,flag为false则是访问详情查询
+                var panelId = undefined
+                if(schemalId.toString().indexOf(':') > 0) {
+                    panelId = schemalId.split(':')[0]
+                } else {
+                    panelId = schemalId
+                }
+                const apiData = {
+                    crowdId: this.crowdId,
+                    bId,
+                    panelId,
+                    hit: flag
+                }
+                this.$service.crowdRequestDetail(apiData).then(data => {
+                    this.showDetailDialog = true
+                    this.$nextTick(() => {
+                        this.$refs.searchInputRef.resetForm()
+                    })
+                    this.tableData = data
+                    this.apiTableData = data
+                })
+            },
+            handleDetailSearch (id) {
+                if (id) {
+                    const arr = []
+                    const apiData = this.apiTableData
+                    const length = apiData.length
+                    for (var i=0; i<length-1; i++) {
+                        if (apiData[i].mac === id) {
+                            arr[0] = apiData[i]
+                            this.tableData = arr
+                            return
+                        }
+                    }
+                    if (arr.length === 0) {
+                        this.tableData = []
+                    }
+                } else {
+                    this.tableData = this.apiTableData
+                }
             }
         },
         created () {
@@ -239,4 +307,11 @@
     font-size 12px
 .no-data-tips
     text-align center
+.table
+    height 361px
+    overflow auto
+.detail-tips
+    font-size 12px
+    color #ccc
+    margin-top 10px
 </style>

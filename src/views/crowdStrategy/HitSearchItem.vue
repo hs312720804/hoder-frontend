@@ -32,30 +32,27 @@
                 class="hit-search-result"
         >
             <div class="result-content">
-                <div>
+                <div style="margin: auto">
                     <div>
                         <span>相关标签</span><span>更新日期{{formatYesterdayDate()}}</span>
                     </div>
-                    <el-input type="textarea" v-model="hitResult"></el-input>
+                    <el-input type="textarea" class="text-area" v-model="hitResult"></el-input>
                 </div>
-                <div class="hit-step">
-                    <!--<div>-->
-                    <div class="step-define">
-                        <div class="step-define--number">1</div>
-                        <div class="step-define--title">是否请求</div>
-                        <div>请求次数：<el-button type="text">详情</el-button></div>
-                        <div>最近请求时间：</div>
-                    </div>
-                    <div class="step-define">
-                        <div class="step-define--number">2</div>
-                        <div class="step-define--title">是否命中</div>
-                        <div>命中次数：<el-button type="text">详情</el-button></div>
-                        <div>最近命中时间：</div>
-                    </div>
+                <!--<div class="hit-step">-->
+                    <!--<div class="step-define">-->
+                        <!--<div class="step-define&#45;&#45;number">1</div>-->
+                        <!--<div class="step-define&#45;&#45;title">是否请求</div>-->
+                        <!--<div>请求次数：<el-button type="text">详情</el-button></div>-->
+                        <!--<div>最近请求时间：</div>-->
                     <!--</div>-->
-                </div>
+                    <!--<div class="step-define">-->
+                        <!--<div class="step-define&#45;&#45;number">2</div>-->
+                        <!--<div class="step-define&#45;&#45;title">是否命中</div>-->
+                        <!--<div>命中次数：<el-button type="text">详情</el-button></div>-->
+                        <!--<div>最近命中时间：</div>-->
+                    <!--</div>-->
+                <!--</div>-->
             </div>
-            <!--<div>结果：<span>可命中</span></div>-->
         </div>
     </div>
 </template>
@@ -76,10 +73,8 @@
         },
         methods: {
             handleSearch () {
-                console.log('childItem======',this.childItem)
                 const searchApi = JSON.parse(JSON.stringify(this.searchForm))
                 this.$service.searchHitCrowd({crowdId: this.crowdId, params: searchApi}).then(data => {
-                    console.log('data======', data)
                     this.showResult = true
                     this.hitResult = JSON.stringify(data)
                 })
@@ -153,4 +148,6 @@
             color #1ac71c
     .step-define--title
         text-align center
+.text-area
+    width 330px
 </style>
