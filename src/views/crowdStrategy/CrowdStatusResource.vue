@@ -134,16 +134,20 @@
                 this.detailDialogTitle = flag ? '命中详情' : '请求详情'
                 // flag为true则是命中详情查询,flag为false则是访问详情查询
                 var panelId = undefined
-                if(schemalId.toString().indexOf(':') > 0) {
-                    panelId = schemalId.split(':')[0]
+                var index = undefined
+                if(schemalId.toString().indexOf('-') > 0) {
+                    panelId = schemalId.split('-')[0]
+                    index = schemalId.split('-')[1]
                 } else {
                     panelId = schemalId
+                    index = 0
                 }
                 const apiData = {
                     crowdId: this.crowdId,
                     bId,
                     panelId,
-                    hit: flag
+                    hit: flag,
+                    index
                 }
                 this.$service.crowdRequestDetail(apiData).then(data => {
                     this.showDetailDialog = true

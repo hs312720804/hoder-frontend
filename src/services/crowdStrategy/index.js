@@ -589,3 +589,19 @@ export function searchHitCrowd ({crowdId,params}) {
         params
     })
 }
+// mac在主页命中明细查询接口
+export function macHitDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/homePage/hit/log',
+        params
+    })
+}
+// mac在主页请求明细查询
+export function macRequestDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/homePage/request/log',
+        params
+    })
+}

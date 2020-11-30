@@ -38,22 +38,34 @@
                     </div>
                     <el-input type="textarea" class="text-area" v-model="hitResult"></el-input>
                 </div>
-                <!--<div class="hit-step">-->
-                    <!--<div class="step-define">-->
-                        <!--<div class="step-define&#45;&#45;number">1</div>-->
-                        <!--<div class="step-define&#45;&#45;title">是否请求</div>-->
-                        <!--<div>请求次数：<el-button type="text">详情</el-button></div>-->
-                        <!--<div>最近请求时间：</div>-->
-                    <!--</div>-->
-                    <!--<div class="step-define">-->
-                        <!--<div class="step-define&#45;&#45;number">2</div>-->
-                        <!--<div class="step-define&#45;&#45;title">是否命中</div>-->
-                        <!--<div>命中次数：<el-button type="text">详情</el-button></div>-->
-                        <!--<div>最近命中时间：</div>-->
-                    <!--</div>-->
-                <!--</div>-->
+                <div class="hit-step">
+                    <div class="step-define">
+                        <div class="step-define--number">1</div>
+                        <div class="step-define--title">是否请求</div>
+                        <div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
+                        <div>最近请求时间：</div>
+                    </div>
+                    <div class="step-define">
+                        <div class="step-define--number">2</div>
+                        <div class="step-define--title">是否命中</div>
+                        <div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
+                        <div>最近命中时间：</div>
+                    </div>
+                </div>
             </div>
         </div>
+        <el-dialog :visible.sync="showDetailDialog" :title="detailDialogTitle">
+            <el-table
+                    :data="tableData"
+                    border
+                    stripe
+                    class="table"
+            >
+                <el-table-column label="时间" prop="time"></el-table-column>
+                <el-table-column label="mac" prop="mac"></el-table-column>
+                <el-table-column label="子人群归属" prop="crowdId"></el-table-column>
+            </el-table>
+        </el-dialog>
     </div>
 </template>
 
@@ -68,7 +80,10 @@
                     openId: undefined
                 },
                 showResult: false,
-                hitResult: undefined
+                hitResult: undefined,
+                showDetailDialog: false,
+                detailDialogTitle: '',
+                tableData: []
             }
         },
         methods: {
@@ -77,6 +92,41 @@
                 this.$service.searchHitCrowd({crowdId: this.crowdId, params: searchApi}).then(data => {
                     this.showResult = true
                     this.hitResult = JSON.stringify(data)
+                })
+            },
+            handleRequestDetail () {
+                console.log(this.childItem)
+                const schemeId = this.childItem.schemeId.toString()
+                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+                // const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+                const reqLogApi = {
+                    mac: this.searchForm.mac,
+                    crowdId: this.crowdId,
+                    panelId
+                    // index
+                }
+                this.$service.macRequestDetail(reqLogApi).then(data => {
+                    console.log(data)
+                    this.showDetailDialog = true
+                    this.detailDialogTitle = '请求详情'
+                    this.tableData = data
+                })
+            },
+            handleHitDetail () {
+                const schemeId = this.childItem.schemeId.toString()
+                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+                // const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+                const hitLogApi = {
+                    mac: this.searchForm.mac,
+                    crowdId: this.crowdId,
+                    panelId
+                    // index
+                }
+                this.$service.macHitDetail(hitLogApi).then(data => {
+                    console.log(data)
+                    this.showDetailDialog = true
+                    this.detailDialogTitle = '命中详情'
+                    this.tableData = data
                 })
             },
             formatYesterdayDate () {
@@ -149,5 +199,5 @@
     .step-define--title
         text-align center
 .text-area
-    width 330px
+    width 220px
 </style>
