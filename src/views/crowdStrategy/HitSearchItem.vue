@@ -42,14 +42,16 @@
                     <div class="step-define">
                         <div class="step-define--number">1</div>
                         <div class="step-define--title">是否请求</div>
-                        <div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
-                        <div>最近请求时间：</div>
+                        <!--<div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>-->
+                        <div>请求<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
+                        <!--<div>最近请求时间：</div>-->
                     </div>
                     <div class="step-define">
                         <div class="step-define--number">2</div>
                         <div class="step-define--title">是否命中</div>
-                        <div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
-                        <div>最近命中时间：</div>
+                        <!--<div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>-->
+                        <div>命中<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
+                        <!--<div>最近命中时间：</div>-->
                     </div>
                 </div>
             </div>
@@ -98,12 +100,12 @@
                 console.log(this.childItem)
                 const schemeId = this.childItem.schemeId.toString()
                 const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
-                // const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
                 const reqLogApi = {
                     mac: this.searchForm.mac,
                     crowdId: this.crowdId,
-                    panelId
-                    // index
+                    panelId,
+                    index
                 }
                 this.$service.macRequestDetail(reqLogApi).then(data => {
                     console.log(data)
@@ -115,12 +117,12 @@
             handleHitDetail () {
                 const schemeId = this.childItem.schemeId.toString()
                 const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
-                // const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
                 const hitLogApi = {
                     mac: this.searchForm.mac,
                     crowdId: this.crowdId,
-                    panelId
-                    // index
+                    panelId,
+                    index
                 }
                 this.$service.macHitDetail(hitLogApi).then(data => {
                     console.log(data)
