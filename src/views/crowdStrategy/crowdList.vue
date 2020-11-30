@@ -172,7 +172,11 @@
               <!--</div>-->
             <!--</el-form-item>-->
             <!--<el-form-item label="人群状态">-->
-                <crowdStatusResource :crowd-id="props.row.crowdId" :key="props.row.crowdId"></crowdStatusResource>
+            <crowdStatusResource
+                    ref="crowdStatusResourceRef"
+                    :crowd-id="props.row.crowdId"
+                    :key="props.row.crowdId"
+            ></crowdStatusResource>
             <!--</el-form-item>-->
           </el-form>
         </template>
@@ -845,7 +849,7 @@ export default {
         conditionEnum: {
           'AND': '且',
           'OR': '或'
-        },
+        }
     }
   },
   props: ["selectRow"],

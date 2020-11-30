@@ -1,8 +1,20 @@
 <template>
     <div class="crowd-status">
+        <div
+                style="display: flex;justify-content: flex-end"
+        >
+            <search-input
+                    :placeHolderText="'请输入ID或名称'"
+                    @handle-search="handleSearchStatusData"
+                    ref="searchInputWrapperRef"
+            ></search-input>
+        </div>
         <div class="flex-content">
             <div v-if="formData" class="normal">
-                <div class="title">投放状态 <span>最近更新时间：{{formData.luaSyncTime}}</span></div>
+                <div class="title">投放状态
+                    <span>最近更新时间：{{requestApiTime}}</span>
+                    <i class="el-icon-refresh refresh-small" @click="handleGetContent"></i>
+                </div>
                 <div
                         v-if="formData.biTrack.length > 0"
                         class="track-content"
@@ -56,7 +68,12 @@
                         </el-steps>
                     </div>
                 </div>
-                <div class="no-data-tips" v-else>暂无数据</div>
+                <div class="no-data-tips" v-else>
+                    <el-steps :active="2" align-center>
+                        <el-step v-if="formData.createTime" title="人群创建" :description="formData.createTime"></el-step>
+                        <el-step v-if="formData.luaSyncTime" title="同步配置" :description="formData.luaSyncTime" class="step-after"></el-step>
+                    </el-steps>
+                </div>
             </div>
             <div class="normal part" v-if="formData">
                 <div class="title">设备命中查询</div>
@@ -119,16 +136,74 @@
                 showDetailDialog: false,
                 detailDialogTitle: '',
                 tableData: [],
-                apiTableData: []
+                apiTableData: [],
+                requestApiTime: undefined,
+                saveApiTableData: undefined,
+                setTimeOutVal: undefined,
+                lastRequestId: 0
             }
         },
         props: ['crowdId'],
         methods: {
+            formatDate (d) {
+                const time = new Date(d)
+                let y = time.getFullYear(); // 年份
+                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+                let r = time.getDate().toString().padStart(2,'0'); // 日子
+                let h = time.getHours().toString().padStart(2,'0')
+                let mins = time.getMinutes().toString().padStart(2,'0')
+                let s = time.getSeconds().toString().padStart(2,'0')
+                return `${y}-${m}-${r} ${h}:${mins}:${s}`
+            },
             handleGetContent() {
                 const crowdId = this.crowdId
+                const id = this.lastRequestId + 1
+                this.lastRequestId = id
                 this.$service.getCrowdStatus({crowdId: crowdId}).then((data) => {
+                    if (this.lastRequestId !== id) {
+                        return
+                    }
+                    const date = new Date()
+                    this.requestApiTime = this.formatDate(date)
                     this.formData = data
+                    this.saveApiTableData = data
+                    console.log('saveApiTableData', this.saveApiTableData)
+                    console.log('我执行了crowdId='+this.crowdId+'的刷新======时间为：'+this.requestApiTime)
                 })
+            },
+            handleSetTimeOut () {
+                console.log('我执行了定时器-----')
+                this.setTimeOutVal = setInterval(() => {this.handleGetContent()},10000)
+            },
+            handleClearTimeOut () {
+                console.log('=========我清除了定时器-----')
+                clearInterval(this.setTimeOutVal)
+            },
+            handleSearchStatusData (searchVal) {
+                this.handleClearTimeOut()
+                if (searchVal) {
+                //  支持ID或名称搜索
+                const WrapperArr = []
+                this.saveApiTableData.biTrack.forEach((item) => {
+                    const a = []
+                    item.list.forEach(childItem => {
+                        // console.log('childItem.resourceName.indexOf(searchVal)',childItem.resourceName.indexOf(searchVal))
+                        // console.log('childItem.schemeId.indexOf(searchVal)',childItem.schemeId.indexOf(searchVal))
+                        if (childItem.resourceName.indexOf(searchVal) >= 0 || childItem.schemeId.indexOf(searchVal) >= 0) {
+                            a.push(childItem)
+                            console.log('a',a)
+                        }
+                    })
+                    if (a.length > 0) {
+                        WrapperArr.push({biId: item.biId, biName: item.biName, list: a})
+                    }
+                    console.log('WrapperArr',WrapperArr)
+                })
+                this.formData.biTrack = WrapperArr
+                } else {
+                    debugger
+                    this.formData = this.saveApiTableData
+                }
             },
             handleSeeDetail (schemalId,flag,bId) {
                 this.detailDialogTitle = flag ? '命中详情' : '请求详情'
@@ -178,8 +253,12 @@
                 }
             }
         },
+        beforeDestroy () {
+            this.handleClearTimeOut()
+        },
         created () {
             this.handleGetContent()
+            this.handleSetTimeOut()
         }
     }
 </script>
@@ -318,4 +397,7 @@
     font-size 12px
     color #ccc
     margin-top 10px
+.refresh-small
+    margin-left 10px
+    font-size 12px
 </style>
