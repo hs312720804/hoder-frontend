@@ -173,7 +173,7 @@
             },
             handleSetTimeOut () {
                 console.log('我执行了定时器-----')
-                this.setTimeOutVal = setInterval(() => {this.handleGetContent()},10000)
+                this.setTimeOutVal = setInterval(() => {this.handleGetContent()},30000)
             },
             handleClearTimeOut () {
                 console.log('=========我清除了定时器-----')
