@@ -237,16 +237,12 @@
                     const arr = []
                     const apiData = this.apiTableData
                     const length = apiData.length
-                    for (var i=0; i<length-1; i++) {
+                    for (var i=0; i<length; i++) {
                         if (apiData[i].mac === id) {
-                            arr[0] = apiData[i]
-                            this.tableData = arr
-                            return
+                            arr.push(apiData[i])
                         }
                     }
-                    if (arr.length === 0) {
-                        this.tableData = []
-                    }
+                    this.tableData = arr
                 } else {
                     this.tableData = this.apiTableData
                 }
