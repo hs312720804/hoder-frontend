@@ -30,6 +30,7 @@
         <div
                 v-if="showResult"
                 class="hit-search-result"
+                ref="hitSearchResult"
         >
             <div class="result-content">
                 <div style="margin: auto">
@@ -38,20 +39,20 @@
                     </div>
                     <el-input type="textarea" class="text-area" v-model="hitResult"></el-input>
                 </div>
-                <div class="hit-step">
+                <div class="hit-step" v-if="showStep">
                     <div class="step-define">
                         <div class="step-define--number">1</div>
                         <div class="step-define--title">是否请求</div>
                         <!--<div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>-->
                         <div>请求<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
-                        <!--<div>最近请求时间：</div>-->
+                        <div>最近请求时间：{{lastReqTime}}</div>
                     </div>
                     <div class="step-define">
                         <div class="step-define--number">2</div>
                         <div class="step-define--title">是否命中</div>
                         <!--<div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>-->
                         <div>命中<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
-                        <!--<div>最近命中时间：</div>-->
+                        <div>最近命中时间：{{lastHitTime}}</div>
                     </div>
                 </div>
             </div>
@@ -85,7 +86,10 @@
                 hitResult: undefined,
                 showDetailDialog: false,
                 detailDialogTitle: '',
-                tableData: []
+                tableData: [],
+                lastReqTime: '暂无数据',
+                lastHitTime: '暂无数据',
+                showStep: true
             }
         },
         methods: {
@@ -95,9 +99,31 @@
                     this.showResult = true
                     this.hitResult = JSON.stringify(data)
                 })
+                // 获取时间和总数
+                const schemeId = this.childItem.schemeId.toString()
+                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+                const macApiData = {
+                    crowdId: this.crowdId,
+                    panelId,
+                    index,
+                    bId: 2,
+                    hit: false
+                }
+                if (this.searchForm.mac) {
+                    this.$service.macLogSearch({mac: this.searchForm.mac, params: macApiData}).then(data => {
+                        if (Object.keys(data).length > 0) {
+                            this.lastReqTime = data.VisitedTime
+                            this.lastHitTime = data.HitTime
+                        } else {
+                            this.$refs.hitSearchResult.style.width = '300px'
+                            this.showStep = false
+                        }
+
+                    })
+                }
             },
             handleRequestDetail () {
-                console.log(this.childItem)
                 const schemeId = this.childItem.schemeId.toString()
                 const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
                 const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
@@ -108,7 +134,6 @@
                     index
                 }
                 this.$service.macRequestDetail(reqLogApi).then(data => {
-                    console.log(data)
                     this.showDetailDialog = true
                     this.detailDialogTitle = '请求详情'
                     this.tableData = data
@@ -125,7 +150,6 @@
                     index
                 }
                 this.$service.macHitDetail(hitLogApi).then(data => {
-                    console.log(data)
                     this.showDetailDialog = true
                     this.detailDialogTitle = '命中详情'
                     this.tableData = data

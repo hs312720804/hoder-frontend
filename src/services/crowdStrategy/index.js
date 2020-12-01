@@ -605,3 +605,11 @@ export function macRequestDetail(params) {
         params
     })
 }
+// 人群mac维度命中请求统计查询
+export function macLogSearch({mac,params}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/log/mac/'+mac,
+        params
+    })
+}
