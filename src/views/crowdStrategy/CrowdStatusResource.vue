@@ -1,6 +1,7 @@
 <template>
     <div class="crowd-status">
         <div
+                v-if="formData"
                 style="display: flex;justify-content: flex-end"
         >
             <search-input
@@ -61,7 +62,7 @@
                         </div>
                     </div>
                     <!-- 纵列第二块-->
-                    <div>
+                    <div :class="['first-line-part',(formData.biTrack.length === 1 && formData.biTrack[0].list.length === 1) ? 'one-list-fixed': '']">
                         <el-steps :active="2" align-center>
                             <el-step title="人群创建" :description="formData.createTime"></el-step>
                             <el-step title="同步配置" :description="formData.luaSyncTime" class="step-after"></el-step>
@@ -181,28 +182,25 @@
             },
             handleSearchStatusData (searchVal) {
                 this.handleClearTimeOut()
+                const saveApiTableData = JSON.parse(JSON.stringify(this.saveApiTableData))
                 if (searchVal) {
                 //  支持ID或名称搜索
                 const WrapperArr = []
-                this.saveApiTableData.biTrack.forEach((item) => {
+                saveApiTableData.biTrack.forEach((item) => {
                     const a = []
                     item.list.forEach(childItem => {
-                        // console.log('childItem.resourceName.indexOf(searchVal)',childItem.resourceName.indexOf(searchVal))
-                        // console.log('childItem.schemeId.indexOf(searchVal)',childItem.schemeId.indexOf(searchVal))
                         if (childItem.resourceName.indexOf(searchVal) >= 0 || childItem.schemeId.indexOf(searchVal) >= 0) {
                             a.push(childItem)
-                            console.log('a',a)
                         }
                     })
                     if (a.length > 0) {
                         WrapperArr.push({biId: item.biId, biName: item.biName, list: a})
                     }
-                    console.log('WrapperArr',WrapperArr)
                 })
                 this.formData.biTrack = WrapperArr
+                this.saveApiTableData =  saveApiTableData
                 } else {
-                    debugger
-                    this.formData = this.saveApiTableData
+                    this.formData = saveApiTableData
                 }
             },
             handleSeeDetail (schemalId,flag,bId) {
@@ -322,7 +320,7 @@
     content ''
     position absolute
     height 2px
-    width 86px
+    width 65px
     background #409EFF
     top 11px
     left 59px
@@ -400,4 +398,10 @@
 .refresh-small
     margin-left 10px
     font-size 12px
+.first-line-part
+    width 230px
+.one-list-fixed
+    position absolute
+    top 0
+    left 115px
 </style>
