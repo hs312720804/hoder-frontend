@@ -116,7 +116,9 @@
                             this.lastReqTime = data.VisitedTime
                             this.lastHitTime = data.HitTime
                         } else {
-                            this.$refs.hitSearchResult.style.width = '300px'
+                            this.$nextTick(() => {
+                                this.$refs.hitSearchResult.style.width = '300px'
+                            })
                             this.showStep = false
                         }
 
