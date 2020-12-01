@@ -1,5 +1,6 @@
 <template>
     <div class="crowd-status">
+        <div v-if="formData" style="text-align: center">总状态：<span style="color: #55a532">正常({{formData.hit ? '命中': '待命中'}})</span></div>
         <div
                 v-if="formData"
                 style="display: flex;justify-content: flex-end"
