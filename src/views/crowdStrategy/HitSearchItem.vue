@@ -30,29 +30,38 @@
         <div
                 v-if="showResult"
                 class="hit-search-result"
-                :style="hitSearchResult"
         >
             <div class="result-content">
                 <div style="margin: auto">
                     <div>
                         <span>相关标签</span><span>更新日期{{formatYesterdayDate()}}</span>
                     </div>
-                    <el-input type="textarea" class="text-area" v-model="hitResult"></el-input>
+                    <el-input type="textarea" readonly class="text-area" v-model="hitResult"></el-input>
                 </div>
                 <div class="hit-step" v-if="showStep">
                     <div class="step-define">
-                        <div class="step-define--number">1</div>
+                        <div :class="['step-define--number',(lastReqTime && !lastHitTime) ? 'current-status' : '']">1</div>
                         <div class="step-define--title">是否请求</div>
                         <!--<div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>-->
                         <div>请求<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
                         <div>最近请求时间：{{lastReqTime}}</div>
                     </div>
                     <div class="step-define">
-                        <div class="step-define--number">2</div>
+                        <div :class="['step-define--number',lastHitTime ? 'current-status' : '']">2</div>
                         <div class="step-define--title">是否命中</div>
                         <!--<div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>-->
                         <div>命中<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
                         <div>最近命中时间：{{lastHitTime}}</div>
+                    </div>
+                </div>
+                <div class="hit-step" v-else>
+                    <div class="step-define">
+                        <div class="step-define--number">1</div>
+                        <div class="step-define--title">是否请求</div>
+                    </div>
+                    <div class="step-define">
+                        <div class="step-define--number">2</div>
+                        <div class="step-define--title">是否命中</div>
                     </div>
                 </div>
             </div>
@@ -90,7 +99,7 @@
                 lastReqTime: '暂无数据',
                 lastHitTime: '暂无数据',
                 showStep: true,
-                hitSearchResult: {}
+                // hitSearchResult: {}
             }
         },
         methods: {
@@ -114,15 +123,15 @@
                 if (this.searchForm.mac) {
                     this.$service.macLogSearch({mac: this.searchForm.mac, params: macApiData}).then(data => {
                         if (Object.keys(data).length > 0) {
-                            this.hitSearchResult = {
-                                width: '500px'
-                            }
+                            // this.hitSearchResult = {
+                            //     width: '500px'
+                            // }
                             this.lastReqTime = data.VisitedTime
                             this.lastHitTime = data.HitTime
                         } else {
-                            this.hitSearchResult = {
-                                width: '300px'
-                            }
+                            // this.hitSearchResult = {
+                            //     width: '300px'
+                            // }
                             this.showStep = false
                         }
 
@@ -195,41 +204,40 @@
     width 50%
     box-sizing content-box
     text-align center
-    .step-define--number
-        position relative
-        width 24px
-        height 24px
-        text-align center
-        line-height 21px
-        border 2px solid
-        border-radius 50%
-        margin auto
-        color #409EFF
-        &:before
-            content ''
-            position absolute
-            height 2px
-            width 98px
-            background #409EFF
-            top 9px
-            left -98px
-        &:after
-            content ''
-            position absolute
-            height 2px
-            width 70px
-            background #409EFF
-            top 9px
-            left 22px
     &:first-child
         .step-define--number
             &:before
                 background none
-    &:last-child
-        .step-define--number
-            color #1ac71c
-    .step-define--title
-        text-align center
+.step-define--number
+    position relative
+    width 24px
+    height 24px
+    text-align center
+    line-height 21px
+    border 2px solid
+    border-radius 50%
+    margin auto
+    color #409EFF
+    &:before
+        content ''
+        position absolute
+        height 2px
+        width 98px
+        background #409EFF
+        top 9px
+        left -98px
+    &:after
+        content ''
+        position absolute
+        height 2px
+        width 70px
+        background #409EFF
+        top 9px
+        left 22px
+.step-define--title
+    text-align center
 .text-area
     width 220px
+.current-status
+    color #1ac71c
 </style>

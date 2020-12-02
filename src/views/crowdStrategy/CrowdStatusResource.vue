@@ -43,18 +43,26 @@
                                     <div class="hit-step">
                                         <!--<div>-->
                                             <div class="step-define" v-if="child.firstResp">
-                                                <div class="step-define--number">3</div>
+                                                <div :class="['step-define--number',(child.firstResp && !child.firstHit) ? 'last-step--number' : '']">3</div>
                                                 <div class="step-define--title">首条请求</div>
                                                 <div>{{child.firstResp.firstTime}}</div>
                                                 <div>ID:{{child.firstResp.mac}}  {{child.firstResp.province}} {{child.firstResp.city}}</div>
                                                 <div>累计:{{child.firstResp.total}} <el-button type="text" @click="handleSeeDetail(child.schemeId,false,item.biId)">详情</el-button></div>
                                             </div>
+                                            <div class="step-define" v-else>
+                                                <div class="step-define--number">3</div>
+                                                <div class="step-define--title">首条请求</div>
+                                            </div>
                                             <div class="step-define" v-if="child.firstHit">
-                                                <div class="step-define--number">4</div>
+                                                <div :class="['step-define--number',child.firstHit ? 'last-step--number' : '']">4</div>
                                                 <div class="step-define--title">首条命中</div>
                                                 <div>{{child.firstHit.firstTime}}</div>
                                                 <div>ID:{{child.firstHit.mac}}  {{child.firstHit.province}} {{child.firstHit.city}}</div>
                                                 <div>累计:{{child.firstHit.total}}<el-button type="text" @click="handleSeeDetail(child.schemeId,true,item.biId)">详情</el-button></div>
+                                            </div>
+                                            <div class="step-define" v-else>
+                                                <div class="step-define--number">4</div>
+                                                <div class="step-define--title">首条命中</div>
                                             </div>
                                         <!--</div>-->
                                     </div>
@@ -71,9 +79,23 @@
                     </div>
                 </div>
                 <div class="no-data-tips" v-else>
-                    <el-steps :active="2" align-center>
-                        <el-step v-if="formData.createTime" title="人群创建" :description="formData.createTime"></el-step>
-                        <el-step v-if="formData.luaSyncTime" title="同步配置" :description="formData.luaSyncTime" class="step-after"></el-step>
+                    <el-steps :active="4" align-center>
+                        <el-step
+                                v-if="formData.createTime"
+                                title="人群创建"
+                                :description="formData.createTime"
+                                :class="(formData.createTime && !formData.luaSyncTime) ? 'active-green' : ''"
+                        >
+                        </el-step>
+                        <el-step
+                                v-if="formData.luaSyncTime"
+                                title="同步配置"
+                                :description="formData.luaSyncTime"
+                                class="active-green">
+                        </el-step>
+                        <el-step v-else title="同步配置"></el-step>
+                        <el-step title="首条请求"></el-step>
+                        <el-step title="首条命中"></el-step>
                     </el-steps>
                 </div>
             </div>
@@ -343,37 +365,36 @@
 .step-define
     width 50%
     box-sizing content-box
-    .step-define--number
-        position relative
-        width 24px
-        height 24px
-        text-align center
-        line-height 21px
-        border 2px solid
-        border-radius 50%
-        margin auto
-        color #409EFF
-        &:before
-            content ''
-            position absolute
-            height 2px
-            width 98px
-            background #409EFF
-            top 9px
-            left -98px
-        &:after
-            content ''
-            position absolute
-            height 2px
-            width 70px
-            background #409EFF
-            top 9px
-            left 22px
-    &:last-child
-        .step-define--number
-            color #1ac71c
-    .step-define--title
-        text-align center
+.step-define--number
+    position relative
+    width 24px
+    height 24px
+    text-align center
+    line-height 21px
+    border 2px solid
+    border-radius 50%
+    margin auto
+    color #409EFF
+    &:before
+        content ''
+        position absolute
+        height 2px
+        width 98px
+        background #409EFF
+        top 9px
+        left -98px
+    &:after
+        content ''
+        position absolute
+        height 2px
+        width 70px
+        background #409EFF
+        top 9px
+        left 22px
+.step-define--title
+    text-align center
+.last-step--number
+    color #1ac71c
 .track-item:first-child .child-wrapper:first-child .hit-step
     &:before
         background transparent
@@ -401,4 +422,15 @@
     position absolute
     top 0
     left 115px
+.active-green >>> .el-step__head .is-text
+    color #1ac71c
+    border-color #1ac71c
+.crowd-status
+    >>> .el-step__description.is-finish
+        color #000
+        font-size 10px
+.crowd-status
+    >>> .el-step__title.is-finish
+        color #000
+        font-size 13px
 </style>
