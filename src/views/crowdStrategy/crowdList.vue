@@ -137,40 +137,40 @@
                 </div>
               </div>
             </el-form-item>
-            <!--<el-form-item label="动态标签:" v-if="props.row.dynamicPolicyJson">-->
-              <!--<div-->
-                      <!--v-for="(item, index) in JSON.parse(props.row.dynamicPolicyJson).rules"-->
-                      <!--:key="index"-->
-                      <!--class="detail"-->
-              <!--&gt;-->
-                <!--<div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(props.row.dynamicPolicyJson).condition] }}</div>-->
+            <el-form-item label="动态标签:" v-if="props.row.dynamicPolicyJson">
+              <div
+                      v-for="(item, index) in JSON.parse(props.row.dynamicPolicyJson).rules"
+                      :key="index"
+                      class="detail"
+              >
+                <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(props.row.dynamicPolicyJson).condition] }}</div>
 
-                <!--<div class="label-ground">(-->
-                  <!--<div-->
-                          <!--v-for="(childItem,childItemIndex) in item.rules"-->
-                          <!--:key="childItem.tagId+childItemIndex"-->
-                          <!--class="label-item"-->
-                  <!--&gt;-->
-                    <!--<div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>-->
-                    <!--<span class="txt">{{ childItem.categoryName }}</span>-->
-                    <!--<span class="sel">{{ childItem.operator }}</span>-->
-                    <!--<span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>-->
-                    <!--<span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>-->
-                    <!--<span class="in">-->
-                      <!--&lt;!&ndash; <el-date-picker-->
-                        <!--v-if="childItem.tagType === 'time'"-->
-                        <!--class="datetime-format"-->
-                        <!--v-model="childItem.tagCode"-->
-                        <!--type="date"-->
-                        <!--placeholder="选择日期"-->
-                      <!--&gt;</el-date-picker> &ndash;&gt;-->
-                      <!--<span >{{ childItem.value }}</span>-->
-                    <!--</span>-->
-                    <!--<span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>-->
-                  <!--</div>)-->
-                <!--</div>-->
-              <!--</div>-->
-            <!--</el-form-item>-->
+                <div class="label-ground">(
+                  <div
+                          v-for="(childItem,childItemIndex) in item.rules"
+                          :key="childItem.tagId+childItemIndex"
+                          class="label-item"
+                  >
+                    <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                    <span class="txt">{{ childItem.categoryName }}</span>
+                    <span class="sel">{{ childItem.operator }}</span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                    <span class="in">
+                      <!-- <el-date-picker
+                        v-if="childItem.tagType === 'time'"
+                        class="datetime-format"
+                        v-model="childItem.tagCode"
+                        type="date"
+                        placeholder="选择日期"
+                      ></el-date-picker> -->
+                      <span >{{ childItem.value }}</span>
+                    </span>
+                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                  </div>)
+                </div>
+              </div>
+            </el-form-item>
             <!--<el-form-item label="人群状态">-->
             <crowdStatusResource
                     ref="crowdStatusResourceRef"
