@@ -33,6 +33,7 @@
         >
             <div class="result-content">
                 <div style="margin: auto">
+                    <div>相关标签</div>
                     <div class="text-area">
                         <div style="color: #ccc;font-size: 10px">
                             <span>相关标签</span><span>更新日期{{formatYesterdayDate()}}(昨天)</span>
@@ -240,7 +241,7 @@
     text-align center
 .text-area
     width 220px
-    height 70px
+    height 55px
     border 1px solid #ccc
     overflow auto
 .current-status
