@@ -33,24 +33,26 @@
         >
             <div class="result-content">
                 <div style="margin: auto">
-                    <div>
-                        <span>相关标签</span><span>更新日期{{formatYesterdayDate()}}</span>
+                    <div class="text-area">
+                        <div style="color: #ccc;font-size: 10px">
+                            <span>相关标签</span><span>更新日期{{formatYesterdayDate()}}(昨天)</span>
+                        </div>
+                        {{hitResult}}
                     </div>
-                    <el-input type="textarea" readonly class="text-area" v-model="hitResult"></el-input>
                 </div>
                 <div class="hit-step" v-if="showStep">
                     <div class="step-define">
                         <div :class="['step-define--number',(lastReqTime && !lastHitTime) ? 'current-status' : '']">1</div>
                         <div class="step-define--title">是否请求</div>
                         <!--<div>请求次数：<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>-->
-                        <div>请求<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
+                        <div class="button-margin">请求<el-button type="text" @click="handleRequestDetail()">详情</el-button></div>
                         <div>最近请求时间：{{lastReqTime}}</div>
                     </div>
                     <div class="step-define">
                         <div :class="['step-define--number',lastHitTime ? 'current-status' : '']">2</div>
                         <div class="step-define--title">是否命中</div>
                         <!--<div>命中次数：<el-button type="text" @click="handleHitDetail()">详情</el-button></div>-->
-                        <div>命中<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
+                        <div class="button-margin">命中<el-button type="text" @click="handleHitDetail()">详情</el-button></div>
                         <div>最近命中时间：{{lastHitTime}}</div>
                     </div>
                 </div>
@@ -238,6 +240,11 @@
     text-align center
 .text-area
     width 220px
+    height 70px
+    border 1px solid #ccc
+    overflow auto
 .current-status
     color #1ac71c
+.button-margin
+    margin -9px 0
 </style>
