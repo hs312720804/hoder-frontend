@@ -47,7 +47,7 @@
                                                 <div class="step-define--title">首条请求</div>
                                                 <div>{{child.firstResp.firstTime}}</div>
                                                 <div>ID:{{child.firstResp.mac}}  {{child.firstResp.province}} {{child.firstResp.city}}</div>
-                                                <div>累计:{{child.firstResp.total}} <el-button type="text" @click="handleSeeDetail(child.schemeId,false,item.biId)">详情</el-button></div>
+                                                <div>累计:{{cc_format_number(child.firstResp.total)}} <el-button type="text" @click="handleSeeDetail(child.schemeId,false,item.biId)">详情</el-button></div>
                                             </div>
                                             <div class="step-define" v-else>
                                                 <div class="step-define--number">3</div>
@@ -58,7 +58,7 @@
                                                 <div class="step-define--title">首条命中</div>
                                                 <div>{{child.firstHit.firstTime}}</div>
                                                 <div>ID:{{child.firstHit.mac}}  {{child.firstHit.province}} {{child.firstHit.city}}</div>
-                                                <div>累计:{{child.firstHit.total}}<el-button type="text" @click="handleSeeDetail(child.schemeId,true,item.biId)">详情</el-button></div>
+                                                <div>累计:{{cc_format_number(child.firstHit.total)}}<el-button type="text" @click="handleSeeDetail(child.schemeId,true,item.biId)">详情</el-button></div>
                                             </div>
                                             <div class="step-define" v-else>
                                                 <div class="step-define--number">4</div>
