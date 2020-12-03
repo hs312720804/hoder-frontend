@@ -126,15 +126,10 @@
                 if (this.searchForm.mac) {
                     this.$service.macLogSearch({mac: this.searchForm.mac, params: macApiData}).then(data => {
                         if (Object.keys(data).length > 0) {
-                            // this.hitSearchResult = {
-                            //     width: '500px'
-                            // }
+                            this.showStep = true
                             this.lastReqTime = data.VisitedTime
                             this.lastHitTime = data.HitTime
                         } else {
-                            // this.hitSearchResult = {
-                            //     width: '300px'
-                            // }
                             this.showStep = false
                         }
 
