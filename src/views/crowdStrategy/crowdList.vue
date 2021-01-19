@@ -39,6 +39,13 @@
               <!--<span>?</span>-->
             </span>
           </el-tooltip>
+          <el-button
+                  type="text"
+                  size="medium"
+                  @click="handleByPass"
+          >
+            请求分流
+          </el-button>
         </el-button-group>
       </div>
       <div class="header-right">
@@ -695,6 +702,90 @@
       <el-dialog :visible.sync="showLimitLaunchDialog">
         <div>限制投放数量为：{{this.showLimitLaunchCount}}</div>
       </el-dialog>
+      <el-dialog
+              :visible.sync="showBypassDialog"
+              title="请求分流"
+              @close="handleCancelBypass"
+      >
+        <div>
+          <el-steps :active="showBypassStep">
+            <el-step title="设置分数">
+            </el-step>
+            <el-step title="设置分组及比例">
+            </el-step>
+          </el-steps>
+        </div>
+        <div v-show="showBypassStep === 1">
+          请求流量划分份数：
+          <el-select v-model="byPassForm.apart">
+            <el-option
+                    v-for="(item,index) in ratioEnum"
+                    :key="index"
+                    :label="item.label"
+                    :value="item.value"
+            >
+            </el-option>
+          </el-select>
+          份
+          <div class="button-margin">
+            <el-button @click="handleCancelBypass">取消</el-button>
+            <el-button type="primary" @click="handleNextBypass">下一步</el-button>
+          </div>
+        </div>
+        <div v-show="showBypassStep === 2">
+          <div
+                  v-for="(tableItem,index) in byPassForm.bypass"
+                  :key="index"
+                  class="bypass-item"
+          >
+            <div>
+              <!--<div><el-input v-model="tableItem.name"></el-input></div>-->
+              <div>{{tableItem.name}}</div>
+              <div>
+                添加人群
+                <el-select v-model="tableItem.crowdSelect" multiple @change="handleCrowdSelectChange(tableItem)">
+                  <el-option
+                          v-for="(selectItem,index) in selectList"
+                          :label="selectItem.crowdName"
+                          :value="selectItem.crowdId"
+                          :key="index"
+                  ></el-option>
+                </el-select>
+              </div>
+              <div v-if="tableItem.crowds.length > 0">
+                <div class="table-header">
+                  <div>ID</div>
+                  <div>人群名称</div>
+                  <div>优先级</div>
+                  <div>分流占比</div>
+                </div>
+                <div class="table-body">
+                  <div class="table-left-part">
+                    <div
+                            v-for="(tableDetailItem,index) in tableItem.crowds"
+                            :key="'tableDetailItem'+index"
+                            class="table-detail-item"
+                    >
+                      <div>{{tableDetailItem.crowdId}}</div>
+                      <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
+                      <div>{{tableDetailItem.priority}}</div>
+                    </div>
+                  </div>
+                  <div class="table-ratio">
+                    <!--<el-input v-model="tableItem.ratio"></el-input>-->
+                    <div>{{tableItem.ratio}}</div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="button-margin">
+            <el-button @click="handleCancelBypass">取消</el-button>
+            <el-button @click="showBypassStep = 1">上一步</el-button>
+            <el-button type="primary" @click="handleSaveBypass">完成</el-button>
+          </div>
+        </div>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -849,7 +940,34 @@ export default {
         conditionEnum: {
           'AND': '且',
           'OR': '或'
-        }
+        },
+        showBypassDialog: false,
+        showBypassStep: 1,
+        byPassForm: this.genBypassForm(),
+        ratioEnum: [
+            {
+                label: 1,
+                value: 1
+            },
+            {
+                label: 2,
+                value: 2
+            },
+            {
+                label: 3,
+                value: 3
+            },
+            {
+                label: 4,
+                value: 4
+            },
+            {
+                label: 5,
+                value: 5
+            }
+        ],
+        selectList: [],
+        bypassSaveFlag: ''
     }
   },
   props: ["selectRow"],
@@ -886,6 +1004,15 @@ export default {
       // }
   },
   methods: {
+      genBypassForm (present) {
+          return {
+              apart: 2,
+              // bypass: [{name: '',ratio: '',crowds: [{ crowdId: '',crowdName: '',priority: 1 }]}],
+              bypass: [{name: '',ratio: '',crowds: []}],
+              ...present
+              // crowds: [{ crowdId: '',crowdName: '',priority: 1 }]
+          }
+      },
       handleInputTime (index, val, method) {
           const key = 'time' + index
           const oldVal = this[key]
@@ -1952,6 +2079,105 @@ export default {
       },
       handleCheckListChange (val) {
           this.$service.saveListDimension({type: 2,behaviorShow: val.join(',')})
+      },
+      handleByPass () {
+          this.showBypassDialog = true
+          this.handleGetEditDetail()
+          this.handleGetBypassCrowdList()
+      },
+      handleGetEditDetail () {
+          this.$service.getBypassCrowdDetail({policyId: this.selectRow.policyId}).then(data => {
+              console.log('分流编辑的data===', data)
+              if (data.bypassList.length === 0) {
+                  // 没有找到分流的信息，走新增保存接口
+                  this.bypassSaveFlag = 'add'
+              } else {
+                  //    有分流的信息，走编辑保存接口
+                  this.bypassSaveFlag = 'edit'
+              //    解析分流信息
+              }
+          })
+      },
+      handleCancelBypass () {
+          this.showBypassDialog = false
+          this.byPassForm = this.genBypassForm()
+          this.showBypassStep = 1
+      },
+      handleSaveBypass () {
+        // 校验 每一个分组是否都填写
+        // 校验 份数是否小于等于100%
+          console.log('this.byPassForm', this.byPassForm)
+          const byPassDetail = JSON.parse(JSON.stringify(this.byPassForm.bypass))
+          const bypassLength = byPassDetail.length
+          const apiData = []
+          if(bypassLength ===0) {
+              this.$message.error('请选择人群填写分流信息！')
+              return
+          }
+          for (let i=0; i<bypassLength; i++) {
+              if (byPassDetail[i].crowds.length === 0) {
+                  // 校验是否填写了分流人群
+                  this.$message.error('请在第'+(i+1)+'块勾选需要分流的人群！')
+                  return
+              } else {
+                  apiData.push({ name: byPassDetail[i].name,ratio: byPassDetail[i].ratio, crowds: byPassDetail[i].crowds })
+              }
+          }
+          console.log('apiData===', apiData)
+          // 新增接口数据格式
+          // bypass:[{name: '一组',ratio: 30,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
+
+          // 编辑保存接口数据格式
+          // bypass:[{id: 123,name: '一组',ratio: 30,policyId: 123,bypassId: 1,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
+          if (this.bypassSaveFlag === 'edit') {
+              // 编辑保存
+          } else {
+              // 新增保存
+              this.$service.saveBypassCrowdAdd({data: apiData, params: {policyId: this.selectRow.policyId}}).then(data => {
+                  console.log('data123', data)
+              })
+          }
+      },
+      handleGetBypassCrowdList () {
+          this.$service.getBypassCrowdList({policyId: this.selectRow.policyId}).then(data => {
+              console.log('data', data)
+              this.selectList = data
+          })
+      },
+      handleCrowdSelectChange (item) {
+          console.log('item---', item)
+          if (item.crowdSelect.length === 0) {
+              item.crowds = []
+          } else {
+              const selectedCrowdIds = item.crowds.map(item => { return item.crowdId }).join(',')
+              console.log('selectedCrowdIds', selectedCrowdIds)
+              console.log('item.crowdSelect', item.crowdSelect)
+              // 对crowdId进行遍历，如果存在，就不添加，不存在就添加
+              const selectedArr = []
+              item.crowdSelect.forEach((childItem,index) => {
+                  const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
+                  console.log('filterCrowd', filterCrowd)
+                  // item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
+                  selectedArr.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
+                  // if (selectedCrowdIds.indexOf(childItem) > -1) {
+                  //     return
+                  // } else {
+                  //     const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
+                  //     console.log('filterCrowd', filterCrowd)
+                  //     item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
+                  // }
+              })
+              item.crowds = selectedArr
+          }
+      },
+      handleNextBypass () {
+          this.showBypassStep = 2
+          const aparts = this.byPassForm.apart
+          const bypassArr = []
+          for (let i=0 ;i < aparts; i++) {
+              bypassArr.push({name: '分组'+(i+1),ratio: 100/aparts,crowds: []})
+          }
+          this.byPassForm.bypass = bypassArr
       }
   }
 }
@@ -2161,4 +2387,43 @@ fieldset>div
     border-color rgba(81, 45, 168, .45)
     .el-tag__close
       color #512DA8
+.button-margin
+  margin-top 10px
+.table-header
+  display flex
+  div
+    width 25%
+    border 1px solid #ccc
+    text-align center
+    box-sizing border-box
+  div + div
+    border-left none
+.table-detail-item
+  display flex
+  div
+    width 33.3%
+    display flex
+    justify-content center
+    align-items center
+    border 1px solid #ccc
+    border-top none
+    box-sizing border-box
+  .crowd-name-item
+    width 33.4%
+  div + div
+    border-left none
+.table-ratio
+    width 25%
+    display flex
+    justify-content center
+    align-items center
+    border-right 1px solid #ccc
+    border-bottom 1px solid #ccc
+    box-sizing border-box
+.table-body
+  display flex
+.table-left-part
+  width 75%
+.bypass-item
+  margin 20px 0
 </style>

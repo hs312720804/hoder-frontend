@@ -613,3 +613,42 @@ export function macLogSearch({mac,params}) {
         params
     })
 }
+// 人群分流人群列表下拉框数据
+export function getBypassCrowdList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/bypassPartition/crowdsList/'+params.policyId
+    })
+}
+// 人群分流新增保存
+export function saveBypassCrowdAdd({data, params}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/policy/bypassPartition/'+params.policyId,
+        data,
+        isJSON: true
+    })
+}
+// 人群分流编辑保存
+export function saveBypassCrowdEdit({data, params}) {
+    return this.fetch({
+        method: 'put',
+        url: '/api/policy/bypassPartition/'+params.policyId,
+        data,
+        isJSON: true
+    })
+}
+// 人群分流删除
+export function delBypassCrowd(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/policy/bypassPartition/crowdsList/'+params.pid
+    })
+}
+// 人群分流数据回显
+export function getBypassCrowdDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/bypassPartition/'+params.policyId
+    })
+}
