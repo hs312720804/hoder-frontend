@@ -103,8 +103,18 @@
             stripe
             border
             :row-class-name="tableRowClassName"
+            :span-method="objectSpanMethod"
     >
-      <el-table-column v-if="showByPassColumn" label="分流占比"></el-table-column>
+      <el-table-column v-if="showByPassColumn" label="分流占比">
+        <template slot-scope="scope">
+          <div>{{scope.row.bypassName}}</div>
+          <div v-if="scope.row.ratio !== 0">{{scope.row.ratio}}%</div>
+          <div v-if="scope.row.ratio !== 0">
+            <el-button type="text" @click="handleEditBypass">编辑</el-button>
+            <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
+          </div>
+        </template>
+      </el-table-column>
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" class="demo-table-expand">
@@ -979,7 +989,8 @@ export default {
         selectList: [],
         bypassSaveFlag: '',
         disabledApart: false,
-        showByPassColumn: false
+        showByPassColumn: false,
+        tableMerge: []
     }
   },
   props: ["selectRow"],
@@ -1163,10 +1174,40 @@ export default {
       this.criteria["pageSize"] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
+        if (data.bypass === 1) {
+            // 分流的人群
+            const tableArr = []
+            const apartArr = []
+            const tableMerge = []
+            if(data.bypassList) {
+                data.bypassList.forEach(item => {
+                    tableMerge.push(item.crowdsList.length)
+                    item.crowdsList.forEach((crowdItem, index) => {
+                        if (index < item.crowdsList.length - 1) {
+                            tableMerge.push(0)
+                        }
+                        tableArr.push({
+                            bypassId: item.bypassId,
+                            bypassName: item.bypassName,
+                            id: item.id,
+                            ratio: item.ratio,
+                            policyId: item.policyId, ...crowdItem
+                        })
+                    })
+                    apartArr.push(item.crowdsList.length)
+                })
+                this.tableMerge = tableMerge
+                this.totalCount = apartArr.reduce((prev, cur) => {
+                    return prev + cur
+                })
+                this.tableData = tableArr
+            }
+        } else {
+            this.tableData = data.pageInfo.list
+            this.totalCount = data.pageInfo.total
+        }
         this.abStatusEnum = data.ABStatus
         this.crowdValidEnum = data.crowdValidEnum
-        this.tableData = data.pageInfo.list
-        this.totalCount = data.pageInfo.total
         this.showByPassColumn = data.bypass === 1
       })
     },
@@ -2238,6 +2279,27 @@ export default {
       },
       handleNextBypass () {
           this.showBypassStep = 2
+      },
+      objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+          if (this.showByPassColumn) {
+              if (columnIndex === 0) {
+                  const row1 = this.tableMerge[rowIndex]
+                  const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
+                  return {
+                      rowspan: row1,
+                      colspan: col1,
+                  }
+              }
+          }
+      },
+      handleEditBypass () {
+          this.handleByPass()
+          this.showBypassStep = 2
+      },
+      handleDeleteBypass (row) {
+          this.$service.delBypassCrowd({pid: row.id},'删除分流成功！').then(() => {
+              this.loadData()
+          })
       }
   }
 }

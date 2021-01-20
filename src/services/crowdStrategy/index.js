@@ -642,7 +642,7 @@ export function saveBypassCrowdEdit({data, params}) {
 export function delBypassCrowd(params) {
     return this.fetch({
         method: 'delete',
-        url: '/api/policy/bypassPartition/crowdsList/'+params.pid
+        url: '/api/policy/bypassPartition/ratio/'+params.pid
     })
 }
 // 人群分流数据回显
