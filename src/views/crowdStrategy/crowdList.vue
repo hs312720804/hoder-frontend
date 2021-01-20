@@ -756,7 +756,7 @@
             <div>
               <!--<div><el-input v-model="tableItem.name"></el-input></div>-->
               <div>
-                <numOrTextEdit :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
+                <numOrTextEdit :key="tableItem.name+'_'+index" :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
               </div>
               <div>
                 添加人群
@@ -790,7 +790,7 @@
                   </div>
                   <div class="table-ratio">
                     <div>
-                      <numOrTextEdit :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'"></numOrTextEdit>
+                      <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'"></numOrTextEdit>
                     </div>
                   </div>
                 </div>
