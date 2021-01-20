@@ -104,6 +104,7 @@
             border
             :row-class-name="tableRowClassName"
     >
+      <el-table-column v-if="showByPassColumn" label="分流占比"></el-table-column>
       <el-table-column type="expand">
         <template slot-scope="props">
           <el-form label-position="left" class="demo-table-expand">
@@ -717,12 +718,16 @@
         </div>
         <div v-show="showBypassStep === 1">
           请求流量划分份数：
-          <el-select v-model="byPassForm.apart">
+          <el-select
+                  v-model="byPassForm.apart"
+                  :disabled="disabledApart"
+          >
             <el-option
                     v-for="(item,index) in ratioEnum"
                     :key="index"
                     :label="item.label"
                     :value="item.value"
+
             >
             </el-option>
           </el-select>
@@ -732,7 +737,7 @@
             <el-button type="primary" @click="handleNextBypass">下一步</el-button>
           </div>
         </div>
-        <div v-show="showBypassStep === 2">
+        <div v-if="showBypassStep === 2">
           <div
                   v-for="(tableItem,index) in byPassForm.bypass"
                   :key="index"
@@ -740,7 +745,9 @@
           >
             <div>
               <!--<div><el-input v-model="tableItem.name"></el-input></div>-->
-              <div>{{tableItem.name}}</div>
+              <div>
+                <numOrTextEdit :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
+              </div>
               <div>
                 添加人群
                 <el-select v-model="tableItem.crowdSelect" multiple @change="handleCrowdSelectChange(tableItem)">
@@ -757,7 +764,7 @@
                   <div>ID</div>
                   <div>人群名称</div>
                   <div>优先级</div>
-                  <div>分流占比</div>
+                  <div>分流占比(%)</div>
                 </div>
                 <div class="table-body">
                   <div class="table-left-part">
@@ -768,12 +775,13 @@
                     >
                       <div>{{tableDetailItem.crowdId}}</div>
                       <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
-                      <div>{{tableDetailItem.priority}}</div>
+                      <priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>
                     </div>
                   </div>
                   <div class="table-ratio">
-                    <!--<el-input v-model="tableItem.ratio"></el-input>-->
-                    <div>{{tableItem.ratio}}</div>
+                    <div>
+                      <numOrTextEdit :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'"></numOrTextEdit>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -794,12 +802,14 @@ import priorityEdit from '../../components/PriorityEdit'
 // import crowdStatusItem from './CrowdStatusItem'
 import crowdStatusResource from './CrowdStatusResource'
 import CommitHistoryDialog from '@/components/CommitHistory'
+import numOrTextEdit from '../../components/EditNumOrText'
 export default {
   components: {
       Table,
       priorityEdit,
       crowdStatusResource,
-      CommitHistoryDialog
+      CommitHistoryDialog,
+      numOrTextEdit
   },
   data() {
     return {
@@ -967,7 +977,9 @@ export default {
             }
         ],
         selectList: [],
-        bypassSaveFlag: ''
+        bypassSaveFlag: '',
+        disabledApart: false,
+        showByPassColumn: false
     }
   },
   props: ["selectRow"],
@@ -996,6 +1008,9 @@ export default {
           if(val !== oldVal && oldVal.length !== 0){
               this.getWatchBehavior()
           }
+      },
+      'bypassForm.apart': function (val) {
+          this.handleBypassApartChange()
       }
       // percent(val) {
       //     this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
@@ -1152,6 +1167,7 @@ export default {
         this.crowdValidEnum = data.crowdValidEnum
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
+        this.showByPassColumn = data.bypass === 1
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -2085,15 +2101,34 @@ export default {
           this.handleGetEditDetail()
           this.handleGetBypassCrowdList()
       },
+      handleBypassApartChange () {
+          const aparts = this.byPassForm.apart
+          const bypassArr = []
+          for (let i=0 ;i < aparts; i++) {
+              bypassArr.push({name: '分组'+(i+1),ratio: (100/aparts).toFixed(2),crowds: []})
+          }
+          this.byPassForm.bypass = bypassArr
+      },
       handleGetEditDetail () {
           this.$service.getBypassCrowdDetail({policyId: this.selectRow.policyId}).then(data => {
               console.log('分流编辑的data===', data)
               if (data.bypassList.length === 0) {
                   // 没有找到分流的信息，走新增保存接口
                   this.bypassSaveFlag = 'add'
+                  this.disabledApart = false
+                  this.byPassForm = this.genBypassForm()
+                  this.handleBypassApartChange()
               } else {
                   //    有分流的信息，走编辑保存接口
                   this.bypassSaveFlag = 'edit'
+                  this.disabledApart = true
+                  this.byPassForm.apart = data.size
+                  this.byPassForm.bypass = data.bypassList.map(item => {
+                      return { name: item.bypassName, ratio: item.ratio,
+                          id: item.id, bypassId: item.bypassId ,
+                          crowds: item.crowdsList, policyId: item.policyId,crowdSelect: item.crowdsList.map(crowdItem => { return crowdItem.crowdId})}
+                  })
+                  console.log('this.byPassForm===', this.byPassForm)
               //    解析分流信息
               }
           })
@@ -2110,6 +2145,7 @@ export default {
           const byPassDetail = JSON.parse(JSON.stringify(this.byPassForm.bypass))
           const bypassLength = byPassDetail.length
           const apiData = []
+          let ratioTotal = 0
           if(bypassLength ===0) {
               this.$message.error('请选择人群填写分流信息！')
               return
@@ -2120,8 +2156,27 @@ export default {
                   this.$message.error('请在第'+(i+1)+'块勾选需要分流的人群！')
                   return
               } else {
-                  apiData.push({ name: byPassDetail[i].name,ratio: byPassDetail[i].ratio, crowds: byPassDetail[i].crowds })
+                  ratioTotal += byPassDetail[i].ratio
+                  if (this.bypassSaveFlag === 'add') {
+                      apiData.push({ name: byPassDetail[i].name,ratio: byPassDetail[i].ratio, crowds: byPassDetail[i].crowds })
+                  } else {
+                      apiData.push({
+                          bypassId: byPassDetail[i].bypassId,
+                          id: byPassDetail[i].id,
+                          policyId: byPassDetail[i].policyId,
+                          name: byPassDetail[i].name,
+                          ratio: byPassDetail[i].ratio,
+                          crowds: byPassDetail[i].crowds.map(crowdItem => {
+                              return {crowdId: crowdItem.crowdId, crowdName: crowdItem.crowdName, priority: crowdItem.priority}
+                          })
+                      })
+                  }
+
               }
+          }
+          if (ratioTotal > 100 || ratioTotal < 0) {
+              this.$message.error('分流总比例不得大于100%或者小于0')
+              return
           }
           console.log('apiData===', apiData)
           // 新增接口数据格式
@@ -2131,10 +2186,15 @@ export default {
           // bypass:[{id: 123,name: '一组',ratio: 30,policyId: 123,bypassId: 1,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
           if (this.bypassSaveFlag === 'edit') {
               // 编辑保存
+              this.$service.saveBypassCrowdEdit({data: {bypass: apiData}, params: {policyId: this.selectRow.policyId}},'分流编辑保存成功！').then(() => {
+                  this.showBypassDialog = false
+                  this.loadData()
+              })
           } else {
               // 新增保存
-              this.$service.saveBypassCrowdAdd({data: apiData, params: {policyId: this.selectRow.policyId}}).then(data => {
-                  console.log('data123', data)
+              this.$service.saveBypassCrowdAdd({data: {bypass: apiData}, params: {policyId: this.selectRow.policyId}},'分流新增保存成功！').then(() => {
+                  this.showBypassDialog = false
+                  this.loadData()
               })
           }
       },
@@ -2142,6 +2202,12 @@ export default {
           this.$service.getBypassCrowdList({policyId: this.selectRow.policyId}).then(data => {
               console.log('data', data)
               this.selectList = data
+              // 如果可选的人群数小于2，则不显示分流按钮
+              // if (this.selectList.length < 2) {
+              //     this.showBypassBtn = false
+              // } else {
+              //     this.showBypassBtn = true
+              // }
           })
       },
       handleCrowdSelectChange (item) {
@@ -2158,7 +2224,7 @@ export default {
                   const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
                   console.log('filterCrowd', filterCrowd)
                   // item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
-                  selectedArr.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
+                  selectedArr.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: filterCrowd[0].priority || index+1 })
                   // if (selectedCrowdIds.indexOf(childItem) > -1) {
                   //     return
                   // } else {
@@ -2172,12 +2238,6 @@ export default {
       },
       handleNextBypass () {
           this.showBypassStep = 2
-          const aparts = this.byPassForm.apart
-          const bypassArr = []
-          for (let i=0 ;i < aparts; i++) {
-              bypassArr.push({name: '分组'+(i+1),ratio: 100/aparts,crowds: []})
-          }
-          this.byPassForm.bypass = bypassArr
       }
   }
 }

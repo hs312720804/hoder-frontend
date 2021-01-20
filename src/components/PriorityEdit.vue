@@ -1,7 +1,9 @@
 <template>
     <div>
-        <!--<div :class="className" v-if="!isEdit" @mouseover="handleShowPencil" @mouseleave="handleHidePencil" @click="editPriority">{{priority}}</div>-->
-        <div class="text-over" v-if="!isEdit" @click="editPriority">{{priority}}</div>
+        <div class="flex-content" v-if="!isEdit" @click="editPriority">
+            <div>{{priority}}</div>
+            <div class="text-over"></div>
+        </div>
         <el-input v-else type="text" ref="inputPriority" size="small" @change="savePriority" @blur="editStatuChange" v-model="priority"></el-input>
     </div>
 </template>
@@ -76,9 +78,11 @@
     }
 </script>
 <style lang="stylus" scoped>
-    .text
-        text-align center
+    .flex-content
+        display flex
     .text-over
         background url(../assets/pencil.png) no-repeat right center
-        text-align center
+        width 16px
+        height 16px
+        margin-left 10px
 </style>
