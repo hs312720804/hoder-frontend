@@ -730,7 +730,8 @@ export default {
             thirdPartyField: tag.thirdPartyField,
             dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
             startDay: tag.tagType === 'time' ? (tag.startDay ? tag.startDay : '') : undefined,
-            endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined
+            endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
+            initValue: tag.initValue
           }
         ]
       })
@@ -765,7 +766,8 @@ export default {
         thirdPartyField: tag.thirdPartyField,
         dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
         startDay: tag.tagType === 'time' ? (tag.startDay ? tag.startDay : '') : undefined,
-        endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined
+        endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
+        initValue: tag.initValue
       })
     },
       handleAddSpecialRule (crowd, tag) {
@@ -789,7 +791,8 @@ export default {
                       dynamic: {
                           type: 1,
                           version: ''
-                      }
+                      },
+                      initValue: tag.initValue
                   }
               ]
           })
@@ -818,7 +821,8 @@ export default {
               dynamic: {
                   type: 1,
                   version: ''
-              }
+              },
+              initValue: tag.initValue
           })
           console.log('crowd====', crowd)
       },
