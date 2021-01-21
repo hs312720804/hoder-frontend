@@ -114,6 +114,7 @@
             <div>
               <el-button type="text" @click="handleEditBypass">编辑</el-button>
               <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
+              <el-button type="text" @click="handleSeeConfigBypass(scope.row.bypassId)">查看配置</el-button>
             </div>
           </div>
         </template>
@@ -723,7 +724,7 @@
       >
         <div>
           <el-steps :active="showBypassStep">
-            <el-step title="设置分数">
+            <el-step title="设置份数">
             </el-step>
             <el-step title="设置分组及比例">
             </el-step>
@@ -806,6 +807,10 @@
             <el-button type="primary" @click="handleSaveBypass">完成</el-button>
           </div>
         </div>
+      </el-dialog>
+      <!-- 查看配置弹窗-->
+      <el-dialog title="查看配置" :visible.sync="showConfiguration">
+          <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
       </el-dialog>
   </div>
 </template>
@@ -993,7 +998,9 @@ export default {
         bypassSaveFlag: '',
         disabledApart: false,
         showByPassColumn: false,
-        tableMerge: []
+        tableMerge: [],
+        showConfiguration: false,
+        configTextarea: ''
     }
   },
   props: ["selectRow"],
@@ -2296,6 +2303,16 @@ export default {
       handleDeleteBypass (row) {
           this.$service.delBypassCrowd({pid: row.id},'删除分流成功！').then(() => {
               this.loadData()
+          })
+      },
+      handleSeeConfigBypass (id) {
+          this.$service.seeDevFile({policyId:id}).then((data) => {
+              this.showConfiguration = true
+              this.configTextarea = data.content
+          }).
+          catch(() => {
+              // this.showConfiguration = true
+              // this.configTextarea = '该策略没有配置文件'
           })
       }
   }
