@@ -108,10 +108,13 @@
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
-          <div v-if="scope.row.ratio !== 0">{{scope.row.ratio}}%</div>
           <div v-if="scope.row.ratio !== 0">
-            <el-button type="text" @click="handleEditBypass">编辑</el-button>
-            <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
+            <div>分流id:{{scope.row.bypassId}}</div>
+            <div>{{scope.row.ratio}}%</div>
+            <div>
+              <el-button type="text" @click="handleEditBypass">编辑</el-button>
+              <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -1020,7 +1023,7 @@ export default {
               this.getWatchBehavior()
           }
       },
-      'bypassForm.apart': function () {
+      'byPassForm.apart': function () {
           this.handleBypassApartChange()
       }
       // percent(val) {
@@ -1187,11 +1190,12 @@ export default {
                             tableMerge.push(0)
                         }
                         tableArr.push({
-                            bypassId: item.bypassId,
                             bypassName: item.bypassName,
                             id: item.id,
                             ratio: item.ratio,
-                            policyId: item.policyId, ...crowdItem
+                            policyId: item.policyId,
+                            ...crowdItem,
+                            bypassId: item.bypassId
                         })
                     })
                     apartArr.push(item.crowdsList.length)
@@ -2237,8 +2241,8 @@ export default {
           this.$service.getBypassCrowdList({policyId: this.selectRow.policyId}).then(data => {
               this.selectList = data
               // 如果可选的人群数小于2，则不显示分流按钮
-              if (this.selectList.length < 2) {
-                  this.$message.error('只有当前人群大于数量大于1才能分流！')
+              if (this.selectList.length < 1) {
+                  this.$message.error('只有当前人群数量大于0才能分流！')
                   return
               }
               this.showBypassDialog = true
