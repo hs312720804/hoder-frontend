@@ -2261,7 +2261,7 @@ export default {
       handleNextBypass () {
           this.showBypassStep = 2
       },
-      objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      objectSpanMethod({ rowIndex, columnIndex }) {
           if (this.showByPassColumn) {
               if (columnIndex === 0) {
                   const row1 = this.tableMerge[rowIndex]
@@ -2273,6 +2273,18 @@ export default {
               }
           }
       },
+      // objectSpanMethod({ row, column, rowIndex, columnIndex }) {
+      //     if (this.showByPassColumn) {
+      //         if (columnIndex === 0) {
+      //             const row1 = this.tableMerge[rowIndex]
+      //             const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
+      //             return {
+      //                 rowspan: row1,
+      //                 colspan: col1,
+      //             }
+      //         }
+      //     }
+      // },
       handleEditBypass () {
           this.handleByPass()
           this.showBypassStep = 2

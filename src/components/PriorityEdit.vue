@@ -80,6 +80,7 @@
 <style lang="stylus" scoped>
     .flex-content
         display flex
+        justify-content center
     .text-over
         background url(../assets/pencil.png) no-repeat right center
         width 16px
