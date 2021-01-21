@@ -2138,7 +2138,6 @@ export default {
           this.$service.saveListDimension({type: 2,behaviorShow: val.join(',')})
       },
       handleByPass () {
-          this.showBypassDialog = true
           this.handleGetEditDetail()
           this.handleGetBypassCrowdList()
       },
@@ -2146,7 +2145,7 @@ export default {
           const aparts = this.byPassForm.apart
           const bypassArr = []
           for (let i=0 ;i < aparts; i++) {
-              bypassArr.push({name: '分组'+(i+1),ratio: (100/aparts).toFixed(2),crowds: []})
+              bypassArr.push({name: '分组'+(i+1),ratio: parseInt(100/aparts),crowds: []})
           }
           this.byPassForm.bypass = bypassArr
       },
@@ -2199,14 +2198,14 @@ export default {
               } else {
                   ratioTotal += byPassDetail[i].ratio
                   if (this.bypassSaveFlag === 'add') {
-                      apiData.push({ name: byPassDetail[i].name,ratio: byPassDetail[i].ratio, crowds: byPassDetail[i].crowds })
+                      apiData.push({ name: byPassDetail[i].name,ratio: parseInt(byPassDetail[i].ratio), crowds: byPassDetail[i].crowds })
                   } else {
                       apiData.push({
                           bypassId: byPassDetail[i].bypassId,
                           id: byPassDetail[i].id,
                           policyId: byPassDetail[i].policyId,
                           name: byPassDetail[i].name,
-                          ratio: byPassDetail[i].ratio,
+                          ratio: parseInt(byPassDetail[i].ratio),
                           crowds: byPassDetail[i].crowds.map(crowdItem => {
                               return {crowdId: crowdItem.crowdId, crowdName: crowdItem.crowdName, priority: crowdItem.priority}
                           })
@@ -2241,18 +2240,16 @@ export default {
       },
       handleGetBypassCrowdList () {
           this.$service.getBypassCrowdList({policyId: this.selectRow.policyId}).then(data => {
-              console.log('data', data)
               this.selectList = data
               // 如果可选的人群数小于2，则不显示分流按钮
-              // if (this.selectList.length < 2) {
-              //     this.showBypassBtn = false
-              // } else {
-              //     this.showBypassBtn = true
-              // }
+              if (this.selectList.length < 2) {
+                  this.$message.error('只有当前人群大于数量大于1才能分流！')
+                  return
+              }
+              this.showBypassDialog = true
           })
       },
       handleCrowdSelectChange (item) {
-          console.log('item---', item)
           if (item.crowdSelect.length === 0) {
               item.crowds = []
           } else {
