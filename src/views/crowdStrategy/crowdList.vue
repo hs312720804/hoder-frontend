@@ -1020,7 +1020,7 @@ export default {
               this.getWatchBehavior()
           }
       },
-      'bypassForm.apart': function (val) {
+      'bypassForm.apart': function () {
           this.handleBypassApartChange()
       }
       // percent(val) {
@@ -2151,7 +2151,6 @@ export default {
       },
       handleGetEditDetail () {
           this.$service.getBypassCrowdDetail({policyId: this.selectRow.policyId}).then(data => {
-              console.log('分流编辑的data===', data)
               if (data.bypassList.length === 0) {
                   // 没有找到分流的信息，走新增保存接口
                   this.bypassSaveFlag = 'add'
@@ -2168,8 +2167,6 @@ export default {
                           id: item.id, bypassId: item.bypassId ,
                           crowds: item.crowdsList, policyId: item.policyId,crowdSelect: item.crowdsList.map(crowdItem => { return crowdItem.crowdId})}
                   })
-                  console.log('this.byPassForm===', this.byPassForm)
-              //    解析分流信息
               }
           })
       },
@@ -2181,7 +2178,6 @@ export default {
       handleSaveBypass () {
         // 校验 每一个分组是否都填写
         // 校验 份数是否小于等于100%
-          console.log('this.byPassForm', this.byPassForm)
           const byPassDetail = JSON.parse(JSON.stringify(this.byPassForm.bypass))
           const bypassLength = byPassDetail.length
           const apiData = []
@@ -2218,7 +2214,6 @@ export default {
               this.$message.error('分流总比例不得大于100%或者小于0')
               return
           }
-          console.log('apiData===', apiData)
           // 新增接口数据格式
           // bypass:[{name: '一组',ratio: 30,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
 
@@ -2253,23 +2248,12 @@ export default {
           if (item.crowdSelect.length === 0) {
               item.crowds = []
           } else {
-              const selectedCrowdIds = item.crowds.map(item => { return item.crowdId }).join(',')
-              console.log('selectedCrowdIds', selectedCrowdIds)
-              console.log('item.crowdSelect', item.crowdSelect)
+              // const selectedCrowdIds = item.crowds.map(item => { return item.crowdId }).join(',')
               // 对crowdId进行遍历，如果存在，就不添加，不存在就添加
               const selectedArr = []
               item.crowdSelect.forEach((childItem,index) => {
                   const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
-                  console.log('filterCrowd', filterCrowd)
-                  // item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
                   selectedArr.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: filterCrowd[0].priority || index+1 })
-                  // if (selectedCrowdIds.indexOf(childItem) > -1) {
-                  //     return
-                  // } else {
-                  //     const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
-                  //     console.log('filterCrowd', filterCrowd)
-                  //     item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: index+1 })
-                  // }
               })
               item.crowds = selectedArr
           }
