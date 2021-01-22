@@ -735,6 +735,7 @@
           <el-select
                   v-model="byPassForm.apart"
                   :disabled="disabledApart"
+                  @change="handleBypassApartChange"
           >
             <el-option
                     v-for="(item,index) in ratioEnum"
@@ -1029,9 +1030,6 @@ export default {
           if(val !== oldVal && oldVal.length !== 0){
               this.getWatchBehavior()
           }
-      },
-      'byPassForm.apart': function () {
-          this.handleBypassApartChange()
       }
       // percent(val) {
       //     this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
@@ -2193,7 +2191,7 @@ export default {
           const bypassLength = byPassDetail.length
           const apiData = []
           let ratioTotal = 0
-          if(bypassLength ===0) {
+          if(bypassLength === 0) {
               this.$message.error('请选择人群填写分流信息！')
               return
           }
