@@ -764,17 +764,6 @@
                 <numOrTextEdit :key="tableItem.name+'_'+index" :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
               </div>
               <div>
-                添加人群
-                <el-select v-model="tableItem.crowdSelect" multiple @change="handleCrowdSelectChange(tableItem)">
-                  <el-option
-                          v-for="(selectItem,index) in selectList"
-                          :label="selectItem.crowdName"
-                          :value="selectItem.crowdId"
-                          :key="index"
-                  ></el-option>
-                </el-select>
-              </div>
-              <div v-if="tableItem.crowds.length > 0">
                 <div class="table-header">
                   <div>ID</div>
                   <div>人群名称</div>
@@ -790,16 +779,33 @@
                     >
                       <div>{{tableDetailItem.crowdId}}</div>
                       <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
-                      <priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>
+                      <numOrTextEdit class="edit-priority" :key="tableDetailItem.priority+'_'+index" :obj="tableDetailItem" :objKey="'priority'" :validType="'number'"></numOrTextEdit>
+                      <!--<priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>-->
+                      <i class="el-icon-minus" @click="handleRemoveCrowds(tableItem,tableDetailItem.crowdId)"></i>
                     </div>
                   </div>
-                  <div class="table-ratio">
+                  <div class="table-ratio" v-if="tableItem.crowds.length > 0">
                     <div>
                       <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'"></numOrTextEdit>
                     </div>
                   </div>
                 </div>
               </div>
+                <div class="select-rows">
+                    <el-select
+                            v-model="tableItem.crowdSelect"
+                            size="small"
+                            @change="handleCrowdSelectChange(tableItem)"
+                            placeholder="请选择人群"
+                    >
+                        <el-option
+                                v-for="(selectItem,index) in selectList"
+                                :label="selectItem.crowdName"
+                                :value="selectItem.crowdId"
+                                :key="index"
+                        ></el-option>
+                    </el-select>
+                </div>
             </div>
           </div>
           <div class="button-margin">
@@ -2174,7 +2180,7 @@ export default {
                   this.byPassForm.bypass = data.bypassList.map(item => {
                       return { name: item.bypassName, ratio: item.ratio,
                           id: item.id, bypassId: item.bypassId ,
-                          crowds: item.crowdsList, policyId: item.policyId,crowdSelect: item.crowdsList.map(crowdItem => { return crowdItem.crowdId})}
+                          crowds: item.crowdsList, policyId: item.policyId,crowdSelect: ''}
                   })
               }
           })
@@ -2196,11 +2202,21 @@ export default {
               return
           }
           for (let i=0; i<bypassLength; i++) {
-              if (byPassDetail[i].crowds.length === 0) {
+              const eachPartLength = byPassDetail[i].crowds.length
+              if (eachPartLength === 0) {
                   // 校验是否填写了分流人群
                   this.$message.error('请在第'+(i+1)+'块勾选需要分流的人群！')
                   return
               } else {
+                  // 判断人群分流的每组优先级是否存在相同
+                  for (let j=0; j<eachPartLength-1; j++) {
+                      for (let n=j+1; n< eachPartLength; n++) {
+                          if(byPassDetail[i].crowds[j].priority === byPassDetail[i].crowds[n].priority){
+                              this.$message.error('第'+(i+1)+'分组里人群第'+(j+1)+'和'+(n+1)+'人群优先级有重复，请修改之后再保存！')
+                              return
+                          }
+                      }
+                  }
                   ratioTotal += byPassDetail[i].ratio
                   if (this.bypassSaveFlag === 'add') {
                       apiData.push({ name: byPassDetail[i].name,ratio: parseInt(byPassDetail[i].ratio), crowds: byPassDetail[i].crowds })
@@ -2254,17 +2270,22 @@ export default {
           })
       },
       handleCrowdSelectChange (item) {
-          if (item.crowdSelect.length === 0) {
-              item.crowds = []
+          const currentCrowds = item.crowds.map(item => { return item.crowdId }).join(',')
+          if (currentCrowds.indexOf(item.crowdSelect) > -1) {
+              return
           } else {
-              // const selectedCrowdIds = item.crowds.map(item => { return item.crowdId }).join(',')
-              // 对crowdId进行遍历，如果存在，就不添加，不存在就添加
-              const selectedArr = []
-              item.crowdSelect.forEach((childItem,index) => {
-                  const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === childItem })
-                  selectedArr.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: filterCrowd[0].priority || index+1 })
-              })
-              item.crowds = selectedArr
+              const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === item.crowdSelect })
+              item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: item.crowds.length+1 })
+          }
+      },
+      handleRemoveCrowds (tableItem, crowdId) {
+          const idMap = tableItem.crowds.map(item => {
+              return item.crowdId
+          })
+          const index = idMap.indexOf(crowdId)
+          tableItem.crowds.splice(index, 1)
+          if (tableItem.crowds.length === 0) {
+              tableItem.crowdSelect = ''
           }
       },
       handleNextBypass () {
@@ -2282,18 +2303,6 @@ export default {
               }
           }
       },
-      // objectSpanMethod({ row, column, rowIndex, columnIndex }) {
-      //     if (this.showByPassColumn) {
-      //         if (columnIndex === 0) {
-      //             const row1 = this.tableMerge[rowIndex]
-      //             const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
-      //             return {
-      //                 rowspan: row1,
-      //                 colspan: col1,
-      //             }
-      //         }
-      //     }
-      // },
       handleEditBypass () {
           this.handleByPass()
           this.showBypassStep = 2
@@ -2530,10 +2539,13 @@ fieldset>div
     border 1px solid #ccc
     text-align center
     box-sizing border-box
+    height 33px
+    line-height 33px
   div + div
     border-left none
 .table-detail-item
   display flex
+  position relative
   div
     width 33.3%
     display flex
@@ -2542,10 +2554,16 @@ fieldset>div
     border 1px solid #ccc
     border-top none
     box-sizing border-box
+    padding 5px
   .crowd-name-item
     width 33.4%
   div + div
     border-left none
+  .el-icon-minus
+    position absolute
+    top 8px
+    right 20px
+    font-weight bold
 .table-ratio
     width 25%
     display flex
@@ -2560,4 +2578,12 @@ fieldset>div
   width 75%
 .bypass-item
   margin 20px 0
+.select-rows
+  width 100%
+  border 1px solid #ccc
+  box-sizing border-box
+  height 33px
+  border-top none
+.edit-priority  >>> .input-width
+  width 50%
 </style>
