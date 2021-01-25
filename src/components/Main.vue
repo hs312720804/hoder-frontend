@@ -11,7 +11,7 @@
         <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
-              :default-active="$route.name"
+              :default-active="activeRouteName"
               class="main_menu menu"
               :collapse="isCollapseMenu"
       >
@@ -19,6 +19,7 @@
           <el-menu-item
                   v-if="item.child.length === 0"
                   :index="routerMap[item.url]"
+                  :key="routerMap[item.url]+'_'+index"
                   @click.native="getRouter(item.url)"
                   class="no-child-menu"
           >{{item.name}}</el-menu-item>
@@ -29,7 +30,7 @@
           >
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
-              <span>{{ item.name }}</span>
+              <span>{{item.name}}</span>
             </template>
             <template v-for="(child, idx) in item.child">
               <el-menu-item
@@ -39,12 +40,12 @@
                       @click.native="getRouter(child.url)"
               >
                 <i v-if="child.icons" :class="child.icons"></i>
-                <span slot="title">{{ child.name }}</span>
+                <span slot="title">{{child.name}}</span>
               </el-menu-item>
               <el-submenu v-else :key="idx" :index="index+'-'+idx">
                 <template slot="title">
                   <i v-if="child.icons" :class="child.icons"></i>
-                  <span>{{ child.name }}</span>
+                  <span>{{child.name}}</span>
                 </template>
                 <template v-for="(c) in child.child">
                   <el-menu-item :key="c.id" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
@@ -137,6 +138,7 @@
         props: ["menu"],
         data() {
             return {
+                activeRouteName: '',
                 activeIndex: '',
                 breadcrumb: [],
                 isCollapseMenu: false,
@@ -181,7 +183,8 @@
                     "/myPolicy/index": "myPolicy",
                     "/groupImageInsight/index": "groupImageInsight",
                     "/userTagsSearch/index": "userTagsSearch",
-                    "/hitSearch/index": "hitSearch"
+                    "/hitSearch/index": "hitSearch",
+                    "/oneTouchDrop/index": "oneTouchDrop"
                 },
                 activeName: 'first',
                 updateMessage: [],
@@ -195,6 +198,9 @@
                 showMoreSystem: false,
                 noCacheMenu: []
             };
+        },
+        watch: {
+            $route: 'handleRouteChange'
         },
         computed: {
             isKeepAlive() {
@@ -238,6 +244,14 @@
             }
         },
         methods: {
+            handleRouteChange() {
+                if (this.$route.name === 'oneTouchDrop') {
+                    this.activeRouteName = 'strategyList'
+                } else {
+                    this.activeRouteName = this.$route.name
+                }
+
+            },
             getRouter(url){
                 const name = this.routerMap[url] + 'AA'
                 this.noCacheMenu.push(name)
@@ -384,6 +398,7 @@
             })
         },
         mounted() {
+            this.activeRouteName = this.$route.name
             window.addEventListener("beforeunload", this.saveTags);
         },
         destroyed() {
