@@ -983,28 +983,7 @@ export default {
         showBypassDialog: false,
         showBypassStep: 1,
         byPassForm: this.genBypassForm(),
-        ratioEnum: [
-            {
-                label: 1,
-                value: 1
-            },
-            {
-                label: 2,
-                value: 2
-            },
-            {
-                label: 3,
-                value: 3
-            },
-            {
-                label: 4,
-                value: 4
-            },
-            {
-                label: 5,
-                value: 5
-            }
-        ],
+        ratioEnum: this.genInitApart(),
         selectList: [],
         bypassSaveFlag: '',
         showByPassColumn: false,
@@ -1048,6 +1027,30 @@ export default {
       // }
   },
   methods: {
+      genInitApart () {
+          return [
+              {
+                  label: 1,
+                  value: 1
+              },
+              {
+                  label: 2,
+                  value: 2
+              },
+              {
+                  label: 3,
+                  value: 3
+              },
+              {
+                  label: 4,
+                  value: 4
+              },
+              {
+                  label: 5,
+                  value: 5
+              }
+          ]
+      },
       genBypassForm (present) {
           return {
               apart: 2,
@@ -2182,6 +2185,7 @@ export default {
                   // 没有找到分流的信息，走新增保存接口
                   this.bypassSaveFlag = 'add'
                   // 分组初始化为1,2,3,4,5
+                  this.ratioEnum = this.genInitApart()
                   this.byPassForm = this.genBypassForm()
                   this.handleBypassApartChange()
               } else {
