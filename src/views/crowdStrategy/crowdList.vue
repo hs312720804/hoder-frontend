@@ -734,7 +734,6 @@
           请求流量划分份数：
           <el-select
                   v-model="byPassForm.apart"
-                  :disabled="disabledApart"
                   @change="handleBypassApartChange"
           >
             <el-option
@@ -1003,7 +1002,6 @@ export default {
         ],
         selectList: [],
         bypassSaveFlag: '',
-        disabledApart: false,
         showByPassColumn: false,
         tableMerge: [],
         showConfiguration: false,
@@ -1048,7 +1046,7 @@ export default {
           return {
               apart: 2,
               // bypass: [{name: '',ratio: '',crowds: [{ crowdId: '',crowdName: '',priority: 1 }]}],
-              bypass: [{name: '',ratio: '',crowds: []}],
+              bypass: [],
               ...present
               // crowds: [{ crowdId: '',crowdName: '',priority: 1 }]
           }
@@ -2158,29 +2156,36 @@ export default {
       },
       handleBypassApartChange () {
           const aparts = this.byPassForm.apart
-          const bypassArr = []
-          for (let i=0 ;i < aparts; i++) {
-              bypassArr.push({name: '分组'+(i+1),ratio: parseInt(100/aparts),crowds: []})
+          const bypassList = this.byPassForm.bypass
+          const addLength = aparts - bypassList.length
+          if(addLength > 0) {
+              for (let i=0 ;i < addLength; i++) {
+                  this.byPassForm.bypass.push({name: '分组'+((bypassList.length || 0)+1), ratio: parseInt(100/aparts), crowds: []})
+              }
+          } else {
+              this.byPassForm.bypass.splice(bypassList.length+addLength, -addLength)
           }
-          this.byPassForm.bypass = bypassArr
       },
       handleGetEditDetail () {
           this.$service.getBypassCrowdDetail({policyId: this.selectRow.policyId}).then(data => {
               if (data.bypassList.length === 0) {
                   // 没有找到分流的信息，走新增保存接口
                   this.bypassSaveFlag = 'add'
-                  this.disabledApart = false
+                  // 分组初始化为1,2,3,4,5
                   this.byPassForm = this.genBypassForm()
                   this.handleBypassApartChange()
               } else {
                   //    有分流的信息，走编辑保存接口
                   this.bypassSaveFlag = 'edit'
-                  this.disabledApart = true
                   this.byPassForm.apart = data.size
                   this.byPassForm.bypass = data.bypassList.map(item => {
                       return { name: item.bypassName, ratio: item.ratio,
                           id: item.id, bypassId: item.bypassId ,
                           crowds: item.crowdsList, policyId: item.policyId,crowdSelect: ''}
+                  })
+                  // 分组只能选择比当前分组大的
+                  this.ratioEnum = this.ratioEnum.filter(item => {
+                      return item.value >= data.size
                   })
               }
           })
