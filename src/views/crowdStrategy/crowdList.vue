@@ -790,6 +790,7 @@
                   </div>
                 </div>
               </div>
+              <div class="select-bottom-rows">
                 <div class="select-rows">
                     <el-select
                             v-model="tableItem.crowdSelect"
@@ -805,6 +806,8 @@
                         ></el-option>
                     </el-select>
                 </div>
+                <div class="table-ratio"></div>
+              </div>
             </div>
           </div>
           <div class="button-margin">
@@ -2575,7 +2578,6 @@ fieldset>div
     justify-content center
     align-items center
     border-right 1px solid #ccc
-    border-bottom 1px solid #ccc
     box-sizing border-box
 .table-body
   display flex
@@ -2583,12 +2585,18 @@ fieldset>div
   width 75%
 .bypass-item
   margin 20px 0
+.select-bottom-rows
+  display flex
+  .table-ratio
+    border-bottom 1px solid #ccc
 .select-rows
-  width 100%
+  width 75%
   border 1px solid #ccc
   box-sizing border-box
   height 33px
   border-top none
+  .el-select
+    width 100%
 .edit-priority  >>> .input-width
   width 50%
 </style>
