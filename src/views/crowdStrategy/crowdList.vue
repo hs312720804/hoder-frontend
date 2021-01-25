@@ -104,6 +104,8 @@
             border
             :row-class-name="tableRowClassName"
             :span-method="objectSpanMethod"
+            row-key="crowdId"
+            :expand-row-keys="initExpandCrowd"
     >
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
@@ -1008,7 +1010,8 @@ export default {
         showByPassColumn: false,
         tableMerge: [],
         showConfiguration: false,
-        configTextarea: ''
+        configTextarea: '',
+        initExpandCrowd: []
     }
   },
   props: ["selectRow"],
@@ -1225,6 +1228,9 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
+        if (this.tableData.length > 0) {
+            this.initExpandCrowd.push(this.tableData[0].crowdId)
+        }
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
