@@ -51,6 +51,9 @@
                     this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
                         this.isEdit = false
                         this.dataBackup = this.priority
+                    }).catch(() => {
+                        // 当接口报错，优先级就显示之前的值
+                        this.priority = this.dataBackup
                     })
                 }
             },
