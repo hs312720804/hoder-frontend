@@ -110,7 +110,7 @@
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
-          <div v-if="scope.row.ratio !== 0">
+          <div v-if="scope.row.bypassName !== '未分组'">
             <div>分流id:{{scope.row.bypassId}}</div>
             <div>{{scope.row.ratio}}%</div>
             <div>
