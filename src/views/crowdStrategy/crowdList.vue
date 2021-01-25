@@ -799,7 +799,7 @@
                     >
                         <el-option
                                 v-for="(selectItem,index) in selectList"
-                                :label="selectItem.crowdName"
+                                :label="selectItem.crowdName+'('+selectItem.crowdId+')'"
                                 :value="selectItem.crowdId"
                                 :key="index"
                         ></el-option>
