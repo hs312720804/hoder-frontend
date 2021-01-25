@@ -1228,6 +1228,7 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
+        this.initExpandCrowd = []
         if (this.tableData.length > 0) {
             this.initExpandCrowd.push(this.tableData[0].crowdId)
         }
@@ -2169,7 +2170,7 @@ export default {
           const addLength = aparts - bypassList.length
           if(addLength > 0) {
               for (let i=0 ;i < addLength; i++) {
-                  this.byPassForm.bypass.push({name: '分组'+((bypassList.length || 0)+1), ratio: parseInt(100/aparts), crowds: []})
+                  this.byPassForm.bypass.push({name: '分组'+((bypassList.length || 0)+1), ratio: 0, crowds: []})
               }
           } else {
               this.byPassForm.bypass.splice(bypassList.length+addLength, -addLength)
@@ -2306,13 +2307,15 @@ export default {
           this.showBypassStep = 2
       },
       objectSpanMethod({ rowIndex, columnIndex }) {
+          console.log('rowIndex', rowIndex)
+          console.log('columnIndex', columnIndex)
           if (this.showByPassColumn) {
               if (columnIndex === 0) {
                   const row1 = this.tableMerge[rowIndex]
-                  const col1 = row1 > 0 ? 1 : 0; // 如果被合并了row = 0; 则他这个列需要取消
+                  const col1 = row1 > 0 ? 1 : 0 // 如果被合并了row = 0; 则他这个列需要取消
                   return {
                       rowspan: row1,
-                      colspan: col1,
+                      colspan: col1
                   }
               }
           }
