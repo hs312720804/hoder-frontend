@@ -24,7 +24,7 @@ export default {
           checkListFilter: ['useStatus'],
           // listCurrentPage: undefined,
           // listPageSize: undefined
-          showAllParent: true
+          showAllParent: false
         }
     },
     props: ["source"],

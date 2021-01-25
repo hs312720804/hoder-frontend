@@ -478,7 +478,7 @@ export default {
           5: 'warning',
           6: 'warningOrange'
       },
-      showAll: true
+      showAll: false
     }
   },
   props: ["historyFilter","checkListFilter","parentSource","showAllParent"],
