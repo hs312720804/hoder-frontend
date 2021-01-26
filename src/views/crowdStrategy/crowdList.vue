@@ -106,6 +106,7 @@
             :span-method="objectSpanMethod"
             row-key="crowdId"
             :expand-row-keys="initExpandCrowd"
+            @expand-change="handleExpandChange"
     >
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
@@ -988,6 +989,7 @@ export default {
         bypassSaveFlag: '',
         showByPassColumn: false,
         tableMerge: [],
+        initTableMerge: [],
         showConfiguration: false,
         configTextarea: '',
         initExpandCrowd: []
@@ -1218,6 +1220,7 @@ export default {
                     })
                     apartArr.push(item.crowdsList.length)
                 })
+                this.initTableMerge = JSON.parse(JSON.stringify(tableMerge))
                 this.tableMerge = tableMerge
                 this.totalCount = apartArr.reduce((prev, cur) => {
                     return prev + cur
@@ -1235,6 +1238,8 @@ export default {
         if (this.tableData.length > 0) {
             this.initExpandCrowd.push(this.tableData[0].crowdId)
         }
+        // 再插入一项
+        this.tableMerge[0] = this.tableMerge[0] + 1
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -2310,9 +2315,59 @@ export default {
       handleNextBypass () {
           this.showBypassStep = 2
       },
+      handleExpandChange (row,expandedRows) {
+          if (this.showByPassColumn) {
+              const currentCrowds = expandedRows.map(item => {
+                  return item.crowdId
+              })
+              let currentIndex = 0
+              for (let i=0;i < this.tableData.length;i++) {
+                  if(this.tableData[i].crowdId === row.crowdId) {
+                      currentIndex = i
+                      break
+                  }
+              }
+              // 递归找到父类的expandIndex
+              let lengthTotal = 0
+              const testIndex = (current, i, arr) => {
+                  lengthTotal += arr[i]
+                  if (current >= i && current < lengthTotal) {
+                      return i
+                  } else {
+                      i = i + arr[i]
+                      return testIndex(current, i, arr)
+                  }
+              }
+              const parentExpandIndex = testIndex(currentIndex, 0, this.initTableMerge)
+              if (currentCrowds.indexOf(row.crowdId) > -1) {
+                  // 当包含当前列，则是展开
+                  // tableMerge[I] >= 1则表示只有一行，只用把当前的tableMerge + 1
+                  // 如果tableMerge = 0,则表示当前的要等于2，并且它前面合并集要+1
+                  // 合并行的头
+                  if (this.initTableMerge[currentIndex] !== 0) {
+                      // 属于合并行
+                      this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 1
+                  }
+                  if (currentIndex !== parentExpandIndex) {
+                      this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] + 1
+                  }
+                  // this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 2
+                  // if (currentIndex > 0) {
+                  //     this.tableMerge[currentIndex-1] = this.tableMerge[currentIndex-1] + 1
+                  // }
+              } else {
+                  // 关闭当前展开行
+                  if (this.initTableMerge[currentIndex] !== 0) {
+                      // 属于合并行
+                      this.tableMerge[currentIndex] = this.tableMerge[currentIndex] - 1
+                  }
+                  if (currentIndex !== parentExpandIndex) {
+                      this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] - 1
+                  }
+              }
+          }
+      },
       objectSpanMethod({ rowIndex, columnIndex }) {
-          console.log('rowIndex', rowIndex)
-          console.log('columnIndex', columnIndex)
           if (this.showByPassColumn) {
               if (columnIndex === 0) {
                   const row1 = this.tableMerge[rowIndex]
