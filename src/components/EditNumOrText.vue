@@ -16,7 +16,7 @@
                 dataBackup: ''
             }
         },
-        props: ['obj', 'objKey', 'validType'],
+        props: ['obj', 'objKey', 'validType', 'range'],
         methods: {
             getInitData () {
                 this.parentValue = this.obj[this.objKey]
@@ -49,15 +49,23 @@
             verifyNumOrText (val) {
                 if (this.validType === 'number') {
                     if (this.isIntNumber(val)) {
-                        if (val > 100 || val < 0 ) {
-                            return '分流占比只能填写1-100的整数'
+                        let min = 0
+                        let max = 0
+                        if (this.range) {
+                            min = this.range[0]
+                            max = this.range[1]
+                            if (val > max || val < min ) {
+                                return `只能填写${min}-${max}的整数`
+                            }
+                            return
                         }
+                        return
+
                     } else {
-                        return '分流占比只能填写0-100的整数，不可填非整数数字'
+                        return '只能填写整数，不可填非整数数字'
                     }
-                } else {
-                    return
                 }
+                return
             }
         },
         created () {

@@ -788,7 +788,7 @@
                   </div>
                   <div class="table-ratio" v-if="tableItem.crowds.length > 0">
                     <div>
-                      <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'"></numOrTextEdit>
+                      <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'" :range="[0,100]"></numOrTextEdit>
                     </div>
                   </div>
                 </div>
