@@ -214,7 +214,7 @@
                <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
-      <el-table-column prop="priority" label="优先级" width="110" sortable>
+      <el-table-column prop="priority" label="优先级" width="110">
           <template slot="header">
             优先级
             <el-popover
@@ -227,7 +227,7 @@
             </el-popover>
           </template>
           <template slot-scope="scope">
-              <priorityEdit :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+              <priorityEdit @refresh="loadData" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
           </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
