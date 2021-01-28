@@ -227,7 +227,7 @@
             </el-popover>
           </template>
           <template slot-scope="scope">
-              <priorityEdit @refresh="loadData" :byPassId="scope.row.id" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+              <priorityEdit @refresh="loadData" :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn" :byPassId="scope.row.id" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
           </template>
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>

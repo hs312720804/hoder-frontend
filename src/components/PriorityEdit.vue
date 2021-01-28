@@ -2,7 +2,7 @@
     <div>
         <div class="flex-content" v-if="!isEdit" @click="editPriority">
             <div>{{priority}}</div>
-            <div class="text-over"></div>
+            <div v-if="showEdit" class="text-over"></div>
         </div>
         <el-input v-else type="text" ref="inputPriority" size="small" @change="savePriority" @blur="editStatuChange" v-model="priority"></el-input>
     </div>
@@ -17,7 +17,7 @@
                 dataBackup: ''
             }
         },
-        props: ['data', 'crowdId', 'policyId', 'byPassId'],
+        props: ['data', 'crowdId', 'policyId', 'byPassId', 'showEdit'],
         watch: {
             data: 'onDataChange'
         },
@@ -50,7 +50,6 @@
                 } else {
                     if (this.byPassId) {
                         // 存在则是分流的，调新接口
-                        console.log('我掉了新的优先级修改接口----')
                         this.$service.updateBypassPriorityInCrowdList({id: this.bypassId, crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
                             this.isEdit = false
                             this.dataBackup = this.priority
