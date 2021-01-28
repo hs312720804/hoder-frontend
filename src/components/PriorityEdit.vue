@@ -17,7 +17,7 @@
                 dataBackup: ''
             }
         },
-        props: ['data', 'crowdId', 'policyId'],
+        props: ['data', 'crowdId', 'policyId', 'byPassId'],
         watch: {
             data: 'onDataChange'
         },
@@ -48,14 +48,28 @@
                     this.$message.error(error)
                     this.priority = this.dataBackup
                 } else {
-                    this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
-                        this.isEdit = false
-                        this.dataBackup = this.priority
-                        this.$emit('refresh')
-                    }).catch(() => {
-                        // 当接口报错，优先级就显示之前的值
-                        this.priority = this.dataBackup
-                    })
+                    if (this.byPassId) {
+                        // 存在则是分流的，调新接口
+                        console.log('我掉了新的优先级修改接口----')
+                        this.$service.updateBypassPriorityInCrowdList({id: this.bypassId, crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+                            this.isEdit = false
+                            this.dataBackup = this.priority
+                            this.$emit('refresh')
+                        }).catch(() => {
+                            // 当接口报错，优先级就显示之前的值
+                            this.priority = this.dataBackup
+                        })
+                    } else {
+                        // 调老的接口
+                        this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+                            this.isEdit = false
+                            this.dataBackup = this.priority
+                            this.$emit('refresh')
+                        }).catch(() => {
+                            // 当接口报错，优先级就显示之前的值
+                            this.priority = this.dataBackup
+                        })
+                    }
                 }
             },
             onDataChange () {

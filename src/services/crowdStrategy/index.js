@@ -366,11 +366,16 @@ export function updatePrioorityInCrowdList(data) {
     data
   })
 }
+// 人群分流优先级单独修改
+export function updateBypassPriorityInCrowdList(data) {
+    return this.fetch({
+        method: 'PUT',
+        url: 'api/crowd/updateBypassPriorityInCrowdList',
+        data
+    })
+}
 // 人群AB test 划分新增
-export function crowdABTestAdd({
-  model,
-  data
-}) {
+export function crowdABTestAdd({model, data}) {
   return this.fetch({
     method: 'post',
     url: '/api/crowd/aBTestPartition/' + model,
