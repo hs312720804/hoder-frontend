@@ -15,6 +15,8 @@ import './auth'
 import pagination from './../components/pagination.vue'
 import moment from 'moment'
 import VCharts from 'v-charts'
+import VueI18n from 'vue-i18n'
+Vue.use(VueI18n)
 Vue.use(VCharts)
 Vue.use(ElementUI,{ size: 'small', zIndex: 3000 })
 Vue.use(AppState)

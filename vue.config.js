@@ -9,6 +9,7 @@ const baseUrl = ENV === 'production'
 
 module.exports = {
   publicPath: baseUrl,
+
   devServer: {
     public: '127.0.0.1:8083',
     port:"8083",
@@ -20,6 +21,15 @@ module.exports = {
         target: 'http://' + BACKEND,
         pathRewrite: {'^/api': '/'},
       }
+    }
+  },
+
+  pluginOptions: {
+    i18n: {
+      locale: 'zh',
+      fallbackLocale: 'zh',
+      localeDir: 'locales',
+      enableInSFC: true
     }
   }
 }
