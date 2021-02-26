@@ -4,9 +4,9 @@
     <el-col :span="6" :offset="9" class="login-form">
       <div class="login-logo"></div>
       <p class="title">人群策略平台</p>
-      <GateSchemaForm ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
+      <c-gate-schema-form ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
 
-      </GateSchemaForm>
+      </c-gate-schema-form>
       <el-button class="login-form__btn" type="primary" size="big" @click="$refs.loginForm.handleSubmit()">登录</el-button>
     </el-col>
   </el-row>

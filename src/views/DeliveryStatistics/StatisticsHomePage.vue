@@ -141,13 +141,13 @@
                             <!--:filter="filter"-->
                             <!--:pagination="pagination"-->
                     <!--&gt;-->
-                        <Table
+                        <c-table
                                 :props="table.props"
                                 :header="table.header"
                                 :data="table.data"
                                 class="table-overflow"
                         >
-                        </Table>
+                        </c-table>
                     <!--</ContentWrapper>-->
                 </div>
             </div>
@@ -167,13 +167,8 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "StatisticsHomePage",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 crowdData: [],

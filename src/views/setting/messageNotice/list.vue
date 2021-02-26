@@ -1,6 +1,6 @@
 <template>
     <div class="message-notice">
-        <ContentWrapper
+        <c-content-wrapper
                 :filter="filter"
                 :pagination="pagination"
                 @filter-change="handleFilterChange"
@@ -13,7 +13,7 @@
                 <el-button @click="fetchData(2)">系统通知</el-button>
                 <el-button @click="fetchData(3)">标签通知</el-button>
             </div>
-            <Table
+            <c-table
                     :props="table.props"
                     :header="table.header"
                     :data="table.data"
@@ -23,19 +23,14 @@
                     @row-selection-remove="handleRowSelectionRemove"
                     @all-row-selection-change="handleAllRowSelectionChange"
             >
-            </Table>
-        </ContentWrapper>
+            </c-table>
+        </c-content-wrapper>
     </div>
 </template>
 
 <script>
-    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "messageNotice",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 noticeTypeEnum: {

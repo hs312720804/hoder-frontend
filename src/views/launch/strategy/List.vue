@@ -1,7 +1,7 @@
 <template>
     <div class="strategy">
         <!--列表页-->
-        <ContentWrapper
+        <c-content-wrapper
                 :filter="filter"
                 :pagination="pagination"
                 @filter-change="handleFilterChange"
@@ -48,13 +48,13 @@
                         :name="'name'+item.biId"
                 ></el-tab-pane>
             </el-tabs>
-            <Table
+            <c-table
                     :props="table.props"
                     :header="table.header"
                     :data="table.data"
             >
-            </Table>
-        </ContentWrapper>
+            </c-table>
+        </c-content-wrapper>
         <!--新增页面-->
         <el-dialog title="新增投放" :visible.sync="showAddDialog">
             <el-form :model="formData" :rules="rulesData" ref="formData">
@@ -96,13 +96,8 @@
     </div>
 </template>
 <script>
-    import { ContentWrapper, Table, utils} from 'admin-toolkit'
     export default {
         name: 'strategyAA',
-        components: {
-            ContentWrapper,
-            Table
-        },
         data() {
             return {
                 activeName: null,
@@ -165,7 +160,7 @@
                             label: '操作',
                             fixed: 'right',
                             width: '100',
-                            render: utils.component.createOperationRender(this, {
+                            render: this.$c_utils.component.createOperationRender(this, {
                                 cancelLaunch: "取消投放"
                             })
                         }

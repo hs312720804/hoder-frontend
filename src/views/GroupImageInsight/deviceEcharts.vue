@@ -36,13 +36,13 @@
                     </div>
                     <div class="city-info-echarts">
                         <div class="table-title">Top50城市活跃排名(近30天活跃)</div>
-                        <Table
+                        <c-table
                                 :props="table.props"
                                 :header="table.header"
                                 :data="table.data"
                                 class="table-overflow"
                         >
-                        </Table>
+                        </c-table>
                     </div>
                     <div ref="circleDevice" class="base-info-circle-echarts" style="border: none;height: 300px"></div>
                 </div>
@@ -114,13 +114,9 @@
 </template>
 
 <script>
-    import { Table} from 'admin-toolkit'
     export default {
         name: "deviceEcharts",
         props: ["currentCid"],
-        components: {
-            Table
-        },
         data () {
             return {
                 showEstimateEcharts: true,

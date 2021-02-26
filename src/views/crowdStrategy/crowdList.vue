@@ -317,6 +317,13 @@
                     @click="divideAB(scope.row,'addABTest')"
             >AB实验
             </el-button>
+            <el-button
+                    :disabled="isShowTest(scope.row)"
+                    size="small"
+                    type="text"
+                    @click="handleOpenTestDialog(scope.row)"
+            >投前测试
+            </el-button>
             <el-dropdown @command="handleCommandOpreate">
               <el-button size="small" type="text">
                 更多
@@ -824,10 +831,35 @@
       <el-dialog title="查看配置" :visible.sync="showConfiguration">
           <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
       </el-dialog>
+      <!-- 投前测试弹出框-->
+      <el-dialog
+        title="投前测试"
+        :visible.sync="testDialogVisible"
+        width="500px">
+        <span>
+          <c-form label-width="120px" :model="formTest" ref="formTest" :inline="true">
+            <c-form-mac label="设备信息:" v-model="formTest.mac"  prop="mac" :rules="rules.mac"/>
+             <el-form-item>
+              <el-button type="primary" @click="handleTest">测试</el-button>
+            </el-form-item>
+            <div>
+              <el-form-item label="测试结果:" v-if="testResult !== ''">
+                <div class="test-result">
+                  <span class="icon iconfont el-icon-cc-frown-fill"></span>
+                  {{testResult}}
+                </div>
+              </el-form-item>
+            </div>
+          </c-form>
+        </span>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="testDialogVisible = false">关闭</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 <script>
-import { Table} from 'admin-toolkit'
+// import { Table} from 'admin-toolkit'
 import priorityEdit from '../../components/PriorityEdit'
 // import crowdStatusItem from './CrowdStatusItem'
 import crowdStatusResource from './CrowdStatusResource'
@@ -835,7 +867,7 @@ import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
 export default {
   components: {
-      Table,
+     // Table,
       priorityEdit,
       crowdStatusResource,
       CommitHistoryDialog,
@@ -845,6 +877,15 @@ export default {
     return {
       // 表格当前页数据
       tableData: [],
+      testResult: '',
+      formTest: {
+        mac: undefined,
+        policyId: undefined,
+        crowdId: undefined
+      },
+      rules: {
+        mac: [{ required: true, message: '请输入Mac', trigger: 'blur' }]
+      },
       //搜索条件
       criteria: {
         //  policyId:selectRow.policyId
@@ -865,6 +906,7 @@ export default {
       estimateItems: [],
       showEstimate: false,
       estimateValue: ['0'],
+      testDialogVisible: false,
       estimateId: '',
         showResult: false,
         total1: undefined,
@@ -1029,6 +1071,42 @@ export default {
       // }
   },
   methods: {
+    handleTest () {
+      this.$refs.formTest.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$service.polisyTest(this.formTest).then((data) => {
+             this.testResult = data.result
+          })
+        }
+      })
+    },
+      /**
+       * 投前测试
+       */
+      isShowTest (item) {
+        const tagsList = this.selectRow.tagsList // 所有的tags
+        const currentItemTagIds = item.tagIds // 当前行的tags
+        const tagsArr = currentItemTagIds.split(',')
+        let flag = false
+        for (let i = 0; i < tagsArr.length; i++) {
+          const tag = tagsList.find((e) => {
+            return e.tagId === parseInt(tagsArr[i])
+          })
+          if (tag.dataSource === 3) {
+            flag = true
+            break
+          }
+        }
+        return flag
+      },
+      /**
+       * 打开投前测试弹出框
+       */
+      handleOpenTestDialog (item) {
+        this.testDialogVisible = true
+        this.formTest.policyId = item.policyId
+        this.formTest.crowdId = item.crowdId
+      },
       genInitApart () {
           return [
               {
@@ -2402,6 +2480,13 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
+.test-result
+   width 300px
+   display flex
+   align-items: center;
+   .icon
+     font-size:25px;
+     margin-right:5px;
 fieldset
   border: 1px solid #ebeef5
   font-size: 14px

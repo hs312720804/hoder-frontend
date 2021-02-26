@@ -657,3 +657,14 @@ export function getBypassCrowdDetail(params) {
         url: '/api/policy/bypassPartition/'+params.policyId
     })
 }
+/**
+ * 接口测试
+ * @param {*} params 
+ */
+export function polisyTest(params) {
+  return this.fetch({
+    method: 'get',
+    isReturnAllInfor: true,
+    url: `/api/policy/invoker/${params.policyId}/${params.mac}/${params.crowdId}`,
+  })
+}

@@ -1,6 +1,6 @@
 <template>
     <div class="tag-dict-database-list">
-        <ContentWrapper
+        <c-content-wrapper
                 :filter="filter"
                 :filterSchema="filterSchema"
                 :pagination="pagination"
@@ -8,7 +8,7 @@
                 @filter-reset="handleFilterReset"
         >
             <div><el-button @click="exportData" type="primary">导出</el-button></div>
-            <Table
+            <c-table
                     :props="table.props"
                     :header="table.header"
                     :data="table.data"
@@ -18,20 +18,15 @@
                     @row-selection-remove="handleRowSelectionRemove"
                     @all-row-selection-change="handleAllRowSelectionChange"
             >
-            </Table>
-        </ContentWrapper>
+            </c-table>
+        </c-content-wrapper>
     </div>
 </template>
 
 <script>
     import _ from 'gateschema'
-    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "tagDictDatabaseAA",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 filter: {},

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { utils } from "admin-toolkit";
+import { utils } from '@ccprivate/admin-toolkit'
 import fetch from './fetch'
 import login from './login'
 import getConstants from './getConstants'

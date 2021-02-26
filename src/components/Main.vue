@@ -67,7 +67,7 @@
                 :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
                 @click="toggleMenu"
         ></el-button>
-        <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
+        <c-breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
           <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
@@ -127,12 +127,9 @@
   </el-container>
 </template>
 <script>
-    import { Breadcrumb, Menu } from "admin-toolkit";
     import TagNav from './TagNav'
     export default {
         components: {
-            Menu,
-            Breadcrumb,
             TagNav
         },
         props: ["menu"],

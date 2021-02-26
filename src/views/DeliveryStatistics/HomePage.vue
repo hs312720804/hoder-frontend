@@ -304,13 +304,10 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table} from 'admin-toolkit'
     import veWordcloud from 'v-charts/lib/wordcloud'
     export default {
         name: "statisticsHomePageAA",
         components: {
-            ContentWrapper,
-            Table,
             veWordcloud
         },
         data () {

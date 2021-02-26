@@ -7,6 +7,7 @@ export default function fetch({
   url,
   data,
   params,
+  isReturnAllInfor = false,
   isJSON = false
 }) {
   NProgress.start();
@@ -27,7 +28,7 @@ export default function fetch({
       NProgress.done();
       const codeFormat = parseInt(data.code)
       if (codeFormat === 0) {
-          return data.data;
+          return isReturnAllInfor ? data : data.data;
       } else if(codeFormat === 400001 || codeFormat === 9999) {
           location.href = location.origin + location.pathname + '#/login'
       } else {

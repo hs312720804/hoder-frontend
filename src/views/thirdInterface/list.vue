@@ -1,6 +1,6 @@
 <template>
     <div class="third-interface-list">
-        <ContentWrapper
+        <c-content-wrapper
                 :filter="filter"
                 :pagination="pagination"
                 @filter-change="handleFilterChange"
@@ -9,7 +9,7 @@
             <div class="add-button">
                 <el-button @click="handleAdd" type="primary">新增</el-button>
             </div>
-            <Table
+            <c-table
                     :props="table.props"
                     :header="table.header"
                     :data="table.data"
@@ -19,20 +19,14 @@
                     @row-selection-remove="handleRowSelectionRemove"
                     @all-row-selection-change="handleAllRowSelectionChange"
             >
-            </Table>
-        </ContentWrapper>
+            </c-table>
+        </c-content-wrapper>
     </div>
 </template>
 
 <script>
-    // import _ from 'gateschema'
-    import { ContentWrapper, Table, utils} from 'admin-toolkit'
     export default {
         name: "thirdInterfaceList",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 filter: {},
@@ -171,7 +165,7 @@
                             label: '操作',
                             fixed: 'right',
                             width: '100',
-                            render: utils.component.createOperationRender(this, {
+                            render: this.$c_utils.component.createOperationRender(this, {
                                 handleEdit: "编辑",
                                 handleDelete: "删除"
                             })
