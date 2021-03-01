@@ -838,7 +838,7 @@
         width="500px">
         <span>
           <c-form label-width="120px" :model="formTest" ref="formTest" :inline="true">
-            <c-form-mac label="设备信息:" v-model="formTest.mac"  prop="mac" :rules="rules.mac"/>
+            <c-form-mac label="设备信息:" v-model="formTest.mac" @change="handleMacChange" prop="mac" :rules="rules.mac"/>
              <el-form-item>
               <el-button type="primary" @click="handleTest">测试</el-button>
             </el-form-item>
@@ -1071,6 +1071,12 @@ export default {
       // }
   },
   methods: {
+    /**
+     * mac 改变的时候触发
+     */
+    handleMacChange () {
+      this.testResult = ''
+    },
     handleTest () {
       this.$refs.formTest.$refs.form.validate((valid) => {
         if (valid) {
