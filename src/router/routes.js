@@ -49,6 +49,8 @@ import groupImageInsight from '@/views/GroupImageInsight/Index'
 import userTagsSearch from  '@/views/launch/userTagsSearch'
 import hitSearch from  '@/views/launch/hitSearch'
 import labelSquare from '@/views/LabelSquare/Index'
+import specialTag from '@/views/SpecialTag/Index'
+
 const children = [
     // {
     //     name: 'homePage',
@@ -698,9 +700,19 @@ const children = [
                     title: '设备画像',
                     tagId:"groupImageInsight",
                 }
-            }
+            },
     //     ]
     // },
+    {
+        name: 'specialTag',
+        path: 'specialTag',
+        component: specialTag,
+        meta: {
+            title: '重定向投放记录',
+            tagId:"specialTag",
+            hideInMenu: true
+        }
+    },
 ]
 
 const routes = [

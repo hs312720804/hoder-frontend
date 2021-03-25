@@ -41,8 +41,7 @@
                 </el-tabs>
             </div>
         </div>
-        <div    class="other-form"
-                v-else>
+        <div class="other-form" v-else>
             <tag-list
                     :data-list="dataList"
                     :data-source-enum="dataSourceEnum"

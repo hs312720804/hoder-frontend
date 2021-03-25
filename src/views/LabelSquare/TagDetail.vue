@@ -1,6 +1,6 @@
 <template>
     <div class="read-tag-category">
-        <template v-if="tagCategory">
+        <template v-if="tagCategory && !showEdit">
             <el-card shadow="never">
                 <div slot="header">
                     <span>{{ tagCategory.tagName }}</span>
@@ -25,16 +25,22 @@
                     </el-form-item>
                 </el-form>
             </el-card>
-            <TagList :tag-category="tagCategory" />
+            <TagRegionTree v-if="tagCategory.tagKey === 'mix_area'" :tagId="tagId" @edit="handleEdit"></TagRegionTree>
+            <tag-list :tag-category="tagCategory" v-else/>
         </template>
+        <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
     </div>
 </template>
 
 <script>
     import TagList from '../Tag/List.vue'
+    import TagRegionTree from './TagRegionTree.vue'
+    // import AddOrEditSpecialTag from '../SpecialTag/Index.vue'
     export default {
         components: {
-            TagList
+            TagList,
+            TagRegionTree,
+            // AddOrEditSpecialTag
         },
         props: {
             tagId: {
@@ -46,6 +52,8 @@
                 tagCategory: null,
                 dataSourceEnum: {},
                 typeEnum: {},
+                showEdit: false,
+                paramsData: {}
             }
         },
         methods: {
@@ -61,6 +69,27 @@
                     this.typeEnum = data.typeEnum
                     this.tagCategory = data.tagCategory
                 })
+                // 特色标签详情
+                // this.$service.specialTagDetail({specialTagId: 50}).then((data) => {
+                    // this.dataSourceEnum = data.dataSourceEnum
+                    // this.typeEnum = data.typeEnum
+                    // this.tagCategory = data.tagCategory
+                // })
+            },
+            handleEdit (parentId, specialTagId, specialTagName) {
+                console.log('parentId===', parentId)
+                this.paramsData = {
+                    parentId,
+                    belongTagId: this.tagId,
+                    specialTagId,
+                    specialTagName
+                }
+                this.$router.push({
+                    name: 'specialTag',
+                    params: this.paramsData
+                })
+                
+                // this.showEdit = true
             }
         },
         created() {

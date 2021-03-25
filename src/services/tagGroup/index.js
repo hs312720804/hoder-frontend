@@ -134,3 +134,46 @@ export function collectTagsList(params) {
         params
     })
 }
+// 标签列表之特色标签
+export function specialTagList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/specialTag/index',
+        params
+    })
+}
+// 特定标签--查看
+export function specialTagDetailList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/list/${params.tagId}`,
+    })
+}
+// 特定标签-查看详情--省份下的市的列表
+export function specialTagChild(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/child/${params.id}`,
+    })
+}
+// 特定标签--修改
+// export function editSpecialTag(params) {
+//     return this.fetch({
+//         method: 'PUT',
+//         url: `api/specialTag/${params.specialTagId}`,
+//     })
+// }
+export function editSpecialTag({rulesJson}) {
+    return this.fetch({
+        method: 'put',
+        url: `api/specialTag`,
+        data: rulesJson,
+        isJSON: true
+    })
+}
+export function specialTagDetail({specialTagId}) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/${specialTagId}`,
+    })
+}

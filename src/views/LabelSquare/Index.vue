@@ -40,6 +40,18 @@
                 >
                 </my-collect>
             </el-tab-pane>
+            <el-tab-pane label="特色标签" name="specialTag">
+                <special-tag
+                        :tagName="myCollectTagName"
+                        :checkList="checkList"
+                        @clear-search="handleClearSearch"
+                        @change-checkList="handleCheckListChange"
+                        @get-table-selected="handleGetTableSelectedData"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                >
+                </special-tag>
+            </el-tab-pane>
         </el-tabs>
         <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
             <el-input
@@ -68,12 +80,15 @@
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
     import tempLabelIndex from './TempLabelIndex'
+    import specialTag from './SpecialTag'
+    
     export default {
         name: "labelSquareAA",
         components: {
             labelZone,
             myCollect,
-            tempLabelIndex
+            tempLabelIndex,
+            specialTag
         },
         data () {
             return {
@@ -138,6 +153,11 @@
                     case 'tempLabel':
                         this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh')
+                        break
+                    case 'specialTag':
+                        //    刷新特色标签
+                        this.fetchCheckListData()
+                        this.$root.$emit('special-tag-list-refresh')
                         break
                 }
             },

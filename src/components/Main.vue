@@ -181,7 +181,8 @@
                     "/groupImageInsight/index": "groupImageInsight",
                     "/userTagsSearch/index": "userTagsSearch",
                     "/hitSearch/index": "hitSearch",
-                    "/oneTouchDrop/index": "oneTouchDrop"
+                    "/oneTouchDrop/index": "oneTouchDrop",
+                    "/specialTag/index": "specialTag"
                 },
                 activeName: 'first',
                 updateMessage: [],
@@ -244,6 +245,8 @@
             handleRouteChange() {
                 if (this.$route.name === 'oneTouchDrop') {
                     this.activeRouteName = 'strategyList'
+                } else if (this.$route.name === 'specialTag') {
+                    this.activeRouteName = 'labelSquare'
                 } else {
                     this.activeRouteName = this.$route.name
                 }

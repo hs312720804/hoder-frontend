@@ -58,7 +58,7 @@
                     <el-button
                         size="small"
                         type="info"
-                         v-permission="'hoder:label:attr:del'"
+                        v-permission="'hoder:label:attr:del'"
                         @click="handleDeleteTag(scope.row)"
                     >
                         删除
