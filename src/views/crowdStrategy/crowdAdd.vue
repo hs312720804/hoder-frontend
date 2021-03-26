@@ -480,7 +480,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="投放数量" prop="limitLaunchCount" v-if="form.limitLaunch">
-            <el-input-number size="medium" placeholder="不能大于10万" :max="100000" :min="1" v-model="form.limitLaunchCount"></el-input-number>
+            <el-input-number size="medium" placeholder="不能大于100万" :max="100000" :min="1" v-model="form.limitLaunchCount"></el-input-number>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input size="small" v-model="form.remark"></el-input>
@@ -765,7 +765,7 @@
                     })
                 })
             },
-            handleCheckboxOk(){
+            handleCheckboxOk () {
                 this.currentChildItem.value = this.checkboxValue
                 this.showMoreTags = false
             },

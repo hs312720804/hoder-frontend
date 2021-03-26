@@ -451,7 +451,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-              <el-input-number size="medium" placeholder="不能大于10万" :max="100000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+              <el-input-number size="medium" placeholder="不能大于100万" :max="100000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
             </el-form-item>
             <el-form-item label="备注" :prop="formProp('remark')">
               <el-input v-model="crowd.remark" placeholder="备注"></el-input>
@@ -571,6 +571,7 @@ export default {
   watch: {
     value: 'setInputValue'
   },
+  inject: ['sTagIndex'],
   methods: {
     changeTimeWays (childItem) {
       childItem.value = ''
@@ -797,6 +798,7 @@ export default {
       // debugger
       console.log('trigger setInputValue method')
       if (val !== this.inputValue) {
+        debugger
           if (val.length > 0) {
               this.inputValue = val
               this.setSeq()
@@ -945,6 +947,7 @@ export default {
     }
   },
   created () {
+    // alert(999)
     console.log('this.params===', this.$route.params)
     console.log('this.value', this.value)
     if (this.value) {
@@ -970,6 +973,49 @@ export default {
     this.$watch('inputValue', this.emitInputValue, {
       deep: true
     })
+
+    const detail = this.sTagIndex.specialTagDetail.specialTag
+
+    //编辑
+      // this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
+          // let policyData = data.policyCrowds
+          // this.form.name = policyData.crowdName
+          // this.form.remark = policyData.remark
+          // this.priority = policyData.priority
+          // this.form.limitLaunch = policyData.limitLaunch
+          // this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
+          // this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
+          let ruleJsonData = JSON.parse(this.sTagIndex.specialTagDetail.specialTag.rulesJson)
+          var cacheIds = []
+          ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
+              itemParent.rules.forEach(item => {
+                  if(item.tagType === 'string' || item.tagType === 'collect') {
+                      cacheIds.push(item.tagId)
+                  }
+                  if (item.tagType === 'string' && item.value === 'nil') {
+                      item.operator = 'null'
+                  }
+                  if(item.tagType === 'time' && item.isDynamicTime === 3){
+                      const value = item.value.split('-')
+                      this.$set(item,'startDay',value[0])
+                      this.$set(item,'endDay',value[1])
+                  }else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                      this.$set(item,'dateAreaType','')
+                      this.$set(item,'dynamicTimeType',parseInt(item.dynamicTimeType))
+                  }
+              })
+              return itemParent
+          })
+          this.inputValue[0].rulesJson.rules = ruleJsonData.rules
+          console.log('ruleJsonData.rules===', ruleJsonData.rules)
+          // this.rulesJson = ruleJsonData
+          // if (policyData.dynamicPolicyJson) {
+          //     this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
+          // }
+          // cacheIds = this.distinct(cacheIds,[])
+          // if(cacheIds.length !== 0){
+          //     cacheIds.forEach(this.fetchTagSuggestions)}
+      // })
   }
 }
 </script>

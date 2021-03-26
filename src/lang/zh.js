@@ -103,7 +103,7 @@ export default {
   crowdUnshelve: '人群下架',
   crowdCopy: '人群复制',
   commitHistoryData: '提交历史数据',
-  noMoreThenTenMillion: '不能大于10万',
+  noMoreThenTenMillion: '不能大于100万',
   save: '保存',
   selectTips: '请选择',
   description: '说明',

@@ -630,6 +630,7 @@ const children = [
         meta: {
             title: '投放统计',
             tagId:"statisticsHomePage",
+            icon: 'el-icon-cc-file'
         }
     },
     {
@@ -708,9 +709,10 @@ const children = [
         path: 'specialTag',
         component: specialTag,
         meta: {
-            title: '重定向投放记录',
+            title: '特色标签',
             tagId:"specialTag",
-            hideInMenu: true
+            hideInMenu: true,
+            isCache: true
         }
     },
 ]

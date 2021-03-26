@@ -22,7 +22,10 @@
                   :key="routerMap[item.url]+'_'+index"
                   @click.native="getRouter(item.url)"
                   class="no-child-menu"
-          >{{item.name}}</el-menu-item>
+          >
+            <i v-if="item.icons" :class="item.icons"></i>
+            <span>{{item.name}}</span>
+          </el-menu-item>
           <el-submenu
                   v-else
                   :key="index"
@@ -121,7 +124,7 @@
         <keep-alive :exclude="noCacheMenu">
           <router-view v-if="isKeepAlive"/>
         </keep-alive>
-        <router-view v-if="!isKeepAlive"/>
+        <router-view v-if="!isKeepAlive" :key="$route.fullpath"/>
       </el-main>
     </el-container>
   </el-container>

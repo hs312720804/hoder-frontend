@@ -17,56 +17,57 @@ export default {
   components: {
     CrowdAdd
   },
-    data: function () {
-        return {
-            activeName: 0,
-            form: {
-                // purpose: undefined,
-                rulesJson: [
-                    {
-                        'recordId': this.getRecordId(),
-                        // 'tempCrowdId': undefined,
-                        'specialTagName': undefined,
-                        'tagIds': [],
-                        // 'purpose': undefined,
-                        'remark': undefined,
-                        'crowdOrder': 0,
-                        'rulesJson': {
-                            condition: 'OR',
-                            rules: []
-                        },
-                        'dynamicPolicyJson': {
-                            link: 'AND',
-                            condition: 'OR',
-                            rules: []
-                        },
-                        // 'limitLaunch': false,
-                        // 'limitLaunchCount': undefined
-                    }
-                ],
-                // crowdExp: []
-            },
-            formRules: {
-                // purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
-                // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
-            },
-            pickerOptions: {
-                disabledDate(time) {
-                    // 设置可选时间为今天之后的60天内
-                    // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
-                    // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
-                    const today = new Date().setHours(23, 59, 59)
-                    const curDate = new Date(today).getTime()
-                    // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
-                    const day = 60 * 24 * 3600 * 1000
-                    const dateRange = curDate + day
-                    return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
-                }
-            }
-        }
-    },
+  data: function () {
+      return {
+          activeName: 0,
+          form: {
+              // purpose: undefined,
+              rulesJson: [
+                  {
+                      'recordId': this.getRecordId(),
+                      // 'tempCrowdId': undefined,
+                      'specialTagName': '',
+                      'tagIds': [],
+                      // 'purpose': undefined,
+                      'remark': undefined,
+                      'crowdOrder': 0,
+                      'rulesJson': {
+                          condition: 'OR',
+                          rules: []
+                      },
+                      'dynamicPolicyJson': {
+                          link: 'AND',
+                          condition: 'OR',
+                          rules: []
+                      },
+                      // 'limitLaunch': false,
+                      // 'limitLaunchCount': undefined
+                  }
+              ],
+              // crowdExp: []
+          },
+          formRules: {
+              // purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
+              // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
+          },
+          pickerOptions: {
+              disabledDate(time) {
+                  // 设置可选时间为今天之后的60天内
+                  // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
+                  // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
+                  const today = new Date().setHours(23, 59, 59)
+                  const curDate = new Date(today).getTime()
+                  // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+                  const day = 60 * 24 * 3600 * 1000
+                  const dateRange = curDate + day
+                  return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
+              }
+          }
+      }
+  },
   // props: ['recordId'],
   props: ['initTagList'],
+  inject: ['sTagIndex'],
   methods: {
       getRecordId () {
           return this.recordId
@@ -156,10 +157,12 @@ export default {
                 if (!this.validateForm(form.rulesJson)) {
                     return
                 }
-                
+                debugger
+                form.rulesJson[0].tagIds = this.initTagList.map((e) => e.tagId)
                 form.rulesJson = form.rulesJson.map((e) => {
                     // e.purpose = form.purpose
                     e.tagIds = e.tagIds.join(',')
+                    // e.tagIds = e.tagIds
                     e.rulesJson.rules = e.rulesJson.rules.map(item => {
                         item.rules.forEach(rulesItem => {
                             if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
@@ -175,21 +178,29 @@ export default {
                     return e
                 })[0]
                 // debugger
-                form.rulesJson.belongTagId = this.$route.params.belongTagId
-                form.rulesJson.parentId = this.$route.params.parentId
-                form.rulesJson.specialTagId = this.$route.params.specialTagId
-                // form.rulesJson.specialTagName = this.$route.params.specialTagName
-                // if(mode === 0) {
-                //     this.$service.oneDropSaveCrowd({ recordId: this.recordId , data: form.rulesJson },'保存成功').then(() => {
-                //         this.$emit('handleDirectStrategyListBrother')
-                //         this.$emit('resetFormData')
-                //     })
-                // } else {
-                    this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
-                        // this.$emit('handleToNextStep',this.recordId,data)
-                        alert('成功！')
-                    })
-                // }
+                const detail = this.sTagIndex.specialTagDetail.specialTag
+                if (detail) {
+                  form.rulesJson.belongTagId = detail.belongTagId
+                  form.rulesJson.parentId = detail.parentId
+                  form.rulesJson.specialTagId = detail.specialTagId
+                } else {
+                  form.rulesJson.belongTagId = Number(this.$route.query.belongTagId)
+                  form.rulesJson.parentId =  0
+                }
+                
+
+            
+                if (this.$route.query.specialTagId) { // 编辑
+                  this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
+                      // this.$emit('handleToNextStep',this.recordId,data)
+                      alert('成功！')
+                  })
+                } else {
+                  this.$service.addSpecialTag({ rulesJson: form.rulesJson}, '新建成功').then((data) => {
+                      // this.$emit('handleToNextStep',this.recordId,data)
+                      // alert('成功！')
+                  })
+                }
             } else {
                 this.$message.error('请检查表单各项是否填写完整')
                 return false
@@ -197,29 +208,37 @@ export default {
         })
     },
     handleEdit () {
-      // const initTagList = this.initTagList
-     
+      const initTagList = this.initTagList
+    //  debugger
       // this.$service.getCrowdsDetail(recordId).then((data) => {
       //   console.log(data)
-        // const data = initTagList.map((e) => {
-        //   e.tagIds = e.tagIds.split(",")
-        //   e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
-        //   e.rulesJson = JSON.parse(e.rulesJson)
-        //   e.rulesJson.rules.forEach(ruleItem => {
-        //       ruleItem.rules.forEach(rulesEachItem => {
-        //           if (rulesEachItem.tagType === 'string' && rulesEachItem.value === 'nil') {
-        //               rulesEachItem.operator = 'null'
-        //           }
-        //       })
-        //   })
-        //   return e
+      alert(333)
+        const data = initTagList.map((e) => {
+          debugger
+          e.tagIds = e.tagIds
+          e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
+          e.rulesJson = JSON.parse(e.rulesJson)
+          e.rulesJson.rules.forEach(ruleItem => {
+              ruleItem.rules.forEach(rulesEachItem => {
+                  if (rulesEachItem.tagType === 'string' && rulesEachItem.value === 'nil') {
+                      rulesEachItem.operator = 'null'
+                  }
+              })
+          })
+          e.rulesJson.specialTagId = this.sTagIndex.specialTagDetail.specialTag.specialTagName
+          return e
+        })
+        this.form = {
+          rulesJson: data,
+        }
+        // debugger
+        // console.log('123=======', this.$route.params.specialTagId)
+        // this.$service.specialTagDetail({ specialTagId: this.$route.params.specialTagId }).then((data) => {
+        //     debugger
         // })
         // this.form = {
-        //   rulesJson: data,
+        //   rulesJson: []
         // }
-        this.form = {
-          rulesJson: []
-        }
       // })
     },
     handleBackPrevStep () {
@@ -236,7 +255,10 @@ export default {
     },
   },
   created () {
-      this.handleEdit()
+    // alert(111)
+    // this.handleEdit()
+    // debugger
+    this.form.rulesJson[0].specialTagName = this.sTagIndex.specialTagDetail.specialTag.specialTagName
   }
 }
 </script>

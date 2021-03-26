@@ -87,9 +87,9 @@
 </template>
 
 <script>
-    import labelZone from './LabelZone'
-    import myCollect from './MyCollect'
-    import tempLabelIndex from './TempLabelIndex'
+    import labelZone from '../LabelSquare/LabelZone'
+    import myCollect from '../LabelSquare/MyCollect'
+    import tempLabelIndex from '../LabelSquare/TempLabelIndex'
     export default {
         name: "labelSquareAA",
         components: {
@@ -117,6 +117,18 @@
                 addForm: this.genDefaultForm(),
                 tempCheckList: [],
                 bottomHeight: 169+'px'
+            }
+        },
+        
+        inject: ['sTagIndex'],
+        watch: {
+            initTagList: {
+                handler: function (val, oldVal) {
+                    // debugger
+                    this.tagList = val
+                    
+                },
+                deep: true
             }
         },
         methods: {
@@ -235,9 +247,14 @@
                 this.setContentBottomMargin()
             },
             saveAndNext(mode) {
-               
-                let addForm = JSON.stringify(this.addForm)
-                addForm = JSON.parse(addForm)
+                debugger
+                const conditionTagIds = this.tagList.map(function (v) {
+                    return parseInt(v.tagId)
+                }) || []
+                this.addForm = {
+                    conditionTagIds
+                }
+                let addForm = JSON.parse(JSON.stringify(this.addForm))
                 if (addForm.conditionTagIds.length === 0) {
                     this.$message.error('请选择策略维度！')
                     return
@@ -246,101 +263,44 @@
                 console.log('tagList====', this.tagList)
                 // eslint-disable-next-line
                 this.$emit('policyNextStep', this.tagList)
-                return
-
-                if (mode === 1) {
-                    if (this.addForm.recordId) {
-                        this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                            if (data.policyId) {
-                                this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                    confirmButtonText: '确定',
-                                    cancelButtonText: '取消',
-                                    type: 'warning'
-                                }).then(() => {
-                                    this.$message({
-                                        type: 'success',
-                                        message: '即将自动跳转至策略列表页'
-                                    })
-                                    this.$emit('handleDirectStrategyList')
-                                    // this.$router.push({ path: 'launch/strategyList' })
-                                }).catch(() => {
-                                })
-                            } else {
-                                this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                            }
-                        })
-                    } else {
-                        this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                            if (data.policyId) {
-                                this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                    confirmButtonText: '确定',
-                                    cancelButtonText: '取消',
-                                    type: 'warning'
-                                }).then(() => {
-                                    this.$message({
-                                        type: 'success',
-                                        message: '即将自动跳转至策略列表页'
-                                    })
-                                    this.$emit('handleDirectStrategyList')
-                                }).catch(() => {
-                                })
-                            } else {
-                                this.addForm.recordId = data.recordId
-                                this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                            }
-                        })
-                    }
-                } else {
-                    let oldFormData = {
-                        policyName: addForm.policyName,
-                        conditionTagIds: addForm.conditionTagIds
-                    }
-                    this.$service.policyAddSave(oldFormData).then((data) => {
-                        if (data.policyId) {
-                            this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                confirmButtonText: '确定',
-                                cancelButtonText: '取消',
-                                type: 'warning'
-                            }).then(() => {
-                                this.$message({
-                                    type: 'success',
-                                    message: '即将自动跳转至策略列表页'
-                                })
-                                this.$emit('handleDirectStrategyList')
-                                // this.$router.push({ path: 'launch/strategyList' })
-                            }).catch(() => {
-                            })
-                        } else {
-                            // this.$root.$emit('stratege-list-refresh')
-                            // this.$router.push({path: 'launch/strategyList'})
-                            this.$emit('handleDirectStrategyList')
-                            this.$emit('resetFormData')
-                        }
-                    })
-                }
-                    
             },
             getPolicyDetail () {
-                this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
+                // this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
+                //     const formData = data
+                //     formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
+                //         return parseInt(v)
+                //     })
+                //     this.addForm = {
+                //         recordId: this.recordId,
+                //         policyName: formData.policyName,
+                //         conditionTagIds: formData.conditionTagIds
+                //     }
+                // })
+
+                console.log('123=======', this.$route.query.specialTagId)
+                this.$service.specialTagDetail({ specialTagId: this.$route.query.specialTagId }).then((data) => {
+                    // debugger
                     const formData = data
                     formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
                         return parseInt(v)
                     })
                     this.addForm = {
-                        recordId: this.recordId,
                         policyName: formData.policyName,
                         conditionTagIds: formData.conditionTagIds
                     }
                 })
+
             }
         },
         created () {
             this.fetchCheckListData()
             this.fetchTempCheckListData()
-            if (this.recordId) {
-                this.getPolicyDetail()
+            
+            // if (this.$route.query.specialTagId) {
+            //     this.getPolicyDetail()
                 this.tagList = this.initTagList
-            }
+                // this.tagList = this.sTagIndex.specialTagDetail.tagId
+            // }
         }
     }
 </script>

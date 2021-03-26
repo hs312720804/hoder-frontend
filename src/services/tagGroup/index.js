@@ -157,15 +157,18 @@ export function specialTagChild(params) {
     })
 }
 // 特定标签--修改
-// export function editSpecialTag(params) {
-//     return this.fetch({
-//         method: 'PUT',
-//         url: `api/specialTag/${params.specialTagId}`,
-//     })
-// }
 export function editSpecialTag({rulesJson}) {
     return this.fetch({
         method: 'put',
+        url: `api/specialTag`,
+        data: rulesJson,
+        isJSON: true
+    })
+}
+// 特定标签--新建
+export function addSpecialTag({rulesJson}) {
+    return this.fetch({
+        method: 'post',
         url: `api/specialTag`,
         data: rulesJson,
         isJSON: true

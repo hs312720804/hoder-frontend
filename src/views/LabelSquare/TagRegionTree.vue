@@ -56,7 +56,8 @@
                 // if (node.) {
 
                 // }
-                this.$emit('edit', parentId, node.data.id, node.data.label)
+                // this.$emit('edit', parentId, node.data.id, node.data.label)
+                this.$emit('edit', node.data.id)
             }, 
             fetchRegionData() {
                 const filter = {

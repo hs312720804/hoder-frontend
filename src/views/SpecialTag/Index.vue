@@ -34,7 +34,7 @@
 
 <script>
     import createCrowd from './CreateCrowd'
-    import newCreatePolicy from '../LabelSquare/AddOrEditSpecialTag'
+    import newCreatePolicy from './AddOrEditSpecialTag'
     export default {
         name: "index",
         components: {
@@ -43,21 +43,33 @@
             // LaunchToBusiness,
             newCreatePolicy
         },
+        provide () {
+            return {
+                sTagIndex: this
+            }
+        },
         data () {
             return {
                 activeStep: 0,
                 recordId: undefined,
                 tempPolicyAndCrowd: {},
                 initTagList: [],
-                routeSource: undefined
+                routeSource: undefined,
+                specialTagDetail: {}
             }
         },
         watch: {
-            '$route.params.source' : function (val, oldVal) {
-                if(val != oldVal) {
-                    this.routeSource = val ? val : undefined
+            // '$route.params.source' : function (val, oldVal) {
+            //     if(val != oldVal) {
+            //         this.routeSource = val ? val : undefined
+            //     }
+            // },
+            '$route.query.specialTagId' : function (val, oldVal) {
+                if(val != oldVal && !!val) {
+                    this.getSpecialTagDetail()
                 }
             }
+            
         },
         methods: {
             handleNextStep(step, recordId) {
@@ -80,6 +92,7 @@
                 this.activeStep = 1
                 // this.recordId = recordId
                 this.initTagList = tagList
+                // this.initTagList = [4398]
             },
             resetFormData () {
                 this.activeStep = 0
@@ -92,10 +105,25 @@
                 } else {
                     this.$router.push({ path: 'launch/strategyList' })
                 }
+            },
+            getSpecialTagDetail () {
+                console.log('123=======', this.$route.query.specialTagId)
+                this.$service.specialTagDetail({ specialTagId: this.$route.query.specialTagId }).then((data) => {
+                    // debugger
+                    this.specialTagDetail = data
+                    this.initTagList = this.specialTagDetail.tags || []
+                    console.log('this.specialTagDetail===', JSON.stringify(this.specialTagDetail))
+                })
             }
         },
         created () {
-            if (this.$route.params.source) {this.routeSource = this.$route.params.source}
+            // if (this.$route.params.source) {this.routeSource = this.$route.params.source}
+             if (this.$route.query.specialTagId) {
+                this.getSpecialTagDetail()
+            }
+        },
+        destroyed() {
+            // debugger
         }
     }
 </script>

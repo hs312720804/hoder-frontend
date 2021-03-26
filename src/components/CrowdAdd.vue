@@ -494,7 +494,7 @@
               </el-radio-group>
             </el-form-item>
             <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-              <el-input-number size="medium" placeholder="不能大于10万" :max="100000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+              <el-input-number size="medium" placeholder="不能大于100万" :max="100000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
             </el-form-item>
             <el-form-item label="备注" :prop="formProp('remark')">
               <el-input v-model="crowd.remark" placeholder="备注"></el-input>
