@@ -798,7 +798,7 @@ export default {
       // debugger
       console.log('trigger setInputValue method')
       if (val !== this.inputValue) {
-        debugger
+        // debugger
           if (val.length > 0) {
               this.inputValue = val
               this.setSeq()
