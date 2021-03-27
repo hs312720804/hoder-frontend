@@ -89,7 +89,8 @@
                     //     return resolve(treeData)
                     // })
                     const filter = {
-                        tagId: this.tagId
+                        tagId: this.tagId,
+                        pageSize: 100
                     }
                     return this.$service.specialTagDetailList(filter).then((data) => {
                         // eslint-disable-next-line
@@ -97,7 +98,7 @@
                         // this.dataSourceEnum = data.dataSourceEnum
                         // this.typeEnum = data.typeEnum
                         // this.tagCategory = data.tagCategory
-                        let treeData = data.slice().map(item => {
+                        let treeData = data.list.slice().map(item => {
                             return {
                                 id: item.specialTagId,
                                 label: item.specialTagName,

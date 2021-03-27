@@ -27,11 +27,20 @@
             </el-form>
         </div>
         <el-table border :data="itemList">
-            <el-table-column prop="attrId" label="ID" width="140">
+            <el-table-column prop="specialTagId" label="ID" width="140">
             </el-table-column>
-            <el-table-column prop="attrName" label="名称">
+            <el-table-column prop="specialTagName" label="名称">
             </el-table-column>
-            <el-table-column prop="attrValue" label="值">
+            <el-table-column label="值">
+                <template slot-scope="scope">
+                    <el-button
+                        size="small"
+                        type="success"
+                        @click="handleEditTag(scope.row)"
+                    >
+                        编辑
+                    </el-button>
+                </template>
             </el-table-column>
             <el-table-column label="状态">
                 <template slot-scope="scope">
@@ -41,7 +50,7 @@
                     <div v-else>暂无状态信息</div>
                 </template>
             </el-table-column>
-            <el-table-column prop="operation" label="操作" width="220"
+            <!-- <el-table-column prop="operation" label="操作" width="220"
                              v-if="tagCategory.dataSource !== 2"
             >
                 <template slot-scope="scope">
@@ -54,23 +63,15 @@
                     >
                         编辑
                     </el-button>
-                    <el-button
-                        size="small"
-                        type="info"
-                        v-permission="'hoder:label:attr:del'"
-                        @click="handleDeleteTag(scope.row)"
-                    >
-                        删除
-                    </el-button>
                     </el-button-group>
                 </template>
-            </el-table-column>
+            </el-table-column> -->
         </el-table>
         <el-pagination
             class="pagination"
-            :current-page.sync="pagination.currentPage"
+            :current-page.sync="pagination.pageNum"
             :page-size.sync="pagination.pageSize"
-            :total="pagination.total"
+            :total="total"
             @size-change="fetchData"
             @current-change="fetchData"
             :page-sizes="[10, 20, 50, 100]"
@@ -95,7 +96,8 @@ export default {
             itemList: [],
             tag: {},
             pagination: {
-
+                pageNum: 1,
+                pageSize: 10    
             },
             filter: {
                 name: undefined,
@@ -103,7 +105,8 @@ export default {
             statusList: {
                 '1': '启用',
                 '2': '禁用'
-            }
+            },
+            total: 0
         }
     },
     props: ['tagId', 'tagCategory', 'typeEnum', 'dataSourceEnum'],
@@ -122,12 +125,13 @@ export default {
             //     this.pagination = pagination
             // })
             const filter = {
-                tagId: this.tagId
+                tagId: this.tagId,
+                ...this.pagination
             }
             this.$service.specialTagDetailList(filter).then((data) => {
                 // eslint-disable-next-line
-                debugger
-                this.itemList = data
+                this.itemList = data.list
+                this.total = data.total
                 console.log('data===>', data)
                 // this.dataSourceEnum = data.dataSourceEnum
                 // this.typeEnum = data.typeEnum
@@ -157,10 +161,11 @@ export default {
             this.$refs.BatchUpload.showBatchDialog = true
         },
         handleEditTag(row) {
-            this.tag = JSON.parse(JSON.stringify(row))
-            this.tag.tagType = this.tagCategory.tagType
-            this.tag.tagId = this.tagCategory.tagId
-            this.$refs.tagUpsert.showCreateDialog = true
+            this.$emit('edit', row.specialTagId)
+            // this.tag = JSON.parse(JSON.stringify(row))
+            // this.tag.tagType = this.tagCategory.tagType
+            // this.tag.tagId = this.tagCategory.tagId
+            // this.$refs.tagUpsert.showCreateDialog = true
         },
         handleDeleteTag(row) {
             this.$confirm('确定删除？')

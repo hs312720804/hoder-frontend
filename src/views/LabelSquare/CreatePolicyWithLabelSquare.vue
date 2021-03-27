@@ -41,6 +41,18 @@
             >
             </my-collect>
           </el-tab-pane>
+          <el-tab-pane label="特色标签" name="specialTag">
+                <special-tag
+                        :tagName="myCollectTagName"
+                        :checkList="checkList"
+                        @clear-search="handleClearSearch"
+                        @change-checkList="handleCheckListChange"
+                        @get-table-selected="handleGetTableSelectedData"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                >
+                </special-tag>
+            </el-tab-pane>
         </el-tabs>
     </div>
     <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
@@ -91,12 +103,14 @@
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
     import tempLabelIndex from './TempLabelIndex'
+    import specialTag from './SpecialTag'
     export default {
         name: "labelSquareAA",
         components: {
             labelZone,
             myCollect,
-            tempLabelIndex
+            tempLabelIndex,
+            specialTag
         },
         props: ['recordId','initTagList'],
         data () {

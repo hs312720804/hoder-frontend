@@ -147,6 +147,7 @@ export function specialTagDetailList(params) {
     return this.fetch({
         method: 'get',
         url: `api/specialTag/list/${params.tagId}`,
+        params
     })
 }
 // 特定标签-查看详情--省份下的市的列表
