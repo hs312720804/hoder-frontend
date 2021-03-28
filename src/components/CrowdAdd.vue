@@ -78,7 +78,7 @@
                             <el-option value=">"></el-option>
                             <el-option value="<"></el-option>
                           </template>
-                          <template v-if="childItem.tagType === 'string'">
+                          <template v-if="childItem.tagType === 'string' || childItem.tagType === 'mix'">
                             <el-option value="=" label="是"></el-option>
                             <el-option value="!=" label="不是"></el-option>
                             <el-option value="like" label="包含"></el-option>
@@ -104,6 +104,7 @@
                         </el-select>
                       </span>
                       <span class="in">
+                        <!-- 111111111111111111 -->
                         <span v-if="childItem.tagType === 'time'">
                           <template v-if="childItem.isDynamicTime === 2">
                             <el-select
@@ -152,7 +153,7 @@
                           </template>
                         </span>
                         <template
-                          v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
+                          v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect' || childItem.tagType === 'mix') && cache[childItem.tagId]">
                             <el-select
                                   v-if="childItem.tagType==='string' && childItem.operator === 'null'"
                                   v-model="childItem.value"
@@ -162,22 +163,41 @@
                             <el-option label="空" value="nil"></el-option>
                           </el-select>
                           <template v-else>
-                          <el-select
-                                v-model="childItem.value"
-                                class="inline-input"
-                                filterable
-                                :key="index+'select'"
-                                default-first-option
-                                placeholder="请输入或选择"
-                                :disabled="cache[childItem.tagId].select"
-                          >
-                            <el-option
-                              v-for="item in cache[childItem.tagId].list"
-                              :key="index+item.attrValue+item.attrId"
-                              :label="item.attrName"
-                              :value="item.attrValue"
-                            ></el-option>
-                          </el-select>
+                            <el-select
+                                  v-model="childItem.value"
+                                  class="inline-input"
+                                  filterable
+                                  :key="index+'select'"
+                                  default-first-option
+                                  placeholder="请输入或选择"
+                                  :disabled="cache[childItem.tagId].select"
+                            >
+                              <el-option
+                                v-for="item in cache[childItem.tagId].list"
+                                :key="index+item.attrValue+item.attrId"
+                                :label="item.attrName"
+                                :value="item.attrValue"
+                              ></el-option>
+                            </el-select>
+                            <!-- 1111111111111111111 -->
+                            <!-- {{childItem}} -->
+                            <el-select
+                                  v-if="childItem.tagCode === 'mix_area'"
+                                  v-model="childItem.value"
+                                  class="inline-input"
+                                  filterable
+                                  :key="index+'select'"
+                                  default-first-option
+                                  placeholder="请输入或选择"
+                                  :disabled="cache[childItem.tagId].select"
+                            >
+                              <el-option
+                                v-for="item in cache[childItem.tagId].list"
+                                :key="index+item.attrValue+item.attrId"
+                                :label="item.attrName"
+                                :value="item.attrValue"
+                              ></el-option>
+                            </el-select>
                           </template>
                         </template>
                         <el-input-number
@@ -652,6 +672,33 @@ export default {
         this.tagsListTotal = data.pageInfo.total
       });
     },
+    // 1111111111111111111111
+    fetchSpecialTagSuggestions (tagId) {
+      const filter = {
+          tagId,
+          pageSize: 100
+      }
+      // debugger
+      this.$service.specialTagDetailList(filter).then((data) => {
+      //     // this.itemList = data.list
+      //     // this.total = data.total
+      //     // console.log('data===>', data)
+        const list = data.list.map(item => {
+          return {
+            attrId: item.specialTagId,
+            attrName: item.specialTagName,
+            attrValue: item.specialTagId,
+            dataSource: 7
+          }
+        })
+        // debugger
+        this.$set(this.cache, tagId, {
+          select: false,
+          list
+        })
+        console.log('123cache===', this.cache)
+      })
+    },
     fetchTagSuggestions (tagId) {
       this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 }).then(data => {
         this.$set(this.cache, tagId, {
@@ -708,8 +755,11 @@ export default {
       if (!crowd.tagIds.includes(tag.tagId)) {
         crowd.tagIds.push(tag.tagId)
       }
+      debugger
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) { this.fetchTagSuggestions(tag.tagId) }
+      } else if (tag.tagType === 'mix') {
+        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId) }
       }
       crowd.rulesJson.rules.push({
         condition: "AND",
@@ -746,6 +796,8 @@ export default {
       }
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) { this.fetchTagSuggestions(tag.tagId) }
+      } else if (tag.tagType === 'mix') {
+        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId) }
       }
       if (!crowd.tagIds.includes(tag.tagId)) {
         crowd.tagIds.push(tag.tagId)
