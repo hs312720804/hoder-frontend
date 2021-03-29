@@ -157,7 +157,7 @@ export default {
                 if (!this.validateForm(form.rulesJson)) {
                     return
                 }
-                debugger
+                // debugger
                 form.rulesJson[0].tagIds = this.initTagList.map((e) => e.tagId)
                 form.rulesJson = form.rulesJson.map((e) => {
                     // e.purpose = form.purpose
@@ -196,7 +196,10 @@ export default {
                       // alert('成功！')
                       // 返回
                       this.$router.push({
-                          name: 'labelSquare'
+                        path: '/labelSquare',
+                        query: {
+                            refresh: true
+                        }
                       })
                   })
                 } else {
@@ -205,7 +208,10 @@ export default {
                       // alert('成功！')
                       // 返回
                       this.$router.push({
-                          name: 'labelSquare'
+                        path: '/labelSquare',
+                        query: {
+                            refresh: true
+                        }
                       })
                   })
                 }

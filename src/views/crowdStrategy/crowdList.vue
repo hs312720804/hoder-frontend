@@ -1017,7 +1017,8 @@ export default {
             2: 'danger',
             3: '',
             5: 'warning',
-            6: 'warningOrange'
+            6: 'warningOrange',
+            7: 'warningOrange2'
         },
         conditionEnum: {
           'AND': '且',
@@ -2695,6 +2696,12 @@ fieldset>div
     color #512DA8
     background-color rgba(119, 81, 200, .4)
     border-color rgba(81, 45, 168, .45)
+    .el-tag__close
+      color #512DA8
+  >>> .el-tag--warningOrange2
+    color: #ff4b13;
+    background-color: rgba(255, 108, 0, 0.4);
+    border-color: #efa231cf;
     .el-tag__close
       color #512DA8
 .button-margin

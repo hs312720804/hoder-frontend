@@ -110,6 +110,17 @@ export default {
         }
     },
     props: ['tagId', 'tagCategory', 'typeEnum', 'dataSourceEnum'],
+    watch: {
+        $route: {
+          handler() {
+                console.log('this.$route.query===', this.$route.query)
+                if (this.$route.query.refresh) {
+                    this.fetchData()
+                }
+            },
+            deep: true,
+        }
+    },
     methods: {
         getFilter() {
             return {
