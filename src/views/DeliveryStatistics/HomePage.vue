@@ -41,7 +41,7 @@
                         <div class="unit-content">
                             <el-row :gutter="20">
                                 <el-col :span="12">
-                                    <ve-wordcloud :data="chartData" :settings="chartSettings" height="300px"></ve-wordcloud>
+                                    <ve-wordcloud :data="chartData" :settings="chartSettings" :extend="setWordCloudExtend()" height="300px"></ve-wordcloud>
                                 </el-col>
                                 <el-col :span="12">
                                     <div class="main" ref="useScene"></div>
@@ -58,7 +58,7 @@
                         <div class="unit-content">
                             <div class="home-page-recommend">
                                 <div class="home-page-recommend-item" v-for="(item,index) in homePageRecommendation" :key="index">
-                                    <div class="home-page-recommend-item--number">{{item.value}}</div>
+                                    <div class="home-page-recommend-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -88,7 +88,7 @@
                         <div class="unit-content">
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagAllData" :key="index">
-                                    <div class="tag-all-item--number">{{item.count}}</div>
+                                    <div class="tag-all-item--number">{{cc_format_number(item.count)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -99,7 +99,8 @@
                         <div class="unit-content">
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
-                                    <div class="tag-all-item--number">{{item.value}}</div>
+                                    <div v-if="item.name === '标签使用率'" class="tag-all-item--number">{{item.value}}</div>
+                                    <div v-else class="tag-all-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -124,7 +125,7 @@
                         <div class="unit-content">
                             <div class="launch-all-item-container">
                                 <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
-                                    <div class="launch-all-item--number">{{item.count}}</div>
+                                    <div class="launch-all-item--number">{{cc_format_number(item.count)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
@@ -136,7 +137,7 @@
                                 <div class="unit-header clearfix">业务人群使用情况</div>
                                 <div class="unit-content">
                                     <div class="business-use-text">
-                                        <div class="number">{{businessUseCrowdData.count}}</div>
+                                        <div class="number">{{cc_format_number(businessUseCrowdData.count)}}</div>
                                         <div class="name">{{businessUseCrowdData.name}}</div>
                                     </div>
                                 </div>
@@ -303,13 +304,10 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table} from 'admin-toolkit'
     import veWordcloud from 'v-charts/lib/wordcloud'
     export default {
-        name: "StatisticsHomePage",
+        name: "statisticsHomePageAA",
         components: {
-            ContentWrapper,
-            Table,
             veWordcloud
         },
         data () {
@@ -417,16 +415,34 @@
             }
         },
         methods: {
+            setWordCloudExtend () {
+                const _this = this
+                return {
+                    tooltip: {
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return a.name + ':' + _this.cc_format_number(a.value)
+                        }
+                    }
+                }
+            },
             // 通用单线性参数设置
             setLineEchart (element,title,xData,yData) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
                     },
                     xAxis: {
                         type: 'category',
@@ -460,51 +476,9 @@
                     }]
                 })
             },
-            // 通用多线性参数设置
-            setLinesEchart (element,title,xData,yData,legend) {
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    tooltip: {
-                        trigger: 'axis'
-                    },
-                    legend: {
-                        data: legend
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: xData,
-                        axisLabel: {
-                            interval: 0,
-                            rotate: -45
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisTick: {
-                            inside: true
-                        },
-                        scale: true,
-                        axisLabel: {
-                            margin: 2,
-                            formatter: function (value) {
-                                if (value >= 10000 && value < 10000000) {
-                                    value = value / 10000 + "万";
-                                }
-                                else if (value >= 10000000) {
-                                    value = value / 10000000 + "千万";
-                                } return value;
-                            }
-                        },
-                    },
-                    series: yData
-                })
-            },
             // 通用圆饼图
             setCircleEcharts(element,title,legend,data,circleType){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -513,7 +487,9 @@
                     },
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
                     },
                     legend: {
                         orient: 'vertical',
@@ -552,6 +528,7 @@
             },
             // 通用嵌套环形图
             setCircleDoubleEcharts(element,title,legend,dataTotal,dataChild){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -560,9 +537,16 @@
                     },
                     tooltip: {
                         trigger: 'item',
-                        // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                        formatter: "{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
+                    // tooltip: {
+                    //     trigger: 'item',
+                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    //     formatter: "{b}: {c} ({d}%)"
+                    // },
                     legend: {
                         orient: 'vertical',
                         x: 'right',
@@ -653,16 +637,26 @@
             },
             // 通用雷达图
             setRadarEcharts(element,title,legend,data,insideChildData){
+                // const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // 可能不需要tooltip
                     tooltip: {
-                        // trigger: 'item',
-                        // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        trigger: 'item'
+                        // formatter:function (a,b) {
+                        //     debugger
+                        //     return a.name + ':' + _this.cc_format_number(a.data.value)
+                        // }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
+                    // tooltip: {
+                    //     // trigger: 'item',
+                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    // },
                     legend: {
                         orient: 'vertical',
                         x: 'left',
@@ -711,14 +705,22 @@
             },
             // 通用多线性参数设置
             setLinesEchart (element,title,xData,yData,legend) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
+                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
                     },
                     legend: {
                         data: legend
@@ -754,6 +756,7 @@
             },
             // 通用柱状图参数设置
             setBarEchart (element,title,xData,yData) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -761,8 +764,14 @@
                         text: title
                     },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     xAxis: {
                         type: 'category',
                         data: xData,
@@ -842,6 +851,7 @@
                 })
             },
             setMapEcharts (element,title,data) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 // 中国地图
@@ -851,10 +861,16 @@
                         // subtext: '纯属虚构',
                         left: 'center'
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
-                        formatter: '{b}<br/>{c}'
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                        }
                     },
+                    // tooltip : {
+                    //     trigger: 'item',
+                    //     formatter: '{b}<br/>{c}'
+                    // },
                     // legend: {
                     //     orient: 'vertical',
                     //     left: 'left',

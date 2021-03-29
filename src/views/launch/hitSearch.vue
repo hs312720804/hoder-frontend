@@ -1,6 +1,6 @@
 <template>
     <div>
-        <el-form :model="outForm" inline label-width="200px">
+        <el-form :model="outForm" inline label-width="100px" class="first-form">
             <el-form-item label="MAC地址：">
                 <el-input v-model="outForm.MAC" clearable></el-input>
             </el-form-item>
@@ -11,7 +11,7 @@
                 <el-checkbox v-model="outForm.auto">自动填充参数</el-checkbox>
             </el-form-item>
         </el-form>
-        <el-form :model="form" inline label-width="200px">
+        <el-form :model="form" inline label-width="100px" class="second-form">
             <el-form-item label="devId：">
                 <el-input v-model="form.devId" clearable></el-input>
             </el-form-item>
@@ -31,19 +31,22 @@
                 <el-radio :label="true" v-model="form.uniqueFlag">是</el-radio>
                 <el-radio :label="false" v-model="form.uniqueFlag">否</el-radio>
             </el-form-item>
+            <el-form-item label=""></el-form-item>
             <el-form-item label=" ">
                 <el-button type="primary" @click="handleSearch">查询</el-button>
                 <el-button type="info" @click="handleReset">重置</el-button>
                 <el-button v-show="showNext" type="success" @click="handleNext">下一条</el-button>
             </el-form-item>
         </el-form>
-        <div class="content" v-if="resultContent">{{resultContent}}</div>
+        <div class="content" v-if="resultContent">
+            <pre><code>{{resultContent}}</code></pre>
+        </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "hitSearch",
+        name: "hitSearchAA",
         data () {
             return {
                 form: this.genForm(),
@@ -92,7 +95,12 @@
             handleSearch () {
                 const form = this.form
                 this.$service.getHitSearchData(form).then(data => {
-                    this.resultContent = data
+                    if (data) {
+                       this.resultContent = data
+                    } else {
+                        this.resultContent = '暂无数据'
+                    }
+
                 })
             },
             checkOutForm () {
@@ -140,4 +148,19 @@
     margin 20px
     border 1px solid #ccc
     padding 20px
+.first-form
+    border-bottom 1px dashed #ccc
+    margin-bottom 20px
+.first-form >>> .el-form-item--mini.el-form-item,
+.first-form >>> .el-form-item--small.el-form-item
+    width 29%
+.first-form >>> .el-form-item--mini.el-form-item:nth-child(2),
+.first-form >>> .el-form-item--small.el-form-item:nth-child(2)
+    width 26%
+.second-form >>> .el-form-item--mini.el-form-item:nth-child(odd),
+.second-form >>> .el-form-item--small.el-form-item:nth-child(odd)
+    width 55%
+.second-form >>> .el-form-item--mini.el-form-item:nth-child(even),
+.second-form >>> .el-form-item--small.el-form-item:nth-child(even)
+    width 32%
 </style>

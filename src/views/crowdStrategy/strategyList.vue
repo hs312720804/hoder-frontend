@@ -1,74 +1,80 @@
 <template>
-  <div>
+  <div class="strategy-list">
     <div class="TopNav">
-      <div class="left">
-        <div>
-          <el-button
-                  type="primary"
-                  size="small"
-                  @click="handleAdd"
-                  v-permission="'hoder:policy:add'"
-          >
-            <a class="fa fa-plus" style="color: white;"></a>新增
-          </el-button>
-          <el-button
-                  type="primary"
-                  size="small"
-                  @click="freshService"
-                  v-permission="'hoder:policy:add'"
-          >
-            <a class="fa fa-plus" style="color: white;"></a>刷新策略服务
-          </el-button>
-          <el-popover
-                  placement="top"
-                  trigger="click"
-                  class="popover-button"
-          >
-            <div>
-              <el-checkbox-group v-model="checkList">
-                <el-checkbox label="createTime">创建时间</el-checkbox>
-                <el-checkbox label="creatorName">创建人</el-checkbox>
-                <el-checkbox label="useStatus">投放状态</el-checkbox>
-                <el-checkbox label="department">业务部门</el-checkbox>
-              </el-checkbox-group>
-            </div>
-            <el-button slot="reference">选择列表展示维度</el-button>
-          </el-popover>
-          <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
-        </div>
-      </div>
-      <div class="right">
-        <!-- form search -->
-        <el-form
-                :inline="true"
-                :model="searchForm"
-                ref="searchForm"
-                @submit.native.prevent="submitForm"
-        >
-          <el-select v-model="searchForm.constType">
-            <el-option label="策略名称模糊查询" value="POLICY_NAME"></el-option>
-            <el-option label="策略ID匹配查询" value="POLICY_ID"></el-option>
-            <el-option label="策略维度方式查询" value="TAG_NAME"></el-option>
-            <el-option label="创建人名称模糊查询" value="CREATOR_NAME"></el-option>
-            <el-option label="创建人部门名称模糊查询" value="OFFICE_NAME"></el-option>
-            <el-option label="人群ID匹配查询" value="CROWD_ID"></el-option>
-          </el-select>
-          <el-form-item>
+      <div class="header">
+        <div class="header-left">
+          <div>
+            <el-radio-group v-model="showAll" @change="handleShowAllChange">
+              <el-radio :label="true">全部</el-radio>
+              <el-radio :label="false">我的</el-radio>
+            </el-radio-group>
+          </div>
+          <div class="search-input">
             <el-input
                     v-model="searchForm.policyName"
-                    style="width: 200px" :placeholder="policyNameHolder"
+                    style="width: 350px"
+                    placeholder="支持按策略、人群、创建人、部门搜索"
                     :clearable='true'
-                    @keyup.enter.native="submitForm"
+                    @keyup.enter.native="handleSearch"
             ></el-input>
-          </el-form-item>
-          <el-form-item>
-            <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-            <el-button type="primary" size="small" @click="handleReset">
-              <a class="fa fa-refresh" style="color: white;"></a> 重置
+            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          </div>
+        </div>
+        <div class="header-right">
+          <!--<div class="search-input">-->
+            <!--<el-input-->
+                    <!--v-model="searchForm.policyName"-->
+                    <!--style="width: 350px"-->
+                    <!--placeholder="支持按策略、人群、创建人、部门搜索"-->
+                    <!--:clearable='true'-->
+                    <!--@keyup.enter.native="handleSearch"-->
+            <!--&gt;</el-input>-->
+            <!--<i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>-->
+          <!--</div>-->
+          <div>
+            <el-button
+                    type="primary"
+                    size="small"
+                    @click="handleAdd"
+                    v-permission="'hoder:policy:add'"
+            >
+              <a class="fa fa-plus" style="color: white;"></a>新增
             </el-button>
-          </el-form-item>
-        </el-form>
+          </div>
+            <!--<el-button-->
+                    <!--type="primary"-->
+                    <!--size="small"-->
+                    <!--@click="freshService"-->
+                    <!--v-permission="'hoder:policy:add'"-->
+            <!--&gt;-->
+              <!--<a class="fa fa-plus" style="color: white;"></a>刷新策略服务-->
+            <!--</el-button>-->
+          <div>
+            <el-popover
+                    placement="top"
+                    trigger="click"
+                    class="popover-button"
+            >
+              <div>
+                <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                  <el-checkbox label="createTime">创建时间</el-checkbox>
+                  <el-checkbox label="creatorName">创建人</el-checkbox>
+                  <el-checkbox label="useStatus">投放状态</el-checkbox>
+                  <el-checkbox label="department">业务部门</el-checkbox>
+                </el-checkbox-group>
+              </div>
+              <i
+                      class="el-icon-cc-setting operate"
+                      slot="reference"
+              >
+              </i>
+              <!--<el-button slot="reference">选择列表展示维度</el-button>-->
+            </el-popover>
+            <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
+          </div>
+        </div>
       </div>
+
     </div>
     <!-- talbe -->
     <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
@@ -80,19 +86,36 @@
           <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="tagsList" label="策略纬度（红色为大数据标签，绿色为自定义标签,蓝色标签为账号标签）" width="270px">
-        <template scope="scope">
-          <el-tag
-                  size="mini"
-                  v-for="item in scope.row.tagsList"
-                  :key="item.tagId"
-                  :type= "item.dataSource === 2 ? 'danger' : (item.dataSource === 1 ? 'success' : '')"
-          >{{item.tagName}}</el-tag>
+      <el-table-column prop="tagsList" width="400px">
+        <template
+                slot="header"
+                slot-scope="{ column, $index }"
+        >
+          策略纬度（
+          <span class="checkbox--red">红色</span>为大数据标签,
+          <span class="checkbox--green">绿色</span>为自定义标签,
+          <span class="checkbox--blue">蓝色</span>为账号标签,
+          <span class="checkbox--yellow">黄色</span>为实时标签,
+          <span class="checkbox--orange">紫色</span>为特定标签）
+        </template>
+        <template slot-scope="scope">
+          <span v-for="item in scope.row.tagsList"
+                :key="item.tagId"
+                style="margin: 0 2px"
+                :class="dataSourceColorClassEnum[item.dataSource]">
+            {{item.tagName}}
+          </span>
+          <!--<el-tag-->
+                  <!--size="mini"-->
+                  <!--v-for="item in scope.row.tagsList"-->
+                  <!--:key="item.tagId"-->
+                  <!--:type= "dataSourceColorEnum[item.dataSource]"-->
+          <!--&gt;{{item.tagName}}</el-tag>-->
         </template>
       </el-table-column>
-      <el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>
+      <!--<el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>-->
       <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
         </template>
@@ -100,19 +123,28 @@
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="60"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="70"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('useStatus') > -1)" prop="useStatus" label="状态" width="60">
-        <template scope="scope">
+        <template slot-scope="scope">
           <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
           <span v-else>未投放</span>
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
-          <el-button-group>
-            <el-button size="small" type="success" @click="crowdList(scope.row)">人群列表</el-button>
-            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="warning" @click="handleLaunch(scope.row)">投放策略</el-button>
+        <template slot-scope="scope">
+          <div class="el-button-group">
+            <el-button size="small" type="text" @click="crowdList(scope.row)">查看人群</el-button>
+            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
+            <el-button
+                    size="small"
+                    type="text"
+                    v-permission="'hoder:policy:sync'"
+                    @click="freshCache(scope.row)"
+            >
+              <span v-if="scope.row.status === 1">未同步</span>
+              <span v-if="scope.row.status === 2">已同步</span>
+            </el-button>
             <el-dropdown @command="handleCommand">
-              <el-button size="small" type="primary">
-                操作
+              <el-button size="small" type="text">
+                更多
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
@@ -126,18 +158,33 @@
                 <el-dropdown-item
                         :command="['detail',scope.row]"
                 >查看配置</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-            <el-dropdown @command="handleCommandStastic" >
-              <el-button size="small" type="primary">
-                统计
-              </el-button>
-              <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                        :command="['detail',scope.row]"
-                >使用情况</el-dropdown-item>
+                        v-if="!scope.row.myCollect"
+                        :command="['collect',scope.row]"
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect && !parentSource"
+                        disabled
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
+                        :command="['collect',scope.row]"
+                >从'我的'删除</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['statics',scope.row]"
+                >调用统计</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
+            <!--<el-dropdown @command="handleCommandStastic">-->
+              <!--<el-button size="small" type="text">-->
+                <!--统计-->
+              <!--</el-button>-->
+              <!--<el-dropdown-menu slot="dropdown">-->
+                <!--<el-dropdown-item-->
+                        <!--:command="['detail',scope.row]"-->
+                <!--&gt;使用情况</el-dropdown-item>-->
+              <!--</el-dropdown-menu>-->
+            <!--</el-dropdown>-->
             <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
                 <!--<div>操作</div>-->
                 <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
@@ -157,16 +204,7 @@
                   <!--</li>-->
                 <!--</ul>-->
             <!--</el-button>-->
-            <el-button
-                    size="small"
-                    :type= "scope.row.status === 1 ? 'success' : 'danger'"
-                    v-permission="'hoder:policy:add'"
-                    @click="freshCache(scope.row)"
-            >
-              <span v-if="scope.row.status === 1">未同步</span>
-              <span v-if="scope.row.status === 2">已同步</span>
-            </el-button>
-          </el-button-group>
+          </div>
         </template>
       </el-table-column>
     </el-table>
@@ -213,7 +251,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签，绿色为自定义标签,蓝色为账号标签</div>
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签,紫色为特定标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
@@ -233,7 +271,7 @@
             </div>
               <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
                 <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="item.tDataSource === 2 ? 'checkbox--red' : (item.tDataSource === 1 ? 'checkbox--green' : 'checkbox--blue')"
+                             :class="dataSourceColorClassEnum[item.tDataSource]"
                              :label="item.tagId"
                              :key="item.tagId"
                              @change="handleTagChange($event,item)"
@@ -270,7 +308,7 @@
             <!--</el-tag>-->
             <el-tag v-for="item in tagList"
                     :key="item.tagId"
-                    :type= "(item.dataSource||item.tDataSource) === 1 ? 'success' : ((item.dataSource||item.tDataSource) === 2 ? 'danger' : '')"
+                    :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
                     closable
                     @close="removeTag(item)"
             >
@@ -329,7 +367,7 @@
     <!-- 投放中弹窗-->
     <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
       <!--<div>该策略正在使用情况</div>-->
-      <div>正在投放：<span v-for="item in launchItems" class="launch-item">{{item}}</span></div>
+      <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
     </el-dialog>
     <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
       <LaunchToBusiness
@@ -362,10 +400,10 @@ export default {
       initCurrentPage: 1,
       // 列表页
       searchForm: {
-        policyName: "",
-        constType: 'POLICY_NAME'
+        policyName: ""
+        // constType: 'POLICY_NAME'
       },
-      policyNameHolder: '请输入策略名称',
+      // policyNameHolder: '请输入策略名称',
       title: "",
       showConfiguration: false,
       showStatistics: false,
@@ -424,10 +462,26 @@ export default {
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
       launchSource: 'strategy',
-      checkList: []
+      checkList: [],
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorClassEnum: {
+          1: 'checkbox--green',
+          2: 'checkbox--red',
+          3: 'checkbox--blue',
+          5: 'checkbox--yellow',
+          6: 'checkbox--orange'
+      },
+      dataSourceColorEnum: {
+          1: 'success',
+          2: 'danger',
+          3: '',
+          5: 'warning',
+          6: 'warningOrange'
+      },
+      showAll: false
     }
   },
-  props: ["historyFilter","checkListFilter","parentSource"],
+  props: ["historyFilter","checkListFilter","parentSource","showAllParent"],
   created() {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
@@ -444,9 +498,9 @@ export default {
       //         this.loadData()
       //     }
       // },
-      'searchForm.constType': function (val) {
-          this.policyNameHolder = this.placeHolderInputObject[val]
-      },
+      // 'searchForm.constType': function (val) {
+      //     this.policyNameHolder = this.placeHolderInputObject[val]
+      // },
       time(val,oldVal) {
           if(this.currentPid && oldVal.length !== 0){
               if(this.setDataInMonth(val[0],val[1])){
@@ -580,7 +634,7 @@ export default {
       //row.conditionTagIds.split(",");
     },
     crowdList(row) {
-      this.$emit("openCrowdPage", row, this.criteria, this.checkList)
+      this.$emit("openCrowdPage", row, this.criteria, this.checkList, this.showAll)
     },
     del(row) {
       var id = row.policyId;
@@ -604,36 +658,70 @@ export default {
     //     }
     // },
     // 从服务器读取数据
-    loadData: function() {
+    loadData () {
+     this.$service.getListDimension({type: 1}).then(data => {
+         if (data) {
+             if (data.behaviorShow) {
+                 this.checkList = data.behaviorShow.split(',')
+             }
+         }
+     })
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
       if(this.reloadHistory){
           if(this.historyFilter != null) {
               this.criteria = this.historyFilter
               this.searchForm = {
-                  policyName: this.historyFilter.policyName,
-                  constType: this.historyFilter.constType || 'POLICY_NAME'
+                  policyName: this.historyFilter.policyName
+                  // constType: this.historyFilter.constType || 'POLICY_NAME'
               },
               this.currentPage = this.historyFilter.pageNum || this.currentPage
               this.pageSize = this.historyFilter.pageSize || this.pageSize
           }
+          if(this.showAllParent) {
+              this.showAll = this.showAllParent
+          } else {
+              this.showAll = false
+          }
           this.reloadHistory = false
       }
-      this.checkList = this.checkListFilter
+      // this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
       // 如果是【我的人群】模块进入
-      if (this.parentSource){
+      if (!this.showAll){
           this.$service.getMyCrowdList(this.criteria).then(data => {
-              this.tableData = data.pageInfo.list;
-              this.totalCount = data.pageInfo.total;
+              const originalTableData = data.pageInfo.list
+              this.totalCount = data.pageInfo.total
+              // 单独获得策略标签维度
+              const currentStrategyIds = []
+              originalTableData.forEach(item => {
+                  currentStrategyIds.push(item.policyId)
+              })
+              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
+                  originalTableData.forEach((item) => {
+                      item.tagsList = tagList[item.policyId]
+                  })
+                  this.tableData = originalTableData
+              })
           });
-          this.$appState.$set('GlobalStrategySource', this.parentSource)
+          // this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
           this.$service.policyList(this.criteria).then(data => {
-              this.tableData = data.pageInfo.list;
-              this.totalCount = data.pageInfo.total;
+              const originalTableData = data.pageInfo.list
+              this.totalCount = data.pageInfo.total
+              // 单独获得策略标签维度
+              const currentStrategyIds = []
+              originalTableData.forEach(item => {
+                  currentStrategyIds.push(item.policyId)
+              })
+              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
+                  originalTableData.forEach((item) => {
+                      item.tagsList = tagList[item.policyId]
+                  })
+                  this.tableData = originalTableData
+              })
           });
-          this.$appState.$set('GlobalStrategySource', '')
+          // this.$appState.$set('GlobalStrategySource', '')
       }
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -647,22 +735,16 @@ export default {
       this.loadData();
     },
     // 搜索,提交表单
-    submitForm: function() {
-      this.$refs.searchForm.validate((result) => {
-        if (result) {
-          this.criteria = this.searchForm
-          // pageNum重置为1
-          this.currentPage = 1
-          this.loadData()
-        } else {
-          return false
-        }
-      })
+    handleSearch () {
+       this.criteria = this.searchForm
+       // pageNum重置为1
+       this.currentPage = 1
+       this.loadData()
     },
     // 重置
-    handleReset: function() {
+    handleReset () {
         this.searchForm.policyName = ''
-        this.searchForm.constType = 'POLICY_NAME'
+        // this.searchForm.constType = 'POLICY_NAME'
         this.criteria = {}
         this.loadData()
       // this.$refs.searchForm.resetFields();
@@ -712,20 +794,41 @@ export default {
     handleCommand(scope) {
         const type = scope[0]
         const params = scope[1]
-        if (type === 'edit') {this.handleEdit(params)}
-        else if (type === 'del') {this.del(params)}
-        else if (type === 'detail') {this.seeDevDetail(params)}
+        if (type === 'edit') {
+            this.handleEdit(params)
+        } else if (type === 'del') {
+            this.del(params)
+        } else if (type === 'detail') {
+            this.seeDevDetail(params)
+        } else if (type === 'collect') {
+            this.handlePolicyCollect(params)
+        } else if(type === 'statics') {
+            this.currentPid = scope[1].policyId
+            this.showStatistics = true
+            // 重置时间
+            this.time = [this.startDate,this.endDate]
+            this.time1 = [this.startDate,this.endDate]
+            this.drawPie(this.currentPid,this.startDate,this.endDate)
+            this.drawLines(this.currentPid,this.startDate,this.endDate)
+        }
     },
       // 通用多线性参数设置
       setLinesEchart (element,title,xData,yData,legend) {
+          const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
               title: {
                   text: title
               },
+              // tooltip: {
+              //     trigger: 'axis'
+              // },
               tooltip: {
-                  trigger: 'axis'
+                  trigger: 'item',
+                  formatter:function (a) {
+                      return _this.cc_format_number(a.data)
+                  }
               },
               legend: {
                   data: legend
@@ -760,15 +863,22 @@ export default {
           })
       },
       setCircleEcharts(element,title,legend,data){
+        const _this = this
           let echarts = require('echarts')
           let myChart = echarts.init(this.$refs[element])
           myChart.setOption({
               title: {
                   text: title
               },
+              // tooltip: {
+              //     trigger: 'item',
+              //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+              // },
               tooltip: {
                   trigger: 'item',
-                  formatter: "{a} <br/>{b}: {c} ({d}%)"
+                  formatter:function (a) {
+                      return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                  }
               },
               legend: {
                   orient: 'vertical',
@@ -881,6 +991,25 @@ export default {
     },
     handleCloseDialog () {
         this.showLaunchToBusiness = false
+    },
+    handlePolicyCollect (row) {
+        const collectFlag = row.myCollect
+        const policyId = row.policyId
+        if (collectFlag) {
+            this.$service.removeCollectPolicy({policyId},'成功取消收藏此策略！').then(() => {
+                this.loadData()
+            })
+        } else {
+            this.$service.collectPolicy({policyId},'成功收藏此策略！').then(() => {
+                this.loadData()
+            })
+        }
+    },
+    handleCheckListChange (val) {
+        this.$service.saveListDimension({type: 1,behaviorShow: val.join(',')})
+    },
+    handleShowAllChange () {
+        this.loadData()
     }
   }
 }
@@ -896,11 +1025,15 @@ export default {
   height: 200px
   overflow: auto
 .checkbox--red
-  color red
+  color #f56c6c
 .checkbox--green
-  color green
+  color #67c23a
 .checkbox--blue
-  color blue
+  color #409eff
+.checkbox--yellow
+  color #e6a23c
+.checkbox--orange
+  color #512DA8
 .strategy-search
   display flex
   margin-bottom 10px
@@ -925,6 +1058,9 @@ export default {
 .operate
   position relative
   z-index 0
+  font-size 20px
+  cursor pointer
+  margin-left 10px
 .more-operate
   position absolute
   z-index 999
@@ -965,7 +1101,33 @@ ul > li
   margin-left 20px
 .manual
   margin 20px
-.left
-  >>> .el-button + .el-button
-    margin-right 10px
+.search-input
+  position relative
+  margin 0 15px
+.icon-fixed
+  position absolute
+  top 8px
+  right 28px
+  transform rotate(-90deg)
+.header
+  width 100%
+  display flex
+  justify-content space-between
+  margin-bottom 10px
+  .header-right
+    display flex
+    align-items center
+.el-button-group >>> .el-button
+  float none
+  margin 0 3px
+.strategy-list
+  >>> .el-tag--warningOrange
+    color #512DA8
+    background-color rgba(119, 81, 200, .4)
+    border-color rgba(81, 45, 168, .45)
+    .el-tag__close
+      color #512DA8
+.header-left
+  display flex
+  align-items center
 </style>

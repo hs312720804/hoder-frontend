@@ -1,32 +1,61 @@
 <template>
     <div class="launch-list">
         <!-- authority -->
-        <div class="TopNav">
-            <div class="left">
-                <el-button-group class="button-list">
+        <div class="header">
+            <div class="header-left">
+                <div class="search-input">
+                    <el-input
+                            v-model="searchForm.launchName"
+                            style="width: 350px"
+                            placeholder="请输入投放名称或ID"
+                            :clearable='true'
+                            @keyup.enter.native="handleSearch"
+                    ></el-input>
+                    <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+                </div>
+            </div>
+            <div class="header-right">
+                <!-- form search -->
+                <!--<el-form-->
+                        <!--:inline="true"-->
+                        <!--:model="searchForm"-->
+                        <!--ref="searchForm"-->
+                        <!--@submit.native.prevent="submitForm"-->
+                <!--&gt;-->
+                    <!--<el-form-item label prop="launchName">-->
+                        <!--<el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称或ID"></el-input>-->
+                    <!--</el-form-item>-->
+                    <!--<el-form-item>-->
+                        <!--<el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>-->
+                        <!--<el-button type="primary" size="small" @click="handleReset">-->
+                            <!--<a class="fa fa-refresh" style="color: white;"></a> 重置-->
+                        <!--</el-button>-->
+                    <!--</el-form-item>-->
+                <!--</el-form>-->
+                <div class="button-list">
                     <el-button
                             type="primary"
                             size="small"
                             @click="handleAdd"
                             v-permission="'hoder:launch:crowd:ver:add'"
                     >
-                       新增投放
+                        新增投放
                     </el-button>
-                    <el-button
-                            type="primary"
-                            size="small"
-                            @click="handleCrowdDefineAdd"
-                            v-permission="'hoder:launch:crowd:ver:add'"
-                    >
-                        新增自定义人群
-                    </el-button>
+                    <!--<el-button-->
+                    <!--type="primary"-->
+                    <!--size="small"-->
+                    <!--@click="handleCrowdDefineAdd"-->
+                    <!--v-permission="'hoder:launch:crowd:ver:add'"-->
+                    <!--&gt;-->
+                    <!--新增自定义人群-->
+                    <!--</el-button>-->
                     <el-popover
                             placement="top"
                             trigger="click"
                             class="popover-button"
                     >
                         <div>
-                            <el-checkbox-group v-model="checkList">
+                            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                                 <el-checkbox label="createTime">创建时间</el-checkbox>
                                 <el-checkbox label="creatorName">创建人</el-checkbox>
                                 <el-checkbox label="status">投放状态</el-checkbox>
@@ -37,36 +66,22 @@
                                 <el-checkbox label="totalCoocaaOpenid">酷开openId数量</el-checkbox>
                             </el-checkbox-group>
                         </div>
-                        <el-button slot="reference">选择列表展示维度</el-button>
+                        <i
+                                class="el-icon-cc-setting operate"
+                                slot="reference"
+                        >
+                        </i>
+                        <!--<el-button slot="reference">选择列表展示维度</el-button>-->
                     </el-popover>
                     <!--<a href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-guan-li/ren-qun-quan-ding.html" target="_blank">操作指南</a>-->
-                </el-button-group>
-            </div>
-            <div class="right">
-                <!-- form search -->
-                <el-form
-                        :inline="true"
-                        :model="searchForm"
-                        ref="searchForm"
-                        @submit.native.prevent="submitForm"
-                >
-                    <el-form-item label prop="launchName">
-                        <el-input v-model="searchForm.launchName" style="width: 200px" placeholder="请输入投放名称"></el-input>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" size="small" icon="search" @click="submitForm">查询</el-button>
-                        <el-button type="primary" size="small" @click="handleReset">
-                            <a class="fa fa-refresh" style="color: white;"></a> 重置
-                        </el-button>
-                    </el-form-item>
-                </el-form>
+                </div>
             </div>
         </div>
         <!-- talbe -->
         <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
             <el-table-column type="index" width="50"></el-table-column>
             <el-table-column prop="launchCrowdId" label="投放ID" width="60">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <div :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">
                         <span v-if="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5">！</span>
                         <span>{{scope.row.launchCrowdId}}</span>
@@ -74,7 +89,7 @@
                 </template>
             </el-table-column>
             <el-table-column prop="launchName" label="投放名称" width="100">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button type="text" v-if="scope.row.abTest === true" @click="showABTestDetail(scope.row)">{{scope.row.launchName}}</el-button>
                     <span v-else :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{scope.row.launchName}}</span>
                 </template>
@@ -82,63 +97,162 @@
             <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
-                <template scope="scope">
-                    <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)">{{(launchStatusEnum[scope.row.history.status]).name}}</span>
+                <template slot-scope="scope">
+                    <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                        <span v-if="scope.row.launchTempCrowdStatus">投放中</span>
+                        <span v-else>待投放</span>
+                    </span>
                     <span v-else>
-                          <el-tooltip placement="right-start">
-                            <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
-                              <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
-                          </el-tooltip>
+                         <!-- 当投放中，人群波动，要显示红色-->
+                        <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
+                              :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
+                        >
+                            {{(launchStatusEnum[scope.row.history.status]).name}}
+                        </span>
+                        <span v-else>
+                              <el-tooltip placement="right-start">
+                                <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
+                                  <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
+                              </el-tooltip>
+                        </span>
                     </span>
                     <!--<el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>-->
                     <!--<span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status].name}}</span>-->
                 </template>
             </el-table-column>
-            <el-table-column prop="expiryTime" label="人群有效期" width="180">
-                <template scope="scope">
-                    <el-icon name="time"></el-icon>
-                    <span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>
-                </template>
-            </el-table-column>
+            <!--<el-table-column prop="expiryTime" label="人群有效期" width="180">-->
+                <!--<template slot-scope="scope">-->
+                    <!--<el-icon name="time"></el-icon>-->
+                    <!--<span style="margin-left: 10px">{{ scope.row.jobEndTime }}</span>-->
+                <!--</template>-->
+            <!--</el-table-column>-->
             <el-table-column label="人群类型">
-                <template scope="scope">
+                <template slot-scope="scope">
                     {{crowdType[scope.row.isFxFullSql]}}
                 </template>
             </el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalUser') > -1)" prop="history.totalUser" label="设备数量" width="80"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalPhone') > -1)" prop="history.totalPhone" label="手机号数量" width="90"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalWxOpenid') > -1)" prop="history.totalWxOpenid" label="微信openId数量" width="110"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('totalCoocaaOpenid') > -1)" prop="history.totalCoocaaOpenid" label="酷开openId数量" width="110"></el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalUser') > -1)"
+                    label="设备数量"
+                    width="80"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalUser">
+                        {{cc_format_number(scope.row.history.totalUser)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalUser}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalPhone') > -1)"
+                    prop="history.totalPhone"
+                    label="手机号数量"
+                    width="90"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalPhone">
+                        {{cc_format_number(scope.row.history.totalPhone)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalPhone}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalWxOpenid') > -1)"
+                    prop="history.totalWxOpenid"
+                    label="微信openId数量"
+                    width="110"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalWxOpenid">
+                        {{cc_format_number(scope.row.history.totalWxOpenid)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalWxOpenid}}
+                    </div>
+                </template>
+            </el-table-column>
+            <el-table-column
+                    v-if="(checkList.indexOf('totalCoocaaOpenid') > -1)"
+                    prop="history.totalCoocaaOpenid"
+                    label="酷开openId数量"
+                    width="110"
+            >
+                <template slot-scope="scope">
+                    <div v-if="scope.row.history.totalCoocaaOpenid">
+                        {{cc_format_number(scope.row.history.totalCoocaaOpenid)}}
+                    </div>
+                    <div v-else>
+                        {{scope.row.history.totalCoocaaOpenid}}
+                    </div>
+                </template>
+            </el-table-column>
             <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门"></el-table-column>
             <el-table-column label="操作" fixed="right" min-width="200">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-button-group  class="button-group-position">
                         <!-- 投放按钮显示的状态：1未投放，4计算失败，5投放失败，7已过期 -->
+                        <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                            <el-button
+                                    v-if="!scope.row.launchTempCrowdStatus"
+                                    v-permission="'hoder:launch:crowd:ver:launch'"
+                                    size="small"
+                                    type="text"
+                                    @click="lanuch(scope.$index, scope.row)"
+                            >投放</el-button>
+                            <el-button
+                                    v-else
+                                    v-permission="'hoder:launch:crowd:ver:cancel'"
+                                    size="small"
+                                    type="text"
+                                    @click="cancelLanuch(scope.row)"
+                            >取消投放</el-button>
+                        </span>
+                        <span v-else>
+                            <el-button
+                                    v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
+                                    v-permission="'hoder:launch:crowd:ver:launch'"
+                                    size="small"
+                                    type="text"
+                                    @click="lanuch(scope.$index, scope.row)"
+                            >投放</el-button>
+                            <!-- 取消投放显示的状态：3投放中 -->
+                            <el-button
+                                    v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"
+                                    v-permission="'hoder:launch:crowd:ver:cancel'"
+                                    size="small"
+                                    type="text"
+                                    @click="cancelLanuch(scope.row)"
+                            >取消投放</el-button>
+                        </span>
+                        <!--<el-button-->
+                                <!--v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "-->
+                                <!--v-permission="'hoder:launch:crowd:ver:launch'"-->
+                                <!--size="small"-->
+                                <!--type="warning"-->
+                                <!--@click="lanuch(scope.$index, scope.row)"-->
+                        <!--&gt;投放</el-button>-->
+                        <!--&lt;!&ndash; 取消投放显示的状态：3投放中 &ndash;&gt;-->
+                        <!--<el-button-->
+                                <!--v-if="(launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91"-->
+                                <!--v-permission="'hoder:launch:crowd:ver:cancel'"-->
+                                <!--size="small"-->
+                                <!--type="warning"-->
+                                <!--@click="cancelLanuch(scope.row)"-->
+                        <!--&gt;取消投放</el-button>-->
                         <el-button
-                                v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7 "
-                                v-permission="'hoder:launch:crowd:ver:launch'"
                                 size="small"
-                                type="warning"
-                                @click="lanuch(scope.$index, scope.row)"
-                        >投放</el-button>
-                        <!-- 取消投放显示的状态：3投放中 -->
-                        <el-button
-                                v-if="(launchStatusEnum[scope.row.history.status]).code === 3"
-                                v-permission="'hoder:launch:crowd:ver:cancel'"
-                                size="small"
-                                type="warning"
-                                @click="cancelLanuch(scope.row)"
-                        >取消投放</el-button>
-                        <el-button
-                                size="small"
-                                type="success"
+                                type="text"
                                 v-permission="'hoder:launch:crowd:ver:detail'"
                                 @click="condition(scope.row) "
                         >人群条件</el-button>
                         <el-dropdown @command="handleCommandOpreate">
-                            <el-button size="small" type="primary">
+                            <el-button size="small" type="text">
                                 操作
                             </el-button>
                             <el-dropdown-menu slot="dropdown">
@@ -147,17 +261,38 @@
                                         v-permission="'hoder:launch:crowd:ver:modify'"
                                 >编辑
                                 </el-dropdown-item>
-                                <el-dropdown-item
-                                        :command="['del',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:delete'"
-                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                                        divided
-                                >删除
+                                 <el-dropdown-item
+                                        v-if="scope.row.isFxFullSql === 1 && (launchStatusEnum[scope.row.history.status]).code === 91"
+                                        :command="['adjust',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                >调整波动阀值
                                 </el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))"
+                                        :command="['monitor',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                >数据监控
+                                </el-dropdown-item>
+                                <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                                    <span v-if="!scope.row.launchTempCrowdStatus">
+                                        <el-dropdown-item
+                                                :command="['del',scope.row]"
+                                                v-permission="'hoder:launch:crowd:ver:delete'"
+                                        >删除
+                                        </el-dropdown-item>
+                                    </span>
+                                </span>
+                                <span v-else>
+                                    <el-dropdown-item
+                                            :command="['del',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:delete'"
+                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                    >删除
+                                    </el-dropdown-item>
+                                </span>
                                 <el-dropdown-item
                                         :command="['divide',scope.row]"
                                         v-if="scope.row.isFxFullSql == 1 && scope.row.abTest === false && (launchStatusEnum[scope.row.history.status]).code === 1"
-                                        divided
                                 >AB实验
                                 </el-dropdown-item>
                                 <el-dropdown-item
@@ -166,12 +301,24 @@
                                 divided
                                 >提交历史数据
                                 </el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="!scope.row.myCollect"
+                                        :command="['collect',scope.row]"
+                                >添加到'我的'</el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="scope.row.myCollect && !parentSource"
+                                        disabled
+                                >添加到'我的'</el-dropdown-item>
+                                <el-dropdown-item
+                                        v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
+                                        :command="['collect',scope.row]"
+                                >从'我的'删除</el-dropdown-item>
                             </el-dropdown-menu>
                         </el-dropdown>
                         <el-button
                                 v-if="(launchStatusEnum[scope.row.history.status]).code !== 1"
                                 size="small"
-                                type="danger"
+                                type="text"
                                 @click="handleGetLaunchDetail(scope.row)"
                         >投放详情</el-button>
                         <!--<el-button-->
@@ -213,7 +360,7 @@
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
             <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
-            <el-checkbox-group v-model="estimateValue" aria-required="true">
+            <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
             </el-checkbox-group>
             <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
@@ -277,7 +424,7 @@
                 <el-table-column prop="id" label="投放子ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="ratio" label="占比">
-                    <template scope="scope">
+                    <template slot-scope="scope">
                         {{scope.row.ratio}}%
                     </template>
                 </el-table-column>
@@ -315,6 +462,111 @@
                 <el-form-item label="所属标签分类：">{{launchDetailFormData.tempTag || '暂无数据'}}</el-form-item>
             </el-form>
         </el-dialog>
+        <el-dialog title="数据监控" :visible.sync="monitorDialog">
+            <el-date-picker
+              v-model="monitorRangeTime"
+              type="daterange"
+              align="right"
+              @change="getDataMonitor"
+              class="monitor-time"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+            <div class="monitor-legend" v-if="isShowMonitorTab">
+            <el-radio-group v-model="monitorTab">
+              <el-radio-button label="mac" >设备数量</el-radio-button>
+              <el-radio-button label="wx" >wxopenId</el-radio-button>
+          </el-radio-group>
+          </div>
+          <ve-histogram
+                  v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)"
+                  :settings="{ yAxisName: ['设备数量'], xAxisType: ['value']}"
+                  :extend="chartExtend"
+                  :data="chartMonitorMacData">
+          </ve-histogram>
+          <ve-histogram
+                  v-if="(monitorTab ==='wx' && isShowMonitorTab) || (chartMonitorWxData && !isShowMonitorTab)"
+                  :settings="{ yAxisName: ['wxopenId'], xAxisType: ['value']}"
+                  :extend="chartExtend"
+                  :data="chartMonitorWxData">
+          </ve-histogram>
+        </el-dialog>
+        <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1020px' : '80%'">
+            <ve-line :data="adjustChartdata" :settings="{ yAxisType: ['percent']}" :extend="adjustExtend"></ve-line>
+            <el-form :inline="true">
+            <el-row>
+             <el-col :span="7">
+               <el-form-item label="Mac数量基准" prop="macInitialValue">
+                      <el-input v-model="crowdDefineForm.macInitialValue" :disabled="true"></el-input>
+                  </el-form-item>
+             </el-col>
+             <el-col :span="8">
+                <el-row>
+                   <el-col :span="18">
+               <el-form-item label="环比低于" label-width="100px" prop="macBelowPer">
+                      <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2"  :min="1"></el-input-number>
+                  </el-form-item>
+                  </el-col>
+                  <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+             </el-col>
+              <el-col :span="8">
+                <el-row>
+                   <el-col :span="18">
+                 <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer">
+                      <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                  </el-form-item>
+                  </el-col>
+                    <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+              </el-col>
+            </el-row>
+            <el-row>
+               <el-col :span="7">
+                 <el-form-item label="微信数量基准" prop="wxInitialValue">
+                   <el-input v-model="crowdDefineForm.wxInitialValue" :disabled="true"></el-input>
+                  </el-form-item>
+               </el-col>
+               <el-col :span="8">
+                 <el-row>
+                   <el-col :span="18">
+                 <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer">
+                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1"></el-input-number>
+                  </el-form-item>
+                   </el-col>
+                   <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+               </el-col>
+               <el-col :span="8">
+                 <el-row>
+                   <el-col :span="18">
+                  <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer">
+                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                  </el-form-item>
+                     </el-col>
+                  <el-col :span="6">
+                  <el-form-item label="%,则告警">
+                  </el-form-item>
+                    </el-col>
+                 </el-row>
+               </el-col>
+            </el-row>
+            <el-row justify="end" v-if="selectedRow && selectedRow.history && selectedRow.history.status === 91">
+               <el-col :span="4" :offset="20">
+               <el-button @click="adjustDialog=false">取消</el-button>
+               <el-button type="primary" @click="handleFluctuationLaunch">确定调整</el-button>
+               </el-col>
+            </el-row>
+             </el-form>
+        </el-dialog>
     </div>
 </template>
 <script>
@@ -334,6 +586,21 @@
                 searchForm: {
                     launchName: ""
                 },
+                adjustExtend: {
+                  series: {
+                    smooth: false,
+                    type: 'line'
+                  }
+                },
+                screenWidth: undefined,
+                crowdDefineForm: {
+                    macInitialValue: undefined, //Mac基准值
+                    macAbovePer: undefined, //Mac最大阈值
+                    macBelowPer: undefined, //Mac最小阈值
+                    wxInitialValue: undefined, //微信基准值
+                    wxAbovePer: undefined, //微信最大阈值
+                    wxBelowPer: undefined, //微信最小阈值
+                },
                 // 编辑页
                 // editFormVisible: false,// 编辑界面是否显示
                 // 默认每页数据量:pageSize
@@ -346,6 +613,14 @@
                 totalCount: 1,
                 isShowCondition: false,
                 selectStrategy: null,//人群条件的选择策略
+                adjustDialog: false,
+                adjustChartdata: undefined, // 调整波动阀值图表数据
+                monitorDialog: false,
+                monitorRangeTime: undefined,
+                chartMonitorMacData: undefined, // 数据监控设备图表数据
+                chartMonitorWxData: undefined, // 数据监控设备图表数据
+                selectedRow: {},
+                monitorTab: 'mac',
                 showEstimate: false,
                 estimateValue: ['0'],
                 estimateItems: [],
@@ -386,18 +661,39 @@
                 updateEnum: {
                     0: '否',
                     1: '是'
-                }
+                },
+                chartExtend: {
+                    xAxis: {
+                        axisLabel: {
+                            margin: 15,
+                            interval: 0,
+                            rotate: 45
+                        },
+                        triggerEvent: true
+                    }
+                },
+                accountDefine: false
             };
         },
-        props: ["parentSource"],
+        props: ["parentSource","showAllParent"],
         created() {
+            this.screenWidth = window.screen.width
             this.loadData();
+            this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+        },
+        computed: {
+          isShowMonitorTab () {
+            return this.chartMonitorMacData && this.chartMonitorWxData
+          }
         },
         watch: {
             percent(val) {
                 this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
                 })
+            },
+            showAllParent () {
+                this.loadData()
             }
         },
         methods: {
@@ -453,10 +749,17 @@
                     })
             },
             // 从服务器读取数据
-            loadData: function() {
+            loadData () {
+                this.$service.getListDimension({type: 3}).then(data => {
+                    if (data) {
+                        if (data.behaviorShow) {
+                            this.checkList = data.behaviorShow.split(',')
+                        }
+                    }
+                })
                 this.criteria["pageNum"] = this.currentPage
                 this.criteria["pageSize"] = this.pageSize
-                if(this.parentSource) {
+                if(this.showAllParent) {
                     this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
                         this.launchStatusEnum = data.launchStatusEnum
                         this.tableData = data.pageInfo.list
@@ -481,25 +784,29 @@
                 this.loadData()
             },
             // 搜索,提交表单
-            submitForm: function() {
-                // var _this = this
-                // this.$refs.searchForm.validate(function(result) {
-                //     if (result) {
-                //         _this.criteria = _this.searchForm;
-                //         _this.loadData()
-                //     } else {
-                //         return false
-                //     }
-                // });
-                this.$refs.searchForm.validate((result) => {
-                    if (result) {
-                       this.criteria = this.searchForm
-                       this.loadData()
-                    } else {
-                        return false
-                    }
-                })
+            handleSearch () {
+                this.criteria = this.searchForm
+                this.loadData()
             },
+            // submitForm: function() {
+            //     // var _this = this
+            //     // this.$refs.searchForm.validate(function(result) {
+            //     //     if (result) {
+            //     //         _this.criteria = _this.searchForm;
+            //     //         _this.loadData()
+            //     //     } else {
+            //     //         return false
+            //     //     }
+            //     // });
+            //     this.$refs.searchForm.validate((result) => {
+            //         if (result) {
+            //            this.criteria = this.searchForm
+            //            this.loadData()
+            //         } else {
+            //             return false
+            //         }
+            //     })
+            // },
             // 重置
             handleReset () {
                 this.searchForm.launchName = ''
@@ -510,6 +817,14 @@
             lanuch (index, row) {
                 this.currentLaunchId = row.launchCrowdId
                 this.showEstimate = true
+                // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                if (row.setCalculate) {
+                    this.accountDefine = true
+                    this.estimateValue = ['0','1','2','3']
+                } else {
+                    this.accountDefine = false
+                    this.estimateValue = ['0']
+                }
                 this.$service.getEstimateType().then((data) => {
                     this.estimateItems = data
                 })
@@ -575,7 +890,103 @@
                     case 'commitHistory':
                         this.handleCommitHistory(params)
                         break
+                    case 'collect':
+                        this.handlePushCollect(params)
+                        break
+                    case 'adjust':
+                        this.handleAdjust(params)
+                        break
+                    case 'monitor':
+                        this.handleMonitor(params)
+                        break
                 }
+            },
+            handleFluctuationLaunch () {
+              const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+              const macInitialValue = crowdDefineForm.macInitialValue
+              const wxInitialValue = crowdDefineForm.wxInitialValue
+              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.replace(/,/g, '') : undefined
+              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.replace(/,/g, '') : undefined
+              this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
+                this.adjustDialog = false
+              })
+            },
+            /**
+             * 千分位格式化
+            */
+            format_number(n) {
+              var b = parseInt(n).toString()
+              var len = b.length
+              if (len <= 3) { return b }
+              var r = len % 3
+              return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
+            },
+            handleAdjust (row) {
+               this.adjustDialog = true
+               this.selectedRow = row
+               this.$service.fluctuation({ launchCrowdId: row.launchCrowdId}).then((data) => {
+                 const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
+                 this.crowdDefineForm = {
+                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue),
+                   macAbovePer: macAbovePer === null ? undefined : macAbovePer,
+                   macBelowPer: macBelowPer === null ? undefined : macBelowPer,
+                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue),
+                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer,
+                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer,
+                 }
+                 this.adjustChartdata = {
+                   columns: ['日期', 'mac数量波动', '微信数量波动']
+                 }
+                 const rows = data.data.reduce((r, c) => {
+                   r.push({
+                     '日期': c.date,
+                     'mac数量波动': c.macTrendPer,
+                    '微信数量波动': c.wxTrendPer
+                   })
+                   return r
+                 }, [])
+                 this.adjustChartdata = {
+                   columns: ['日期', 'mac数量波动', '微信数量波动'],
+                   rows
+                 }
+               })
+            },
+            handleMonitor (row) {
+               this.monitorDialog = true
+               this.selectedRow = row
+               this.getDataMonitor()
+            },
+            setMonitorFormart (data) {
+              const columns = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+              const rows = data.reduce((r, c) => {
+                  r.push({
+                    'DMP收到的人群数量': c.rec_num,
+                    'SQL圈定的人群数量': c.cul_num,
+                    '日期': c.date,
+                  })
+                  return r
+                }, [])
+              return {
+                columns,
+                rows
+              }
+            },
+            getDataMonitor () {
+               const monitorRangeTime = this.monitorRangeTime
+               const startDate = monitorRangeTime[0]
+               const endDate = monitorRangeTime[1]
+               this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
+                 // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+                 this.monitorTab = data.mac ? 'mac' : 'wx'
+                 this.chartMonitorMacData = data.mac ? this.setMonitorFormart(data.mac) : undefined
+                 this.chartMonitorWxData = data.wx ? this.setMonitorFormart(data.wx) : undefined
+                 // if (data.mac) {
+                 //   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
+                 // }
+                 // if (data.wx) {
+                 //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
+                 // }
+               })
             },
             divideAB (row) {
                 this.showDivide = true
@@ -670,11 +1081,45 @@
                 this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
                     this.launchDetailFormData = data
                 })
+            },
+            handlePushCollect (row) {
+                const collectFlag = row.myCollect
+                const launchCrowdId = row.launchCrowdId
+                if (collectFlag) {
+                    this.$service.removeCollectPush({launchCrowdId},'成功取消收藏此圈定人群！').then(() => {
+                        this.loadData()
+                    })
+                } else {
+                    this.$service.collectPush({launchCrowdId},'成功收藏圈定人群！').then(() => {
+                        this.loadData()
+                    })
+                }
+            },
+            handleCheckListChange (val) {
+                this.$service.saveListDimension({type: 3,behaviorShow: val.join(',')})
             }
         }
     }
 </script>
 <style lang="stylus" scoped>
+    .inline-block
+        display inline-block
+    .one-line
+        position relative
+        span
+          color #c3bcbc
+          position absolute
+          left 0px
+          top 30px
+    .base-line
+      width 150px
+    .ratio
+      width 130px
+    .monitor-time
+      margin-bottom 30px
+    .monitor-legend
+      text-align center
+      margin-bottom 30px
     .choose-tip
         margin 20px 0
         color red
@@ -717,4 +1162,31 @@
             line-height 12px
     .red-text
         color red
+    .popover-button
+        margin-left 10px
+    .operate
+        position relative
+        z-index 0
+        font-size 20px
+        cursor pointer
+        margin-left 10px
+    .search-input
+        position relative
+        margin 0 10px
+    .icon-fixed
+        position absolute
+        top 8px
+        right 20px
+        transform rotate(-90deg)
+    .header
+        width 100%
+        display flex
+        justify-content space-between
+        margin-bottom 10px
+        .header-right
+            display flex
+            align-items center
+    .el-button-group >>> .el-button
+        float none
+        margin 0 3px
 </style>

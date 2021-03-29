@@ -1,7 +1,9 @@
 <template>
     <div>
-        <!--<div :class="className" v-if="!isEdit" @mouseover="handleShowPencil" @mouseleave="handleHidePencil" @click="editPriority">{{priority}}</div>-->
-        <div class="text-over" v-if="!isEdit" @click="editPriority">{{priority}}</div>
+        <div class="flex-content" v-if="!isEdit" @click="editPriority">
+            <div>{{priority}}</div>
+            <div v-if="showEdit" class="text-over"></div>
+        </div>
         <el-input v-else type="text" ref="inputPriority" size="small" @change="savePriority" @blur="editStatuChange" v-model="priority"></el-input>
     </div>
 </template>
@@ -15,7 +17,7 @@
                 dataBackup: ''
             }
         },
-        props: ['data', 'crowdId', 'policyId'],
+        props: ['data', 'crowdId', 'policyId', 'byPassId', 'showEdit'],
         watch: {
             data: 'onDataChange'
         },
@@ -46,13 +48,30 @@
                     this.$message.error(error)
                     this.priority = this.dataBackup
                 } else {
-                    this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
-                        this.isEdit = false
-                        this.dataBackup = this.priority
-                    })
+                    if (this.byPassId) {
+                        // 存在则是分流的，调新接口
+                        this.$service.updateBypassPriorityInCrowdList({id: this.bypassId, crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+                            this.isEdit = false
+                            this.dataBackup = this.priority
+                            this.$emit('refresh')
+                        }).catch(() => {
+                            // 当接口报错，优先级就显示之前的值
+                            this.priority = this.dataBackup
+                        })
+                    } else {
+                        // 调老的接口
+                        this.$service.updatePrioorityInCrowdList({ crowdId: this.crowdId, priority: this.priority ,policyId: this.policyId}, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+                            this.isEdit = false
+                            this.dataBackup = this.priority
+                            this.$emit('refresh')
+                        }).catch(() => {
+                            // 当接口报错，优先级就显示之前的值
+                            this.priority = this.dataBackup
+                        })
+                    }
                 }
             },
-            onDataChange (val, oldVal) {
+            onDataChange () {
                 this.getPriority()
                 this.isEdit = false
             },
@@ -76,9 +95,12 @@
     }
 </script>
 <style lang="stylus" scoped>
-    .text
-        text-align center
+    .flex-content
+        display flex
+        justify-content center
     .text-over
         background url(../assets/pencil.png) no-repeat right center
-        text-align center
+        width 16px
+        height 16px
+        margin-left 10px
 </style>

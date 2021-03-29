@@ -18,7 +18,7 @@
                     </el-select>
                 </el-form-item>
                 <el-form-item label="设置人群条件">
-                    <div v-for="(item, index) in rulesJson.rules" class="label-content">
+                    <div v-for="(item, index) in rulesJson.rules" :key="index+'rules'" class="label-content">
                         <div v-show="index > 0" class="label-or-space" :key="index+'or'">或者</div>
                         <div class="label-ground" :key="index+'business'">
                             <div class="header-name-operate">
@@ -49,7 +49,7 @@
                                 <span class="sel">
                                   <el-select
                                           class="time-dot-select-new" :key="index+'_'+n+'business'" v-model="childItem.value">
-                                          <el-option v-for="parentBusinessItem in business" :value=parentBusinessItem.value :label=parentBusinessItem.label></el-option>
+                                          <el-option v-for="(parentBusinessItem,index) in business" :key="index+'business'" :value=parentBusinessItem.value :label=parentBusinessItem.label></el-option>
                                   </el-select>
                                 </span>
                                 <span class="i" @click="handleRemoveBusinessRule(item, childItem)">
@@ -86,7 +86,7 @@
                                 <span class="sel">
                                   <el-select
                                           class="time-dot-select-new" :key="index+'_'+n+'behavior'" v-model="childItem.value">
-                                          <el-option v-for="parentBehaviorItem in behavior" :value=parentBehaviorItem.value :label=parentBehaviorItem.label></el-option>
+                                          <el-option v-for="(parentBehaviorItem,index) in behavior" :key="index+'behaviorItem'" :value=parentBehaviorItem.value :label=parentBehaviorItem.label></el-option>
                                   </el-select>
                                 </span>
                                 <span class="i" @click="handleRemoveBehaviorRule(item, childItem)">

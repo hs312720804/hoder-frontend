@@ -1,6 +1,6 @@
 <template>
     <div>
-        <ContentWrapper
+        <c-content-wrapper
                 :filter="filter"
                 :pagination="pagination"
                 @filter-change="handleFilterChange"
@@ -30,13 +30,13 @@
                     <el-button type="success" @click="handleBackToCrowdList">返回人群列表</el-button>
                 </div>
             </div>
-            <Table
+            <c-table
                     :props="table.props"
                     :header="table.header"
                     :data="table.data"
             >
-            </Table>
-        </ContentWrapper>
+            </c-table>
+        </c-content-wrapper>
         <el-dialog :visible.sync="showFunnel" @close="handleClose" title="该推荐位人群投后全链路的漏斗数据">
             <div class="export-button">
                 <a :href="downloadUrl" download ref="download_Url"></a>
@@ -55,13 +55,8 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table, utils} from 'admin-toolkit'
     export default {
         name: "HomepageReleaseRecord",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 filter: {},
@@ -103,7 +98,7 @@
                         },
                         {
                             label: '操作',
-                            render: utils.component.createOperationRender(this, {
+                            render: this.$c_utils.component.createOperationRender(this, {
                                 handleSeeFunnel: "查看数据漏斗"
                             })
                         }

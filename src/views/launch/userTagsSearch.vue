@@ -13,6 +13,17 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                <el-form-item label="选择日期：" v-if="formData.type === 2">
+                    <el-date-picker
+                            v-model="formData.date"
+                            type="date"
+                            placeholder="选择日期"
+                            value-format="yyyy-MM-dd"
+                            value="yyyy-MM-dd"
+                            :picker-options="dateRange"
+                    >
+                    </el-date-picker>
+                </el-form-item>
                 <el-form-item v-if="formData.type === 2">
                     <el-input
                             v-model="formData.mac"
@@ -66,7 +77,7 @@
                     >
                         <el-option
                                 v-for="(tagItem,index) in tagAttrList"
-                                :label="tagItem.label"
+                                :label="'【'+tagItem.value+'】'+tagItem.label"
                                 :value="tagItem.value"
                                 :key="index"
                         >
@@ -86,14 +97,16 @@
                     <el-button type="primary" @click="handleSearch">查询</el-button>
                 </el-form-item>
             </el-form>
-            <div class="content" v-if="content">{{content}}</div>
+            <div class="content" v-if="content">
+                <pre><code>{{content}}</code></pre>
+            </div>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "userTagsSearch",
+        name: "userTagsSearchAA",
         data () {
             return {
                 formData: {
@@ -103,7 +116,8 @@
                     thirdUserId: undefined,
                     tagId: undefined,
                     tagAttrId: undefined,
-                    tempMac: undefined
+                    tempMac: undefined,
+                    date: undefined
                 },
                 typeEnum: {
                     1 : '临时标签',
@@ -113,7 +127,12 @@
                 typeEnumArr: [],
                 tagList: [],
                 tagAttrList: [],
-                content: undefined
+                content: undefined,
+                dateRange: {
+                    disabledDate (time) {
+                        return time.getTime() > Date.now() || time.getTime() < new Date().getTime() - 15*24*60*60*1000
+                    }
+                }
             }
         },
         methods: {
@@ -153,11 +172,30 @@
                     cOpenid: types === 3 ? formData.cOpenid : undefined,
                     thirdUserId: types === 3 ? formData.thirdUserId : undefined,
                     tagId:types === 1 ? formData.tagId : undefined,
-                    tagAttrId: types === 1 ? formData.tagAttrId : undefined
+                    tagAttrId: types === 1 ? formData.tagAttrId : undefined,
+                    date: types === 2 ? formData.date : undefined
                 }
-                this.$service.getUserTagList(apiData).then(data => {
-                    this.content = data
-                })
+                if (types !== 2) {
+                    this.$service.getUserTagList(apiData).then(data => {
+                        if (data) {
+                            this.content = data
+                        } else {
+                            this.content = '暂无数据'
+                        }
+                    })
+                } else {
+                    const bigDataApi = {
+                        id: formData.mac,
+                        date: formData.date
+                    }
+                    this.$service.getBigDataUserTagList(bigDataApi).then(data => {
+                        if (data) {
+                            this.content = data
+                        } else {
+                            this.content = '暂无数据'
+                        }
+                    })
+                }
             }
         },
         created() {

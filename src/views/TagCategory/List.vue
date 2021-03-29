@@ -7,7 +7,7 @@
                     class="popover-button"
             >
                 <div>
-                    <el-checkbox-group v-model="checkList">
+                    <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                         <el-checkbox label="tagKey">标签code</el-checkbox>
                         <el-checkbox label="tagValues">示例值</el-checkbox>
                         <el-checkbox label="defineRemark">标签定义</el-checkbox>
@@ -28,7 +28,7 @@
             </el-form>
         </el-header>
 
-        <el-main>
+        <el-main class="tag-table">
             <el-table border :data="tagCategoryList" >
                 <el-table-column prop="tagId" label="ID" width="100">
                 </el-table-column>
@@ -85,7 +85,9 @@
                         >
                             复制
                         </el-button>
-                         </el-button-group>
+                        <div :class="scope.row.myCollect ? 'el-icon-cc-star-fill': 'el-icon-cc-star'" @click="handleCollect(scope.row)"></div>
+                        <!--<div v-else class="el-icon-cc-star"></div>-->
+                        </el-button-group>
                     </template>
                 </el-table-column>
             </el-table>
@@ -216,6 +218,13 @@ export default {
             })
         },
         fetchData() {
+            this.$service.getListDimension({type: 4}).then(data => {
+                if (data) {
+                    if (data.behaviorShow) {
+                        this.checkList = data.behaviorShow.split(',')
+                    }
+                }
+            })
             this.filterAll = this.getFilter()
             this.$service.getTagGroupTreeList(this.filterAll).then((data) => {
                 this.tagCategoryList = data.pageInfo.list
@@ -232,6 +241,24 @@ export default {
             //     this.pagination = pagination
             // })
         },
+        handleCollect (currentTag) {
+            const flag = currentTag.myCollect
+            const tagId = currentTag.tagId
+            if (flag) {
+            //    取消收藏
+                this.$service.cancelCollectTags({tagId},'已取消收藏！').then(() => {
+                    this.fetchData()
+                })
+            } else {
+            //    收藏
+                this.$service.collectTags({tagId},'已成功收藏！').then(() => {
+                    this.fetchData()
+                })
+            }
+        },
+        handleCheckListChange (val) {
+            this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
+        }
     },
     created() {
         this.fetchData()
@@ -247,4 +274,12 @@ export default {
 .tag-category-read__header >>> .el-form
     margin-top 15px
     float right
+.tag-table >>> .el-icon-cc-star-fill
+    color #E6A13C
+    font-size 24px
+.tag-table >>> .el-icon-cc-star
+    font-size 24px
+.tag-table >>> .el-button-group
+    display flex
+    align-items center
 </style>

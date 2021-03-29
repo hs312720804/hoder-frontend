@@ -32,7 +32,7 @@
             <el-table-column prop="id" label="ID"></el-table-column>
             <el-table-column prop="loginName" label="账号"></el-table-column>
             <el-table-column prop="loginTime" label="登录时间">
-                <template scope="scope">
+                <template slot-scope="scope">
                     <el-icon name="time"></el-icon>
                     <span style="margin-left: 10px">{{ scope.row.loginTime }}</span>
                 </template>
@@ -53,6 +53,7 @@
 </template>
 <script>
 export default {
+    name: 'loginLogAA',
     data(){
         return{
             // 表格当前页数据
@@ -92,7 +93,6 @@ export default {
                     _this.criteria = _this.queryForm;
                     _this.loadData();
                 } else {
-                    console.log("error submit!!");
                     return false;
                 }
             });
@@ -100,15 +100,12 @@ export default {
         // 显示新增界面
         pageRefresh: function() {
             var _this = this;
-            //console.log(JSON.stringify(this.tableData.loginName));
-            // debugger
             if(this.tableData[0].loginName){
                 this.$refs.queryForm.validate(function(result) {
                     if (result) {
                         _this.criteria = _this.queryForm;
                         _this.loadData();
                     } else {
-                        console.log("error submit!!");
                         return false;
                     }
                 });
@@ -116,7 +113,7 @@ export default {
                 this.$message('未查询！');
             }
         },
-        
+
         // 重置
         handleReset: function () {
             this.$refs.queryForm.resetFields();

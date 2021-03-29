@@ -319,3 +319,42 @@ export function getVideoSourceList(params) {
         params
     })
 }
+// 人群圈定push 收藏
+export function collectPush(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/collect/multiVersionCrowd',
+        data
+    })
+}
+// 人群圈定push 取消收藏
+export function removeCollectPush(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/collect/multiVersionCrowd?launchCrowdId='+params.launchCrowdId
+    })
+}
+// 人群管理-人群圈定投放-数据监控
+export function dataMonitor(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/historyResult',
+      params
+  })
+}
+// 人群管理-人群圈定投放-调整波动阈值
+export function fluctuation(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/fluctuation',
+      params
+  })
+}
+// 人群管理-人群圈定投放-调整波动阈值-确定调整
+export function fluctuationLaunch(params) {
+  return this.fetch({
+      method: 'get',
+      url:'/api/multiVersionCrowd/fluctuationLaunch',
+      params
+  })
+}

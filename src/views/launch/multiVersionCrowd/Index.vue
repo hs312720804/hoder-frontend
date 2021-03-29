@@ -1,10 +1,16 @@
 <template>
     <div>
-        <list v-show="isShowList" :parentSource="parentSource" @changeStatus="changeStatus" ref="list"></list>
+        <list v-show="isShowList"
+              :parentSource="parentSource"
+              :showAllParent="showAllParent"
+              @changeStatus="changeStatus"
+              ref="list">
+        </list>
         <add v-if="!isShowList"
              @changeStatus="changeStatus"
              :model="addModel"
              @goBack="goBack"
+             :showAllParent="showAllParent"
              :editLaunchCrowdId="editLaunchCrowdId"
              :editStatus="editStatus"
              :parentSource="parentSource"
@@ -15,15 +21,16 @@
     import List from "./List"
     import Add from "./Add"
     export default {
+        name: 'multiVersionCrowdAA',
         data() {
             return {
                 isShowList: true,
                 editLaunchCrowdId:null, //编辑的ID
                 addModel: 0,
                 editStatus: null
-            };
+            }
         },
-        props: ["parentSource"],
+        props: ["parentSource","showAllParent"],
         components: {
             List,
             Add
@@ -45,6 +52,6 @@
                 this.isShowList=true
             }
         }
-    };
+    }
 </script>
 

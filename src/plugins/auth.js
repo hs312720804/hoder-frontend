@@ -31,7 +31,8 @@ Vue.prototype.$login = async function(data) {
             token: res.jwtToken,
             password: data.password,
             version: res.version,
-            roleName: res.roleNames
+            roleName: res.roleNames,
+            userId: res.userInfo.userId
         }
         this.$service.service.state = user
         this.$appState.user = user

@@ -7,6 +7,7 @@
 
 <script>
     export default {
+        name: 'indexBIAA',
         data () {
             return {
                 pageSrc: 'http://192.168.2.165:8080/xmind/service/BI20190606html'

@@ -11,15 +11,29 @@
         <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
-              :default-active="$route.name"
+              :default-active="activeRouteName"
               class="main_menu menu"
               :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
-          <el-submenu v-if="item.child" :key="index" :index="index+''">
+          <el-menu-item
+                  v-if="item.child.length === 0"
+                  :index="routerMap[item.url]"
+                  :key="routerMap[item.url]+'_'+index"
+                  @click.native="getRouter(item.url)"
+                  class="no-child-menu"
+          >
+            <i v-if="item.icons" :class="item.icons"></i>
+            <span>{{item.name}}</span>
+          </el-menu-item>
+          <el-submenu
+                  v-else
+                  :key="index"
+                  :index="index+''"
+          >
             <template slot="title">
               <i v-if="item.icons" :class="item.icons"></i>
-              <span>{{ item.name }}</span>
+              <span>{{item.name}}</span>
             </template>
             <template v-for="(child, idx) in item.child">
               <el-menu-item
@@ -29,12 +43,12 @@
                       @click.native="getRouter(child.url)"
               >
                 <i v-if="child.icons" :class="child.icons"></i>
-                <span slot="title">{{ child.name }} </span>
+                <span slot="title">{{child.name}}</span>
               </el-menu-item>
               <el-submenu v-else :key="idx" :index="index+'-'+idx">
                 <template slot="title">
                   <i v-if="child.icons" :class="child.icons"></i>
-                  <span>{{ child.name }}</span>
+                  <span>{{child.name}}</span>
                 </template>
                 <template v-for="(c) in child.child">
                   <el-menu-item :key="c.id" :index="routerMap[c.url]" @click.native="getRouter(c.url)">
@@ -56,7 +70,7 @@
                 :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
                 @click="toggleMenu"
         ></el-button>
-        <Breadcrumb class="breadcrumb" :items="breadcrumb"/>
+        <c-breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
           <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
@@ -107,30 +121,29 @@
       </el-header>
       <TagNav ref="tag" :init-tags="initTags" class="tagNav"/>
       <el-main>
-        <keep-alive>
+        <keep-alive :exclude="noCacheMenu">
           <router-view v-if="isKeepAlive"/>
         </keep-alive>
-        <router-view v-if="!isKeepAlive"/>
+        <router-view v-if="!isKeepAlive" :key="$route.fullpath"/>
       </el-main>
     </el-container>
   </el-container>
 </template>
 <script>
-    import { Breadcrumb, Menu, TagNav } from "admin-toolkit";
+    import TagNav from './TagNav'
     export default {
         components: {
-            Menu,
-            Breadcrumb,
             TagNav
         },
         props: ["menu"],
         data() {
             return {
+                activeRouteName: '',
                 activeIndex: '',
                 breadcrumb: [],
                 isCollapseMenu: false,
                 routerMap: {
-                    "label/index": "tag-group-read",
+                    "label/index": "labelSquare",
                     // "label/index": "tag",
                     "launchHelp/index": "validate",
                     "launchCrowd/index": "crowd",
@@ -170,7 +183,9 @@
                     "/myPolicy/index": "myPolicy",
                     "/groupImageInsight/index": "groupImageInsight",
                     "/userTagsSearch/index": "userTagsSearch",
-                    "/hitSearch/index": "hitSearch"
+                    "/hitSearch/index": "hitSearch",
+                    "/oneTouchDrop/index": "oneTouchDrop",
+                    "/specialTag/index": "specialTag"
                 },
                 activeName: 'first',
                 updateMessage: [],
@@ -179,10 +194,14 @@
                     'first': 1,
                     'second': 2
                 },
-                unReadMessage: 0,
+                unReadMessage: undefined,
                 showMoreUpdate: false,
-                showMoreSystem: false
+                showMoreSystem: false,
+                noCacheMenu: []
             };
+        },
+        watch: {
+            $route: 'handleRouteChange'
         },
         computed: {
             isKeepAlive() {
@@ -216,12 +235,33 @@
             //   return items;
             // },
             initTags() {
-                return this.$appState.$get("tags") || [];
+                const tagsInfo = this.$appState.$get("tags")
+                if (tagsInfo && tagsInfo.userName === this.$appState.user.name) {
+                    return tagsInfo.tags
+                } else {
+                    return []
+                }
+                // return this.$appState.$get("tags") || [];
             }
         },
         methods: {
+            handleRouteChange() {
+                if (this.$route.name === 'oneTouchDrop') {
+                    this.activeRouteName = 'strategyList'
+                } else if (this.$route.name === 'specialTag') {
+                    this.activeRouteName = 'labelSquare'
+                } else {
+                    this.activeRouteName = this.$route.name
+                }
+
+            },
             getRouter(url){
-                this.$router.push({name:this.routerMap[url]});
+                const name = this.routerMap[url] + 'AA'
+                this.noCacheMenu.push(name)
+                this.$router.push({name:this.routerMap[url]})
+                this.$nextTick(() => {
+                    this.noCacheMenu = []
+                })
             },
             handleDropdownCommand(command) {
                 if (command === "logout") {
@@ -236,7 +276,7 @@
                 this.isCollapseMenu = isCollapseMenu;
             },
             saveTags() {
-                const tags = this.$refs.tag.tags;
+                const tags = {tags: this.$refs.tag.tags, userName: this.$appState.user.name};
                 this.$appState.$set("tags", tags);
             },
             setMetaTitle() {
@@ -299,7 +339,7 @@
                 this.$service.getNoticeHeaderList({noticeType}).then((data) => {
                     let interfaceData = data['消息列表']
                     let statusData = data['消息状态']
-                    this.unReadMessage = data['未读数量']
+                    this.unReadMessage = data['未读数量'] > 0 ? data['未读数量'] : undefined
                     interfaceData.forEach((item,index)=> {
                         item.noticeStatus = statusData[index]
                     })
@@ -361,6 +401,7 @@
             })
         },
         mounted() {
+            this.activeRouteName = this.$route.name
             window.addEventListener("beforeunload", this.saveTags);
         },
         destroyed() {
@@ -486,4 +527,8 @@
       font-size 14px
       margin 15px 0
       cursor pointer
+  .no-child-menu
+      color #fff
+  .no-child-menu.is-active
+      color: #409EFF
 </style>

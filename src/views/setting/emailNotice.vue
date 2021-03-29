@@ -55,20 +55,20 @@
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="id" label="ID" width="50"></el-table-column>
       <el-table-column prop="emailName" label="邮箱" width="230">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="message"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.emailName }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="comment" label="类型" width="200"></el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="200">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createDate }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="status" label="状态" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.status === 1">
             <a class="fa fa-unlock"></a> 启用
           </el-tag>
@@ -78,7 +78,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
                             <a class="fa fa-search" style="color: white;"></a> 查看
@@ -166,8 +166,8 @@
   </div>
 </template>
 <script>
-import axios from "axios";
 export default {
+  name: 'emailNoticeAA',
   data() {
     var validatePass = (rule, value, callback) => {
       var c = value.indexOf("@coocaa.com");
@@ -264,7 +264,6 @@ export default {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -285,7 +284,7 @@ export default {
         .then(() => {
           this.$service
             .changeEmailStatus({ id: id, status: status },"修改成功")
-            .then(data => {
+            .then(() => {
               this.loadData();
             });
         })
@@ -298,10 +297,10 @@ export default {
     },
 
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail: function(index, row) {
+    //   var id = row.id;
+    //   // todo: 以后再做
+    // },
     // 显示新增界面
     handleAdd: function() {
       this.dialogTitle = "新增";
@@ -323,18 +322,17 @@ export default {
           emailForm = JSON.parse(emailForm);
           emailForm.typeFlags = emailForm.typeFlags.join(",");
           if(this.emailForm.id!=""){
-          this.$service.updateEmail(emailForm,"更新成功").then(data => {
+          this.$service.updateEmail(emailForm,"更新成功").then(() => {
             this.loadData();
             this.addFormVisible = false;
           });
           }else{
-          this.$service.addEmail(emailForm,"添加成功").then(data => {
+          this.$service.addEmail(emailForm,"添加成功").then(() => {
             this.loadData();
             this.addFormVisible = false;
           });
           }
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -376,7 +374,7 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delEmail({ id: id },"删除成功").then(data => {
+          this.$service.delEmail({ id: id },"删除成功").then(() => {
             this.loadData();
           });
         })
@@ -392,7 +390,6 @@ export default {
         ids.push(val[i].id);
       }
       this.multipleSelection = ids;
-      // console.log(this.multipleSelection);
     },
 
     // 批量删除
@@ -405,7 +402,7 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchDelEmail({ ids: ids.join(",") },"删除成功").then(data => {
+            this.$service.batchDelEmail({ ids: ids.join(",") },"删除成功").then(() => {
               this.loadData();
             });
           })

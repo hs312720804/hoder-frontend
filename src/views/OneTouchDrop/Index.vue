@@ -3,19 +3,28 @@
         <div class="header">
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
                 <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
-                <el-step title="第二步：设置人群条件" icon="el-icon-edit"></el-step>
+                <el-step title="第二步：创建人群" icon="el-icon-edit"></el-step>
                 <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step>
             </el-steps>
         </div>
         <div>
-            <create-policy
+            <new-create-policy
                     @policyNextStep="handlePolicyNextStep"
                     v-if="activeStep === 0"
                     :recordId="recordId"
                     :initTagList="initTagList"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
-            ></create-policy>
+            >
+            </new-create-policy>
+            <!--<create-policy-->
+                    <!--@policyNextStep="handlePolicyNextStep"-->
+                    <!--v-if="activeStep === 0"-->
+                    <!--:recordId="recordId"-->
+                    <!--:initTagList="initTagList"-->
+                    <!--@resetFormData="resetFormData"-->
+                    <!--@handleDirectStrategyList="handleDirectStrategyList"-->
+            <!--&gt;</create-policy>-->
             <create-crowd
                     :recordId="recordId"
                     @crowdNextStep="handleCrowdNextStep"
@@ -42,12 +51,14 @@
     import createPolicy from './CreatePolicy'
     import createCrowd from './CreateCrowd'
     import LaunchToBusiness from './LaunchToBusinessPlatform'
+    import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
     export default {
         name: "index",
         components: {
             createPolicy,
             createCrowd,
-            LaunchToBusiness
+            LaunchToBusiness,
+            newCreatePolicy
         },
         data () {
             return {

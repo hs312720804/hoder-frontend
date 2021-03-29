@@ -68,13 +68,13 @@
       <!--<el-table-column prop="menuIds" label="权限" width="200"></el-table-column>-->
       <el-table-column prop="remarks" label="备注" width="200"></el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="200">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createDate }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="useable" label="状态" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.useable === 1">
             <a class="fa fa-unlock"></a> 正常
           </el-tag>
@@ -84,7 +84,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
                             <a class="fa fa-search" style="color: white;"></a> 查看
@@ -236,6 +236,7 @@
 <script>
 import _ from "lodash";
 export default {
+  name: 'roleManageAA',
   data() {
     return {
       // 表格当前页数据
@@ -290,8 +291,11 @@ export default {
     this.loadData();
   },
   methods: {
-    callback(data, successMsg) {
-      this.loadData();
+    // callback(data, successMsg) {
+    //   this.loadData();
+    // },
+    callback() {
+        this.loadData();
     },
     // 从服务器读取数据
     loadData () {
@@ -320,7 +324,7 @@ export default {
     getKeys(json, keys) {
       var final = [];
       for (var i = 0; i < keys.length; i++) {
-        var final = this.searchTree(json, keys[i]).concat(final);
+        final = this.searchTree(json, keys[i]).concat(final);
       }
       if (json.length == 0 || keys.length == 0) {
         return [];
@@ -354,7 +358,7 @@ export default {
     searchInit(json) {
       var newJson = json.concat([]);
       var len = newJson.length; //长度
-      var parentNode = [];
+      // var parentNode = [];
       for (var i = 0; i < len; i++) {
         var item = newJson[i];
         if (item.children && item.children.length != 0) {
@@ -404,8 +408,8 @@ export default {
         .then(() => {
           this.$service
             .changeRoleStatus({ id: id, useable: useable },"状态修改成功")
-            .then(data => {
-              this.callback(data, "状态修改成功");
+            .then(() => {
+              this.callback();
             });
         })
         .catch(() => {
@@ -414,10 +418,8 @@ export default {
     },
 
     // 查看详情
-    handleDetail (index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail (index, row) {
+    // },
 
     // 过滤权限值
     filterNode(value, data) {
@@ -444,8 +446,8 @@ export default {
           roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
           roleForm.menuIds = roleForm.menuIds.join(",");
           roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.addRole(roleForm,"添加成功").then(data => {
-            this.callback(data, "添加成功");
+          this.$service.addRole(roleForm,"添加成功").then(() => {
+            this.callback();
             this.addFormVisible = false;
           });
         } else {
@@ -482,8 +484,8 @@ export default {
           roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
           roleForm.menuIds = roleForm.menuIds.join(",");
           roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.updateRole(roleForm,"编辑成功").then(data => {
-            this.callback(data, "编辑成功");
+          this.$service.updateRole(roleForm,"编辑成功").then(() => {
+            this.callback();
             this.editFormVisible = false;
           });
         } else {
@@ -519,8 +521,8 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delRole({ id: id },"删除成功").then(data => {
-            this.callback(data, "删除成功");
+          this.$service.delRole({ id: id },"删除成功").then(() => {
+            this.callback();
           });
         })
         .catch(() => {
@@ -546,8 +548,8 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchRoles({ ids: ids.join(",") },"删除成功").then(data => {
-              this.callback(data, "删除成功");
+            this.$service.batchRoles({ ids: ids.join(",") },"删除成功").then(() => {
+              this.callback();
             });
           })
           .catch(() => {

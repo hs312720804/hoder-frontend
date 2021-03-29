@@ -141,13 +141,13 @@
                             <!--:filter="filter"-->
                             <!--:pagination="pagination"-->
                     <!--&gt;-->
-                        <Table
+                        <c-table
                                 :props="table.props"
                                 :header="table.header"
                                 :data="table.data"
                                 class="table-overflow"
                         >
-                        </Table>
+                        </c-table>
                     <!--</ContentWrapper>-->
                 </div>
             </div>
@@ -167,13 +167,8 @@
 </template>
 
 <script>
-    import { ContentWrapper, Table} from 'admin-toolkit'
     export default {
         name: "StatisticsHomePage",
-        components: {
-            ContentWrapper,
-            Table
-        },
         data () {
             return {
                 crowdData: [],
@@ -515,7 +510,6 @@
                         // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
                         return {value: key.count, name: key.name}
                     })
-                    console.log(newProvinceData)
                     this.setMapEcharts('main','省份分布',newProvinceData)
                     this.cityData = data.cityPercent
                     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})

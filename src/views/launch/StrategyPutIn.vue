@@ -119,19 +119,19 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
-                <el-form-item label="数据有效期" prop="expiryDay">
-                    <el-select
-                            v-model="crowdForm.expiryDay"
-                    >
-                        <el-option
-                                v-for="(item,index) in effectTimeList"
-                                :key="index"
-                                :label="item.label"
-                                :value="item.value"
-                        >
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item label="数据有效期" prop="expiryDay">-->
+                    <!--<el-select-->
+                            <!--v-model="crowdForm.expiryDay"-->
+                    <!--&gt;-->
+                        <!--<el-option-->
+                                <!--v-for="(item,index) in effectTimeList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value"-->
+                        <!--&gt;-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item label="每天是否更新" prop="autoVersion">
                     <el-select
                             v-model="crowdForm.autoVersion"
@@ -177,7 +177,7 @@
                     //      dataSource: 2,
                     policyIds: undefined,
                     policyCrowdIds: [],
-                    expiryDay: 7,
+                    // expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined,
                     launchMode: {
@@ -263,7 +263,7 @@
                         this.crowdData = data
                     }
                 })
-                .catch(err => {})
+                .catch(() => {})
             },
             // pull模式保存
             savePullData() {
@@ -296,7 +296,7 @@
                     abTest: crowdForm.abTest,
                     launchName: crowdForm.launchName, //投放名称
                     remark: crowdForm.remark,
-                    expiryDay: crowdForm.expiryDay,
+                    // expiryDay: crowdForm.expiryDay,
                     autoVersion: crowdForm.autoVersion,
                     autoLaunchTime: crowdForm.autoLaunchTime,
                     launchCrowdId: crowdForm.launchCrowdId

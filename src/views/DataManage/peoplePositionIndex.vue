@@ -9,7 +9,7 @@
 import PeoplePositionList from './peoplePositionList'
 import PeoplePositionAdd from './peoplePositionAdd'
 export default {
-    name: "peoplePositionIndex",
+    name: "dataManageAA",
     components: {
         PeoplePositionAdd,
         PeoplePositionList

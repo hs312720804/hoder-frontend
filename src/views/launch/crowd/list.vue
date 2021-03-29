@@ -42,13 +42,13 @@
       <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
       <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
       <el-table-column prop="status" label="人群状态" width="70">
-        <template scope="scope">
+        <template slot-scope="scope">
           <span style="margin-left: 10px">{{launchStatusEnum[scope.row.status]}}</span>
         </template>
       </el-table-column>
       <!--<el-table-column prop="menuIds" label="权限" width="200"></el-table-column>-->
       <el-table-column prop="expiryTime" label="人群有效期" width="180">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.expiryTime }}</span>
         </template>
@@ -60,7 +60,7 @@
       <el-table-column prop="creatorName" label="创建人"></el-table-column>
       <el-table-column prop="department" label="业务部门"></el-table-column>
       <el-table-column label="操作" fixed="right" min-width="200">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group  class="button-group-position">
             <el-button
               v-if="scope.row.status==1"

@@ -97,19 +97,19 @@
                             </el-checkbox-group>
                         </el-form-item>
                 </el-form-item>
-                <el-form-item label="数据有效期" prop="expiryDay">
-                    <el-select
-                            v-model="crowdForm.expiryDay"
-                    >
-                        <el-option
-                                v-for="(item,index) in effectTimeList"
-                                :key="index"
-                                :label="item.label"
-                                :value="item.value"
-                        >
-                        </el-option>
-                    </el-select>
-                </el-form-item>
+                <!--<el-form-item label="数据有效期" prop="expiryDay">-->
+                    <!--<el-select-->
+                            <!--v-model="crowdForm.expiryDay"-->
+                    <!--&gt;-->
+                        <!--<el-option-->
+                                <!--v-for="(item,index) in effectTimeList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value"-->
+                        <!--&gt;-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
                 <el-form-item label="每天是否更新" prop="autoVersion">
                     <el-select
                             v-model="crowdForm.autoVersion"
@@ -156,7 +156,7 @@
                     //      dataSource: 2,
                     policyIds: '',
                     policyCrowdIds: [],
-                    expiryDay: 7,
+                    // expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined,
                     launchMode: {
@@ -249,7 +249,7 @@
                                 autoLaunchTime:crowdForm.autoLaunchTime,
                                 autoVersion: crowdForm.autoVersion,
                                 biIds: crowdForm.biIds,
-                                expiryDay:  crowdForm.expiryDay,
+                                // expiryDay:  crowdForm.expiryDay,
                                 launchName: crowdForm.launchName,
                                 policyCrowdIds: crowdForm.policyCrowdIds,
                                 calType: crowdForm.calType,

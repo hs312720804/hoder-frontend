@@ -14,8 +14,16 @@
             <el-table-column label="序号" type="index"></el-table-column>
             <el-table-column label="id" prop="id"></el-table-column>
             <el-table-column label="设备包名称" prop="name"></el-table-column>
-            <el-table-column label="总数量" prop="totalSize"></el-table-column>
-            <el-table-column label="可识别数量" prop="realSize"></el-table-column>
+            <el-table-column label="总数量" prop="totalSize">
+                <template slot-scope="scope">
+                    {{cc_format_number(scope.row.totalSize)}}
+                </template>
+            </el-table-column>
+            <el-table-column label="可识别数量" prop="realSize">
+                <template slot-scope="scope">
+                    {{cc_format_number(scope.row.realSize)}}
+                </template>
+            </el-table-column>
             <el-table-column label="创建时间" prop="createTime"></el-table-column>
             <el-table-column label="状态" prop="status">
                 <template slot-scope="scope">

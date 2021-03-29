@@ -36,13 +36,13 @@
                     </div>
                     <div class="city-info-echarts">
                         <div class="table-title">Top50城市活跃排名(近30天活跃)</div>
-                        <Table
+                        <c-table
                                 :props="table.props"
                                 :header="table.header"
                                 :data="table.data"
                                 class="table-overflow"
                         >
-                        </Table>
+                        </c-table>
                     </div>
                     <div ref="circleDevice" class="base-info-circle-echarts" style="border: none;height: 300px"></div>
                 </div>
@@ -114,13 +114,9 @@
 </template>
 
 <script>
-    import { Table} from 'admin-toolkit'
     export default {
         name: "deviceEcharts",
         props: ["currentCid"],
-        components: {
-            Table
-        },
         data () {
             return {
                 showEstimateEcharts: true,
@@ -183,14 +179,21 @@
         methods: {
             // 通用多线性参数设置
             setLinesEchart (element,title,xData,yData,legend) {
+                const _this  = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
                     },
                     legend: {
                         data: legend
@@ -226,6 +229,7 @@
             },
             // 通用柱状图参数设置
             setBarEchart (element,title,xData,yData) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -233,8 +237,14 @@
                         text: title
                     },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     xAxis: {
                         type: 'category',
                         data: xData,
@@ -270,6 +280,7 @@
             },
             // 圆饼图
             setCircleEcharts(element,title,legend,data,showDetail){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
@@ -277,9 +288,15 @@
                         text: title,
                         left: 'center'
                     },
+                    // tooltip: {
+                    //     trigger: 'item',
+                    //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    // },
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
                     },
                     legend: {
                         orient: 'vertical',
@@ -318,6 +335,7 @@
             },
             // 中国地图
             setMapEcharts (element,title,data,minValue,maxValue) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 // 中国地图
@@ -327,10 +345,16 @@
                         // subtext: '副标题',
                         left: 'center'
                     },
-                    tooltip : {
+                    tooltip: {
                         trigger: 'item',
-                        formatter: '{b}<br/>({c})'
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+                        }
                     },
+                    // tooltip : {
+                    //     trigger: 'item',
+                    //     formatter: '{b}<br/>({c})'
+                    // },
                     visualMap: {
                         min: minValue ? minValue : 0,
                         max: maxValue ? maxValue : 20000000,
@@ -426,7 +450,6 @@
             },
             // 设备画像---开始
             getCrowdBaseInfo() {
-                const crdId = this.currentCid
                 // 性别，年龄，产品等级
                 const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
                 // this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0]},id: this.currentCid}).then(data => {
@@ -455,7 +478,6 @@
                 })
             },
             getCrowdProvinceInfo() {
-                const crdId = this.currentCid
                 // 省份、城市活跃度
                 const typeEnum = ['portrait.province','portrait.cities.rank']
                 this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0]},id: this.currentCid}).then(data => {
@@ -477,7 +499,6 @@
             getTopActiveRank() {
                 const typeEnum = ['portrait.top50.active.city']
                 this.$service.seeDevicePortraintCharts({params: {type: typeEnum[0], orderBy: 'value',sortOrder: 'desc'},id: this.currentCid}).then(data => {
-                    console.log(data.dataList)
                     const arr = data.dataList
                     var sum = 0
                     arr.forEach(item => {
@@ -486,13 +507,10 @@
                     this.table.data = arr.reduce((result, item) => {
                         return result.concat({ name: item.name, value: parseInt(item.value), PCT:((parseInt(item.value)/sum)*100).toFixed(2)+ '%' })
                     }, [])
-                    console.log('---------')
-                    console.log(this.table.data)
                 })
             },
             getMemberBenefits() {
                 this.$service.getEstimatedTvEnumData().then(data => {
-                    console.log(data)
                     const memberListData = this.objectToArray(data)
                     this.memberList = memberListData
                     // 设置两个默认的下拉框选值
@@ -564,49 +582,35 @@
                     'kmVIP': "portrait.user.category.cool.meow.vip.expireddate.member"
                 }
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        console.log(item.name+':'+item.value)
                     })
                     this.setCircleEcharts('member','会员用户的分布情况',names,values,true)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithNoVipSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('非会员总数======'+dataCount)
                     this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithVipSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('有效期会员总数======'+dataCount)
                     this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
                 })
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
-                    var dataCount = 0
                     data.dataList.forEach(item => {
                         names.push(item.name)
                         values.push({value: item.value, name: item.name})
-                        dataCount += parseInt(item.value)
                     })
-                    console.log('过期会员总数======'+dataCount)
                     this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
                 })
                 // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
@@ -643,7 +647,6 @@
                     'kmVIP': "portrait.last.payment.cool.meow.vip"
                 }
                 this.$service.seeDevicePortraintCharts({params: {type: typeWithSelectEnum[this.memberListByPay]},id: this.currentCid}).then(data => {
-                    console.log(data)
                     const [names,values] = [[],[]]
                     data.dataList.forEach(item => {
                         names.push(item.name)

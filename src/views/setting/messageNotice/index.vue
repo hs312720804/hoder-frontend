@@ -9,7 +9,7 @@
     import noticeList from './list'
     import noticeAdd from './add'
     export default {
-        name: "noticeIndex",
+        name: "noticeAA",
         components: {
             noticeList,
             noticeAdd
@@ -35,7 +35,6 @@
                 this.mode = mode
             },
             openListPage () {
-                this.$router.push({name: 'notice'})
                 this.showList = true
             }
         },

@@ -56,7 +56,7 @@
 
 <script>
     export default {
-        name: "anomaly",
+        name: "anomalyEchartsAA",
         data () {
             return {
                 time: [],
@@ -126,14 +126,21 @@
             },
             // 通用多线性参数设置
             setLinesEchart (element,title,xData,yData,legend) {
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'axis'
+                    // },
                     tooltip: {
-                        trigger: 'axis'
+                        trigger: 'item',
+                        formatter:function (a) {
+                            return _this.cc_format_number(a.data)
+                        }
                     },
                     legend: {
                         data: legend,
@@ -170,15 +177,22 @@
             },
             // 通用圆饼图
             setCircleEcharts(element,title,legend,data,circleType){
+                const _this = this
                 let echarts = require('echarts')
                 let myChart = echarts.init(this.$refs[element])
                 myChart.setOption({
                     title: {
                         text: title
                     },
+                    // tooltip: {
+                    //     trigger: 'item',
+                    //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+                    // },
                     tooltip: {
                         trigger: 'item',
-                        formatter: "{a} <br/>{b}: {c} ({d}%)"
+                        formatter:function (a) {
+                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
+                        }
                     },
                     legend: {
                         orient: 'vertical',

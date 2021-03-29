@@ -366,11 +366,16 @@ export function updatePrioorityInCrowdList(data) {
     data
   })
 }
+// 人群分流优先级单独修改
+export function updateBypassPriorityInCrowdList(data) {
+    return this.fetch({
+        method: 'PUT',
+        url: 'api/crowd/updateBypassPriorityInCrowdList',
+        data
+    })
+}
 // 人群AB test 划分新增
-export function crowdABTestAdd({
-  model,
-  data
-}) {
+export function crowdABTestAdd({model, data}) {
   return this.fetch({
     method: 'post',
     url: '/api/crowd/aBTestPartition/' + model,
@@ -404,6 +409,14 @@ export function getCrowdStatus(params) {
     url: 'api/crowd/crowdStatusTrack',
     params
   })
+}
+// 人群列表请求详情列表
+export function crowdRequestDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/crowd/trackDetail',
+        params
+    })
 }
 // 人群列表查看自人群
 export function getAbChilds(params) {
@@ -547,4 +560,111 @@ export function getRedirectCrowdAdd({policyId,params}) {
         url: '/api/crowd/reLaunch/'+policyId,
         params
     })
+}
+// 人群收藏
+export function collectPolicy(data) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/collect/policy',
+        data
+    })
+}
+// 人群删除收藏
+export function removeCollectPolicy(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/collect/policy?policyId='+params.policyId
+    })
+}
+
+// 策略列表根据id单独获取策略维度
+export function getSrtategyTagsList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/policyUsedTag',
+        params
+    })
+}
+
+// 设备命中查询
+export function searchHitCrowd ({crowdId,params}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/dataSearcher/macCrowdTagValue/'+crowdId,
+        params
+    })
+}
+// mac在主页命中明细查询接口
+export function macHitDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/homePage/hit/log',
+        params
+    })
+}
+// mac在主页请求明细查询
+export function macRequestDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/homePage/request/log',
+        params
+    })
+}
+// 人群mac维度命中请求统计查询
+export function macLogSearch({mac,params}) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/crowd/log/mac/'+mac,
+        params
+    })
+}
+// 人群分流人群列表下拉框数据
+export function getBypassCrowdList(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/bypassPartition/crowdsList/'+params.policyId
+    })
+}
+// 人群分流新增保存
+export function saveBypassCrowdAdd({data, params}) {
+    return this.fetch({
+        method: 'post',
+        url: '/api/policy/bypassPartition/'+params.policyId,
+        data,
+        isJSON: true
+    })
+}
+// 人群分流编辑保存
+export function saveBypassCrowdEdit({data, params}) {
+    return this.fetch({
+        method: 'put',
+        url: '/api/policy/bypassPartition/'+params.policyId,
+        data,
+        isJSON: true
+    })
+}
+// 人群分流删除
+export function delBypassCrowd(params) {
+    return this.fetch({
+        method: 'delete',
+        url: '/api/policy/bypassPartition/ratio/'+params.pid
+    })
+}
+// 人群分流数据回显
+export function getBypassCrowdDetail(params) {
+    return this.fetch({
+        method: 'get',
+        url: '/api/policy/bypassPartition/'+params.policyId
+    })
+}
+/**
+ * 接口测试
+ * @param {*} params 
+ */
+export function polisyTest(params) {
+  return this.fetch({
+    method: 'get',
+    isReturnAllInfor: true,
+    url: `/api/policy/invoker/${params.policyId}/${params.mac}/${params.crowdId}`,
+  })
 }

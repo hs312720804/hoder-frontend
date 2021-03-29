@@ -111,4 +111,73 @@ export function copyLabelSingle(params) {
         params
     })
 }
-
+// 标签收藏
+export function collectTags(data) {
+    return this.fetch({
+        method: 'post',
+        url: 'api/collect/label',
+        data
+    })
+}
+// 标签取消收藏
+export function cancelCollectTags(data) {
+    return this.fetch({
+        method: 'delete',
+        url: 'api/collect/label?'+'tagId='+data.tagId
+    })
+}
+// 标签列表之我的收藏
+export function collectTagsList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/collect/label',
+        params
+    })
+}
+// 标签列表之特色标签
+export function specialTagList(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/specialTag/index',
+        params
+    })
+}
+// 特定标签--查看
+export function specialTagDetailList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/list/${params.tagId}`,
+        params
+    })
+}
+// 特定标签-查看详情--省份下的市的列表
+export function specialTagChild(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/child/${params.id}`,
+    })
+}
+// 特定标签--修改
+export function editSpecialTag({rulesJson}) {
+    return this.fetch({
+        method: 'put',
+        url: `api/specialTag`,
+        data: rulesJson,
+        isJSON: true
+    })
+}
+// 特定标签--新建
+export function addSpecialTag({rulesJson}) {
+    return this.fetch({
+        method: 'post',
+        url: `api/specialTag`,
+        data: rulesJson,
+        isJSON: true
+    })
+}
+export function specialTagDetail({specialTagId}) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/${specialTagId}`,
+    })
+}

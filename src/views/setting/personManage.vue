@@ -66,19 +66,19 @@
       <el-table-column prop="name" label="真实姓名" width="80"></el-table-column>
       <el-table-column prop="roleNameStr" label="所拥有角色" width="150"></el-table-column>
       <el-table-column prop="email" label="邮箱" width="220">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="message"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.email }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="createDate" label="创建时间" width="200">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-icon name="time"></el-icon>
           <span style="margin-left: 10px">{{ scope.row.createDate }}</span>
         </template>
       </el-table-column>
       <el-table-column prop="loginFlag" label="状态" width="100">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-tag type="success" close-transition="false" v-if="scope.row.loginFlag === 1">
             <a class="fa fa-unlock"></a> 正常
           </el-tag>
@@ -88,7 +88,7 @@
         </template>
       </el-table-column>
       <el-table-column label="操作" fixed="right" width="280">
-        <template scope="scope">
+        <template slot-scope="scope">
           <el-button-group>
             <!--<el-button size="small" type="success" @click="handleDetail(scope.$index, scope.row)">
                             <a class="fa fa-search" style="color: white;"></a> 查看
@@ -261,6 +261,7 @@
 </template>
 <script>
 export default {
+  name: 'personManageAA',
   data() {
     return {
       // 表格当前页数据
@@ -334,7 +335,7 @@ export default {
     };
   },
   methods: {
-    callback(data, successMsg) {
+    callback() {
         this.loadData();
     },
     // 从服务器读取数据
@@ -368,7 +369,6 @@ export default {
           _this.criteria = _this.searchForm;
           _this.loadData();
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -396,8 +396,8 @@ export default {
         .then(() => {
           this.$service
             .changeloginFlag({ id: id, loginFlag: loginFlag },"状态修改成功")
-            .then(data => {
-              this.callback(data, "状态修改成功");
+            .then(() => {
+              this.callback();
             });
         })
         .catch(() => {
@@ -406,10 +406,10 @@ export default {
     },
 
     // 查看详情
-    handleDetail: function(index, row) {
-      var id = row.id;
-      // todo: 以后再做
-    },
+    // handleDetail: function(index, row) {
+    //   var id = row.id;
+    //   // todo: 以后再做
+    // },
    selectOffice(){
      this.companyVisible=true;
      this.$service.get_office_tree_json().then((data)=>{
@@ -456,12 +456,11 @@ export default {
           userForm.roleIds = userForm.roleIds.join(",");
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.addUser(userForm,"添加成功").then(data => {
-            this.callback(data, "添加成功");
+          this.$service.addUser(userForm,"添加成功").then(() => {
+            this.callback();
             this.addFormVisible=false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -470,7 +469,6 @@ export default {
     // 显示编辑页面
     handleEdit: function(index, row) {
       this.editFormVisible = true;
-      // console.log(row);
       this.userForm.id = row.id;
       this.userForm.name = row.name;
       this.userForm.loginName = row.loginName;
@@ -494,12 +492,11 @@ export default {
           userForm.roleIds = userForm.roleIds.join(",");
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.updateUser(userForm,"更新成功").then(data => {
-            this.callback(data, "更新成功");
+          this.$service.updateUser(userForm,"更新成功").then(() => {
+            this.callback();
             this.editFormVisible=false;
           });
         } else {
-          console.log("error submit!!");
           return false;
         }
       });
@@ -530,8 +527,8 @@ export default {
         type: "error"
       })
         .then(() => {
-          this.$service.delUser({ id: id },"删除成功").then(data => {
-            this.callback(data, "删除成功");
+          this.$service.delUser({ id: id },"删除成功").then(() => {
+            this.callback();
           });
         })
         .catch(() => {
@@ -546,7 +543,6 @@ export default {
         ids.push(val[i].id);
       }
       this.multipleSelection = ids;
-      // console.log(this.multipleSelection);
     },
 
     // 批量删除
@@ -559,8 +555,8 @@ export default {
           type: "error"
         })
           .then(() => {
-            this.$service.batchDelUsers({ids:ids.join(",")},"删除成功").then(data => {
-              this.callback(data, "删除成功");
+            this.$service.batchDelUsers({ids:ids.join(",")},"删除成功").then(() => {
+              this.callback();
             });
           })
           .catch(() => {

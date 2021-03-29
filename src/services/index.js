@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { utils } from "admin-toolkit";
+import { utils } from '@ccprivate/admin-toolkit'
 import fetch from './fetch'
 import login from './login'
 import getConstants from './getConstants'
@@ -27,6 +27,8 @@ import * as crowdStatistic from './statisticCrowd/crowdStatistic'
 import * as anomaly from './launch/anomaly'
 import * as devicePortrait from './GroupImageInsight/devicePortrait'
 import * as userTagsSearch from './launch/useTagsSearch'
+import * as listDimension from './listDimension'
+import * as tempCrowd from './crowdStrategy/tempCrowd'
 const service = {
     state: {},
     fetch,
@@ -56,6 +58,8 @@ const service = {
     ...crowdStatistic,
     ...anomaly,
     ...devicePortrait,
-    ...userTagsSearch
+    ...userTagsSearch,
+    ...listDimension,
+    ...tempCrowd
 }
 Vue.prototype.$service = utils.wrapService(service)

@@ -7,7 +7,7 @@
         </el-row>
         <!--新增编辑界面-->
         <!--新增自定义人群-->
-        <div v-if="model == 1">
+        <div v-if="model == 1 && isTempCrowd">
             <el-row :gutter="40" >
                 <el-col :span="24">
                     <el-form :model="crowdDefineForm" :rules="crowdDefineFormRules" ref="crowdDefineForm" label-width="140px">
@@ -50,27 +50,12 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
+                        <div class="horizontal-line">
                         <el-form-item label="是否生成临时标签" prop="proTempTag">
                             <el-radio-group v-model="crowdDefineForm.proTempTag">
                                 <el-radio :label="false">否</el-radio>
                                 <el-radio :label="true">是</el-radio>
                             </el-radio-group>
-                        </el-form-item>
-                        <el-form-item label="每天是否更新" prop="autoVersion">
-                            <el-select
-                                    v-model="crowdDefineForm.autoVersion"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            >
-                                <el-option label="是" :value="1"></el-option>
-                                <el-option label="否" :value="0"></el-option>
-                            </el-select>
-                        </el-form-item>
-                        <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
-                            <el-time-picker
-                                    v-model="crowdDefineForm.autoLaunchTime"
-                                    value-format="HH:mm:ss"
-                                    :disabled="status!==undefined && (status === 2 || status === 3)"
-                            ></el-time-picker>
                         </el-form-item>
                         <el-form-item label="选择标签" prop="tagId" v-if="crowdDefineForm.proTempTag === true">
                             <el-select
@@ -88,7 +73,75 @@
                                 </el-option>
                             </el-select>
                         </el-form-item>
-                        <el-form-item label="人群数量上限" v-if="crowdDefineForm.autoVersion === 1">
+                        </div>
+                            <div class="horizontal-line">
+                        <el-form-item label="每天是否更新" prop="autoVersion">
+                           <el-radio-group v-model="crowdDefineForm.autoVersion"  :disabled="status!==undefined && (status === 2 || status === 3)">
+                                <el-radio :label="0">否</el-radio>
+                                <el-radio :label="1">是</el-radio>
+                            </el-radio-group>
+                            <!-- <el-select
+                                    v-model="crowdDefineForm.autoVersion"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            >
+                                <el-option label="是" :value="1"></el-option>
+                                <el-option label="否" :value="0"></el-option>
+                            </el-select> -->
+                        </el-form-item>
+                        <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-time-picker
+                                    v-model="crowdDefineForm.autoLaunchTime"
+                                    value-format="HH:mm:ss"
+                                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                            ></el-time-picker>
+                        </el-form-item>
+                            </div>
+                            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="Mac数量基准" class="one-line" >
+                                  <el-form-item label="" prop="macInitialValue" class="inline-block  base-line">
+                                    <cc-input-thousands-int
+                                      v-model="crowdDefineForm.macInitialValue"
+                                      ref="inputThousandsInt"
+                                      @change="handleRule"
+                                      >
+                                    </cc-input-thousands-int>
+                                  </el-form-item>
+                                  <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
+                                    <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
+                                    <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <span>请至少填写一组基准和环比阀值</span>
+                              </el-form-item>
+                              <el-form-item label="微信数量基准" class="one-line">
+                                  <el-form-item label="" prop="wxInitialValue" class="inline-block  base-line">
+                                    <cc-input-thousands-int
+                                      v-model="crowdDefineForm.wxInitialValue"
+                                      >
+                                    </cc-input-thousands-int>
+                                  </el-form-item>
+                                  <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
+                                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                  <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
+                                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+
+                                  </el-form-item>&nbsp;&nbsp;%，则告警
+                                    <span>请至少填写一组基准和环比阀值</span>
+                              </el-form-item>
+                              <div class="basic-line-error">{{basicLineErrorText}}</div>
+
+                            </div>
+                        <!-- <el-form-item label="微信数量" v-if="crowdDefineForm.autoVersion === 1">
+                            <el-form-item label="mac数量不少于" prop="minMacEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minMacEstimateCount" type="number" placeholder="请输入mac数量的最小值"></el-input>
+                            </el-form-item>
+                            <el-form-item label="微信数量不少于" prop="minWxEstimateCount" class="inline-block">
+                                <el-input v-model="crowdDefineForm.minWxEstimateCount" type="number" placeholder="请输入微信数量的最小值"></el-input>
+                            </el-form-item>
+                        </el-form-item> -->
+                        <!-- <el-form-item label="人群数量上限" v-if="crowdDefineForm.autoVersion === 1">
                             <el-form-item label="mac数量不超过" prop="maxMacEstimateCount" class="inline-block">
                                 <el-input v-model="crowdDefineForm.maxMacEstimateCount" type="number" placeholder="请输入mac数量的最大值"></el-input>
                             </el-form-item>
@@ -103,7 +156,7 @@
                             <el-form-item label="微信数量不少于" prop="minWxEstimateCount" class="inline-block">
                                 <el-input v-model="crowdDefineForm.minWxEstimateCount" type="number" placeholder="请输入微信数量的最小值"></el-input>
                             </el-form-item>
-                        </el-form-item>
+                        </el-form-item> -->
                         <el-form-item label="数据类型" prop="calType">
                             <el-checkbox-group v-model="crowdDefineForm.calType" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
@@ -114,7 +167,7 @@
                             <el-input disabled v-model="abTestApart" style="width: 10%;margin-right: 10px"></el-input>份
                         </el-form-item>
                         <el-form-item label="各人群占比">
-                            <div class="block" v-for="(item,index) in copiesItem">
+                            <div class="block" v-for="(item,index) in copiesItem" :key="index">
                                 <span>人群_{{alphaData[index]}}<span class="show-percent">{{percent[index]}}%</span></span>
                                 <el-slider :disabled="status === 2 || status === 3" v-model="percent[index]" :key="item"></el-slider>
                             </div>
@@ -142,16 +195,21 @@
         </div>
         <!--新增投放-->
         <div v-else>
-            <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="100px">
-                <el-form-item label="投放名称" prop="launchName">
+            <el-form :model="crowdForm" :rules="crowdFormRules" ref="crowdForm" label-width="130px">
+                <el-form-item label="投放名称" prop="launchName" class="form-width">
                     <el-input size="small"
                               v-model="crowdForm.launchName"
                               placeholder="投放名称"
                               :disabled="status!==undefined && (status === 2 || status === 3)"
                     ></el-input>
                 </el-form-item>
-                <el-form-item label="投放平台" class="multipleSelect" prop="biIds">
-                    <el-select v-model="crowdForm.biIds" multiple placeholder="请选择投放平台">
+                <el-form-item label="投放平台" class="multipleSelect form-width" prop="biIds">
+                    <el-select
+                            v-model="crowdForm.biIds"
+                            @change="handleBiIdChange"
+                            multiple
+                            placeholder="请选择投放平台"
+                    >
                         <el-option
                                 v-for="item in launchPlatform"
                                 :key="item.biId+''"
@@ -161,21 +219,41 @@
                             <!-- {{item.biName}} -->
                         </el-option>
                     </el-select>
+                    <el-checkbox
+                            v-if="showAccountRelative"
+                            v-model="crowdForm.setCalculate"
+                            style="margin-left: 20px;position: absolute">
+                        账号关联去重
+                    </el-checkbox>
                 </el-form-item>
-                <el-form-item label="数据来源" prop="dataSource">
-                    <input type="hidden" value="2" v-model="crowdForm.dataSource">
-                    <el-input size="small" readonly value="大数据"></el-input>
-                </el-form-item>
-                <el-form-item label="备注" prop="remark">
-                    <el-input size="small" v-model="crowdForm.remark"></el-input>
-                </el-form-item>
-                <el-form-item label="是否做abTest">
-                    <el-radio-group v-model="crowdForm.abTest">
+                <!--<el-form-item label="数据来源" prop="dataSource" class="form-width">-->
+                    <!--<input type="hidden" value="2" v-model="crowdForm.dataSource">-->
+                    <!--<el-input size="small" readonly value="大数据"></el-input>-->
+                <!--</el-form-item>-->
+                <!--<el-form-item label="备注" prop="remark" class="form-width">-->
+                    <!--<el-input size="small" v-model="crowdForm.remark"></el-input>-->
+                <!--</el-form-item>-->
+                <el-form-item label="是否做abTest" class="form-width" v-if="!crowdForm.crowdType">
+                    <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item label="选择策略" prop="policyIds" class="multipleSelect">
+                <el-form-item label="选择人群类型" class="form-width">
+                    <el-radio-group
+                            v-model="crowdForm.crowdType"
+                            :disabled="disabledCrowdType"
+                    >
+                        <el-radio :label="false">普通人群</el-radio>
+                        <el-radio :label="true">临时人群</el-radio>
+                    </el-radio-group>
+                </el-form-item>
+                <el-form-item
+                        v-if="!crowdForm.crowdType"
+                        label="选择策略"
+                        prop="policyIds"
+                        class="multipleSelect form-width"
+                >
                     <el-select
                             filterable
                             v-model="crowdForm.policyIds"
@@ -195,7 +273,11 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="选择人群" prop="policyCrowdIds">
+                <el-form-item
+                        label="选择人群"
+                        prop="policyCrowdIds"
+                        v-if="!crowdForm.crowdType"
+                >
                     <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
@@ -223,21 +305,71 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
-                <el-form-item label="数据有效期" prop="expiryDay">
+                <!-- 选择临时人群 -->
+                <el-form-item
+                        label="选择人群"
+                        prop="tempCrowdId"
+                        v-if="crowdForm.crowdType"
+                >
                     <el-select
-                            v-model="crowdForm.expiryDay"
-                            :disabled="status!==undefined && (status === 2 || status === 3)"
+                            filterable
+                            v-model="crowdForm.tempCrowdId"
                     >
                         <el-option
-                                v-for="(item,index) in effectTimeList"
-                                :key="index"
-                                :label="item.label"
-                                :value="item.value"
-                        >
+                                v-for="item in tempCrowdList"
+                                :key="item.launchCrowdId+''"
+                                :label="item.launchName"
+                                :value="item.launchCrowdId"
+                        >{{item.launchName}}
                         </el-option>
                     </el-select>
+                    <!--<div v-if="!crowdForm.abTest">-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="v.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
+                    <!--<div v-else>-->
+                        <!--<el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">-->
+                            <!--<el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">-->
+                                <!--<el-checkbox-->
+                                        <!--v-for="item in v.childs"-->
+                                        <!--:label="item.policyId+'_'+item.crowdId"-->
+                                        <!--:key="item.crowdId+''"-->
+                                        <!--:disabled="item.canLaunch === false"-->
+                                <!--&gt;{{item.crowdName}}-->
+                                <!--</el-checkbox>-->
+                            <!--</el-checkbox-group>-->
+                        <!--</el-form-item>-->
+                    <!--</div>-->
                 </el-form-item>
-                <el-form-item label="每天是否更新" prop="autoVersion">
+                <!--<el-form-item label="数据有效期" prop="expiryDay" class="form-width">-->
+                    <!--<el-select-->
+                            <!--v-model="crowdForm.expiryDay"-->
+                            <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
+                    <!--&gt;-->
+                        <!--<el-option-->
+                                <!--v-for="(item,index) in effectTimeList"-->
+                                <!--:key="index"-->
+                                <!--:label="item.label"-->
+                                <!--:value="item.value"-->
+                        <!--&gt;-->
+                        <!--</el-option>-->
+                    <!--</el-select>-->
+                <!--</el-form-item>-->
+                <el-form-item
+                        label="每天是否更新"
+                        prop="autoVersion"
+                        class="form-width"
+                        v-if="!crowdForm.crowdType"
+                >
                     <el-select
                             v-model="crowdForm.autoVersion"
                             :disabled="status!==undefined && (status === 2 || status === 3)"
@@ -246,7 +378,7 @@
                         <el-option label="否" :value="0"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && !crowdForm.crowdType" class="form-width">
                     <el-time-picker
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
@@ -257,13 +389,32 @@
             <div slot="footer" class="footer">
                 <el-button @click="cancelAdd">返回</el-button>
                 <el-button type="primary" @click="addSubmit">保存</el-button>
+                <el-button
+                        v-if="!(status!==undefined && (status === 2 || status === 3))"
+                        type="primary"
+                        @click="launchDirectly"
+                >直接投放</el-button>
             </div>
+            <!-- 投放提示估算弹窗 -->
+            <el-dialog :visible.sync="showEstimate">
+                <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
+                <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
+                    <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+                </el-checkbox-group>
+                <span slot="footer" class="dialog-footer">
+                <el-button @click="showEstimate = false">取 消</el-button>
+                <el-button type="primary" @click="handleEstimate(estimateValue)">投放</el-button>
+            </span>
+            </el-dialog>
         </div>
     </div>
 </template>
 <script>
-    import _ from "lodash"
+    import CcInputThousandsInt from '@/components/CcInputThousandsInt'
     export default {
+        components: {
+          CcInputThousandsInt
+        },
         data() {
             // 正整数数字校验
             const reg = /^[1-9][0-9]{0,7}$/
@@ -337,19 +488,23 @@
                 launchPlatform: [],
                 getStrategyCrowds: [],
                 title: "",
+                basicLineErrorText: '',
                 // 新增界面数据
                 crowdForm: {
                     abTest: false,
                     launchCrowdId: "", //投放ID
                     launchName: "", //投放名称
                     biIds: "", //投放平台ID
-                    remark: "",
+                    // remark: "",
                     //      dataSource: 2,
                     policyIds: [],
                     policyCrowdIds: [],
-                    expiryDay: 7,
+                    // expiryDay: 7,
                     autoVersion: 0,
-                    autoLaunchTime: undefined
+                    autoLaunchTime: undefined,
+                    setCalculate: false, //，当投放平台只有消息触达时，设置账号关联相关
+                    crowdType: false,
+                    tempCrowdId: undefined
                 },
                 // 新增自定义人群
                 crowdDefineForm: {
@@ -365,10 +520,17 @@
                     tagId: undefined,
                     abTest: undefined,
                     ratios: undefined,
-                    minMacEstimateCount: undefined,
-                    maxMacEstimateCount: undefined,
-                    minWxEstimateCount: undefined,
-                    maxWxEstimateCount: undefined,
+                    basicLine: undefined, // 数量基准验证用
+                    macInitialValue: undefined, //Mac基准值
+                    macAbovePer: undefined, //Mac最大阈值
+                    macBelowPer: 5.00, //Mac最小阈值
+                    wxInitialValue: undefined, //微信基准值
+                    wxAbovePer: undefined, //微信最大阈值
+                    wxBelowPer: undefined, //微信最小阈值
+                    // minMacEstimateCount: undefined,
+                    // maxMacEstimateCount: undefined,
+                    // minWxEstimateCount: undefined,
+                    // maxWxEstimateCount: undefined,
                     videoSource: '0',
                     videoSourceIds: []
                 },
@@ -388,6 +550,9 @@
                     autoLaunchTime: [
                         { required: true, message: "请选择每天更新时间点", trigger: "blur" }
                     ],
+                    tempCrowdId: [
+                        { required: true, message: "请选择人群", trigger: "blur" }
+                    ]
                 },
                 crowdDefineFormRules: {
                     launchName: [
@@ -435,24 +600,33 @@
                 percent: [],
                 copiesItem: [],
                 percentTotal: 0,
-                videoSourceList: []
+                videoSourceList: [],
+                showAccountRelative: false,
+                tempCrowdList: [],
+                disabledCrowdType: false,
+                isTempCrowd: false,
+                showEstimate: false,
+                estimateValue: ['0'],
+                accountDefine: false,
+                currentLaunchId: undefined
             }
         },
-        props: ["editLaunchCrowdId", "model","editStatus","parentSource"],
+        props: ["editLaunchCrowdId", "model","editStatus","parentSource","showAllParent"],
         watch: {
-            'crowdForm.abTest': function (val, oldVal) {
-                // 根第一次加载的时候不判断，当值变的时候再触发
-                if (oldVal && this.firstTimeLoad) {
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.crowdData = []
-                    this.firstTimeLoad = false
-                }
-                if (val && !this.firstTimeLoad) {
-                    this.crowdData = []
-                    this.crowdForm.policyIds = val ? '' : []
-                    this.firstTimeLoad = true
-                }
-            },
+            // 'crowdForm.abTest': function (val, oldVal) {
+            //     debugger
+            //     // 根第一次加载的时候不判断，当值变的时候再触发
+            //     if (oldVal && this.firstTimeLoad) {
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         this.crowdData = []
+            //         // this.firstTimeLoad = false
+            //     }
+            //     if (val && !this.firstTimeLoad) {
+            //         this.crowdData = []
+            //         this.crowdForm.policyIds = val ? '' : []
+            //         // this.firstTimeLoad = true
+            //     }
+            // },
             percent(val) {
                 this.percentTotal = val.reduce((prev ,cur) => {
                     return prev + cur
@@ -465,6 +639,7 @@
             }
         },
         created() {
+            this.getTempCrowdList()
             this.getAddList(this.model)
             this.handleGetVideoList()
             if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
@@ -472,9 +647,12 @@
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
                     let abTestRatio = data.ratio || {}
-                    if (this.model == 1) {
+                    // 当row.tempCrowdId=0，就是普通人群
+                    this.isTempCrowd = !row.tempCrowdId
+                    if (this.model == 1 && !row.tempCrowdId) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
+                            let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
                             this.crowdDefineForm = {
                                 launchCrowdId: row.launchCrowdId,
                                 launchName: row.launchName,
@@ -488,10 +666,16 @@
                                 tagId: row.tagId,
                                 abTest: row.abTest,
                                 ratios: abTestRatio,
-                                minMacEstimateCount: row.minMacEstimateCount,
-                                maxMacEstimateCount: row.maxMacEstimateCount,
-                                minWxEstimateCount: row.minWxEstimateCount,
-                                maxWxEstimateCount: row.maxWxEstimateCount,
+                                macInitialValue: macInitialValue === null ? undefined : macInitialValue, //Mac基准值
+                                macAbovePer: macAbovePer === null ? undefined : macAbovePer, //Mac最大阈值
+                                macBelowPer: macBelowPer === null ? undefined : macBelowPer, //Mac最小阈值
+                                wxInitialValue: wxInitialValue === null ? undefined : wxInitialValue, //微信基准值
+                                wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, //微信最大阈值
+                                wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, //微信最小阈值
+                                // minMacEstimateCount: row.minMacEstimateCount,
+                                // maxMacEstimateCount: row.maxMacEstimateCount,
+                                // minWxEstimateCount: row.minWxEstimateCount,
+                                // maxWxEstimateCount: row.maxWxEstimateCount,
                                 videoSource: row.videoSource === null ? '0' : '1',
                                 videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(",")
                             }
@@ -511,27 +695,40 @@
                             this.status = this.editStatus
                     } else {
                         this.launchPlatform = data.biLists
-                        this.strategyPlatform = data.policies
+                        // this.strategyPlatform = data.policies
                         this.crowdForm.launchCrowdId = row.launchCrowdId
                         this.crowdForm.dmpCrowdId = row.dmpCrowdId
                         this.crowdForm.launchName = row.launchName
                         this.crowdForm.biIds = data.launchCrowdBiIds
-                        this.crowdForm.remark = row.remark
-                        this.crowdForm.dataSource = row.dataSource
-                        this.crowdForm.expiryDay = row.expiryDay
+                        this.crowdForm.crowdType = row.tempCrowdId ? true : false
+                        this.disabledCrowdType = true
+                        // this.crowdForm.remark = row.remark
+                        // this.crowdForm.dataSource = row.dataSource
+                        // this.crowdForm.expiryDay = row.expiryDay
                         this.crowdForm.autoVersion = row.autoVersion
                         this.crowdForm.autoLaunchTime = row.autoLaunchTime
                         this.crowdForm.abTest = row.abTest
+                        if (this.crowdForm.biIds.join(',') === '7') {
+                            this.showAccountRelative = true
+                        }
+                        this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
-                        this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
-                        this.getCrowd()
-                        data.respcl.forEach(element => {
-                            element.childs.forEach(v => {
-                                if (v.choosed)
-                                    this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
+                        if (row.tempCrowdId) {
+                            this.crowdForm.tempCrowdId = row.tempCrowdId
+                            this.crowdForm.policyIds = []
+                            this.crowdForm.policyCrowdIds = []
+                        } else {
+                            this.crowdForm.tempCrowdId = undefined
+                            this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
+                            this.getCrowd()
+                            data.respcl.forEach(element => {
+                                element.childs.forEach(v => {
+                                    if (v.choosed)
+                                        this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
+                                })
                             })
-                        })
-                        this.firstTimeLoad = true
+                        }
+                        // this.firstTimeLoad = true
                     }
                 })
             } else {
@@ -569,13 +766,18 @@
                             this.crowdData = data
                         }
                     })
-                    .catch(err => {})
+                    .catch(() => {})
             },
             // 新增
             addSubmit () {
-                if (this.model == 1) {this.saveDefineCrowd()}
-                else {this.saveNormalCrowd()}
-
+                if (this.model == 1 && this.isTempCrowd)
+                 {
+                   this.saveDefineCrowd()
+                }
+                else
+                {
+                  this.saveNormalCrowd()
+                }
             },
             saveNormalCrowd () {
                 this.$refs.crowdForm.validate(valid => {
@@ -583,16 +785,28 @@
                         let crowdForm = JSON.stringify(this.crowdForm)
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
-                        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
-                        crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-                            return v.split("_")[1]
-                        }).join(",")
+                        // 选择的是临时人群
+                        if (crowdForm.crowdType) {
+                            crowdForm.abTest = false
+                            crowdForm.policyIds = undefined
+                            crowdForm.policyCrowdIds = undefined
+                        } else {
+                            crowdForm.tempCrowdId = 0
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
+                        }
+                        // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                        // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                        //     return v.split("_")[1]
+                        // }).join(",")
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: this.model,data: crowdForm},"新增成功").then(() => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then(() => {
                                 this.callback()
                             })
                         }
@@ -600,6 +814,43 @@
                         return false
                     }
                 })
+            },
+            handleRule () {
+              let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+              let macInitialValue = crowdForm.macInitialValue
+              const macBelowPer = crowdForm.macBelowPer
+              let wxInitialValue = crowdForm.wxInitialValue
+              const wxBelowPer = crowdForm.wxBelowPer
+              macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
+              wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+              this.validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)
+            },
+            validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer) {
+              const macCondition = (macInitialValue === undefined || macInitialValue === '') && (macBelowPer === undefined || macBelowPer === '')
+              const wxCondition = (wxInitialValue === undefined || wxInitialValue === '') && (wxBelowPer === undefined || wxBelowPer === '')
+              if (macCondition && wxCondition) {
+                this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                return false
+              }
+              else if ((macInitialValue !== undefined && macInitialValue !== '') && (macBelowPer === undefined || macBelowPer === '')) {
+                this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                return false
+              }
+              else if ((macBelowPer !== undefined && macBelowPer !== '') && (macInitialValue === undefined || macInitialValue === '')) {
+                this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                return false
+              }
+              else if ((wxInitialValue !== undefined && wxInitialValue !== '') && (wxBelowPer === undefined || wxBelowPer === '')) {
+                this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                return false
+              }
+              else if ((wxBelowPer !== undefined && wxBelowPer !== '') && (wxInitialValue === undefined || wxInitialValue === '')) {
+                this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+                return false
+              } else {
+                this.basicLineErrorText = ''
+                return true
+              }
             },
             // 保存自定义人群
             saveDefineCrowd () {
@@ -631,6 +882,75 @@
                             })
                             crowdForm.ratios = oldRatio
                         }
+                        // let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
+                        let { macInitialValue, macBelowPer, wxInitialValue, wxBelowPer } = crowdForm
+                        macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
+                        wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+                        crowdForm.macInitialValue = macInitialValue
+                        crowdForm.wxInitialValue = wxInitialValue
+                        if (crowdForm.autoVersion === 1 && !this.validateBasicLine(macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)) {
+                          return
+                        }
+                        // const macCondition = (macInitialValue === undefined || macInitialValue === '') && (macBelowPer === undefined || macBelowPer === '')
+                        // const wxCondition = (wxInitialValue === undefined || wxInitialValue === '') && (wxBelowPer === undefined || wxBelowPer === '')
+                        // if (macCondition && wxCondition) {
+                        //   this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                        //   return
+                        // }
+                        // else if ((macInitialValue !== undefined && macInitialValue !== '') && (macBelowPer === undefined || macBelowPer === '')) {
+                        //   this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((macBelowPer !== undefined && macBelowPer !== '') && (macInitialValue === undefined || macInitialValue === '')) {
+                        //   this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((wxInitialValue !== undefined && wxInitialValue !== '') && (wxBelowPer === undefined || wxBelowPer === '')) {
+                        //   this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                        //   return
+                        // }
+                        // else if ((wxBelowPer !== undefined && wxBelowPer !== '') && (wxInitialValue === undefined || wxInitialValue === '')) {
+                        //   this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+                        //   return
+                        // }
+                        // const macCondition = macInitialValue !== undefined && macInitialValue !== '' && macBelowPer !== undefined && macBelowPer !== ''
+                        // const wxCondition = wxInitialValue !== undefined && wxInitialValue !== '' && wxBelowPer !== undefined && wxBelowPer !== ''
+                        // if (crowdForm.autoVersion === 1) {
+                        //     if (!(macCondition || wxCondition)) {
+                        //       this.basicLineErrorText = '请至少填写一组基准和环比阀值'
+                        //       return
+                        //     }
+                        //     if (macCondition) {
+                        //       if ((wxInitialValue !== undefined && wxInitialValue !== '')) {
+                        //         if (wxBelowPer === undefined || wxBelowPer === '') {
+                        //           this.basicLineErrorText = '请把微信数量环比低于这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //       if ((wxBelowPer !== undefined && wxBelowPer !== '')) {
+                        //         if (wxInitialValue === undefined || wxInitialValue === '') {
+                        //            this.basicLineErrorText = '请把微信数量基准这个选项填写完整'
+
+                        //           return
+                        //         }
+                        //       }
+                        //     }
+                        //     if (wxCondition) {
+                        //       if ((macInitialValue !== undefined && macInitialValue !== '')) {
+                        //         if (macBelowPer === undefined || macBelowPer === '') {
+                        //            this.basicLineErrorText = '请把Mac数量环比低于这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //       if ((macBelowPer !== undefined && macBelowPer !== '')) {
+                        //         if (macInitialValue === undefined || macInitialValue === '') {
+                        //           this.basicLineErrorText = '请把Mac数量基准这个选项填写完整'
+                        //           return
+                        //         }
+                        //       }
+                        //     }
+                        // }
+
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: this.model, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
@@ -650,6 +970,9 @@
                 this.$emit("goBack")
             },
             getAddList (model) {
+                this.$service.getEstimateType().then((data) => {
+                    this.estimateItems = data
+                })
                 if (model === 1) {
                     this.$service.addMultiVersionCrowd(this.model).then(data => {
                         this.launchPlatform = data.biLists
@@ -657,15 +980,12 @@
                             return { label: item + '天',value: item }
                         })
                     })
-                    this.$service.getEstimateType().then((data) => {
-                        this.estimateItems = data
-                    })
                     this.$service.searchTags().then(data=> {
                         this.tagsList = data
                     })
                 }
                 else {
-                    if (this.parentSource) {
+                    if (this.showAllParent) {
                         this.$service.addMyMultiVersionCrowd(this.model).then(data => {
                             this.launchPlatform = data.biLists
                             this.strategyPlatform = data.policies
@@ -701,29 +1021,151 @@
                 this.$service.getVideoSourceList().then(data => {
                     this.videoSourceList = data
                 })
+            },
+            handleBiIdChange (val) {
+                if (val) {
+                    if(val.join(',') === '7') {
+                        this.showAccountRelative = true
+                    } else {
+                        this.showAccountRelative = false
+                        this.crowdForm.setCalculate = false
+                    }
+                } else {
+                    this.showAccountRelative = false
+                    this.crowdForm.setCalculate = false
+                }
+            },
+            getTempCrowdList () {
+                const filter = {
+                    pageNum: 1,
+                    pageSize: 100
+                }
+                this.$service.getCalculatedTempCrowdList(filter).then(data => {
+                    this.tempCrowdList = data.pageInfo.list
+                    // this.launchStatusEnum = data.launchStatusEnum
+                    // this.tableData = data.pageInfo.list
+                    // this.totalCount = data.pageInfo.total
+                })
+            },
+            handleAbTestChange (val) {
+                if (val) {
+                    this.crowdForm.policyIds = ''
+                    this.crowdData = []
+                } else {
+                    this.crowdData = []
+                    this.crowdForm.policyIds = []
+                }
+            },
+            // 显示投放弹窗
+            launchDirectly () {
+                // 先进行保存校验
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        this.showEstimatePop()
+                    } else {
+                        return false
+                    }
+                })
+            },
+            showEstimatePop () {
+                this.showEstimate = true
+                // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                if (this.crowdForm.setCalculate) {
+                    this.accountDefine = true
+                    this.estimateValue = ['0','1','2','3']
+                } else {
+                    this.accountDefine = false
+                    this.estimateValue = ['0']
+                }
+            },
+            handleEstimate (calTypes) {
+                if (calTypes.length === 0) {
+                    this.$message.error('请至少选择一个要投放的人群')
+                    return
+                }
+                let calIdType = calTypes.map((item) => item).join(',')
+
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        let crowdForm = JSON.stringify(this.crowdForm)
+                        crowdForm = JSON.parse(crowdForm)
+                        crowdForm.biIds = crowdForm.biIds.join(",")
+                        // 选择的是临时人群
+                        if (crowdForm.crowdType) {
+                            crowdForm.abTest = false
+                            crowdForm.policyIds = undefined
+                            crowdForm.policyCrowdIds = undefined
+                        } else {
+                            crowdForm.tempCrowdId = 0
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
+                        }
+                        if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                                this.currentLaunchId = this.editLaunchCrowdId
+                                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+                                    this.showEstimate = false
+                                    this.callback()
+                                })
+                            })
+                        } else {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
+                                this.currentLaunchId = data.launchCrowdId
+                                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+                                    this.showEstimate = false
+                                    this.callback()
+                                })
+                            })
+                        }
+                    } else {
+                        return false
+                    }
+                })
             }
         }
     }
 </script>
 <style lang="stylus" scoped>
-    .multipleSelect
-        >>>.el-select
-            width: 100%
-    .add
-        border: 1px solid #ebeef5
-        padding: 20px
-        border-radius: 4px
-    .title
-        font-size: 18px
-        margin-bottom: 30px
-    .footer
-        display: flex
-        justify-content: flex-end
-    .select-tag
-        width 30%
-    .inline-block
-        display inline-block
-        width 30%
+  .basic-line
+    border 1px dashed #ccc
+    position relative
+    padding-top 10px
+    .basic-line-error
+      margin-left 35px
+      margin-bottom 10px
+      color red
+  .horizontal-line
+    display flex
+  .multipleSelect
+      >>>.el-select
+          width: 100%
+  .add
+      border: 1px solid #ebeef5
+      padding: 20px
+      border-radius: 4px
+  .title
+      font-size: 18px
+      margin-bottom: 30px
+  .footer
+      display: flex
+      justify-content: flex-end
+  .inline-block
+      display inline-block
+  .one-line
+      position relative
+      span
+        color #c3bcbc
+        position absolute
+        left 0px
+        top 30px
+  .base-line
+    width 180px
+  .ratio
+    width 230px
+  .form-width
+    width 60%
 </style>
 
 

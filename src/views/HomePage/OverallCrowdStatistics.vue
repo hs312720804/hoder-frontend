@@ -7,6 +7,7 @@
 
 <script>
     export default {
+        name: 'OverallCrowdStatisticsAA',
         data () {
             return {
                 pageSrc: 'http://datav.aliyuncs.com/share/a8611c7d492ad70e37afe8b72a92de62'

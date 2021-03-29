@@ -8,7 +8,7 @@
                 <div key="/groupId">
                     <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
                     <el-input   size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
-                    <el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>
+                    <!--<el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>-->
                 </div>
                 <!--<el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">-->
                     <!--<el-option-->
@@ -89,7 +89,8 @@ import _ from '@/gateschema'
 export default {
    data() {
        return {
-            parentGroupName: '',
+            // parentGroupName: '',
+            parentGroupName: '自定义标签',
             showCreateDialog: false,
             showSelectDialog: false,
             tagCategory: {},
@@ -107,7 +108,7 @@ export default {
             oldGroupId: undefined
        }
    },
-   props: ['typeEnum', 'currentTagCategory'],
+   props: ['typeEnum', 'currentTagCategory','definedTagId'],
    computed: {
        typeList() {
            const typeEnum = this.typeEnum || {}
@@ -174,15 +175,20 @@ export default {
                 form.activePaths = {}
             }
             this.tagCategory = val ? cloneDeep(val) : {}
-           if(this.tagCategory){
+           if(this.tagCategory) {
                this.oldGroupId = this.tagCategory.groupId
            }
-            this.getParentInfo()
+           this.getParentInfo()
        },
        showCreateDialog (val) {
            if(!val) {
                // this.tagCategory = {}
                this.parentGroupName = ''
+           }
+       },
+       definedTagId (val) {
+           if (val) {
+               this.tagCategory.groupId = this.definedTagId
            }
        }
    },
@@ -239,13 +245,14 @@ export default {
                        return (item.groupId != 79)
                    })
                }
-               const parentId = this.tagCategory.groupId
-               if (parentId) {
-                   this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
-                       this.parentGroupName = detail.groupName
-                   })
-
-               }else {this.parentGroupName = ''}
+               // const parentId = this.tagCategory.groupId
+               this.parentGroupName = '自定义标签'
+               // if (parentId) {
+               //     this.$service.findLabelGroupById({ groupId: parentId }).then((detail) => {
+               //         this.parentGroupName = detail.groupName
+               //     })
+               //
+               // }else {this.parentGroupName = ''}
            })
        },
        handleSelectNodeClick (node) {
@@ -265,6 +272,8 @@ export default {
        this.getThirdInterfaces()
        this.tagCategory = this.currentTagCategory || {}
        this.getParentInfo()
+       this.tagCategory.groupId = this.definedTagId
+       this.parentGroupName = '自定义标签'
    }
 }
 </script>

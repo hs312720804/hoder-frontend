@@ -7,6 +7,7 @@
 
 <script>
     export default {
+        name: 'OTTBigscreenIndex',
         data () {
             return {
                 pageSrc: 'http://192.168.2.165:8080/xmind/service/OTTzhishu20190606html'
