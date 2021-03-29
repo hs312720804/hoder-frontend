@@ -97,7 +97,7 @@
             myCollect,
             tempLabelIndex
         },
-        props: ['recordId','initTagList'],
+        props: ['recordId','initTagList', 'usedTagList'],
         data () {
             return {
                 activeName: 'labelZone',
@@ -246,13 +246,19 @@
                 })
             },
             removeTag(tag) {
+                // 标签已经在使用中，无法删不掉
+                if (this.usedTagList.includes(tag.tagId)) {
+                    this.$message.error('标签已经在使用中')
+                    return
+                }
+                
                 const addForm = this.addForm
                 addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
                 this.tagList.splice(this.tagList.indexOf(tag),1)
                 this.setContentBottomMargin()
             },
             saveAndNext(mode) {
-                debugger
+                // debugger
                 const conditionTagIds = this.tagList.map(function (v) {
                     return parseInt(v.tagId)
                 }) || []

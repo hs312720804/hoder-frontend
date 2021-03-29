@@ -13,6 +13,7 @@
                     @policyNextStep="handlePolicyNextStep"
                     v-if="activeStep === 0"
                     :initTagList="initTagList"
+                    :usedTagList="usedTagList"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
             >
@@ -54,6 +55,7 @@
                 recordId: undefined,
                 tempPolicyAndCrowd: {},
                 initTagList: [],
+                usedTagList: [],
                 routeSource: undefined,
                 specialTagDetail: {}
             }
@@ -112,6 +114,12 @@
                     // debugger
                     this.specialTagDetail = data
                     this.initTagList = this.specialTagDetail.tags || []
+                    if (this.specialTagDetail.useTags.length > 0) {
+                        this.usedTagList = this.specialTagDetail.useTags.map(item => {
+                            return Number(item.tagId)
+                        })
+                    }
+                 
                     console.log('this.specialTagDetail===', JSON.stringify(this.specialTagDetail))
                 })
             }

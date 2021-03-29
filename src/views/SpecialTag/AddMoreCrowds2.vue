@@ -194,11 +194,19 @@ export default {
                   this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
                       // this.$emit('handleToNextStep',this.recordId,data)
                       // alert('成功！')
+                      // 返回
+                      this.$router.push({
+                          name: 'labelSquare'
+                      })
                   })
                 } else {
                   this.$service.addSpecialTag({ rulesJson: form.rulesJson}, '新建成功').then((data) => {
                       // this.$emit('handleToNextStep',this.recordId,data)
                       // alert('成功！')
+                      // 返回
+                      this.$router.push({
+                          name: 'labelSquare'
+                      })
                   })
                 }
             } else {
