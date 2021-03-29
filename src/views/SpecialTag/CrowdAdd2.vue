@@ -9,6 +9,7 @@
             <!-- <el-form-item label="标签名称" > -->
             <el-form-item label="标签名称" :prop="formProp(i +'.specialTagName')" :rules="rules.specialTagName">
               <el-input v-model="crowd.specialTagName" placeholder="标签名称"></el-input>
+              <!-- :disabled="crowd." -->
             </el-form-item>
             <div style="position: relative">
             <el-form-item label="设置标签" class="multipleSelect" required>

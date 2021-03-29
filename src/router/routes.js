@@ -712,7 +712,7 @@ const children = [
             title: '特色标签',
             tagId:"specialTag",
             hideInMenu: true,
-            isCache: true
+            isCache: false
         }
     },
 ]

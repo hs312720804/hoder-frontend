@@ -193,7 +193,7 @@ export default {
                 if (this.$route.query.specialTagId) { // 编辑
                   this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
                       // this.$emit('handleToNextStep',this.recordId,data)
-                      alert('成功！')
+                      // alert('成功！')
                   })
                 } else {
                   this.$service.addSpecialTag({ rulesJson: form.rulesJson}, '新建成功').then((data) => {

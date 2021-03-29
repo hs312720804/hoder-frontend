@@ -79,7 +79,7 @@
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
       </el-form-item> -->
       <el-form-item>
-        <el-button type="warning" >返回</el-button>
+        <el-button type="warning" @click="back">返回</el-button>
         <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
       </el-form-item>
     </el-form>
@@ -132,6 +132,11 @@
             }
         },
         methods: {
+            back () {
+                this.$router.push({
+                    name: 'labelSquare'
+                })
+            },
             genDefaultForm () {
                 return {
                     recordId: undefined,
