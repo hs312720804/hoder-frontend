@@ -480,7 +480,7 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item label="投放数量" prop="limitLaunchCount" v-if="form.limitLaunch">
-            <el-input-number size="medium" placeholder="不能大于100万" :max="100000" :min="1" v-model="form.limitLaunchCount"></el-input-number>
+            <el-input-number size="medium" placeholder="不能大于100万" :max="1000000" :min="1" v-model="form.limitLaunchCount"></el-input-number>
           </el-form-item>
           <el-form-item label="备注" prop="remark">
             <el-input size="small" v-model="form.remark"></el-input>
@@ -541,7 +541,7 @@
                     return callback(new Error('限制投放数量不能为空'));
                 }
                 if (!Number.isInteger(value)) {
-                    callback(new Error('请输入大于0小于10万的整数'));
+                    callback(new Error('请输入大于0小于100万的整数'));
                 } else {
                     callback()
                 }
