@@ -97,7 +97,7 @@
           <span class="checkbox--blue">蓝色</span>为账号标签,
           <span class="checkbox--yellow">黄色</span>为实时标签,
           <span class="checkbox--orange">紫色</span>为特定标签,
-          <span class="checkbox--orange2">橙色</span>为特色标签）
+          <span class="checkbox--orange2">棕色</span>为特色标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -470,7 +470,8 @@ export default {
           2: 'checkbox--red',
           3: 'checkbox--blue',
           5: 'checkbox--yellow',
-          6: 'checkbox--orange'
+          6: 'checkbox--orange',
+          7: 'checkbox--orange2'
       },
       dataSourceColorEnum: {
           1: 'success',
@@ -1037,7 +1038,7 @@ export default {
 .checkbox--orange
   color #512DA8
 .checkbox--orange2
-  color #FF8040
+  color #795548
 .strategy-search
   display flex
   margin-bottom 10px
@@ -1132,9 +1133,9 @@ ul > li
     .el-tag__close
       color #512DA8
   >>> .el-tag--warningOrange2
-    color: #ff4b13;
-    background-color: rgba(255, 108, 0, 0.4);
-    border-color: #efa231cf;
+    color: #795548;
+    background-color: rgba(167, 130, 117, .5);
+    border-color: #7955488c;
     .el-tag__close
       color #512DA8
 .header-left

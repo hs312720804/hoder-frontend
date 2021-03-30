@@ -75,7 +75,7 @@
         <span class="checkbox--blue">蓝色</span>为账号标签,
         <span class="checkbox--yellow">黄色</span>为实时标签,
         <span class="checkbox--orange">紫色</span>为特定标签,
-        <span class="checkbox--orange2">橙色</span>为特色标签
+        <span class="checkbox--orange2">棕色</span>为特色标签
       </div>
       <!-- <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -371,9 +371,9 @@
         .el-tag__close
           color #512DA8
     >>> .el-tag--warningOrange2
-        color: #ff4b13;
-        background-color: rgba(255, 108, 0, 0.4);
-        border-color: #efa231cf;
+        color: #795548;
+        background-color: rgba(167, 130, 117, .5);
+        border-color: #7955488c;
         .el-tag__close
             color #512DA8
   .search-input
@@ -409,7 +409,7 @@
   .checkbox--orange
     color #512DA8
   .checkbox--orange2
-    color #FF8040
+    color #795548
   .fix-bottom-form
     position fixed
     bottom 0

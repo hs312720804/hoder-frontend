@@ -1276,9 +1276,9 @@ i
     .el-tag__close
       color #512DA8
   >>> .el-tag--warningOrange2
-    color: #ff4b13;
-    background-color: rgba(255, 108, 0, 0.4);
-    border-color: #efa231cf;
+    color: #795548;
+    background-color: rgba(167, 130, 117, .5);
+    border-color: #7955488c;
     .el-tag__close
       color #512DA8
 .flex-item
