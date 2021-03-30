@@ -428,7 +428,6 @@
     position fixed
     bottom 0
     background-color #fff
-    width 90%
     z-index 999
   .table-list
     width 100%
