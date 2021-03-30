@@ -239,4 +239,6 @@
 .label-content >>> .el-tabs__nav-wrap
     background #fff
     z-index 999
+    margin-top: -20px;
+    padding-top: 20px;
 </style>
