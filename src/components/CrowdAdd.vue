@@ -165,10 +165,11 @@
                           <template v-else>
                             
                             <!-- 官方-地域标签 -->
+                              <!-- v-model="provinceValueList[(n+1)*(index+1)]" -->
                             <div v-if="childItem.tagCode === 'mix_area'" class="mix-area-select">
                               <!-- 省 -->
                               <el-select
-                                  v-model="provinceValue[(n+1)*(index+1)]"
+                                  v-model="childItem.provinceValue"
                                   class="inline-input"
                                   filterable
                                   :key="index+'mix_area_select'"
@@ -184,7 +185,6 @@
                                   :value="item.attrValue"
                                 ></el-option>
                               </el-select>
-                              <!-- {{provinceValue[(n+1)*(index+1)]}} -->
                                <!-- 市 -->
                               <el-select
                                     v-model="childItem.value"
@@ -194,10 +194,10 @@
                                     default-first-option
                                     placeholder="请输入或选择"
                                     :disabled="cache[childItem.tagId].select"
-                                    @change="citySelectChange($event, childItem, cityData[provinceValue[(n+1)*(index+1)]])"
+                                    @change="citySelectChange($event, childItem, cityData[childItem.provinceValue])"
                               >
                                 <el-option
-                                  v-for="item in cityData[provinceValue[(n+1)*(index+1)]]"
+                                  v-for="item in cityData[childItem.provinceValue]"
                                   :key="index+item.attrValue+item.attrId"
                                   :label="item.attrName"
                                   :value="item.attrValue"
@@ -656,8 +656,7 @@ export default {
           7: 'warningOrange2'
       },
       cityData: [],
-      provinceValueIndex: 0,
-      provinceValue: []
+      provinceValueList: []
     }
   },
   props: ['value', 'propPrefix', 'recordId'],
@@ -692,11 +691,9 @@ export default {
       // }
     },
     areaSelectChange (val, index, tagCode) {
-      // this.provinceValue[index] = val
-      // console.log(this.provinceValue==='', this.provinceValue)
+      // this.provinceValueList[index] = val
+      // console.log(this.provinceValueList==='', this.provinceValueList)
       if (tagCode === 'mix_area') {
-        // alert(val)
-        // alert(tagCode)
         const params = {
             id: val
         }
@@ -791,7 +788,7 @@ export default {
       this.initCurrentPage = index
       this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
         this.tagList = data.pageInfo.list
-      });
+      })
     },
     handleRemoveRule (crowd, rule, childRule) {
       const rulesJson = crowd.rulesJson
