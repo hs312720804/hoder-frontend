@@ -164,9 +164,9 @@
                           </el-select>
                           <template v-else>
                             
-                            <!-- 1111111111111111111 -->
-                            <!-- {{n}} -->
-                            <div v-if="childItem.tagCode === 'mix_area'">
+                            <!-- 官方-地域标签 -->
+                            <div v-if="childItem.tagCode === 'mix_area'" class="mix-area-select">
+                              <!-- 省 -->
                               <el-select
                                   v-model="provinceValue[(n+1)*(index+1)]"
                                   class="inline-input"
@@ -185,6 +185,7 @@
                                 ></el-option>
                               </el-select>
                               <!-- {{provinceValue[(n+1)*(index+1)]}} -->
+                               <!-- 市 -->
                               <el-select
                                     v-model="childItem.value"
                                     class="inline-input"
@@ -203,7 +204,7 @@
                                 ></el-option>
                               </el-select>
                             </div>
-                            <!-- 1111111111111111111 -->
+                            <!-- 官方-地域标签 -->
 
                             <el-select
                               v-else
@@ -1191,6 +1192,9 @@ export default {
 .multipleSelect
   >>>.el-select
     width 100%
+.mix-area-select
+  >>>.el-select
+    width 50%
 .add
   border 1px solid #ebeef5
   padding 20px
