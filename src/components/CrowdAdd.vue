@@ -749,7 +749,7 @@ export default {
         this.tagsListTotal = data.pageInfo.total
       });
     },
-    // 1111111111111111111111
+    // 获取特色标签列表
     fetchSpecialTagSuggestions (tagId, tagKey) {
       const filter = {
           tagId,
@@ -1324,7 +1324,5 @@ i
   display flex
   align-items center
   justify-content center
-.errorMsg
-  color red
-  font-size 12px
+
 </style>

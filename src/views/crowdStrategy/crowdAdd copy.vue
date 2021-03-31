@@ -74,7 +74,7 @@
                           <el-option value=">"></el-option>
                           <el-option value="<"></el-option>
                         </template>
-                        <template v-if="childItem.tagType === 'string' || childItem.tagType === 'mix'">
+                        <template v-if="childItem.tagType === 'string'">
                           <el-option value="=" label="是"></el-option>
                           <el-option value="!=" label="不是"></el-option>
                           <el-option value="like" label="包含"></el-option>
@@ -120,7 +120,7 @@
                           <span><el-input class="time-dot-input" style="width: 106px" v-model="childItem.endDay" @blur="bigNum(childItem)"></el-input>天</span>
                         </template>
                     </span>
-                     <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect' || childItem.tagType === 'mix') && cache[childItem.tagId]">
+                     <template v-else-if="(childItem.tagType==='string' || childItem.tagType === 'collect') && cache[childItem.tagId]">
                        <el-select
                                v-if="childItem.tagType==='string' && childItem.operator === 'null'"
                                v-model="childItem.value"
@@ -128,87 +128,23 @@
                        >
                          <el-option label="空" value="nil"></el-option>
                        </el-select>
-                       <template v-else>
-                            
-                        <!-- 官方-地域标签 -->
-                          <!-- v-model="provinceValueList[(n+1)*(index+1)]" -->
-                        <div v-if="childItem.tagCode === 'mix_area'" class="mix-area-select">
-                          <!-- 省 -->
-                          <el-select
-                              v-model="childItem.provinceValue"
-                              class="inline-input"
-                              filterable
-                              :key="index+'mix_area_select'"
-                              default-first-option
-                              placeholder="请输入或选择"
-                              :disabled="cache[childItem.tagId].select"
-                              @change="areaSelectChange($event, n*index, childItem.tagCode)"
+                       <el-select
+                                  v-else
+                                  v-model="childItem.value"
+                                  class="inline-input"
+                                  filterable
+                                  :key="index+'select'"
+                                  default-first-option
+                                  placeholder="请输入或选择"
+                                  :disabled="cache[childItem.tagId].select"
                           >
-                            <el-option
-                              v-for="item in cache[childItem.tagId].list"
-                              :key="index+item.attrValue+item.attrId"
-                              :label="item.attrName"
-                              :value="item.attrValue"
-                            ></el-option>
+                                <el-option
+                                        v-for="item in cache[childItem.tagId].list"
+                                        :key="index+item.attrValue+item.attrId"
+                                        :label="item.attrName"
+                                        :value="item.attrValue"
+                                ></el-option>
                           </el-select>
-                            <!-- 市 -->
-                          <el-select
-                                v-model="childItem.value"
-                                class="inline-input"
-                                filterable
-                                :key="index+'mix_area2_select'"
-                                default-first-option
-                                placeholder="请输入或选择"
-                                :disabled="cache[childItem.tagId].select"
-                                @change="citySelectChange($event, childItem, cityData[childItem.provinceValue])"
-                          >
-                            <el-option
-                              v-for="item in cityData[childItem.provinceValue]"
-                              :key="index+item.attrValue+item.attrId"
-                              :label="item.attrName"
-                              :value="item.attrValue"
-                            ></el-option>
-                          </el-select>
-                        </div>
-                        <!-- 官方-地域标签 end-->
-
-                        <el-select
-                          v-else
-                          v-model="childItem.value"
-                          class="inline-input"
-                          filterable
-                          :key="index+'select'"
-                          default-first-option
-                          placeholder="请输入或选择"
-                          :disabled="cache[childItem.tagId].select"
-                          @change="citySelectChange($event, childItem, cache[childItem.tagId].list)"
-                        >
-                          <el-option
-                            v-for="item in cache[childItem.tagId].list"
-                            :key="index+item.attrValue+item.attrId"
-                            :label="item.attrName"
-                            :value="item.attrValue"
-                          ></el-option>
-                        </el-select>
-                        <div class="errorMsg">{{ childItem.errorMsg ? childItem.errorMsg : '' }}</div>
-                      </template>
-                        <!-- <el-select
-                                v-else
-                                v-model="childItem.value"
-                                class="inline-input"
-                                filterable
-                                :key="index+'select'"
-                                default-first-option
-                                placeholder="请输入或选择"
-                                :disabled="cache[childItem.tagId].select"
-                        >
-                              <el-option
-                                      v-for="item in cache[childItem.tagId].list"
-                                      :key="index+item.attrValue+item.attrId"
-                                      :label="item.attrName"
-                                      :value="item.attrValue"
-                              ></el-option>
-                        </el-select> -->
                       </template>
                       <el-input-number
                               v-else-if="childItem.tagType==='number'"
@@ -671,44 +607,11 @@
                     5: 'warning',
                     6: 'warningOrange',
                     7: 'warningOrange2'
-                },
-                cityData: [],
-                provinceValueList: []
+                }
             };
         },
         props: ["policyId", "crowdId","limitLaunchDisabled"],
         methods: {
-            citySelectChange (val, childRule, cityList) {
-              if ( childRule.tagType === 'mix') {
-                const matchCity = cityList.find(item => {
-                  return val === item.attrName
-                })
-                childRule.specialCondition = matchCity.rulesJson
-                childRule.errorMsg = matchCity.rulesJson ? '' : '标签未配置，请先配置再使用'
-                console.log('inputValue=====', this.inputValue)
-              }
-            },
-            areaSelectChange (val, index, tagCode) {
-              // this.provinceValueList[index] = val
-              // console.log(this.provinceValueList==='', this.provinceValueList)
-              if (tagCode === 'mix_area') {
-                const params = {
-                    id: val
-                }
-                return this.$service.specialTagChild(params).then(data => {
-                    const cityData = data.slice().map(item => {
-                        return {
-                            attrValue: item.specialTagName,
-                            attrName: item.specialTagName,
-                            attrId: item.specialTagId,
-                            rulesJson: item.rulesJson
-                        }
-                    })
-                    this.$set(this.cityData, val, cityData)
-                    console.log('this.cityData===', this.cityData)
-                })
-              }
-            },
             changeTimeWays (childItem) {
                 childItem.value = ''
                 if(childItem.isDynamicTime) {
@@ -744,10 +647,8 @@
                     this.$message.warning("已达最大数量")
                     return
                 }
-                if (tag.tagType ==='string' || tag.tagType === 'collect') {
-                  if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
-                } else if (tag.tagType === 'mix') {
-                  if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey) }
+                if(tag.tagType==='string' || tag.tagType === 'collect'){
+                    if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
                 }
                 this.rulesJson.rules.push({
                     condition: "AND",
@@ -769,8 +670,7 @@
                             dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
                             startDay: tag.tagType==='time' ? (tag.startDay ? tag.startDay : ''): undefined,
                             endDay: tag.tagType==='time' ? (tag.endDay ? tag.endDay : ''): undefined,
-                            initValue: tag.initValue,
-                            specialCondition: tag.tagType === 'mix' ? (tag.rulesJson ? tag.rulesJson : '') : undefined,
+                            initValue: tag.initValue
                         }
                     ]
                 })
@@ -780,10 +680,8 @@
                     this.$message.warning("已达最大数量")
                     return;
                 }
-                if (tag.tagType === 'string' || tag.tagType === 'collect') {
+                if(tag.tagType==='string' || tag.tagType === 'collect'){
                     if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
-                } else if (tag.tagType === 'mix') {
-                  if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey) }
                 }
                 rule.rules.push({
                                   operator: tag.tagType==='time'? 'between' : this.getDefaultOperator("="),
@@ -802,8 +700,7 @@
                                   dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
                                   startDay: tag.tagType==='time' ? (tag.startDay ? tag.startDay : ''): undefined,
                                   endDay: tag.tagType==='time' ? (tag.endDay ? tag.endDay : ''): undefined,
-                                  initValue: tag.initValue,
-                                  specialCondition: ''
+                                  initValue: tag.initValue
                                 })
             },
             handleAddSpecialRule (tag) {
@@ -860,34 +757,6 @@
                     },
                     initValue: tag.initValue
                 })
-            },
-            // 获取特色标签列表
-            fetchSpecialTagSuggestions (tagId, tagKey) {
-              const filter = {
-                  tagId,
-                  pageSize: 100
-              }
-              this.$service.specialTagDetailList(filter).then((data) => {
-              //     // this.itemList = data.list
-              //     // this.total = data.total
-              //     // console.log('data===>', data)
-                const list = data.list.map(item => {
-                  return {
-                    attrId: item.specialTagId,
-                    attrName: item.specialTagName,
-                    attrValue: tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
-                    // attrValue: item.specialTagName,
-                    dataSource: 7,
-                    rulesJson: item.rulesJson
-                  }
-                })
-                // debugger
-                this.$set(this.cache, tagId, {
-                  select: false,
-                  list
-                })
-                console.log('123cache===', this.cache)
-              })
             },
             fetchTagSuggestions(tagId) {
                 this.$service.getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum:1}).then(data => {
@@ -1186,9 +1055,6 @@
   .multipleSelect
     >>>.el-select
       width: 100%
-  .mix-area-select
-    >>>.el-select
-      width 50%
   .add
     border: 1px solid #ebeef5
     padding: 20px
