@@ -14,7 +14,7 @@
             <el-input size="small" v-model="form.name" placeholder="投放名称"></el-input>
           </el-form-item>
           <div style="position: relative">
-          <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+          <el-form-item label="设置标签111" class="multipleSelect" prop="tagIds">
             <div class="label-container">
               <div
                  v-show="rulesJson.rules.length > 1"
