@@ -668,7 +668,7 @@ export default {
     citySelectChange (val, childRule, cityList) {
       if ( childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
-          return val === item.attrId
+          return val === item.attrName
         })
         childRule.specialCondition = matchCity.rulesJson
         childRule.errorMsg = matchCity.rulesJson ? '' : '标签未配置，请先配置再使用'
@@ -701,7 +701,7 @@ export default {
         return this.$service.specialTagChild(params).then(data => {
             const cityData = data.slice().map(item => {
                 return {
-                    attrValue: item.specialTagId,
+                    attrValue: item.specialTagName,
                     attrName: item.specialTagName,
                     attrId: item.specialTagId,
                     rulesJson: item.rulesJson
@@ -750,12 +750,11 @@ export default {
       });
     },
     // 1111111111111111111111
-    fetchSpecialTagSuggestions (tagId) {
+    fetchSpecialTagSuggestions (tagId, tagKey) {
       const filter = {
           tagId,
           pageSize: 100
       }
-      // debugger
       this.$service.specialTagDetailList(filter).then((data) => {
       //     // this.itemList = data.list
       //     // this.total = data.total
@@ -764,7 +763,8 @@ export default {
           return {
             attrId: item.specialTagId,
             attrName: item.specialTagName,
-            attrValue: item.specialTagId,
+            attrValue: tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
+            // attrValue: item.specialTagName,
             dataSource: 7,
             rulesJson: item.rulesJson
           }
@@ -836,7 +836,7 @@ export default {
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) { this.fetchTagSuggestions(tag.tagId) }
       } else if (tag.tagType === 'mix') {
-        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId) }
+        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey) }
       }
       crowd.rulesJson.rules.push({
         condition: "AND",
@@ -875,7 +875,7 @@ export default {
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) { this.fetchTagSuggestions(tag.tagId) }
       } else if (tag.tagType === 'mix') {
-        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId) }
+        if (this.cache[tag.tagId] === undefined) { this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey) }
       }
       if (!crowd.tagIds.includes(tag.tagId)) {
         crowd.tagIds.push(tag.tagId)

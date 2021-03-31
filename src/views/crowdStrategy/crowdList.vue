@@ -1317,6 +1317,8 @@ export default {
             this.tableData = data.pageInfo.list
             this.totalCount = data.pageInfo.total
         }
+        // console.log('this.tableData===', this.tableData[0].rulesJson)
+        
         this.abStatusEnum = data.ABStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
