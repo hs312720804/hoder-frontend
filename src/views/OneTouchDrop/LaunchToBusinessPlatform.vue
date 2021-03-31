@@ -324,7 +324,7 @@
                 })
             },
             handleBackPrevStep () {
-                this.$emit('launchPrevStep',2)
+                this.$emit('launchPrevStep', 2)
             },
             getCountDataEnum () {
                 this.$service.getEstimateType().then((data) => {

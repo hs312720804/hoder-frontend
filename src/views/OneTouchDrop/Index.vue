@@ -10,7 +10,7 @@
         <div>
             <new-create-policy
                     @policyNextStep="handlePolicyNextStep"
-                    v-if="activeStep === 0"
+                    v-show="activeStep === 0"
                     :recordId="recordId"
                     :initTagList="initTagList"
                     @resetFormData="resetFormData"
@@ -31,7 +31,7 @@
                     @crowdPrevStep="handleCrowdPrevStep"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="activeStep === 1">
+                    v-show="activeStep === 1">
             </create-crowd>
             <LaunchToBusiness
                     :recordId="recordId"
@@ -41,7 +41,7 @@
                     @launchPrevStep="handleLaunchPrevStep"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="activeStep === 2"
+                    v-show="activeStep === 2"
             ></LaunchToBusiness>
         </div>
     </div>
