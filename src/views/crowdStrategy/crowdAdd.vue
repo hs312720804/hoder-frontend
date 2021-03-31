@@ -142,7 +142,7 @@
                               default-first-option
                               placeholder="请输入或选择"
                               :disabled="cache[childItem.tagId].select"
-                              @change="areaSelectChange($event, n*index, childItem.tagCode)"
+                              @change="areaSelectChange($event, childItem.tagCode)"
                           >
                             <el-option
                               v-for="item in cache[childItem.tagId].list"
@@ -688,7 +688,8 @@
                 console.log('inputValue=====', this.inputValue)
               }
             },
-            areaSelectChange (val, index, tagCode) {
+            // 根据省id获取市列表
+            areaSelectChange (val, tagCode) {
               // this.provinceValueList[index] = val
               // console.log(this.provinceValueList==='', this.provinceValueList)
               if (tagCode === 'mix_area') {
@@ -1151,11 +1152,19 @@
                     this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
                     let ruleJsonData = JSON.parse(policyData.rulesJson)
-                    var cacheIds = []
+                    let cacheIds = []
+                    let cacheSpecialIds = []
                     ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
                         itemParent.rules.forEach(item => {
                             if(item.tagType === 'string' || item.tagType === 'collect') {
                                 cacheIds.push(item.tagId)
+                            }
+                            if (item.tagType === 'mix') {
+                                cacheSpecialIds.push({
+                                  tagId: item.tagId,
+                                  tagCode: item.tagCode,
+                                  provinceValue: item.provinceValue,
+                                })
                             }
                             if (item.tagType === 'string' && item.value === 'nil') {
                                 item.operator = 'null'
@@ -1177,7 +1186,15 @@
                     }
                     cacheIds = this.distinct(cacheIds,[])
                     if(cacheIds.length !== 0){
-                        cacheIds.forEach(this.fetchTagSuggestions)}
+                      cacheIds.forEach(this.fetchTagSuggestions)
+                    }
+                    // 特色标签的 id 集合
+                    if(cacheSpecialIds.length !== 0){
+                      cacheSpecialIds.forEach(item => {
+                        this.fetchSpecialTagSuggestions(item.tagId, item.tagCode) 
+                        this.areaSelectChange(item.provinceValue, item.tagCode) // 根据省id获取市列表
+                      })
+                    }
                 })
         }
     }
