@@ -31,9 +31,10 @@
                     @crowdPrevStep="handleCrowdPrevStep"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="activeStep === 1">
+                    v-if="!!recordId"
+                    v-show="activeStep === 1">
             </create-crowd>
-            <LaunchToBusiness
+            <launch-to-business
                     :recordId="recordId"
                     :tempPolicyAndCrowd="tempPolicyAndCrowd"
                     :routeSource="routeSource"
@@ -42,7 +43,7 @@
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList"
                     v-if="activeStep === 2"
-            ></LaunchToBusiness>
+            ></launch-to-business>
         </div>
     </div>
 </template>
