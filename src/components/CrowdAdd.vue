@@ -204,7 +204,7 @@
                                 ></el-option>
                               </el-select>
                             </div>
-                            <!-- 官方-地域标签 -->
+                            <!-- 官方-地域标签 end-->
 
                             <el-select
                               v-else
@@ -224,6 +224,7 @@
                                 :value="item.attrValue"
                               ></el-option>
                             </el-select>
+                            <div class="errorMsg">{{ childItem.errorMsg ? childItem.errorMsg : '' }}</div>
                           </template>
                         </template>
                         <el-input-number
@@ -665,12 +666,12 @@ export default {
   },
   methods: {
     citySelectChange (val, childRule, cityList) {
-      // debugger
       if ( childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
           return val === item.attrId
         })
         childRule.specialCondition = matchCity.rulesJson
+        childRule.errorMsg = matchCity.rulesJson ? '' : '标签未配置，请先配置再使用'
         console.log('inputValue=====', this.inputValue)
       }
       // rule.rules.splice(rule.rules.indexOf(childRule), 1)
@@ -1323,4 +1324,7 @@ i
   display flex
   align-items center
   justify-content center
+.errorMsg
+  color red
+  font-size 12px
 </style>
