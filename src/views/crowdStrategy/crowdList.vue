@@ -845,7 +845,8 @@
             <div>
               <el-form-item label="测试结果:" v-if="testResult !== ''">
                 <div class="test-result">
-                  <span class="icon iconfont el-icon-cc-frown-fill"></span>
+                  <span v-if="testResult === '不属于该人群'" class="icon iconfont el-icon-cc-frown-fill"></span>
+                  <span v-else class="icon iconfont el-icon-cc-smile-fill"></span>
                   {{testResult}}
                 </div>
               </el-form-item>
