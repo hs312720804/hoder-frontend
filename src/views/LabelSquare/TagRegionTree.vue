@@ -21,8 +21,8 @@
         >
             <span class="custom-tree-node" slot-scope="{ node }">
                 <span class="tree-label">{{ node.label }}</span>
-                <!-- <span class="tree-label">{{ node.id }}</span> -->
-                <span class="tree-edit" @click="edit(node)">编辑</span>
+                <!-- <span class="tree-label">{{ node.level }}</span> -->
+                <span class="tree-edit" @click="edit(node)" v-if="node.level !== 1">编辑</span>
             </span>
         </el-tree>
     </el-card>
@@ -73,7 +73,7 @@
             },
             loadNode (node, resolve) {
                 const nodeData = node.data
-                console.log(node)
+                // console.log(node)
                 if (node.level === 0) {
                     // return this.getDeptPersonList(params).then(data => {
                     //     let treeData = data.slice().map(item => {

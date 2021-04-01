@@ -114,7 +114,7 @@
                     // debugger
                     this.specialTagDetail = data
                     this.initTagList = this.specialTagDetail.tags || []
-                    if (this.specialTagDetail.useTags.length > 0) {
+                    if (this.specialTagDetail.useTags && this.specialTagDetail.useTags.length > 0) {
                         this.usedTagList = this.specialTagDetail.useTags.map(item => {
                             return Number(item.tagId)
                         })

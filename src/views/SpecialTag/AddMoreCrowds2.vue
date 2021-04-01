@@ -69,17 +69,21 @@ export default {
   props: ['initTagList'],
   inject: ['sTagIndex'],
   methods: {
-      getRecordId () {
-          return this.recordId
-      },
+    getRecordId () {
+        return this.recordId
+    },
     validateForm (rulesJson) {
-      // debugger
       if (rulesJson.length === 0) {
           this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
           return
       }
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
+        if (rulesJson[index].rulesJson.rules.length === 0) {
+          this.$message.error('请设置标签条件')
+          flag = false
+          break
+        }
         if (!rulesJson[index].specialTagName) {
           this.$message.error('第' + (index + 1) + "人群的人群名称不能为空")
           flag = false
@@ -157,7 +161,6 @@ export default {
                 if (!this.validateForm(form.rulesJson)) {
                     return
                 }
-                // debugger
                 form.rulesJson[0].tagIds = this.initTagList.map((e) => e.tagId)
                 form.rulesJson = form.rulesJson.map((e) => {
                     // e.purpose = form.purpose
