@@ -142,7 +142,7 @@
                               default-first-option
                               placeholder="请输入或选择"
                               :disabled="cache[childItem.tagId].select"
-                              @change="areaSelectChange($event, childItem.tagCode)"
+                              @change="areaSelectChange($event, childItem.tagCode, childItem)"
                           >
                             <el-option
                               v-for="item in cache[childItem.tagId].list"
@@ -689,9 +689,10 @@
               }
             },
             // 根据省id获取市列表
-            areaSelectChange (val, tagCode) {
+            areaSelectChange (val, tagCode, childItem) {
               // this.provinceValueList[index] = val
               // console.log(this.provinceValueList==='', this.provinceValueList)
+              if (childItem) childItem.value = ''
               if (tagCode === 'mix_area') {
                 const params = {
                     id: val
