@@ -1256,20 +1256,20 @@ export default {
     getUserName () {
           return this.$appState.user.name.split('@')[0]
     },
-      // 显示估算结果
-      showCountResult (id) {
-          const crowdId = id
-          this.showResult = true
-          this.$service.estimateResult({crowdId: crowdId}).then((data) => {
-              this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-              const {total1,total2,total3,totalUser} = data[0] || {}
-              // const {totalUser} = data[0] || {}
-              this.total1 = this.cc_format_number(total1) || '暂无数据'
-              this.total2 = this.cc_format_number(total2) || '暂无数据'
-              this.total3 = this.cc_format_number(total3) || '暂无数据'
-              this.totalUser = this.cc_format_number(totalUser) || '暂无数据'
-          })
-      },
+    // 显示估算结果
+    showCountResult (id) {
+        const crowdId = id
+        this.showResult = true
+        this.$service.estimateResult({crowdId: crowdId}).then((data) => {
+            this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
+            const {total1,total2,total3,totalUser} = data[0] || {}
+            // const {totalUser} = data[0] || {}
+            this.total1 = this.cc_format_number(total1) || '暂无数据'
+            this.total2 = this.cc_format_number(total2) || '暂无数据'
+            this.total3 = this.cc_format_number(total3) || '暂无数据'
+            this.totalUser = this.cc_format_number(totalUser) || '暂无数据'
+        })
+    },
     // 从服务器读取数据
     loadData () {
       this.$service.getListDimension({type: 2}).then(data => {

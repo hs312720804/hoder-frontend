@@ -630,7 +630,8 @@ const children = [
         meta: {
             title: '投放统计',
             tagId:"statisticsHomePage",
-            icon: 'el-icon-cc-file'
+            icon: 'el-icon-cc-file',
+            isCloseable: false
         }
     },
     {

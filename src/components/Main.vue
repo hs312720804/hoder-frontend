@@ -245,7 +245,7 @@
             }
         },
         methods: {
-            handleRouteChange() {
+            handleRouteChange () {
                 if (this.$route.name === 'oneTouchDrop') {
                     this.activeRouteName = 'strategyList'
                 } else if (this.$route.name === 'specialTag') {
@@ -255,7 +255,7 @@
                 }
 
             },
-            getRouter(url){
+            getRouter (url) {
                 const name = this.routerMap[url] + 'AA'
                 this.noCacheMenu.push(name)
                 this.$router.push({name:this.routerMap[url]})
@@ -263,23 +263,23 @@
                     this.noCacheMenu = []
                 })
             },
-            handleDropdownCommand(command) {
+            handleDropdownCommand (command) {
                 if (command === "logout") {
                     this.$logout().then(() => {
                         this.$router.push({ name: "login" });
                     });
                 }
             },
-            toggleMenu() {
+            toggleMenu () {
                 const isCollapseMenu = !this.isCollapseMenu;
                 this.$appState.$set("isCollapseMenu", isCollapseMenu);
                 this.isCollapseMenu = isCollapseMenu;
             },
-            saveTags() {
+            saveTags () {
                 const tags = {tags: this.$refs.tag.tags, userName: this.$appState.user.name};
                 this.$appState.$set("tags", tags);
             },
-            setMetaTitle() {
+            setMetaTitle () {
                 const routes = this.$router.options.routes
                 const findRouteByName = (name, route) => {
                     if (Array.isArray(route)) {

@@ -38,7 +38,7 @@
 
 <script>
 
-    class TagHistory {
+class TagHistory {
         constructor ({ router, stack, cursor }) {
             this.cursor = cursor !== undefined ? cursor : -1
             this.stack = stack || []
@@ -143,7 +143,6 @@
                 return this.titles[name] || (meta && meta.title) || name
             },
             handleNavigate (route) {
-                console.log(route)
                 this.$router.push({ path: route.fullPath })
                 this.$emit('navigate', route)
             },
@@ -215,7 +214,8 @@
                     const tagItem = {
                         name: route.name,
                         meta,
-                        fullPath: route.fullPath
+                        fullPath: route.fullPath,
+                        isCloseable: meta.hasOwnProperty('isCloseable') ? meta.isCloseable : true
                     }
                     if (!item) {
                         this.tags.push(tagItem)
@@ -225,7 +225,7 @@
                 }
             },
             init () {
-                const router = this.$router
+                // const router = this.$router
                 this.tags = this.initTags
             },
             scrollIntoView () {
