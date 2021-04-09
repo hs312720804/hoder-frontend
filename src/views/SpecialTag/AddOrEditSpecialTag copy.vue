@@ -198,7 +198,7 @@
                 if(mode === 'add') {
                     // 如果有匹配的，就直接return
                     let firstIndex = -1
-                    for (var i=0; i < tagList.length;i++) {
+                    for (var i=0; i < tagList.length; i++) {
                         if (tagList[i].tagId === val.tagId) {
                             firstIndex = i
                             return
