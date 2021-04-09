@@ -727,32 +727,19 @@ export default {
   },
   watch: {
     rulesJson: {
-      handler () {
+      handler() {
         this.fetchAllTagSuggestions()
       },
       immediate: true
     },
     dynamicPolicyJson: {
-      handler () {
+      handler() {
         this.fetchAllTagSuggestions()
       },
       immediate: true
-    },
+    }
   },
   methods: {
-    onSubmit() {
-      this.$service
-        .getTagAttr({
-          tagId: this.currentChildItem.tagId,
-          pageSize: this.initPageSize,
-          pageNum: 1,
-          attrName: this.formInline.attrName
-        })
-        .then(data => {
-          this.tagList = data.pageInfo.list
-          this.tagsListTotal = data.pageInfo.total
-        })
-    },
     handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
@@ -1117,13 +1104,6 @@ export default {
         item.value = ''
       }
     },
-    // handleEstimate11(formData) {
-    //   this.$service.estimateTemp(formData.rulesJson).then(data => {
-    //     if (data || data === 0) {
-    //       this.$set(formData, 'total0', data)
-    //     }
-    //   })
-    // },
     handleOperatorChange(item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
@@ -1135,8 +1115,8 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     fetchAllTagSuggestions() {
-      console.log('this.tags====', this.tags)
-      console.log('this.tags====', this.specialTags)
+      // console.log('this.tags====', this.tags)
+      // console.log('this.tags====', this.specialTags)
       let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
       if (ruleJsonData.rules.length > 0) {
         let cacheIds = []

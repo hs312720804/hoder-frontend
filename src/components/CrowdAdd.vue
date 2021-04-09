@@ -128,21 +128,6 @@ export default {
     value: 'setInputValue'
   },
   methods: {
-    // onSubmit () {
-    //   this.$service.getTagAttr({
-    //     tagId: this.currentChildItem.tagId,
-    //     pageSize: this.initPageSize,
-    //     pageNum: 1,
-    //     attrName: this.formInline.attrName
-    //   }).then(data => {
-    //     this.tagList = data.pageInfo.list
-    //     this.tagsListTotal = data.pageInfo.total
-    //   });
-    // },
-    // handleCheckboxOk () {
-    //   this.currentChildItem.value = this.checkboxValue
-    //   this.showMoreTags = false
-    // },
     handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
