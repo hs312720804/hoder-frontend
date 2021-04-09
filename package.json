@@ -9,10 +9,11 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
   "dependencies": {
+    "@antv/x6": "^1.18.1",
+    "@ccprivate/admin-toolkit": "^1.1.4",
     "@stateform/element": "^0.1.14",
     "@tinymce/tinymce-vue": "^2.1.0",
     "@william17/vue-app-state": "^0.1.1",
-    "@ccprivate/admin-toolkit": "^1.1.4",
     "async-validate": "^1.0.1",
     "axios": "^0.19.2",
     "echarts": "^4.9.0",

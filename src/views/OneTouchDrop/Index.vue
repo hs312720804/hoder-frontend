@@ -8,15 +8,16 @@
             </el-steps>
         </div>
         <div>
-            <new-create-policy
-                    @policyNextStep="handlePolicyNextStep"
-                    v-if="activeStep === 0"
-                    :recordId="recordId"
-                    :initTagList="initTagList"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList"
-            >
-            </new-create-policy>
+            <create-config-scheme v-if="activeStep === 0"></create-config-scheme>
+            <!--<new-create-policy-->
+                    <!--@policyNextStep="handlePolicyNextStep"-->
+                    <!--v-if="activeStep === 0"-->
+                    <!--:recordId="recordId"-->
+                    <!--:initTagList="initTagList"-->
+                    <!--@resetFormData="resetFormData"-->
+                    <!--@handleDirectStrategyList="handleDirectStrategyList"-->
+            <!--&gt;-->
+            <!--</new-create-policy>-->
             <!--<create-policy-->
                     <!--@policyNextStep="handlePolicyNextStep"-->
                     <!--v-if="activeStep === 0"-->
@@ -53,13 +54,15 @@
     import createCrowd from './CreateCrowd'
     import LaunchToBusiness from './LaunchToBusinessPlatform'
     import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
+    import createConfigScheme from './createConfigScheme'
     export default {
         name: "index",
         components: {
             createPolicy,
             createCrowd,
             LaunchToBusiness,
-            newCreatePolicy
+            newCreatePolicy,
+            createConfigScheme
         },
         data () {
             return {
