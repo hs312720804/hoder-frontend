@@ -304,7 +304,7 @@
             },
             // 编辑
             handleEdit(launchCrowdItem) {
-                this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+                this.$emit("show-edit", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
             },
             // minitor (row) {},
             // 计算

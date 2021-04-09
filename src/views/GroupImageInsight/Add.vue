@@ -66,7 +66,7 @@
                             return
                         }
                     }
-                }else {
+                } else {
                     this.message = '文件不能为空'
                     this.resetFormFile()
                     return
