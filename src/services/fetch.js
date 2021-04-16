@@ -8,7 +8,8 @@ export default function fetch({
   data,
   params,
   isReturnAllInfor = false,
-  isJSON = false
+  isJSON = false,
+  contentType
 }) {
   NProgress.start();
   let option = {
@@ -19,10 +20,12 @@ export default function fetch({
         : isJSON
             ? data
             : qs.stringify(data),
-    params
+    params,
+    contentType
   };
-
+  debugger
   if (url != "/api/login") option.headers = { Authorization: this.state.token };
+  if (option.contentType) option.headers['Content-Type'] = option.contentType
   return axios(option)
     .then(function({ data }) {
       NProgress.done();

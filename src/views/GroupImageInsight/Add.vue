@@ -111,7 +111,7 @@ export default {
           const form = this.form
           const formData = JSON.parse(JSON.stringify(form))
           if (form.fileName != undefined && form.originFileName != undefined) {
-            this.$emit('save-form', formData)
+            this.$emit('save-form', formData, this.slotData.name)
             // this.$emit('upsert-end')
             // this.$emit('close-add')
           } else {

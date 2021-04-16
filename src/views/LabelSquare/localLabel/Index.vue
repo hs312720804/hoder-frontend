@@ -22,8 +22,8 @@
     >
       <!-- 解构插槽 Prop -->
       <template #default="slotData">
-        {{ slotData }}
-        <el-form-item label="人群名称" prop="name" :rules="[{ required: true, message: '请填写人群名称', trigger: 'blur' }]">
+        <!-- {{ slotData }} -->
+        <el-form-item label="人群名称">
           <el-input v-model="slotData.slotData.name"></el-input>
         </el-form-item>
       </template>
@@ -32,7 +32,7 @@
 </template>
 
 <script>
-import list from './List'
+import list from './LocalList'
 // import tempLabelAdd from './TempLabelAdd'
 import groupImageAdd from '../../GroupImageInsight/Add'
 import deviceEcharts from '../../GroupImageInsight/deviceEcharts'
@@ -69,8 +69,12 @@ export default {
   },
   created() {},
   methods: {
-    handleSave(formData) {
-      this.$service.devicePortraintAddSave(formData, '保存成功').then(() => {
+    handleSave(formData, launchName) {
+      const params = {
+        file: formData,
+        launchName: launchName
+      }
+      this.$service.addLocalCrowd(params, '保存成功').then(() => {
         this.handleRefreshList()
         this.handleCloseAddForm()
       })

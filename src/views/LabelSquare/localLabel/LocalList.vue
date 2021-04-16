@@ -251,7 +251,7 @@
                     pageSize: this.pageSize,
                     launchName: this.launchName
                 }
-                this.$service.getTempCrowdList(filter).then(data => {
+                this.$service.getLocalCrowdList(filter).then(data => {
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total
