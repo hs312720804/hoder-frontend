@@ -16,7 +16,7 @@ import StrategyList from './strategyList'
 import CrowdIndex from './crowdIndex'
 export default {
     name: "strategyListAA",
-    data(){
+    data() {
         return{
           selectRow:null,//选中的一行策略数据
           isShowStrategyList:true,

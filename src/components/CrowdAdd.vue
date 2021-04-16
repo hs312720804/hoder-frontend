@@ -34,6 +34,11 @@
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <MultipleSelect :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MultipleSelect>
             </el-form-item>
+
+            <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
+              <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
+            </el-form-item> -->
+            
             </div>
             <el-form-item label="是否限制投放数量" prop="limitLaunch">
               <el-radio-group v-model="crowd.limitLaunch">
@@ -67,9 +72,11 @@
 
 <script>
 import MultipleSelect from './MultipleSelect.vue'
+// import MUserAction from './MUserAction.vue'
 export default {
   components: {
     MultipleSelect
+    // MUserAction
   },
   data () {
     // function validateKV (rule, value, cb) {

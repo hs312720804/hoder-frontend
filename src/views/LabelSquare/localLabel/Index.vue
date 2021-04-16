@@ -1,6 +1,6 @@
 <template>
   <div class="temp-label">
-    <temp-label-list
+    <list
       v-show="showList"
       @show-add="handleShowAdd"
       @show-edit="addOrEditBySql"
@@ -11,53 +11,36 @@
       :check-list-parent="checkList"
       @change-checkList="handleCheckListChange"
     >
-    </temp-label-list>
+    </list>
 
-    <temp-label-add
-      v-if="!showList"
-      :editLaunchCrowdId="editLaunchCrowdId"
-      :editStatus="editStatus"
-      @cancel-add="showList = true"
-      @changeStatus="handleRefreshList"
-    >
-    </temp-label-add>
-
-    <!-- <group-image-add
+    <group-image-add
       v-if="showAdd2"
+      title="新增本地人群"
       @close-add="handleCloseAddForm"
       @upsert-end="handleRefreshList"
-      
-    ></group-image-add> -->
-
-    <!--请选择创建类型弹窗-->
-    <el-dialog
-      title="请选择创建类型"
-      :visible.sync="showSelectTypeDialog"
-      width="30%"
-      class="organSelect"
+      @save-form="handleSave"
     >
-      <el-row :gutter="20" class="type-item">
-        <el-col :span="12">
-          <el-button @click="addOrEditBySql()">通过SQL创建</el-button>
-        </el-col>
-        <el-col :span="12">
-          <el-button @click="addByLocalFile()">通过导入本地文件创建</el-button>
-        </el-col>
-      </el-row>
-    </el-dialog>
+      <!-- 解构插槽 Prop -->
+      <template #default="slotData">
+        {{ slotData }}
+        <el-form-item label="人群名称" prop="name" :rules="[{ required: true, message: '请填写人群名称', trigger: 'blur' }]">
+          <el-input v-model="slotData.slotData.name"></el-input>
+        </el-form-item>
+      </template>
+    </group-image-add>
   </div>
 </template>
 
 <script>
-import tempLabelList from './TempLabelList'
-import tempLabelAdd from './TempLabelAdd'
-import groupImageAdd from '../GroupImageInsight/Add'
-import deviceEcharts from '../GroupImageInsight/deviceEcharts'
+import list from './List'
+// import tempLabelAdd from './TempLabelAdd'
+import groupImageAdd from '../../GroupImageInsight/Add'
+import deviceEcharts from '../../GroupImageInsight/deviceEcharts'
 export default {
   name: 'TempLabel',
   components: {
-    tempLabelList,
-    tempLabelAdd,
+    list,
+    // tempLabelAdd,
     groupImageAdd,
     deviceEcharts
   },
@@ -74,19 +57,27 @@ export default {
   },
   data() {
     return {
+      aaa: '12',
       showList: true,
       editLaunchCrowdId: undefined,
       editStatus: undefined,
       refreshFlag: false,
       showSelectTypeDialog: false,
+      showAdd1: false,
       showAdd2: false 
     }
   },
   created() {},
   methods: {
+    handleSave(formData) {
+      this.$service.devicePortraintAddSave(formData, '保存成功').then(() => {
+        this.handleRefreshList()
+        this.handleCloseAddForm()
+      })
+    },
     handleShowAdd() {
-      this.showList = false
       // this.showSelectTypeDialog = true
+      this.showAdd2 = true
     },
     // 通过SQL创建
     addOrEditBySql(id, code) {

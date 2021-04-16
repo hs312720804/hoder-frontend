@@ -1,7 +1,7 @@
 <template>
     <div>
         <group-image-list @open-add="handleOpenAddForm" @open-echarts="handleOpenEcharts" :refreshList="refreshList"></group-image-list>
-        <group-image-add v-if="showAdd" @close-add="handleCloseAddForm" @upsert-end="handleRefreshData"></group-image-add>
+        <group-image-add v-if="showAdd" @close-add="handleCloseAddForm" @upsert-end="handleRefreshData" @save-form="handleSave"></group-image-add>
         <device-echarts v-if="showEcharts" :current-cid="currentId" @close-echarts="handleCloseEcharts"></device-echarts>
     </div>
 </template>
@@ -26,6 +26,12 @@
             }
         },
         methods: {
+            handleSave(formData) {
+                this.$service.devicePortraintAddSave(formData, '保存成功').then(() => {
+                    this.handleRefreshData()
+                    this.handleCloseAddForm()
+                })
+            },
             handleOpenAddForm () {
                 this.showAdd = true
             },

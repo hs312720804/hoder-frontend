@@ -4,7 +4,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-            <el-tab-pane label="临时人群" name="tempLabel">
+            <el-tab-pane label="临时人群/标签" name="tempLabel">
                 <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
@@ -52,6 +52,17 @@
                 >
                 </special-tag>
             </el-tab-pane>
+             <el-tab-pane label="本地人群/标签" name="localLabel">
+                <local-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        @fetch-checkList="fetchTempCheckListData"
+                >
+                </local-label-index>
+            </el-tab-pane>
         </el-tabs>
         <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
             <el-input
@@ -80,7 +91,9 @@
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
     import tempLabelIndex from './TempLabelIndex'
+    import LocalLabelIndex from './localLabel/Index'
     import specialTag from './SpecialTag'
+    
     
     export default {
         name: "labelSquareAA",
@@ -88,7 +101,8 @@
             labelZone,
             myCollect,
             tempLabelIndex,
-            specialTag
+            specialTag,
+            LocalLabelIndex
         },
         data () {
             return {
@@ -180,7 +194,7 @@
                 } else {
                     // 取消选中的则删除这一项
                     let index = -1
-                    for (var i=0; i < tagList.length;i++) {
+                    for (let i = 0; i < tagList.length;i++) {
                         if (tagList[i].tagId === val.tagId) {
                             index = i
                             this.tagList.splice(index,1)
