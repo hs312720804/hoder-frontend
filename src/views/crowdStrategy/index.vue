@@ -3,17 +3,20 @@
         <strategy-list
                 v-if="isShowStrategyList"
                 @openCrowdPage="openCrowdPage"
+                @openSchemePage="openSchemePage"
                 :historyFilter="historyFilter"
                 :showAllParent="showAllParent"
                 :checkListFilter="checkListFilter"
                 :parentSource="source"
         ></strategy-list>
-        <crowd-index v-if="!isShowStrategyList" :selectRow="selectRow" @goBack="goBack"></crowd-index>
+        <crowd-index v-if="!isShowStrategyList && !isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></crowd-index>
+        <scheme-index v-if="isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></scheme-index>
     </div>
 </template>
 <script>
 import StrategyList from './strategyList'
 import CrowdIndex from './crowdIndex'
+import SchemeIndex from './schemeIndex'
 export default {
     name: "strategyListAA",
     data() {
@@ -24,7 +27,8 @@ export default {
           checkListFilter: ['useStatus'],
           // listCurrentPage: undefined,
           // listPageSize: undefined
-          showAllParent: false
+          showAllParent: false,
+          isShowSchemePage: false
         }
     },
     props: ["source"],
@@ -38,13 +42,21 @@ export default {
           // this.listCurrentPage = filter.page
           // this.listPageSize = filter.pageSize
         },
+        openSchemePage (row) {
+          this.isShowSchemePage = true
+          this.isShowStrategyList = false
+          this.selectRow = row
+          this.$store.commit('setPolicyId', row.policyId)
+        },
         goBack(){
             this.isShowStrategyList=true
+            this.isShowSchemePage = false
         }
     },
     components: {
         StrategyList,
-        CrowdIndex
+        CrowdIndex,
+        SchemeIndex
     }
 }
 </script>

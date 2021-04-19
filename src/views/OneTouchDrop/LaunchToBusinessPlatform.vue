@@ -3,7 +3,7 @@
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
             <el-form-item label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
-                <el-checkbox v-model="crowdForm.launchMode.push">push模式（用于消息、微信）</el-checkbox>
+                <el-checkbox :disabled="!!policyId" v-model="crowdForm.launchMode.push">push模式（用于消息、微信）</el-checkbox>
             </el-form-item>
             <div class="border" v-if="crowdForm.launchMode.pull">
                 <div class="tips">投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
@@ -140,6 +140,7 @@
 </template>
 
 <script>
+    import { mapGetters } from 'vuex'
     export default {
         name: "LaunchToBusinessPlatform",
         props: ['recordId','tempPolicyAndCrowd','routeSource'],
@@ -199,6 +200,9 @@
                 estimateItems: []
             }
         },
+        computed: {
+            ...mapGetters(['policyId'])
+        },
         methods: {
             handleGetCurrentPolicy() {
                 this.$service.getAddCrowdData().then((data) => {
@@ -256,34 +260,51 @@
                                 remark: crowdForm.remark
                             }: undefined
                         }
-                        this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
-                            // 一键投放成功之后，调'未同步'的接口，手动进行同步
-                            if (launch) {
-                                this.$service.freshCache({policyId: data.policyId}).then(() => {
-                                    if (this.routeSource) {
-                                        this.$router.push({
-                                            name: 'myPolicy',
-                                            params: { changeTab: 'ToMyLaunch' }
-                                        })
-                                    } else {
-                                        this.$router.push({ path: 'launch/launchTabList' })
-                                    }
-                                    // this.$router.push({ path: 'launch/launchTabList' })
-                                    this.$root.$emit('stratege-list-refresh')
-                                    this.$emit('resetFormData')
-                                })
-                            } else {
-                                this.$emit('handleDirectStrategyList')
-                                // this.$root.$emit('stratege-list-refresh')
-                                // this.$router.push({ path: 'launch/strategyList' })
-                                this.$emit('resetFormData')
+                        // debugger
+                        // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
+                        if (this.policyId) {
+                            let data = {
+                                biIds: crowdForm.biIdsPull,
+                                policyIds: [this.policyId]
                             }
+                            this.$service.saveAddCrowdData(data, 'pull投放成功').then(res => {
+                                this.jumpToRouter(launch, this.policyId)
+                            }).catch(e => {
+                                this.$message.error(e)
+                            })
+                        } else {
+                            this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
+                                // 一键投放成功之后，调'未同步'的接口，手动进行同步
+                                this.jumpToRouter(launch, data.policyId)
+                            })
 
-                        })
+                        }
                     } else {
                         return false
                     }
                 })
+            },
+            jumpToRouter (launch, policyId) {
+                if (launch) {
+                    this.$service.freshCache({policyId: policyId}).then(() => {
+                        if (this.routeSource) {
+                            this.$router.push({
+                                name: 'myPolicy',
+                                params: { changeTab: 'ToMyLaunch' }
+                            })
+                        } else {
+                            this.$router.push({ path: 'launch/launchTabList' })
+                        }
+                        // this.$router.push({ path: 'launch/launchTabList' })
+                        this.$root.$emit('stratege-list-refresh')
+                        this.$emit('resetFormData')
+                    })
+                } else {
+                    this.$emit('handleDirectStrategyList')
+                    // this.$root.$emit('stratege-list-refresh')
+                    // this.$router.push({ path: 'launch/strategyList' })
+                    this.$emit('resetFormData')
+                }
             },
             getCrowdInitList () {
                     this.$service.addMultiVersionCrowd(0).then(data => {

@@ -91,6 +91,7 @@
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
+        <slot name="isChoosePeople"></slot>
       </el-form-item>
       <el-form-item>
         <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
@@ -105,6 +106,7 @@
     import myCollect from './MyCollect'
     import tempLabelIndex from './tempLabel/TempLabelIndex'
     import specialTag from './SpecialTag'
+    import { cloneDeep } from 'lodash'
     export default {
         name: "labelSquareAA",
         components: {
