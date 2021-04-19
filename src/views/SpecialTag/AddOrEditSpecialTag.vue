@@ -90,7 +90,7 @@
 <script>
     import labelZone from '../LabelSquare/LabelZone'
     import myCollect from '../LabelSquare/MyCollect'
-    import tempLabelIndex from '../LabelSquare/TempLabelIndex'
+    import tempLabelIndex from '../LabelSquare/tempLabel/TempLabelIndex'
     export default {
         name: "labelSquareAA",
         components: {

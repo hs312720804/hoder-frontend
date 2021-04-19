@@ -21,7 +21,14 @@ export function updateLocalCrowd(data) {
     return this.fetch({
         method: 'put',
         url: 'api/tempCrowd/localCrowd',
-        isJSON: true,
+        data
+    })
+}
+// 本地人群下架
+export function OnOrOffLocalCrowd(data) {
+    return this.fetch({
+        method: 'post',
+        url: `api/tempCrowd/localCrowd/OnOrOff/${data.localCrowdId}`,
         data
     })
 }

@@ -51,8 +51,8 @@
 <script>
 import tempLabelList from './TempLabelList'
 import tempLabelAdd from './TempLabelAdd'
-import groupImageAdd from '../GroupImageInsight/Add'
-import deviceEcharts from '../GroupImageInsight/deviceEcharts'
+import groupImageAdd from '../../GroupImageInsight/Add'
+import deviceEcharts from '../../GroupImageInsight/deviceEcharts'
 export default {
   name: 'TempLabel',
   components: {
@@ -84,9 +84,12 @@ export default {
   },
   created() {},
   methods: {
-    handleShowAdd() {
+    handleShowAdd(id, code) {
       this.showList = false
-      // this.showSelectTypeDialog = true
+      this.refreshFlag = false
+      this.editLaunchCrowdId = id
+      this.editStatus = code
+
     },
     // 通过SQL创建
     addOrEditBySql(id, code) {

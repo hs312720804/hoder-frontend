@@ -90,7 +90,7 @@
 <script>
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
-    import tempLabelIndex from './TempLabelIndex'
+    import tempLabelIndex from './tempLabel/TempLabelIndex'
     import LocalLabelIndex from './localLabel/Index'
     import specialTag from './SpecialTag'
     
@@ -172,6 +172,10 @@
                         //    刷新特色标签
                         this.fetchCheckListData()
                         this.$root.$emit('special-tag-list-refresh')
+                        break
+                    case 'localLabel':
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('local-label-list-refresh')
                         break
                 }
             },

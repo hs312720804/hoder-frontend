@@ -1,9 +1,8 @@
 <template>
   <div class="temp-label">
-    <list
+    <temp-label-list
       v-show="showList"
       @show-add="handleShowAdd"
-      @show-edit="addOrEditBySql"
       :refreshFlag="refreshFlag"
       :show-selection="showSelection"
       :currentSelectTag="currentSelectTag"
@@ -11,37 +10,53 @@
       :check-list-parent="checkList"
       @change-checkList="handleCheckListChange"
     >
-    </list>
+    </temp-label-list>
 
-    <group-image-add
+    <temp-label-add
+      v-if="!showList"
+      :editLaunchCrowdId="editLaunchCrowdId"
+      :editStatus="editStatus"
+      @cancel-add="showList = true"
+      @changeStatus="handleRefreshList"
+    >
+    </temp-label-add>
+
+    <!-- <group-image-add
       v-if="showAdd2"
-      :title="title"
       @close-add="handleCloseAddForm"
       @upsert-end="handleRefreshList"
-      @save-form="handleSave"
-      :isUpload="false"
+      
+    ></group-image-add> -->
+
+    <!--请选择创建类型弹窗-->
+    <el-dialog
+      title="请选择创建类型"
+      :visible.sync="showSelectTypeDialog"
+      width="30%"
+      class="organSelect"
     >
-      <!-- 解构插槽 Prop -->
-      <template #default="slotData">
-        <!-- {{ slotData }} -->
-        <el-form-item label="人群名称">
-          <el-input v-model="slotData.slotData.name"></el-input>
-        </el-form-item>
-      </template>
-    </group-image-add>
+      <el-row :gutter="20" class="type-item">
+        <el-col :span="12">
+          <el-button @click="addOrEditBySql()">通过SQL创建</el-button>
+        </el-col>
+        <el-col :span="12">
+          <el-button @click="addByLocalFile()">通过导入本地文件创建</el-button>
+        </el-col>
+      </el-row>
+    </el-dialog>
   </div>
 </template>
 
 <script>
-import list from './LocalList'
-// import tempLabelAdd from './TempLabelAdd'
+import tempLabelList from './TempLabelList'
+import tempLabelAdd from './TempLabelAdd'
 import groupImageAdd from '../../GroupImageInsight/Add'
 import deviceEcharts from '../../GroupImageInsight/deviceEcharts'
 export default {
   name: 'TempLabel',
   components: {
-    list,
-    // tempLabelAdd,
+    tempLabelList,
+    tempLabelAdd,
     groupImageAdd,
     deviceEcharts
   },
@@ -63,35 +78,23 @@ export default {
       editStatus: undefined,
       refreshFlag: false,
       showSelectTypeDialog: false,
-      showAdd2: false, // 弹窗
-      title: '新增本地人群'
+      showAdd2: false 
     }
   },
   created() {},
   methods: {
-    handleSave(selectedFile, launchName) {
-      // const params = {
-      //   file: selectedFile,
-      //   launchName: launchName
-      // }
-      const formData = new FormData()
-      formData.append('file', selectedFile)
-      formData.append('launchName', launchName)
-      this.$service.addLocalCrowd(formData, '保存成功').then(() => {
-        this.$root.$emit('local-label-list-refresh')
-        this.handleCloseAddForm()
-      })
-    },
     handleShowAdd(id, code) {
-      this.showAdd2 = true
+      this.showList = false
       this.refreshFlag = false
       this.editLaunchCrowdId = id
       this.editStatus = code
+
     },
     // 通过SQL创建
     addOrEditBySql(id, code) {
       this.showSelectTypeDialog = false
       this.showList = false
+      // this.showAdd1 = true
       this.refreshFlag = false
       this.editLaunchCrowdId = id
       this.editStatus = code

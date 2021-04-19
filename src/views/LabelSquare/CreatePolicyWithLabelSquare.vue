@@ -103,7 +103,7 @@
 <script>
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
-    import tempLabelIndex from './TempLabelIndex'
+    import tempLabelIndex from './tempLabel/TempLabelIndex'
     import specialTag from './SpecialTag'
     export default {
         name: "labelSquareAA",

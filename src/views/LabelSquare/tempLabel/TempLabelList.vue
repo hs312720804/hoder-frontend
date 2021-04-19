@@ -104,6 +104,11 @@
                         {{cc_format_number(scope.row.history.totalWxOpenid)}}
                     </template>
                 </el-table-column>
+                <el-table-column label="版本">
+                    <template slot-scope="scope">
+                        {{scope.row.history.version}}
+                    </template>
+                </el-table-column>
                 <el-table-column
                         label="操作"
                         width="200"
@@ -304,7 +309,7 @@
             },
             // 编辑
             handleEdit(launchCrowdItem) {
-                this.$emit("show-edit", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+                this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
             },
             // minitor (row) {},
             // 计算

@@ -38,13 +38,18 @@ export default {
       showAddForm: true,
       addFormRule: {
         type: [{ required: true, message: '请选择文件类型' }],
-      }
+      },
+      selectedFile: ''
     }
   },
   props: {
     title: {
       type: String,
       default: '请上传MAC包'
+    },
+    isUpload: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
@@ -81,18 +86,21 @@ export default {
         return
       }
       const fileName = event.currentTarget.files[0]
+      this.selectedFile = fileName
       const formData = new FormData()
       formData.append('fileName', fileName)
-      this.$service
-        .devicePortraitFileUpload(formData, '文件上传成功')
-        .then(data => {
-          this.form.fileName = data.fileName
-          this.form.originFileName = data.originalFilename
-        })
-        .catch(e => {
-          this.$message.error(e)
-          this.resetFormFile()
-        })
+      if (this.isUpload) {
+        this.$service
+          .devicePortraitFileUpload(formData, '文件上传成功')
+          .then(data => {
+            this.form.fileName = data.fileName
+            this.form.originFileName = data.originalFilename
+          })
+          .catch(e => {
+            this.$message.error(e)
+            this.resetFormFile()
+          })
+      }
     },
     resetFormFile() {
       this.form.fileName = undefined
@@ -110,10 +118,12 @@ export default {
         if (valid) {
           const form = this.form
           const formData = JSON.parse(JSON.stringify(form))
-          if (form.fileName != undefined && form.originFileName != undefined) {
+          if ( this.isUpload && form.fileName != undefined && form.originFileName != undefined) {
             this.$emit('save-form', formData, this.slotData.name)
             // this.$emit('upsert-end')
             // this.$emit('close-add')
+          } else if (!this.isUpload && this.selectedFile !== '') {
+            this.$emit('save-form', this.selectedFile, this.slotData.name)
           } else {
             this.message = '请检查文件格式是否不对或者为空'
           }

@@ -60,7 +60,7 @@
                         <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
                     <!--</template>-->
                 </el-table-column>
-                <el-table-column
+                <!-- <el-table-column
                         label="状态"
                 >
                     <template slot-scope="scope">
@@ -78,7 +78,7 @@
                             {{(launchStatusEnum[scope.row.history.status]).name}}
                         </div>
                     </template>
-                </el-table-column>
+                </el-table-column> -->
                 <el-table-column
                         v-if="(checkList.indexOf('creatorName') > -1)"
                         label="创建人"
@@ -104,6 +104,11 @@
                         {{cc_format_number(scope.row.history.totalWxOpenid)}}
                     </template>
                 </el-table-column>
+                <el-table-column label="版本">
+                    <template slot-scope="scope">
+                        {{scope.row.history.version}}
+                    </template>
+                </el-table-column>
                 <el-table-column
                         label="操作"
                         width="200"
@@ -125,19 +130,20 @@
                             </el-button> -->
                             <el-button
                                     type="text"
-                                    @click="condition(scope.row)"
+                                    @click="handleEdit(scope.row)"
                             >
                                 编辑
                             </el-button>
                             <el-button
                                     type="text"
-                                    @click="condition(scope.row)"
+                                    @click="onOrOffLocalCrowd(scope.row)"
                             >
-                                下架
+                                {{ scope.row.launchTempCrowdStatus }}
+                                {{ scope.row.launchTempCrowdStatus ? '下架' : '上架'}}
                             </el-button>
                             <el-button
                                     type="text"
-                                    @click="condition(scope.row)"
+                                    @click="del(scope.row)"
                             >
                                 删除
                             </el-button>
@@ -230,7 +236,7 @@
             }
         },
         created () {
-            this.$root.$on('temp-label-list-refresh', this.fetchData)
+            this.$root.$on('local-label-list-refresh', this.fetchData)
             this.fetchData()
         },
         watch: {
@@ -249,35 +255,35 @@
                 const filter = {
                     pageNum: this.currentPage,
                     pageSize: this.pageSize,
-                    launchName: this.launchName
+                    search: this.launchName
                 }
                 this.$service.getLocalCrowdList(filter).then(data => {
-                    this.launchStatusEnum = data.launchStatusEnum
-                    this.tableData = data.pageInfo.list
-                    this.totalCount = data.pageInfo.total
+                    // this.launchStatusEnum = data.launchStatusEnum
+                    this.tableData = data.list
+                    this.totalCount = data.total
                     if (this.showSelection) {
                         this.updateTableSelected()
                     }
-                    this.tableData.forEach(item => {
-                        item.dataSource = 1
-                    })
+                    // this.tableData.forEach(item => {
+                    //     item.dataSource = 1
+                    // })
                 })
             },
-            handleCommandOpreate(scope) {
-                const type = scope[0]
-                const params = scope[1]
-                switch (type) {
-                    case 'edit':
-                        this.handleEdit(params)
-                        break
-                    case 'del':
-                        this.del(params)
-                        break
-                    // case 'monitor':
-                    //     this.handleMonitor(params)
-                    //     break
-                }
-            },
+            // handleCommandOpreate(scope) {
+            //     const type = scope[0]
+            //     const params = scope[1]
+            //     switch (type) {
+            //         case 'edit':
+            //             this.handleEdit(params)
+            //             break
+            //         case 'del':
+            //             this.del(params)
+            //             break
+            //         // case 'monitor':
+            //         //     this.handleMonitor(params)
+            //         //     break
+            //     }
+            // },
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
             handleSizeChange (val) {
                 this.pageSize = val
@@ -301,8 +307,9 @@
             },
             // 删除
             del(row) {
+                const crowdName = row.launchName
                 const launchCrowdId = row.launchCrowdId
-                this.$confirm("确定要删除吗?", "提示", {
+                this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
                     confirmButtonText: "确定",
                     cancelButtonText: "取消",
                     type: "warning"
@@ -315,9 +322,32 @@
                 .catch(() => {
                 })
             },
+            // 下架
+            onOrOffLocalCrowd(row) {
+                const crowdName = row.launchName
+                const localCrowdId = row.launchCrowdId
+                const params = {
+                    launchTempCrowdStatus: !row.launchTempCrowdStatus,
+                    localCrowdId
+                }
+                this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要下架吗?`, "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                })
+                .then(() => {
+                    this.$service.OnOrOffLocalCrowd(params, "上/下架成功").then(() => {
+                        this.fetchData()
+                    })
+                })
+                .catch(() => {
+                })
+            },
             // 编辑
-            handleEdit(launchCrowdItem) {
-                this.$emit("show-edit", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+            handleEdit(row) {
+                const crowdName = row.launchName
+                const localCrowdId = row.launchCrowdId
+                this.$emit("show-add", localCrowdId, crowdName)
             },
             // minitor (row) {},
             // 计算

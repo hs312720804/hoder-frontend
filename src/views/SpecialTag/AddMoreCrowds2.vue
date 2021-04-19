@@ -226,12 +226,9 @@ export default {
     },
     handleEdit () {
       const initTagList = this.initTagList
-    //  debugger
       // this.$service.getCrowdsDetail(recordId).then((data) => {
       //   console.log(data)
-      alert(333)
         const data = initTagList.map((e) => {
-          debugger
           e.tagIds = e.tagIds
           e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
           e.rulesJson = JSON.parse(e.rulesJson)
