@@ -132,7 +132,8 @@
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
-            <el-button size="small" type="text" @click="crowdList(scope.row)">查看人群</el-button>
+            <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
+            <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button>
             <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
             <el-button
                     size="small"
@@ -610,6 +611,8 @@ export default {
           name: 'oneTouchDrop',
           params: { source: this.parentSource ? 'myCrowd': undefined}
       })
+      // 清空编辑时设置的数据
+        this.$store.commit('setSchemeConfigNull')
       // this.addFormVisible = true;
       // this.addForm.policyName = "";
       // this.addForm.policyId = "";
@@ -638,6 +641,9 @@ export default {
     },
     crowdList(row) {
       this.$emit("openCrowdPage", row, this.criteria, this.checkList, this.showAll)
+    },
+    smartScheme (row) {
+      this.$emit("openSchemePage", row)
     },
     del(row) {
       var id = row.policyId;
@@ -799,6 +805,18 @@ export default {
         const params = scope[1]
         if (type === 'edit') {
             this.handleEdit(params)
+            // 如果是smart=true 则证明是流程图创建人群 否则普通人群创建
+            // if (params.smart) {
+            //     this.$router.push({
+            //         name: 'oneTouchDrop',
+            //         params: {
+            //             source: this.parentSource ? 'myCrowd': undefined,
+            //         },
+            //         query: {
+            //             policyId: params.policyId
+            //         }
+            //     })
+            // }
         } else if (type === 'del') {
             this.del(params)
         } else if (type === 'detail') {

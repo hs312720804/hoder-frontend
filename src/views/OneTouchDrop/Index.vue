@@ -8,16 +8,21 @@
             </el-steps>
         </div>
         <div>
-            <create-config-scheme v-if="activeStep === 0"></create-config-scheme>
-            <!--<new-create-policy-->
-                    <!--@policyNextStep="handlePolicyNextStep"-->
-                    <!--v-if="activeStep === 0"-->
-                    <!--:recordId="recordId"-->
-                    <!--:initTagList="initTagList"-->
-                    <!--@resetFormData="resetFormData"-->
-                    <!--@handleDirectStrategyList="handleDirectStrategyList"-->
-            <!--&gt;-->
-            <!--</new-create-policy>-->
+            <new-create-policy
+                    @policyNextStep="handlePolicyNextStep"
+                    v-if="activeStep === 0"
+                    :recordId="recordId"
+                    :initTagList="initTagList"
+                    @resetFormData="resetFormData"
+                    @handleDirectStrategyList="handleDirectStrategyList">
+                <template v-slot:isChoosePeople>
+                    <el-checkbox
+                        style="margin-left: 20px"
+                        v-model="peoplePageCheck">
+                        智能分人群模式
+                    </el-checkbox>
+                </template>
+            </new-create-policy>
             <!--<create-policy-->
                     <!--@policyNextStep="handlePolicyNextStep"-->
                     <!--v-if="activeStep === 0"-->
@@ -27,14 +32,22 @@
                     <!--@handleDirectStrategyList="handleDirectStrategyList"-->
             <!--&gt;</create-policy>-->
             <create-crowd
-                    :recordId="recordId"
-                    @crowdNextStep="handleCrowdNextStep"
-                    @crowdPrevStep="handleCrowdPrevStep"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="!!recordId"
-                    v-show="activeStep === 1">
+                :recordId="recordId"
+                @crowdNextStep="handleCrowdNextStep"
+                @crowdPrevStep="handleCrowdPrevStep"
+                @resetFormData="resetFormData"
+                @handleDirectStrategyList="handleDirectStrategyList"
+                v-if="!!recordId && !peoplePageCheck && activeStep === 1">
             </create-crowd>
+            <!--人群流程图-->
+            <create-config-scheme
+                v-if="peoplePageCheck && activeStep === 1"
+                :recordId="recordId"
+                @crowdPrevStep="handleCrowdPrevStep"
+                @handleToNextStep="handleCrowdNextStep"
+                @resetFormData="resetFormData"
+                @handleDirectStrategyList="handleDirectStrategyList">
+            </create-config-scheme>
             <launch-to-business
                     :recordId="recordId"
                     :tempPolicyAndCrowd="tempPolicyAndCrowd"
@@ -70,7 +83,9 @@
                 recordId: undefined,
                 tempPolicyAndCrowd: {},
                 initTagList: [],
-                routeSource: undefined
+                routeSource: undefined,
+                peoplePageCheck: false,
+                programmeId: undefined
             }
         },
         watch: {
@@ -85,7 +100,7 @@
                 this.activeStep = step + 1
                 this.recordId = recordId
             },
-            handleCrowdNextStep (step,recordId,tempPolicyAndCrowd) {
+            handleCrowdNextStep (step,recordId, tempPolicyAndCrowd) {
                 this.activeStep = step + 1
                 this.recordId = recordId
                 this.tempPolicyAndCrowd = tempPolicyAndCrowd
@@ -105,6 +120,8 @@
             resetFormData () {
                 this.activeStep = 0
                 this.recordId = undefined
+                this.$store.commit('setPolicyId', undefined)
+                this.peoplePageCheck = false
             },
             handleDirectStrategyList () {
                 this.$root.$emit('stratege-list-refresh')
@@ -117,6 +134,7 @@
         },
         created () {
             if (this.$route.params.source) {this.routeSource = this.$route.params.source}
+            this.$store.commit('setEditSchemeConfig', false)
         }
     }
 </script>

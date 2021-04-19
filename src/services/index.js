@@ -65,3 +65,5 @@ const service = {
     ...localCrowd
 }
 Vue.prototype.$service = utils.wrapService(service)
+
+export default utils.wrapService(service)

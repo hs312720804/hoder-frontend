@@ -10,28 +10,32 @@ export default class FlowGraph {
   // 左边导航
   static initStencil () {
     this.stencil = new Addon.Stencil({
-      title: 'Components',
+      title: '',
       target: this.graph,
       search: false,
-      stencilGraphWidth: 280,
-      collapsable: true,
+      stencilGraphWidth: 160,
+      collapsable: false,
       groups: [
         {
           name: 'basicComponents',
           title: '基础组件',
-          collapsable: true,
-          graphHeight: 180
-        },
-        {
-          name: 'groupComponents',
-          title: '节点组',
-          collapsable: true,
-          graphHeight: 100,
+          collapsable: false,
+          graphHeight: 160,
           layoutOptions: {
             columns: 1,
-            marginX: 60
+            marginX: 40
           }
         }
+        // {
+        //   name: 'groupComponents',
+        //   title: '节点组',
+        //   collapsable: true,
+        //   graphHeight: 100,
+        //   layoutOptions: {
+        //     columns: 1,
+        //     marginX: 60
+        //   }
+        // }
       ]
     })
     const stencilContainer = document.querySelector('#flowStencil')
@@ -40,47 +44,41 @@ export default class FlowGraph {
   // 图形
   static initShape () {
     const { graph } = this
-    // 开始节点
-    const r1 = graph.createNode({
-      shape: 'flow-chart-rect',
-      attrs: {
-        body: {
-          rx: 24,
-          ry: 24
-        },
-        text: {
-          textWrap: {
-            text: '方案开始'
-          }
-        }
-      },
-      name: 'start'
-    })
     // 人群节点
     const r2 = graph.createNode({
       shape: 'flow-chart-rect',
-      width: 30,
-      height: 30,
+      width: 40,
+      height: 40,
+      label: '人群',
+      name: 'people',
       attrs: {
         body: {
+          fill: '#1790ff',
+          stroke: '#1790ff',
           rx: 35,
           ry: 35
         },
         text: {
-          textWrap: {
-            text: '人群'
-          }
+          fill: '#FFFFFF',
+          // textWrap: {
+          //   // text: '人群'
+          // }
         }
-      },
-      name: 'people'
+      }
     })
     // 组节点
     const g1 = graph.createNode({
       name: 'group',
       shape: 'flowGroupNode',
+      label: '策略',
       attrs: {
+        body: {
+          fill: 'orange',
+          stroke: 'orange',
+        },
         text: {
-          text: '策略'
+          fill: '#FFFFFF',
+          // text: '策略'
         }
       },
       data: {
@@ -89,8 +87,8 @@ export default class FlowGraph {
     })
 
     // 添加到侧边栏中
-    this.stencil.load([r1, r2], 'basicComponents')
-    this.stencil.load([g1], 'groupComponents')
+    this.stencil.load([r2, g1], 'basicComponents')
+    // this.stencil.load([g1], 'basicComponents')
   }
   // 展示链接点
   static showPorts (ports, show) {
@@ -100,22 +98,8 @@ export default class FlowGraph {
   }
   // 初始化事件
   static initEvent () {
-    const { graph } = this;
+    const {graph} = this;
     const container = document.getElementById('flowContainer');
-    // 连线时触发的事件
-    graph.on('node:collapse', ({ node, e }) => {
-      e.stopPropagation()
-      node.toggleCollapse()
-      const collapsed = node.isCollapsed()
-      const cells = node.getDescendants()
-      cells.forEach((n) => {
-        if (collapsed) {
-          n.hide()
-        } else {
-          n.show()
-        }
-      })
-    });
     graph.on('node:mouseenter', FunctionExt.debounce(() => {
         const ports = container.querySelectorAll('.x6-port-body')
         this.showPorts(ports, true)
@@ -129,7 +113,7 @@ export default class FlowGraph {
       this.showPorts(ports, false)
     });
     // 扩展父节点
-    graph.on('node:change:size', ({ node, options }) => {
+    graph.on('node:change:size', ({node, options}) => {
       if (options.skipParentHandler) {
         return
       }
@@ -139,7 +123,7 @@ export default class FlowGraph {
         node.prop('originSize', node.getSize())
       }
     })
-    graph.on('node:change:position', ({ node, options }) => {
+    graph.on('node:change:position', ({node, options}) => {
       if (options.skipParentHandler) {
         return
       }
@@ -172,7 +156,7 @@ export default class FlowGraph {
         const children = parent.getChildren()
         if (children) {
           children.forEach((child) => {
-            const bbox = child.getBBox().inflate(40)
+            const bbox = child.getBBox().inflate(30)
             const corner = bbox.getCorner()
 
             if (bbox.x < x) {
@@ -199,12 +183,12 @@ export default class FlowGraph {
         if (hasChange) {
           parent.prop(
             {
-              position: { x, y },
-              size: { width: cornerX - x, height: cornerY - y },
+              position: {x, y},
+              size: {width: cornerX - x, height: cornerY - y},
             },
             // Note that we also pass a flag so that we know we shouldn't
             // adjust the `originPosition` and `originSize` in our handlers.
-            { skipParentHandler: true },
+            {skipParentHandler: true},
           )
         }
       }

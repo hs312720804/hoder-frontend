@@ -9,18 +9,49 @@
                 <div id="flowContainer" class="x6-graph" />
             </div>
         </div>
-        <people-dialog :show="peopleDialogStatus" @savePeople="savePeople"></people-dialog>
+        <!--人群配置-->
+        <people-dialog
+            :show="peopleDialogStatus"
+            :info="editPeopleInfo"
+            @savePeople="savePeople"
+        >
+        </people-dialog>
+        <!--入口配置-->
+        <entry-config
+            :entryData="entryData"
+            :show="schemeStart"
+            :recordId="recordId"
+            :policyId="policyId"
+            :splitRadio="splitRadio"
+            @saveEntryData="saveEntryData"
+        >
+        </entry-config>
+        <!--按钮操作-->
+        <div class="btn-group" v-if="!isSmartEdit">
+            <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
+            <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
+            <el-button type="primary" @click="handleSave(1)">下一步</el-button>
+        </div>
     </div>
 </template>
 
 <script>
-import { Graph, Shape } from '@antv/x6'
-import FlowGraph from './graph/index'
-import peopleDialog from './graph/peopleDialog';
+import peopleDialog from './graph/peopleDialog'
+import entryConfig from './graph/entryConfig'
+import graphMixin from './graph/graphMixin'
+import { mapGetters } from 'vuex'
 export default {
+    props: ['recordId'],
     name: "CreateConfigScheme",
+    mixins: [graphMixin],
     data () {
         return {
+            schemeConfig: {
+                programmeName: '方案入口', // 入口名称
+                inputCondition: null, // 入口规则
+                remark: '', // 入口备注
+                smartStrategies: [] // 流程图配置
+            },
             graph: null,
             schemeData: [], // 存储数据集合
             currentNode: null,
@@ -31,262 +62,287 @@ export default {
             groupId: null, // 点击人群时所在组id
             schemeStart: {
                 is: false
-            }
+            },
+            groupIdx: 1, // 组的序号
+            entryData: [],
+            editPeopleInfo: {}, // 编辑时传入的数据
+            tempPortArr: [], // 临时存储已连接port
+            splitRadio: ''
         }
     },
     components: {
-        peopleDialog
+        peopleDialog,
+        entryConfig
     },
     mounted () {
         this.initGraph()
     },
+    computed: {
+        ...mapGetters(['policyInfo', 'policyId', 'isSmartEdit'])
+    },
     methods: {
-        initGraph () {
-            const graph = new Graph({
-                container: document.getElementById('flowContainer'),
-                width: window.innerWidth - 530,
-                height: window.innerHeight - 205,
-                grid: true,
-                mousewheel: {  // 背景缩放
-                    enabled: true,
-                    global: true,
-                    modifiers: ['ctrl', 'meta'],
-                },
-                snapline: {
-                    enabled: true,
-                    sharp: true,
-                },
-                scroller: {
-                    enabled: true,
-                    pageVisible: false,
-                    pageBreak: false,
-                    pannable: true,
-                },
-                connecting: {
-                    anchor: 'center',
-                    connectionPoint: 'anchor',
-                    allowBlank: false,
-                    highlight: true,
-                    snap: true,
-                    allowMulti: false,
-                    allowLoop: false,
-                    createEdge () {
-                        return new Shape.Edge({
-                            attrs: {
-                                line: {
-                                    stroke: '#5F95FF',
-                                    strokeWidth: 1,
-                                    targetMarker: {
-                                        name: 'classic',
-                                        size: 8
-                                    }
-                                }
-                            },
-                            router: {
-                                name: 'manhattan'
-                            },
-                            zIndex: 0
-                        })
-                    },
-                    validateConnection ({sourceView, targetView, sourceMagnet, targetMagnet}) {
-                        if (sourceView === targetView) {
-                            return false
-                        }
-                        if (!sourceMagnet) {
-                            return false
-                        }
-                        if (!targetMagnet) {
-                            return false
-                        }
-                        return true
-                    }
-                },
-                highlighting: {
-                    magnetAvailable: {
-                        name: 'stroke',
-                        args: {
-                            padding: 4,
-                            attrs: {
-                                strokeWidth: 4,
-                                stroke: 'rgba(223,234,255)'
-                            }
-                        }
-                    }
-                },
-                history: true,
-                clipboard: {
-                    enabled: true
-                },
-                keyboard: {
-                    enabled: true
-                },
-                embedding: {
-                    enabled: true,
-                    findParent ({ node }) {
-                        const bbox = node.getBBox()
-                        return this.getNodes().filter((node) => {
-                            // 只有 data.parent 为 true 的节点才是父节点
-                            const data = node.getData()
-                            if (data && data.parent) {
-                                const targetBBox = node.getBBox()
-                                return bbox.isIntersectWithRect(targetBBox)
-                            }
-                            return false
-                        })
-                    }
-                }
-            });
-            FlowGraph.init(graph);
-            this.graph = graph;
-
-            /**
-             * 以下是业务逻辑处理
-             1. 添加节点
-             2. 删除节点
-             3. 编辑节点
-             4. 移动节点
-             5. 边连接
-             6. 组限制
-             */
-            // 添加一个节点时
-            this.graph.on('node:added', (cell) => {
-                let { node } = cell;
-                let name = node.store.data.name;
-                switch (name) {
-                    case 'start':
-                        this.addStartNode(node);
-                        break;
-                    case 'group':
-                        this.addGroupNode(node);
-                        break;
-                    case 'people':
-                        this.addPeopleNode(node);
-                        break;
-                }
-            });
-            // 边的连接事件
-            this.graph.on('edge:connected', ({ isNew, edge }) => {
-                if (isNew) {
-                    const source = edge.getSourceCell();
-                    const target = edge.getTargetCell();
-                    this.schemeData.forEach(item => {
-                        if (item.id === source.id) {
-                            item.mapGrid.moduleSource = source.id;
-                            item.mapGrid.moduleTarget = target.id;
-                        }
-                        if (item.id === target.id) {
-                            item.mapGrid.moduleSource = source.id;
-                            item.mapGrid.moduleTarget = target.id;
-                        }
-                    });
-                }
-            });
-            // 移动节点时更新x,y
-            this.graph.on('node:moved', ({e, x, y, node, view}) => {
-                console.log(node);
-                this.schemeData.forEach(item => {
-                    if (item.id === node.id) {
-                        item.mapGrid.x = x;
-                        item.mapGrid.y = y;
-                    }
-                })
-            });
-            this.graph.on('node:click', ({e, x, y, node, view}) => {
-                let name = node.store.data.name;
-                if (name === 'people') {
-                    this.peopleId = node.id; // 记录当前点击人群的id
-                    this.groupId = node.parent.id;
-                    this.peopleDialogStatus.is = true;
-                } else if (name === 'start') {
-                
+        // 还原数据
+        handleParseData (data) {
+            data.inputCondition = data.inputCondition ? JSON.parse(data.inputCondition) : []
+            data.smartStrategies && data.smartStrategies.forEach(item => {
+                item.mapGrid = JSON.parse(item.mapGrid);
+                if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
+                    item.smartStrategyNodes.forEach(v => {
+                        v.mapGrid = JSON.parse(v.mapGrid);
+                        v.nodeCondition = JSON.parse(v.nodeCondition);
+                    })
                 }
             })
         },
+        // 处理删除节点索引规则
+        setNodeIdx (identify, node, deleteNode = false) {
+            const sourceId = node.mapGrid.source;
+            const targetId = node.mapGrid.target;
+            if (identify === 'schemeGroup') {
+                let nextNode = this.findNodesById(null, targetId);
+                if (!nextNode) {
+                    return;
+                } else {
+                    if (deleteNode) {
+                        node.strategyIndex = 0;
+                    }
+                    if (nextNode.strategyIndex >= 1) {
+                        nextNode.strategyIndex = node.strategyIndex + 1;
+                    } else {
+                        nextNode.strategyIndex = 0;
+                    }
+                    this.setNodeIdx(nextNode.mapGrid.identify, nextNode);
+                }
+            } else {
+                let nextNode = this.findNodesById(sourceId, targetId);
+                if (!nextNode) {
+                    return;
+                } else {
+                    if (deleteNode) {
+                        node.strategyNodeIndex = 0;
+                    }
+                    if (nextNode.strategyNodeIndex >= 1) {
+                        nextNode.strategyNodeIndex = node.strategyNodeIndex + 1;
+                    } else {
+                        nextNode.strategyNodeIndex = 0;
+                    }
+                    this.setNodeIdx(nextNode.mapGrid.identify, nextNode);
+                }
+            }
+        },
         // 添加开始节点
-        addStartNode (node) {
+        addStartNode () {
             this.currentNode = {
-                id: node.id,
-                moduleType: '1', // 开始
-                strategyNodeName: '方案开始',
+                strategyName: '方案入口',
+                strategyIndex: 0,
+                defaultStrategy: false,
+                smartStrategyNodes: [],
+                remark: '',
                 mapGrid: {
-                    x: node.store.data.position.x, // 节点x坐标
-                    y: node.store.data.position.y, // 节点y坐标
-                    moduleSource: '', // 节点边原对象
-                    moduleTarget: '', // 节点边目标对象
+                    x: 300, // 节点x坐标
+                    y: 20, // 节点y坐标
+                    source: 'startNode', // 节点边原对象
+                    target: '', // 节点边目标对象
+                    id: 'startNode',
+                    identify: 'start'
                 }
             };
             this.schemeData.push(this.currentNode);
         },
         addGroupNode (node) {
-            let idx = 1;
+            let groupNameColl = this.findGroupName(this.schemeData);
+            this.groupIdx = this.getMaxNum(groupNameColl.toString());
             this.currentNode = {
-                id: node.id,
-                moduleType: '2', // 策略组
-                strategyNodeName: `策略${idx}`,
+                strategyName: `策略${this.groupIdx}`,
+                strategyIndex: 0, // 是否有连线
+                defaultStrategy: true,
+                outCondition: '',
+                remark: '',
                 mapGrid: {
                     x: node.store.data.position.x, // 节点x坐标
                     y: node.store.data.position.y, // 节点y坐标
-                    moduleSource: '', // 节点边原对象
-                    moduleTarget: '', // 节点边目标对象
+                    source: '', // 节点边原对象
+                    target: '', // 节点边目标对象
+                    id: node.id,
+                    identify: 'schemeGroup'
                 },
-                children: []
+                smartStrategyNodes: []
             };
             node.attr({
                 text: {
-                    text: `策略${idx}`
+                    text: `策略${this.groupIdx}`
                 }
             });
             this.schemeData.push(this.currentNode);
-            idx++;
+            node.size({width: 250, height: 180});
         },
         addPeopleNode (node) {
             this.$nextTick(() => {
                 let parent = node.parent;
                 if (!parent) {
                     this.$message({
-                        message: '人群只能放置在策略组中...',
+                        message: '人群只能放置在策略组中!',
                         type: 'warning'
                     });
                     node.remove();
                     return false;
                 }
-                let idx = 1;
                 this.currentNode = {
-                    id: node.id,
-                    moduleType: '3', // 人群
-                    strategyNodeName: `人群${idx}`,
+                    nodeCondition: {}, // 存储人群用户信息
+                    strategyNodeName: '',
+                    strategyNodeIndex: 0,
                     mapGrid: {
                         x: node.store.data.position.x, // 节点x坐标
                         y: node.store.data.position.y, // 节点y坐标
-                        moduleSource: '', // 节点边原对象
-                        moduleTarget: '', // 节点边目标对象
-                    },
-                    _content: {} // 存储人群用户信息
+                        source: '', // 节点边原对象
+                        target: '', // 节点边目标对象
+                        id: node.id, // 人群id
+                        identify: 'crowd'
+                    }
                 };
-                node.attr({
-                    text: {
-                        text: `人群${idx}`
-                    }
-                });
                 this.schemeData.forEach(item => {
-                    if (item.id === parent.id) {
-                        item.children.push(this.currentNode)
+                    if (item.mapGrid.id === parent.id) {
+                        item.smartStrategyNodes.push(this.currentNode)
                     }
                 });
-                idx ++;
             });
         },
+        // 保存人群信息
         savePeople (data) {
             this.schemeData.forEach(item => {
-                if (item.id === this.groupId) {
-                    item.children.forEach(v => {
-                        if (v.id === this.peopleId) {
-                            v._content = data;
+                if (item.mapGrid.id === this.groupId) {
+                    item.smartStrategyNodes.forEach(v => {
+                        if (v.mapGrid.id === this.peopleId) {
+                            v.nodeCondition = data.condition;
+                            v.strategyNodeName = data.strategyNodeName;
                         }
                         this.peopleDialogStatus.is = false;
                     })
                 }
+            });
+            this.currentNode.attr({
+                text: {
+                    textWrap: {
+                        text: data.strategyNodeName
+                    }
+                }
             })
+        },
+        // 查找节点数据
+        findNodesById (parentId, id) {
+            let result;
+            if (!parentId) {
+                result = this.schemeData.find(item => {
+                    return item.mapGrid.id === id;
+                });
+            } else {
+                this.schemeData.forEach(item => {
+                    if (item.mapGrid.id === parentId) {
+                        result = item.smartStrategyNodes.find(v => {
+                            return v.mapGrid.id === id;
+                        })
+                    }
+                });
+            }
+            return result;
+        },
+        findChildId (arr) {
+            let result = [];
+            arr && arr.forEach(item => {
+                result.push(item.mapGrid.id);
+            });
+            return result;
+        },
+        // 上一步操作
+        handleBackPrevStep () {
+            this.$emit('crowdPrevStep', 1, this.recordId);
+        },
+        // 跳过直接保存
+        handleSave (idx) {
+            // 将节点数组mapGuid存储为JSON字符串
+            this.schemeData.forEach(item => {
+                item.mapGrid = JSON.stringify(item.mapGrid);
+                if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
+                    item.smartStrategyNodes.forEach(v => {
+                        v.mapGrid = JSON.stringify(v.mapGrid);
+                        v.nodeCondition = JSON.stringify(v.nodeCondition);
+                    })
+                }
+            });
+            this.schemeConfig.smartStrategies = this.schemeData;
+            if (!this.policyId) {
+                this.schemeConfig.recordId = this.recordId;
+                // 如果还没有创建策略流程图 则走创建逻辑
+                let data = {
+                    recordId: this.recordId,
+                    data: this.schemeConfig
+                }
+                this.$store.dispatch('saveSmartProgramme', data).then(rs => {
+                    if (idx === 0) {
+                        this.$emit('handleDirectStrategyList');
+                        this.$emit('resetFormData');
+                    } else {
+                        // 下一步操作
+                        this.$store.commit('setPolicyId', rs.policyId);
+                        this.$store.dispatch('getPolicyInfo', rs.policyId).then(rs => {
+                            let obj = {
+                                tempPolicy: {
+                                    recordId: this.recordId,
+                                    policyName: rs.policyName
+                                }
+                            }
+                            this.$emit('handleToNextStep', 1, null, obj);
+                        })
+                    }
+                })
+            } else {
+                let data = {
+                    data: this.schemeConfig,
+                    params: { programmeId: this.schemeConfig.programmeId }
+                }
+                this.$store.dispatch('saveSmartProgramme', data).then(() => {
+                    if (idx === 0) {
+                        this.$emit('handleDirectStrategyList');
+                        this.$emit('resetFormData');
+                    } else {
+                        this.$store.dispatch('getPolicyInfo', this.policyId).then(rs => {
+                            let obj = {
+                                tempPolicy: {
+                                    recordId: this.recordId,
+                                    policyName: rs.policyName
+                                }
+                            }
+                            this.$emit('handleToNextStep', 1, null, obj);
+                        })
+                    }
+                })
+            }
+        },
+        // 保存入口配置信息
+        saveEntryData (data, data1) {
+            this.entryData = data;
+            this.splitRadio = data1;
+            let tempArr = [data, data1];
+            this.schemeConfig.inputCondition = JSON.stringify(tempArr);
+            this.schemeStart.is = false;
+        },
+        // 查找策略索引名称
+        findGroupName (arr) {
+            return arr && arr.map(item => {
+                return item.strategyName
+            })
+        },
+        // 查找策略索引名称最大值
+        getMaxNum (str) {
+            let reg = /策略(\d+)/g;
+            let m = 0, v = 0;
+            while (m != null) {
+                m = reg.exec(str);
+                if (m != null) {
+                    v = Math.max(v, m[1]);
+                }
+            }
+            return v + 1;
         }
     }
 }
@@ -311,10 +367,14 @@ export default {
             display: flex;
             .sider
                 position: relative;
-                width: 290px;
+                width: 200px;
                 border-right: 1px solid rgba(0, 0, 0, 0.08);
             .panel
                 height: 100%;
+        .btn-group
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
     // 调整边界
     .ant-drawer-body
         padding: 0;

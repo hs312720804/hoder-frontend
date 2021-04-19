@@ -659,12 +659,63 @@ export function getBypassCrowdDetail(params) {
 }
 /**
  * 接口测试
- * @param {*} params 
+ * @param {*} params
  */
 export function polisyTest(params) {
   return this.fetch({
     method: 'get',
     isReturnAllInfor: true,
     url: `/api/policy/invoker/${params.policyId}/${params.mac}/${params.crowdId}`,
+  })
+}
+
+/**
+ * 人群流程图创建
+ * @param data
+ * @param param
+ */
+export function smartProgramme ({data}) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/smartProgramme',
+    data,
+    isJSON: true
+  })
+}
+
+/**
+ * 策略人群获取详情
+ * @param params
+ */
+export function smartProgrammeDetail (policyId) {
+  return this.fetch({
+    method: 'get',
+    isReturnAllInfor: true,
+    url: '/api/smartProgramme/policy/' + policyId
+  })
+}
+
+/**
+ * 根据策略id获取策略纬度详情
+ * @param policyId
+ */
+export function smartProframPolicyInfo (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/policy/edit',
+    params
+  })
+}
+
+/**
+ * 方案修改
+ * @param policyId
+ */
+export function smartProframPolicyUpdate ({data, params}) {
+  return this.fetch({
+    method: 'put',
+    url: '/api/smartProgramme/' + params.programmeId,
+    data,
+    isJSON: true
   })
 }
