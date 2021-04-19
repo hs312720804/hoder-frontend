@@ -383,6 +383,7 @@ export default {
         },
         // 编辑数据保存
         handleEditSave () {
+            this.handleSaveData();
             return new Promise(resolve => {
                 this.$service.smartProframPolicyUpdate({
                     data: this.schemeConfig,

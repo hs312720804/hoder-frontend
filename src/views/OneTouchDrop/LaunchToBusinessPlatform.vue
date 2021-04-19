@@ -260,7 +260,7 @@
                                 remark: crowdForm.remark
                             }: undefined
                         }
-                        debugger
+                        // debugger
                         // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
                         if (this.policyId) {
                             let data = {

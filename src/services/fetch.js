@@ -23,7 +23,7 @@ export default function fetch({
     params,
     contentType
   };
-  debugger
+  // debugger
   if (url != "/api/login") option.headers = { Authorization: this.state.token };
   if (option.contentType) option.headers['Content-Type'] = option.contentType
   return axios(option)

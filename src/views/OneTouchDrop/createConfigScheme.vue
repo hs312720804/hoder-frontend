@@ -257,8 +257,8 @@ export default {
         handleBackPrevStep () {
             this.$emit('crowdPrevStep', 1, this.recordId);
         },
-        // 跳过直接保存
-        handleSave (idx) {
+        // 处理保存数据
+        handleSaveData () {
             // 将节点数组mapGuid存储为JSON字符串
             this.schemeData.forEach(item => {
                 item.mapGrid = JSON.stringify(item.mapGrid);
@@ -270,6 +270,10 @@ export default {
                 }
             });
             this.schemeConfig.smartStrategies = this.schemeData;
+        },
+        // 跳过直接保存
+        handleSave (idx) {
+            this.handleSaveData();
             if (!this.policyId) {
                 this.schemeConfig.recordId = this.recordId;
                 // 如果还没有创建策略流程图 则走创建逻辑
