@@ -267,6 +267,15 @@
                             this.$message.error('请选择策略维度！')
                             return
                         }
+                        if (this.$parent.peoplePageCheck) {
+                            let result = this.tagList.filter(item => {
+                                return item.dataSource === 6
+                            });
+                            if (!result.length) {
+                                this.$message.error('智能分人群需携带动态因子纬度标签！')
+                                return;
+                            }
+                        }
                         addForm.conditionTagIds = addForm.conditionTagIds.join(",")
                         if (mode === 1) {
                             if (this.addForm.recordId) {

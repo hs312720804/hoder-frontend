@@ -26,6 +26,22 @@
             @saveEntryData="saveEntryData"
         >
         </entry-config>
+        <!--组出口配置-->
+        <out-condition
+            :recordId="recordId"
+            :show="outConditionStatus"
+            :outputData="outputData"
+            @saveOutputCondition="saveOutputCondition">
+        </out-condition>
+        <!--放大缩小操作-->
+        <div class="scale-group">
+            <el-tooltip class="item" content="放大画布" placement="top-start">
+                <el-button icon="el-icon-plus" @click="scaleGraph(0.2)"></el-button>
+            </el-tooltip>
+            <el-tooltip class="item" content="缩小画布" placement="top-start">
+                <el-button icon="el-icon-minus" @click="scaleGraph(-0.2)"></el-button>
+            </el-tooltip>
+        </div>
         <!--按钮操作-->
         <div class="btn-group" v-if="!isSmartEdit">
             <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
@@ -38,6 +54,7 @@
 <script>
 import peopleDialog from './graph/peopleDialog'
 import entryConfig from './graph/entryConfig'
+import outCondition from './graph/outCondition'
 import graphMixin from './graph/graphMixin'
 import { mapGetters } from 'vuex'
 export default {
@@ -64,15 +81,21 @@ export default {
                 is: false
             },
             groupIdx: 1, // 组的序号
+            peopleIdx: 1, // 人群序号
             entryData: [],
+            outputData: [],
             editPeopleInfo: {}, // 编辑时传入的数据
             tempPortArr: [], // 临时存储已连接port
-            splitRadio: ''
+            splitRadio: '',
+            outConditionStatus: { // 出口规则配置
+                is: false
+            }
         }
     },
     components: {
         peopleDialog,
-        entryConfig
+        entryConfig,
+        outCondition
     },
     mounted () {
         this.initGraph()
@@ -187,9 +210,11 @@ export default {
                     node.remove();
                     return false;
                 }
+                let crowdNameColl = this.findGroupCrowdName(this.schemeData)
+                this.peopleIdx = this.getMaxNum(crowdNameColl.toString(), 'child');
                 this.currentNode = {
                     nodeCondition: {}, // 存储人群用户信息
-                    strategyNodeName: '',
+                    strategyNodeName: `人群${this.peopleIdx}`,
                     strategyNodeIndex: 0,
                     mapGrid: {
                         x: node.store.data.position.x, // 节点x坐标
@@ -200,6 +225,11 @@ export default {
                         identify: 'crowd'
                     }
                 };
+                node.attr({
+                    text: {
+                        text: `人群${this.peopleIdx}`
+                    }
+                });
                 this.schemeData.forEach(item => {
                     if (item.mapGrid.id === parent.id) {
                         item.smartStrategyNodes.push(this.currentNode)
@@ -336,9 +366,24 @@ export default {
                 return item.strategyName
             })
         },
+        // 查找人群名字索引
+        findGroupCrowdName (arr) {
+            let result = [];
+            arr.forEach(item => {
+                item.smartStrategyNodes && item.smartStrategyNodes.forEach(v => {
+                    result.push(v.strategyNodeName)
+                })
+            });
+            return result;
+        },
         // 查找策略索引名称最大值
-        getMaxNum (str) {
-            let reg = /策略(\d+)/g;
+        getMaxNum (str, flag) {
+            let reg;
+            if (!flag) {
+                reg = /策略(\d+)/g;
+            } else {
+                reg = /人群(\d+)/g;
+            }
             let m = 0, v = 0;
             while (m != null) {
                 m = reg.exec(str);
@@ -347,6 +392,17 @@ export default {
                 }
             }
             return v + 1;
+        },
+        // 出口规则配置
+        addGroupOutCondition (node) {
+            this.groupId = node.id;
+            this.outConditionStatus.is = true;
+        },
+        saveOutputCondition (data) {
+            let result = this.findNodesById(null, this.groupId)
+            this.outputData = data;
+            this.outConditionStatus.is = false;
+            result.outCondition = JSON.stringify(data);
         }
     }
 }
@@ -375,6 +431,10 @@ export default {
                 border-right: 1px solid rgba(0, 0, 0, 0.08);
             .panel
                 height: 100%;
+        .scale-group
+            position: absolute;
+            bottom: 100px;
+            right: 100px;
         .btn-group
             position: absolute;
             bottom: 20px;

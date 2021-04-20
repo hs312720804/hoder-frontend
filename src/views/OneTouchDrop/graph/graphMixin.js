@@ -121,8 +121,10 @@ export default {
                         this.splitRadio = data.inputCondition[1] ? data.inputCondition[1] : ''
                     }
                     let groupNameColl = this.findGroupName(data.smartStrategies);
+                    let crowdNameColl = this.findGroupCrowdName(data.smartStrategies);
                     // 设置策略索引当前最大值
                     this.groupIdx = this.getMaxNum(groupNameColl.toString());
+                    this.peopleIdx = this.getMaxNum(crowdNameColl.toString(), 'crowd');
                     // 设置入口数据
                     let nodes = [], edges = [];
                     data.smartStrategies && data.smartStrategies.forEach(item => {
@@ -319,7 +321,7 @@ export default {
                     this.peopleId = node.id; // 记录当前点击人群的id
                     this.groupId = node.getParentId();
                     const peopleObj = this.findNodesById(node.getParentId(), node.id);
-                    if (peopleObj.strategyNodeName) {
+                    if (peopleObj.nodeCondition.time) {
                         this.editPeopleInfo = {
                             strategyNodeName: peopleObj.strategyNodeName,
                             frequency: peopleObj.nodeCondition.times.val,
@@ -371,9 +373,48 @@ export default {
                         }
                     })
                 }
+                if (newNode.mapGrid.identify === 'schemeGroup') {
+                    node.addTools({
+                        name: 'button',
+                        args: {
+                            markup: [
+                                {
+                                    tagName: 'circle',
+                                    selector: 'button',
+                                    attrs: {
+                                        r: 14,
+                                        stroke: 'green',
+                                        strokeWidth: 2,
+                                        fill: 'green',
+                                        cursor: 'pointer',
+                                    },
+                                },
+                                {
+                                    tagName: 'text',
+                                    textContent: '出口',
+                                    selector: 'icon',
+                                    attrs: {
+                                        fill: '#ffffff',
+                                        fontSize: 10,
+                                        textAnchor: 'middle',
+                                        pointerEvents: 'none',
+                                        y: '0.3em',
+                                    },
+                                },
+                            ],
+                            x: '50%',
+                            y: '100%',
+                            offset: { x: 0, y: -20 },
+                            onClick({ cell }) {
+                                // 添加出口规则
+                                _this.addGroupOutCondition(cell)
+                            }
+                        },
+                    })
+                }
             });
             this.graph.on('node:mouseleave', ({ node }) => {
-                node.removeTools()
+                node.removeTool('button-remove')
             });
             this.graph.on('node:change:size', ({ cell, node }) => {
                 let result = this.findNodesById(node.getParent(), node.id);
@@ -392,6 +433,10 @@ export default {
                     resolve(rs)
                 })
             })
+        },
+        // 放大缩小画布
+        scaleGraph (data) {
+            this.graph.zoom(data)
         }
     }
 }
