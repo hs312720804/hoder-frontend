@@ -4,7 +4,7 @@
             <span>标签列表</span>
             <el-form :inline="true" style="float: right">
                 <el-form-item>
-                    <el-input clearable @keyup.enter.native="fetchData" v-model="filter.name" placeholder="标签名称"></el-input>
+                    <el-input clearable @keyup.enter.native="fetchData" v-model="filter.search" placeholder="标签名称"></el-input>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
@@ -100,7 +100,7 @@ export default {
                 pageSize: 10    
             },
             filter: {
-                name: undefined,
+                search: '',
             },
             statusList: {
                 '1': '启用',
@@ -124,36 +124,26 @@ export default {
     methods: {
         getFilter() {
             return {
-                // tagCategoryId: this.tagCategory.tagId,
+                tagId: this.tagId,
                 ...this.filter,
-                ...this.pagination
+                ...this.pagination,
             }
         },
         fetchData() {
-            // const filter = this.getFilter()
+            const filter = this.getFilter()
             // this.$service.getTagList(filter).then(({itemList, pagination}) => {
             //     this.itemList = itemList
             //     this.pagination = pagination
             // })
-            const filter = {
-                tagId: this.tagId,
-                ...this.pagination
-            }
             this.$service.specialTagDetailList(filter).then((data) => {
                 // eslint-disable-next-line
-                this.itemList = data.list
-                this.total = data.total
-                console.log('data===>', data)
-                // this.dataSourceEnum = data.dataSourceEnum
-                // this.typeEnum = data.typeEnum
-                // this.tagCategory = data.tagCategory
-                // let treeData = data.slice().map(item => {
-                //     return {
-                //         id: item.specialTagId,
-                //         label: item.specialTagName,
-                //         children: []
-                //     }
-                // })
+                if (data) {
+                    this.itemList = data.list || []
+                    this.total = data.total || 0
+                } else {
+                    this.itemList = []
+                    this.total = 0
+                }
             })
         },
         handleAddTag() {

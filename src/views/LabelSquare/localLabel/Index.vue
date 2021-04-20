@@ -3,7 +3,6 @@
     <list
       v-show="showList"
       @show-add="handleShowAdd"
-      @show-edit="addOrEditBySql"
       :refreshFlag="refreshFlag"
       :show-selection="showSelection"
       :currentSelectTag="currentSelectTag"
@@ -20,6 +19,8 @@
       @upsert-end="handleRefreshList"
       @save-form="handleSave"
       :isUpload="false"
+      :localCrowdId="localCrowdId"
+      :crowdName="crowdName"
     >
       <!-- 解构插槽 Prop -->
       <template #default="slotData">
@@ -64,7 +65,10 @@ export default {
       refreshFlag: false,
       showSelectTypeDialog: false,
       showAdd2: false, // 弹窗
-      title: '新增本地人群'
+      title: '新增本地人群',
+      localCrowdId: '',
+      crowdName: '',
+      addOrEditStatus: ''
     }
   },
   created() {},
@@ -77,30 +81,30 @@ export default {
       const formData = new FormData()
       formData.append('file', selectedFile)
       formData.append('launchName', launchName)
-      this.$service.addLocalCrowd(formData, '保存成功').then(() => {
-        this.$root.$emit('local-label-list-refresh')
-        this.handleCloseAddForm()
-      })
+      // debugger
+      if ( this.addOrEditStatus === 'add' ) {
+        this.$service.addLocalCrowd(formData, '保存成功').then(() => {
+          this.$root.$emit('local-label-list-refresh')
+          this.handleCloseAddForm()
+        })
+      } else {
+        this.$service.updateLocalCrowd({formData, id: this.localCrowdId}, '编辑成功').then(() => {
+          this.$root.$emit('local-label-list-refresh')
+          this.handleCloseAddForm()
+        })
+      }
     },
-    handleShowAdd(id, code) {
+    handleShowAdd(localCrowdId, crowdName) {
       this.showAdd2 = true
       this.refreshFlag = false
-      this.editLaunchCrowdId = id
-      this.editStatus = code
-    },
-    // 通过SQL创建
-    addOrEditBySql(id, code) {
-      this.showSelectTypeDialog = false
-      this.showList = false
-      this.refreshFlag = false
-      this.editLaunchCrowdId = id
-      this.editStatus = code
-    },
-    // 通过导入本地文件创建
-    addByLocalFile() {
-      this.showSelectTypeDialog = false
-      // this.showList = false
-      this.showAdd2 = true
+      this.localCrowdId = localCrowdId
+      this.crowdName = crowdName
+      this.addOrEditStatus = this.localCrowdId != null && this.crowdName != undefined ? 'edit' : 'add'
+      if ( this.addOrEditStatus === 'edit' ) {
+        this.title = '编辑本地人群'
+      } else {
+        this.title = '新增本地人群'
+      }
     },
     handleRefreshList() {
       this.showList = true

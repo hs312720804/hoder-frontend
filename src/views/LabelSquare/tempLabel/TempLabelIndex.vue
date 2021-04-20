@@ -88,7 +88,6 @@ export default {
       this.refreshFlag = false
       this.editLaunchCrowdId = id
       this.editStatus = code
-
     },
     // 通过SQL创建
     addOrEditBySql(id, code) {

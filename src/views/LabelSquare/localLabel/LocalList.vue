@@ -60,25 +60,14 @@
                         <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
                     <!--</template>-->
                 </el-table-column>
-                <!-- <el-table-column
+                <el-table-column
                         label="状态"
                 >
-                    <template slot-scope="scope">
-                        <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
-                            计算完成
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                        >
-                            <el-button type="text" @click="calculate(scope.row)">计算</el-button>
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
-                            计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
-                        </div>
-                        <div v-else>
-                            {{(launchStatusEnum[scope.row.history.status]).name}}
-                        </div>
+                    <template #default="scope">
+                        <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
+                        <el-tag v-else type="info">已下架</el-tag>
                     </template>
-                </el-table-column> -->
+                </el-table-column>
                 <el-table-column
                         v-if="(checkList.indexOf('creatorName') > -1)"
                         label="创建人"
@@ -138,8 +127,8 @@
                                     type="text"
                                     @click="onOrOffLocalCrowd(scope.row)"
                             >
-                                {{ scope.row.launchTempCrowdStatus }}
-                                {{ scope.row.launchTempCrowdStatus ? '下架' : '上架'}}
+                                <!-- {{ scope.row.launchTempCrowdStatus }} -->
+                                {{ scope.row.onOffCrowd ? '下架' : '上架' }}
                             </el-button>
                             <el-button
                                     type="text"
@@ -307,40 +296,31 @@
             },
             // 删除
             del(row) {
-                const crowdName = row.launchName
+                // const crowdName = row.launchName
                 const launchCrowdId = row.launchCrowdId
-                this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                .then(() => {
+                // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
+                //     confirmButtonText: "确定",
+                //     cancelButtonText: "取消",
+                //     type: "warning"
+                // })
+                // .then(() => {
                     this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
                         this.fetchData()
                     })
-                })
-                .catch(() => {
-                })
+                // })
+                // .catch(() => {
+                // })
             },
             // 下架
             onOrOffLocalCrowd(row) {
-                const crowdName = row.launchName
                 const localCrowdId = row.launchCrowdId
                 const params = {
-                    launchTempCrowdStatus: !row.launchTempCrowdStatus,
+                    onOffCrowd: !row.onOffCrowd,
                     localCrowdId
                 }
-                this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要下架吗?`, "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                .then(() => {
-                    this.$service.OnOrOffLocalCrowd(params, "上/下架成功").then(() => {
-                        this.fetchData()
-                    })
-                })
-                .catch(() => {
+                const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
+                this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
+                    this.fetchData()
                 })
             },
             // 编辑

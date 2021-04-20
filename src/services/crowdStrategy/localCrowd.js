@@ -20,8 +20,9 @@ export function addLocalCrowd(data) {
 export function updateLocalCrowd(data) {
     return this.fetch({
         method: 'put',
-        url: 'api/tempCrowd/localCrowd',
-        data
+        url: `api/tempCrowd/localCrowd/${data.id}`,
+        // url: `api/tempCrowd/localCrowd`,
+        data: data.formData
     })
 }
 // 本地人群下架

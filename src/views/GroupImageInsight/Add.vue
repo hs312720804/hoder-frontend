@@ -50,6 +50,14 @@ export default {
     isUpload: {
       type: Boolean,
       default: true
+    },
+    localCrowdId: {
+      type: Number,
+      default: undefined
+    },
+    crowdName: {
+      type: String,
+      default: undefined
     }
   },
   watch: {
@@ -131,6 +139,12 @@ export default {
           return false
         }
       })
+    }
+  },
+  created() {
+    if (this.localCrowdId != null && this.crowdName != undefined) {
+      // 编辑状态
+      this.slotData.name = this.crowdName
     }
   }
 }

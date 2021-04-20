@@ -379,7 +379,7 @@
             :key="item.tagName"
             @click.native="handleAddRule(item)"
             :type="dataSourceColorEnum[item.dataSource]"
-            >{{ item.tagName }}123
+            >{{ item.tagName }}
           </el-tag>
         </div>
       </div>
