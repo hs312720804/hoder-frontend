@@ -132,7 +132,7 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" @click="submitForm('crowdForm',false)">存稿不投放</el-button>
+                <el-button type="warning" v-if="!policyId" @click="submitForm('crowdForm',false)">存稿不投放</el-button>
                 <el-button type="primary" @click="submitForm('crowdForm',true)">投放</el-button>
             </el-form-item>
         </el-form>

@@ -95,6 +95,15 @@
                 }
             }
         },
+        beforeRouteEnter (to, from, next) {
+            next(vm => {
+                if (from.name === 'strategyList') {
+                    vm.activeStep = 0;
+                    next();
+                }
+                next();
+            })
+        },
         methods: {
             handleNextStep(step,recordId) {
                 this.activeStep = step + 1
