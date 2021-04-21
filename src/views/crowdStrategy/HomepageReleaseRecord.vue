@@ -42,7 +42,7 @@
                 <a :href="downloadUrl" download ref="download_Url"></a>
                 <el-button type="primary" @click="handleExport">导出数据</el-button>
             </div>
-            <div class="funnel-item" v-if="funnelData.length > 0" v-for="(item,index) in funnelData" :key="index">
+            <div class="funnel-item" v-for="(item,index) in funnelData" :key="index">
                 <div class="item-title">{{item.name}}</div>
                 <div class="item-buf">
                     <div v-if="loadColor" :style="{width: (index < 6 ? (100-index*15) : 40) + '%',background: '#' + generateMixed(),margin: 'auto'}">

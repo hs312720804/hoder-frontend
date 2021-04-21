@@ -11,7 +11,8 @@
                 <input style="display: none" @change="handleSelectFile" type="file" ref="upload"></input>
                 <el-button @click="handleUploadFile">上传</el-button>
                 <span>【请上传只包含mac地址的单列文件】</span>
-                <div v-if="form.originFileName">{{form.originFileName}} 上传成功</div>
+                <div v-if="form.originFileName">{{ form.originFileName }} 上传成功</div>
+                <div v-if="selectedFile !== ''">{{ selectedFile.name }} 上传成功</div>
                 <div class="error-tips">{{ message }}</div>
             </el-form-item>
             <el-form-item>
