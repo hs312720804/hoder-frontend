@@ -35,6 +35,9 @@ export default {
             type: [Number, String],
             default: 1
         },
+        policyId: {
+            type: [String, Number]
+        },
         outputData: {
             type: [Array, Object, String]
         }
@@ -114,6 +117,7 @@ export default {
                             this.specialTags = data.filter(item => {
                                 return item.dataSource === 6
                             })
+                            console.log(this.outputData);
                             this.setInputValue(this.outputData)
                         })
                     }

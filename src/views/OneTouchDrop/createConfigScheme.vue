@@ -31,6 +31,7 @@
             :recordId="recordId"
             :show="outConditionStatus"
             :outputData="outputData"
+            :policyId="policyId"
             @saveOutputCondition="saveOutputCondition">
         </out-condition>
         <!--放大缩小操作-->
@@ -109,6 +110,7 @@ export default {
             data.inputCondition = data.inputCondition ? JSON.parse(data.inputCondition) : []
             data.smartStrategies && data.smartStrategies.forEach(item => {
                 item.mapGrid = JSON.parse(item.mapGrid);
+                item.outCondition = item.outCondition ? JSON.parse(item.outCondition) : '';
                 if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
                     item.smartStrategyNodes.forEach(v => {
                         v.mapGrid = JSON.parse(v.mapGrid);
@@ -396,6 +398,8 @@ export default {
         // 出口规则配置
         addGroupOutCondition (node) {
             this.groupId = node.id;
+            let result = this.findNodesById(null, node.id);
+            this.outputData = result.outCondition ? result.outCondition : []
             this.outConditionStatus.is = true;
         },
         saveOutputCondition (data) {
