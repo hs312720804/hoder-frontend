@@ -58,6 +58,7 @@ import entryConfig from './graph/entryConfig'
 import outCondition from './graph/outCondition'
 import graphMixin from './graph/graphMixin'
 import { mapGetters } from 'vuex'
+import { cloneDeep } from 'lodash'
 export default {
     props: ['recordId'],
     name: "CreateConfigScheme",
@@ -110,7 +111,7 @@ export default {
             data.inputCondition = data.inputCondition ? JSON.parse(data.inputCondition) : []
             data.smartStrategies && data.smartStrategies.forEach(item => {
                 item.mapGrid = JSON.parse(item.mapGrid);
-                item.outCondition = item.outCondition ? JSON.parse(item.outCondition) : '';
+                item.outCondition = item.outCondition ? JSON.parse(item.outCondition) : [];
                 if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
                     item.smartStrategyNodes.forEach(v => {
                         v.mapGrid = JSON.parse(v.mapGrid);
@@ -294,6 +295,7 @@ export default {
             // 将节点数组mapGuid存储为JSON字符串
             this.schemeData.forEach(item => {
                 item.mapGrid = JSON.stringify(item.mapGrid);
+                item.outCondition = JSON.stringify(item.outCondition);
                 if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
                     item.smartStrategyNodes.forEach(v => {
                         v.mapGrid = JSON.stringify(v.mapGrid);
@@ -399,14 +401,14 @@ export default {
         addGroupOutCondition (node) {
             this.groupId = node.id;
             let result = this.findNodesById(null, node.id);
-            this.outputData = result.outCondition ? result.outCondition : []
+            this.outputData = result.outCondition.length > 0 ? result.outCondition : []
             this.outConditionStatus.is = true;
         },
         saveOutputCondition (data) {
             let result = this.findNodesById(null, this.groupId)
             this.outputData = data;
+            result.outCondition = cloneDeep(data);
             this.outConditionStatus.is = false;
-            result.outCondition = JSON.stringify(data);
         }
     }
 }

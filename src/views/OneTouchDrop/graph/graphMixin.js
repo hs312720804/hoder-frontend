@@ -312,7 +312,6 @@ export default {
             });
             // 点击节点
             this.graph.on('node:click', ({e, x, y, node, view}) => {
-                console.log(node);
                 let newNode = this.findNodesById(node.getParentId(), node.id);
                 let identify = newNode.mapGrid.identify;
                 if (identify === 'start') {

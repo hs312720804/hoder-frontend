@@ -104,6 +104,7 @@ export default {
             handler (val) {
                 if (val.is) {
                     // 新增
+                    this.inputValue = []
                     if (!this.policyId) {
                         this.$service.tagInfoNew(this.recordId).then(data => {
                             this.specialTags = data.filter(item => {

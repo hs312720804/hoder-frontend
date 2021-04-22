@@ -272,7 +272,7 @@
                                 return item.dataSource === 6
                             });
                             if (!result.length) {
-                                this.$message.error('智能分人群需携带动态因子纬度标签！')
+                                this.$message.error('创建智能人群策略，需要选择动态指标！')
                                 return;
                             }
                         }
