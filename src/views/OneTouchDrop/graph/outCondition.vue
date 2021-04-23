@@ -50,6 +50,37 @@ export default {
     },
     methods: {
         saveEntryData () {
+            const dynamicPolicyJson = JSON.parse(JSON.stringify(this.inputValue[0].dynamicPolicyJson))
+            const dynamicPolicyRules = dynamicPolicyJson.rules
+            const dynamicPolicyRulesLength = dynamicPolicyRules.length
+            let i, j = 0;
+            // 如果设置标签和动态因子都没有选rules则报错
+            if (dynamicPolicyRulesLength === 0) {
+                this.$message.error('请至少填写一个动态因子完整的内容！')
+                return
+            }
+            //判断动态因子里面是否有未填的
+            let dynamicPolicyFlag = true
+            for (i = 0; i < dynamicPolicyRulesLength; i++) {
+                for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
+                    let rulesItem = dynamicPolicyRules[i].rules[j]
+                    if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
+                        this.$message.error(
+                                '请正确填写第' +
+                                (i + 1) +
+                                '动态因子里面的第' +
+                                (j + 1) +
+                                '行的值！'
+                        )
+                        dynamicPolicyFlag = false
+                        break
+                    }
+                    if (!dynamicPolicyFlag) break
+                }
+                if (!dynamicPolicyFlag) break
+            }
+            if (!dynamicPolicyFlag) return
+            
             this.$emit('saveOutputCondition', this.inputValue)
         },
         getRecordId () {
@@ -65,27 +96,27 @@ export default {
                         return
                     }
                     this.inputValue.push(
-                            {
-                                'recordId': this.getRecordId(),
-                                'tempCrowdId': undefined,
-                                'crowdName': undefined,
-                                'tagIds': [],
-                                'purpose': undefined,
-                                'remark': undefined,
-                                'crowdOrder': length + 1,
-                                'rulesJson': {
-                                    condition: 'OR',
-                                    rules: []
-                                },
-                                'dynamicPolicyJson': {
-                                    link: 'AND',
-                                    condition: 'AND',
-                                    rules: []
-                                },
-                                'limitLaunch': false,
-                                'limitLaunchCount': undefined,
-                                total0: undefined
-                            }
+                        {
+                            'recordId': this.getRecordId(),
+                            'tempCrowdId': undefined,
+                            'crowdName': undefined,
+                            'tagIds': [],
+                            'purpose': undefined,
+                            'remark': undefined,
+                            'crowdOrder': length + 1,
+                            'rulesJson': {
+                                condition: 'OR',
+                                rules: []
+                            },
+                            'dynamicPolicyJson': {
+                                link: 'AND',
+                                condition: 'AND',
+                                rules: []
+                            },
+                            'limitLaunch': false,
+                            'limitLaunchCount': undefined,
+                            total0: undefined
+                        }
                     )
                     this.setSeq()
                 }

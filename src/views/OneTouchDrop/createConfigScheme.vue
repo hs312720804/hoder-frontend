@@ -332,6 +332,8 @@ export default {
                             this.$emit('handleToNextStep', 1, null, obj);
                         })
                     }
+                }).catch(() => {
+                    this.handleParseData(this.schemeConfig)
                 })
             } else {
                 let data = {
@@ -353,6 +355,8 @@ export default {
                             this.$emit('handleToNextStep', 1, null, obj);
                         })
                     }
+                }).catch(() => {
+                    this.handleParseData(this.schemeConfig)
                 })
             }
         },

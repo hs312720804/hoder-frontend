@@ -42,15 +42,18 @@ const configScheme = {
         },
         // 根据policyId判断是编辑还是创建
         saveSmartProgramme ({commit, state}, params) {
-            console.log(params);
-            return new Promise(resolve => {
+            return new Promise((resolve, reject) => {
                 if (state.policyId) {
                     API.smartProframPolicyUpdate(params, '编辑成功').then(rs => {
                         resolve(rs)
+                    }).catch(err => {
+                        reject(err)
                     })
                 } else {
                     API.smartProgramme(params, '保存成功').then(rs => {
                         resolve(rs)
+                    }).catch(err => {
+                        reject(err)
                     })
                 }
             })
