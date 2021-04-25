@@ -1,6 +1,7 @@
 import { Graph, Shape } from '@antv/x6'
 import FlowGraph from './index'
 import nodeConfig from './node'
+import { cloneDeep } from 'lodash'
 export default {
     methods: {
         initGraph () {
@@ -195,7 +196,7 @@ export default {
                                     port: 'bottom'
                                 },
                                 target: {
-                                    cell: item.mapGrid.target,
+                                    cell: item.mapGrid.target || '',
                                     port: 'top'
                                 },
                                 attrs: {
@@ -312,7 +313,6 @@ export default {
             });
             // 点击节点
             this.graph.on('node:click', ({e, x, y, node, view}) => {
-                console.log(node);
                 let newNode = this.findNodesById(node.getParentId(), node.id);
                 let identify = newNode.mapGrid.identify;
                 if (identify === 'start') {
@@ -425,11 +425,11 @@ export default {
         },
         // 编辑数据保存
         handleEditSave () {
-            this.handleSaveData();
+            let schemeConfig = this.handleSaveData(cloneDeep(this.schemeConfig));
             return new Promise(resolve => {
                 this.$service.smartProframPolicyUpdate({
-                    data: this.schemeConfig,
-                    params: { programmeId: this.schemeConfig.programmeId }
+                    data: schemeConfig,
+                    params: { programmeId: schemeConfig.programmeId }
                 }, '编辑成功').then(rs => {
                     resolve(rs)
                 })
