@@ -291,9 +291,10 @@ export default {
             this.$emit('crowdPrevStep', 1, this.recordId);
         },
         // 处理保存数据
-        handleSaveData () {
+        handleSaveData (config) {
+            let schemeData = cloneDeep(this.schemeData)
             // 将节点数组mapGuid存储为JSON字符串
-            this.schemeData.forEach(item => {
+            schemeData.forEach(item => {
                 item.mapGrid = JSON.stringify(item.mapGrid);
                 item.outCondition = JSON.stringify(item.outCondition);
                 if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
@@ -303,17 +304,18 @@ export default {
                     })
                 }
             });
-            this.schemeConfig.smartStrategies = this.schemeData;
+            config.smartStrategies = schemeData;
+            return config;
         },
         // 跳过直接保存
         handleSave (idx) {
-            this.handleSaveData();
+            let schemeConfig = this.handleSaveData(this.schemeConfig);
             if (!this.policyId) {
                 this.schemeConfig.recordId = this.recordId;
                 // 如果还没有创建策略流程图 则走创建逻辑
                 let data = {
                     recordId: this.recordId,
-                    data: this.schemeConfig
+                    data: schemeConfig
                 }
                 this.$store.dispatch('saveSmartProgramme', data).then(rs => {
                     if (idx === 0) {
@@ -332,13 +334,11 @@ export default {
                             this.$emit('handleToNextStep', 1, null, obj);
                         })
                     }
-                }).catch(() => {
-                    this.handleParseData(this.schemeConfig)
                 })
             } else {
                 let data = {
-                    data: this.schemeConfig,
-                    params: { programmeId: this.schemeConfig.programmeId }
+                    data: schemeConfig,
+                    params: { programmeId: schemeConfig.programmeId }
                 }
                 this.$store.dispatch('saveSmartProgramme', data).then(() => {
                     if (idx === 0) {
@@ -355,8 +355,6 @@ export default {
                             this.$emit('handleToNextStep', 1, null, obj);
                         })
                     }
-                }).catch(() => {
-                    this.handleParseData(this.schemeConfig)
                 })
             }
         },
