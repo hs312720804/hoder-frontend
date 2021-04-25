@@ -248,14 +248,14 @@
                 }
                 this.$service.getLocalCrowdList(filter).then(data => {
                     // this.launchStatusEnum = data.launchStatusEnum
-                    this.tableData = data.list
-                    this.totalCount = data.total
+                    this.tableData = data.pageInfo.list
+                    this.totalCount = data.pageInfo.total
                     if (this.showSelection) {
                         this.updateTableSelected()
                     }
-                    // this.tableData.forEach(item => {
-                    //     item.dataSource = 1
-                    // })
+                    this.tableData.forEach(item => {
+                        item.dataSource = 1
+                    })
                 })
             },
             // handleCommandOpreate(scope) {

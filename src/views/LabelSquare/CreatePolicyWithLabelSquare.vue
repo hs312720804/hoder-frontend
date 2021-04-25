@@ -5,7 +5,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-          <el-tab-pane label="临时人群" name="tempLabel">
+          <el-tab-pane label="临时人群/标签" name="tempLabel">
             <temp-label-index
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
@@ -53,6 +53,17 @@
                 >
                 </special-tag>
             </el-tab-pane>
+            <el-tab-pane label="本地人群/标签" name="localLabel">
+                <local-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        @fetch-checkList="fetchTempCheckListData"
+                >
+                </local-label-index>
+            </el-tab-pane>
         </el-tabs>
     </div>
     <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
@@ -83,11 +94,11 @@
       </el-form-item>
       <div class="tags-tips">
         注：<span class="checkbox--red">红色</span>为大数据标签,
-        <span class="checkbox--green">绿色</span>为自定义标签,
+        <span class="checkbox--green">绿色</span>为自定义/本地标签,
         <span class="checkbox--blue">蓝色</span>为账号标签,
         <span class="checkbox--yellow">黄色</span>为实时标签,
-        <span class="checkbox--orange">紫色</span>为特定标签,
-        <span class="checkbox--orange2">棕色</span>为特色标签
+        <span class="checkbox--orange">紫色</span>为动态指标,
+        <span class="checkbox--orange2">棕色</span>为组合标签
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -105,14 +116,15 @@
     import labelZone from './LabelZone'
     import myCollect from './MyCollect'
     import tempLabelIndex from './tempLabel/TempLabelIndex'
+    import LocalLabelIndex from './localLabel/Index'
     import specialTag from './SpecialTag'
-    import { cloneDeep } from 'lodash'
     export default {
         name: "labelSquareAA",
         components: {
             labelZone,
             myCollect,
             tempLabelIndex,
+            LocalLabelIndex,
             specialTag
         },
         props: ['recordId','initTagList'],
@@ -211,6 +223,10 @@
                     case 'tempLabel':
                         this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh')
+                        break
+                    case 'localLabel':
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('local-label-list-refresh')
                         break
                 }
             },

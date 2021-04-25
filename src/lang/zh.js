@@ -21,7 +21,7 @@ export default {
   strategyName: '策略名称',
   strategyDemension: '策略维度',
   bigDataTagWithRed: '红色为大数据标签',
-  definedTagWithGreen: '绿色为自定义标签',
+  definedTagWithGreen: '绿色为自定义/本地标签',
   accountTagWithBlue: '蓝色为账号标签',
   specialTagWithPurple: '紫色为特定标签',
   createTime: '创建时间',

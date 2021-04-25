@@ -5,7 +5,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-          <el-tab-pane label="临时人群" name="tempLabel">
+          <el-tab-pane label="临时人群/标签" name="tempLabel">
             <temp-label-index
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
@@ -70,11 +70,11 @@
       </el-form-item>
       <div class="tags-tips">
         注：<span class="checkbox--red">红色</span>为大数据标签,
-        <span class="checkbox--green">绿色</span>为自定义标签,
+        <span class="checkbox--green">绿色</span>为自定义/本地标签,
         <span class="checkbox--blue">蓝色</span>为账号标签,
         <span class="checkbox--yellow">黄色</span>为实时标签,
-        <span class="checkbox--orange">紫色</span>为特定标签,
-        <span class="checkbox--orange2">棕色</span>为特色标签
+        <span class="checkbox--orange">紫色</span>为动态指标,
+        <span class="checkbox--orange2">棕色</span>为组合标签
       </div>
       <!-- <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
