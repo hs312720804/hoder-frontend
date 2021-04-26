@@ -153,7 +153,7 @@ export default {
                                             id: v.mapGrid.id,
                                             x: v.mapGrid.x,
                                             y: v.mapGrid.y,
-                                            label: v.strategyNodeName,
+                                            label: `${v.strategyNodeName} ID:${v.strategyNodeId}`,
                                             parent: item.mapGrid.id
                                         }));
                                         if (v.mapGrid.target) {
