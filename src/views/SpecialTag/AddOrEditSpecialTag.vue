@@ -139,7 +139,7 @@ export default {
   inject: ['sTagIndex'],
   watch: {
     initTagList: {
-      handler: function(val, oldVal) {
+      handler: function(val) {
         // debugger
         this.tagList = val
       },
@@ -317,7 +317,6 @@ export default {
       //     }
       // })
 
-      console.log('123=======', this.$route.query.specialTagId)
       this.$service
         .specialTagDetail({ specialTagId: this.$route.query.specialTagId })
         .then(data => {
