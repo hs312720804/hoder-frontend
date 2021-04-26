@@ -93,11 +93,11 @@
         >
           策略纬度（
           <span class="checkbox--red">红色</span>为大数据标签,
-          <span class="checkbox--green">绿色</span>为自定义标签,
+          <span class="checkbox--green">绿色</span>为自定义/本地标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
           <span class="checkbox--yellow">黄色</span>为实时标签,
-          <span class="checkbox--orange">紫色</span>为特定标签,
-          <span class="checkbox--orange2">棕色</span>为特色标签）
+          <span class="checkbox--orange">紫色</span>为动态指标,
+          <span class="checkbox--orange2">棕色</span>为组合标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -253,7 +253,7 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义标签,蓝色为账号标签,黄色为实时标签,紫色为特定标签</div>
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签</div>
         <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
