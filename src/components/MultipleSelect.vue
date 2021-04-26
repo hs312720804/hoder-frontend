@@ -856,7 +856,8 @@ export default {
     },
     fetchTagSuggestions(tagId) {
       this.$service
-        .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
+        // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
+        .getTagAttr({ tagId: tagId, pageNum: 1 })
         .then(data => {
           this.$set(this.cache, tagId, {
             select: data.select,

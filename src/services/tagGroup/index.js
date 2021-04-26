@@ -189,3 +189,12 @@ export function tempCrowdList(params) {
         params
     })
 }
+
+// 创建、编辑特色标签第一步保存
+export function saveSpecialTag(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/specialTag/tagList`,
+        params
+    })
+}

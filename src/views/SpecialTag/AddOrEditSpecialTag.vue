@@ -297,9 +297,12 @@ export default {
         return
       }
       addForm.conditionTagIds = addForm.conditionTagIds.join(',')
-      console.log('tagList====', this.tagList)
-      // eslint-disable-next-line
-      this.$emit('policyNextStep', this.tagList)
+      // this.$emit('policyNextStep', this.tagList)
+
+      const tagIds = addForm.conditionTagIds
+      this.$service.saveSpecialTag({tagIds}).then((data) => {
+        this.$emit('policyNextStep', data)
+      })
     },
     getPolicyDetail() {
       // this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
