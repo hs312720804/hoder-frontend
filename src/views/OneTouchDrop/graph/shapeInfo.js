@@ -100,62 +100,62 @@ Graph.registerNode('flow-chart-rect', {
             strokeWidth: 1,
             fill: 'rgba(95,149,255,0.05)'
         },
-        fo: {
-            refWidth: '100%',
-            refHeight: '100%'
-        },
-        foBody: {
-            xmlns: Dom.ns.xhtml,
-            style: {
-                width: '100%',
-                height: '100%',
-                display: 'flex',
-                justifyContent: 'center',
-                alignItems: 'center'
-            }
-        },
-        'edit-text': {
-            contenteditable: 'false',
-            class: 'x6-edit-text',
-            style: {
-                width: '100%',
-                textAlign: 'center',
-                fontSize: 12,
-                color: 'rgba(0,0,0,0.85)'
-            }
-        },
+        // fo: {
+        //     refWidth: '100%',
+        //     refHeight: '100%'
+        // },
+        // foBody: {
+        //     xmlns: Dom.ns.xhtml,
+        //     style: {
+        //         width: '100%',
+        //         height: '100%',
+        //         display: 'flex',
+        //         justifyContent: 'center',
+        //         alignItems: 'center'
+        //     }
+        // },
+        // 'edit-text': {
+        //     contenteditable: 'false',
+        //     class: 'x6-edit-text',
+        //     style: {
+        //         width: '100%',
+        //         textAlign: 'center',
+        //         fontSize: 12,
+        //         color: 'rgba(0,0,0,0.85)'
+        //     }
+        // },
         text: {
             fontSize: 12,
             fill: '#FFFFFF'
         }
     },
-    markup: [
-        {
-            tagName: 'rect',
-            selector: 'body'
-        },
-        {
-            tagName: 'text',
-            selector: 'text'
-        },
-        {
-            tagName: 'foreignObject',
-            selector: 'fo',
-            children: [
-                {
-                    ns: Dom.ns.xhtml,
-                    tagName: 'body',
-                    selector: 'foBody',
-                    children: [
-                        {
-                            tagName: 'div',
-                            selector: 'edit-text'
-                        }
-                    ]
-                }
-            ]
-        }
-    ],
+    // markup: [
+    //     {
+    //         tagName: 'rect',
+    //         selector: 'body'
+    //     },
+    //     {
+    //         tagName: 'text',
+    //         selector: 'text'
+    //     },
+    //     {
+    //         tagName: 'foreignObject',
+    //         selector: 'fo',
+    //         children: [
+    //             {
+    //                 ns: Dom.ns.xhtml,
+    //                 tagName: 'body',
+    //                 selector: 'foBody',
+    //                 children: [
+    //                     {
+    //                         tagName: 'div',
+    //                         selector: 'edit-text'
+    //                     }
+    //                 ]
+    //             }
+    //         ]
+    //     }
+    // ],
     ports: {
         groups: {
             top: {

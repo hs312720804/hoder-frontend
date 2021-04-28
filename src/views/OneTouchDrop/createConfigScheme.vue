@@ -177,6 +177,7 @@ export default {
         },
         addGroupNode (node) {
             let groupNameColl = this.findGroupName(this.schemeData);
+            let pos = node.position();
             this.groupIdx = this.getMaxNum(groupNameColl.toString());
             this.currentNode = {
                 strategyName: `策略${this.groupIdx}`,
@@ -185,8 +186,8 @@ export default {
                 outCondition: '',
                 remark: '',
                 mapGrid: {
-                    x: node.store.data.position.x, // 节点x坐标
-                    y: node.store.data.position.y, // 节点y坐标
+                    x: pos.x, // 节点x坐标
+                    y: pos.y, // 节点y坐标
                     source: '', // 节点边原对象
                     target: '', // 节点边目标对象
                     id: node.id,
@@ -199,6 +200,7 @@ export default {
                     text: `策略${this.groupIdx}`
                 }
             });
+            node.setTools(this.setTools())
             this.schemeData.push(this.currentNode);
             node.size({width: 250, height: 180});
         },
@@ -214,14 +216,15 @@ export default {
                     return false;
                 }
                 let crowdNameColl = this.findGroupCrowdName(this.schemeData)
+                let pos = node.position();
                 this.peopleIdx = this.getMaxNum(crowdNameColl.toString(), 'child');
                 this.currentNode = {
                     nodeCondition: {}, // 存储人群用户信息
                     strategyNodeName: `人群${this.peopleIdx}`,
                     strategyNodeIndex: 0,
                     mapGrid: {
-                        x: node.store.data.position.x, // 节点x坐标
-                        y: node.store.data.position.y, // 节点y坐标
+                        x: pos.x, // 节点x坐标
+                        y: pos.y, // 节点y坐标
                         source: '', // 节点边原对象
                         target: '', // 节点边目标对象
                         id: node.id, // 人群id
@@ -411,6 +414,47 @@ export default {
             this.outputData = data;
             result.outCondition = cloneDeep(data);
             this.outConditionStatus.is = false;
+        },
+        // 设置出口规则节点
+        setTools () {
+            let _this = this;
+            return [{
+                name: 'button',
+                args: {
+                    markup: [
+                        {
+                            tagName: 'circle',
+                            selector: 'button',
+                            attrs: {
+                                r: 14,
+                                stroke: 'green',
+                                strokeWidth: 2,
+                                fill: 'green',
+                                cursor: 'pointer',
+                            },
+                        },
+                        {
+                            tagName: 'text',
+                            textContent: '出口',
+                            selector: 'icon',
+                            attrs: {
+                                fill: '#ffffff',
+                                fontSize: 10,
+                                textAnchor: 'middle',
+                                pointerEvents: 'none',
+                                y: '0.3em',
+                            },
+                        },
+                    ],
+                    x: '50%',
+                    y: '100%',
+                    offset: { x: 0, y: -20 },
+                    onClick({ cell }) {
+                        // 添加出口规则
+                        _this.addGroupOutCondition(cell)
+                    }
+                },
+            }]
         }
     }
 }

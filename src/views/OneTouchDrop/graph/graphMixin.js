@@ -145,7 +145,8 @@ export default {
                                     width: item.mapGrid.w,
                                     height: item.mapGrid.h,
                                     label: item.strategyName,
-                                    children: this.findChildId(item.smartStrategyNodes)
+                                    children: this.findChildId(item.smartStrategyNodes),
+                                    tools: _this.setTools()
                                 }));
                                 if (item.smartStrategyNodes && item.smartStrategyNodes.length > 0) {
                                     item.smartStrategyNodes.forEach(v => {
@@ -153,8 +154,8 @@ export default {
                                             id: v.mapGrid.id,
                                             x: v.mapGrid.x,
                                             y: v.mapGrid.y,
-                                            label: `${v.strategyNodeName} ID:${v.strategyNodeId}`,
-                                            parent: item.mapGrid.id
+                                            parent: item.mapGrid.id,
+                                            text: `${v.strategyNodeName} `
                                         }));
                                         if (v.mapGrid.target) {
                                             edges.push({
@@ -328,8 +329,12 @@ export default {
                             frequency: peopleObj.nodeCondition.times.val,
                             time: peopleObj.nodeCondition.time
                         }
+                        if (this.policyId) {
+                            this.editPeopleInfo.id = peopleObj.strategyNodeId
+                        }
                     } else {
                         this.editPeopleInfo = {};
+                        this.editPeopleInfo.id = null;
                     }
                     this.peopleDialogStatus.is = true;
                 }
@@ -345,7 +350,8 @@ export default {
                             y: 0,
                             offset: { x: -10, y: 10 },
                             onClick({view}) {
-                                let id = view.cell.id;
+                                // let id = view.cell.id;
+                                newNode.delFlag = 2; // 将删除的节点设置为2
                                 // 删除时处理下连线索引规则
                                 _this.setNodeIdx(newNode.mapGrid.identify, newNode, true);
                                 if (newNode.mapGrid.identify === 'schemeGroup') {
@@ -355,16 +361,18 @@ export default {
                                             item.mapGrid.target = '';
                                         }
                                     });
-                                    _this.schemeData = _this.schemeData.filter(item => {
-                                        return item.mapGrid.id !== id;
-                                    });
+                                    // _this.schemeData = _this.schemeData.filter(item => {
+                                    //     return item.mapGrid.id !== id;
+                                    // });
                                     view.cell.remove();
                                 } else if (newNode.mapGrid.identify === 'crowd') {
                                     let parentId = node.getParentId();
                                     _this.schemeData.forEach(item => {
                                         if (item.mapGrid.id === parentId) {
-                                            item.smartStrategyNodes = item.smartStrategyNodes.filter(v => {
-                                                return v.mapGrid.id !== id;
+                                            item.smartStrategyNodes.forEach(v => {
+                                                if (v.mapGrid.id === newNode.mapGrid.prevSourceId) {
+                                                    v.mapGrid.target = '';
+                                                }
                                             })
                                         }
                                     });
@@ -374,53 +382,18 @@ export default {
                         }
                     })
                 }
-                if (newNode.mapGrid.identify === 'schemeGroup') {
-                    node.addTools({
-                        name: 'button',
-                        args: {
-                            markup: [
-                                {
-                                    tagName: 'circle',
-                                    selector: 'button',
-                                    attrs: {
-                                        r: 14,
-                                        stroke: 'green',
-                                        strokeWidth: 2,
-                                        fill: 'green',
-                                        cursor: 'pointer',
-                                    },
-                                },
-                                {
-                                    tagName: 'text',
-                                    textContent: '出口',
-                                    selector: 'icon',
-                                    attrs: {
-                                        fill: '#ffffff',
-                                        fontSize: 10,
-                                        textAnchor: 'middle',
-                                        pointerEvents: 'none',
-                                        y: '0.3em',
-                                    },
-                                },
-                            ],
-                            x: '50%',
-                            y: '100%',
-                            offset: { x: 0, y: -20 },
-                            onClick({ cell }) {
-                                // 添加出口规则
-                                _this.addGroupOutCondition(cell)
-                            }
-                        },
-                    })
-                }
             });
             this.graph.on('node:mouseleave', ({ node }) => {
                 node.removeTool('button-remove')
             });
             this.graph.on('node:change:size', ({ cell, node }) => {
                 let result = this.findNodesById(node.getParent(), node.id);
-                result.mapGrid.w = node.store.data.size.width;
-                result.mapGrid.h = node.store.data.size.height;
+                let nodeSize = node.size();
+                let pos = node.position();
+                result.mapGrid.w = nodeSize.width;
+                result.mapGrid.h = nodeSize.height;
+                result.mapGrid.x = pos.x;
+                result.mapGrid.y = pos.y;
             })
         },
         // 编辑数据保存

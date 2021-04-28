@@ -29,6 +29,21 @@ export default {
                     stroke: '#1790ff',
                     rx: 35,
                     ry: 35
+                },
+                label: {
+                    refX: 0.5,
+                    refY: '20%',
+                    refY2: 4,
+                    textAnchor: 'middle',
+                    textVerticalAnchor: 'top'
+                },
+                text: {
+                    textWrap: {
+                        width: '100%',
+                        height: '120%',
+                        text: options.text,
+                        ellipsis: true
+                    }
                 }
             }
         };
