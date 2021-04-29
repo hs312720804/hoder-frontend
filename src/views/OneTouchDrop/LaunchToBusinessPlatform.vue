@@ -267,11 +267,25 @@
                                 biIds: crowdForm.biIdsPull,
                                 policyIds: [this.policyId]
                             }
-                            this.$service.saveAddCrowdData(data, 'pull投放成功').then(res => {
-                                this.jumpToRouter(launch, this.policyId)
-                            }).catch(e => {
-                                this.$message.error(e)
-                            })
+                            if (launch) {
+                                // 方案创建需要先同步后投放
+                                this.$service.freshCache({policyId: this.policyId}, '同步成功').then(() => {
+                                    setTimeout(() => {
+                                        this.$service.saveAddCrowdData(data, 'pull投放成功').then(res => {
+                                            if (this.routeSource) {
+                                                this.$router.push({
+                                                    name: 'myPolicy',
+                                                    params: { changeTab: 'ToMyLaunch' }
+                                                })
+                                            } else {
+                                                this.$router.push({ path: 'launch/launchTabList' })
+                                            }
+                                            this.$root.$emit('stratege-list-refresh')
+                                            this.$emit('resetFormData')
+                                        })
+                                    }, 300)
+                                })
+                            }
                         } else {
                             this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
                                 // 一键投放成功之后，调'未同步'的接口，手动进行同步
