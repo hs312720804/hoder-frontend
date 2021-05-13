@@ -17,19 +17,30 @@
               <el-input v-model="crowd.crowdName" placeholder="投放名称"></el-input>
             </el-form-item>
             <div style="position: relative">
-            <el-form-item label="设置标签" required>
-              <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
-            </el-form-item>
 
-            <div class="outer-and" v-if="specialTags.length > 0">
+            <div v-if="tags.length > 0">
+              <el-form-item label="设置标签" required>
+                <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
+              </el-form-item>
+            </div>
+
+            <div class="outer-and" v-if="actionTags.length > 0 || specialTags.length > 0">
               <el-button
                       type="danger"
                       v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
                       @click="handleConditionChange(crowd)"
                       round
                       :key="i+'condition'"
-              >{{crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且'}}</el-button>
+              >{{ (crowd.actionRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+            
+            <!-- {{ (crowd.actionRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+            123
+            {{ crowd.dynamicPolicyJson.link }} -->
             </div>
+
+            <el-form-item label="行为标签" v-if="actionTags.length > 0">
+              <MultipleActionTagSelect :actionTags="actionTags" :actionRulesJson="crowd.actionRulesJson" :crowd="crowd" :i="i"></MultipleActionTagSelect>
+            </el-form-item>
 
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <MultipleSelect :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MultipleSelect>
@@ -72,10 +83,12 @@
 
 <script>
 import MultipleSelect from './MultipleSelect.vue'
+import MultipleActionTagSelect from './MultipleActionTagSelect.vue'
 // import MUserAction from './MUserAction.vue'
 export default {
   components: {
-    MultipleSelect
+    MultipleSelect,
+    MultipleActionTagSelect
     // MUserAction
   },
   data () {
@@ -88,6 +101,7 @@ export default {
     // }
     return {
       tags: [],
+      actionTags: [],
       specialTags: [],
       cache: {},
       tagSelectMoreShow: false,
@@ -164,6 +178,11 @@ export default {
                           condition: 'OR',
                           rules: []
                       },
+                      'actionRulesJson': {
+                          link: 'AND',
+                          condition: 'OR',
+                          rules: []
+                      },
                       'dynamicPolicyJson': {
                           link: 'AND',
                           condition: 'AND',
@@ -203,6 +222,11 @@ export default {
           'rulesJson': {
             condition: 'OR',
             rules: []
+          },
+          'actionRulesJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
           },
           'dynamicPolicyJson': {
               link: 'AND',
@@ -248,15 +272,19 @@ export default {
             // this.tags = data
             // console.log(data)
             const normalTags = []
+            const actionTags = []
             const specialTags = []
             data.forEach(item => {
-                if (item.dataSource === 6) {
-                    specialTags.push(item)
-                } else {
-                    normalTags.push(item)
+                if (item.dataSource === 6) { // 效果指标
+                  specialTags.push(item)
+                } else if (item.dataSource === 8) {
+                  actionTags.push(item)
+                }else {
+                  normalTags.push(item)
                 }
             })
             this.tags = normalTags
+            this.actionTags = actionTags
             this.specialTags = specialTags
             this.setInputValue(this.value)
         })

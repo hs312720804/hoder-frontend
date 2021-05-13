@@ -38,7 +38,7 @@
               <!-- 行为标签专属日期选项 111111111111111111111111111-->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
                 <span>周期范围</span>
-                <span class="sel">
+                <span class="sel"> 
                   <el-select
                     v-model="periodRangeVal"
                     style="width: 100px"
@@ -70,7 +70,7 @@
                     class="input-inline"
                     @change="handleOperatorChange(childItem)"
                   > 
-                    <template v-for="item in weekRange" >
+                    <template v-for="item in weekRange">
                       <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
                     </template>
                   </el-select>
@@ -101,64 +101,77 @@
                 </span>
 
                 <span class="sel flexColumn">
-                  <!-- {{childItem.categoryCode}}
-                  {{childItem.dataSource}}
-                   -->
+                  <!-- {{childItem.categoryCode}} -->
+                  <!-- {{childItem}} -->
+                    <!-- 第一级 -->
                     <el-select
                       multiple
-                      v-model="childItem.checkedVal"
-                      style="width: 100px"
+                      v-model="childItem.value"
+                      style="width: 120px"
                       name="oxve"
                       class="input-inline"
-                      @change="handleOperatorChange(childItem)"
+                      @change="handelBehavirSelectChange(childItem)"
                     >
                       <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
                         <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
                       </template>
                     </el-select>
-                    <span v-for="(item, index) in getCheckedList(childItem.checkedVal, getBehaviorAttrList(childItem.dataSource))" :key="item.value" class="flexRow">
+                    <span v-for="(item, index) in childItem.behaviorValue" :key="item.value" class="flexRow">
+                      
                       <span class="w100">{{ item.label }}</span>
                       <span class="flexColumn">
-                        {{item.childCheckedVal}}
+                        <!-- 第二级 -->
+                        <!-- {{ item.childCheckedVal }} -->
                         <el-select
                           multiple
                           v-model="item.childCheckedVal"
-                          style="width: 100px"
+                          style="width: 110px;"
                           name="asdq"
                           class="input-inline"
-                          @change="changeSelect($event, index)"
+                          @change="handelChildBehavirSelectChange(item)"
                         >
-                          <template v-for="attrChildItem in item.childBehaviorAttrList">
+                          <template v-for="attrChildItem in getChildBehaviorAttrList()">
                             <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
                           </template>
                         </el-select>
 
-                        <span v-for="item2 in item.childCheckedList" :key="item2.value" class="flexRow">
+                        <span v-for="(item2, index) in item.child" :key="item2.value" class="flexRow">
                           <span class="w100">{{ item2.label }}</span>
-                          <el-select
-                            v-model="childItem.operator"
-                            style="width: 80px"
-                            name="oxve"
-                            class="input-inline"
-                            @change="handleOperatorChange(childItem)"
-                          >
-                            <el-option value="0" label="次数"></el-option>
-                            <el-option value="1" label="天数"></el-option>
-                          </el-select>
-                          <el-select
-                            v-model="childItem.operator"
-                            style="width: 80px"
-                            name="oxve"
-                            class="input-inline"
-                            @change="handleOperatorChange(childItem)"
-                          >
-                            <el-option value="="></el-option>
-                            <el-option value=">="></el-option>
-                            <el-option value="<="></el-option>
-                            <el-option value=">"></el-option>
-                            <el-option value="<"></el-option>
-                          </el-select>
-                          <el-input v-model="childItem.operator"></el-input>
+                          <!-- 第三级 -->
+                          <span v-for="(item3, index2) in item2.child" :key="item3.value" class="flexRow">
+                            <!-- {{ item3 }} -->
+                            <el-select
+                              v-model="item3.type"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                              @change="handleRateTypeChange($event, item3, 'type', item.child, index2)"
+                            >
+                              <el-option value="0" label="次数"></el-option>
+                              <el-option value="1" label="天数"></el-option>
+                            </el-select>
+                            <el-select
+                              v-model="item3.operator"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                              @change="handleRateTypeChange($event, item2, 'operator')"
+                            >
+                              <el-option value="="></el-option>
+                              <el-option value=">="></el-option>
+                              <el-option value="<="></el-option>
+                              <el-option value=">"></el-option>
+                              <el-option value="<"></el-option>
+                            </el-select>
+                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
+                            <el-input
+                              placeholder="请输入"
+                              v-model="item3.value"
+                              clearable
+                              style="max-width: 100px; min-width: 100px;"
+                            >
+                            </el-input>
+                          </span>
                         </span>
                       </span>
                     </span>
@@ -521,6 +534,225 @@
       </div>
     </div>
 
+    <!-- 行为标签 -->
+    <!-- {{ actionTags}} -->
+    <div v-if="actionTags && actionTags.length > 0">
+      <div
+        v-show="actionRulesJson.rules.length > 1"
+        class="label-or-space"
+        :key="i + 'or'"
+      >
+        <el-button
+          type="success"
+          round
+          :key="'button2' + '_' + i"
+          @click="handleRulesConditionChange(actionRulesJson)"
+        >
+          {{ actionRulesJson.condition === 'AND' ? '且' : '或' }}
+        </el-button>
+      </div>
+      <template v-for="(item, index) in actionRulesJson.rules">
+        <div class="label-ground" :key="index">
+          <div class="tag-condition--parent">
+            <div class="tag-condition" v-show="item.rules.length > 1">
+              <el-button
+                type="warning"
+                @click="handleRulesConditionChange(item)"
+                round
+                size="small"
+                :key="'button' + index + '_' + i"
+              >
+                {{ item.condition === 'AND' ? '且' : '或' }}
+              </el-button>
+            </div>
+            <div
+              v-for="(childItem, n) in item.rules"
+              :key="index + 'tagId' + n"
+              :class="{ 'label-item': true, paddingTop: n > 0 }"
+            >
+              <!-- 行为标签专属日期选项 111111111111111111111111111-->
+              <div v-if="childItem.dataSource === 8" class="behavior-label">
+                <span>周期范围</span>
+                <span class="sel"> 
+                  <el-select
+                    v-model="periodRangeVal"
+                    style="width: 100px"
+                    name="oxve"
+                    class="input-inline"
+                    @change="handleOperatorChange(childItem)"
+                  >
+                    <el-option value="fixed" label="固定周期"></el-option>
+                    <el-option value="move" label="动态周期"></el-option>
+                  </el-select>
+                </span>
+                <span style="width: 30%; display: inline-block;">
+                  <el-date-picker
+                    v-model="value1"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期">
+                  </el-date-picker>
+                </span>
+
+                <span>星期范围</span>
+                <span class="sel">
+                  <el-select
+                    multiple
+                    v-model="weekRangeVal"
+                    style="width: 110px"
+                    name="oxve"
+                    class="input-inline"
+                    @change="handleOperatorChange(childItem)"
+                  > 
+                    <template v-for="item in weekRange">
+                      <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
+                    </template>
+                  </el-select>
+                </span>
+
+                <span>时间区间</span>
+                <span> 
+                  <el-select
+                    multiple
+                    v-model="timeRangeVal"
+                    style="width: 200px"
+                    name="oxve"
+                    class="input-inline"
+                    @change="handleOperatorChange(childItem)"
+                  >
+                    <template v-for="item in timeRange">
+                      <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
+                    </template>
+                  </el-select>
+                </span>
+
+                <span>
+                  <el-tag
+                    class="oc-item"
+                    :type="dataSourceColorEnum[childItem.dataSource]"
+                    >{{ childItem.categoryName }}
+                  </el-tag>
+                </span>
+
+                <span class="sel flexColumn">
+                  <!-- {{childItem.categoryCode}} -->
+                  <!-- {{childItem}} -->
+                    <!-- 第一级 -->
+                    <el-select
+                      multiple
+                      v-model="childItem.value"
+                      style="width: 120px"
+                      name="oxve"
+                      class="input-inline"
+                      @change="handelBehavirSelectChange(childItem)"
+                    >
+                      <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
+                        <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
+                      </template>
+                    </el-select>
+                    <span v-for="(item, index) in childItem.behaviorValue" :key="item.value" class="flexRow">
+                      
+                      <span class="w100">{{ item.label }}</span>
+                      <span class="flexColumn">
+                        <!-- 第二级 -->
+                        <!-- {{ item.childCheckedVal }} -->
+                        <el-select
+                          multiple
+                          v-model="item.childCheckedVal"
+                          style="width: 110px;"
+                          name="asdq"
+                          class="input-inline"
+                          @change="handelChildBehavirSelectChange(item)"
+                        >
+                          <template v-for="attrChildItem in getChildBehaviorAttrList()">
+                            <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
+                          </template>
+                        </el-select>
+
+                        <span v-for="(item2, index) in item.child" :key="item2.value" class="flexRow">
+                          <span class="w100">{{ item2.label }}</span>
+                          <!-- 第三级 -->
+                          <span v-for="(item3, index2) in item2.child" :key="item3.value" class="flexRow">
+                            <!-- {{ item3 }} -->
+                            <el-select
+                              v-model="item3.type"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                              @change="handleRateTypeChange($event, item3, 'type', item.child, index2)"
+                            >
+                              <el-option value="0" label="次数"></el-option>
+                              <el-option value="1" label="天数"></el-option>
+                            </el-select>
+                            <el-select
+                              v-model="item3.operator"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                              @change="handleRateTypeChange($event, item2, 'operator')"
+                            >
+                              <el-option value="="></el-option>
+                              <el-option value=">="></el-option>
+                              <el-option value="<="></el-option>
+                              <el-option value=">"></el-option>
+                              <el-option value="<"></el-option>
+                            </el-select>
+                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
+                            <el-input
+                              placeholder="请输入"
+                              v-model="item3.value"
+                              clearable
+                              style="max-width: 100px; min-width: 100px;"
+                            >
+                            </el-input>
+                          </span>
+                        </span>
+                      </span>
+                    </span>
+                </span>
+                
+              </div>
+
+              <!-- 行为标签专属日期选项 end111111111111111111111111111-->
+
+              
+            </div>
+            <div class="label-add">
+              <div class="optional-condition">
+                <el-tag
+                  class="oc-item"
+                  v-for="tagItem in actionTags"
+                  :key="tagItem.tagItem"
+                  @click.native="handleAddActionChildRule(item, tagItem)"
+                  :type="dataSourceColorEnum[tagItem.dataSource]"
+                  >{{ tagItem.tagName }}</el-tag
+                >
+              </div>
+            </div>
+          </div>
+        </div>
+      </template>
+      <div class="label-or">
+        <div
+          class="optional-condition"
+          v-if="actionTags.length"
+          :style="{
+            'padding-top': actionRulesJson.rules.length > 0 ? '10px' : 0,
+          }"
+        >
+          <el-tag
+            class="oc-item"
+            v-for="item in actionTags"
+            :key="item.tagName"
+            @click.native="handleAddActionRule(item)"
+            :type="dataSourceColorEnum[item.dataSource]"
+            >{{ item.tagName }}
+          </el-tag>
+        </div>
+      </div>
+    </div>
+
     <!-- 动态因子 -->
     <div v-if="specialTags && specialTags.length > 0">
       <div
@@ -738,6 +970,7 @@
         </div>
       </div>
     </div>
+
     <el-dialog
       title="显示更多标签"
       :visible.sync="showMoreTags"
@@ -820,7 +1053,20 @@ export default {
         value: 2,
         label: 'bilibili'
       }],
-      checkedList: [],
+      defaultChildObj: {
+        name: '',
+        value: '',
+        filed: '',
+        operator: '',
+        type: '',
+        child: [{
+          name: '',
+          value: '',
+          filed: '',
+          operator: '',
+          type: '',
+        }]
+      },
 // ----------------
       cache: {},
       tagSelectMoreShow: false,
@@ -872,6 +1118,10 @@ export default {
       type: Array,
       default: () => []
     },
+    actionTags: {
+      type: Array,
+      default: () => []
+    },
     specialTags: {
       type: Array,
       default: () => []
@@ -881,6 +1131,10 @@ export default {
       default: 0
     },
     rulesJson: {
+      type: Object,
+      default: () => {}
+    },
+    actionRulesJson: {
       type: Object,
       default: () => {}
     },
@@ -896,6 +1150,13 @@ export default {
   watch: {
     rulesJson: {
       handler() {
+        // console.log('rulesJson', this.rulesJson)
+        this.fetchAllTagSuggestions()
+      },
+      immediate: true,
+    },
+    actionRulesJson: {
+      handler() {
         this.fetchAllTagSuggestions()
       },
       immediate: true
@@ -905,141 +1166,101 @@ export default {
         this.fetchAllTagSuggestions()
       },
       immediate: true
-    },
-    checkedVal: {
-      handler(val, oldV) {
-        let list = []
-        this.checkedVal.forEach(val => {
-          let obj = this.behaviorAttrList.find(item => item.value === val)
-          obj.childBehaviorAttrList = [{
-            value: 0,
-            label: '芒果TV'
-          },{
-            value: 1,
-            label: '腾讯视频'
-          },{
-            value: 2,
-            label: 'bilibili'
-          }]
-          // obj.childCheckedVal = []
-          // obj.childCheckedList = []
-          let obj2 = {
-            childCheckedVal: [],
-            childCheckedList: []
-          }
-          
-          // eslint-disable-next-line no-debugger
-          debugger
-          obj = Object.assign(obj2, obj)
-          // console.log('obj===>', obj)
-          // this.$set(obj, 'childCheckedList', [])
-          // this.$set(obj, 'childCheckedVal', [])
-          // console.log('obj===>', obj)
-          list.push(obj)
-
-        })
-        console.log('list===>', list)
-        this.checkedList = list
-      }
-    },
-    checkedList: {
-      handler(val, oldV) {
-        // eslint-disable-next-line no-debugger
-        debugger
-        console.log('checkedList===>', val)
-      },
-      deep: true
     }
-  
-  },
-  computed: {
-    // checkedList() {
-    //   let list = []
-    //   this.checkedVal.forEach(val => {
-    //     let obj = this.behaviorAttrList.find(item => item.value === val)
-    //     obj.childCheckedVal = []
-    //     obj.childCheckedList = []
-    //     obj.childBehaviorAttrList = [{
-    //       value: 0,
-    //       label: '芒果TV'
-    //     },{
-    //       value: 1,
-    //       label: '腾讯视频'
-    //     },{
-    //       value: 2,
-    //       label: 'bilibili'
-    //     }]
-    //     this.$set(obj, 'childCheckedList', [])
-    //     this.$set(obj, 'childCheckedVal', [])
-    //     list.push(obj)
-
-    //   })
-    //   console.log('list===>', list)
-    //   return list
-    // },
-    // checkedList2() {
-    //   let list = []
-    //   this.checkedVal.forEach(val => {
-    //     list.push(this.behaviorAttrList2.find(item => item.value === val))
-    //   })
-    //   return list
-    // }
   },
   methods: {
+    getDefaultChildObj() {
+      return JSON.parse(JSON.stringify(this.defaultChildObj))
+    },
+
+    handleRateTypeChange(val, item, key, arr, index) {
+      // eslint-disable-next-line no-debugger
+      // console.log('item2.child.type', item.child.type)
+      console.log(val, item)
+      // let obj = {}
+      // obj[key] = val
+      
+      // item.child.push(obj)
+      // item.child[key] = val
+      // arr[index] = item
+      // // let obj = Object.assign(item.child, {})
+      // this.$set(arr, index, arr[index])
+      // console.log(val, item)
+    },  
+    handelBehavirSelectChange(childItem) {
+      // eslint-disable-next-line no-debugger
+      debugger
+      const vals = childItem.value
+      const checkedList = childItem.behaviorValue
+      const behaviorAttrList = this.getBehaviorAttrList(childItem.dataSource)
+      childItem.behaviorValue = this.byValsGetValList(vals, checkedList, behaviorAttrList)
+      // eslint-disable-next-line no-debugger
+      debugger
+    },
+
+    // 通过 vals 获取完整的 valList
+    // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
+    byValsGetValList (vals, checkedList, attrList, isLast = false) {
+      // console.log('rulesJson.rules===>', this.rulesJson.rules)
+      let list = []
+      vals.forEach(val => {
+        // eslint-disable-next-line no-debugger
+        debugger
+        const aa = [{ name: '', value: '', filed: '', operator: '', type: '' }]
+        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
+        let obj = checkedList.find(item => item.value === val) || attrList.find(item => item.value === val)
+        obj.childCheckedVal = obj.childCheckedVal || []
+        // obj.child = obj.child || aa
+        // eslint-disable-next-line no-debugger
+        debugger
+        console.log('obj.child=>>', obj.child)
+        obj.child = obj.child || (isLast ? aa : [])
+        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        list.push(obj2)
+      })
+      console.log('list===>', list)
+      return list 
+    },
+    
+    handelChildBehavirSelectChange(childItem) {
+      console.log(childItem)
+      // eslint-disable-next-line no-debugger
+      // debugger
+      const vals = childItem.childCheckedVal
+      const checkedList = childItem.child || []
+      const behaviorAttrList = this.getChildBehaviorAttrList()
+      childItem.child = this.byValsGetValList(vals, checkedList, behaviorAttrList, true)
+      // this.checkedList[i].childCheckedVal = val
+      // let obj = Object.assign(this.checkedList[i], {childCheckedVal: val})
+      // this.$set(this.checkedList, i, obj)
+      // console.log(this.checkedList)
+    },
     getBehaviorAttrList() {
-       return [{
+      return [{
         value: 0,
         label: '下载应用'
-      },{
+      }, {
         value: 1,
         label: '启动应用'
-      },{
+      }, {
         value: 2,
         label: '卸载应用'
       }]
     },
-    getCheckedList(val, list) {
-      this.checkedVal.forEach(val => {
-          let obj = this.behaviorAttrList.find(item => item.value === val)
-          obj.childBehaviorAttrList = [{
-            value: 0,
-            label: '芒果TV'
-          },{
-            value: 1,
-            label: '腾讯视频'
-          },{
-            value: 2,
-            label: 'bilibili'
-          }]
-          // obj.childCheckedVal = []
-          // obj.childCheckedList = []
-          let obj2 = {
-            childCheckedVal: [],
-            childCheckedList: []
-          }
-          
-          // eslint-disable-next-line no-debugger
-          debugger
-          obj = Object.assign(obj2, obj)
-          // console.log('obj===>', obj)
-          // this.$set(obj, 'childCheckedList', [])
-          // this.$set(obj, 'childCheckedVal', [])
-          // console.log('obj===>', obj)
-          list.push(obj)
 
-        })
-        console.log('list===>', list)
-        return list
+    getChildBehaviorAttrList() {
+      return [{
+        value: 0,
+        label: '芒果TV'
+      },{
+        value: 1,
+        label: '腾讯视频'
+      },{
+        value: 2,
+        label: 'bilibili'
+      }]
     },
-    changeSelect(val, i) {
-      console.log(val, i)
-      // eslint-disable-next-line no-debugger
-      debugger
-      // this.checkedList[i].childCheckedVal = val
-      let obj = Object.assign(this.checkedList[i], {childCheckedVal: val})
-      this.$set(this.checkedList, i, obj)
-      console.log(this.checkedList)
-    },
+    // 111111111111111111
     handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
@@ -1217,6 +1438,7 @@ export default {
           this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
         }
       }
+      // 11111111111111
       this.rulesJson.rules.push({
         condition: 'AND',
         rules: [
@@ -1227,6 +1449,7 @@ export default {
             tagName: tag.tagName,
             dataSource: tag.dataSource,
             value: '',
+            
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -1360,6 +1583,64 @@ export default {
         initValue: tag.initValue
       })
     },
+    handleAddActionRule(tag) {
+      if (this.actionRulesJson.rules.length > 50) {
+        this.$message.warning('已达最大数量')
+        return
+      }
+      this.actionRulesJson.rules.push({
+        condition: 'AND',
+        rules: [
+          {
+            operator: '=',
+            tagCode: tag.tagKey,
+            tagName: tag.tagName,
+            dataSource: tag.dataSource,
+            // 11
+            value: [],
+            behaviorValue: [],
+            // 11
+            tagId: tag.tagId,
+            tagType: tag.tagType,
+            categoryName: tag.tagName,
+            categoryCode: tag.tagKey,
+            dynamic: {
+              type: 1,
+              version: ''
+            },
+            initValue: tag.initValue
+          }
+        ]
+      })
+    },
+    handleAddActionChildRule(rule, tag) {
+      if (rule.rules.length > 50) {
+        this.$message.warning('已达最大数量')
+        return
+      }
+      if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
+        this.crowd.tagIds.push(tag.tagId)
+      }
+      rule.rules.push({
+        operator: '=',
+        tagCode: tag.tagKey,
+        tagName: tag.tagName,
+        dataSource: tag.dataSource,
+        // 11
+        value: [],
+        behaviorValue: [],
+        // 11
+        tagId: tag.tagId,
+        tagType: tag.tagType,
+        categoryName: tag.tagName,
+        categoryCode: tag.tagKey,
+        dynamic: {
+          type: 1,
+          version: ''
+        },
+        initValue: tag.initValue
+      })
+    },
     // 数组去重
     distinct(a, b) {
       let arr = a.concat(b)
@@ -1418,8 +1699,11 @@ export default {
     fetchAllTagSuggestions() {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
-      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
-      if (ruleJsonData.rules && ruleJsonData.rules.length > 0) {
+      // eslint-disable-next-line no-debugger
+      debugger
+      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || this.actionRulesJson || []
+      const len = ruleJsonData.rules && ruleJsonData.rules.length || 0
+      if (len > 0) {
         let cacheIds = []
         let cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {
@@ -1480,19 +1764,6 @@ export default {
         value: item
       }
     })
-    // this.behaviorAttrList = [{
-    //   label: 0,
-    //   value: '下载应用'
-    // },{
-    //   label: 1,
-    //   value: '启动应用'
-    // },{
-    //   label: 2,
-    //   value: '卸载应用'
-    // }]
-    // <el-option value="0" label="下载应用"></el-option>
-    // <el-option value="1" label="启动应用"></el-option>
-    // <el-option value="2" label="卸载应用"></el-option>
   }
 }
 </script>
