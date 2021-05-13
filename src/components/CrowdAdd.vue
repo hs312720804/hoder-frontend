@@ -118,14 +118,6 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-          1: 'success',
-          2: 'danger',
-          3: '',
-          5: 'warning',
-          6: 'warningOrange',
-          7: 'warningOrange2'
-      },
       cityData: [],
       provinceValueList: []
     }
@@ -356,5 +348,9 @@ i
     border-color: #7955488c;
     .el-tag__close
       color #512DA8
-
+  >>> .el-tag--warningCyan {
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  }
 </style>

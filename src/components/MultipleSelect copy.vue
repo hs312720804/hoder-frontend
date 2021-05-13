@@ -70,7 +70,7 @@
                     class="input-inline"
                     @change="handleOperatorChange(childItem)"
                   > 
-                    <template v-for="item in weekRange">
+                    <template v-for="item in weekRange" >
                       <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
                     </template>
                   </el-select>
@@ -101,77 +101,64 @@
                 </span>
 
                 <span class="sel flexColumn">
-                  <!-- {{childItem.categoryCode}} -->
-                  <!-- {{childItem}} -->
-                    <!-- 第一级 -->
+                  <!-- {{childItem.categoryCode}}
+                  {{childItem.dataSource}}
+                   -->
                     <el-select
                       multiple
-                      v-model="childItem.value"
-                      style="width: 120px"
+                      v-model="childItem.checkedVal"
+                      style="width: 100px"
                       name="oxve"
                       class="input-inline"
-                      @change="handelBehavirSelectChange(childItem)"
+                      @change="handleOperatorChange(childItem)"
                     >
                       <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
                         <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
                       </template>
                     </el-select>
-                    <span v-for="(item, index) in childItem.behaviorValue" :key="item.value" class="flexRow">
-                      
+                    <span v-for="(item, index) in getCheckedList(childItem.checkedVal, getBehaviorAttrList(childItem.dataSource))" :key="item.value" class="flexRow">
                       <span class="w100">{{ item.label }}</span>
                       <span class="flexColumn">
-                        <!-- 第二级 -->
-                        <!-- {{ item.childCheckedVal }} -->
+                        {{item.childCheckedVal}}
                         <el-select
                           multiple
                           v-model="item.childCheckedVal"
-                          style="width: 110px;"
+                          style="width: 100px"
                           name="asdq"
                           class="input-inline"
-                          @change="handelChildBehavirSelectChange(item)"
+                          @change="changeSelect($event, index)"
                         >
-                          <template v-for="attrChildItem in getChildBehaviorAttrList()">
+                          <template v-for="attrChildItem in item.childBehaviorAttrList">
                             <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
                           </template>
                         </el-select>
 
-                        <span v-for="(item2, index) in item.child" :key="item2.value" class="flexRow">
+                        <span v-for="item2 in item.childCheckedList" :key="item2.value" class="flexRow">
                           <span class="w100">{{ item2.label }}</span>
-                          <!-- 第三级 -->
-                          <span v-for="(item3, index2) in item2.child" :key="item3.value" class="flexRow">
-                            <!-- {{ item3 }} -->
-                            <el-select
-                              v-model="item3.type"
-                              style="max-width: 100px; min-width: 100px;"
-                              name="oxve"
-                              class="input-inline"
-                              @change="handleRateTypeChange($event, item3, 'type', item.child, index2)"
-                            >
-                              <el-option value="0" label="次数"></el-option>
-                              <el-option value="1" label="天数"></el-option>
-                            </el-select>
-                            <el-select
-                              v-model="item3.operator"
-                              style="max-width: 100px; min-width: 100px;"
-                              name="oxve"
-                              class="input-inline"
-                              @change="handleRateTypeChange($event, item2, 'operator')"
-                            >
-                              <el-option value="="></el-option>
-                              <el-option value=">="></el-option>
-                              <el-option value="<="></el-option>
-                              <el-option value=">"></el-option>
-                              <el-option value="<"></el-option>
-                            </el-select>
-                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
-                            <el-input
-                              placeholder="请输入"
-                              v-model="item3.value"
-                              clearable
-                              style="max-width: 100px; min-width: 100px;"
-                            >
-                            </el-input>
-                          </span>
+                          <el-select
+                            v-model="childItem.operator"
+                            style="width: 80px"
+                            name="oxve"
+                            class="input-inline"
+                            @change="handleOperatorChange(childItem)"
+                          >
+                            <el-option value="0" label="次数"></el-option>
+                            <el-option value="1" label="天数"></el-option>
+                          </el-select>
+                          <el-select
+                            v-model="childItem.operator"
+                            style="width: 80px"
+                            name="oxve"
+                            class="input-inline"
+                            @change="handleOperatorChange(childItem)"
+                          >
+                            <el-option value="="></el-option>
+                            <el-option value=">="></el-option>
+                            <el-option value="<="></el-option>
+                            <el-option value=">"></el-option>
+                            <el-option value="<"></el-option>
+                          </el-select>
+                          <el-input v-model="childItem.operator"></el-input>
                         </span>
                       </span>
                     </span>
@@ -833,20 +820,7 @@ export default {
         value: 2,
         label: 'bilibili'
       }],
-      defaultChildObj: {
-        name: '',
-        value: '',
-        filed: '',
-        operator: '',
-        type: '',
-        child: [{
-          name: '',
-          value: '',
-          filed: '',
-          operator: '',
-          type: '',
-        }]
-      },
+      checkedList: [],
 // ----------------
       cache: {},
       tagSelectMoreShow: false,
@@ -921,114 +895,151 @@ export default {
   },
   watch: {
     rulesJson: {
-      handler(val) {
-        console.log('rulesJson', this.rulesJson)
+      handler() {
         this.fetchAllTagSuggestions()
       },
-      immediate: true,
-      deep: true
+      immediate: true
     },
     dynamicPolicyJson: {
       handler() {
         this.fetchAllTagSuggestions()
       },
       immediate: true
+    },
+    checkedVal: {
+      handler(val, oldV) {
+        let list = []
+        this.checkedVal.forEach(val => {
+          let obj = this.behaviorAttrList.find(item => item.value === val)
+          obj.childBehaviorAttrList = [{
+            value: 0,
+            label: '芒果TV'
+          },{
+            value: 1,
+            label: '腾讯视频'
+          },{
+            value: 2,
+            label: 'bilibili'
+          }]
+          // obj.childCheckedVal = []
+          // obj.childCheckedList = []
+          let obj2 = {
+            childCheckedVal: [],
+            childCheckedList: []
+          }
+          
+          // eslint-disable-next-line no-debugger
+          debugger
+          obj = Object.assign(obj2, obj)
+          // console.log('obj===>', obj)
+          // this.$set(obj, 'childCheckedList', [])
+          // this.$set(obj, 'childCheckedVal', [])
+          // console.log('obj===>', obj)
+          list.push(obj)
+
+        })
+        console.log('list===>', list)
+        this.checkedList = list
+      }
+    },
+    checkedList: {
+      handler(val, oldV) {
+        // eslint-disable-next-line no-debugger
+        debugger
+        console.log('checkedList===>', val)
+      },
+      deep: true
     }
   
   },
+  computed: {
+    // checkedList() {
+    //   let list = []
+    //   this.checkedVal.forEach(val => {
+    //     let obj = this.behaviorAttrList.find(item => item.value === val)
+    //     obj.childCheckedVal = []
+    //     obj.childCheckedList = []
+    //     obj.childBehaviorAttrList = [{
+    //       value: 0,
+    //       label: '芒果TV'
+    //     },{
+    //       value: 1,
+    //       label: '腾讯视频'
+    //     },{
+    //       value: 2,
+    //       label: 'bilibili'
+    //     }]
+    //     this.$set(obj, 'childCheckedList', [])
+    //     this.$set(obj, 'childCheckedVal', [])
+    //     list.push(obj)
+
+    //   })
+    //   console.log('list===>', list)
+    //   return list
+    // },
+    // checkedList2() {
+    //   let list = []
+    //   this.checkedVal.forEach(val => {
+    //     list.push(this.behaviorAttrList2.find(item => item.value === val))
+    //   })
+    //   return list
+    // }
+  },
   methods: {
-    getDefaultChildObj() {
-      return JSON.parse(JSON.stringify(this.defaultChildObj))
-    },
-
-    handleRateTypeChange(val, item, key, arr, index) {
-      // eslint-disable-next-line no-debugger
-      // console.log('item2.child.type', item.child.type)
-      console.log(val, item)
-      // let obj = {}
-      // obj[key] = val
-      
-      // item.child.push(obj)
-      // item.child[key] = val
-      // arr[index] = item
-      // // let obj = Object.assign(item.child, {})
-      // this.$set(arr, index, arr[index])
-      // console.log(val, item)
-    },  
-    handelBehavirSelectChange(childItem) {
-      // eslint-disable-next-line no-debugger
-      debugger
-      const vals = childItem.value
-      const checkedList = childItem.behaviorValue
-      const behaviorAttrList = this.getBehaviorAttrList(childItem.dataSource)
-      childItem.behaviorValue = this.byValsGetValList(vals, checkedList, behaviorAttrList)
-      // eslint-disable-next-line no-debugger
-      debugger
-    },
-
-    // 通过 vals 获取完整的 valList
-    // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    byValsGetValList (vals, checkedList, attrList, isLast = false) {
-      console.log('rulesJson.rules===>', this.rulesJson.rules)
-      let list = []
-      vals.forEach(val => {
-        // eslint-disable-next-line no-debugger
-        debugger
-        const aa = [{ name: '', value: '', filed: '', operator: '', type: '' }]
-        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
-        let obj = checkedList.find(item => item.value === val) || attrList.find(item => item.value === val)
-        obj.childCheckedVal = obj.childCheckedVal || []
-        // obj.child = obj.child || aa
-        // eslint-disable-next-line no-debugger
-        debugger
-        console.log('obj.child=>>', obj.child)
-        obj.child = obj.child || (isLast ? aa : [])
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
-        list.push(obj2)
-      })
-      console.log('list===>', list)
-      return list 
-    },
-    
-    handelChildBehavirSelectChange(childItem) {
-      console.log(childItem)
-      // eslint-disable-next-line no-debugger
-      // debugger
-      const vals = childItem.childCheckedVal
-      const checkedList = childItem.child || []
-      const behaviorAttrList = this.getChildBehaviorAttrList()
-      childItem.child = this.byValsGetValList(vals, checkedList, behaviorAttrList, true)
-      // this.checkedList[i].childCheckedVal = val
-      // let obj = Object.assign(this.checkedList[i], {childCheckedVal: val})
-      // this.$set(this.checkedList, i, obj)
-      // console.log(this.checkedList)
-    },
     getBehaviorAttrList() {
-      return [{
+       return [{
         value: 0,
         label: '下载应用'
-      }, {
+      },{
         value: 1,
         label: '启动应用'
-      }, {
+      },{
         value: 2,
         label: '卸载应用'
       }]
     },
+    getCheckedList(val, list) {
+      this.checkedVal.forEach(val => {
+          let obj = this.behaviorAttrList.find(item => item.value === val)
+          obj.childBehaviorAttrList = [{
+            value: 0,
+            label: '芒果TV'
+          },{
+            value: 1,
+            label: '腾讯视频'
+          },{
+            value: 2,
+            label: 'bilibili'
+          }]
+          // obj.childCheckedVal = []
+          // obj.childCheckedList = []
+          let obj2 = {
+            childCheckedVal: [],
+            childCheckedList: []
+          }
+          
+          // eslint-disable-next-line no-debugger
+          debugger
+          obj = Object.assign(obj2, obj)
+          // console.log('obj===>', obj)
+          // this.$set(obj, 'childCheckedList', [])
+          // this.$set(obj, 'childCheckedVal', [])
+          // console.log('obj===>', obj)
+          list.push(obj)
 
-    getChildBehaviorAttrList() {
-      return [{
-        value: 0,
-        label: '芒果TV'
-      },{
-        value: 1,
-        label: '腾讯视频'
-      },{
-        value: 2,
-        label: 'bilibili'
-      }]
+        })
+        console.log('list===>', list)
+        return list
     },
-    // 111111111111111111
+    changeSelect(val, i) {
+      console.log(val, i)
+      // eslint-disable-next-line no-debugger
+      debugger
+      // this.checkedList[i].childCheckedVal = val
+      let obj = Object.assign(this.checkedList[i], {childCheckedVal: val})
+      this.$set(this.checkedList, i, obj)
+      console.log(this.checkedList)
+    },
     handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
@@ -1206,7 +1217,6 @@ export default {
           this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
         }
       }
-      // 11111111111111
       this.rulesJson.rules.push({
         condition: 'AND',
         rules: [
@@ -1216,11 +1226,7 @@ export default {
             tagCode: tag.tagKey,
             tagName: tag.tagName,
             dataSource: tag.dataSource,
-            // value: '',
-            // 11
-            value: [],
-            behaviorValue: [],
-            // 11
+            value: '',
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -1280,11 +1286,7 @@ export default {
         tagCode: tag.tagKey,
         tagName: tag.tagName,
         dataSource: tag.dataSource,
-        // value: '',
-        // 11
-        value: [],
-        behaviorValue: [],
-        // 11
+        value: '',
         tagId: tag.tagId,
         tagType: tag.tagType,
         categoryName: tag.tagName,
@@ -1478,6 +1480,19 @@ export default {
         value: item
       }
     })
+    // this.behaviorAttrList = [{
+    //   label: 0,
+    //   value: '下载应用'
+    // },{
+    //   label: 1,
+    //   value: '启动应用'
+    // },{
+    //   label: 2,
+    //   value: '卸载应用'
+    // }]
+    // <el-option value="0" label="下载应用"></el-option>
+    // <el-option value="1" label="启动应用"></el-option>
+    // <el-option value="2" label="卸载应用"></el-option>
   }
 }
 </script>
