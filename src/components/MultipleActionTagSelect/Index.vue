@@ -38,147 +38,62 @@
             >
               <!-- 行为标签专属日期选项 111111111111111111111111111-->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <span>周期范围</span>
-                <span class="sel"> 
-                  <el-select
-                    v-model="periodRangeVal"
-                    style="width: 100px"
-                    name="oxve"
-                    class="input-inline"
-                    @change="handleOperatorChange(childItem)"
-                  >
-                    <el-option value="fixed" label="固定周期"></el-option>
-                    <el-option value="move" label="动态周期"></el-option>
-                  </el-select>
-                </span>
-                <span style="width: 30%; display: inline-block;">
-                  <el-date-picker
-                    v-model="value1"
-                    type="daterange"
-                    range-separator="至"
-                    start-placeholder="开始日期"
-                    end-placeholder="结束日期">
-                  </el-date-picker>
-                </span>
 
-                <span>星期范围</span>
-                <span class="sel">
-                  <el-select
-                    multiple
-                    v-model="weekRangeVal"
-                    style="width: 110px"
-                    name="oxve"
-                    class="input-inline"
-                    @change="handleOperatorChange(childItem)"
-                  > 
-                    <template v-for="item in weekRange">
-                      <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
-                    </template>
-                  </el-select>
-                </span>
-
-                <span>时间区间</span>
-                <span> 
-                  <el-select
-                    multiple
-                    v-model="timeRangeVal"
-                    style="width: 200px"
-                    name="oxve"
-                    class="input-inline"
-                    @change="handleOperatorChange(childItem)"
-                  >
-                    <template v-for="item in timeRange">
-                      <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
-                    </template>
-                  </el-select>
-                </span>
-
-                <span>
+                <Range :childItem="childItem" :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"></Range>
+                <div class="bav-attr-warp">
                   <el-tag
                     class="oc-item"
                     :type="dataSourceColorEnum[childItem.dataSource]"
-                    >{{ childItem.categoryName }}
+                    >{{ childItem.tagName }}
                   </el-tag>
-                </span>
 
-                <span class="sel flexColumn">
-                  <!-- {{childItem.categoryCode}} -->
-                  <!-- {{childItem}} -->
-                    <!-- 第一级 -->
-                    <el-select
-                      multiple
-                      v-model="childItem.value"
-                      style="width: 120px"
-                      name="oxve"
-                      class="input-inline"
-                      @change="handelBehavirSelectChange(childItem)"
-                    >
-                      <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
-                        <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
-                      </template>
-                    </el-select>
-                    <span v-for="(item, index) in childItem.behaviorValue" :key="item.value" class="flexRow">
-                      
-                      <span class="w100">{{ item.label }}</span>
-                      <span class="flexColumn">
-                        <!-- 第二级 -->
-                        <!-- {{ item.childCheckedVal }} -->
-                        <el-select
-                          multiple
-                          v-model="item.childCheckedVal"
-                          style="width: 110px;"
-                          name="asdq"
-                          class="input-inline"
-                          @change="handelChildBehavirSelectChange(item)"
-                        >
-                          <template v-for="attrChildItem in getChildBehaviorAttrList()">
-                            <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
-                          </template>
-                        </el-select>
+                  <span class="flex-column">
+                    <!-- {{childItem.categoryCode}} -->
+                    <!-- {{childItem}} -->
+                      <!-- 第一级 -->
+                      <el-select
+                        multiple
+                        v-model="childItem.bav.value"
+                        style="width: 120px"
+                        name="oxve"
+                        class="input-inline"
+                        @change="handelBehavirSelectChange(childItem)"
+                      >
+                        <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
+                          <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
+                        </template>
+                      </el-select>
+                      <div v-for="(item) in childItem.bav.behaviorValue" :key="item.value" class="flex-row child-attr-wrap" >
+                        
+                        <span class="w100">{{ item.label }}</span>
+                        <span class="flex-column" >
+                          <!-- 第二级 -->
+                          <!-- {{ item.childCheckedVal }} -->
+                          <el-select
+                            multiple
+                            v-model="item.childCheckedVal"
+                            style="width: 110px;"
+                            name="asdq"
+                            class="input-inline"
+                            @change="handelChildBehavirSelectChange(item)"
+                          >
+                            <template v-for="attrChildItem in getChildBehaviorAttrList()">
+                              <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
+                            </template>
+                          </el-select>
 
-                        <span v-for="(item2, index) in item.child" :key="item2.value" class="flexRow">
-                          <span class="w100">{{ item2.label }}</span>
-                          <!-- 第三级 -->
-                          <!-- <span v-for="(item3, index2) in item2.child" :key="'typeInputValue'+index2" class="flexRow"> -->
-                          <span v-for="(item3, index2) in item2.child" :key="item3.value" class="flexRow">
-                            <!-- {{ item3 }} -->
-                            <el-select
-                              v-model="item3.type"
-                              style="max-width: 100px; min-width: 100px;"
-                              name="oxve"
-                              class="input-inline"
-                              @change="handleRateTypeChange($event, item3, 'type', item.child, index2)"
-                            >
-                              <el-option value="0" label="次数"></el-option>
-                              <el-option value="1" label="天数"></el-option>
-                            </el-select>
-                            <el-select
-                              v-model="item3.operator"
-                              style="max-width: 100px; min-width: 100px;"
-                              name="oxve"
-                              class="input-inline"
-                              @change="handleRateTypeChange($event, item2, 'operator')"
-                            >
-                              <el-option value="="></el-option>
-                              <el-option value=">="></el-option>
-                              <el-option value="<="></el-option>
-                              <el-option value=">"></el-option>
-                              <el-option value="<"></el-option>
-                            </el-select>
-                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
-                            <el-input
-                              placeholder="请输入"
-                              v-model="item3.value"
-                              clearable
-                              style="max-width: 100px; min-width: 100px;"
-                            >
-                            </el-input>
+                          <span v-for="(item2, index) in item.child" :key="index" class="flex-row child">
+                            <span class="w100">{{ item2.label }}</span>
+                            <!-- 第三级 -->
+                            <span v-for="(item3, index2) in item2.child" :key="'typeInputValue'+index2" class="flex-row">
+                              <!-- 次数、天数 -->
+                              <Times :item3="item3"></Times>
+                            </span>
                           </span>
                         </span>
-                      </span>
-                    </span>
-                </span>
-                
+                      </div>
+                  </span>
+                </div>
               </div>
 
               <!-- 行为标签专属日期选项 end111111111111111111111111111-->
@@ -268,7 +183,10 @@
 </template>
 
 <script>
-import types from './types'
+import List from '../../views/DevelopTools/ipManage/list.vue'
+import types from '../types'
+import Range from './Range.vue'
+import Times from './Times.vue'
 export default {
   data() {
     return {
@@ -282,26 +200,6 @@ export default {
       value1: [],
       checkedVal: [],
       periodRangeVal: '',
-      behaviorAttrList: [{
-        value: 0,
-        label: '下载应用'
-      },{
-        value: 1,
-        label: '启动应用'
-      },{
-        value: 2,
-        label: '卸载应用'
-      }],
-      behaviorAttrList2: [{
-        value: 0,
-        label: '芒果TV'
-      },{
-        value: 1,
-        label: '腾讯视频'
-      },{
-        value: 2,
-        label: 'bilibili'
-      }],
       defaultChildObj: {
         name: '',
         value: '',
@@ -361,6 +259,11 @@ export default {
       provinceValueList: []
     }
   },
+  components: {
+    Range,
+    Times,
+    List
+  },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
   props: {
     tags: {
@@ -389,16 +292,12 @@ export default {
     }
   },
   watch: {
-    crowd: {
-      handler(val) {
-        console.log(val)
-      },
-      deep: true
-    },
     actionRulesJson: {
       handler(val) {
+        console.log('crowd==>', val)
         this.fetchAllTagSuggestions()
       },
+      deep: true,
       immediate: true
     },
     
@@ -407,30 +306,11 @@ export default {
     getDefaultChildObj() {
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
-
-    handleRateTypeChange(val, item, key, arr, index) {
-      // eslint-disable-next-line no-debugger
-      // console.log('item2.child.type', item.child.type)
-      console.log(val, item)
-      // let obj = {}
-      // obj[key] = val
-      
-      // item.child.push(obj)
-      // item.child[key] = val
-      // arr[index] = item
-      // // let obj = Object.assign(item.child, {})
-      // this.$set(arr, index, arr[index])
-      // console.log(val, item)
-    },  
     handelBehavirSelectChange(childItem) {
-      // eslint-disable-next-line no-debugger
-      debugger
-      const vals = childItem.value
-      const checkedList = childItem.behaviorValue
+      const vals = childItem.bav.value
+      const checkedList = childItem.bav.behaviorValue
       const behaviorAttrList = this.getBehaviorAttrList(childItem.dataSource)
-      childItem.behaviorValue = this.byValsGetValList(vals, checkedList, behaviorAttrList)
-      // eslint-disable-next-line no-debugger
-      debugger
+      childItem.bav.behaviorValue = this.byValsGetValList(vals, checkedList, behaviorAttrList)
     },
 
     // 通过 vals 获取完整的 valList
@@ -441,24 +321,24 @@ export default {
       vals.forEach(val => {
         // eslint-disable-next-line no-debugger
         debugger
-        const aa = [{ name: '', value: '', filed: '', operator: '', type: '' }]
+        const aa = [{ name: '', value: '', filed: '', operator: '=', type: 'cishu' }]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = checkedList.find(item => item.value === val) || attrList.find(item => item.value === val)
         obj.childCheckedVal = obj.childCheckedVal || []
         // obj.child = obj.child || aa
         // eslint-disable-next-line no-debugger
         debugger
-        console.log('obj.child=>>', obj.child)
+        // console.log('obj.child=>>', obj.child)
         obj.child = obj.child || (isLast ? aa : [])
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
-      console.log('list===>', list)
+      // console.log('list===>', list)
       return list 
     },
     
     handelChildBehavirSelectChange(childItem) {
-      console.log(childItem)
+      // console.log(childItem)
       // eslint-disable-next-line no-debugger
       // debugger
       const vals = childItem.childCheckedVal
@@ -472,26 +352,26 @@ export default {
     },
     getBehaviorAttrList() {
       return [{
-        value: 0,
+        value: 'xiazai',
         label: '下载应用'
       }, {
-        value: 1,
+        value: 'qidong',
         label: '启动应用'
       }, {
-        value: 2,
+        value: 'xiezai',
         label: '卸载应用'
       }]
     },
 
     getChildBehaviorAttrList() {
       return [{
-        value: 0,
+        value: 'mg',
         label: '芒果TV'
       },{
-        value: 1,
+        value: 'tx',
         label: '腾讯视频'
       },{
-        value: 2,
+        value: 'bl',
         label: 'bilibili'
       }]
     },
@@ -666,17 +546,17 @@ export default {
             tagCode: tag.tagKey,
             tagName: tag.tagName,
             dataSource: tag.dataSource,
-            value: [],
-            behaviorValue: [],
             tagId: tag.tagId,
             tagType: tag.tagType,
-            categoryName: tag.tagName,
             categoryCode: tag.tagKey,
-            dynamic: {
-              type: 1,
-              version: ''
-            },
-            initValue: tag.initValue
+            bav: {
+              value: [],
+              behaviorValue: [],
+              rangeType: 'fixed',
+              rang: "",
+              weekRang: [],
+              timeRange: []
+            }
           }
         ]
       })
@@ -694,17 +574,17 @@ export default {
         tagCode: tag.tagKey,
         tagName: tag.tagName,
         dataSource: tag.dataSource,
-        value: [],
-        behaviorValue: [],
         tagId: tag.tagId,
         tagType: tag.tagType,
-        categoryName: tag.tagName,
         categoryCode: tag.tagKey,
-        dynamic: {
-          type: 1,
-          version: ''
-        },
-        initValue: tag.initValue
+        bav: {
+          value: [],
+          behaviorValue: [],
+          rangeType: 'fixed',
+          rang: "",
+          weekRang: [],
+          timeRange: []
+        }
       })
     },
     // 数组去重
@@ -766,9 +646,9 @@ export default {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
       let ruleJsonData = this.actionRulesJson || {}
-      console.log('ruleJsonData==>',  ruleJsonData)
+      // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
-      console.log('ruleJsonData==>',  ruleJsonData)
+      // console.log('ruleJsonData==>',  ruleJsonData)
 
       if (len > 0) {
         let cacheIds = []
@@ -1027,12 +907,33 @@ i {
 .w100 {
   min-width: 100px;
 }
-.flexColumn {
+.flex-column {
   display: flex;
   flex-direction: column;
 }
-.flexRow {
+.flex-row {
   display: flex;
   flex-direction: row;
+}
+.child-attr-wrap {
+  border: 1px dashed #fff;
+  padding: 20px 5px;
+  margin: 10px 0
+  &:hover {
+    // text-decoration: underline;
+    border-color: rgb(0, 188, 212)
+    border-radius: 7px
+  }
+}
+.bav-attr-warp {
+  align-items: baseline
+  border: 1px dashed #fff;
+  display: flex;
+  margin-bottom: 10px;
+  &:hover {
+    // text-decoration: underline;
+    border-color: rgb(0, 188, 212)
+    border-radius: 7px
+  }
 }
 </style>

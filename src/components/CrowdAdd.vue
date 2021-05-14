@@ -83,7 +83,7 @@
 
 <script>
 import MultipleSelect from './MultipleSelect.vue'
-import MultipleActionTagSelect from './MultipleActionTagSelect.vue'
+import MultipleActionTagSelect from './MultipleActionTagSelect/Index.vue'
 // import MUserAction from './MUserAction.vue'
 export default {
   components: {
