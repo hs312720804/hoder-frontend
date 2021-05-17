@@ -38,67 +38,13 @@
             >
               <!-- 行为标签专属日期选项 111111111111111111111111111-->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-
                 <Range :childItem="childItem" :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"></Range>
-                <div class="bav-attr-warp">
-                  <el-tag
-                    class="oc-item"
-                    :type="dataSourceColorEnum[childItem.dataSource]"
-                    >{{ childItem.tagName }}
-                  </el-tag>
-
-                  <span class="flex-column">
-                    <!-- {{childItem.categoryCode}} -->
-                    <!-- {{childItem}} -->
-                      <!-- 第一级 -->
-                      <el-select
-                        multiple
-                        v-model="childItem.bav.value"
-                        style="width: 120px"
-                        name="oxve"
-                        class="input-inline"
-                        @change="handelBehavirSelectChange(childItem)"
-                      >
-                        <template v-for="item in getBehaviorAttrList(childItem.dataSource)" >
-                          <el-option :value="item.value" :label="item.label" :key="item.value"></el-option>
-                        </template>
-                      </el-select>
-                      <div v-for="(item) in childItem.bav.behaviorValue" :key="item.value" class="flex-row child-attr-wrap" >
-                        
-                        <span class="w100">{{ item.label }}</span>
-                        <span class="flex-column" >
-                          <!-- 第二级 -->
-                          <!-- {{ item.childCheckedVal }} -->
-                          <el-select
-                            multiple
-                            v-model="item.childCheckedVal"
-                            style="width: 110px;"
-                            name="asdq"
-                            class="input-inline"
-                            @change="handelChildBehavirSelectChange(item)"
-                          >
-                            <template v-for="attrChildItem in getChildBehaviorAttrList()">
-                              <el-option :value="attrChildItem.value" :label="attrChildItem.label" :key="attrChildItem.value"></el-option>
-                            </template>
-                          </el-select>
-
-                          <span v-for="(item2, index) in item.child" :key="index" class="flex-row child">
-                            <span class="w100">{{ item2.label }}</span>
-                            <!-- 第三级 -->
-                            <span v-for="(item3, index2) in item2.child" :key="'typeInputValue'+index2" class="flex-row">
-                              <!-- 次数、天数 -->
-                              <Times :item3="item3"></Times>
-                            </span>
-                          </span>
-                        </span>
-                      </div>
-                  </span>
-                </div>
+                
+                <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
+                <Bav :childItem="childItem" ></Bav>
               </div>
 
               <!-- 行为标签专属日期选项 end111111111111111111111111111-->
-
-              
             </div>
             <div class="label-add">
               <div class="optional-condition">
@@ -184,35 +130,21 @@
 
 <script>
 import List from '../../views/DevelopTools/ipManage/list.vue'
-import types from '../types'
 import Range from './Range.vue'
-import Times from './Times.vue'
+import Bav from './Bav/Index.vue'
 export default {
   data() {
     return {
-      // tags: [],
-      // specialTags: [],
-      aaaa: [],
-      weekRange: [],
-      timeRange: [],
-      weekRangeVal: [],
-      timeRangeVal: [],
-      value1: [],
-      checkedVal: [],
-      periodRangeVal: '',
-      defaultChildObj: {
-        name: '',
-        value: '',
-        filed: '',
-        operator: '',
-        type: '',
-        child: [{
-          name: '',
-          value: '',
-          filed: '',
-          operator: '',
-          type: '',
-        }]
+      bavAttrList: [],
+      tagCodeValue: {
+        'BAV0001': 1,
+        'BAV0002': 2,
+        'BAV0003': 3,
+        'BAV0004': 4,
+        'BAV0005': 5,
+        'BAV0006': 6,
+        'BAV0007': 7,
+        'BAV0008': 8
       },
 // ----------------
       cache: {},
@@ -261,8 +193,8 @@ export default {
   },
   components: {
     Range,
-    Times,
-    List
+    List,
+    Bav
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
   props: {
@@ -303,78 +235,6 @@ export default {
     
   },
   methods: {
-    getDefaultChildObj() {
-      return JSON.parse(JSON.stringify(this.defaultChildObj))
-    },
-    handelBehavirSelectChange(childItem) {
-      const vals = childItem.bav.value
-      const checkedList = childItem.bav.behaviorValue
-      const behaviorAttrList = this.getBehaviorAttrList(childItem.dataSource)
-      childItem.bav.behaviorValue = this.byValsGetValList(vals, checkedList, behaviorAttrList)
-    },
-
-    // 通过 vals 获取完整的 valList
-    // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    byValsGetValList (vals, checkedList, attrList, isLast = false) {
-      // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      let list = []
-      vals.forEach(val => {
-        // eslint-disable-next-line no-debugger
-        debugger
-        const aa = [{ name: '', value: '', filed: '', operator: '=', type: 'cishu' }]
-        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
-        let obj = checkedList.find(item => item.value === val) || attrList.find(item => item.value === val)
-        obj.childCheckedVal = obj.childCheckedVal || []
-        // obj.child = obj.child || aa
-        // eslint-disable-next-line no-debugger
-        debugger
-        // console.log('obj.child=>>', obj.child)
-        obj.child = obj.child || (isLast ? aa : [])
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
-        list.push(obj2)
-      })
-      // console.log('list===>', list)
-      return list 
-    },
-    
-    handelChildBehavirSelectChange(childItem) {
-      // console.log(childItem)
-      // eslint-disable-next-line no-debugger
-      // debugger
-      const vals = childItem.childCheckedVal
-      const checkedList = childItem.child || []
-      const behaviorAttrList = this.getChildBehaviorAttrList()
-      childItem.child = this.byValsGetValList(vals, checkedList, behaviorAttrList, true)
-      // this.checkedList[i].childCheckedVal = val
-      // let obj = Object.assign(this.checkedList[i], {childCheckedVal: val})
-      // this.$set(this.checkedList, i, obj)
-      // console.log(this.checkedList)
-    },
-    getBehaviorAttrList() {
-      return [{
-        value: 'xiazai',
-        label: '下载应用'
-      }, {
-        value: 'qidong',
-        label: '启动应用'
-      }, {
-        value: 'xiezai',
-        label: '卸载应用'
-      }]
-    },
-
-    getChildBehaviorAttrList() {
-      return [{
-        value: 'mg',
-        label: '芒果TV'
-      },{
-        value: 'tx',
-        label: '腾讯视频'
-      },{
-        value: 'bl',
-        label: 'bilibili'
-      }]
-    },
     // 111111111111111111
     handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
@@ -551,7 +411,14 @@ export default {
             categoryCode: tag.tagKey,
             bav: {
               value: [],
-              behaviorValue: [],
+              behaviorValue: [
+                {
+                  name: '',
+                  type: "",
+                  field: "",
+                  operator: "=",
+                }
+              ],
               rangeType: 'fixed',
               rang: "",
               weekRang: [],
@@ -559,6 +426,11 @@ export default {
             }
           }
         ]
+      })
+
+      this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
+        this.bavAttrList = res
+        console.log('this.bavAttrList ==>', this.bavAttrList)
       })
     },
     handleAddActionChildRule(rule, tag) {
@@ -579,7 +451,14 @@ export default {
         categoryCode: tag.tagKey,
         bav: {
           value: [],
-          behaviorValue: [],
+          behaviorValue: [
+            {
+              name: '',
+              type: "",
+              field: "",
+              operator: "=",
+            }
+          ],
           rangeType: 'fixed',
           rang: "",
           weekRang: [],
@@ -697,21 +576,7 @@ export default {
       }
     }
   },
-  created() {
-    // console.log('rulesJson==', this.rulesJson)
-    this.weekRange = Object.keys(types.weekRange).map(item => {
-      return {
-        label: types.weekRange[item],
-        value: item
-      }
-    })
-    this.timeRange = Object.keys(types.timeRange).map(item => {
-      return {
-        label: types.timeRange[item],
-        value: item
-      }
-    })
-  }
+
 }
 </script>
 <style scoped  lang="stylus">
@@ -904,36 +769,6 @@ i {
   overflow-y: hidden;
   display: flex
 }
-.w100 {
-  min-width: 100px;
-}
-.flex-column {
-  display: flex;
-  flex-direction: column;
-}
-.flex-row {
-  display: flex;
-  flex-direction: row;
-}
-.child-attr-wrap {
-  border: 1px dashed #fff;
-  padding: 20px 5px;
-  margin: 10px 0
-  &:hover {
-    // text-decoration: underline;
-    border-color: rgb(0, 188, 212)
-    border-radius: 7px
-  }
-}
-.bav-attr-warp {
-  align-items: baseline
-  border: 1px dashed #fff;
-  display: flex;
-  margin-bottom: 10px;
-  &:hover {
-    // text-decoration: underline;
-    border-color: rgb(0, 188, 212)
-    border-radius: 7px
-  }
-}
+
+
 </style>

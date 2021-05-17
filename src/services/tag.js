@@ -61,3 +61,10 @@ export function getTagDictDatabaseList(params) {
     })
 }
 
+export function getBavTagList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/getBehaviorTagDict/${params.id}`,
+    })
+}
+
