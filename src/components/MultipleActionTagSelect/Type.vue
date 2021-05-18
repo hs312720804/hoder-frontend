@@ -6,8 +6,16 @@
     name="oxve"
     class="input-inline"
   >
-    <el-option value="cishu" label="次数"></el-option>
-    <el-option value="tianshu" label="天数"></el-option>
+    <!-- <el-option value="cishu" label="次数"></el-option>
+    <el-option value="tianshu" label="天数"></el-option> -->
+    <template v-for="attrChildItem in attrList">
+      <el-option
+        :value="attrChildItem.value"
+        :label="attrChildItem.name"
+        :key="attrChildItem.value"
+      >
+      </el-option>
+    </template>
   </el-select>
   <el-select
     v-model="item3.operator"
@@ -36,6 +44,7 @@
 export default {
   data() {
     return {
+      attrList: []
     }
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
@@ -43,6 +52,26 @@ export default {
     item3: {
       type: Object,
       default: () => {}
+    },
+    options: {
+      type: Array,
+      default: () => []
+    },
+  },
+  watch: {
+    options: {
+      handler(val) {
+        this.attrList = val.map(item => {
+          return {
+            name: item.dictLabel,
+            value: item.dictValue,
+            field: item.tableField,
+          }
+        })
+        console.log('2222===>', this.attrList)
+      },
+      deep: true,
+      immediate: true
     }
   },
   methods: {},

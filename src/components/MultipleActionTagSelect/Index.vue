@@ -38,12 +38,24 @@
             >
               <!-- 行为标签专属日期选项 111111111111111111111111111-->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <Range :childItem="childItem" :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"></Range>
-                
+                <Range 
+                  v-if="childItem.tagCode !== 'BAV0001'" 
+                  :childItem="childItem" 
+                  :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
+                  :options="bavAttrList[childItem.categoryCode]"
+                >
+                </Range>
+                <!-- {{childItem}} -->
                 <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
-                <Bav :childItem="childItem" ></Bav>
+                <Bav 
+                  :childItem="childItem" 
+                  :bavAttrList="bavAttrList[childItem.categoryCode]"
+                >
+                </Bav>
               </div>
-
+              <span class="i" @click="handleRemoveSpecialRule(item, childItem)">
+                <i class="icon iconfont el-icon-cc-delete"></i>
+              </span>
               <!-- 行为标签专属日期选项 end111111111111111111111111111-->
             </div>
             <div class="label-add">
@@ -135,7 +147,7 @@ import Bav from './Bav/Index.vue'
 export default {
   data() {
     return {
-      bavAttrList: [],
+      bavAttrList: {},
       tagCodeValue: {
         'BAV0001': 1,
         'BAV0002': 2,
@@ -381,7 +393,7 @@ export default {
       }
     },
     handleRemoveSpecialRule(rule, childRule) {
-      const rulesJson = this.dynamicPolicyJson
+      const rulesJson = this.actionRulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
         rulesJson.rules = rulesJson.rules.filter(function(item) {
@@ -398,38 +410,54 @@ export default {
         this.$message.warning('已达最大数量')
         return
       }
-      this.actionRulesJson.rules.push({
-        condition: 'AND',
-        rules: [
-          {
-            operator: '=',
-            tagCode: tag.tagKey,
-            tagName: tag.tagName,
-            dataSource: tag.dataSource,
-            tagId: tag.tagId,
-            tagType: tag.tagType,
-            categoryCode: tag.tagKey,
-            bav: {
-              value: [],
-              behaviorValue: [
-                {
-                  name: '',
-                  type: "",
-                  field: "",
-                  operator: "=",
-                }
-              ],
-              rangeType: 'fixed',
-              rang: "",
-              weekRang: [],
-              timeRange: []
-            }
-          }
-        ]
-      })
+      
 
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
-        this.bavAttrList = res
+        // eslint-disable-next-line no-debugger
+        this.bavAttrList[tag.tagKey] = res || {}
+
+        this.actionRulesJson.rules.push({
+          condition: 'AND',
+          rules: [
+            {
+              operator: '=',
+              tagCode: tag.tagKey,
+              tagName: tag.tagName,
+              dataSource: tag.dataSource,
+              tagId: tag.tagId,
+              tagType: tag.tagType,
+              categoryCode: tag.tagKey,
+              bav: {
+                table: res.tableName || '',
+                value: [],
+                behaviorValue: [
+                  {
+                    name: '',
+                    type: '',
+                    field: '',
+                    operator: '=',
+                  }
+                ],
+                rangeType: 'fixed',
+                rang:  {
+                  name: '',
+                  value: [],
+                  field: '',
+                },
+                weekRang: {
+                  name: '',
+                  value: [],
+                  field:''
+                },
+                timeRange: {
+                  name: '',
+                  value:[],
+                  field: ''
+                }
+              }
+            }
+          ]
+        })
         console.log('this.bavAttrList ==>', this.bavAttrList)
       })
     },
@@ -441,30 +469,52 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      rule.rules.push({
-        operator: '=',
-        tagCode: tag.tagKey,
-        tagName: tag.tagName,
-        dataSource: tag.dataSource,
-        tagId: tag.tagId,
-        tagType: tag.tagType,
-        categoryCode: tag.tagKey,
-        bav: {
-          value: [],
-          behaviorValue: [
-            {
+
+      this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
+        // eslint-disable-next-line no-debugger
+        this.bavAttrList[tag.tagKey] = res || {}
+        
+        rule.rules.push({
+          operator: '=',
+          tagCode: tag.tagKey,
+          tagName: tag.tagName,
+          dataSource: tag.dataSource,
+          tagId: tag.tagId,
+          tagType: tag.tagType,
+          categoryCode: tag.tagKey,
+          bav: {
+            table: res.tableName || '',
+            value: [],
+            behaviorValue: [
+              {
+                name: '',
+                type: "",
+                field: "",
+                operator: "=",
+              }
+            ],
+            rangeType: 'fixed',
+            rang:  {
               name: '',
-              type: "",
-              field: "",
-              operator: "=",
+              value: [],
+              field: '',
+            },
+            weekRang: {
+              name: '',
+              value: [],
+              field:''
+            },
+            timeRange: {
+              name: '',
+              value:[],
+              field: ''
             }
-          ],
-          rangeType: 'fixed',
-          rang: "",
-          weekRang: [],
-          timeRange: []
-        }
+          }
+        })
+        console.log('this.bavAttrList ==>', this.bavAttrList)
       })
+
+      
     },
     // 数组去重
     distinct(a, b) {
