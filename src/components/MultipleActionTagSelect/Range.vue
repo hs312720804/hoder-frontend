@@ -56,7 +56,7 @@
           style="width: 412px"
           name="oxve"
           class="input-inline sel"
-          @change="handelWeekChange(childItem.bav.weekRang, weekRange)"
+          @change="handelSelectChange(childItem.bav.weekRang, weekRange)"
         >
           <template v-for="item in weekRange">
             <el-option
@@ -77,6 +77,7 @@
           style="width: 412px"
           name="oxve"
           class="input-inline"
+          @change="handelSelectChange(childItem.bav.timeRange, timeRange)"
         >
           <template v-for="item in timeRange">
             <el-option
@@ -158,7 +159,7 @@ export default {
     }
   },
   methods: {
-    handelWeekChange(item, list) {
+    handelSelectChange(item, list) {
       item.field = list[0].field
     }
   },

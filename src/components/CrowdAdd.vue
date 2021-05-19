@@ -277,9 +277,12 @@ export default {
             data.forEach(item => {
                 if (item.dataSource === 6) { // 效果指标
                   specialTags.push(item)
-                } else if (item.dataSource === 8) {
+                } else if ( item.dataSource === 8 ) { // 行为标签
                   actionTags.push(item)
-                }else {
+                } else if ( item.dataSource === 2 ) { // 大数据标签
+                  actionTags.push(item)
+                  normalTags.push(item)
+                } else {
                   normalTags.push(item)
                 }
             })

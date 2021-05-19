@@ -61,10 +61,20 @@ export function getTagDictDatabaseList(params) {
     })
 }
 
+// 行为标签
 export function getBavTagList(params) {
     return this.fetch({
         method: 'get',
         url: `api/auto/getBehaviorTagDict/${params.id}`,
+    })
+}
+
+// 行为标签- 模块活跃-推荐位,板块位，版面位下拉信息
+export function moduleMatch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/module/match/${params.type}`,
+        params
     })
 }
 
