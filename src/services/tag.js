@@ -78,3 +78,21 @@ export function moduleMatch(params) {
     })
 }
 
+// 行为标签- 起播行为-查询影视内容接口
+export function tvContentMatch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/play/tvContent/${params.source}`,
+        params
+    })
+}
+
+// 行为标签- 起播行为-查询影视内容接口
+export function tvEpisodes(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/play/tvEpisodes/${params.source}/${params.id}`,
+        params
+    })
+}
+

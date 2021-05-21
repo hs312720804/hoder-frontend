@@ -560,7 +560,7 @@ export default {
     actionRulesJson: {
       handler(val) {
         console.log('crowd==>', val)
-        this.fetchAllTagSuggestions()
+        // this.fetchAllTagSuggestions()
       },
       deep: true,
       immediate: true
@@ -740,14 +740,60 @@ export default {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
         // 设备活跃 特殊赋值
-        const defaultBehaviorValue = tag.tagKey === 'BAV0007' ? [
-          {
-            name: '',
-            type: '',
-            field: '',
-            operator: '=',
-          }
-        ] : []
+        let defaultBehaviorValue = []
+        if (tag.tagKey === 'BAV0007') {
+          defaultBehaviorValue = [
+            {
+              name: '',
+              type: '',
+              field: '',
+              operator: '=',
+              value: ''
+            }
+          ]
+        } else if (tag.tagKey === 'BAV0008') {
+          defaultBehaviorValue = [
+            {
+              name: '',
+              type: 'string',
+              field: '',
+              operator: '=',
+              value: '',
+              childCheckedVal: [''],
+              child: [{
+                name: '',
+                type: 'string',
+                field: '',
+                operator: '=',
+                value: '',
+                childCheckedVal: [''],
+                child: [{
+                  name: '',
+                  type: 'string',
+                  field: '',
+                  operator: '=',
+                  value: '',
+                  childCheckedVal: [''],
+                  child: [{
+                    name: '',
+                    type: 'string',
+                    field: '',
+                    operator: '=',
+                    value: '',
+                    childCheckedVal: [''],
+                    child: [{
+                      name: '',
+                      type: 'string',
+                      field: '',
+                      operator: '=',
+                      value: '',
+                    }]
+                  }]
+                }]
+              }]
+            }
+          ]
+        }
         this.actionRulesJson.rules.push({
           condition: 'AND',
           rules: [
