@@ -4,7 +4,7 @@
                 :title="tagCategory.tagId ? '编辑种类' : '新建种类'"
                 :visible.sync="showCreateDialog"
         >
-            <GateSchemaForm v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
+            <c-gate-schema-form v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
                 <div key="/groupId">
                     <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
                     <el-input   size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
@@ -61,7 +61,7 @@
                     >
                     </el-option>
                 </el-select>
-            </GateSchemaForm>
+            </c-gate-schema-form>
         </el-dialog>
         <!--选择父类弹窗-->
         <el-dialog
