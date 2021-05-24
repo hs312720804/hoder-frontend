@@ -88,7 +88,7 @@ export function tvContentMatch(params) {
 }
 
 // 行为标签- 起播行为-查询影视内容接口
-export function tvEpisodes(params) {
+export function getTvEpisodes(params) {
     return this.fetch({
         method: 'get',
         url: `api/auto/play/tvEpisodes/${params.source}/${params.id}`,

@@ -56,7 +56,7 @@
           <!-- 第三级 -->
           <!-- {{item.childCheckedVal}}
           {{item.child}} -->
-          <span v-if="item.childCheckedVal === 'vip_prod_due_timeeffective' || item.childCheckedVal === 'vip_prod_due_timeno_effective'">
+          <span v-if="item.childCheckedVal === 'effective' || item.childCheckedVal === 'no_effective'">
             <span
               v-for="(item2, index2) in item.child"
               :key="'typeInputValue' + index2"
@@ -83,7 +83,7 @@
             </span>
           </span>
 
-          <span v-else-if="item.childCheckedVal === 'single_prod_status购买过'">
+          <span v-else-if="item.childCheckedVal === 'paid_single'">
             <span
               v-for="(item2, index2) in item.child"
               :key="'typeInputValue' + index2"
@@ -465,7 +465,7 @@
         <!-- <span class="w100">{{ item.name }}</span> -->
           <!-- {{ item.childCheckedVal }} -->
         <!-- handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) { -->
-        {{ item.childCheckedVal}}
+        <!-- {{ item.childCheckedVal}} -->
         <!-- 第二级 -->
         <el-select
           v-model="item.childCheckedVal[0]"
@@ -524,7 +524,7 @@
               name="asdq"
               class="input-inline"
               clearable
-              @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, [])"
+              @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', false, [])"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(childItem, 4)">
 
@@ -620,13 +620,13 @@
                           style="width: 150px;"
                           placeholder="请选择123"
                           clearable
-                          @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'value', false)"
+                          @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
                         >
                           <el-option
                             v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
-                            :key="attrChildItem.value"
+                            :key="attrChildItem.type"
                             :label="attrChildItem.name"
-                            :value="attrChildItem.value">
+                            :value="attrChildItem.type">
                           </el-option>
                         </el-select>
                         <span
@@ -788,7 +788,6 @@ export default {
         this.moOptions[field] = [];
       }
     },
-    
 
     getDefaultChildObj() {
       return JSON.parse(JSON.stringify(this.defaultChildObj))
@@ -906,7 +905,8 @@ export default {
     // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
     getQiBoValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      
+      // eslint-disable-next-line no-debugger
+      debugger
       let list = []
       vals.forEach(val => {
         const aa = [
@@ -951,12 +951,13 @@ export default {
           obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
         // eslint-disable-next-line no-debugger
-        debugger
-        if (isValueClear) { // 清空当前对象的child里面的值
+        if (isValueClear) { // 清空当前对象的child里面的值 (一二级联动时的交互)
           obj.childCheckedVal = []
-          obj.child[0].value = ''
-          obj.child[0].name = ''
-          obj.child[0].field = ''
+          if (obj.child.length > 0 ) {
+            obj.child[0].value = ''
+            obj.child[0].name = ''
+            obj.child[0].field = ''
+          }
           // obj.child = [{
           //   value: '',
           //   name: '',
@@ -1013,9 +1014,11 @@ export default {
       console.log('123item==>', item)
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
-      
+      // eslint-disable-next-line no-debugger
+      debugger
       // const behaviorAttrList = this.getChildBehaviorAttrList()
       const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
+      if (level === 4) this.qiBoOptions = [] // 切换视频源时，清空下拉选项
       childItem.child = this.getQiBoValListByVals(
         vals,
         checkedList,
@@ -1040,9 +1043,9 @@ export default {
           attrlist = dict.vip_package
         } else if (level === 2) {
           attrlist = dict.use_status
-        } else if (level === 3 && extra.extra === 'vip_prod_due_timeeffective') {
+        } else if (level === 3 && extra.extra === 'effective') {
           attrlist = dict.vip_expire_use
-        } else if (level === 3 && extra.extra === 'vip_prod_due_timeno_effective') {
+        } else if (level === 3 && extra.extra === 'no_effective') {
           attrlist = dict.vip_expire
         } 
       } else if (childItem.tagCode === 'BAV0002') {
@@ -1117,13 +1120,24 @@ export default {
       }
       // console.log('attrlist==>', attrlist)
       attrlist = attrlist.map(item => {
-        return {
+        let list = {
           name: item.dictLabel,
           value: item.dictValue,
           field: item.tableField,
           type: item.filedType,
           selectKey: item.tableField + item.dictValue
         }
+        if (childItem.tagCode === 'BAV0001') {
+          list = {
+            name: item.dictLabel,
+            value: item.dictValue,
+            field: item.tableField,
+            type: 'string',
+            selectKey: item.filedType,
+            operator: '>='
+          }
+        }
+        return list
       })
       // console.log('attrlist==>', attrlist)
       return attrlist

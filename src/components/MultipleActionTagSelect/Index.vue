@@ -805,6 +805,7 @@ export default {
               tagId: tag.tagId,
               tagType: tag.tagType,
               categoryCode: tag.tagKey,
+              table: res.tableName || '',
               bav: {
                 table: res.tableName || '',
                 value: [],
@@ -865,6 +866,7 @@ export default {
           tagId: tag.tagId,
           tagType: tag.tagType,
           categoryCode: tag.tagKey,
+          table: res.tableName || '',
           bav: {
             table: res.tableName || '',
             value: [],
@@ -882,7 +884,7 @@ export default {
             },
             timeRange: {
               name: '',
-              value:[],
+              value: [],
               field: ''
             }
           }

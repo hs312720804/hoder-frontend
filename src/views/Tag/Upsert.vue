@@ -4,8 +4,8 @@
             :visible.sync="showCreateDialog"
             :append-to-body='true'
     >
-        <GateSchemaForm ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
-        </GateSchemaForm>
+        <c-gate-schema-form ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
+        </c-gate-schema-form>
     </el-dialog>
 
 </template>
