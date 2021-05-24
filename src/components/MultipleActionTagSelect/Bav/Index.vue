@@ -524,7 +524,7 @@
               name="asdq"
               class="input-inline"
               clearable
-              @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', false, [])"
+              @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(childItem, 4)">
 
@@ -547,14 +547,14 @@
               <!-- 第五级 -->
               <el-select
                 v-model="item4.childCheckedVal[0]"
-                style="width: 200px;"
+                style="width: 150px;"
                 filterable
                 remote
                 placeholder="请输入板块ID"
                 clearable
                 :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
                 :loading="loading2"
-                @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', false)"
+                @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)"
               >
                 <el-option
                   v-for="tv in qiBoOptions"
@@ -570,96 +570,213 @@
                 class="flex-row child"
               >
                 <!-- {{ item5 }} -->
-
-                <span class="flex-column">
-                  <el-select
-                    multiple
-                    v-if="item5.videoType !== '电影'"
-                    v-model="item5.childCheckedVal"
-                    style="width: 100px;"
-                    placeholder="请选择集数"
-                    clearable
-                    @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)"
-                  >
-                    <el-option
-                      v-for="tv in qiBoCollectionOptions"
-                      :key="tv.value"
-                      :label="tv.name"
-                      :value="tv.value">
-                    </el-option>
-                  </el-select>
-                  <span
-                    v-for="(item6, index) in item5.child"
-                    :key="index"
-                    class="flex-row child"
-                  >
-                    <span class="w100">{{ item6.name }}</span>
+                <!-- 选择了视频源下的视频 -->
+                <span v-if="!!item5.value" class="flex-column">
+                  <!-- // 是电影的 -->
+                  <span v-if="item5.videoType === '电影'" class="flex-row"> 
                     <el-select
-                      v-model="item6.childCheckedVal[0]"
-                      style="width: 150px;"
-                      placeholder="请选择"
-                      clearable
-                      @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
-                    > 
-                      
-                      <el-option
-                        v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
-                        :key="attrChildItem.value"
-                        :label="attrChildItem.name"
-                        :value="attrChildItem.value">
-                      </el-option>
-                    </el-select>
-                    <span>
-                      <span
-                        v-for="(item7, index) in item6.child"
-                        :key="index"
-                        class="flex-row child"
-                      >
-                        <el-select
-                          v-model="item7.childCheckedVal[0]"
-                          style="width: 150px;"
-                          placeholder="请选择123"
-                          clearable
-                          @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
-                        >
-                          <el-option
-                            v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
-                            :key="attrChildItem.type"
-                            :label="attrChildItem.name"
-                            :value="attrChildItem.type">
-                          </el-option>
-                        </el-select>
+                        v-model="item5.childCheckedVal[0]"
+                        style="width: 150px;"
+                        placeholder="请选择"
+                        clearable
+                        @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)"
+                      > 
+                        
+                        <el-option
+                          v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
+                          :key="attrChildItem.value"
+                          :label="attrChildItem.name"
+                          :value="attrChildItem.value">
+                        </el-option>
+                      </el-select>
+                      <span>
                         <span
-                          v-for="(item8, index) in item7.child"
+                          v-for="(item6, index) in item5.child"
                           :key="index"
                           class="flex-row child"
                         >
                           <el-select
-                            v-model="item8.operator"
-                            style="max-width: 100px; min-width: 100px;"
-                            name="oxve"
-                            class="input-inline"
-                          >
-                            <el-option value="="></el-option>
-                            <el-option value=">="></el-option>
-                            <el-option value="<="></el-option>
-                            <el-option value=">"></el-option>
-                            <el-option value="<"></el-option>
-                          </el-select>
-                          <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
-                          <el-input
-                            placeholder="请输入"
-                            v-model="item8.value"
+                            v-model="item6.childCheckedVal[0]"
+                            style="width: 150px;"
+                            placeholder="请选择333"
                             clearable
-                            style="max-width: 100px; min-width: 100px;"
+                            @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)"
                           >
-                          </el-input>
+                            <el-option
+                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                              :key="attrChildItem.type"
+                              :label="attrChildItem.name"
+                              :value="attrChildItem.type">
+                            </el-option>
+                          </el-select>
+                          <span
+                            v-for="(item7, index) in item6.child"
+                            :key="index"
+                            class="flex-row child"
+                          >
+                            <el-select
+                              v-model="item7.operator"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                            >
+                              <el-option value="="></el-option>
+                              <el-option value=">="></el-option>
+                              <el-option value="<="></el-option>
+                              <el-option value=">"></el-option>
+                              <el-option value="<"></el-option>
+                            </el-select>
+                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
+                            <el-input
+                              placeholder="请输入"
+                              v-model="item7.value"
+                              clearable
+                              style="max-width: 100px; min-width: 100px;"
+                            >
+                            </el-input>
+                          </span>
+                        </span>
+                      </span>
+                  </span>
+                  <!-- // 不是电影的 -->
+                  <span v-else> 
+                    <el-select
+                      multiple
+                      v-model="item5.childCheckedVal"
+                      style="width: 100px;"
+                      placeholder="请选择集数"
+                      clearable
+                      @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)"
+                    >
+                      <el-option
+                        v-for="tv in qiBoCollectionOptions"
+                        :key="tv.value"
+                        :label="tv.name"
+                        :value="tv.value">
+                      </el-option>
+                    </el-select>
+                    <span
+                      v-for="(item6, index) in item5.child"
+                      :key="index"
+                      class="flex-row child"
+                    >
+                      <span class="w100">{{ item6.name }}</span>
+                      <el-select
+                        v-model="item6.childCheckedVal[0]"
+                        style="width: 150px;"
+                        placeholder="请选择"
+                        clearable
+                        @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
+                      > 
+                        
+                        <el-option
+                          v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
+                          :key="attrChildItem.value"
+                          :label="attrChildItem.name"
+                          :value="attrChildItem.value">
+                        </el-option>
+                      </el-select>
+                      <span>
+                        <span
+                          v-for="(item7, index) in item6.child"
+                          :key="index"
+                          class="flex-row child"
+                        >
+                          <el-select
+                            v-model="item7.childCheckedVal[0]"
+                            style="width: 150px;"
+                            placeholder="请选择123"
+                            clearable
+                            @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
+                          >
+                            <el-option
+                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                              :key="attrChildItem.type"
+                              :label="attrChildItem.name"
+                              :value="attrChildItem.type">
+                            </el-option>
+                          </el-select>
+                          <span
+                            v-for="(item8, index) in item7.child"
+                            :key="index"
+                            class="flex-row child"
+                          >
+                            <el-select
+                              v-model="item8.operator"
+                              style="max-width: 100px; min-width: 100px;"
+                              name="oxve"
+                              class="input-inline"
+                            >
+                              <el-option value="="></el-option>
+                              <el-option value=">="></el-option>
+                              <el-option value="<="></el-option>
+                              <el-option value=">"></el-option>
+                              <el-option value="<"></el-option>
+                            </el-select>
+                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
+                            <el-input
+                              placeholder="请输入"
+                              v-model="item8.value"
+                              clearable
+                              style="max-width: 100px; min-width: 100px;"
+                            >
+                            </el-input>
+                          </span>
                         </span>
                       </span>
                     </span>
                   </span>
+
                 </span>
-              <!-- {{ item5 }} -->
+
+                <!-- 没有选择视频 -->
+                <span v-else>
+                  <!-- {{ item5 }} -->
+                  <span class="flex-row"
+                  >
+                    <el-select
+                      v-model="item5.childCheckedVal[0]"
+                      style="width: 150px;"
+                      placeholder="请选择666666666"
+                      clearable
+                      @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)"
+                    >
+                      <el-option
+                        v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                        :key="attrChildItem.type"
+                        :label="attrChildItem.name"
+                        :value="attrChildItem.type">
+                      </el-option>
+                    </el-select>
+                    <span
+                      v-for="(item6, index) in item5.child"
+                      :key="index"
+                      class="flex-row child"
+                    >
+                      <el-select
+                        v-if="index === 0"
+                        v-model="item6.operator"
+                        style="max-width: 100px; min-width: 100px;"
+                        name="oxve"
+                        class="input-inline"
+                      >
+                        <el-option value="="></el-option>
+                        <el-option value=">="></el-option>
+                        <el-option value="<="></el-option>
+                        <el-option value=">"></el-option>
+                        <el-option value="<"></el-option>
+                      </el-select>
+                      <el-input
+                        v-if="index === 0"
+                        placeholder="请输入"
+                        v-model="item6.value"
+                        clearable
+                        style="max-width: 100px; min-width: 100px;"
+                      >
+                      </el-input>
+                    </span>
+                  </span>
+                </span>
               </span>
             </span>
           </span>
@@ -957,6 +1074,13 @@ export default {
             obj.child[0].value = ''
             obj.child[0].name = ''
             obj.child[0].field = ''
+            if (level !== 2 && level !== 4 && obj.child[0].child && obj.child[0].child.length > 0 ) {
+              obj.child[0].childCheckedVal = []
+              obj.child[0].child[0].value = ''
+              obj.child[0].child[0].name = ''
+              obj.child[0].child[0].field = ''
+              obj.child[0].child[0].childCheckedVal = []
+            }
           }
           // obj.child = [{
           //   value: '',
@@ -971,27 +1095,27 @@ export default {
           // eslint-disable-next-line no-debugger
           debugger
           console.log('childItem==>', matchObj)
-          if (obj.videoType !== '电影') {
+          if (obj.videoType !== '电影' && obj.source && obj.value) {
             const params = {
-            source: obj.source,
-            id: obj.value,
-            page: 1,
-            pageSize: 10
-          }
-          
-          // const unit = 
-          this.$service.getTvEpisodes(params).then(res => {
-            this.qiBoCollectionOptions = res.rows || []
-            this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
-              return {
-                name: '第' + obj.urlCollection + '集',
-                value: obj.urlCollection,
-                field: obj.tableField,
-                type: 'string'
-              }
+              source: obj.source,
+              id: obj.value,
+              page: 1,
+              pageSize: 10
+            }
+            
+            // const unit = 
+            this.$service.getTvEpisodes(params).then(res => {
+              this.qiBoCollectionOptions = res.rows || []
+              this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
+                return {
+                  name: '第' + obj.urlCollection + '集',
+                  value: obj.urlCollection,
+                  field: obj.tableField,
+                  type: 'string'
+                }
+              })
+              console.log('res', res)
             })
-            console.log('res', res)
-          })
           }
           
         }
@@ -1016,8 +1140,8 @@ export default {
       const checkedList = childItem.child || []
       // eslint-disable-next-line no-debugger
       debugger
-      // const behaviorAttrList = this.getChildBehaviorAttrList()
-      const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
+      const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
+      // const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
       if (level === 4) this.qiBoOptions = [] // 切换视频源时，清空下拉选项
       childItem.child = this.getQiBoValListByVals(
         vals,
@@ -1099,7 +1223,7 @@ export default {
           return this.qiBoCollectionOptions
         } else if (level === 7) {
           attrlist = dict.pay_type
-        } else if (level === 8) {
+        } else if (level === 8 ) {
           attrlist = dict.watch_time
         }
       } else {

@@ -787,6 +787,14 @@ export default {
                       field: '',
                       operator: '=',
                       value: '',
+                      childCheckedVal: [''],
+                      child: [{
+                        name: '',
+                        type: 'string',
+                        field: '',
+                        operator: '=',
+                        value: '',
+                      }]
                     }]
                   }]
                 }]
