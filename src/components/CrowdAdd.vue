@@ -31,15 +31,15 @@
                       @click="handleConditionChange(crowd)"
                       round
                       :key="i+'condition'"
-              >{{ (crowd.actionRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+              >{{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
             
-            <!-- {{ (crowd.actionRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+            <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
             123
             {{ crowd.dynamicPolicyJson.link }} -->
             </div>
 
             <el-form-item label="行为标签" v-if="actionTags.length > 0">
-              <MultipleActionTagSelect :actionTags="actionTags" :actionRulesJson="crowd.actionRulesJson" :crowd="crowd" :i="i"></MultipleActionTagSelect>
+              <MultipleActionTagSelect :actionTags="actionTags" :behaviorRulesJson="crowd.behaviorRulesJson" :crowd="crowd" :i="i"></MultipleActionTagSelect>
             </el-form-item>
 
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
@@ -178,7 +178,7 @@ export default {
                           condition: 'OR',
                           rules: []
                       },
-                      'actionRulesJson': {
+                      'behaviorRulesJson': {
                           link: 'AND',
                           condition: 'OR',
                           rules: []
@@ -223,7 +223,7 @@ export default {
             condition: 'OR',
             rules: []
           },
-          'actionRulesJson': {
+          'behaviorRulesJson': {
               link: 'AND',
               condition: 'OR',
               rules: []

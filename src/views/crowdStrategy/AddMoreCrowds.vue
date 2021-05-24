@@ -55,7 +55,7 @@ export default {
               condition: 'OR',
               rules: []
             },
-            actionRulesJson: {
+            behaviorRulesJson: {
               link: 'AND',
               condition: 'OR',
               rules: []

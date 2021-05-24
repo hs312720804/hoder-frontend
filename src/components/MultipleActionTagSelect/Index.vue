@@ -4,7 +4,7 @@
     <!-- {{ actionTags}} -->
     <div v-if="actionTags && actionTags.length > 0">
       <div
-        v-show="actionRulesJson.rules.length > 1"
+        v-show="behaviorRulesJson.rules.length > 1"
         class="label-or-space"
         :key="i + 'or'"
       >
@@ -12,12 +12,12 @@
           type="success"
           round
           :key="'button2' + '_' + i"
-          @click="handleRulesConditionChange(actionRulesJson)"
+          @click="handleRulesConditionChange(behaviorRulesJson)"
         >
-          {{ actionRulesJson.condition === 'AND' ? '且' : '或' }}
+          {{ behaviorRulesJson.condition === 'AND' ? '且' : '或' }}
         </el-button>
       </div>
-      <template v-for="(item, index) in actionRulesJson.rules">
+      <template v-for="(item, index) in behaviorRulesJson.rules">
         <div class="label-ground" :key="index">
           <div class="tag-condition--parent">
             <div class="tag-condition" v-show="item.rules.length > 1">
@@ -399,7 +399,7 @@
           class="optional-condition"
           v-if="actionTags.length"
           :style="{
-            'padding-top': actionRulesJson.rules.length > 0 ? '10px' : 0,
+            'padding-top': behaviorRulesJson.rules.length > 0 ? '10px' : 0,
           }"
         >
           <el-tag
@@ -547,7 +547,7 @@ export default {
       type: Number,
       default: 0
     },
-    actionRulesJson: {
+    behaviorRulesJson: {
       type: Object,
       default: () => {}
     },
@@ -557,7 +557,7 @@ export default {
     }
   },
   watch: {
-    actionRulesJson: {
+    behaviorRulesJson: {
       handler(val) {
         console.log('crowd==>', val)
         // this.fetchAllTagSuggestions()
@@ -714,7 +714,7 @@ export default {
       }
     },
     handleRemoveSpecialRule(rule, childRule) {
-      const rulesJson = this.actionRulesJson
+      const rulesJson = this.behaviorRulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
         rulesJson.rules = rulesJson.rules.filter(function(item) {
@@ -731,7 +731,7 @@ export default {
         this.handleAddRule(tag)
         return
       }
-      if (this.actionRulesJson.rules.length > 50) {
+      if (this.behaviorRulesJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
       }
@@ -794,7 +794,7 @@ export default {
             }
           ]
         }
-        this.actionRulesJson.rules.push({
+        this.behaviorRulesJson.rules.push({
           condition: 'AND',
           rules: [
             {
@@ -893,7 +893,7 @@ export default {
     },
     // 大数据
     handleAddRule(tag) {
-      if (this.actionRulesJson.rules.length > 50) {
+      if (this.behaviorRulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
           message: '已达最大数量'
@@ -913,7 +913,7 @@ export default {
         }
       }
       // 11111111111111
-      this.actionRulesJson.rules.push({
+      this.behaviorRulesJson.rules.push({
         condition: 'AND',
         rules: [
           {
@@ -1066,7 +1066,7 @@ export default {
     fetchAllTagSuggestions() {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
-      let ruleJsonData = this.actionRulesJson || {}
+      let ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)

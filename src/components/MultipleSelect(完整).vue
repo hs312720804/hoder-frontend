@@ -538,7 +538,7 @@
     <!-- {{ actionTags}} -->
     <div v-if="actionTags && actionTags.length > 0">
       <div
-        v-show="actionRulesJson.rules.length > 1"
+        v-show="behaviorRulesJson.rules.length > 1"
         class="label-or-space"
         :key="i + 'or'"
       >
@@ -546,12 +546,12 @@
           type="success"
           round
           :key="'button2' + '_' + i"
-          @click="handleRulesConditionChange(actionRulesJson)"
+          @click="handleRulesConditionChange(behaviorRulesJson)"
         >
-          {{ actionRulesJson.condition === 'AND' ? '且' : '或' }}
+          {{ behaviorRulesJson.condition === 'AND' ? '且' : '或' }}
         </el-button>
       </div>
-      <template v-for="(item, index) in actionRulesJson.rules">
+      <template v-for="(item, index) in behaviorRulesJson.rules">
         <div class="label-ground" :key="index">
           <div class="tag-condition--parent">
             <div class="tag-condition" v-show="item.rules.length > 1">
@@ -738,7 +738,7 @@
           class="optional-condition"
           v-if="actionTags.length"
           :style="{
-            'padding-top': actionRulesJson.rules.length > 0 ? '10px' : 0,
+            'padding-top': behaviorRulesJson.rules.length > 0 ? '10px' : 0,
           }"
         >
           <el-tag
@@ -1134,7 +1134,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    actionRulesJson: {
+    behaviorRulesJson: {
       type: Object,
       default: () => {}
     },
@@ -1155,7 +1155,7 @@ export default {
       },
       immediate: true,
     },
-    actionRulesJson: {
+    behaviorRulesJson: {
       handler() {
         this.fetchAllTagSuggestions()
       },
@@ -1584,11 +1584,11 @@ export default {
       })
     },
     handleAddActionRule(tag) {
-      if (this.actionRulesJson.rules.length > 50) {
+      if (this.behaviorRulesJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
       }
-      this.actionRulesJson.rules.push({
+      this.behaviorRulesJson.rules.push({
         condition: 'AND',
         rules: [
           {
@@ -1701,7 +1701,7 @@ export default {
       // console.log('this.tags====', this.specialTags)
       // eslint-disable-next-line no-debugger
       debugger
-      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || this.actionRulesJson || []
+      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || this.behaviorRulesJson || []
       const len = ruleJsonData.rules && ruleJsonData.rules.length || 0
       if (len > 0) {
         let cacheIds = []

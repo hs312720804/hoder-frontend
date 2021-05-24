@@ -39,13 +39,13 @@
             style="width: 150px"
             name="asdq"
             class="input-inline"
-            @change="handelChildBehavirSelectChange(item, false, childItem, 2, {extra: item.childCheckedVal})"
+            @change="handelChildBehavirSelectChange(item, true, childItem, 2, {extra: item.childCheckedVal}, 'selectKey')"
           >
             <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2, {extra: item.childCheckedVal} )">
               <el-option
-                :value="attrChildItem.value"
+                :value="attrChildItem.selectKey"
                 :label="attrChildItem.name"
-                :key="attrChildItem.value"
+                :key="attrChildItem.selectKey"
               >
               </el-option>
             </template>
@@ -56,12 +56,13 @@
           <!-- 第三级 -->
           <!-- {{item.childCheckedVal}}
           {{item.child}} -->
-          <span v-if="item.childCheckedVal === 'effective' || item.childCheckedVal === 'no_effective'">
+          <span v-if="item.childCheckedVal === 'vip_prod_due_timeeffective' || item.childCheckedVal === 'vip_prod_due_timeno_effective'">
             <span
               v-for="(item2, index2) in item.child"
               :key="'typeInputValue' + index2"
               class="flex-row"
             >
+            <!-- {{item2}} -->
               <el-select
                 multiple
                 v-model="item2.childCheckedVal"
@@ -79,6 +80,18 @@
                   </el-option>
                 </template>
               </el-select>
+            </span>
+          </span>
+
+          <span v-else-if="item.childCheckedVal === 'single_prod_status购买过'">
+            <span
+              v-for="(item2, index2) in item.child"
+              :key="'typeInputValue' + index2"
+              class="flex-row"
+            >   
+            <!-- {{item2}} -->
+               <!-- 次数、天数 -->
+              <Type :item3="item2.child[0]" :options="bavAttrList.dict.attrType"></Type>
             </span>
           </span>
         </span>
@@ -873,7 +886,7 @@ export default {
     handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
       console.log(childItem)
       // eslint-disable-next-line no-debugger
-      // debugger
+      debugger
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
@@ -1027,9 +1040,9 @@ export default {
           attrlist = dict.vip_package
         } else if (level === 2) {
           attrlist = dict.use_status
-        } else if (level === 3 && extra.extra === 'effective') {
+        } else if (level === 3 && extra.extra === 'vip_prod_due_timeeffective') {
           attrlist = dict.vip_expire_use
-        } else if (level === 3 && extra.extra === 'no_effective') {
+        } else if (level === 3 && extra.extra === 'vip_prod_due_timeno_effective') {
           attrlist = dict.vip_expire
         } 
       } else if (childItem.tagCode === 'BAV0002') {
