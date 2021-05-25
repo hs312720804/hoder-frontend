@@ -25,76 +25,84 @@
           ></el-option>
         </template>
       </el-select>
-      <div
-        v-for="item in childItem.bav.behaviorValue"
-        :key="item.value"
-        class="flex-row child-attr-wrap"
-      >
-        <span class="w100">{{ item.name }}</span>
-        <span class="flex-row">
-          <!-- 第二级 -->
-          <!-- {{ item.childCheckedVal }} -->
-          <el-select
-            v-model="item.childCheckedVal"
-            style="width: 150px"
-            name="asdq"
-            class="input-inline"
-            @change="handelChildBehavirSelectChange(item, true, childItem, 2, {extra: item.childCheckedVal}, 'selectKey')"
-          >
-            <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2, {extra: item.childCheckedVal} )">
-              <el-option
-                :value="attrChildItem.selectKey"
-                :label="attrChildItem.name"
-                :key="attrChildItem.selectKey"
-              >
-              </el-option>
-            </template>
-          </el-select>
+      
+      <div class="flex-column">
+         
+        <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
 
-          <!-- <span class="flex-row"> -->
-          <!-- <span class="w100">{{ item.label }}</span> -->
-          <!-- 第三级 -->
-          <!-- {{item.childCheckedVal}}
-          {{item.child}} -->
-          <span v-if="item.childCheckedVal === 'effective' || item.childCheckedVal === 'no_effective'">
-            <span
-              v-for="(item2, index2) in item.child"
-              :key="'typeInputValue' + index2"
-              class="flex-row"
+        <div
+          v-for="item in childItem.bav.behaviorValue"
+          :key="item.value"
+          class="flex-row child-attr-wrap"
+        >
+          
+          <span class="w100">{{ item.name }}</span>
+          <span class="flex-row">
+            <!-- 第二级 -->
+            <!-- {{ item.childCheckedVal }} -->
+            <el-select
+              v-model="item.childCheckedVal"
+              style="width: 150px"
+              name="asdq"
+              class="input-inline"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2, {extra: item.childCheckedVal}, 'selectKey')"
             >
-            <!-- {{item2}} -->
-              <el-select
-                multiple
-                v-model="item2.childCheckedVal"
-                style="width: 200px"
-                name="asdq"
-                class="input-inline"
-                @change="handelChildBehavirSelectChange(item2, false, childItem, 3, {extra: item.childCheckedVal})"
-              >
-                <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3, {extra: item.childCheckedVal})">
-                  <el-option
-                    :value="attrChildItem.value"
-                    :label="attrChildItem.name"
-                    :key="attrChildItem.value"
-                  >
-                  </el-option>
-                </template>
-              </el-select>
-            </span>
-          </span>
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2, {extra: item.childCheckedVal} )">
+                <el-option
+                  :value="attrChildItem.selectKey"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.selectKey"
+                >
+                </el-option>
+              </template>
+            </el-select>
 
-          <span v-else-if="item.childCheckedVal === 'paid_single'">
-            <span
-              v-for="(item2, index2) in item.child"
-              :key="'typeInputValue' + index2"
-              class="flex-row"
-            >   
-            <!-- {{item2}} -->
-               <!-- 次数、天数 -->
-              <Type :item3="item2.child[0]" :options="bavAttrList.dict.attrType"></Type>
+            <!-- <span class="flex-row"> -->
+            <!-- <span class="w100">{{ item.label }}</span> -->
+            <!-- 第三级 -->
+            <!-- {{item.childCheckedVal}}
+            {{item.child}} -->
+            <span v-if="item.childCheckedVal === 'effective' || item.childCheckedVal === 'no_effective'">
+            
+              <span
+                v-for="(item2, index2) in item.child"
+                :key="'typeInputValue' + index2"
+                class="flex-row"
+              >
+              <!-- {{item2}} -->
+                <el-select
+                  multiple
+                  v-model="item2.childCheckedVal"
+                  style="width: 200px"
+                  name="asdq"
+                  class="input-inline"
+                  @change="handelChildBehavirSelectChange(item2, false, childItem, 3, {extra: item.childCheckedVal})"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3, {extra: item.childCheckedVal})">
+                    <el-option
+                      :value="attrChildItem.value"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.value"
+                    >
+                    </el-option>
+                  </template>
+                </el-select>
+              </span>
+            </span>
+
+            <span v-else-if="item.childCheckedVal === 'paid_single'">
+              <span
+                v-for="(item2, index2) in item.child"
+                :key="'typeInputValue' + index2"
+                class="flex-row"
+              >   
+              <!-- {{item2}} -->
+                <!-- 次数、天数 -->
+                <Type :item3="item2.child[0]" :options="bavAttrList.dict.attrType"></Type>
+              </span>
             </span>
           </span>
-        </span>
+        </div>
       </div>
     </span>
 
@@ -117,50 +125,55 @@
           ></el-option>
         </template>
       </el-select>
-      <div
-        v-for="item in childItem.bav.behaviorValue"
-        :key="item.value"
-        class="flex-row child-attr-wrap"
-      >
-        <span class="w100">{{ item.name }}</span>
-        <span class="flex-column">
-          <!-- 第二级 -->
-          <!-- {{ item.childCheckedVal }} -->
-          <el-select
-            multiple
-            v-model="item.childCheckedVal"
-            style="width: 110px"
-            name="asdq"
-            class="input-inline"
-            @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
-          >
-            <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
-              <el-option
-                :value="attrChildItem.value"
-                :label="attrChildItem.name"
-                :key="attrChildItem.value"
-              >
-              </el-option>
-            </template>
-          </el-select>
-
-          <span
-            v-for="(item2, index) in item.child"
-            :key="index"
-            class="flex-row child"
-          >
-            <span class="w100">{{ item2.name }}</span>
-            <!-- 第三级 -->
-            <span
-              v-for="(item3, index2) in item2.child"
-              :key="'typeInputValue' + index2"
-              class="flex-row"
+      <div class="flex-column">
+        <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
+        <div
+          v-for="item in childItem.bav.behaviorValue"
+          :key="item.value"
+          class="flex-row child-attr-wrap"
+        >
+          <span class="w100">{{ item.name }}</span>
+          <span class="flex-column">
+            <!-- 第二级 -->
+            <!-- {{ item.childCheckedVal }} -->
+            <el-select
+              multiple
+              v-model="item.childCheckedVal"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
             >
-              <!-- 次数、天数 -->
-              <Type :item3="item3" :options="bavAttrList.dict.attrType"></Type>
-            </span>
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
+                <el-option
+                  :value="attrChildItem.value"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.value"
+                >
+                </el-option>
+              </template>
+            </el-select>
+            <div class="flex-column">
+              <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
+              <span
+                v-for="(item2, index) in item.child"
+                :key="index"
+                class="flex-row child"
+              >
+                <span class="w100">{{ item2.name }}</span>
+                <!-- 第三级 -->
+                <span
+                  v-for="(item3, index2) in item2.child"
+                  :key="'typeInputValue' + index2"
+                  class="flex-row"
+                >
+                  <!-- 次数、天数 -->
+                  <Type :item3="item3" :options="bavAttrList.dict.attrType"></Type>
+                </span>
+              </span>
+            </div>
           </span>
-        </span>
+        </div>
       </div>
     </span>
 
@@ -183,104 +196,113 @@
           ></el-option>
         </template>
       </el-select>
-      <div
-        v-for="item in childItem.bav.behaviorValue"
-        :key="item.value"
-        class="flex-row child-attr-wrap"
-      >
-        <span class="w100">{{ item.name }}</span>
-        <span class="flex-column">
-          <!-- 第二级 -->
-          <!-- {{ item }} -->
-          <el-select
-            multiple
-            v-model="item.childCheckedVal"
-            style="width: 110px"
-            name="asdq"
-            class="input-inline"
-            @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
-          >
-            <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
-              <el-option
-                :value="attrChildItem.value"
-                :label="attrChildItem.name"
-                :key="attrChildItem.value"
+      <div class="flex-column" >
+        <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
+        <div
+          v-for="item in childItem.bav.behaviorValue"
+          :key="item.value"
+          class="flex-row child-attr-wrap"
+        >
+          <span class="w100">{{ item.name }}</span>
+          <span class="flex-column">
+            <!-- 第二级 -->
+            <!-- {{ item }} -->
+            <el-select
+              multiple
+              v-model="item.childCheckedVal"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
+                <el-option
+                  :value="attrChildItem.value"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.value"
+                >
+                </el-option>
+              </template>
+            </el-select>
+            <!-- {{ item.childCheckedVal }} -->
+            <div class="flex-column" >
+              <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
+              <span
+                v-for="(item2, index) in item.child"
+                :key="index"
+                class="flex-row"
               >
-              </el-option>
-            </template>
-          </el-select>
-          <!-- {{ item.childCheckedVal }} -->
-          <span
-            v-for="(item2, index) in item.child"
-            :key="index"
-            class="flex-row"
-          >
-          <!-- {{item2}} -->
-            <span class="flex-row">
-              <span class="w100">{{ item2.name }}</span>
-              <span v-if="item.field === 'purchase_recent_two_years'" class="flex-column" >
-                <!-- 历史购买 -->
-                <!-- 第三级 -->
-                <el-select
-                  multiple
-                  v-model="item2.childCheckedVal"
-                  style="width: 110px"
-                  name="asdq"
-                  class="input-inline"
-                  @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
-                >
-                  <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
-                    <el-option
-                      :value="attrChildItem.value"
-                      :label="attrChildItem.name"
-                      :key="attrChildItem.value"
+              <!-- {{item2}} -->
+                <span class="flex-row">
+                  <span class="w100">{{ item2.name }}</span>
+                  <span v-if="item.field === 'purchase_recent_two_years'" class="flex-column" >
+                    <!-- 历史购买 -->
+                    <!-- 第三级 -->
+                    <el-select
+                      multiple
+                      v-model="item2.childCheckedVal"
+                      style="width: 110px"
+                      name="asdq"
+                      class="input-inline"
+                      @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
                     >
-                    </el-option>
-                  </template>
-                </el-select>
-                <span
-                  v-for="(item3, index2) in item2.child"
-                  :key="'typeInputValue' + index2"
-                  class="flex-column"
-                >
-                  <!-- 第四级 -->
-                  <span class="flex-row">
-                    <span class="w100">{{ item3.name }}</span>
-                    <span
-                      v-for="(item4, index) in item3.child"
-                      :key="index"
-                      class="flex-row"
+                      <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
+                        <el-option
+                          :value="attrChildItem.value"
+                          :label="attrChildItem.name"
+                          :key="attrChildItem.value"
+                        >
+                        </el-option>
+                      </template>
+                    </el-select>
+                    <div class="flex-column" >
+                      <ConditionLine :isShow="item2.child.length > 1"></ConditionLine>
+                      <span
+                        v-for="(item3, index2) in item2.child"
+                        :key="'typeInputValue' + index2"
+                        class="flex-column"
+                      >
+                        <!-- 第四级 -->
+                        <span class="flex-row">
+                          <span class="w100">{{ item3.name }}</span>
+                          <span
+                            v-for="(item4, index) in item3.child"
+                            :key="index"
+                            class="flex-row"
+                          >
+                            <!-- 次数、天数 -->
+                            <!-- <Type :item3="item4"></Type> -->
+                            <Type :item3="item4" :options="bavAttrList.dict.attrType"></Type>
+                          </span>
+                        </span>
+                      </span>
+                    </div>
+                  </span>
+                  <span v-else class="flex-column" >
+                    <!-- 首次购买  -->
+                    <!-- 第三级 -->
+                    <el-select
+                      v-model="item2.childCheckedVal"
+                      style="width: 110px"
+                      name="asdq"
+                      class="input-inline"
+                      @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
                     >
-                      <!-- 次数、天数 -->
-                      <!-- <Type :item3="item4"></Type> -->
-                      <Type :item3="item4" :options="bavAttrList.dict.attrType"></Type>
-                    </span>
+                      <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
+                        <el-option
+                          :value="attrChildItem.value"
+                          :label="attrChildItem.name"
+                          :key="attrChildItem.value"
+                        >
+                        </el-option>
+                      </template>
+                    </el-select>
                   </span>
                 </span>
               </span>
-              <span v-else class="flex-column" >
-                <!-- 首次购买  -->
-                <!-- 第三级 -->
-                <el-select
-                  v-model="item2.childCheckedVal"
-                  style="width: 110px"
-                  name="asdq"
-                  class="input-inline"
-                  @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
-                >
-                  <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
-                    <el-option
-                      :value="attrChildItem.value"
-                      :label="attrChildItem.name"
-                      :key="attrChildItem.value"
-                    >
-                    </el-option>
-                  </template>
-                </el-select>
-              </span>
-            </span>
+            </div>
           </span>
-        </span>
+        </div>
       </div>
     </span>
 
@@ -303,92 +325,95 @@
           ></el-option>
         </template>
       </el-select>
-      <div
-        v-for="(item, index) in childItem.bav.behaviorValue"
-        :key="'mo' + index"
-        class="flex-row child-attr-wrap"
-      >
-        <span class="w100">{{ item.name }}</span>
-        <!-- {{item}} -->
-        <span class="flex-row">
-          <!-- 第二级 -->
-            <!-- <el-input
-              placeholder="请输入板块ID"
-              v-model="item.value"
-              clearable
-              style="max-width: 180px; min-width: 180px;"
-            >
-              <el-button slot="append" icon="el-icon-search" @click="searchModuleMatch(item.value)"></el-button>
-            </el-input> -->
-            <!-- {{item.value}} -->
-            <!-- <el-autocomplete
-              v-model="item.value"
-              :fetch-suggestions="querySearchAsync"
-              placeholder="请输入板块ID"
-              value-key="albumName"
-              label="albumId"
-              clearable
-              style="max-width: 180px; min-width: 180px;"
-            ></el-autocomplete> -->
-            <!-- {{item}} -->
-            <el-select
-              style="width: 150px"
-              v-model="item.value"
-              filterable
-              remote
-              placeholder="请输入板块ID"
-              clearable
-              :remote-method="(query) => { remoteMethod(query, item.field) }"
-              :loading="loading">
-              <el-option
-                v-for="item in moOptions[item.field]"
-                :key="item.forumId"
-                :label="item.albumName"
-                :value="item.forumId">
-              </el-option>
-            </el-select>
-            <!-- 推荐位 -->
-            <span v-if="item.selectKey === 'album_id1'">
-              <span
-                v-for="(item2, index) in item.child"
-                :key="index"
-                class="flex-row child"
+      <div class="flex-column" >
+        <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
+        <div
+          v-for="(item, index) in childItem.bav.behaviorValue"
+          :key="'mo' + index"
+          class="flex-row child-attr-wrap"
+        >
+          <span class="w100">{{ item.name }}</span>
+          <!-- {{item}} -->
+          <span class="flex-row">
+            <!-- 第二级 -->
+              <!-- <el-input
+                placeholder="请输入板块ID"
+                v-model="item.value"
+                clearable
+                style="max-width: 180px; min-width: 180px;"
               >
-                <!-- 次数、天数 -->
-                <!-- <Type :item3="item3"></Type> -->
-                <el-select
-                  v-model="item2.value"
-                  style="width: 100px"
-                  name="oxve"
-                  class="input-inline"
-                >
-                  <template v-for="item in 15">
-                    <el-option
-                      :value="item"
-                      :label="item"
-                      :key="item"
-                    ></el-option>
-                  </template>
-                </el-select>
+                <el-button slot="append" icon="el-icon-search" @click="searchModuleMatch(item.value)"></el-button>
+              </el-input> -->
+              <!-- {{item.value}} -->
+              <!-- <el-autocomplete
+                v-model="item.value"
+                :fetch-suggestions="querySearchAsync"
+                placeholder="请输入板块ID"
+                value-key="albumName"
+                label="albumId"
+                clearable
+                style="max-width: 180px; min-width: 180px;"
+              ></el-autocomplete> -->
+              <!-- {{item}} -->
+              <el-select
+                style="width: 150px"
+                v-model="item.value"
+                filterable
+                remote
+                placeholder="请输入板块ID"
+                clearable
+                :remote-method="(query) => { remoteMethod(query, item.field) }"
+                :loading="loading">
+                <el-option
+                  v-for="item in moOptions[item.field]"
+                  :key="item.forumId"
+                  :label="item.albumName"
+                  :value="item.forumId">
+                </el-option>
+              </el-select>
+              <!-- 推荐位 -->
+              <span v-if="item.selectKey === 'album_id1'">
                 <span
-                  v-for="(item3, index) in item2.child"
+                  v-for="(item2, index) in item.child"
                   :key="index"
                   class="flex-row child"
                 >
-                  <Type :item3="item3" :options="bavAttrList.dict.attrType"></Type>
+                  <!-- 次数、天数 -->
+                  <!-- <Type :item3="item3"></Type> -->
+                  <el-select
+                    v-model="item2.value"
+                    style="width: 100px"
+                    name="oxve"
+                    class="input-inline"
+                  >
+                    <template v-for="item in 15">
+                      <el-option
+                        :value="item"
+                        :label="item"
+                        :key="item"
+                      ></el-option>
+                    </template>
+                  </el-select>
+                  <span
+                    v-for="(item3, index) in item2.child"
+                    :key="index"
+                    class="flex-row child"
+                  >
+                    <Type :item3="item3" :options="bavAttrList.dict.attrType"></Type>
+                  </span>
                 </span>
               </span>
-            </span>
-            <span v-else>
-              <span
-                v-for="(item2, index) in item.child"
-                :key="index"
-                class="flex-row child"
-              >
-                <Type :item3="item2" :options="bavAttrList.dict.attrType"></Type>
+              <span v-else>
+                <span
+                  v-for="(item2, index) in item.child"
+                  :key="index"
+                  class="flex-row child"
+                >
+                  <Type :item3="item2" :options="bavAttrList.dict.attrType"></Type>
+                </span>
               </span>
-            </span>
-        </span>
+          </span>
+        </div>
       </div>
     </span>
 
@@ -411,24 +436,27 @@
           ></el-option>
         </template>
       </el-select>
-      <div
-        v-for="item in childItem.bav.behaviorValue"
-        :key="item.value"
-        class="flex-row child-attr-wrap"
-      >
-        <span class="w100">{{ item.name }}</span>
-        <span class="flex-column">
-          <!-- 第二级 -->
-          <span
-            v-for="(item2, index) in item.child"
-            :key="index"
-            class="flex-row child"
-          >
-            <!-- 次数、天数 -->
-            <!-- <Type :item3="item2"></Type> -->
-            <Type :item3="item2" :options="bavAttrList.dict.attrType"></Type>
+      <div class="flex-column" >
+        <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
+        <div
+          v-for="item in childItem.bav.behaviorValue"
+          :key="item.value"
+          class="flex-row child-attr-wrap"
+        >
+          <span class="w100">{{ item.name }}</span>
+          <span class="flex-column">
+            <!-- 第二级 -->
+            <span
+              v-for="(item2, index) in item.child"
+              :key="index"
+              class="flex-row child"
+            >
+              <!-- 次数、天数 -->
+              <!-- <Type :item3="item2"></Type> -->
+              <Type :item3="item2" :options="bavAttrList.dict.attrType"></Type>
+            </span>
           </span>
-        </span>
+        </div>
       </div>
     </span>
 
@@ -659,76 +687,79 @@
                         :value="tv.value">
                       </el-option>
                     </el-select>
-                    <span
-                      v-for="(item6, index) in item5.child"
-                      :key="index"
-                      class="flex-row child"
-                    >
-                      <span class="w100">{{ item6.name }}</span>
-                      <el-select
-                        v-model="item6.childCheckedVal[0]"
-                        style="width: 150px;"
-                        placeholder="请选择"
-                        clearable
-                        @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
-                      > 
-                        
-                        <el-option
-                          v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
-                          :key="attrChildItem.value"
-                          :label="attrChildItem.name"
-                          :value="attrChildItem.value">
-                        </el-option>
-                      </el-select>
-                      <span>
-                        <span
-                          v-for="(item7, index) in item6.child"
-                          :key="index"
-                          class="flex-row child"
-                        >
-                          <el-select
-                            v-model="item7.childCheckedVal[0]"
-                            style="width: 150px;"
-                            placeholder="请选择123"
-                            clearable
-                            @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
-                          >
-                            <el-option
-                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
-                              :key="attrChildItem.type"
-                              :label="attrChildItem.name"
-                              :value="attrChildItem.type">
-                            </el-option>
-                          </el-select>
+                    <div class="flex-column">
+                      <ConditionLine :isShow="item5.child.length > 1"></ConditionLine>
+                      <span
+                        v-for="(item6, index) in item5.child"
+                        :key="index"
+                        class="flex-row child"
+                      >
+                        <span class="w100">{{ item6.name }}</span>
+                        <el-select
+                          v-model="item6.childCheckedVal[0]"
+                          style="width: 150px;"
+                          placeholder="请选择"
+                          clearable
+                          @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
+                        > 
+                          
+                          <el-option
+                            v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
+                            :key="attrChildItem.value"
+                            :label="attrChildItem.name"
+                            :value="attrChildItem.value">
+                          </el-option>
+                        </el-select>
+                        <span>
                           <span
-                            v-for="(item8, index) in item7.child"
+                            v-for="(item7, index) in item6.child"
                             :key="index"
                             class="flex-row child"
                           >
                             <el-select
-                              v-model="item8.operator"
-                              style="max-width: 100px; min-width: 100px;"
-                              name="oxve"
-                              class="input-inline"
-                            >
-                              <el-option value="="></el-option>
-                              <el-option value=">="></el-option>
-                              <el-option value="<="></el-option>
-                              <el-option value=">"></el-option>
-                              <el-option value="<"></el-option>
-                            </el-select>
-                            <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
-                            <el-input
-                              placeholder="请输入"
-                              v-model="item8.value"
+                              v-model="item7.childCheckedVal[0]"
+                              style="width: 150px;"
+                              placeholder="请选择123"
                               clearable
-                              style="max-width: 100px; min-width: 100px;"
+                              @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
                             >
-                            </el-input>
+                              <el-option
+                                v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                                :key="attrChildItem.type"
+                                :label="attrChildItem.name"
+                                :value="attrChildItem.type">
+                              </el-option>
+                            </el-select>
+                            <span
+                              v-for="(item8, index) in item7.child"
+                              :key="index"
+                              class="flex-row child"
+                            >
+                              <el-select
+                                v-model="item8.operator"
+                                style="max-width: 100px; min-width: 100px;"
+                                name="oxve"
+                                class="input-inline"
+                              >
+                                <el-option value="="></el-option>
+                                <el-option value=">="></el-option>
+                                <el-option value="<="></el-option>
+                                <el-option value=">"></el-option>
+                                <el-option value="<"></el-option>
+                              </el-select>
+                              <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
+                              <el-input
+                                placeholder="请输入"
+                                v-model="item8.value"
+                                clearable
+                                style="max-width: 100px; min-width: 100px;"
+                              >
+                              </el-input>
+                            </span>
                           </span>
                         </span>
                       </span>
-                    </span>
+                    </div>
                   </span>
 
                 </span>
@@ -741,7 +772,7 @@
                     <el-select
                       v-model="item5.childCheckedVal[0]"
                       style="width: 150px;"
-                      placeholder="请选择666666666"
+                      placeholder="请选择"
                       clearable
                       @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)"
                     >
@@ -797,10 +828,13 @@
 
 <script>
 import Type from '../Type.vue'
+import ConditionLine from '../ConditionLine.vue'
+
 export default {
   name: 'bavList',
   components: {
-    Type
+    Type,
+    ConditionLine
   },
   props: {
     childItem: {
@@ -1314,11 +1348,13 @@ export default {
 .flex-column {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .flex-row {
   display: flex;
   flex-direction: row;
+  // margin: 3px 2px;
 }
 
 .child-attr-wrap {
@@ -1326,11 +1362,11 @@ export default {
   padding: 20px 5px;
   margin: 10px 0;
 
-  &:hover {
-    // text-decoration: underline;
-    border-color: rgb(0, 188, 212);
-    border-radius: 7px;
-  }
+  // &:hover {
+  //   // text-decoration: underline;
+  //   border-color: rgb(0, 188, 212);
+  //   border-radius: 7px;
+  // }
 }
 
 .bav-attr-warp {
@@ -1339,10 +1375,11 @@ export default {
   display: flex;
   margin-bottom: 10px;
 
-  &:hover {
-    // text-decoration: underline;
-    border-color: rgb(0, 188, 212);
-    border-radius: 7px;
-  }
+  // &:hover {
+  //   // text-decoration: underline;
+  //   border-color: rgb(0, 188, 212);
+  //   border-radius: 7px;
+  // }
 }
+
 </style>

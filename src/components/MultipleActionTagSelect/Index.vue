@@ -739,7 +739,7 @@ export default {
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
-        // 设备活跃 特殊赋值
+        // 【设备活跃】 、【起播行为】特殊赋值
         let defaultBehaviorValue = []
         if (tag.tagKey === 'BAV0007') {
           defaultBehaviorValue = [
@@ -858,14 +858,71 @@ export default {
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
-        const defaultBehaviorValue = tag.tagKey === 'BAV0007' ? [
-          {
-            name: '',
-            type: '',
-            field: '',
-            operator: '=',
-          }
-        ] : []
+        
+        // 【设备活跃】 、【起播行为】特殊赋值
+        let defaultBehaviorValue = []
+        if (tag.tagKey === 'BAV0007') {
+          defaultBehaviorValue = [
+            {
+              name: '',
+              type: '',
+              field: '',
+              operator: '=',
+              value: ''
+            }
+          ]
+        } else if (tag.tagKey === 'BAV0008') {
+          defaultBehaviorValue = [
+            {
+              name: '',
+              type: 'string',
+              field: '',
+              operator: '=',
+              value: '',
+              childCheckedVal: [''],
+              child: [{
+                name: '',
+                type: 'string',
+                field: '',
+                operator: '=',
+                value: '',
+                childCheckedVal: [''],
+                child: [{
+                  name: '',
+                  type: 'string',
+                  field: '',
+                  operator: '=',
+                  value: '',
+                  childCheckedVal: [''],
+                  child: [{
+                    name: '',
+                    type: 'string',
+                    field: '',
+                    operator: '=',
+                    value: '',
+                    childCheckedVal: [''],
+                    child: [{
+                      name: '',
+                      type: 'string',
+                      field: '',
+                      operator: '=',
+                      value: '',
+                      childCheckedVal: [''],
+                      child: [{
+                        name: '',
+                        type: 'string',
+                        field: '',
+                        operator: '=',
+                        value: '',
+                      }]
+                    }]
+                  }]
+                }]
+              }]
+            }
+          ]
+        }
+
         rule.rules.push({
           operator: '=',
           tagCode: tag.tagKey,
@@ -1156,6 +1213,7 @@ export default {
 .multipleSelect {
   >>>.el-select {
     width: 100%;
+    margin-bottom: 5px;
   }
 }
 

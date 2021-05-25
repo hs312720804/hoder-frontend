@@ -101,7 +101,8 @@
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签
       </div>
-      <el-form-item label="策略名称12345" prop="policyName">
+      <!-- 1111111111111111111111111111111111111 -->
+      <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
         <slot name="isChoosePeople"></slot>
       </el-form-item>
