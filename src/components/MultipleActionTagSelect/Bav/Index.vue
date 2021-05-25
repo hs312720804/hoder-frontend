@@ -444,6 +444,7 @@
        <!-- 第一级 -->
       <el-select
         v-model="childItem.bav.value"
+        placeholder="请选择业务分类"
         style="width: 120px"
         name="oxve"
         class="input-inline"
@@ -469,6 +470,7 @@
         <!-- 第二级 -->
         <el-select
           v-model="item.childCheckedVal[0]"
+          placeholder="请选择一级分类"
           style="width: 110px"
           name="asdq"
           class="input-inline"
@@ -495,6 +497,7 @@
           <!-- 第三级 -->
           <el-select
             v-model="item2.childCheckedVal[0]"
+            placeholder="请选择二级分类"
             style="width: 110px"
             name="asdq"
             class="input-inline"
@@ -523,6 +526,7 @@
               style="width: 110px"
               name="asdq"
               class="input-inline"
+              placeholder="请选择内容源"
               clearable
               @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)"
             >
@@ -550,7 +554,7 @@
                 style="width: 150px;"
                 filterable
                 remote
-                placeholder="请输入板块ID"
+                placeholder="请输入片名或ID"
                 clearable
                 :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
                 :loading="loading2"

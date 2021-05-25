@@ -24,14 +24,13 @@
               </el-form-item>
             </div>
 
-            <div class="outer-and" v-if="actionTags.length > 0 || specialTags.length > 0">
+            <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0 &&  specialTags.length > 0)">
               <el-button
                       type="danger"
-                      v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
                       @click="handleConditionChange(crowd)"
                       round
                       :key="i+'condition'"
-              >{{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+              >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
             
             <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
             123
@@ -263,6 +262,7 @@ export default {
     },
     handleConditionChange (crowd) {
         crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+        crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
     },
    
   },
