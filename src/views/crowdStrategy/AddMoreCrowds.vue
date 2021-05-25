@@ -251,6 +251,7 @@ export default {
               return item
             })
             e.rulesJson = JSON.stringify(e.rulesJson)
+            e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
             e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
             // e.crowdValidFrom = form.crowdExp[0]
             // e.crowdValidTo = form.crowdExp[1]

@@ -1343,6 +1343,7 @@ export default {
 
 .w100 {
   min-width: 100px;
+  margin-bottom: 5px
 }
 
 .flex-column {
@@ -1359,7 +1360,7 @@ export default {
 
 .child-attr-wrap {
   border: 1px dashed #fff;
-  padding: 20px 5px;
+  padding: 0 5px;
   margin: 10px 0;
 
   // &:hover {

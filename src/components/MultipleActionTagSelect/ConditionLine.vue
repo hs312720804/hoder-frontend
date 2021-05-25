@@ -45,7 +45,7 @@ export default {
   width: 3px;
   height: auto;
   margin: auto 0;
-  border: 1px dashed #67c23a;
+  border: 1px dashed #00bdd6;
   border-right: 0;
   z-index: 999;
   display: -webkit-box;
@@ -60,10 +60,9 @@ export default {
 }
 .condition-text {
   color: #fff;
-  border-color: #67c23a;
   padding: 0px 6px;
   border-radius: 9px;
-  background-color: rgba(0,189,214,1);
+  background-color: #00bdd6
   font-size: 12px;
 }
 
