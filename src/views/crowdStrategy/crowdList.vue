@@ -248,10 +248,10 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="putway" label="状态" width="70px">
+      <el-table-column prop="status" label="状态1234" width="70px">
         <template slot-scope="scope">
-          <span v-if="scope.row.putway === 1">生效中</span>
-          <span v-if="scope.row.putway === 0">已下架</span>
+          <span v-if="scope.row.status === 1">生效中</span>
+          <span v-if="scope.row.status === 0">已下架</span>
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">

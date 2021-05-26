@@ -1,99 +1,102 @@
 <template>
-  <div style="display: flex; flex-direction: row; align-items: center" >
-    
-    <div style="flex-direction: column" :style="{'display': open ? 'flex' : 'none'}">
-      <div class="range-wrap" v-if="type.indexOf('range') > -1">
-        <span>周期范围</span>
-        <span>
-          <el-select
-            v-model="childItem.bav.rangeType"
-            style="width: 100px"
-            name="oxve"
-            class="input-inline sel"
-            
-          >
-            <!-- <el-option value="fixed" label="固定周期"></el-option>
-          <el-option value="move" label="动态周期"></el-option> -->
-            <template v-for="item in rangeTypeList">
-              <el-option
-                :value="item.value"
-                :label="item.name"
-                :key="item.value"
-              ></el-option>
-            </template>
-          </el-select>
-        </span>
-        <!-- {{childItem.bav}} -->
-        <span style="max-width: 300px; min-width: 300px; display: inline-block">
-          <el-date-picker
-            v-if="childItem.bav.rangeType === 'fixed'"
-            v-model="childItem.bav.rang.value"
-            type="daterange"
-            range-separator="至"
-            start-placeholder="开始日期"
-            end-placeholder="结束日期"
-            value-format="yyyy-MM-dd"
-            :picker-options="pickerOptions0"
-          >
-          </el-date-picker>
-          <span v-else style="display: inline-block; width: 200px">
-            最近
-            <!-- <el-input v-model="childItem.bav.rang" placeholder="请输入天数"></el-input>   -->
-            <el-input-number
-              v-model="childItem.bav.rang.value"
-              :min="1"
-              :max="30"
-              label="请输入天数"
-            ></el-input-number>
-            天
-          </span>
-        </span>
+  <div style="display: flex; flex-direction: row;" >
+    <!-- <transition name="el-zoom-in-left"> -->
+      <div v-show="show3">
+        <div style="display: flex; flex-direction: row">
+          <div class="range-wrap" v-if="type.indexOf('range') > -1">
+            <span>周期范围</span>
+            <span>
+              <el-select
+                v-model="childItem.bav.rangeType"
+                style="width: 100px"
+                name="oxve"
+                class="input-inline sel"
+                
+              >
+                <!-- <el-option value="fixed" label="固定周期"></el-option>
+              <el-option value="move" label="动态周期"></el-option> -->
+                <template v-for="item in rangeTypeList">
+                  <el-option
+                    :value="item.value"
+                    :label="item.name"
+                    :key="item.value"
+                  ></el-option>
+                </template>
+              </el-select>
+            </span>
+            <!-- {{childItem.bav}} -->
+            <span style="max-width: 220px; min-width: 220px; display: inline-block">
+              <el-date-picker
+                v-if="childItem.bav.rangeType === 'fixed'"
+                v-model="childItem.bav.rang.value"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"
+                :picker-options="pickerOptions0"
+              >
+              </el-date-picker>
+              <span v-else style="display: inline-block; width: 200px">
+                最近
+                <!-- <el-input v-model="childItem.bav.rang" placeholder="请输入天数"></el-input>   -->
+                <el-input-number
+                  v-model="childItem.bav.rang.value"
+                  :min="1"
+                  :max="30"
+                  label="请输入天数"
+                ></el-input-number>
+                天
+              </span>
+            </span>
+          </div>
+          <div class="range-wrap" v-if="type.indexOf('week') > -1">
+            <span>星期范围</span>
+            <span>
+              <el-select
+                multiple
+                v-model="childItem.bav.weekRang.value"
+                style="width: 90px"
+                name="oxve"
+                class="input-inline sel"
+                @change="handelSelectChange(childItem.bav.weekRang, weekRange)"
+              >
+                <template v-for="item in weekRange">
+                  <el-option
+                    :value="item.value"
+                    :label="item.name"
+                    :key="item.value"
+                  ></el-option>
+                </template>
+              </el-select>
+            </span>
+          </div>
+          <div class="range-wrap" v-if="type.indexOf('time') > -1">
+            <span>时间区间</span>
+            <span>
+              <el-select
+                multiple
+                v-model="childItem.bav.timeRange.value"
+                style="width: 210px"
+                name="oxve"
+                class="input-inline"
+                @change="handelSelectChange(childItem.bav.timeRange, timeRange)"
+              >
+                <template v-for="item in timeRange">
+                  <el-option
+                    :value="item.value"
+                    :label="item.name"
+                    :key="item.value"
+                  ></el-option>
+                </template>
+              </el-select>
+            </span>
+          </div>
+        </div>
       </div>
-      <div class="range-wrap" v-if="type.indexOf('week') > -1">
-        <span>星期范围</span>
-        <span>
-          <el-select
-            multiple
-            v-model="childItem.bav.weekRang.value"
-            style="width: 412px"
-            name="oxve"
-            class="input-inline sel"
-            @change="handelSelectChange(childItem.bav.weekRang, weekRange)"
-          >
-            <template v-for="item in weekRange">
-              <el-option
-                :value="item.value"
-                :label="item.name"
-                :key="item.value"
-              ></el-option>
-            </template>
-          </el-select>
-        </span>
-      </div>
-      <div class="range-wrap" v-if="type.indexOf('time') > -1">
-        <span>时间区间</span>
-        <span>
-          <el-select
-            multiple
-            v-model="childItem.bav.timeRange.value"
-            style="width: 412px"
-            name="oxve"
-            class="input-inline"
-            @change="handelSelectChange(childItem.bav.timeRange, timeRange)"
-          >
-            <template v-for="item in timeRange">
-              <el-option
-                :value="item.value"
-                :label="item.name"
-                :key="item.value"
-              ></el-option>
-            </template>
-          </el-select>
-        </span>
-      </div>
-    </div>
+    <!-- </transition> -->
 
-    <span @click="openOrClose">{{ open ? '< 收起' : '> 展开' }}</span>
+    <span @click="openOrClose">{{ show3 ? '< 收起' : '> 展开' }}</span>
 
   </div>
 </template>
@@ -114,7 +117,7 @@ export default {
           return time.getTime() > maxTime || time.getTime() < minTime
         }
       },
-      open: true
+      show3: true
     }
   },
   props: {
@@ -167,7 +170,7 @@ export default {
   },
   methods: {
     openOrClose() {
-      this.open = !this.open
+      this.show3 = !this.show3
     },
     handelSelectChange(item, list) {
       item.field = list[0].field
@@ -201,5 +204,6 @@ export default {
 
 .range-wrap {
   margin-bottom: 20px;
+  display: flex;
 }
 </style>

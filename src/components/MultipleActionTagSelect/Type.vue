@@ -13,10 +13,13 @@
         :value="attrChildItem.value"
         :label="attrChildItem.name"
         :key="attrChildItem.value"
+        :disabled="attrChildItem.value === 'day' && isDisableDaySelect"
       >
       </el-option>
     </template>
   </el-select>
+  <!-- {{attrChildItem}}
+  {{isDisableDaySelect}} -->
   <el-select
     v-model="item3.operator"
     style="max-width: 100px; min-width: 100px;"
@@ -44,7 +47,8 @@
 export default {
   data() {
     return {
-      attrList: []
+      attrList: [],
+      isDisableDaySelect: false
     }
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
@@ -57,8 +61,29 @@ export default {
       type: Array,
       default: () => []
     },
+    childItem: {
+      type: Object,
+      default: () => {}
+    }
+  
   },
   watch: {
+    childItem: {
+      handler(val) {
+        console.log('val', val)
+        const rangeType = val.bav.rangeType
+        const weekRang = val.bav.weekRang.value
+        const timeRange = val.bav.timeRange.value
+        // 判断是否禁用【天数】选项
+        if (weekRang.length === 0 && timeRange.length === 0 ) {
+          this.isDisableDaySelect = false
+        } else {
+          this.isDisableDaySelect = true
+        }
+      },
+      deep: true,
+      immediate: true
+    },
     options: {
       handler(val) {
         this.attrList = val.map(item => {
