@@ -571,7 +571,7 @@ export default {
   },
   created() {
     // console.log('this.params===', this.$route.params)
-    // console.log('this.value', this.value)
+    // console.log('this.value==>', this.value)
     if (this.value) {
       // this.$service.tagInfoNew(this.recordId).then(data => {
       // this.tags = data
@@ -631,7 +631,8 @@ export default {
         })
         return itemParent
       })
-      this.inputValue[0].rulesJson.rules = ruleJsonData.rules
+      // this.inputValue[0].rulesJson.rules = ruleJsonData.rules
+      this.inputValue[0].rulesJson = ruleJsonData
       // console.log('ruleJsonData.rules===', ruleJsonData.rules)
     }
 
