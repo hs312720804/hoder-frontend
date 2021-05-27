@@ -108,6 +108,16 @@ export function freshCache(params) {
     params
   })
 }
+
+// 投放提示
+export function alertLaunch(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/alertLaunch',
+    params
+  })
+}
+
 //人群估算获取类型
 export function getEstimateType(params) {
   return this.fetch({

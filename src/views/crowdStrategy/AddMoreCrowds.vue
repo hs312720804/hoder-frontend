@@ -303,6 +303,7 @@ export default {
           // }
           e.tagIds = e.tagIds.split(',')
           e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
+          e.behaviorRulesJson = JSON.parse(e.behaviorRulesJson)
           e.rulesJson = JSON.parse(e.rulesJson)
           e.rulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {

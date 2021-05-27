@@ -185,7 +185,8 @@
                     "/userTagsSearch/index": "userTagsSearch",
                     "/hitSearch/index": "hitSearch",
                     "/oneTouchDrop/index": "oneTouchDrop",
-                    "/specialTag/index": "specialTag"
+                    "/specialTag/index": "specialTag",
+                    "/launchHelper/resendCommand": "resendCommand"
                 },
                 activeName: 'first',
                 updateMessage: [],

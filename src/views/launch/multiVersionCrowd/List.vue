@@ -357,6 +357,17 @@
             </el-form>
             <div v-if="launchType === 1">{{selectStrategy}}</div>
         </el-dialog>
+
+        <!-- 投放提示 -->
+        <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+            <div class="choose-tip">{{ launchTip }}</div>
+            
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showLaunchTip = false">取 消</el-button>
+                <el-button type="primary" @click="confirmLaunch">投 放</el-button>
+            </span>
+        </el-dialog>
+
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
             <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
@@ -622,6 +633,9 @@
                 selectedRow: {},
                 monitorTab: 'mac',
                 showEstimate: false,
+                showLaunchTip: false,
+                launchTip: '',
+                currentLaunchRow: {},
                 estimateValue: ['0'],
                 estimateItems: [],
                 currentLaunchId: '',
@@ -813,12 +827,40 @@
                 this.criteria = {}
                 this.loadData()
             },
+
             // 修改状态
             lanuch (index, row) {
+                this.currentLaunchRow = row
                 this.currentLaunchId = row.launchCrowdId
+                const parmas = {
+                    crowdIds: this.currentLaunchId
+                }
+                this.$service.alertLaunch(parmas).then((data) => {
+                    // eslint-disable-next-line no-debugger
+                    this.showLaunchTip = true
+                    this.launchTip = data
+                })
+                // this.currentLaunchId = row.launchCrowdId
+                // this.showEstimate = true
+                // // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                // if (row.setCalculate) {
+                //     this.accountDefine = true
+                //     this.estimateValue = ['0','1','2','3']
+                // } else {
+                //     this.accountDefine = false
+                //     this.estimateValue = ['0']
+                // }
+                // this.$service.getEstimateType().then((data) => {
+                //     this.estimateItems = data
+                // })
+            },
+            
+            // 确认投放
+            confirmLaunch () {
+                this.showLaunchTip = false
                 this.showEstimate = true
                 // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-                if (row.setCalculate) {
+                if (this.currentLaunchId.setCalculate) {
                     this.accountDefine = true
                     this.estimateValue = ['0','1','2','3']
                 } else {
@@ -829,6 +871,7 @@
                     this.estimateItems = data
                 })
             },
+
             handleEstimate (calTypes) {
                 if (calTypes.length === 0) {
                     this.$message.error('请至少选择一个要投放的人群')

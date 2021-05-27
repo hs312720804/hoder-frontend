@@ -395,6 +395,17 @@
                         @click="launchDirectly"
                 >直接投放</el-button>
             </div>
+
+            <!-- 投放提示 -->
+            <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+                <div class="choose-tip">{{ launchTip }}</div>
+                
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="showLaunchTip = false">取 消</el-button>
+                    <el-button type="primary" @click="confirmLaunch">投 放</el-button>
+                </span>
+            </el-dialog>
+
             <!-- 投放提示估算弹窗 -->
             <el-dialog :visible.sync="showEstimate">
                 <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
@@ -606,6 +617,9 @@
                 disabledCrowdType: false,
                 isTempCrowd: false,
                 showEstimate: false,
+                showLaunchTip: false,
+                launchTip: '',
+                currentLaunchRow: {},
                 estimateValue: ['0'],
                 accountDefine: false,
                 currentLaunchId: undefined
@@ -1056,17 +1070,48 @@
                     this.crowdForm.policyIds = []
                 }
             },
-            // 显示投放弹窗
+            
+            
+            // 修改状态
             launchDirectly () {
+                console.log('this.crowdForm==>', this.crowdForm)
+                // let policyCrowdIds = JSON.parse(JSON.stringify(this.crowdForm.policyCrowdIds))
+                const crowdIds = this.crowdForm.policyCrowdIds.map(item => item.split('_')[1]).join(',')
                 // 先进行保存校验
                 this.$refs.crowdForm.validate(valid => {
                     if (valid) {
-                        this.showEstimatePop()
+                        const parmas = {
+                            crowdIds
+                        }
+                        this.$service.alertLaunch(parmas).then((data) => {
+                            this.showLaunchTip = true
+                            this.launchTip = data
+                        })
                     } else {
                         return false
                     }
                 })
+
             },
+            
+            // 确认投放
+            confirmLaunch () {
+                this.showEstimatePop()
+            },
+
+            // // 显示投放弹窗
+            // launchDirectly () {
+            //     console.log('this.crowdForm==>', this.crowdForm)
+            //     // 先进行保存校验
+            //     this.$refs.crowdForm.validate(valid => {
+            //         if (valid) {
+            //             this.showEstimatePop()
+            //         } else {
+            //             return false
+            //         }
+            //     })
+            // },
+
             showEstimatePop () {
                 this.showEstimate = true
                 // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选

@@ -349,6 +349,16 @@ const children = [
                     icon: 'el-icon-cc-file'
                 }
             },
+            {
+                name: 'resendCommand',
+                path: 'launchHelper/resendCommand',
+                component: userTagsSearch,
+                meta: {
+                    title: '重发指令',
+                    tagId:"resendCommand ",
+                    icon: 'el-icon-cc-file'
+                }
+            },
     //     ]
     // },
     // {

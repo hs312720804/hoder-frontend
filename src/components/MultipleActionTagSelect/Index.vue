@@ -3,8 +3,9 @@
     <!-- 行为标签 -->
     <!-- {{ actionTags}} -->
     <div v-if="actionTags && actionTags.length > 0">
+      <!-- {{ behaviorRulesJson }} -->
       <div
-        v-show="behaviorRulesJson.rules.length > 1"
+        v-show="behaviorRulesJson && behaviorRulesJson.rules.length > 1"
         class="label-or-space"
         :key="i + 'or'"
       >
@@ -560,7 +561,7 @@ export default {
     behaviorRulesJson: {
       handler(val) {
         console.log('crowd==>', val)
-        // this.fetchAllTagSuggestions()
+        this.fetchAllTagSuggestions()
       },
       deep: true,
       immediate: true
@@ -658,30 +659,31 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    // 获取特色标签列表
-    fetchSpecialTagSuggestions(tagId, tagKey) {
-      const filter = {
-        tagId,
-        pageSize: 100
-      }
-      this.$service.specialTagDetailList(filter).then(data => {
-        const list = data.list.map(item => {
-          return {
-            attrId: item.specialTagId,
-            attrName: item.specialTagName,
-            attrValue:
-              tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
-            // attrValue: item.specialTagName,
-            dataSource: 7,
-            rulesJson: item.rulesJson
-          }
-        })
-        // debugger
-        this.$set(this.cache, tagId, {
-          select: false,
-          list
-        })
+    
+    // 获取行为标签下拉选项
+    fetchSpecialTagSuggestions(tagCode) {
+      this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
+        // eslint-disable-next-line no-debugger
+        this.bavAttrList[tagCode] = res || {}
       })
+      // this.$service.specialTagDetailList(filter).then(data => {
+      //   const list = data.list.map(item => {
+      //     return {
+      //       attrId: item.specialTagId,
+      //       attrName: item.specialTagName,
+      //       attrValue:
+      //         tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
+      //       // attrValue: item.specialTagName,
+      //       dataSource: 7,
+      //       rulesJson: item.rulesJson
+      //     }
+      //   })
+      //   // debugger
+      //   this.$set(this.cache, tagId, {
+      //     select: false,
+      //     list
+      //   })
+      // })
     },
     fetchTagSuggestions(tagId) {
       this.$service
@@ -1133,6 +1135,8 @@ export default {
     fetchAllTagSuggestions() {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
+      // eslint-disable-next-line no-debugger
+      debugger
       let ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
@@ -1140,19 +1144,16 @@ export default {
 
       if (len > 0) {
         let cacheIds = []
-        let cacheSpecialIds = []
+        let cacheActionIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
-            if (item.tagType === 'string' || item.tagType === 'collect') {
+            // 行为标签
+            if (item.dataSource === 8) {
+              cacheActionIds.push(item.tagCode)
+            } else if (item.tagType === 'string' || item.tagType === 'collect') {
               cacheIds.push(item.tagId)
             }
-            if (item.tagType === 'mix') {
-              cacheSpecialIds.push({
-                tagId: item.tagId,
-                tagCode: item.tagCode,
-                provinceValue: item.provinceValue
-              })
-            }
+
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
             }
@@ -1175,11 +1176,10 @@ export default {
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)
         }
-        // 特色标签的 id 集合
-        if (cacheSpecialIds.length !== 0) {
-          cacheSpecialIds.forEach(item => {
-            this.fetchSpecialTagSuggestions(item.tagId, item.tagCode)
-            this.areaSelectChange(item.provinceValue, item.tagCode) // 根据省id获取市列表
+        // 行为标签的 id 集合
+        if (cacheActionIds.length !== 0) {
+          cacheActionIds.forEach(tagCode => {
+            this.fetchSpecialTagSuggestions(tagCode)
           })
         }
       }
