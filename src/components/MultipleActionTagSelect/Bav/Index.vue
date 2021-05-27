@@ -98,7 +98,7 @@
               >   
               <!-- {{item2}} -->
                 <!-- 次数、天数 -->
-                <Type :item3="item2.child[0]" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+                <Type :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
               </span>
             </span>
           </span>
@@ -168,7 +168,7 @@
                   class="flex-row"
                 >
                   <!-- 次数、天数 -->
-                  <Type :item3="item3" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+                  <Type :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                 </span>
               </span>
             </div>
@@ -272,7 +272,7 @@
                           >
                             <!-- 次数、天数 -->
                             <!-- <Type :item3="item4"></Type> -->
-                            <Type :item3="item4" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+                            <Type :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                           </span>
                         </span>
                       </span>
@@ -399,7 +399,7 @@
                     :key="index"
                     class="flex-row child"
                   >
-                    <Type :item3="item3" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+                    <Type :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                   </span>
                 </span>
               </span>
@@ -409,7 +409,7 @@
                   :key="index"
                   class="flex-row child"
                 >
-                  <Type :item3="item2" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+                  <Type :item3="item2" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                 </span>
               </span>
           </span>
@@ -452,7 +452,7 @@
               class="flex-row child"
             >
               <!-- 次数、天数 -->
-              <Type :item3="item2" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+              <Type :item3="item2"  :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
             </span>
           </span>
         </div>
@@ -462,7 +462,7 @@
     <!-- 设备活跃 -->
     <span class="flex-column" v-if="childItem.tagCode === 'BAV0007'">
       <!-- 次数、天数 -->
-      <Type :item3="childItem.bav.behaviorValue[0]" :options="bavAttrList.dict.attrType" :childItem="childItem"></Type>
+      <Type :item3="childItem.bav.behaviorValue[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
     </span>
 
     <!-- 起播行为 -->
@@ -1192,125 +1192,127 @@ export default {
     getBehaviorAttrList(childItem, level=1, extra={}) {
       // eslint-disable-next-line no-debugger
       debugger
-      let attrlist = []
-
-      const dict = this.bavAttrList.dict
-      if (childItem.tagCode === 'BAV0001') {
-        // eslint-disable-next-line no-debugger
-        if (level === 1) {
-          attrlist = dict.vip_package
-        } else if (level === 2) {
-          attrlist = dict.use_status
-        } else if (level === 3 && extra.extra === 'effective') {
-          attrlist = dict.vip_expire_use
-        } else if (level === 3 && extra.extra === 'no_effective') {
-          attrlist = dict.vip_expire
-        } 
-      } else if (childItem.tagCode === 'BAV0002') {
-        if (level === 1) {
-          attrlist = dict.app_operation
-        } else if (level === 2) {
-          attrlist = dict.app_name
-        } 
-      } else if (childItem.tagCode === 'BAV0003') {
-        if (level === 1) {
-          attrlist = dict.buy_operation
-        } else if (level === 2) {
-          attrlist = dict.vip_package
-        } else if (level === 3) {
-          attrlist = dict.buy_type
-        } 
-      } else if (childItem.tagCode === 'BAV0004') {
-        if (level === 1) {
-          attrlist = dict.block_location
-        }
-      } else if (childItem.tagCode === 'BAV0005') {
-        if (level === 1) {
-          attrlist = dict.page_active
-        }
-      } else if (childItem.tagCode === 'BAV0006') {
-        if (level === 1) {
-          attrlist = dict.func_click
-        }
-      } else if (childItem.tagCode === 'BAV0008') {
-        // eslint-disable-next-line no-debugger
-        debugger
-        if (level === 1) {
-          attrlist = dict.business_type
-        } else if (level === 2) {
-          attrlist = dict.play_category
-        } else if (level === 3 && extra.type === '电影') {
-          attrlist = dict.movie_category
-        } else if (level === 3 && extra.type === '综艺') {
-          attrlist = dict.show_category
-        } else if (level === 3 && extra.type === '记录片') {
-          attrlist = dict.documentary_category
-        } else if (level === 3 && extra.type === '电视剧') {
-          attrlist = dict.tv_category
-        } else if (level === 3 && extra.type === '动漫') {
-          attrlist = dict.anime_category
-        } else if (level === 4) {
-          attrlist = dict.source
-        } else if (level === 5) {
-          return this.qiBoOptions
-        } else if (level === 6) {
-          return this.qiBoCollectionOptions
-        } else if (level === 7) {
-          attrlist = dict.pay_type
-        } else if (level === 8 ) {
-          attrlist = dict.watch_time
-        }
-      } else {
-        attrlist = [
-          {
-            value: 'xiazai',
-            label: '下载应用'
-          },
-          {
-            value: 'qidong',
-            label: '启动应用'
-          },
-          {
-            value: 'xiezai',
-            label: '卸载应用'
-          }
-        ]
-      }
-      // console.log('attrlist==>', attrlist)
-      attrlist = attrlist.map(item => {
-        let list = {
-          name: item.dictLabel,
-          value: item.dictValue,
-          field: item.tableField,
-          type: item.filedType,
-          selectKey: item.tableField + item.dictValue
-        }
+      if (this.bavAttrList) {
+        let attrlist = []
+  
+        const dict = this.bavAttrList.dict
         if (childItem.tagCode === 'BAV0001') {
-          let operator = '='
-          if ( level === 2 && item.filedType === 'effective') { operator = '<=' } // 有效
-          if ( 
-            (level === 2 && item.filedType === 'no_effective') 
-          || item.dictValue === 'date_sub(current_date,30)') { operator = '<' } // 无效 || 过期时间>30
-          if ( item.dictValue === 'date_sub(current_date,-30)') { operator = '>' } // 会员过期时间>30天
-          if ( 
-             item.dictValue === 'date_sub(current_date,-7) and date_sub(current_dat' 
-          || item.dictValue === 'current_date and date_sub(current_date,-7)'
-          || item.dictValue === 'current_date and date_sub(current_date,-7)'
-          || item.dictValue === 'date_sub(current_date,29) and date_sub(current_dat'
-          || item.dictValue === 'date_sub(current_date,7) and current_date') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
-          list = {
+          // eslint-disable-next-line no-debugger
+          if (level === 1) {
+            attrlist = dict.vip_package
+          } else if (level === 2) {
+            attrlist = dict.use_status
+          } else if (level === 3 && extra.extra === 'effective') {
+            attrlist = dict.vip_expire_use
+          } else if (level === 3 && extra.extra === 'no_effective') {
+            attrlist = dict.vip_expire
+          } 
+        } else if (childItem.tagCode === 'BAV0002') {
+          if (level === 1) {
+            attrlist = dict.app_operation
+          } else if (level === 2) {
+            attrlist = dict.app_name
+          } 
+        } else if (childItem.tagCode === 'BAV0003') {
+          if (level === 1) {
+            attrlist = dict.buy_operation
+          } else if (level === 2) {
+            attrlist = dict.vip_package
+          } else if (level === 3) {
+            attrlist = dict.buy_type
+          } 
+        } else if (childItem.tagCode === 'BAV0004') {
+          if (level === 1) {
+            attrlist = dict.block_location
+          }
+        } else if (childItem.tagCode === 'BAV0005') {
+          if (level === 1) {
+            attrlist = dict.page_active
+          }
+        } else if (childItem.tagCode === 'BAV0006') {
+          if (level === 1) {
+            attrlist = dict.func_click
+          }
+        } else if (childItem.tagCode === 'BAV0008') {
+          // eslint-disable-next-line no-debugger
+          debugger
+          if (level === 1) {
+            attrlist = dict.business_type
+          } else if (level === 2) {
+            attrlist = dict.play_category
+          } else if (level === 3 && extra.type === '电影') {
+            attrlist = dict.movie_category
+          } else if (level === 3 && extra.type === '综艺') {
+            attrlist = dict.show_category
+          } else if (level === 3 && extra.type === '记录片') {
+            attrlist = dict.documentary_category
+          } else if (level === 3 && extra.type === '电视剧') {
+            attrlist = dict.tv_category
+          } else if (level === 3 && extra.type === '动漫') {
+            attrlist = dict.anime_category
+          } else if (level === 4) {
+            attrlist = dict.source
+          } else if (level === 5) {
+            return this.qiBoOptions
+          } else if (level === 6) {
+            return this.qiBoCollectionOptions
+          } else if (level === 7) {
+            attrlist = dict.pay_type
+          } else if (level === 8 ) {
+            attrlist = dict.watch_time
+          }
+        } else {
+          attrlist = [
+            {
+              value: 'xiazai',
+              label: '下载应用'
+            },
+            {
+              value: 'qidong',
+              label: '启动应用'
+            },
+            {
+              value: 'xiezai',
+              label: '卸载应用'
+            }
+          ]
+        }
+        // console.log('attrlist==>', attrlist)
+        attrlist = attrlist.map(item => {
+          let list = {
             name: item.dictLabel,
             value: item.dictValue,
             field: item.tableField,
-            type: 'string',
-            selectKey: item.filedType,
-            operator
+            type: item.filedType,
+            selectKey: item.tableField + item.dictValue
           }
-        }
-        return list
-      })
-      // console.log('attrlist==>', attrlist)
-      return attrlist
+          if (childItem.tagCode === 'BAV0001') {
+            let operator = '='
+            if ( level === 2 && item.filedType === 'effective') { operator = '<=' } // 有效
+            if ( 
+              (level === 2 && item.filedType === 'no_effective') 
+            || item.dictValue === 'date_sub(current_date,30)') { operator = '<' } // 无效 || 过期时间>30
+            if ( item.dictValue === 'date_sub(current_date,-30)') { operator = '>' } // 会员过期时间>30天
+            if ( 
+               item.dictValue === 'date_sub(current_date,-7) and date_sub(current_dat' 
+            || item.dictValue === 'current_date and date_sub(current_date,-7)'
+            || item.dictValue === 'current_date and date_sub(current_date,-7)'
+            || item.dictValue === 'date_sub(current_date,29) and date_sub(current_dat'
+            || item.dictValue === 'date_sub(current_date,7) and current_date') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+            list = {
+              name: item.dictLabel,
+              value: item.dictValue,
+              field: item.tableField,
+              type: 'string',
+              selectKey: item.filedType,
+              operator
+            }
+          }
+          return list
+        })
+        // console.log('attrlist==>', attrlist)
+        return attrlist
+      } 
     },
     getChildBehaviorAttrList() {
       return [

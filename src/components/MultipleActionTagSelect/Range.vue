@@ -139,30 +139,32 @@ export default {
       handler(val) {
         // eslint-disable-next-line no-debugger
         debugger
-        const periodRange = val.dict.periodRange || []
-        const timeRange = val.dict.timeRange || []
-        const weekRange = val.dict.weekRange || []
-        this.rangeTypeList = periodRange.map(item => {
-          return {
-            name: item.dictLabel,
-            value: item.dictValue,
-            field: item.tableField
-          }
-        })
-        this.timeRange = timeRange.map(item => {
-          return {
-            name: item.dictLabel,
-            value: item.dictValue,
-            field: item.tableField
-          }
-        })
-        this.weekRange = weekRange.map(item => {
-          return {
-            name: item.dictLabel,
-            value: item.dictValue,
-            field: item.tableField
-          }
-        })
+        if (val) {
+          const periodRange = val.dict.periodRange || []
+          const timeRange = val.dict.timeRange || []
+          const weekRange = val.dict.weekRange || []
+          this.rangeTypeList = periodRange.map(item => {
+            return {
+              name: item.dictLabel,
+              value: item.dictValue,
+              field: item.tableField
+            }
+          })
+          this.timeRange = timeRange.map(item => {
+            return {
+              name: item.dictLabel,
+              value: item.dictValue,
+              field: item.tableField
+            }
+          })
+          this.weekRange = weekRange.map(item => {
+            return {
+              name: item.dictLabel,
+              value: item.dictValue,
+              field: item.tableField
+            }
+          })
+        } 
       },
       deep: true,
       immediate: true

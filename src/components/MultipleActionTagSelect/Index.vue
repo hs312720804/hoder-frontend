@@ -558,6 +558,12 @@ export default {
     }
   },
   watch: {
+    bavAttrList: {
+      handler(val) {
+        console.log('2342425==>', val)
+      },
+      deep: true
+    },
     behaviorRulesJson: {
       handler(val) {
         console.log('crowd==>', val)
@@ -664,26 +670,14 @@ export default {
     fetchSpecialTagSuggestions(tagCode) {
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
-        this.bavAttrList[tagCode] = res || {}
+        // this.$nextTick(() => {
+          this.bavAttrList[tagCode] = res || {}
+          this.$set(this.bavAttrList, tagCode, res)
+          this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+          console.log('this.bavAttrList==>', this.bavAttrList)
+        // })
       })
-      // this.$service.specialTagDetailList(filter).then(data => {
-      //   const list = data.list.map(item => {
-      //     return {
-      //       attrId: item.specialTagId,
-      //       attrName: item.specialTagName,
-      //       attrValue:
-      //         tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
-      //       // attrValue: item.specialTagName,
-      //       dataSource: 7,
-      //       rulesJson: item.rulesJson
-      //     }
-      //   })
-      //   // debugger
-      //   this.$set(this.cache, tagId, {
-      //     select: false,
-      //     list
-      //   })
-      // })
+     
     },
     fetchTagSuggestions(tagId) {
       this.$service
@@ -1172,6 +1166,8 @@ export default {
         // if (policyData.dynamicPolicyJson) {
         //   this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
         // }
+        // eslint-disable-next-line no-debugger
+        debugger
         cacheIds = this.distinct(cacheIds, [])
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)
