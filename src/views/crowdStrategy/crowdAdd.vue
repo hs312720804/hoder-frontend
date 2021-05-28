@@ -29,7 +29,7 @@
                 :rulesJson="rulesJson"
               ></MultipleSelect>
             </el-form-item>
-            <div class="outer-and" v-if="specialTags.length > 0">
+            <!-- <div class="outer-and" v-if="specialTags.length > 0">
               <el-button
                 type="danger"
                 v-if="
@@ -40,7 +40,24 @@
                 :key="'condition'"
                 >{{ dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
               </el-button>
+            </div> -->
+            <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0 &&  specialTags.length > 0)">
+              <el-button
+                type="danger"
+                @click="handleConditionChange(crowd)"
+                round
+                :key="'condition'"
+              >{{ (dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
             </div>
+
+            <el-form-item label="行为标签" v-if="actionTags.length > 0">
+              <!-- {{behaviorRulesJson}} -->
+              <MultipleActionTagSelect 
+                :actionTags="actionTags" 
+                :behaviorRulesJson="behaviorRulesJson" 
+              ></MultipleActionTagSelect>
+            </el-form-item>
+
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <MultipleSelect
                 :specialTags="specialTags"
@@ -132,9 +149,11 @@
 </template>
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
 export default {
   components: {
-    MultipleSelect
+    MultipleSelect,
+    MultipleActionTagSelect
   },
   data() {
     var checkIntNumber = (rule, value, callback) => {
@@ -151,6 +170,7 @@ export default {
       //attrs: [[${attrs}]] || {},
       cache: {},
       tags: [],
+      actionTags: [],
       specialTags: [],
       tagInitSize: 200,
       tagCurrentPage: 1,
@@ -169,6 +189,7 @@ export default {
       },
       // usedTags: [[${usedTags}]] || {},
       rulesJson: { condition: 'OR', rules: [] },
+      behaviorRulesJson: { link: 'AND', condition: 'OR', rules: [] },
       dynamicPolicyJson: { link: 'AND', condition: 'OR', rules: [] },
       suggestions: {},
       suggestionsNew: [],
@@ -466,6 +487,20 @@ export default {
         // console.log('123cache===', this.cache)
       })
     },
+
+    // 获取行为标签下拉选项
+    fetchActionTagSuggestions(tagCode) {
+      this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
+        // eslint-disable-next-line no-debugger
+        // this.$nextTick(() => {
+          this.bavAttrList[tagCode] = res || {}
+          this.$set(this.bavAttrList, tagCode, res)
+          this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+          console.log('this.bavAttrList==>', this.bavAttrList)
+        // })
+      })
+    },
+
     fetchTagSuggestions(tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
@@ -532,11 +567,15 @@ export default {
           const form = JSON.parse(JSON.stringify(this.form))
           const tagIds = []
           const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
+          const behaviorRulesJson = JSON.parse(JSON.stringify(this.behaviorRulesJson))
           const dynamicPolicyJson = JSON.parse(
             JSON.stringify(this.dynamicPolicyJson)
           )
           const rules = ruleJson.rules
           const ruleLength = rules.length
+
+          const behaviorRules = behaviorRulesJson.rules
+
           const dynamicPolicyRules = dynamicPolicyJson.rules
           const dynamicPolicyRulesLength = dynamicPolicyRules.length
           let i,
@@ -674,6 +713,7 @@ export default {
             crowdName: form.name,
             tagIds: tagIds.join(','),
             rulesJson: JSON.stringify(ruleJson),
+            behaviorRulesJson: JSON.stringify(behaviorRulesJson),
             dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
             remark: form.remark,
             policyId: form.policyId,
@@ -780,15 +820,22 @@ export default {
       .getTagsByPoliceId({ policyId: this.form.policyId })
       .then(data => {
         const normalTags = []
+        const actionTags = []
         const specialTags = []
         data.forEach(item => {
-          if (item.dataSource === 6) {
+          if (item.dataSource === 6) { // 效果指标
             specialTags.push(item)
+          } else if ( item.dataSource === 8 ) { // 行为标签
+            actionTags.push(item)
+          } else if ( item.dataSource === 2 ) { // 大数据标签
+            actionTags.push(item)
+            normalTags.push(item)
           } else {
             normalTags.push(item)
           }
         })
         this.tags = normalTags
+        this.actionTags = actionTags
         this.specialTags = specialTags
       })
     if (this.crowdId != null)
@@ -807,10 +854,14 @@ export default {
           : undefined
         let ruleJsonData = JSON.parse(policyData.rulesJson)
         let cacheIds = []
+        let cacheActionIds = []
         let cacheSpecialIds = []
         ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
           itemParent.rules.forEach(item => {
-            if (item.tagType === 'string' || item.tagType === 'collect') {
+            // 行为标签
+            if (item.dataSource === 8) {
+              cacheActionIds.push(item.tagCode)
+            } else if (item.tagType === 'string' || item.tagType === 'collect') {
               cacheIds.push(item.tagId)
             }
             if (item.tagType === 'mix') {
@@ -836,6 +887,9 @@ export default {
         })
 
         this.rulesJson = ruleJsonData
+
+        this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+
         if (policyData.dynamicPolicyJson) {
           this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
         }
@@ -844,6 +898,14 @@ export default {
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)
         }
+
+        // 行为标签的 id 集合
+        if (cacheActionIds.length !== 0) {
+          cacheActionIds.forEach(tagCode => {
+            this.fetchActionTagSuggestions(tagCode)
+          })
+        }
+
         // 特色标签的 id 集合
         if (cacheSpecialIds.length !== 0) {
           cacheSpecialIds.forEach(item => {

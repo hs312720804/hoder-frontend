@@ -667,7 +667,7 @@ export default {
     },
     
     // 获取行为标签下拉选项
-    fetchSpecialTagSuggestions(tagCode) {
+    fetchActionTagSuggestions(tagCode) {
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {
@@ -677,8 +677,8 @@ export default {
           console.log('this.bavAttrList==>', this.bavAttrList)
         // })
       })
-     
     },
+    
     fetchTagSuggestions(tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
@@ -1175,7 +1175,7 @@ export default {
         // 行为标签的 id 集合
         if (cacheActionIds.length !== 0) {
           cacheActionIds.forEach(tagCode => {
-            this.fetchSpecialTagSuggestions(tagCode)
+            this.fetchActionTagSuggestions(tagCode)
           })
         }
       }
