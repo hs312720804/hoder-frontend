@@ -50,6 +50,7 @@ import userTagsSearch from  '@/views/launch/userTagsSearch'
 import hitSearch from  '@/views/launch/hitSearch'
 import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
+import resendCommand from  '@/views/launch/resendCommand'
 
 const children = [
     // {
@@ -352,7 +353,7 @@ const children = [
             {
                 name: 'resendCommand',
                 path: 'launchHelper/resendCommand',
-                component: userTagsSearch,
+                component: resendCommand,
                 meta: {
                     title: '重发指令',
                     tagId:"resendCommand ",

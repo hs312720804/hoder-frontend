@@ -96,3 +96,22 @@ export function getTvEpisodes(params) {
     })
 }
 
+// 指令重发
+export function manualLaunch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/multiVersionCrowd/manualLaunch`,
+        params
+    })
+}
+
+// 指令重发
+export function getManualLaunchList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/multiVersionCrowd/manualLaunchList`,
+        params
+    })
+}
+
+
