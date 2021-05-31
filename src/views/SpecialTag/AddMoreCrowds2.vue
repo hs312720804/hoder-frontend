@@ -73,10 +73,10 @@ export default {
         return this.recordId
     },
     validateForm (rulesJson) {
-      if (rulesJson.length === 0) {
-          this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
-          return
-      }
+      // if (rulesJson.length === 0) {
+      //     this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+      //     return
+      // }
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
         if (rulesJson[index].rulesJson.rules.length === 0) {

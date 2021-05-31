@@ -250,13 +250,14 @@
       <!--</el-table-column>-->
       <el-table-column prop="status" label="状态1234" width="70px">
         <template slot-scope="scope">
-          <span v-if="scope.row.status === 1">生效中</span>
-          <span v-if="scope.row.status === 0">已下架</span>
+          {{ launchStatusEnum[scope.row.status] }}
+          <!-- <span v-if="scope.row.putway === 1">生效中</span>
+          <span v-if="scope.row.putway === 0">已下架</span> -->
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">
           <template slot-scope="scope">
-              {{abStatusEnum[scope.row.abstatus]}}
+              {{ abStatusEnum[scope.row.abstatus] }}
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
@@ -1004,6 +1005,7 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
+        launchStatusEnum: {},
         checkList: ['creatorName'],
         downloadUrl: undefined,
         launchedExportUrl: undefined,
@@ -1093,14 +1095,16 @@ export default {
        * 投前测试
        */
       isShowTest (item) {
-        const tagsList = this.selectRow.tagsList // 所有的tags
-        const currentItemTagIds = item.tagIds // 当前行的tags
+        // eslint-disable-next-line no-debugger
+        debugger
+        const tagsList = this.selectRow.tagsList || []// 所有的tags
+        const currentItemTagIds = item.tagIds || ''// 当前行的tags
         const tagsArr = currentItemTagIds.split(',')
         let flag = false
         for (let i = 0; i < tagsArr.length; i++) {
           const tag = tagsList.find((e) => {
             return e.tagId === parseInt(tagsArr[i])
-          })
+          }) || {}
           if (tag.dataSource === 3) {
             flag = true
             break
@@ -1321,6 +1325,7 @@ export default {
         // console.log('this.tableData===', this.tableData[0].rulesJson)
         
         this.abStatusEnum = data.ABStatus
+        this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
         this.initExpandCrowd = []

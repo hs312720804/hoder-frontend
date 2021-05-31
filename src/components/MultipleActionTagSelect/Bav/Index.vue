@@ -587,13 +587,20 @@
                 @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)"
               >
                 <el-option
+                  
                   v-for="tv in qiBoOptions"
                   :key="tv.value"
                   :label="tv.name"
                   :value="tv.value">
                 </el-option>
+                <!-- 编辑回显 选项-->
+                <el-option
+                  v-if="qiBoOptions.length === 0 && item4.child[0].value !== ''"
+                  :label="item4.child[0].name"
+                  :value="item4.childCheckedVal[0]">
+                </el-option>
               </el-select>
-              <!-- {{ item3.childCheckedVal[0] }} -->
+              <!-- {{ item4 }} -->
               <span
                 v-for="(item5, index) in item4.child"
                 :key="index"
@@ -610,7 +617,7 @@
                         placeholder="请选择"
                         clearable
                         @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)"
-                      > 
+                      >
                         
                         <el-option
                           v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
@@ -628,7 +635,7 @@
                           <el-select
                             v-model="item6.childCheckedVal[0]"
                             style="width: 150px;"
-                            placeholder="请选择333"
+                            placeholder="请选择"
                             clearable
                             @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)"
                           >
@@ -669,7 +676,7 @@
                       </span>
                   </span>
                   <!-- // 不是电影的 -->
-                  <span v-else> 
+                  <span v-else>
                     <el-select
                       multiple
                       v-model="item5.childCheckedVal"
@@ -875,7 +882,7 @@ export default {
       moDefaultChild: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }],
       moOptions: {},
       loading: false,
-      qiBoOptions: {},
+      qiBoOptions: [],
       loading2: false,
       qiBoCollectionOptions: []
       // jiList: [{
@@ -1148,7 +1155,6 @@ export default {
                   type: 'string'
                 }
               })
-              console.log('res', res)
             })
           }
           

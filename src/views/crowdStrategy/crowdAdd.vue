@@ -490,6 +490,7 @@ export default {
 
     // 获取行为标签下拉选项
     fetchActionTagSuggestions(tagCode) {
+      if (this.bavAttrList[tagCode]) return
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {
@@ -581,12 +582,12 @@ export default {
           let i,
             j = 0
           // 如果设置标签和动态因子都没有选rules则报错
-          if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
-            this.$message.error(
-              '请至少填写一个标签块内容或者一个动态因子完整的内容！'
-            )
-            return
-          }
+          // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
+          //   this.$message.error(
+          //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
+          //   )
+          //   return
+          // }
           if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
             if (this.currentLaunchLimitCount > form.limitLaunchCount) {
               this.$message.error('投放数量不能小于上一次设置的限制数量')

@@ -24,9 +24,9 @@
                     <!-- 纵列第一块-->
                     <div>
                         <div
-                                v-for="(item,index) in formData.biTrack"
-                                :key="index"
-                                class="track-item"
+                            v-for="(item,index) in formData.biTrack"
+                            :key="index"
+                            class="track-item"
                         >
                             <div class="business-name">{{item.biName}}</div>
                             <div v-if="item.list">

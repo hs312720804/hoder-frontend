@@ -1,5 +1,5 @@
 <template>
-  <div style="display: flex; flex-direction: row;" >
+  <div>
     <!-- <transition name="el-zoom-in-left"> -->
       <div v-show="show3">
         <div style="display: flex; flex-direction: row">
@@ -96,7 +96,7 @@
       </div>
     <!-- </transition> -->
 
-    <span @click="openOrClose">{{ show3 ? '< 收起' : '> 展开' }}</span>
+    <!-- <span @click="openOrClose">{{ show3 ? '< 收起' : '> 展开' }}</span> -->
 
   </div>
 </template>
@@ -132,9 +132,17 @@ export default {
     options: {
       type: Object,
       default: () => {}
+    },
+    show: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
+    show(val) {
+      console.log(val)
+      this.show3 = val
+    },
     options: {
       handler(val) {
         // eslint-disable-next-line no-debugger
@@ -164,7 +172,7 @@ export default {
               field: item.tableField
             }
           })
-        } 
+        }
       },
       deep: true,
       immediate: true

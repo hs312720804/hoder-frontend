@@ -41,13 +41,16 @@
               <!-- 会员状态 不需要周期范围的所有下拉框选项 -->
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <Range 
-                  v-if="childItem.tagCode !== 'BAV0001'" 
-                  :childItem="childItem" 
-                  :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
-                  :options="bavAttrList[childItem.categoryCode]"
-                >
-                </Range>
+                <div v-if="childItem.tagCode !== 'BAV0001'" style="display: flex; flex-direction: row;" >
+                  <Range 
+                    :childItem="childItem" 
+                    :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
+                    :options="bavAttrList[childItem.categoryCode]"
+                    :show="showRange"
+                  >
+                  </Range>
+                  <span @click="handelChangeShow" :class="showRange ? 'range-open' : 'range-close'" class="range">{{ showRange ? '收起' : '展开' }}</span> 
+                </div>
                 <!-- {{childItem}} -->
                 <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
                 <Bav 
@@ -522,7 +525,8 @@ export default {
         8: 'warningCyan',
       },
       cityData: [],
-      provinceValueList: []
+      provinceValueList: [],
+      showRange: true
     }
   },
   components: {
@@ -576,6 +580,10 @@ export default {
   },
   methods: {
     // 111111111111111111
+    handelChangeShow () {
+      // console.log('1234567890--', val)
+      this.showRange = !this.showRange
+    },
     handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
@@ -668,6 +676,7 @@ export default {
     
     // 获取行为标签下拉选项
     fetchActionTagSuggestions(tagCode) {
+      if (this.bavAttrList[tagCode]) return
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {
@@ -731,7 +740,7 @@ export default {
         this.$message.warning('已达最大数量')
         return
       }
-    
+      
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
@@ -1228,6 +1237,7 @@ export default {
 .label-item {
   display: flex;
   position: relative;
+  border-bottom: 1px dashed rgba(182, 212, 216, .78);
 }
 
 .paddingTop {
@@ -1376,5 +1386,35 @@ i {
   display: flex
 }
 
+.range {
+  line-height: 0px;
+  padding-left: 0px;
+  color: dimgray;
+  text-indent: 23px;
+  osition: absolute;
+  width: 0;
+  height: 0;
+}
+.range-open {
+  text-indent: -52px;
+  border-top: 19px solid transparent;
+  border-bottom: 16px solid transparent;
+  border-left: 54px solid #e2e2e2;
+  border-right: 6px solid transparent;
+}
+
+.range-close {
+  line-height: 0px;
+  padding-left: 0px;
+  color: dimgray;
+  text-indent: 23px;
+  osition: absolute;
+  width: 0;
+  height: 0;
+  border-top: 19px solid transparent;
+  border-bottom: 16px solid transparent;
+  border-left: 6px solid transparent;
+  border-right: 54px solid #e2e2e2;
+}
 
 </style>
