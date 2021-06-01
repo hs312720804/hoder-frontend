@@ -149,10 +149,16 @@
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
                                     <el-dropdown-item
-                                            :command="['del',scope.row]"
-                                            v-permission="'hoder:launch:crowd:ver:delete'"
-                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                        :command="['del',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                            v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))"
+                                            :command="['monitor',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:index'"
+                                    >数据监控
                                     </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
@@ -184,6 +190,33 @@
             <!--</el-form>-->
             <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
             <div>{{selectStrategy}}</div>
+        </el-dialog>
+        <el-dialog title="数据监控" :visible.sync="monitorDialog">
+            <el-date-picker
+              v-model="monitorRangeTime"
+              type="daterange"
+              align="right"
+              @change="getDataMonitor"
+              class="monitor-time"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          
+            <c-table
+                :props="monitorTable.props"
+                :header="monitorTable.header"
+                :data="monitorTable.data"
+                class="table-overflow"
+            >
+            </c-table>
+            <div style="margin: 30px 0 0; overflow: auto">
+                <pagination
+                    :currentpage="monitorOutForm.pageNum"
+                    :pagesize="monitorOutForm.pageSize"
+                    :totalcount="monitorTotal"
+                    @handle-size-change="handleMonitorSizeChange"
+                    @handle-current-change="handleMonitorCurrentChange"
+                ></pagination>
+            </div>
         </el-dialog>
     </div>
 </template>
@@ -218,12 +251,54 @@
                 // launchType: undefined,
                 launchTitle: '',
                 selectStrategy: null,//人群条件的选择策略
-                checkList: []
+                checkList: [],
+                monitorDialog: false,
+                monitorRangeTime: undefined,
+                monitorOutForm: {
+                    pageSize: 10,
+                    pageNum: 1
+                },
+                monitorTotal: 0,
+                monitorTable: {
+                    props: {},
+                    header: [
+                        {
+                            label: '人群名称',
+                            prop: 'launch_name'
+                        },
+                        {
+                            label: '投放ID（dmp_crowd_id）',
+                            prop: 'launch_crowd_id'
+                        },
+                        {
+                            label: '临时人群（SQL）指令',
+                            prop: 'crowd_sql'
+                        },
+                        {
+                            label: '临时人群版本号',
+                            prop: 'cur_version'
+                        },
+                        {
+                            label: '临时人群es index',
+                            prop: 'es_index'
+                        },
+                        {
+                            label: '临时人群是否同步成功',
+                            prop: 'status_name'
+                        },
+                        {
+                            label: '临时人群同步日期',
+                            prop: 'update_time'
+                        }
+                    ],
+                    data: []
+                },
             }
         },
         created () {
             this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
+            this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
         },
         watch: {
             'refreshFlag': function (val) {
@@ -237,6 +312,50 @@
             }
         },
         methods: {
+            handleMonitor (row) {
+               this.monitorDialog = true
+               this.selectedRow = row
+               this.getDataMonitor()
+            },
+
+            getDataMonitor () {
+                this.handleGetMonitorTableList()
+            },
+
+            handleGetMonitorTableList () {
+                const monitorRangeTime = this.monitorRangeTime
+                const startDate = monitorRangeTime[0]
+                const endDate = monitorRangeTime[1]
+                const params = {
+                    launchCrowdId: this.selectedRow.launchCrowdId, 
+                    startDate, 
+                    endDate,
+                    ...this.monitorOutForm
+                }
+                this.$service.launchVersionList(params).then(data => {
+                    if (data) {
+                        this.monitorTotal = data.pageInfo.total
+                        this.monitorTable.data = data.pageInfo.list || []
+                    } else {
+                        this.resultContent = '暂无数据'
+                    }
+                })
+            },
+
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+            handleMonitorSizeChange (val) {
+                this.monitorOutForm.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.monitorOutForm.pageNum = 1
+                this.handleGetMonitorTableList()
+            },
+
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleMonitorCurrentChange (val) {
+                this.monitorOutForm.pageNum = val
+                this.handleGetMonitorTableList()
+            },
+
             fetchData () {
                 const filter = {
                     pageNum: this.currentPage,
@@ -265,9 +384,9 @@
                     case 'del':
                         this.del(params)
                         break
-                    // case 'monitor':
-                    //     this.handleMonitor(params)
-                    //     break
+                    case 'monitor':
+                        this.handleMonitor(params)
+                        break
                 }
             },
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
