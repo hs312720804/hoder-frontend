@@ -392,7 +392,7 @@
                 <el-button
                         v-if="!(status!==undefined && (status === 2 || status === 3))"
                         type="primary"
-                        @click="launchDirectly"
+                        @click="handelLaunch"
                 >直接投放</el-button>
             </div>
 
@@ -1072,8 +1072,13 @@
             },
             
             
-            // 修改状态
-            launchDirectly () {
+            // 投放提示
+            handelLaunch () {
+                // 临时人群/本地人群 直接投放
+                if (this.crowdForm.crowdType) {
+                    this.launchDirectly()
+                    return
+                }
                 console.log('this.crowdForm==>', this.crowdForm)
                 // let policyCrowdIds = JSON.parse(JSON.stringify(this.crowdForm.policyCrowdIds))
                 const crowdIds = this.crowdForm.policyCrowdIds.map(item => item.split('_')[1]).join(',')
@@ -1099,18 +1104,18 @@
                 this.showEstimatePop()
             },
 
-            // // 显示投放弹窗
-            // launchDirectly () {
-            //     console.log('this.crowdForm==>', this.crowdForm)
-            //     // 先进行保存校验
-            //     this.$refs.crowdForm.validate(valid => {
-            //         if (valid) {
-            //             this.showEstimatePop()
-            //         } else {
-            //             return false
-            //         }
-            //     })
-            // },
+            // 直接投放
+            launchDirectly () {
+                console.log('this.crowdForm==>', this.crowdForm)
+                // 先进行保存校验
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        this.showEstimatePop()
+                    } else {
+                        return false
+                    }
+                })
+            },
 
             showEstimatePop () {
                 this.showEstimate = true
