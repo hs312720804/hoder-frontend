@@ -94,7 +94,7 @@ export default {
                 this.$message.error('第' + (index + 1) + "人群的人群限制数量为必填")
                 flag = false
                 break
-            }else{
+            } else {
                 if (!Number.isInteger(rulesJson[index].limitLaunchCount)) {
                     this.$message.error('第' + (index + 1) + "人群的人群限制数量必须是大于1小于10万的整数")
                     flag = false

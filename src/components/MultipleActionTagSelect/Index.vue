@@ -676,7 +676,9 @@ export default {
     
     // 获取行为标签下拉选项
     fetchActionTagSuggestions(tagCode) {
+      // 重复的不查
       if (this.bavAttrList[tagCode]) return
+      // 获取行为标签下拉选项
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {

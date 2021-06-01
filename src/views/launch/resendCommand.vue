@@ -2,14 +2,11 @@
     <div>
         <el-form :model="outForm" inline class="first-form">
             <el-form-item label="投放ID：">
-                <el-input v-model="outForm.launchCrowdId" clearable></el-input>
+                <el-input v-model="outForm.launchCrowdId" @keyup.enter.native="handleGetManualLaunchList" clearable></el-input>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="handleResendCommand">触发计算</el-button>
             </el-form-item>
-        </el-form>
-        <el-form :model="form" inline label-width="100px" class="second-form">
-            
         </el-form>
         <c-table
             :props="table.props"
@@ -18,6 +15,24 @@
             class="table-overflow"
         >
         </c-table>
+            <!-- <el-pagination
+                class="pagination"
+                :current-page.sync="outForm.pageNum"
+                :page-size.sync="outForm.pageSize"
+                :total="total"
+                @size-change="handleGetManualLaunchList"
+                @current-change="handleGetManualLaunchList"
+                :page-sizes="[10, 20, 50, 100]"
+                layout="total, sizes, prev, pager, next, jumper"
+            >
+            </el-pagination> -->
+        <pagination
+            :currentpage="outForm.pageNum"
+            :pagesize="outForm.pageSize"
+            :totalcount="total"
+            @handle-size-change="handleSizeChange"
+            @handle-current-change="handleCurrentChange"
+        ></pagination>
     </div>
 </template>
 
@@ -27,10 +42,11 @@
         data () {
             return {
                 outForm: {
-                    launchCrowdId: ''
+                    launchCrowdId: '',
+                    pageSize: 10,
+                    pageNum: 1
                 },
-                pageNum: 0,
-                pageSize: 1,
+                total: 0,
                 showNext: false,
                 resultContent: undefined,
                 table: {
@@ -39,7 +55,6 @@
                         {
                             label: 'id',
                             width: '50',
-                            type: 'index',
                             prop: 'id'
                         },
                         {
@@ -82,55 +97,41 @@
         methods: {
             handleResendCommand() {
                 this.$service.manualLaunch(this.outForm).then(data => {
-
+                    this.outForm.pageNum = 1
+                    this.handleGetManualLaunchList()
                 })
             },
-
+            
             handleGetManualLaunchList () {
-                const form = this.outForm
-                this.$service.getManualLaunchList(form).then(data => {
+                this.$service.getManualLaunchList(this.outForm).then(data => {
                     if (data) {
-                       this.table.data = data
+                        this.total = data.pageInfo.total
+                        this.table.data = data.pageInfo.list || []
                     } else {
                         this.resultContent = '暂无数据'
                     }
-
                 })
             },
-            // checkOutForm () {
-            //     const form = this.outForm
-            //     if (form.MAC || form.policyId) {
-            //         return true
-            //     } else {
-            //         this.$message.error('MAC或策略ID至少得填一项！')
-            //         return false
-            //     }
-            // },
-            // parseAutoFilter () {
-            //     const form = this.outForm
-            //     return {
-            //         MAC: form.MAC,
-            //         policyId: form.policyId,
-            //         pageSize: this.pageSize,
-            //         pageNum: this.pageNum
-            //     }
-            // },
-            // handleGetAutoData () {
-            //     const checkOutFormFlag = this.checkOutForm()
-            //     if (checkOutFormFlag) {
-            //         const filter = this.parseAutoFilter()
-            //         this.$service.getAutoFilledParams(filter).then(data => {
-            //             if (data.length > 0) {
-            //                 this.form = data[0]
-            //                 this.showNext = true
-            //             } else {
-            //                 this.showNext = false
-            //             }
-            //         })
-            //     }
-            // }
-           
+
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+            handleSizeChange (val) {
+                this.outForm.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.currentPage = 1
+                this.handleGetManualLaunchList()
+            },
+
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleCurrentChange (val) {
+                this.outForm.pageNum = val
+                this.handleGetManualLaunchList()
+            }
+            
+        },
+        mounted() {
+            this.handleGetManualLaunchList()
         }
+
     }
 </script>
 

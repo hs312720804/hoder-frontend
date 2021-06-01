@@ -682,7 +682,6 @@
                       v-model="item5.childCheckedVal"
                       style="width: 100px;"
                       placeholder="请选择集数"
-                      clearable
                       @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)"
                     >
                       <el-option
@@ -849,6 +848,19 @@ export default {
       type: Object
     }
   },
+  watch: {
+    childItem: {
+      handler(val) {
+        console.log('11111111111===', val)
+        // 起播行为标签需要查询影片集数
+        if (val && val.tagCode === 'BAV0008') {
+          this.getQiboTvEpisodes(val.bav.behaviorValue)
+        }
+      },
+      deep: true,
+      immediate: true
+    }
+  },
   data() {
     return {
       value1: [],
@@ -894,6 +906,17 @@ export default {
   },
   created() {},
   methods: {
+    // 起播行为编辑，获取影片集数
+    getQiboTvEpisodes(bavVal) {
+      bavVal.forEach(obj => {
+        if (obj.videoType && obj.videoType !== '电影' && obj.source && obj.value) {
+          this.getTvEpisodes(obj.source, obj.value)
+        } else {
+          this.getQiboTvEpisodes(obj.child)
+        }
+      })
+    },
+
     qiBoRemoteMethod(query, source) {
       if (query !== '') {
         this.loading2 = true;
@@ -1129,33 +1152,11 @@ export default {
           //   field: ''
           // }]
         }
-        // eslint-disable-next-line no-debugger
-        debugger
         if (level === 5) { // 输入了影片名称之后，需要查询集数/期数
-          
-          // eslint-disable-next-line no-debugger
-          debugger
-          console.log('childItem==>', matchObj)
+          // console.log('123124childItem==>', matchObj)
+          // console.log('12345obj==>', obj)
           if (obj.videoType !== '电影' && obj.source && obj.value) {
-            const params = {
-              source: obj.source,
-              id: obj.value,
-              page: 1,
-              pageSize: 10
-            }
-            
-            // const unit = 
-            this.$service.getTvEpisodes(params).then(res => {
-              this.qiBoCollectionOptions = res.rows || []
-              this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
-                return {
-                  name: '第' + obj.urlCollection + '集',
-                  value: obj.urlCollection,
-                  field: obj.tableField,
-                  type: 'string'
-                }
-              })
-            })
+           this.getTvEpisodes(obj.source, obj.value)
           }
           
         }
@@ -1193,6 +1194,28 @@ export default {
         isValueClear,
         level
       )
+    },
+
+    // 获取影片集数
+    getTvEpisodes(source, id) {
+      const params = {
+        source,
+        id,
+        page: 1,
+        pageSize: 10
+      }
+      
+      this.$service.getTvEpisodes(params).then(res => {
+        this.qiBoCollectionOptions = res.rows || []
+        this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
+          return {
+            name: '第' + obj.urlCollection + '集',
+            value: obj.urlCollection,
+            field: obj.tableField,
+            type: 'string'
+          }
+        })
+      })
     },
 
     getBehaviorAttrList(childItem, level=1, extra={}) {
@@ -1318,7 +1341,7 @@ export default {
         })
         // console.log('attrlist==>', attrlist)
         return attrlist
-      } 
+      }
     },
     getChildBehaviorAttrList() {
       return [
@@ -1343,6 +1366,10 @@ export default {
 <style lang='stylus' scoped>
 .label-item span, .oc-item {
   margin-right: 10px;
+}
+
+.oc-item {
+  margin-top: 5px;
 }
 
 .w100 {
@@ -1375,9 +1402,9 @@ export default {
 }
 
 .bav-attr-warp {
-  align-items: baseline;
-  border: 1px dashed #fff;
+  // align-items: baseline;
   display: flex;
+  border: 1px dashed #fff;
   margin-bottom: 10px;
 
   // &:hover {
