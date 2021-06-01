@@ -83,7 +83,11 @@
                         },
                         {
                             label: '投放状态',
-                            prop: 'status'
+                            prop: 'status',
+                            render:(h, {row}) => {
+                                if(row.status === 1) {return '成功'}
+                                else {return '失败'}
+                            }
                         },
                         {
                             label: '说明',
