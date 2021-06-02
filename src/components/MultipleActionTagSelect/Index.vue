@@ -526,7 +526,8 @@ export default {
       },
       cityData: [],
       provinceValueList: [],
-      showRange: true
+      showRange: true,
+      tableIndex: 0
     }
   },
   components: {
@@ -809,6 +810,8 @@ export default {
             }
           ]
         }
+      // debugger
+        const tableIndex = this.tableIndex++ 
         this.behaviorRulesJson.rules.push({
           condition: 'AND',
           rules: [
@@ -820,9 +823,9 @@ export default {
               tagId: tag.tagId,
               tagType: tag.tagType,
               categoryCode: tag.tagKey,
-              table: res.tableName || '',
+              table: res.tableName + tableIndex || '',
               bav: {
-                table: res.tableName || '',
+                table: res.tableName + tableIndex || '',
                 value: [],
                 behaviorValue: defaultBehaviorValue,
                 rangeType: 'fixed',
@@ -929,7 +932,7 @@ export default {
             }
           ]
         }
-
+        const tableIndex = this.tableIndex++
         rule.rules.push({
           operator: '=',
           tagCode: tag.tagKey,
@@ -938,9 +941,9 @@ export default {
           tagId: tag.tagId,
           tagType: tag.tagType,
           categoryCode: tag.tagKey,
-          table: res.tableName || '',
+          table: res.tableName + tableIndex || '',
           bav: {
-            table: res.tableName || '',
+            table: res.tableName + tableIndex || '',
             value: [],
             behaviorValue: defaultBehaviorValue,
             rangeType: 'fixed',
@@ -987,17 +990,18 @@ export default {
         }
       }
       // 11111111111111
+      const tableIndex = this.tableIndex++
       this.behaviorRulesJson.rules.push({
         condition: 'AND',
         rules: [
           {
+            table: 'dmp_db.base_user_tags_v' + tableIndex,
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
             tagCode: tag.tagKey,
             tagName: tag.tagName,
             dataSource: tag.dataSource,
             value: '',
-            
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -1052,8 +1056,9 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      // debugger
+      const tableIndex = this.tableIndex++
       rule.rules.push({
+        table: 'dmp_db.base_user_tags_v' + tableIndex,
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
         tagCode: tag.tagKey,
