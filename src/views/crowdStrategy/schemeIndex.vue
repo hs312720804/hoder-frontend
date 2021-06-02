@@ -11,7 +11,7 @@
                 </div>
                 <div class="info">
                     策略ID：{{selectRow.policyId}}
-                    策略纬度:
+                    策略维度:
                     <el-tag
                         size="mini"
                         v-for="item in selectRow.tagsList"

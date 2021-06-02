@@ -267,8 +267,8 @@
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
                                 </el-dropdown-item>
+                                        <!-- v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))" -->
                                 <el-dropdown-item
-                                        v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))"
                                         :command="['monitor',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
@@ -486,7 +486,7 @@
             <el-radio-group v-model="monitorTab">
               <el-radio-button label="mac" >设备数量</el-radio-button>
               <el-radio-button label="wx" >wxopenId</el-radio-button>
-          </el-radio-group>
+            </el-radio-group>
           </div>
           <ve-histogram
                   v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)"

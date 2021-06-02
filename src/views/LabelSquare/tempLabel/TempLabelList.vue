@@ -155,9 +155,8 @@
                                     >删除
                                     </el-dropdown-item>
                                     <el-dropdown-item
-                                            v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))"
-                                            :command="['monitor',scope.row]"
-                                            v-permission="'hoder:launch:crowd:ver:index'"
+                                        :command="['monitor',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
                                     >数据监控
                                     </el-dropdown-item>
                                 </el-dropdown-menu>
@@ -298,7 +297,7 @@
         created () {
             this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
-            this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+            // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
         },
         watch: {
             'refreshFlag': function (val) {
@@ -323,9 +322,9 @@
             },
 
             handleGetMonitorTableList () {
-                const monitorRangeTime = this.monitorRangeTime
-                const startDate = monitorRangeTime[0]
-                const endDate = monitorRangeTime[1]
+                const monitorRangeTime = this.monitorRangeTime || []
+                const startDate = monitorRangeTime[0] || ''
+                const endDate = monitorRangeTime[1] || ''
                 const params = {
                     launchCrowdId: this.selectedRow.launchCrowdId, 
                     startDate, 
@@ -518,4 +517,6 @@
     .operate
         margin-left 20px
         cursor pointer
+    .monitor-time
+        margin-bottom 30px
 </style>

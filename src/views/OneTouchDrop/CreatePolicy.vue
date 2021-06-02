@@ -25,7 +25,7 @@
                 <span class="checkbox--blue">蓝色</span>为账号标签,
                 <span class="checkbox--yellow">黄色</span>为实时标签
             </div>
-            <el-form-item label="策略纬度" prop="conditionTagIds">
+            <el-form-item label="策略维度" prop="conditionTagIds">
                 <el-tabs tab-position="top">
                     <div class="strategy-search">
                         <el-input aria-placeholder="请输入标签关键字进行搜索"

@@ -91,7 +91,7 @@
                 slot="header"
                 slot-scope="{ column, $index }"
         >
-          策略纬度（
+          策略维度（
           <span class="checkbox--red">红色</span>为大数据标签,
           <span class="checkbox--green">绿色</span>为自定义/本地标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
@@ -241,7 +241,7 @@
             <!--<el-option label="自定义" value="1"></el-option>-->
           <!--</el-select>-->
         <!--</el-form-item>-->
-        <!--<el-form-item label="策略纬度" prop="conditionTagIds">-->
+        <!--<el-form-item label="策略维度" prop="conditionTagIds">-->
           <!--<el-tabs tab-position="top" style="height: 200px;">-->
             <!--<el-tab-pane-->
               <!--v-for="item in conditionTagIdsData"-->
@@ -255,7 +255,7 @@
           <!--</el-tabs>-->
         <!--</el-form-item>-->
         <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签</div>
-        <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
+        <el-form-item label="策略维度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
                     <!--v-for="item in conditionTagIdsData"-->
@@ -430,7 +430,7 @@ export default {
       // 查询的页码
       start: 1,
       addFormVisible: false,
-      conditionTagIdsData: [], //策略纬度
+      conditionTagIdsData: [], //策略维度
       conditionTagsFiltered: [],
       tagList: [],
       defaultProps: {

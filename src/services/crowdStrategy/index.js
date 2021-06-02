@@ -706,7 +706,7 @@ export function smartProgrammeDetail (policyId) {
 }
 
 /**
- * 根据策略id获取策略纬度详情
+ * 根据策略id获取策略维度详情
  * @param policyId
  */
 export function smartProframPolicyInfo (params) {
