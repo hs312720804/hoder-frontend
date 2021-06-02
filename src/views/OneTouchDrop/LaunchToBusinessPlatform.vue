@@ -86,15 +86,16 @@
                 </el-form-item>
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
                                 <el-checkbox
                                         v-for="item in v.childs"
                                         :label="v.policyId+'_'+item.tempCrowdId"
                                         :key="item.tempCrowdId+''"
-                                        :disabled="item.canLaunch === false"
+                                        :disabled="item.canLaunch === false || item.isDisabledCrowd"
                                 >{{item.crowdName}}
                                 </el-checkbox>
                             </el-checkbox-group>
+                            <span style="color: red">单次仅可投放一个包含行为标签的人群</span>
                         </el-form-item>
                 </el-form-item>
                 <!--<el-form-item label="数据有效期" prop="expiryDay">-->
@@ -204,7 +205,62 @@
             ...mapGetters(['policyId'])
         },
         methods: {
+            handelCheckoutGroup (val, index, crowdData) {
+                // console.log(val)
+                // console.log(index)
+                // console.log(crowdData)
+                const crowdList = crowdData[index].childs
+                const policyId = crowdData[index].policyId
+                // 选中的对象list
+                let checkedList = crowdList.filter(item => {
+                    const flag = val.includes(policyId+'_'+item.tempCrowdId)
+                    return flag
+                }) || []
+
+                // 若无选中，则全部恢复可选状态
+                if (checkedList.length === 0) {
+                    this.crowdData[index].childs.forEach(item => {
+                        item.isDisabledCrowd = false
+                    })
+                    this.$set(this.crowdData, index, this.crowdData[index])
+                }
+
+                for (let i = 0; i < checkedList.length; i++ ) {
+                    // eslint-disable-next-line no-debugger
+                    debugger
+                    let obj = checkedList[i]
+                    if (obj.isBehaviorCrowd) {  // 选了行为人群
+                        this.crowdData[index].childs.forEach(item => {
+                            // eslint-disable-next-line no-debugger
+                            debugger
+                            if (obj.tempCrowdId === item.tempCrowdId) {
+                                item.isDisabledCrowd = false
+                            } else {
+                                item.isDisabledCrowd = true
+                            }
+                        })
+                        this.$set(this.crowdData, index, this.crowdData[index])
+                        break;
+                    } else { // 选了普通人群
+                        this.crowdData[index].childs.forEach(item => {
+                            if (item.isBehaviorCrowd) {
+                                item.isDisabledCrowd = true
+                            } else {
+                                item.isDisabledCrowd = false
+                            }
+                        })
+                        this.$set(this.crowdData, index, this.crowdData[index])
+                        break;
+                    }
+
+                }
+                
+                console.log('this.crowdData==', this.crowdData)
+
+                // v.policyId+'_'+item.tempCrowdId
+            },
             handleGetCurrentPolicy() {
+                alert(1)
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
                 })
@@ -219,6 +275,18 @@
                 this.strategyPlatform = crowdArr
                 this.crowdForm.policyIdsPull = currentPolicy.policyId
                 this.crowdForm.policyIds = currentPolicy.policyId
+                tempPolicyAndCrowdData.tempCrowds = tempPolicyAndCrowdData.tempCrowds.map(item => {
+                    let isBehaviorCrowd = false
+                    let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+                    if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
+                        isBehaviorCrowd = true
+                    }
+                    return {
+                        ...item,
+                        isBehaviorCrowd, // 是否为行为人群
+                        isDisabledCrowd: false // 是否禁用
+                    }
+                })
                 let arr = []
                 let currentCrowd = {
                     policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
