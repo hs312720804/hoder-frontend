@@ -963,7 +963,7 @@ export default {
         this.$service.moduleMatch(params).then(res => {
           console.log('res==>', res)
           this.loading = false;
-          this.moOptions[field] = res.rows || []
+          this.moOptions[field] = res.data || []
         })
       } else {
         this.moOptions[field] = [];

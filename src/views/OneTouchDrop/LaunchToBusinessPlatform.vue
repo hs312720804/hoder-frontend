@@ -260,7 +260,6 @@
                 // v.policyId+'_'+item.tempCrowdId
             },
             handleGetCurrentPolicy() {
-                alert(1)
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
                 })

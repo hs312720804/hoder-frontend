@@ -527,7 +527,7 @@ export default {
       cityData: [],
       provinceValueList: [],
       showRange: true,
-      tableIndex: 0
+      tableIndex: Number(localStorage.getItem('tableIndex'))+1 || 0
     }
   },
   components: {
@@ -812,6 +812,7 @@ export default {
         }
       // debugger
         const tableIndex = this.tableIndex++ 
+        localStorage.setItem('tableIndex', tableIndex)
         this.behaviorRulesJson.rules.push({
           condition: 'AND',
           rules: [
@@ -933,6 +934,7 @@ export default {
           ]
         }
         const tableIndex = this.tableIndex++
+        localStorage.setItem('tableIndex', tableIndex)
         rule.rules.push({
           operator: '=',
           tagCode: tag.tagKey,
@@ -991,6 +993,7 @@ export default {
       }
       // 11111111111111
       const tableIndex = this.tableIndex++
+      localStorage.setItem('tableIndex', tableIndex)
       this.behaviorRulesJson.rules.push({
         condition: 'AND',
         rules: [
@@ -1057,6 +1060,7 @@ export default {
         this.crowd.tagIds.push(tag.tagId)
       }
       const tableIndex = this.tableIndex++
+      localStorage.setItem('tableIndex', tableIndex)
       rule.rules.push({
         table: 'dmp_db.base_user_tags_v' + '$' + tableIndex,
         operator:

@@ -360,14 +360,15 @@
                 >
                     <el-select
                             filterable
-                            v-model="crowdForm.policyCrowdIds"
+                            v-model="crowdForm.policyCrowdIds[0]"
+                            @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0])"
                     >
                         <el-option
                             v-for="item in behaviorCrowdList"
                             :label="item.launchName"
                             :value="item.policyIds+'_'+item.policyCrowdIds"
                             :key="item.launchName+'_'+item.policyCrowdIds"
-                        >{{item.launchName}} -- {{ item.policyCrowdIds }}
+                        >{{item.launchName}} -- {{ item.policyCrowdIds }} -- {{ item.policyIds }}
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -530,7 +531,7 @@
                     // remark: "",
                     //      dataSource: 2,
                     policyIds: [],
-                    policyCrowdIds: [],
+                    policyCrowdIds: [''],
                     // expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined,
@@ -772,6 +773,9 @@
             }
         },
         methods: {
+            handelBehaviorCrowdSelectChange(e, selectedV) {
+                this.crowdForm.policyIds = selectedV.split('_')[0].split(',')
+            },
             callback () {
                 this.$emit("changeStatus", true)
             },
@@ -807,7 +811,7 @@
             // 新增
             addSubmit () {
                 if (this.model == 1 && this.isTempCrowd)
-                 {
+                {
                    this.saveDefineCrowd()
                 }
                 else
