@@ -823,9 +823,9 @@ export default {
               tagId: tag.tagId,
               tagType: tag.tagType,
               categoryCode: tag.tagKey,
-              table: res.tableName + tableIndex || '',
+              table: res.tableName + '$' + tableIndex || '',
               bav: {
-                table: res.tableName + tableIndex || '',
+                table: res.tableName + '$' + tableIndex || '',
                 value: [],
                 behaviorValue: defaultBehaviorValue,
                 rangeType: 'fixed',
@@ -941,9 +941,9 @@ export default {
           tagId: tag.tagId,
           tagType: tag.tagType,
           categoryCode: tag.tagKey,
-          table: res.tableName + tableIndex || '',
+          table: res.tableName + '$' + tableIndex || '',
           bav: {
-            table: res.tableName + tableIndex || '',
+            table: res.tableName + '$' + tableIndex || '',
             value: [],
             behaviorValue: defaultBehaviorValue,
             rangeType: 'fixed',
@@ -995,7 +995,7 @@ export default {
         condition: 'AND',
         rules: [
           {
-            table: 'dmp_db.base_user_tags_v' + tableIndex,
+            table: 'dmp_db.base_user_tags_v' + '$' + tableIndex,
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
             tagCode: tag.tagKey,
@@ -1058,7 +1058,7 @@ export default {
       }
       const tableIndex = this.tableIndex++
       rule.rules.push({
-        table: 'dmp_db.base_user_tags_v' + tableIndex,
+        table: 'dmp_db.base_user_tags_v' + '$' + tableIndex,
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
         tagCode: tag.tagKey,

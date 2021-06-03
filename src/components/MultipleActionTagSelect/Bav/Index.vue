@@ -1317,12 +1317,12 @@ export default {
           }
           if (childItem.tagCode === 'BAV0001') {
             let operator = '='
-            if ( level === 2 && item.filedType === 'effective') { operator = '<=' } // 有效
-            if ( 
+            if ( level === 2 && item.filedType === 'effective') { operator = '>=' } // 有效
+            if (
               (level === 2 && item.filedType === 'no_effective') 
             || item.dictValue === 'date_sub(current_date,30)') { operator = '<' } // 无效 || 过期时间>30
             if ( item.dictValue === 'date_sub(current_date,-30)') { operator = '>' } // 会员过期时间>30天
-            if ( 
+            if (
                item.dictValue === 'date_sub(current_date,-7) and date_sub(current_dat' 
             || item.dictValue === 'current_date and date_sub(current_date,-7)'
             || item.dictValue === 'current_date and date_sub(current_date,-7)'

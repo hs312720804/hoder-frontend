@@ -201,6 +201,7 @@
                     ref="crowdStatusResourceRef"
                     :crowd-id="props.row.crowdId"
                     :key="props.row.crowdId"
+                    :status="launchStatusEnum[props.row.status]"
             ></crowdStatusResource>
             <!--</el-form-item>-->
           </el-form>
