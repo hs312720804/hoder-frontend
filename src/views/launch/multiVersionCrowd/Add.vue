@@ -368,7 +368,8 @@
                             :label="item.launchName"
                             :value="item.policyIds+'_'+item.policyCrowdIds"
                             :key="item.launchName+'_'+item.policyCrowdIds"
-                        >{{item.launchName}} -- {{ item.policyCrowdIds }} -- {{ item.policyIds }}
+                        >
+                            {{item.launchName}}
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -531,7 +532,7 @@
                     // remark: "",
                     //      dataSource: 2,
                     policyIds: [],
-                    policyCrowdIds: [''],
+                    policyCrowdIds: [],
                     // expiryDay: 7,
                     autoVersion: 0,
                     autoLaunchTime: undefined,
@@ -673,6 +674,11 @@
                 if (val === '0') {
                     this.crowdDefineForm.videoSourceIds = []
                 }
+            },
+            'crowdForm.crowdType'(val) {
+                if (val === 2 && this.crowdForm.policyCrowdIds.length === 0) {
+                    this.crowdForm.policyCrowdIds = ['']
+                }  
             }
         },
         created() {
@@ -686,6 +692,9 @@
                     let abTestRatio = data.ratio || {}
                     // 当row.tempCrowdId=0，就是普通人群
                     this.isTempCrowd = !row.tempCrowdId
+                    // row.crowdType不为null，则 row.crowdType == 1 是临时人群
+                    // row.crowdType为null，当row.tempCrowdId=0，就是普通人群
+                    // this.isTempCrowd = (row.crowdType && row.crowdType === 1) ? true : !row.tempCrowdId
                     if (this.model == 1 && !row.tempCrowdId) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
@@ -737,7 +746,8 @@
                         this.crowdForm.dmpCrowdId = row.dmpCrowdId
                         this.crowdForm.launchName = row.launchName
                         this.crowdForm.biIds = data.launchCrowdBiIds
-                        this.crowdForm.crowdType = row.tempCrowdId ? 1 : 0
+                        // this.crowdForm.crowdType = row.tempCrowdId ? 1 : 0
+                        this.crowdForm.crowdType = row.crowdType ? row.crowdType : (row.tempCrowdId ? 1 : 0)
                         this.disabledCrowdType = true
                         // this.crowdForm.remark = row.remark
                         // this.crowdForm.dataSource = row.dataSource
@@ -750,14 +760,23 @@
                         }
                         this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
-                        if (row.tempCrowdId) {
+                        // if (row.tempCrowdId) {
+                        if (this.crowdForm.crowdType === 1) { // 临时人群
                             this.crowdForm.tempCrowdId = row.tempCrowdId
                             this.crowdForm.policyIds = []
                             this.crowdForm.policyCrowdIds = []
-                        } else {
+                        } else if (this.crowdForm.crowdType === 0) { // 普通人群
                             this.crowdForm.tempCrowdId = undefined
                             this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                             this.getCrowd()
+                            data.respcl.forEach(element => {
+                                element.childs.forEach(v => {
+                                    if (v.choosed)
+                                        this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
+                                })
+                            })
+                        } else { // 行为人群
+                            this.crowdForm.tempCrowdId = undefined
                             data.respcl.forEach(element => {
                                 element.childs.forEach(v => {
                                     if (v.choosed)
