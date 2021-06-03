@@ -1323,10 +1323,9 @@ export default {
             || item.dictValue === 'date_sub(current_date,30)') { operator = '<' } // 无效 || 过期时间>30
             if ( item.dictValue === 'date_sub(current_date,-30)') { operator = '>' } // 会员过期时间>30天
             if (
-               item.dictValue === 'date_sub(current_date,-7) and date_sub(current_dat' 
+               item.dictValue === 'date_sub(current_date,-7) and date_sub(current_date,-30)' 
             || item.dictValue === 'current_date and date_sub(current_date,-7)'
-            || item.dictValue === 'current_date and date_sub(current_date,-7)'
-            || item.dictValue === 'date_sub(current_date,29) and date_sub(current_dat'
+            || item.dictValue === 'date_sub(current_date,29) and date_sub(current_date,7)'
             || item.dictValue === 'date_sub(current_date,7) and current_date') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
             list = {
               name: item.dictLabel,
