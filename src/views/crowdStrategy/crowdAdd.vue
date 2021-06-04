@@ -23,12 +23,14 @@
             ></el-input>
           </el-form-item>
           <div style="position: relative">
-            <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
-              <MultipleSelect
-                :tags="tags"
-                :rulesJson="rulesJson"
-              ></MultipleSelect>
-            </el-form-item>
+            <div v-if="tags.length > 0">
+              <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+                <MultipleSelect
+                  :tags="tags"
+                  :rulesJson="rulesJson"
+                ></MultipleSelect>
+              </el-form-item>
+            </div>
             <!-- <div class="outer-and" v-if="specialTags.length > 0">
               <el-button
                 type="danger"
@@ -562,20 +564,34 @@ export default {
     getDefaultOperator() {
       return '='
     },
+
+    // 给 behaviorRulesJson 中的table 添加序号
+    putBehaviorRulesJsonTableIndex (val) {
+      let tableIndex = 0
+      let ruleList = val.rules
+      ruleList.forEach(rule => {
+        let ruleGroup = rule.rules
+        ruleGroup.forEach(item => {
+          tableIndex = tableIndex+1
+          item.table = item.table.split('$')[0] + '$' + tableIndex
+          if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+        })
+      })
+      return val
+    },
+
     handleSave() {
       this.$refs['form'].validate(valid => {
         if (valid) {
           const form = JSON.parse(JSON.stringify(this.form))
           const tagIds = []
           const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
-          const behaviorRulesJson = JSON.parse(JSON.stringify(this.behaviorRulesJson))
+          const behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(JSON.parse(JSON.stringify(this.behaviorRulesJson)))
           const dynamicPolicyJson = JSON.parse(
             JSON.stringify(this.dynamicPolicyJson)
           )
           const rules = ruleJson.rules
           const ruleLength = rules.length
-
-          const behaviorRules = behaviorRulesJson.rules
 
           const dynamicPolicyRules = dynamicPolicyJson.rules
           const dynamicPolicyRulesLength = dynamicPolicyRules.length

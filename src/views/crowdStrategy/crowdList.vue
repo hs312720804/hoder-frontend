@@ -249,7 +249,7 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="status" label="状态1234" width="70px">
+      <el-table-column prop="status" label="状态" width="70px">
         <template slot-scope="scope">
           {{ launchStatusEnum[scope.row.status] }}
           <!-- <span v-if="scope.row.putway === 1">生效中</span>

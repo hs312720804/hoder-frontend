@@ -527,7 +527,6 @@ export default {
       cityData: [],
       provinceValueList: [],
       showRange: true,
-      tableIndex: Number(localStorage.getItem('tableIndex'))+1 || 0
     }
   },
   components: {
@@ -563,15 +562,9 @@ export default {
     }
   },
   watch: {
-    bavAttrList: {
-      handler(val) {
-        console.log('2342425==>', val)
-      },
-      deep: true
-    },
     behaviorRulesJson: {
       handler(val) {
-        console.log('crowd==>', val)
+        // console.log('behaviorRulesJson==>', val)
         this.fetchAllTagSuggestions()
       },
       deep: true,
@@ -810,9 +803,6 @@ export default {
             }
           ]
         }
-      // debugger
-        const tableIndex = this.tableIndex++ 
-        localStorage.setItem('tableIndex', tableIndex)
         this.behaviorRulesJson.rules.push({
           condition: 'AND',
           rules: [
@@ -824,9 +814,9 @@ export default {
               tagId: tag.tagId,
               tagType: tag.tagType,
               categoryCode: tag.tagKey,
-              table: res.tableName + '$' + tableIndex || '',
+              table: res.tableName + '$' || '',
               bav: {
-                table: res.tableName + '$' + tableIndex || '',
+                table: res.tableName + '$' || '',
                 value: [],
                 behaviorValue: defaultBehaviorValue,
                 rangeType: 'fixed',
@@ -933,8 +923,7 @@ export default {
             }
           ]
         }
-        const tableIndex = this.tableIndex++
-        localStorage.setItem('tableIndex', tableIndex)
+   
         rule.rules.push({
           operator: '=',
           tagCode: tag.tagKey,
@@ -943,9 +932,9 @@ export default {
           tagId: tag.tagId,
           tagType: tag.tagType,
           categoryCode: tag.tagKey,
-          table: res.tableName + '$' + tableIndex || '',
+          table: res.tableName + '$',
           bav: {
-            table: res.tableName + '$' + tableIndex || '',
+            table: res.tableName + '$',
             value: [],
             behaviorValue: defaultBehaviorValue,
             rangeType: 'fixed',
@@ -991,14 +980,11 @@ export default {
           this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
         }
       }
-      // 11111111111111
-      const tableIndex = this.tableIndex++
-      localStorage.setItem('tableIndex', tableIndex)
       this.behaviorRulesJson.rules.push({
         condition: 'AND',
         rules: [
           {
-            table: 'dmp_db.base_user_tags_v' + '$' + tableIndex,
+            table: 'dmp_db.base_user_tags_v' + '$',
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
             tagCode: tag.tagKey,
@@ -1059,10 +1045,8 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      const tableIndex = this.tableIndex++
-      localStorage.setItem('tableIndex', tableIndex)
       rule.rules.push({
-        table: 'dmp_db.base_user_tags_v' + '$' + tableIndex,
+        table: 'dmp_db.base_user_tags_v' + '$',
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
         tagCode: tag.tagKey,
@@ -1146,6 +1130,8 @@ export default {
     handleRulesConditionChange(item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
+
+    // 获取标签下拉选项
     fetchAllTagSuggestions() {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)

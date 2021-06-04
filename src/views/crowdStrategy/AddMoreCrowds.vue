@@ -225,6 +225,22 @@ export default {
       }
       return flag
     },
+
+    // 给 behaviorRulesJson 中的table 添加序号
+    putBehaviorRulesJsonTableIndex (val) {
+      let tableIndex = 0
+      let ruleList = val.rules
+      ruleList.forEach(rule => {
+        let ruleGroup = rule.rules
+        ruleGroup.forEach(item => {
+          tableIndex = tableIndex+1
+          item.table = item.table.split('$')[0] + '$' + tableIndex
+          if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+        })
+      })
+      return val
+    },
+    
     handleSave(mode) {
       let form = JSON.parse(JSON.stringify(this.form))
       // if (form.purpose === undefined || form.purpose === '') {
@@ -251,6 +267,7 @@ export default {
               return item
             })
             e.rulesJson = JSON.stringify(e.rulesJson)
+            e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
             e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
             e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
             // e.crowdValidFrom = form.crowdExp[0]
