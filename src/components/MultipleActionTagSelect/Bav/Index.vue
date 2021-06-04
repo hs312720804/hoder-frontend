@@ -367,7 +367,7 @@
                 <el-option
                   v-for="item in moOptions[item.field]"
                   :key="item.forumId"
-                  :label="item.albumName"
+                  :label="item.albumName + '(' + item.albumId + ')'"
                   :value="item.forumId">
                 </el-option>
               </el-select>
@@ -590,7 +590,7 @@
                   
                   v-for="tv in qiBoOptions"
                   :key="tv.value"
-                  :label="tv.name"
+                  :label="tv.name +'('+ tv.value+')'"
                   :value="tv.value">
                 </el-option>
                 <!-- 编辑回显 选项-->
@@ -1320,13 +1320,13 @@ export default {
             if ( level === 2 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
               (level === 2 && item.filedType === 'no_effective') 
-            || item.dictValue === 'date_sub(current_date,30)') { operator = '<' } // 无效 || 过期时间>30
-            if ( item.dictValue === 'date_sub(current_date,-30)') { operator = '>' } // 会员过期时间>30天
+            || item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
+            if ( item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
             if (
-               item.dictValue === 'date_sub(current_date,-7) and date_sub(current_date,-30)' 
-            || item.dictValue === 'current_date and date_sub(current_date,-7)'
-            || item.dictValue === 'date_sub(current_date,29) and date_sub(current_date,7)'
-            || item.dictValue === 'date_sub(current_date,7) and current_date') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+               item.filedType === '7vip_expire_use30' 
+            || item.filedType === '7vip_expire_use'
+            || item.filedType === '7vip_expire30'
+            || item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
             list = {
               name: item.dictLabel,
               value: item.dictValue,
