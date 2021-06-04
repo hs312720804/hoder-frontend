@@ -563,11 +563,10 @@ export default {
   },
   watch: {
     behaviorRulesJson: {
-      handler(val) {
+      handler() {
         // console.log('behaviorRulesJson==>', val)
         this.fetchAllTagSuggestions()
       },
-      deep: true,
       immediate: true
     },
     
@@ -1068,8 +1067,7 @@ export default {
               ? tag.startDay
               : ''
             : undefined,
-        endDay:
-          tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
+        endDay: tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
         initValue: tag.initValue,
         specialCondition: ''
       })
@@ -1135,13 +1133,11 @@ export default {
     fetchAllTagSuggestions() {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
-      // eslint-disable-next-line no-debugger
-      debugger
+    
       let ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)
-
       if (len > 0) {
         let cacheIds = []
         let cacheActionIds = []

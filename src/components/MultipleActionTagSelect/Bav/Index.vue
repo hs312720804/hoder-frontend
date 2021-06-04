@@ -366,9 +366,9 @@
                 :loading="loading">
                 <el-option
                   v-for="item in moOptions[item.field]"
-                  :key="item.forumId"
+                  :key="item.albumName + item.albumId"
                   :label="item.albumName + '(' + item.albumId + ')'"
-                  :value="item.forumId">
+                  :value="item.albumId">
                 </el-option>
               </el-select>
               <!-- 推荐位 -->

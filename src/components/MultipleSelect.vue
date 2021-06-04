@@ -980,7 +980,6 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      // debugger
       rule.rules.push({
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
