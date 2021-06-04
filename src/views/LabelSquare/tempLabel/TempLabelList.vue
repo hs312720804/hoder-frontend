@@ -3,8 +3,9 @@
         <div class="header">
             <div v-if="!showSelection">
                 <el-button
-                        @click="handleAdd"
-                        type="primary"
+                    v-if="crowdType !== 2"
+                    @click="handleAdd"
+                    type="primary"
                 >
                     新建
                 </el-button>
@@ -64,18 +65,21 @@
                         label="状态"
                 >
                     <template slot-scope="scope">
-                        <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
-                            计算完成
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                        >
-                            <el-button type="text" @click="calculate(scope.row)">计算</el-button>
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
-                            计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
-                        </div>
-                        <div v-else>
-                            {{(launchStatusEnum[scope.row.history.status]).name}}
+                        <!-- {{ scope.row.history.status }} -->
+                        <div v-if="scope.row.history.status">
+                            <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+                                计算完成
+                            </div>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                            >
+                                <el-button type="text" @click="calculate(scope.row)">计算</el-button>
+                            </div>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
+                                计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
+                            </div>
+                            <div v-else>
+                                {{(launchStatusEnum[scope.row.history.status]).name}}
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
@@ -141,15 +145,17 @@
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item
                                             :command="['edit',scope.row]"
-                                    >编辑
+                                    >
+                                        {{ crowdType === 2 ? '查看' : '编辑' }}
                                     </el-dropdown-item>
+                                    
                                     <!--<el-dropdown-item-->
                                             <!--:command="['monitor',scope.row]"-->
                                             <!--v-permission="'hoder:launch:crowd:ver:index'"-->
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
                                     <el-dropdown-item
-                                        v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                        v-if="crowdType !== 2 && (scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))"
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除
@@ -235,6 +241,9 @@
             },
             checkListParent: {
                 type: Array
+            },
+            crowdType: {
+               type: Number
             }
         },
         data () {
@@ -275,6 +284,10 @@
                         },
                         {
                             label: '临时人群版本号',
+                            prop: 'version'
+                        },
+                        {
+                            label: '当前版本',
                             prop: 'cur_version'
                         },
                         {
@@ -356,12 +369,16 @@
             },
 
             fetchData () {
+                // eslint-disable-next-line no-debugger
                 const filter = {
                     pageNum: this.currentPage,
                     pageSize: this.pageSize,
                     launchName: this.launchName
                 }
+                filter.crowdType = this.crowdType // 行为人群
                 this.$service.getTempCrowdList(filter).then(data => {
+                    // eslint-disable-next-line no-debugger
+                    debugger
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total

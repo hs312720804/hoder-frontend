@@ -76,7 +76,7 @@
               <!--</el-select>-->
               <!--</el-form-item>-->
             </div>
-            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1">
+            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1 && crowdType !== 2">
               <el-form-item label="Mac数量基准" class="one-line">
                 <el-form-item
                   label=""
@@ -210,7 +210,7 @@
       </el-row>
       <div slot="footer" class="footer">
         <el-button @click="cancelAdd">返回</el-button>
-        <el-button type="primary" @click="addSubmit">保存</el-button>
+        <el-button type="primary" @click="addSubmit" v-if="crowdType !== 2">保123存</el-button>
       </div>
     </div>
   </div>
@@ -304,7 +304,7 @@ export default {
       videoSourceList: []
     }
   },
-  props: ['editLaunchCrowdId', 'model', 'editStatus'],
+  props: ['editLaunchCrowdId', 'model', 'editStatus', 'crowdType'],
   watch: {
     // 'crowdForm.abTest': function (val, oldVal) {
     //     // 根第一次加载的时候不判断，当值变的时候再触发
@@ -335,6 +335,7 @@ export default {
     this.handleGetVideoList()
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
       this.title = '编辑临时人群'
+      if (this.crowdType === 2)  this.title = '查看行为人群'
       // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
       this.$service
         .getTempCrowd({ launchCrowdId: this.editLaunchCrowdId })

@@ -9,6 +9,7 @@
       @table-selected="handleTableSelected"
       :check-list-parent="checkList"
       @change-checkList="handleCheckListChange"
+      :crowdType="crowdType"
     >
     </temp-label-list>
 
@@ -18,6 +19,7 @@
       :editStatus="editStatus"
       @cancel-add="showList = true"
       @changeStatus="handleRefreshList"
+      :crowdType="crowdType"
     >
     </temp-label-add>
 
@@ -69,6 +71,9 @@ export default {
     },
     checkList: {
       type: Array
+    },
+    crowdType: {
+      type: Number
     }
   },
   data() {

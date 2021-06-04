@@ -2,7 +2,7 @@
   <div class="label-content">
     <div class="table-list" :style="{ marginBottom: bottomHeight }">
       <el-tabs v-model="activeName" @tab-click="handleTabChange">
-        <el-tab-pane label="临时人群/标签" name="tempLabel">
+        <el-tab-pane label="高级人群/标签" name="tempLabel">
           <temp-label-index
             :show-selection="showSelection"
             :currentSelectTag="tagList"

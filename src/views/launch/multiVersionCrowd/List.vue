@@ -666,6 +666,10 @@
                         },
                         {
                             label: '临时人群版本号',
+                            prop: 'version'
+                        },
+                        {
+                            label: '当前版本',
                             prop: 'cur_version'
                         },
                         {
