@@ -196,7 +196,7 @@
           ></el-option>
         </template>
       </el-select>
-      <div class="flex-column" >
+      <div class="flex-column">
         <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
         <div
           v-for="item in childItem.bav.behaviorValue"
@@ -354,13 +354,14 @@
                 clearable
                 style="max-width: 180px; min-width: 180px;"
               ></el-autocomplete> -->
-              <!-- {{item}} -->
+              <!-- {{ item.name }} -->
               <el-select
-                style="width: 150px"
                 v-model="item.value"
+                style="width: 150px"
                 filterable
                 remote
-                placeholder="请输入板块ID"
+                :placeholder="'请输入'+ (item.field === 'album_id' ? '板块' : '版面') + 'ID'"
+                no-data-text="不支持该ID"
                 clearable
                 :remote-method="(query) => { remoteMethod(query, item.field) }"
                 :loading="loading">
@@ -371,7 +372,6 @@
                   :value="item.albumId">
                 </el-option>
               </el-select>
-              <!-- 推荐位 -->
               <span v-if="item.selectKey === 'album_id1'">
                 <span
                   v-for="(item2, index) in item.child"
@@ -581,13 +581,13 @@
                 filterable
                 remote
                 placeholder="请输入片名或ID"
+                no-data-text='没有找到该片'
                 clearable
                 :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
                 :loading="loading2"
                 @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)"
               >
                 <el-option
-                  
                   v-for="tv in qiBoOptions"
                   :key="tv.value"
                   :label="tv.name +'('+ tv.value+')'"
@@ -693,6 +693,7 @@
                     </el-select>
                     <div class="flex-column">
                       <ConditionLine :isShow="item5.child.length > 1"></ConditionLine>
+                      <!-- {{ item5.child }} -->
                       <span
                         v-for="(item6, index) in item5.child"
                         :key="index"
@@ -705,8 +706,7 @@
                           placeholder="请选择"
                           clearable
                           @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
-                        > 
-                          
+                        >
                           <el-option
                             v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
                             :key="attrChildItem.value"
@@ -723,7 +723,7 @@
                             <el-select
                               v-model="item7.childCheckedVal[0]"
                               style="width: 150px;"
-                              placeholder="请选择123"
+                              placeholder="请选择"
                               clearable
                               @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
                             >
@@ -751,7 +751,6 @@
                                 <el-option value=">"></el-option>
                                 <el-option value="<"></el-option>
                               </el-select>
-                              <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
                               <el-input
                                 placeholder="请输入"
                                 v-model="item8.value"
@@ -1086,9 +1085,15 @@ export default {
     // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
     getQiBoValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      // eslint-disable-next-line no-debugger
-      debugger
       let list = []
+      if (vals.length === 0 && level === 6) { // 清空集数
+        let obj = checkedList[0] // 不改变子级的数据
+        obj.name = ''
+        obj.value = ''
+        obj.field = ''
+        list.push(obj)
+      }
+
       vals.forEach(val => {
         const aa = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
@@ -1096,8 +1101,7 @@ export default {
         
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-        // eslint-disable-next-line no-debugger
-        debugger
+     
           // checkedList.find(item => item[selectPropKeyValue] === val) ||
           // attrList.find(item => item[selectPropKeyValue] === val)
         const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
@@ -1108,22 +1112,10 @@ export default {
         } else if (matchObj2) {
           obj = matchObj2
         }
-        
-        // eslint-disable-next-line no-debugger
-        debugger
-        console.log('obj.childCheckedVal==>', obj.childCheckedVal)
-        // obj.child = obj.child || aa
-        // eslint-disable-next-line no-debugger
-        debugger
         // console.log('obj.child=>>', obj.child)
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
-        if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位
-          defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string' , child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }]}]
-        }
-        // eslint-disable-next-line no-debugger
-        debugger
-
+        
         obj.child = obj.child || (isLast ? aa : defaultchild)
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
@@ -1131,7 +1123,6 @@ export default {
         if (defaultchild.length > 0) {
           obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
-        // eslint-disable-next-line no-debugger
         if (isValueClear) { // 清空当前对象的child里面的值 (一二级联动时的交互)
           obj.childCheckedVal = []
           if (obj.child.length > 0 ) {
@@ -1152,13 +1143,38 @@ export default {
           //   field: ''
           // }]
         }
-        if (level === 5) { // 输入了影片名称之后，需要查询集数/期数
-          // console.log('123124childItem==>', matchObj)
-          // console.log('12345obj==>', obj)
+        if (level === 5 || level === 6) { // 输入了影片名称之后，需要查询集数/期数
           if (obj.videoType !== '电影' && obj.source && obj.value) {
-           this.getTvEpisodes(obj.source, obj.value)
+            this.getTvEpisodes(obj.source, obj.value)
           }
-          
+          obj.child = [{
+            name: '',
+            value: '',
+            field: '',
+            operator: '=',
+            type: 'string',
+            childCheckedVal: [],
+            child: [
+              {
+                name: '',
+                value: '',
+                filed: '',
+                operator: '=',
+                type: 'string',
+                childCheckedVal: [''],
+                child: [
+                  {
+                    name: '',
+                    value: '',
+                    filed: '',
+                    operator: '=',
+                    type: 'string',
+                  }
+                ]
+              }
+            ]
+          }]
+         
         }
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
@@ -1174,6 +1190,7 @@ export default {
     // level -- 层级 为获取下拉框list
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
+    // isValueClear -- 一二级联动时，一级下拉切换，将二级下拉框清空
     handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
       console.log('123childItem==>', childItem)
       console.log('123item==>', item)
@@ -1412,5 +1429,15 @@ export default {
   //   border-radius: 7px;
   // }
 }
-
+@media(device-width: 768px) and (device-height: 1024px) {
+  ::-webkit-scrollbar {
+      -webkit-appearance: none;
+      width: 7px;
+  }
+  ::-webkit-scrollbar-thumb {
+      border-radius: 4px;
+      background-color: rgba(0, 0, 0, .5);
+      -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
+  }
+}
 </style>

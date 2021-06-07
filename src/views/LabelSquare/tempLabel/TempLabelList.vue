@@ -291,6 +291,10 @@
                             prop: 'cur_version'
                         },
                         {
+                            label: '设备数量',
+                            prop: 'total_user'
+                        },
+                        {
                             label: '临时人群es index',
                             prop: 'es_index'
                         },

@@ -70,8 +70,10 @@
                             prop: 'version'
                         },
                         {
-                            label: '投放人ID',
-                            prop: 'creator'
+                            label: '投放人',
+                            // prop: 'creator'
+                            prop: 'creatorName'
+                            
                         },
                         {
                             label: '投放时间',
