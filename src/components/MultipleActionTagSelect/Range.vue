@@ -11,7 +11,7 @@
                 style="width: 100px"
                 name="oxve"
                 class="input-inline sel"
-                
+                @change="handelSelectChange(childItem.bav.range, rangeTypeList)"
               >
                 <!-- <el-option value="fixed" label="固定周期"></el-option>
               <el-option value="move" label="动态周期"></el-option> -->
@@ -148,10 +148,12 @@ export default {
         // eslint-disable-next-line no-debugger
         debugger
         if (val) {
+          const _this = this
           const periodRange = val.dict.periodRange || []
           const timeRange = val.dict.timeRange || []
           const weekRange = val.dict.weekRange || []
           this.rangeTypeList = periodRange.map(item => {
+            _this.childItem.bav.rang.field = item.tableField
             return {
               name: item.dictLabel,
               value: item.dictValue,
@@ -172,7 +174,10 @@ export default {
               field: item.tableField
             }
           })
-        }
+          console.log('this.childItem',  this.childItem)
+          console.log('this.childItem',  this.rangeTypeList[0])
+          // this.childItem.bav.range.field = this.rangeTypeList[0].field || ''
+       }
       },
       deep: true,
       immediate: true

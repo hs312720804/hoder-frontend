@@ -689,8 +689,8 @@
                       @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)"
                     >
                       <el-option
-                        v-for="tv in qiBoCollectionOptions"
-                        :key="tv.value"
+                        v-for="(tv, index) in qiBoCollectionOptions"
+                        :key="tv.value + index"
                         :label="tv.name"
                         :value="tv.value">
                       </el-option>
