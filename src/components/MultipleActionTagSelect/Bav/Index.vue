@@ -644,7 +644,7 @@
                             @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)"
                           >
                             <el-option
-                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                              v-for="attrChildItem in getBehaviorAttrList(childItem, 9)"
                               :key="attrChildItem.type"
                               :label="attrChildItem.name"
                               :value="attrChildItem.type">
@@ -855,16 +855,18 @@ export default {
     childItem: {
       handler(val) {
         console.log('11111111111===', val)
+        // 编辑回显
         // 模块活跃需要查询版面、板块ID
         if (val && val.tagCode === 'BAV0004') {
           this.getModuleId(val.bav.behaviorValue)
         }
         // 起播行为标签需要查询影片集数
         else if (val && val.tagCode === 'BAV0008') {
+          console.log('val.bav', val)
           this.getQiboTvEpisodes(val.bav.behaviorValue)
         }
       },
-      deep: true,
+      // deep: true,
       immediate: true
     }
   },
@@ -922,7 +924,7 @@ export default {
   created() {},
   methods: {
     handelQiboLoadmore() {
-      this.qiboParams.page++
+      this.qiboParams.page++ // 滚动加载翻页
       this.qiBoRemoteMethod(this.qiboQuery, this.qiboSource)
     },
 
@@ -951,8 +953,13 @@ export default {
     },
 
     qiBoRemoteMethod(query, source) {
-      this.qiboQuery = query
-      this.qiboSource = source
+      // 重新查询，不是滚动加载
+      if (this.qiboQuery !== query) { 
+        this.qiBoOptions = []
+        this.qiboParams.page = 1 // 页码归1 
+      }
+
+      if (source === '') return this.$message.error('请先选择内容源')
       if (query !== '') {
         this.loading2 = true;
 
@@ -960,8 +967,9 @@ export default {
         this.qiboParams.keywords = query
 
         this.$service.tvContentMatch(this.qiboParams).then(res => {
-          
           this.loading2 = false;
+          this.qiboQuery = query // 记录查询关键字，滚动加载时要用到
+          this.qiboSource = source
           let list = res.rows
 
           list = list.map(obj => {
@@ -974,8 +982,9 @@ export default {
               source: obj.source
             }
           })
-
           this.qiBoOptions.push(...list)
+        }).catch(() => {
+          this.loading2 = false;
         })
       } else {
         this.qiBoOptions = [];
@@ -1234,7 +1243,10 @@ export default {
       debugger
       const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
       // const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
-      if (level === 4) this.qiBoOptions = [] // 切换视频源时，清空下拉选项
+      if (level === 4) { // 切换视频源时，清空下拉选项
+        this.qiBoOptions = [] 
+        this.qiboParams.page = 1 // 页码归1
+      } 
       childItem.child = this.getQiBoValListByVals(
         vals,
         checkedList,
@@ -1342,6 +1354,8 @@ export default {
             attrlist = dict.pay_type
           } else if (level === 8 ) {
             attrlist = dict.watch_time
+          } else if (level === 9 ) {
+            attrlist = dict.single_episode
           }
         } else {
           attrlist = [

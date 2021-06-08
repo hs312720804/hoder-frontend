@@ -11,7 +11,7 @@
                 style="width: 100px"
                 name="oxve"
                 class="input-inline sel"
-                @change="handelSelectChange(childItem.bav.range, rangeTypeList)"
+                @change="handelSelectChange(childItem.bav.rang, rangeTypeList)"
               >
                 <!-- <el-option value="fixed" label="固定周期"></el-option>
               <el-option value="move" label="动态周期"></el-option> -->
@@ -25,6 +25,7 @@
               </el-select>
             </span>
             <!-- {{childItem.bav}} -->
+            <!-- {{ childItem.bav.rangeType }} -->
             <span style="max-width: 220px; min-width: 220px; display: inline-block">
               <el-date-picker
                 v-if="childItem.bav.rangeType === 'fixed'"
@@ -39,11 +40,12 @@
               </el-date-picker>
               <span v-else style="display: inline-block; width: 200px">
                 最近
+                <!-- 购买行为730天 其他30天 -->
                 <!-- <el-input v-model="childItem.bav.rang" placeholder="请输入天数"></el-input>   -->
                 <el-input-number
                   v-model="childItem.bav.rang.value"
                   :min="1"
-                  :max="30"
+                  :max="childItem.tagCode === 'BAV0003' ? 720 : 30"
                   label="请输入天数"
                 ></el-input-number>
                 天
