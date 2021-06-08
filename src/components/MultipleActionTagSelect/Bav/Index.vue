@@ -325,7 +325,7 @@
           ></el-option>
         </template>
       </el-select>
-      <div class="flex-column" >
+      <div class="flex-column">
         <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
         <div
           v-for="(item, index) in childItem.bav.behaviorValue"
@@ -335,43 +335,45 @@
           <span class="w100">{{ item.name }}</span>
           <!-- {{item}} -->
           <span class="flex-row">
-            <!-- 第二级 -->
-              <!-- <el-input
-                placeholder="请输入板块ID"
-                v-model="item.value"
-                clearable
-                style="max-width: 180px; min-width: 180px;"
-              >
-                <el-button slot="append" icon="el-icon-search" @click="searchModuleMatch(item.value)"></el-button>
-              </el-input> -->
-              <!-- {{item.value}} -->
-              <!-- <el-autocomplete
-                v-model="item.value"
-                :fetch-suggestions="querySearchAsync"
-                placeholder="请输入板块ID"
-                value-key="albumName"
-                label="albumId"
-                clearable
-                style="max-width: 180px; min-width: 180px;"
-              ></el-autocomplete> -->
-              <!-- {{ item.name }} -->
               <el-select
+                v-if="item.field === 'album_id'"
                 v-model="item.value"
                 style="width: 150px"
                 filterable
                 remote
-                :placeholder="'请输入'+ (item.field === 'album_id' ? '板块' : '版面') + 'ID'"
+                placeholder="请输入板块版面ID"
                 no-data-text="不支持该ID"
                 clearable
                 :remote-method="(query) => { remoteMethod(query, item.field) }"
                 :loading="loading">
                 <el-option
-                  v-for="item in moOptions[item.field]"
-                  :key="item.albumName + item.albumId"
+                  v-for="(item, index) in moOptions['album_id']"
+                  :key="'album_id' + item.albumId + index"
                   :label="item.albumName + '(' + item.albumId + ')'"
                   :value="item.albumId">
                 </el-option>
               </el-select>
+
+              <el-select
+                v-else
+                v-model="item.value"
+                style="width: 150px"
+                filterable
+                remote
+                placeholder="请输入版面ID"
+                no-data-text="不支持该ID"
+                clearable
+                :remote-method="(query) => { remoteMethod(query, item.field) }"
+                :loading="loading">
+                <el-option
+                  v-for="(item, index) in moOptions['forum_id']"
+                  :key="'forum_id' + item.forumId + index"
+                  :label="item.albumName + '(' + item.forumId + ')'"
+                  :value="item.forumId">
+                </el-option>
+                
+              </el-select>
+              <!-- {{ item.field }} -->
               <span v-if="item.selectKey === 'album_id1'">
                 <span
                   v-for="(item2, index) in item.child"
@@ -386,12 +388,13 @@
                     name="oxve"
                     class="input-inline"
                   >
-                    <template v-for="item in 15">
+                    <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
                       <el-option
-                        :value="item"
-                        :label="item"
-                        :key="item"
+                        :value="attrChildItem.value"
+                        :label="attrChildItem.name"
+                        :key="attrChildItem.value"
                       ></el-option>
+                      
                     </template>
                   </el-select>
                   <span
@@ -851,8 +854,12 @@ export default {
     childItem: {
       handler(val) {
         console.log('11111111111===', val)
+        // 模块活跃需要查询版面、板块ID
+        if (val && val.tagCode === 'BAV0004') {
+          this.getModuleId(val.bav.behaviorValue)
+        }
         // 起播行为标签需要查询影片集数
-        if (val && val.tagCode === 'BAV0008') {
+        else if (val && val.tagCode === 'BAV0008') {
           this.getQiboTvEpisodes(val.bav.behaviorValue)
         }
       },
@@ -905,6 +912,19 @@ export default {
   },
   created() {},
   methods: {
+    // 模块活跃编辑，获取版面/板块ID
+    getModuleId (bavVal) {
+      console.log('bavVal====', bavVal)
+      bavVal && bavVal.forEach(obj => {
+        console.log('obj===', obj)
+        if (obj.value!== '' && obj.field === 'album_id' || obj.field === 'forum_id') {
+          this.remoteMethod(obj.value, obj.field)
+        } else {
+          this.getModuleId(obj.child)
+        }
+      })
+    },
+
     // 起播行为编辑，获取影片集数
     getQiboTvEpisodes(bavVal) {
       bavVal.forEach(obj => {
@@ -960,12 +980,15 @@ export default {
           pageSize: 10
         }
         this.$service.moduleMatch(params).then(res => {
-          console.log('res==>', res)
           this.loading = false;
-          this.moOptions[field] = res.data || []
+          // this.moOptions[field] = res.data || []
+          this.$set(this.moOptions, field, res.data)
+          console.log('this.moOptions==>', this.moOptions)
+
         })
       } else {
         this.moOptions[field] = [];
+        this.$set(this.moOptions, field, [])
       }
     },
 
@@ -1270,6 +1293,8 @@ export default {
         } else if (childItem.tagCode === 'BAV0004') {
           if (level === 1) {
             attrlist = dict.block_location
+          } else if (level === 3) {
+            attrlist = dict.blockPid
           }
         } else if (childItem.tagCode === 'BAV0005') {
           if (level === 1) {
