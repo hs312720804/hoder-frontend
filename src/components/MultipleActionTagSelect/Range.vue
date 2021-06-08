@@ -11,7 +11,7 @@
                 style="width: 100px"
                 name="oxve"
                 class="input-inline sel"
-                @change="handelSelectChange(childItem.bav.rang, rangeTypeList)"
+                @change="handelSelectChange(childItem.bav.rang, rangeTypeList, childItem.bav.rangeType)"
               >
                 <!-- <el-option value="fixed" label="固定周期"></el-option>
               <el-option value="move" label="动态周期"></el-option> -->
@@ -25,7 +25,8 @@
               </el-select>
             </span>
             <!-- {{childItem.bav}} -->
-            <!-- {{ childItem.bav.rangeType }} -->
+            <!-- {{ childItem.bav.rangeType }}
+            {{ childItem.bav.rang.value }} -->
             <span style="max-width: 220px; min-width: 220px; display: inline-block">
               <el-date-picker
                 v-if="childItem.bav.rangeType === 'fixed'"
@@ -189,8 +190,13 @@ export default {
     openOrClose() {
       this.show3 = !this.show3
     },
-    handelSelectChange(item, list) {
+    handelSelectChange(item, list, type) {
       item.field = list[0].field
+      if (type === 'fixed') {
+        this.childItem.bav.rang.value = []
+      } else {
+        this.childItem.bav.rang.value = []
+      }
     }
   },
   created() {

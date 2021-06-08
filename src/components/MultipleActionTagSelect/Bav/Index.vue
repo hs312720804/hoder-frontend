@@ -854,7 +854,6 @@ export default {
   watch: {
     childItem: {
       handler(val) {
-        console.log('11111111111===', val)
         // 编辑回显
         // 模块活跃需要查询版面、板块ID
         if (val && val.tagCode === 'BAV0004') {

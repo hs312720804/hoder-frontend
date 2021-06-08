@@ -81,7 +81,7 @@ export default {
           this.isDisableDaySelect = true
         }
       },
-      deep: true,
+      // deep: true,
       immediate: true
     },
     options: {
@@ -95,7 +95,7 @@ export default {
         })
         console.log('2222===>', this.attrList)
       },
-      deep: true,
+      // deep: true,
       immediate: true
     }
   },
