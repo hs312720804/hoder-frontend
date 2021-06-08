@@ -588,6 +588,7 @@
                 clearable
                 :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
                 :loading="loading2"
+                v-loadmore="{'methord': handelQiboLoadmore}"
                 @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)"
               >
                 <el-option
@@ -902,7 +903,15 @@ export default {
       loading: false,
       qiBoOptions: [],
       loading2: false,
-      qiBoCollectionOptions: []
+      qiBoCollectionOptions: [],
+      qiboQuery: '',
+      qiboSource: '',
+      qiboParams: {
+        source: '',
+        keywords: '',
+        page: 1,
+        pageSize: 10
+      }
       // jiList: [{
       //   name: '',
       //   value: 1,
@@ -912,6 +921,11 @@ export default {
   },
   created() {},
   methods: {
+    handelQiboLoadmore() {
+      this.qiboParams.page++
+      this.qiBoRemoteMethod(this.qiboQuery, this.qiboSource)
+    },
+
     // 模块活跃编辑，获取版面/板块ID
     getModuleId (bavVal) {
       console.log('bavVal====', bavVal)
@@ -937,24 +951,20 @@ export default {
     },
 
     qiBoRemoteMethod(query, source) {
+      this.qiboQuery = query
+      this.qiboSource = source
       if (query !== '') {
         this.loading2 = true;
-        let params = {
-          source, // 'album_id', 'forum_id'
-          keywords: query,
-          page: 1,
-          pageSize: 10
-        }
-        // eslint-disable-next-line no-debugger
-        debugger
-        this.$service.tvContentMatch(params).then(res => {
-          console.log('res==>', res)
-          // eslint-disable-next-line no-debugger
-          debugger
-          this.loading2 = false;
-          this.qiBoOptions = res.rows || []
 
-          this.qiBoOptions = this.qiBoOptions.map(obj => {
+        this.qiboParams.source = source
+        this.qiboParams.keywords = query
+
+        this.$service.tvContentMatch(this.qiboParams).then(res => {
+          
+          this.loading2 = false;
+          let list = res.rows
+
+          list = list.map(obj => {
             return {
               name: obj.title,
               value: obj.coocaaVId,
@@ -964,7 +974,8 @@ export default {
               source: obj.source
             }
           })
-          console.log('qiBoOptions==>', this.qiBoOptions)
+
+          this.qiBoOptions.push(...list)
         })
       } else {
         this.qiBoOptions = [];
@@ -1242,7 +1253,7 @@ export default {
         source,
         id,
         page: 1,
-        pageSize: 10
+        pageSize: 200
       }
       
       this.$service.getTvEpisodes(params).then(res => {

@@ -25,7 +25,24 @@ Vue.directive('permission', function (el, binding,vNode) {
     if(vNode.context.$appState.permissions[binding.value]===undefined) {
         el.style.display = 'none'
     }
-  })
+})
+ 
+Vue.directive('loadmore', {
+    bind (el, binding) {
+      // 获取element-ui定义好的scroll盒子
+      const SELECTWRAP_DOM = el.querySelector('.el-select-dropdown .el-select-dropdown__wrap')
+      SELECTWRAP_DOM.addEventListener('scroll', function () {
+        console.log('el==>', el)
+        console.log('binding==>', binding)
+        const CONDITION = this.scrollHeight - this.scrollTop <= this.clientHeight
+        if (CONDITION) {
+            // this.binding.expression()
+          binding.value.methord(binding.value.params)
+        }
+      })
+    }
+})
+
 Vue.prototype.cc_format_number = function(n) {
     // 如果不是字符或者数字，则直接返回
     if (typeof n !== 'string' && typeof n !== 'number') {
