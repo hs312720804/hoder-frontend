@@ -194,8 +194,8 @@ export default {
       item.field = list[0].field
       if (type === 'fixed') {
         this.childItem.bav.rang.value = []
-      } else {
-        this.childItem.bav.rang.value = []
+      } else if (type === 'move') {
+        this.childItem.bav.rang.value = ''
       }
     }
   },

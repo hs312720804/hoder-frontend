@@ -335,13 +335,14 @@
           <span class="w100">{{ item.name }}</span>
           <!-- {{item}} -->
           <span class="flex-row">
+              <!-- 推荐位 -->
               <el-select
                 v-if="item.field === 'album_id'"
                 v-model="item.value"
                 style="width: 150px"
                 filterable
                 remote
-                placeholder="请输入板块版面ID"
+                placeholder="请输入板块ID"
                 no-data-text="不支持该ID"
                 clearable
                 :remote-method="(query) => { remoteMethod(query, item.field) }"
@@ -354,6 +355,7 @@
                 </el-option>
               </el-select>
 
+              <!-- 版面版位 -->
               <el-select
                 v-else
                 v-model="item.value"
@@ -375,18 +377,20 @@
               </el-select>
               <!-- {{ item.field }} -->
               <span v-if="item.selectKey === 'album_id1'">
+                  <!-- v-for="(item2, index) in item.child"
+                  :key="index" -->
                 <span
-                  v-for="(item2, index) in item.child"
-                  :key="index"
                   class="flex-row child"
                 >
                   <!-- 次数、天数 -->
                   <!-- <Type :item3="item3"></Type> -->
+                  <!-- 1111111111111111111111111111111111111111111111111 -->
                   <el-select
-                    v-model="item2.value"
+                    v-model="item.childCheckedVal"
                     style="width: 100px"
                     name="oxve"
                     class="input-inline"
+                    @change="handelChildBehavirSelectChange(item, true, childItem, 3)"
                   >
                     <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
                       <el-option
@@ -394,11 +398,10 @@
                         :label="attrChildItem.name"
                         :key="attrChildItem.value"
                       ></el-option>
-                      
                     </template>
                   </el-select>
                   <span
-                    v-for="(item3, index) in item2.child"
+                    v-for="(item3, index) in item.child[0].child"
                     :key="index"
                     class="flex-row child"
                   >
