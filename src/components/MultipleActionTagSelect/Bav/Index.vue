@@ -647,7 +647,7 @@
                             @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)"
                           >
                             <el-option
-                              v-for="attrChildItem in getBehaviorAttrList(childItem, 9)"
+                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
                               :key="attrChildItem.type"
                               :label="attrChildItem.name"
                               :value="attrChildItem.type">
@@ -726,8 +726,10 @@
                             v-for="(item7, index) in item6.child"
                             :key="index"
                             class="flex-row child"
-                          >
+                          > 
+                            <!-- 没有选择集 -->
                             <el-select
+                              v-if="item6.name === ''"
                               v-model="item7.childCheckedVal[0]"
                               style="width: 150px;"
                               placeholder="请选择"
@@ -736,6 +738,22 @@
                             >
                               <el-option
                                 v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
+                                :key="attrChildItem.type"
+                                :label="attrChildItem.name"
+                                :value="attrChildItem.type">
+                              </el-option>
+                            </el-select>
+                            <!-- 选择了集数，下拉选项只有【单集观看时长】 -->
+                            <el-select
+                              v-else
+                              v-model="item7.childCheckedVal[0]"
+                              style="width: 150px;"
+                              placeholder="请选择"
+                              clearable
+                              @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 9, {}, 'type', true)"
+                            >
+                              <el-option
+                                v-for="attrChildItem in getBehaviorAttrList(childItem, 9)"
                                 :key="attrChildItem.type"
                                 :label="attrChildItem.name"
                                 :value="attrChildItem.type">
