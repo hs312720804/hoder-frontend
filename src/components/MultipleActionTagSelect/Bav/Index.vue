@@ -925,6 +925,7 @@ export default {
   },
   created() {},
   methods: {
+    // 起播行为影片搜索更多
     handelQiboLoadmore() {
       this.qiboParams.page++ // 滚动加载翻页
       this.qiBoRemoteMethod(this.qiboQuery, this.qiboSource)
@@ -1388,7 +1389,7 @@ export default {
             let operator = '='
             if ( level === 2 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
-              (level === 2 && item.filedType === 'no_effective') 
+              (level === 2 && item.filedType === 'no_effective')
             || item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
             if ( item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
             if (

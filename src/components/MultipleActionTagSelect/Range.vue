@@ -63,6 +63,7 @@
                 name="oxve"
                 class="input-inline sel"
                 @change="handelSelectChange(childItem.bav.weekRang, weekRange)"
+                :disabled="isSelectedDay"
               >
                 <template v-for="item in weekRange">
                   <el-option
@@ -84,6 +85,7 @@
                 name="oxve"
                 class="input-inline"
                 @change="handelSelectChange(childItem.bav.timeRange, timeRange)"
+                :disabled="isSelectedDay"
               >
                 <template v-for="item in timeRange">
                   <el-option
@@ -120,7 +122,8 @@ export default {
           return time.getTime() > maxTime || time.getTime() < minTime
         }
       },
-      show3: true
+      show3: true,
+      isSelectedDay: false
     }
   },
   props: {
@@ -142,6 +145,17 @@ export default {
     }
   },
   watch: {
+    childItem: {
+      handler(val) {
+        console.log('6666666666666===', val)
+        let list = val.bav.behaviorValue
+        this.isSelectedDay = false
+        // 判断是否选择了【天数】
+        this.handelIsSelectedDay(list)
+      },
+      deep: true,
+      immediate: true
+    },
     show(val) {
       console.log(val)
       this.show3 = val
@@ -177,12 +191,10 @@ export default {
               field: item.tableField
             }
           })
-          console.log('this.childItem',  this.childItem)
-          console.log('this.childItem',  this.rangeTypeList[0])
           // this.childItem.bav.range.field = this.rangeTypeList[0].field || ''
        }
       },
-      deep: true,
+      // deep: true,
       immediate: true
     }
   },
@@ -197,6 +209,18 @@ export default {
       } else if (type === 'move') {
         this.childItem.bav.rang.value = ''
       }
+    },
+
+    // 判断是否有选择【天数】选项
+    handelIsSelectedDay(list) {
+        for(let i = 0; i < list.length; i++) {
+          if (list[i].type === 'day') { // 判断是否选了【天数】
+            this.isSelectedDay = true
+            break;
+          } else if (list[i].child) {
+            this.handelIsSelectedDay(list[i].child)
+          }
+        }
     }
   },
   created() {

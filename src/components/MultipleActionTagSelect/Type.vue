@@ -70,18 +70,16 @@ export default {
   watch: {
     childItem: {
       handler(val) {
-        console.log('val', val)
-        const rangeType = val.bav.rangeType
         const weekRang = val.bav.weekRang.value
         const timeRange = val.bav.timeRange.value
-        // 判断是否禁用【天数】选项
+        // 当选择了星期范围或者时间区间时，禁用【天数】选项
         if (weekRang.length === 0 && timeRange.length === 0 ) {
           this.isDisableDaySelect = false
         } else {
           this.isDisableDaySelect = true
         }
       },
-      // deep: true,
+      deep: true,
       immediate: true
     },
     options: {
