@@ -1,46 +1,48 @@
 <template>
-<div>
-  <el-select
-    v-model="item3.type"
-    style="max-width: 100px; min-width: 100px;"
-    name="oxve"
-    class="input-inline"
-  >
-    <!-- <el-option value="cishu" label="次数"></el-option>
-    <el-option value="tianshu" label="天数"></el-option> -->
-    <template v-for="attrChildItem in attrList">
-      <el-option
-        :value="attrChildItem.value"
-        :label="attrChildItem.name"
-        :key="attrChildItem.value"
-        :disabled="attrChildItem.value === 'day' && isDisableDaySelect"
+  <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true">
+    <el-select
+      v-model="item3.type"
+      style="max-width: 100px; min-width: 100px;"
+      name="oxve"
+      class="input-inline"
+    >
+      <!-- <el-option value="cishu" label="次数"></el-option>
+      <el-option value="tianshu" label="天数"></el-option> -->
+      <template v-for="attrChildItem in attrList">
+        <el-option
+          :value="attrChildItem.value"
+          :label="attrChildItem.name"
+          :key="attrChildItem.value"
+          :disabled="attrChildItem.value === 'day' && isDisableDaySelect"
+        >
+        </el-option>
+      </template>
+    </el-select>
+    <!-- {{attrChildItem}}
+    {{isDisableDaySelect}} -->
+    <el-select
+      v-model="item3.operator"
+      style="max-width: 100px; min-width: 100px;"
+      name="oxve"
+      class="input-inline"
+    >
+      <el-option value="="></el-option>
+      <el-option value=">="></el-option>
+      <el-option value="<="></el-option>
+      <el-option value=">"></el-option>
+      <el-option value="<"></el-option>
+    </el-select>
+
+    <el-form-item prop="value">
+      <el-input
+        placeholder="请输入"
+        v-model="item3.value"
+        clearable
+        style="max-width: 100px; min-width: 100px;"
       >
-      </el-option>
-    </template>
-  </el-select>
-  <!-- {{attrChildItem}}
-  {{isDisableDaySelect}} -->
-  <el-select
-    v-model="item3.operator"
-    style="max-width: 100px; min-width: 100px;"
-    name="oxve"
-    class="input-inline"
-  >
-    <el-option value="="></el-option>
-    <el-option value=">="></el-option>
-    <el-option value="<="></el-option>
-    <el-option value=">"></el-option>
-    <el-option value="<"></el-option>
-  </el-select>
-  <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
-  <el-input
-    placeholder="请输入"
-    v-model="item3.value"
-    clearable
-    style="max-width: 100px; min-width: 100px;"
-  >
-  </el-input>
-</div>
+      </el-input>
+    </el-form-item>
+  </el-form>
 </template>
 
 <script>
@@ -48,7 +50,13 @@ export default {
   data() {
     return {
       attrList: [],
-      isDisableDaySelect: false
+      isDisableDaySelect: false,
+      typeFormRules: {
+        value: [
+          { required: true, message: '请输入值', trigger: 'blur' },
+          { required: true, message: '请输入值', trigger: 'change' }
+        ],
+      }
     }
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],

@@ -98,7 +98,7 @@
               >   
               <!-- {{item2}} -->
                 <!-- 次数、天数 -->
-                <Type :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                <Type ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
               </span>
             </span>
           </span>
@@ -168,7 +168,7 @@
                   class="flex-row"
                 >
                   <!-- 次数、天数 -->
-                  <Type :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                  <Type ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                 </span>
               </span>
             </div>
@@ -271,8 +271,8 @@
                             class="flex-row"
                           >
                             <!-- 次数、天数 -->
-                            <!-- <Type :item3="item4"></Type> -->
-                            <Type :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                            <!-- <Type ref="typeRef" :item3="item4"></Type> -->
+                            <Type ref="typeRef" :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                           </span>
                         </span>
                       </span>
@@ -383,7 +383,7 @@
                   class="flex-row child"
                 >
                   <!-- 次数、天数 -->
-                  <!-- <Type :item3="item3"></Type> -->
+                  <!-- <Type ref="typeRef" :item3="item3"></Type> -->
                   <!-- 1111111111111111111111111111111111111111111111111 -->
                   <el-select
                     v-model="item.childCheckedVal"
@@ -405,7 +405,7 @@
                     :key="index"
                     class="flex-row child"
                   >
-                    <Type :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                    <Type ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                   </span>
                 </span>
               </span>
@@ -415,7 +415,7 @@
                   :key="index"
                   class="flex-row child"
                 >
-                  <Type :item3="item2" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                  <Type ref="typeRef" :item3="item2" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                 </span>
               </span>
           </span>
@@ -458,7 +458,7 @@
               class="flex-row child"
             >
               <!-- 次数、天数 -->
-              <Type :item3="item2"  :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+              <Type ref="typeRef" :item3="item2"  :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
             </span>
           </span>
         </div>
@@ -468,7 +468,7 @@
     <!-- 设备活跃 -->
     <span class="flex-column" v-if="childItem.tagCode === 'BAV0007'">
       <!-- 次数、天数 -->
-      <Type :item3="childItem.bav.behaviorValue[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+      <Type ref="typeRef" :item3="childItem.bav.behaviorValue[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
     </span>
 
     <!-- 起播行为 -->
@@ -957,7 +957,7 @@ export default {
         if (obj.value!== '' && obj.field === 'album_id' || obj.field === 'forum_id') {
           this.remoteMethod(obj.value, obj.field)
         } else {
-          this.getModuleId(obj.child)
+          this.getModuleId(obj.child) // 递归
         }
       })
     },

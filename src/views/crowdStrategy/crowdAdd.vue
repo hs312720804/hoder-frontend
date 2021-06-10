@@ -55,6 +55,7 @@
             <el-form-item label="行为标签" v-if="actionTags.length > 0">
               <!-- {{behaviorRulesJson}} -->
               <MultipleActionTagSelect 
+                ref="multipleActionTagSelect"
                 :actionTags="actionTags" 
                 :behaviorRulesJson="behaviorRulesJson" 
               ></MultipleActionTagSelect>
@@ -580,192 +581,229 @@ export default {
       return val
     },
 
-    handleSave() {
-      this.$refs['form'].validate(valid => {
-        if (valid) {
-          const form = JSON.parse(JSON.stringify(this.form))
-          const tagIds = []
-          const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
-          const behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(JSON.parse(JSON.stringify(this.behaviorRulesJson)))
-          const dynamicPolicyJson = JSON.parse(
-            JSON.stringify(this.dynamicPolicyJson)
-          )
-          const rules = ruleJson.rules
-          const ruleLength = rules.length
+    getFormPromise(form) {
+      return new Promise(resolve => {
+        form.validate(res => {
+          resolve(res);
+        })
+      })
+    },
 
-          const dynamicPolicyRules = dynamicPolicyJson.rules
-          const dynamicPolicyRulesLength = dynamicPolicyRules.length
-          let i,
-            j = 0
-          // 如果设置标签和动态因子都没有选rules则报错
-          // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
-          //   this.$message.error(
-          //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
-          //   )
-          //   return
-          // }
-          if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
-            if (this.currentLaunchLimitCount > form.limitLaunchCount) {
-              this.$message.error('投放数量不能小于上一次设置的限制数量')
-              return
-            }
+    handleSave() {
+      
+      // eslint-disable-next-line no-debugger
+      debugger
+      // 获取到组件中的form 
+      // 周期范围
+      const rangeFormList = []
+      this.$refs.multipleActionTagSelect.$refs.range && this.$refs.multipleActionTagSelect.$refs.range.forEach(item => {
+        rangeFormList.push(item.$refs.rangeForm)
+      })
+
+      const typeFormList = []
+      this.$refs.multipleActionTagSelect.$refs.bav && this.$refs.multipleActionTagSelect.$refs.bav.forEach(item => {
+        item.$refs.typeRef && item.$refs.typeRef.forEach(obj => 
+          { 
+            typeFormList.push(obj.$refs.typeForm)
           }
-          // 判断设置标签里是否有未填写的项
-          let rulesFlag = true
-          for (i = 0; i < ruleLength; i++) {
-            for (j = 0; j < rules[i].rules.length; j++) {
-              let rulesItem = rules[i].rules[j]
-              if (rulesItem.value === '') {
-                this.$message.error(
-                  '请正确填写第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值！'
-                )
-                rulesFlag = false
-                break
-              } else if (
-                rulesItem.tagType === 'time' &&
-                rulesItem.isDynamicTime === 3
-              ) {
-                if (
-                  this.checkNumMostFour(rulesItem.startDay) &&
-                  this.checkNumMostFour(rulesItem.endDay)
-                ) {
-                  if (
-                    parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
-                  ) {
-                    rulesItem.value =
-                      rulesItem.startDay + '-' + rulesItem.endDay
-                  } else {
+        )
+      })
+
+      let allList = rangeFormList.concat(typeFormList)
+      // 使用Promise.all去校验结果
+      let a = Promise.all(allList.map(this.getFormPromise)).then(res => {
+        const validateResult = res.every(item => !!item);
+        if (validateResult) {
+          this.$refs['form'].validate(valid => {
+            if (valid) {
+              const form = JSON.parse(JSON.stringify(this.form))
+              const tagIds = []
+              const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
+              const behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(JSON.parse(JSON.stringify(this.behaviorRulesJson)))
+              const dynamicPolicyJson = JSON.parse(
+                JSON.stringify(this.dynamicPolicyJson)
+              )
+              const rules = ruleJson.rules
+              const ruleLength = rules.length
+
+              const dynamicPolicyRules = dynamicPolicyJson.rules
+              const dynamicPolicyRulesLength = dynamicPolicyRules.length
+              let i,
+                j = 0
+              // 如果设置标签和动态因子都没有选rules则报错
+              // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
+              //   this.$message.error(
+              //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
+              //   )
+              //   return
+              // }
+              if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
+                if (this.currentLaunchLimitCount > form.limitLaunchCount) {
+                  this.$message.error('投放数量不能小于上一次设置的限制数量')
+                  return
+                }
+              }
+              // 判断设置标签里是否有未填写的项
+              let rulesFlag = true
+              for (i = 0; i < ruleLength; i++) {
+                for (j = 0; j < rules[i].rules.length; j++) {
+                  let rulesItem = rules[i].rules[j]
+                  if (rulesItem.value === '') {
                     this.$message.error(
-                      '第' +
+                      '请正确填写第' +
                         (i + 1) +
                         '设置标签块里面的第' +
                         (j + 1) +
-                        '行的天数值后面的值必须大于前面的'
+                        '行的值！'
                     )
                     rulesFlag = false
                     break
+                  } else if (
+                    rulesItem.tagType === 'time' &&
+                    rulesItem.isDynamicTime === 3
+                  ) {
+                    if (
+                      this.checkNumMostFour(rulesItem.startDay) &&
+                      this.checkNumMostFour(rulesItem.endDay)
+                    ) {
+                      if (
+                        parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
+                      ) {
+                        rulesItem.value =
+                          rulesItem.startDay + '-' + rulesItem.endDay
+                      } else {
+                        this.$message.error(
+                          '第' +
+                            (i + 1) +
+                            '设置标签块里面的第' +
+                            (j + 1) +
+                            '行的天数值后面的值必须大于前面的'
+                        )
+                        rulesFlag = false
+                        break
+                      }
+                    } else {
+                      this.$message.error(
+                        '第' +
+                          (i + 1) +
+                          '设置标签块里面的第' +
+                          (j + 1) +
+                          '行的值是大于等于0的整数且不能超过4位数'
+                      )
+                      rulesFlag = false
+                      break
+                    }
+                  } else if (
+                    rulesItem.tagType === 'string' &&
+                    rulesItem.operator === 'null'
+                  ) {
+                    rulesItem.operator = '='
                   }
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的值是大于等于0的整数且不能超过4位数'
-                  )
-                  rulesFlag = false
-                  break
+                  if (!rulesFlag) break
                 }
-              } else if (
-                rulesItem.tagType === 'string' &&
-                rulesItem.operator === 'null'
-              ) {
-                rulesItem.operator = '='
+                if (!rulesFlag) break
               }
-              if (!rulesFlag) break
+              if (!rulesFlag) return
+              //判断动态因子里面是否有未填的
+              let dynamicPolicyFlag = true
+              for (i = 0; i < dynamicPolicyRulesLength; i++) {
+                for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
+                  let rulesItem = dynamicPolicyRules[i].rules[j]
+                  if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
+                    this.$message.error(
+                      '请正确填写第' +
+                        (i + 1) +
+                        '动态因子里面的第' +
+                        (j + 1) +
+                        '行的值！'
+                    )
+                    dynamicPolicyFlag = false
+                    break
+                  }
+                  if (!dynamicPolicyFlag) break
+                }
+                if (!dynamicPolicyFlag) break
+              }
+              if (!dynamicPolicyFlag) return
+              // 如果外层条件是且，则设置标签和动态因子都是必填，如果是或则选填
+              // if (dynamicPolicyJson.condition === 'AND') {
+              //     if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
+              //         this.$message.error('因为动态因子上面的条件为且，所以请填写至少一个标签块内容和一个动态因子完整的内容！')
+              //         return
+              //     }
+              //     if (!validateJsonRules(true) || !validateDynamicPolicyRules(true)) {
+              //         return
+              //     }
+              // } else {
+              // //    或的时候校验一个是否已填
+              //     if (!validateJsonRules(false) && !validateDynamicPolicyRules(false)) {
+              //         this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
+              //         return
+              //     } else {
+              //         if (!validateJsonRules(false)) {
+              //             const dynamicFlag = validateDynamicPolicyRules(true)
+              //             if (!dynamicFlag) {return}
+              //         }
+              //         if (!validateDynamicPolicyRules(false)) {
+              //             const rulesFlag = validateJsonRules(true)
+              //             if (!rulesFlag) {return}
+              //         }
+              //     }
+              // }
+              rules.forEach(function(item) {
+                item.rules.forEach(function(childItem) {
+                  if (tagIds.indexOf(childItem.tagId) === -1) {
+                    tagIds.push(childItem.tagId)
+                  }
+                  delete childItem.startDay
+                  delete childItem.endDay
+                })
+              })
+              const data = {
+                crowdName: form.name,
+                tagIds: tagIds.join(','),
+                rulesJson: JSON.stringify(ruleJson),
+                behaviorRulesJson: JSON.stringify(behaviorRulesJson),
+                dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
+                remark: form.remark,
+                policyId: form.policyId,
+                // crowdValidFrom: form.crowdExp[0],
+                // crowdValidTo: form.crowdExp[1],
+                limitLaunch: form.limitLaunch,
+                limitLaunchCount: form.limitLaunch
+                  ? form.limitLaunchCount
+                  : undefined
+              }
+              if (this.crowdId != null) {
+                data.crowdId = this.crowdId
+                data.priority = this.priority
+                this.$service
+                  .crowdUpdate(
+                    data,
+                    '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+                  )
+                  .then(() => {
+                    this.$emit('goBackCrowdListPage', true)
+                  })
+              } else {
+                this.$service
+                  .crowdSave(
+                    data,
+                    '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+                  )
+                  .then(() => {
+                    this.$emit('goBackCrowdListPage', true)
+                  })
+              }
+            } else {
+              return false
             }
-            if (!rulesFlag) break
-          }
-          if (!rulesFlag) return
-          //判断动态因子里面是否有未填的
-          let dynamicPolicyFlag = true
-          for (i = 0; i < dynamicPolicyRulesLength; i++) {
-            for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-              let rulesItem = dynamicPolicyRules[i].rules[j]
-              if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-                this.$message.error(
-                  '请正确填写第' +
-                    (i + 1) +
-                    '动态因子里面的第' +
-                    (j + 1) +
-                    '行的值！'
-                )
-                dynamicPolicyFlag = false
-                break
-              }
-              if (!dynamicPolicyFlag) break
-            }
-            if (!dynamicPolicyFlag) break
-          }
-          if (!dynamicPolicyFlag) return
-          // 如果外层条件是且，则设置标签和动态因子都是必填，如果是或则选填
-          // if (dynamicPolicyJson.condition === 'AND') {
-          //     if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
-          //         this.$message.error('因为动态因子上面的条件为且，所以请填写至少一个标签块内容和一个动态因子完整的内容！')
-          //         return
-          //     }
-          //     if (!validateJsonRules(true) || !validateDynamicPolicyRules(true)) {
-          //         return
-          //     }
-          // } else {
-          // //    或的时候校验一个是否已填
-          //     if (!validateJsonRules(false) && !validateDynamicPolicyRules(false)) {
-          //         this.$message.error('请至少填写一个标签块内容或者一个动态因子完整的内容！')
-          //         return
-          //     } else {
-          //         if (!validateJsonRules(false)) {
-          //             const dynamicFlag = validateDynamicPolicyRules(true)
-          //             if (!dynamicFlag) {return}
-          //         }
-          //         if (!validateDynamicPolicyRules(false)) {
-          //             const rulesFlag = validateJsonRules(true)
-          //             if (!rulesFlag) {return}
-          //         }
-          //     }
-          // }
-          rules.forEach(function(item) {
-            item.rules.forEach(function(childItem) {
-              if (tagIds.indexOf(childItem.tagId) === -1) {
-                tagIds.push(childItem.tagId)
-              }
-              delete childItem.startDay
-              delete childItem.endDay
-            })
           })
-          const data = {
-            crowdName: form.name,
-            tagIds: tagIds.join(','),
-            rulesJson: JSON.stringify(ruleJson),
-            behaviorRulesJson: JSON.stringify(behaviorRulesJson),
-            dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
-            remark: form.remark,
-            policyId: form.policyId,
-            // crowdValidFrom: form.crowdExp[0],
-            // crowdValidTo: form.crowdExp[1],
-            limitLaunch: form.limitLaunch,
-            limitLaunchCount: form.limitLaunch
-              ? form.limitLaunchCount
-              : undefined
-          }
-          if (this.crowdId != null) {
-            data.crowdId = this.crowdId
-            data.priority = this.priority
-            this.$service
-              .crowdUpdate(
-                data,
-                '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
-              })
-          } else {
-            this.$service
-              .crowdSave(
-                data,
-                '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
-              })
-          }
         } else {
-          return false
+          this.$message.error('请输入必填项')
         }
       })
+     
     },
     // 取消
     cancelAdd: function() {

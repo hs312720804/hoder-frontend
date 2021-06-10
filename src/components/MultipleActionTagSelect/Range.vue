@@ -1,6 +1,7 @@
 <template>
   <div>
     <!-- <transition name="el-zoom-in-left"> -->
+    <el-form :model="childItem" ref="rangeForm" :rules="rangeFormRules">
       <div v-show="show3">
         <div style="display: flex; flex-direction: row">
           <div class="range-wrap" v-if="type.indexOf('range') > -1">
@@ -24,21 +25,19 @@
                 </template>
               </el-select>
             </span>
-            <!-- {{childItem.bav}} -->
-            <!-- {{ childItem.bav.rangeType }}
-            {{ childItem.bav.rang.value }} -->
             <span style="max-width: 220px; min-width: 220px; display: inline-block">
-              <el-date-picker
-                v-if="childItem.bav.rangeType === 'fixed'"
-                v-model="childItem.bav.rang.value"
-                type="daterange"
-                range-separator="至"
-                start-placeholder="开始日期"
-                end-placeholder="结束日期"
-                value-format="yyyy-MM-dd"
-                :picker-options="pickerOptions0"
-              >
-              </el-date-picker>
+              <el-form-item label="" prop="bav.rang.value" v-if="childItem.bav.rangeType === 'fixed'">
+                <el-date-picker
+                  v-model="childItem.bav.rang.value"
+                  type="daterange"
+                  range-separator="至"
+                  start-placeholder="开始日期"
+                  end-placeholder="结束日期"
+                  value-format="yyyy-MM-dd"
+                  :picker-options="pickerOptions0"
+                >
+                </el-date-picker>
+              </el-form-item>
               <span v-else style="display: inline-block; width: 200px">
                 最近
                 <!-- 购买行为730天 其他30天 -->
@@ -100,7 +99,7 @@
         </div>
       </div>
     <!-- </transition> -->
-
+    </el-form>
     <!-- <span @click="openOrClose">{{ show3 ? '< 收起' : '> 展开' }}</span> -->
 
   </div>
@@ -123,7 +122,13 @@ export default {
         }
       },
       show3: true,
-      isSelectedDay: false
+      isSelectedDay: false,
+      rangeFormRules: {
+        'bav.rang.value': [
+          { type: 'array', required: true, message: '请输入周期范围', trigger: 'change' },
+          { type: 'array', required: true, message: '请输入周期范围', trigger: 'blur' }
+        ]
+      }
     }
   },
   props: {

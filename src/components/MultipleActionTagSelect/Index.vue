@@ -42,7 +42,8 @@
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
                 <div v-if="childItem.tagCode !== 'BAV0001'" style="display: flex; flex-direction: row;" >
-                  <Range 
+                  <Range
+                    ref="range"
                     :childItem="childItem" 
                     :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
                     :options="bavAttrList[childItem.categoryCode]"
@@ -53,7 +54,8 @@
                 </div>
                 <!-- {{childItem}} -->
                 <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
-                <Bav 
+                <Bav
+                  ref="bav"
                   :childItem="childItem" 
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
                 >
@@ -466,7 +468,6 @@
 </template>
 
 <script>
-import List from '../../views/DevelopTools/ipManage/list.vue'
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
 export default {
@@ -531,7 +532,6 @@ export default {
   },
   components: {
     Range,
-    List,
     Bav
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
