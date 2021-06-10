@@ -591,23 +591,27 @@ export default {
 
     handleSave() {
       
-      // eslint-disable-next-line no-debugger
-      debugger
-      // 获取到组件中的form 
+      // 获取到组件中的form  校验必填项
       // 周期范围
       const rangeFormList = []
-      this.$refs.multipleActionTagSelect.$refs.range && this.$refs.multipleActionTagSelect.$refs.range.forEach(item => {
+      const rangeRefList = this.$refs.multipleActionTagSelect.$refs.range ? this.$refs.multipleActionTagSelect.$refs.range : []
+      rangeRefList.forEach(item => {
         rangeFormList.push(item.$refs.rangeForm)
       })
 
       // value值
       const typeFormList = []
-      this.$refs.multipleActionTagSelect.$refs.bav && this.$refs.multipleActionTagSelect.$refs.bav.forEach(item => {
-        item.$refs.typeRef && item.$refs.typeRef.forEach(obj => 
-          { 
+      const typeRefList = this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
+      typeRefList.forEach(item => {
+        
+        if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+          item.$refs.typeRef.forEach(obj => {
             typeFormList.push(obj.$refs.typeForm)
-          }
-        )
+          })
+        } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
+          typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+        }
+        
       })
 
       let allList = rangeFormList.concat(typeFormList)

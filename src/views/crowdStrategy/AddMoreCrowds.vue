@@ -257,7 +257,7 @@ export default {
       //     return
       // }
 
-       // 获取到组件中的form 
+      // 获取到组件中的form 校验必填项
       // 周期范围 ref
       const rangeFormList = []
       const rangeRefList = this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
@@ -266,16 +266,16 @@ export default {
       })
       // value值 ref
       const typeFormList = []
-
       const typeRefList = this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
       typeRefList.forEach(item => {
-        if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') {
-          // item.$refs.typeRef.forEach(obj => 
-          //   {
-            typeFormList.push(item.$refs.typeRef.$refs.typeForm)
-          //   }
-          // )
-        } 
+        
+        if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+          item.$refs.typeRef.forEach(obj => {
+            typeFormList.push(obj.$refs.typeForm)
+          })
+        } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
+          typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+        }
       })
 
       let allList = rangeFormList.concat(typeFormList)
