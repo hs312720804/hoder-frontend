@@ -677,7 +677,7 @@
                             prop: 'es_index'
                         },
                         {
-                            label: '临时人群是否同步成功',
+                            label: '状态',
                             prop: 'status_name'
                         },
                         {

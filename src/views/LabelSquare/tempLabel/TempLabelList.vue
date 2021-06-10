@@ -108,6 +108,11 @@
                         {{cc_format_number(scope.row.history.totalWxOpenid)}}
                     </template>
                 </el-table-column>
+                <el-table-column label="dmp人群ID">
+                    <template slot-scope="scope">
+                        {{ scope.row.dmpCrowdId }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="版本">
                     <template slot-scope="scope">
                         {{scope.row.history.version}}
@@ -280,7 +285,18 @@
                         },
                         {
                             label: '临时人群（SQL）指令',
-                            prop: 'crowd_sql'
+                            prop: 'crowd_sql',
+                            render: (h, params) => {
+                                return h('el-tooltip',{
+                                    props: {
+                                        effect: 'dark',
+                                        content: params.row.crowd_sql,
+                                        placement:'top',
+                                    }
+                                }, [h('span',
+                                    params.row.crowd_sql.slice(0, 20)
+                                )])
+                            }
                         },
                         {
                             label: '临时人群版本号',
@@ -291,6 +307,10 @@
                             prop: 'cur_version'
                         },
                         {
+                            label: '接收设备数量',
+                            prop: 'receive_user_total'
+                        },
+                        {
                             label: '设备数量',
                             prop: 'total_user'
                         },
@@ -299,7 +319,7 @@
                             prop: 'es_index'
                         },
                         {
-                            label: '临时人群是否同步成功',
+                            label: '状态',
                             prop: 'status_name'
                         },
                         {

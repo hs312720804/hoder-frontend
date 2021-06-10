@@ -983,7 +983,7 @@ export default {
         condition: 'AND',
         rules: [
           {
-            table: 'dmp_db.base_user_tags_v' + '$',
+            table: 'dmp_db.base_user_tags_v3' + '$',
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
             tagCode: tag.tagKey,
@@ -1045,7 +1045,7 @@ export default {
         this.crowd.tagIds.push(tag.tagId)
       }
       rule.rules.push({
-        table: 'dmp_db.base_user_tags_v' + '$',
+        table: 'dmp_db.base_user_tags_v3' + '$',
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
         tagCode: tag.tagKey,
