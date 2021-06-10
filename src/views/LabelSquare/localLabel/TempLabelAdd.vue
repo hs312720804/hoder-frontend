@@ -396,8 +396,8 @@ export default {
       const macBelowPer = crowdForm.macBelowPer
       let wxInitialValue = crowdForm.wxInitialValue
       const wxBelowPer = crowdForm.wxBelowPer
-      macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
-      wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+      macInitialValue = macInitialValue && macInitialValue.toString().replace(/,/g, '')
+      wxInitialValue = wxInitialValue && wxInitialValue.toString().replace(/,/g, '')
       this.validateBasicLine(
         macInitialValue,
         macBelowPer,
@@ -489,8 +489,8 @@ export default {
             wxInitialValue,
             wxBelowPer
           } = crowdForm
-          macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
-          wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+          macInitialValue = macInitialValue && macInitialValue.toString().replace(/,/g, '')
+          wxInitialValue = wxInitialValue && wxInitialValue.toString().replace(/,/g, '')
           crowdForm.macInitialValue = macInitialValue
           crowdForm.wxInitialValue = wxInitialValue
           if (

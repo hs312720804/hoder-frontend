@@ -1007,8 +1007,8 @@
               const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
               const macInitialValue = crowdDefineForm.macInitialValue
               const wxInitialValue = crowdDefineForm.wxInitialValue
-              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.replace(/,/g, '') : undefined
-              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.replace(/,/g, '') : undefined
+              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.toString().replace(/,/g, '') : undefined
+              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.toString().replace(/,/g, '') : undefined
               this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
                 this.adjustDialog = false
               })
