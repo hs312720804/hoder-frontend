@@ -308,7 +308,7 @@
                         },
                         {
                             label: '接收设备数量',
-                            prop: 'receive_user_total'
+                            prop: 'receive_total_user'
                         },
                         {
                             label: '设备数量',
