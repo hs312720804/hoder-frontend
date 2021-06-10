@@ -34,7 +34,7 @@
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
                   value-format="yyyy-MM-dd"
-                  :picker-options="pickerOptions0"
+                  :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
                 >
                 </el-date-picker>
               </el-form-item>
@@ -116,6 +116,14 @@ export default {
       pickerOptions0: {
         disabledDate:(time)=> {
           const day1 =  31 * 24 * 3600 * 1000
+          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let minTime = Date.now() - day1
+          return time.getTime() > maxTime || time.getTime() < minTime
+        }
+      },
+      pickerOptions720: {
+        disabledDate:(time)=> {
+          const day1 =  720 * 24 * 3600 * 1000
           let maxTime = Date.now() - 1 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
