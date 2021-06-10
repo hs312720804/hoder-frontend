@@ -38,7 +38,13 @@
             </div>
 
             <el-form-item label="行为标签" v-if="actionTags.length > 0">
-              <MultipleActionTagSelect :actionTags="actionTags" :behaviorRulesJson="crowd.behaviorRulesJson" :crowd="crowd" :i="i"></MultipleActionTagSelect>
+              <MultipleActionTagSelect 
+                ref="multipleActionTagSelect"
+                :actionTags="actionTags" 
+                :behaviorRulesJson="crowd.behaviorRulesJson" 
+                :crowd="crowd" 
+                :i="i">
+              </MultipleActionTagSelect>
             </el-form-item>
 
             <el-form-item label="动态因子" v-if="specialTags.length > 0">

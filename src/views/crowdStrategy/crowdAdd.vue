@@ -600,6 +600,7 @@ export default {
         rangeFormList.push(item.$refs.rangeForm)
       })
 
+      // value值
       const typeFormList = []
       this.$refs.multipleActionTagSelect.$refs.bav && this.$refs.multipleActionTagSelect.$refs.bav.forEach(item => {
         item.$refs.typeRef && item.$refs.typeRef.forEach(obj => 
@@ -611,7 +612,7 @@ export default {
 
       let allList = rangeFormList.concat(typeFormList)
       // 使用Promise.all去校验结果
-      let a = Promise.all(allList.map(this.getFormPromise)).then(res => {
+      Promise.all(allList.map(this.getFormPromise)).then(res => {
         const validateResult = res.every(item => !!item);
         if (validateResult) {
           this.$refs['form'].validate(valid => {
