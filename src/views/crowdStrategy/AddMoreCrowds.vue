@@ -27,7 +27,7 @@
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
-        <el-button type="primary" @click="handleSave(1)">下一12313步</el-button>
+        <el-button type="primary" @click="handleSave(1)">下一步</el-button>
       </el-form-item>
     </el-form>
   </div>
