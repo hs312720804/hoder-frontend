@@ -762,7 +762,7 @@
                         this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
                         // if (row.tempCrowdId) {
-                        if (this.crowdForm.crowdType === 1) { // 临时人群
+                        if (this.crowdForm.crowdType === 1 || this.crowdForm.crowdType === 3) { // 临时人群
                             this.crowdForm.tempCrowdId = row.tempCrowdId
                             this.crowdForm.policyIds = []
                             this.crowdForm.policyCrowdIds = []
@@ -1127,7 +1127,7 @@
             // 投放提示
             handelLaunch () {
                 // 临时人群/本地人群 直接投放，不展示投放提示
-                if (this.crowdForm.crowdType === 1) {
+                if (this.crowdForm.crowdType === 1 || this.crowdForm.crowdType === 3) {
                     this.launchDirectly()
                     return
                 }
@@ -1193,7 +1193,7 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         // 选择的是临时人群
-                        if (crowdForm.crowdType === 1) {
+                        if (crowdForm.crowdType === 1 || crowdForm.crowdType === 3) {
                             crowdForm.abTest = false
                             crowdForm.policyIds = undefined
                             crowdForm.policyCrowdIds = undefined
