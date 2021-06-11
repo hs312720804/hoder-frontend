@@ -964,10 +964,12 @@ export default {
 
     // 起播行为编辑，获取影片集数
     getQiboTvEpisodes(bavVal) {
+      // eslint-disable-next-line no-debugger
+      debugger
       bavVal.forEach(obj => {
         if (obj.videoType && obj.videoType !== '电影' && obj.source && obj.value) {
           this.getTvEpisodes(obj.source, obj.value)
-        } else {
+        } else if (obj.child) {
           this.getQiboTvEpisodes(obj.child)
         }
       })
