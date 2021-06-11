@@ -245,8 +245,8 @@
                             :disabled="disabledCrowdType"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                        <el-radio :label="1">临时人群/本地人群</el-radio><!-- true -->
-                        <el-radio :label="2">行为人群</el-radio>
+                        <el-radio :label="1">高级人群/本地人群</el-radio><!-- true -->
+                        <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item
@@ -356,7 +356,7 @@
                 <el-form-item
                         label="选择人群"
                         prop="tempCrowdId"
-                        v-if="crowdForm.crowdType === 2"
+                        v-if="crowdForm.crowdType === 3"
                 >
                     <el-select
                             filterable
@@ -676,7 +676,8 @@
                 }
             },
             'crowdForm.crowdType'(val) {
-                if (val === 2 && this.crowdForm.policyCrowdIds.length === 0) {
+                if (val === 3) {
+                    // 行为人群
                     this.crowdForm.policyCrowdIds = ['']
                 }  
             }
@@ -863,11 +864,11 @@
                         //     return v.split("_")[1]
                         // }).join(",")
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType === 1 ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.callback()
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType === 1 ? 1 : 0,data: crowdForm},"新增成功").then(() => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then(() => {
                                 this.callback()
                             })
                         }
@@ -1204,7 +1205,7 @@
                             }).join(",")
                         }
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType === 1 ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.currentLaunchId = this.editLaunchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false
@@ -1212,7 +1213,7 @@
                                 })
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType === 1 ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
                                 this.currentLaunchId = data.launchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false

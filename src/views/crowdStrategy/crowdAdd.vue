@@ -568,16 +568,18 @@ export default {
 
     // 给 behaviorRulesJson 中的table 添加序号
     putBehaviorRulesJsonTableIndex (val) {
-      let tableIndex = 0
-      let ruleList = val.rules
-      ruleList.forEach(rule => {
-        let ruleGroup = rule.rules
-        ruleGroup.forEach(item => {
-          tableIndex = tableIndex+1
-          item.table = item.table.split('$')[0] + '$' + tableIndex
-          if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+      if (val) {
+        let tableIndex = 0
+        let ruleList = val.rules
+        ruleList.forEach(rule => {
+          let ruleGroup = rule.rules
+          ruleGroup.forEach(item => {
+            tableIndex = tableIndex+1
+            item.table = item.table.split('$')[0] + '$' + tableIndex
+            if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+          })
         })
-      })
+      }
       return val
     },
 
@@ -590,9 +592,6 @@ export default {
     },
 
     handleSave() {
-      
-      
-
       this.$refs['form'].validate(valid => {
         if (valid) {
           const form = JSON.parse(JSON.stringify(this.form))

@@ -727,11 +727,13 @@ export default {
      * tag 为标签
      */
     handleAddActionRule(tag) {
+      // eslint-disable-next-line no-debugger
+      debugger
       if (tag.dataSource === 2) { // 大数据标签
         this.handleAddRule(tag)
         return
       }
-      if (this.behaviorRulesJson.rules.length > 50) {
+      if (this.behaviorRulesJson && this.behaviorRulesJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
       }
