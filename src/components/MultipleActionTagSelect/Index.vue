@@ -734,10 +734,14 @@ export default {
         return
       }
       if (this.behaviorRulesJson && this.behaviorRulesJson.rules.length > 50) {
-        this.$message.warning('已达最大数量')
+        this.$message.error('已达最大数量')
         return
       }
       
+      // if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
+      //   this.crowd.tagIds.push(tag.tagId)
+      // }
+
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
