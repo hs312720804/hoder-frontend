@@ -355,8 +355,34 @@
                             }
                         } else {
                             this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
-                                // 一键投放成功之后，调'未同步'的接口，手动进行同步
-                                this.jumpToRouter(launch, data.policyId)
+                                if (data.policyId) {
+                                    // 一键投放成功之后，调'未同步'的接口，手动进行同步
+                                    this.jumpToRouter(launch, data.policyId)
+                                } else {
+                                    if (this.routeSource) {
+                                        this.$router.push({
+                                            name: 'myPolicy',
+                                            params: { changeTab: 'ToMyLaunch' }
+                                        })
+                                    } else {
+                                        this.$router.push({ path: 'launch/launchTabList' })
+                                    }
+                                    // this.$router.push({ path: 'launch/launchTabList' })
+                                    this.$root.$emit('stratege-list-refresh')
+                                    this.$emit('resetFormData')
+                                }
+                            }).catch(() => {
+                                if (this.routeSource) {
+                                    this.$router.push({
+                                        name: 'myPolicy',
+                                        params: { changeTab: 'ToMyLaunch' }
+                                    })
+                                } else {
+                                    this.$router.push({ path: 'launch/launchTabList' })
+                                }
+                                // this.$router.push({ path: 'launch/launchTabList' })
+                                this.$root.$emit('stratege-list-refresh')
+                                this.$emit('resetFormData')
                             })
 
                         }

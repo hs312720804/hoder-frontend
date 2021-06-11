@@ -1168,6 +1168,7 @@
                 }
             },
             finish (saveType) {
+
                 const model = this.divideForm.launchCrowdId
                 // const divideForm = JSON.stringify(this.divideForm)
                 const divideForm = this.divideForm
