@@ -257,35 +257,38 @@ export default {
       //     return
       // }
 
-      // 获取到组件中的form 校验必填项
-      // 周期范围 ref
-      const rangeFormList = []
-      const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
-      rangeRefList && rangeRefList.forEach(item => {
-        rangeFormList.push(item.$refs.rangeForm)
-      })
       
-      // value值 ref
-      const typeFormList = []
-      const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
-      typeRefList && typeRefList.forEach(item => {
-        
-        if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
-          item.$refs.typeRef.forEach(obj => {
-            typeFormList.push(obj.$refs.typeForm)
-          })
-        } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
-          typeFormList.push(item.$refs.typeRef.$refs.typeForm)
-        }
-      })
-
-      let allList = rangeFormList.concat(typeFormList)
 
       this.$refs['form'].validate(valid => {
             if (valid) {
               if (!this.validateForm(form.rulesJson)) {
                 return
               }
+
+              // 获取到组件中的form 校验必填项
+              // 周期范围 ref
+              const rangeFormList = []
+              const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
+              rangeRefList && rangeRefList.forEach(item => {
+                rangeFormList.push(item.$refs.rangeForm)
+              })
+              
+              // value值 ref
+              const typeFormList = []
+              const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+              typeRefList && typeRefList.forEach(item => {
+                
+                if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+                  item.$refs.typeRef.forEach(obj => {
+                    typeFormList.push(obj.$refs.typeForm)
+                  })
+                } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
+                  typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+                }
+              })
+
+              let allList = rangeFormList.concat(typeFormList)
+
               if (allList.length > 0) {
                 // 使用Promise.all去校验结果
                 Promise.all(allList.map(this.getFormPromise)).then(res => {
