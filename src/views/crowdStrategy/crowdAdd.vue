@@ -776,27 +776,69 @@ export default {
               ? form.limitLaunchCount
               : undefined
           }
-          if (this.crowdId != null) {
-            data.crowdId = this.crowdId
-            data.priority = this.priority
-            this.$service
-              .crowdUpdate(
-                data,
-                '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
-              })
-          } else {
-            this.$service
-              .crowdSave(
-                data,
-                '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
-              })
+
+          if (allList.length > 0) {  // 有行为标签的
+            // 使用Promise.all去校验结果
+            Promise.all(allList.map(this.getFormPromise)).then(res => {
+              const validateResult = res.every(item => !!item);
+              if (validateResult) {
+
+
+                if (this.crowdId != null) {
+                  data.crowdId = this.crowdId
+                  data.priority = this.priority
+                  this.$service
+                    .crowdUpdate(
+                      data,
+                      '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+                    )
+                    .then(() => {
+                      this.$emit('goBackCrowdListPage', true)
+                    })
+                } else {
+                  this.$service
+                    .crowdSave(
+                      data,
+                      '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+                    )
+                    .then(() => {
+                      this.$emit('goBackCrowdListPage', true)
+                    })
+                }
+
+              } else {
+                this.$message.error('请输入必填项')
+              }
+            }).catch(() => {
+              this.$message.error('请至少设置一个行为标签规则')
+            })
+          } else { // 没有行为标签的
+
+            if (this.crowdId != null) {
+              data.crowdId = this.crowdId
+              data.priority = this.priority
+              this.$service
+                .crowdUpdate(
+                  data,
+                  '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+                )
+                .then(() => {
+                  this.$emit('goBackCrowdListPage', true)
+                })
+            } else {
+              this.$service
+                .crowdSave(
+                  data,
+                  '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+                )
+                .then(() => {
+                  this.$emit('goBackCrowdListPage', true)
+                })
+            }
+
           }
+          
+
         } else {
           return false
         }
