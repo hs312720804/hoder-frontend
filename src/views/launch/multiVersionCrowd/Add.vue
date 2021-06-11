@@ -358,18 +358,18 @@
                         prop="tempCrowdId"
                         v-if="crowdForm.crowdType === 3"
                 >
+                    <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
                     <el-select
-                            filterable
-                            v-model="crowdForm.policyCrowdIds[0]"
-                            @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0])"
+                        filterable
+                        v-model="crowdForm.tempCrowdId"
                     >
                         <el-option
                             v-for="item in behaviorCrowdList"
+                            :key="item.launchCrowdId+''"
                             :label="item.launchName"
-                            :value="item.policyIds+'_'+item.policyCrowdIds"
-                            :key="item.launchName+'_'+item.policyCrowdIds"
+                            :value="item.launchCrowdId"
                         >
-                            {{item.launchName}}
+                            {{item.launchName}} -- {{item.launchCrowdId}}
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -675,10 +675,10 @@
                     this.crowdDefineForm.videoSourceIds = []
                 }
             },
-            'crowdForm.crowdType'(val) {
-                if (val === 3) {
+            'crowdForm.crowdType'(val) { // 切换时置空
+                if (val === 1 || val === 3) {
                     // 行为人群
-                    this.crowdForm.policyCrowdIds = ['']
+                    this.crowdForm.tempCrowdId = ''
                 }  
             }
         },
@@ -845,8 +845,8 @@
                         let crowdForm = JSON.stringify(this.crowdForm)
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
-                        // 选择的是临时人群
-                        if (crowdForm.crowdType === 1) {
+                        // 选择的是临时人群 或者行为人群
+                        if (crowdForm.crowdType === 1 || crowdForm.crowdType === 3) {
                             crowdForm.abTest = false
                             crowdForm.policyIds = undefined
                             crowdForm.policyCrowdIds = undefined

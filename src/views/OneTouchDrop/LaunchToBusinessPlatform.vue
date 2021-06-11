@@ -294,6 +294,7 @@
                 }
                 this.crowdData = arr.concat(currentCrowd)
             },
+            
             submitForm(formName,launch) {
                 if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
                     this.$message.error('请勾选至少一种投放模式')
