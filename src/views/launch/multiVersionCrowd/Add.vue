@@ -648,7 +648,8 @@
                 estimateValue: ['0'],
                 accountDefine: false,
                 currentLaunchId: undefined,
-                behaviorCrowdList: []
+                behaviorCrowdList: [],
+                islaunchDirectly: false
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource","showAllParent"],
@@ -850,6 +851,7 @@
             },
             // 新增
             addSubmit () {
+                this.islaunchDirectly = false
                 if (this.model == 1 && this.isTempCrowd)
                 {
                    this.saveDefineCrowd()
@@ -892,7 +894,8 @@
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then((data) => {
                                 this.callback()
-                                if (crowdForm.crowdType === 3) { // 行为人群
+                                if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
+                                // if (crowdForm.crowdType === 3) { // 行为人群
                                     this.$service.calculateTempCrowd({launchCrowdId: data.launchCrowdId, calType: data.calType},'成功计算中').then(()=> {
                                         this.fetchData()
                                     })
@@ -901,7 +904,8 @@
                         } else {
                             this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
                                 this.callback()
-                                if (crowdForm.crowdType === 3) { // 行为人群
+                                if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
+                                // if (crowdForm.crowdType === 3) { // 行为人群
                                     this.$service.calculateTempCrowd({launchCrowdId: data.launchCrowdId, calType: data.calType},'成功计算中').then(()=> {
                                         this.fetchData()
                                     })
@@ -1162,6 +1166,7 @@
             
             // 投放提示
             handelLaunch () {
+                this.islaunchDirectly = true
                 // 临时人群/本地人群 直接投放，不展示投放提示
                 if (this.crowdForm.crowdType === 1 || this.crowdForm.crowdType === 3) {
                     this.launchDirectly()
@@ -1248,6 +1253,7 @@
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.currentLaunchId = this.editLaunchCrowdId
+                                debugger
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false
                                     this.callback()
@@ -1255,6 +1261,7 @@
                             })
                         } else {
                             this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
+                                debugger
                                 this.currentLaunchId = data.launchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false

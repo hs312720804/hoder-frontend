@@ -371,18 +371,21 @@
                                     this.$root.$emit('stratege-list-refresh')
                                     this.$emit('resetFormData')
                                 }
-                            }).catch(() => {
-                                if (this.routeSource) {
-                                    this.$router.push({
-                                        name: 'myPolicy',
-                                        params: { changeTab: 'ToMyLaunch' }
-                                    })
-                                } else {
-                                    this.$router.push({ path: 'launch/launchTabList' })
+                            }).catch((err) => {
+                                debugger
+                                if (err.message.indexOf('已存在') === -1) {
+                                    if (this.routeSource) {
+                                        this.$router.push({
+                                            name: 'myPolicy',
+                                            params: { changeTab: 'ToMyLaunch' }
+                                        })
+                                    } else {
+                                        this.$router.push({ path: 'launch/launchTabList' })
+                                    }
+                                    // this.$router.push({ path: 'launch/launchTabList' })
+                                    this.$root.$emit('stratege-list-refresh')
+                                    this.$emit('resetFormData')
                                 }
-                                // this.$router.push({ path: 'launch/launchTabList' })
-                                this.$root.$emit('stratege-list-refresh')
-                                this.$emit('resetFormData')
                             })
 
                         }
