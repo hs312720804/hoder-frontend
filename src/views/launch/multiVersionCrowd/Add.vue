@@ -359,6 +359,7 @@
                         v-if="crowdForm.crowdType === 3"
                 >
                     <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
+                    <!-- {{this.crowdForm.policyCrowdIds}} -->
                     <el-select
                         filterable
                         v-model="crowdForm.policyCrowdIds[0]"
@@ -678,8 +679,8 @@
                     this.crowdDefineForm.videoSourceIds = []
                 }
             },
-            'crowdForm.crowdType'(val) { // 切换时置空
-                if (val === 3) {
+            'crowdForm.crowdType'(val, oldVal) { // 切换时置空
+                if (val === 3 && oldVal === 2) {
                     // 行为人群
                     this.crowdForm.policyCrowdIds = ['']
                 }  
@@ -770,17 +771,20 @@
                             this.crowdForm.policyIds = []
                             this.crowdForm.policyCrowdIds = []
                         } else if (this.crowdForm.crowdType === 3) { // 行为人群
-                            data.respcl.forEach(element => {
-                                element.childs.forEach(v => {
-                                    if (v.choosed)
-                                        this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
+                            // 行为人群列表
+                            if (data.tempCrowds) {
+                                this.behaviorCrowdList = data.tempCrowds.filter(item => {
+                                    return item.isFxFullSql === 3
                                 })
-                            })
-                        }else if (this.crowdForm.crowdType === 0) { // 普通人群
+                            }
+                            this.crowdForm.tempCrowdId = row.tempCrowdId
+                            this.crowdForm.policyCrowdIds.push(row.policyIds + "_" + row.policyCrowdIds)
+                            
+                        } else if (this.crowdForm.crowdType === 0) { // 普通人群
                             this.crowdForm.tempCrowdId = undefined
                             this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                             this.getCrowd()
-                            data.respcl.forEach(element => {
+                            data.respcl && data.respcl.forEach(element => {
                                 element.childs.forEach(v => {
                                     if (v.choosed)
                                         this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
@@ -1102,10 +1106,12 @@
                             this.effectTimeList = data.efTime.map(item => {
                                 return {label: item + '天', value: item}
                             })
-                            // 行为人群列表
-                            this.behaviorCrowdList = data.tempCrowds.filter(item => {
-                                return item.isFxFullSql === 3
-                            })
+                            if (data.tempCrowds) {
+                                // 行为人群列表
+                                this.behaviorCrowdList = data.tempCrowds.filter(item => {
+                                    return item.isFxFullSql === 3
+                                })
+                            }
                         })
                     }
                 }
@@ -1253,7 +1259,6 @@
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
                             this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.currentLaunchId = this.editLaunchCrowdId
-                                debugger
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false
                                     this.callback()
@@ -1261,7 +1266,6 @@
                             })
                         } else {
                             this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
-                                debugger
                                 this.currentLaunchId = data.launchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false
