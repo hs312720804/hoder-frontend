@@ -1209,6 +1209,9 @@ export default {
           //   field: ''
           // }]
         }
+        if (level === 4) { //视频源, value 和 name 都是中文
+          obj.value = obj.name
+        }
         if (level === 5 || level === 6) { // 输入了影片名称之后，需要查询集数/期数
           if (obj.videoType !== '电影' && obj.source && obj.value) {
             this.getTvEpisodes(obj.source, obj.value)
