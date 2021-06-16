@@ -584,6 +584,9 @@ export default {
             if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
           })
         })
+      } else {
+        val = {link: 'AND', condition: 'OR', rules:[]}
+        // val = ''
       }
       return val
     },

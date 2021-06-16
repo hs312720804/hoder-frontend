@@ -240,6 +240,9 @@ export default {
             if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
           })
         })
+      } else {
+        val = {link: 'AND', condition: 'OR', rules:[]}
+        // val = ''
       }
       return val
     },
@@ -312,7 +315,7 @@ export default {
                         return item
                       })
                       e.rulesJson = JSON.stringify(e.rulesJson)
-                      e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson) 
+                      e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
                       e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
                       e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
                       // e.crowdValidFrom = form.crowdExp[0]
