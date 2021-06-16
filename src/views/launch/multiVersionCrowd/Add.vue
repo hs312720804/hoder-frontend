@@ -286,7 +286,7 @@
                                         v-for="item in v.childs"
                                         :label="v.policyId+'_'+item.crowdId"
                                         :key="item.crowdId+''"
-                                        :disabled="item.canLaunch === false"
+                                        :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
                                 >{{item.crowdName}}
                                 </el-checkbox>
                             </el-checkbox-group>
