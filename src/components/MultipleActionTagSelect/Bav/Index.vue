@@ -1211,7 +1211,7 @@ export default {
         }
         if (level === 3) { // 选择二级分类时，operator: 'like',  value: '%抗日%'
           obj.operator = 'like'
-          obj.value = '%' + obj.value + '%'
+          if (obj.value !== '') {obj.value = '%' + obj.value + '%'}
         }
         if (level === 4) { //视频源, value 和 name 都是中文
           obj.value = obj.name
