@@ -24,7 +24,7 @@
               </el-form-item>
             </div>
 
-            <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0 &&  specialTags.length > 0)">
+            <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
               <el-button
                       type="danger"
                       @click="handleConditionChange(crowd)"
@@ -37,7 +37,7 @@
             {{ crowd.dynamicPolicyJson.link }} -->
             </div>
 
-            <el-form-item label="行为标签" v-if="actionTags.length > 0">
+            <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
               <MultipleActionTagSelect 
                 ref="multipleActionTagSelect"
                 :actionTags="actionTags" 
@@ -144,6 +144,11 @@ export default {
   props: ['value', 'propPrefix', 'recordId'],
   watch: {
     value: 'setInputValue'
+  },
+  computed: {
+    hasBehaviorTag() {
+      return this.actionTags.some(item => item.dataSource === 8)
+    }
   },
   methods: {
     handleCurrentChange (index) {
