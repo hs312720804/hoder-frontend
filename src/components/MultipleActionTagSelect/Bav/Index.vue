@@ -1213,7 +1213,7 @@ export default {
           obj.operator = 'like'
           if (obj.value !== '') {obj.value = '%' + obj.value + '%'}
         }
-        if (level === 4) { //视频源, value 和 name 都是中文
+        if (level === 4) { // 视频源, value 和 name 都是中文
           obj.value = obj.name
         }
         if (level === 5 || level === 6) { // 输入了影片名称之后，需要查询集数/期数

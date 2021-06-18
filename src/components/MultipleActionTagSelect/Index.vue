@@ -678,7 +678,6 @@ export default {
           this.bavAttrList[tagCode] = res || {}
           this.$set(this.bavAttrList, tagCode, res)
           this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
-          console.log('this.bavAttrList==>', this.bavAttrList)
         // })
       })
     },
@@ -844,7 +843,6 @@ export default {
             }
           ]
         })
-        console.log('this.bavAttrList ==>', this.bavAttrList)
       })
     },
 
@@ -960,7 +958,6 @@ export default {
             }
           }
         })
-        console.log('this.bavAttrList ==>', this.bavAttrList)
       })
 
     },

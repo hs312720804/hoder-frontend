@@ -765,20 +765,23 @@ export default {
           // 周期范围
           const rangeFormList = []
           const rangeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.range ? this.$refs.multipleActionTagSelect.$refs.range : []
-          rangeRefList && rangeRefList.forEach(item => {
+       
+          rangeRefList.forEach(item => {
             rangeFormList.push(item.$refs.rangeForm)
           })
 
           // value值
           const typeFormList = []
           const typeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
-          typeRefList && typeRefList.forEach(item => {
+
+          // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
+          typeRefList.forEach(item => {
             
             if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
               item.$refs.typeRef.forEach(obj => {
                 typeFormList.push(obj.$refs.typeForm)
               })
-            } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
+            } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {  // 【设备活跃】tab只有一个 type 组件，因此 typeRef 不为数组
               typeFormList.push(item.$refs.typeRef.$refs.typeForm)
             }
             
@@ -786,36 +789,13 @@ export default {
 
           let allList = rangeFormList.concat(typeFormList)
 
-
           if (allList.length > 0) {  // 有行为标签的
             // 使用Promise.all去校验结果
             Promise.all(allList.map(this.getFormPromise)).then(res => {
               const validateResult = res.every(item => !!item);
               if (validateResult) {
-
-
-                if (this.crowdId != null) {
-                  data.crowdId = this.crowdId
-                  data.priority = this.priority
-                  this.$service
-                    .crowdUpdate(
-                      data,
-                      '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-                    )
-                    .then(() => {
-                      this.$emit('goBackCrowdListPage', true)
-                    })
-                } else {
-                  this.$service
-                    .crowdSave(
-                      data,
-                      '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-                    )
-                    .then(() => {
-                      this.$emit('goBackCrowdListPage', true)
-                    })
-                }
-
+                // 新增或编辑
+                this.fetchAddOrEdit(data)
               } else {
                 this.$message.error('请输入必填项')
               }
@@ -823,47 +803,40 @@ export default {
               this.$message.error('请至少设置一个行为标签规则')
             })
           } else { // 没有行为标签的
-
-            if (this.crowdId != null) {
-              data.crowdId = this.crowdId
-              data.priority = this.priority
-              this.$service
-                .crowdUpdate(
-                  data,
-                  '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-                )
-                .then(() => {
-                  this.$emit('goBackCrowdListPage', true)
-                })
-            } else {
-              this.$service
-                .crowdSave(
-                  data,
-                  '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-                )
-                .then(() => {
-                  this.$emit('goBackCrowdListPage', true)
-                })
-            }
-
+            // 新增或编辑
+            this.fetchAddOrEdit(data)
           }
-          
 
         } else {
           return false
         }
       })
 
-      // 使用Promise.all去校验结果
-      // Promise.all(allList.map(this.getFormPromise)).then(res => {
-      //   const validateResult = res.every(item => !!item);
-      //   if (validateResult) {
-          
-      //   } else {
-      //     this.$message.error('请输入必填项')
-      //   }
-      // })
-     
+    },
+    
+    // 请求新增或编辑接口
+    fetchAddOrEdit(data) {
+      if (this.crowdId != null) {
+        data.crowdId = this.crowdId
+        data.priority = this.priority
+        this.$service
+          .crowdUpdate(
+            data,
+            '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            this.$emit('goBackCrowdListPage', true)
+          })
+      } else {
+        this.$service
+          .crowdSave(
+            data,
+            '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            this.$emit('goBackCrowdListPage', true)
+          })
+      }
     },
     // 取消
     cancelAdd: function() {

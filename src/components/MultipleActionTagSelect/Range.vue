@@ -133,8 +133,7 @@ export default {
       isSelectedDay: false,
       rangeFormRules: {
         'bav.rang.value': [
-          { type: 'array', required: true, message: '请输入周期范围', trigger: 'change' },
-          { type: 'array', required: true, message: '请输入周期范围', trigger: 'blur' }
+          { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur']},
         ]
       }
     }
@@ -160,7 +159,6 @@ export default {
   watch: {
     childItem: {
       handler(val) {
-        console.log('6666666666666===', val)
         let list = val.bav.behaviorValue
         this.isSelectedDay = false
         // 判断是否选择了【天数】
@@ -170,7 +168,6 @@ export default {
       immediate: true
     },
     show(val) {
-      console.log(val)
       this.show3 = val
     },
     options: {
