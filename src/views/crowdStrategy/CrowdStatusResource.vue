@@ -1,6 +1,9 @@
 <template>
     <div class="crowd-status">
-        <div v-if="formData" style="text-align: center">总状态：<span style="color: #55a532">正常({{formData.hit ? '命中': '待命中'}})</span></div>
+        <div v-if="formData" style="text-align: center">总状态：<span style="color: #55a532">正常(
+            <span v-if="status === '生效中'">{{ formData.hit ? '命中': '待命中' }}</span>
+            <span v-else>{{ status }}</span>
+        )</span></div>
         <div
                 v-if="formData"
                 style="display: flex;justify-content: flex-end"
@@ -24,9 +27,9 @@
                     <!-- 纵列第一块-->
                     <div>
                         <div
-                                v-for="(item,index) in formData.biTrack"
-                                :key="index"
-                                class="track-item"
+                            v-for="(item,index) in formData.biTrack"
+                            :key="index"
+                            class="track-item"
                         >
                             <div class="business-name">{{item.biName}}</div>
                             <div v-if="item.list">
@@ -167,7 +170,7 @@
                 lastRequestId: 0
             }
         },
-        props: ['crowdId'],
+        props: ['crowdId', 'status'],
         methods: {
             formatDate (d) {
                 const time = new Date(d)

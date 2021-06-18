@@ -4,7 +4,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-            <el-tab-pane label="临时人群/标签" name="tempLabel">
+            <el-tab-pane label="高级人群/标签" name="tempLabel">
                 <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
@@ -62,6 +62,18 @@
                         @fetch-checkList="fetchTempCheckListData"
                 >
                 </local-label-index>
+            </el-tab-pane>
+            <el-tab-pane label="行为人群/标签" name="behaviorLabel">
+                <temp-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        @fetch-checkList="fetchTempCheckListData"
+                        :crowdType=2
+                >
+                </temp-label-index>
             </el-tab-pane>
         </el-tabs>
         <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
@@ -176,6 +188,10 @@
                     case 'localLabel':
                         this.fetchTempCheckListData()
                         this.$root.$emit('local-label-list-refresh')
+                        break
+                    case 'behaviorLabel':
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('temp-label-list-refresh')
                         break
                 }
             },

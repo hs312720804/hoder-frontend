@@ -23,13 +23,15 @@
             ></el-input>
           </el-form-item>
           <div style="position: relative">
-            <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
-              <MultipleSelect
-                :tags="tags"
-                :rulesJson="rulesJson"
-              ></MultipleSelect>
-            </el-form-item>
-            <div class="outer-and" v-if="specialTags.length > 0">
+            <div v-if="tags.length > 0">
+              <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+                <MultipleSelect
+                  :tags="tags"
+                  :rulesJson="rulesJson"
+                ></MultipleSelect>
+              </el-form-item>
+            </div>
+            <!-- <div class="outer-and" v-if="specialTags.length > 0">
               <el-button
                 type="danger"
                 v-if="
@@ -40,7 +42,25 @@
                 :key="'condition'"
                 >{{ dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
               </el-button>
+            </div> -->
+            <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
+              <el-button
+                type="danger"
+                @click="handleConditionChange(crowd)"
+                round
+                :key="'condition'"
+              >{{ (dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
             </div>
+
+            <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+              <!-- {{behaviorRulesJson}} -->
+              <MultipleActionTagSelect 
+                ref="multipleActionTagSelect"
+                :actionTags="actionTags" 
+                :behaviorRulesJson="behaviorRulesJson" 
+              ></MultipleActionTagSelect>
+            </el-form-item>
+
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <MultipleSelect
                 :specialTags="specialTags"
@@ -132,9 +152,11 @@
 </template>
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
 export default {
   components: {
-    MultipleSelect
+    MultipleSelect,
+    MultipleActionTagSelect
   },
   data() {
     var checkIntNumber = (rule, value, callback) => {
@@ -151,6 +173,7 @@ export default {
       //attrs: [[${attrs}]] || {},
       cache: {},
       tags: [],
+      actionTags: [],
       specialTags: [],
       tagInitSize: 200,
       tagCurrentPage: 1,
@@ -169,6 +192,7 @@ export default {
       },
       // usedTags: [[${usedTags}]] || {},
       rulesJson: { condition: 'OR', rules: [] },
+      behaviorRulesJson: { link: 'AND', condition: 'OR', rules: [] },
       dynamicPolicyJson: { link: 'AND', condition: 'OR', rules: [] },
       suggestions: {},
       suggestionsNew: [],
@@ -210,10 +234,16 @@ export default {
         3: '',
         5: 'warning',
         6: 'warningOrange',
-        7: 'warningOrange2'
+        7: 'warningOrange2',
+        8: 'warningCyan'
       },
       cityData: [],
       provinceValueList: []
+    }
+  },
+  computed: {
+    hasBehaviorTag() {
+      return this.actionTags.some(item => item.dataSource === 8)
     }
   },
   props: ['policyId', 'crowdId', 'limitLaunchDisabled'],
@@ -465,6 +495,21 @@ export default {
         // console.log('123cache===', this.cache)
       })
     },
+
+    // 获取行为标签下拉选项
+    fetchActionTagSuggestions(tagCode) {
+      if (this.bavAttrList[tagCode]) return
+      this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
+        // eslint-disable-next-line no-debugger
+        // this.$nextTick(() => {
+          this.bavAttrList[tagCode] = res || {}
+          this.$set(this.bavAttrList, tagCode, res)
+          this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+          console.log('this.bavAttrList==>', this.bavAttrList)
+        // })
+      })
+    },
+
     fetchTagSuggestions(tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
@@ -525,28 +570,59 @@ export default {
     getDefaultOperator() {
       return '='
     },
+
+    // 给 behaviorRulesJson 中的table 添加序号
+    putBehaviorRulesJsonTableIndex (val) {
+      if (val) {
+        let tableIndex = 0
+        let ruleList = val.rules
+        ruleList.forEach(rule => {
+          let ruleGroup = rule.rules
+          ruleGroup.forEach(item => {
+            tableIndex = tableIndex+1
+            item.table = item.table.split('$')[0] + '$' + tableIndex
+            if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+          })
+        })
+      } else {
+        val = {link: 'AND', condition: 'OR', rules:[]}
+        // val = ''
+      }
+      return val
+    },
+
+    getFormPromise(form) {
+      return new Promise(resolve => {
+        form.validate(res => {
+          resolve(res);
+        })
+      })
+    },
+
     handleSave() {
       this.$refs['form'].validate(valid => {
         if (valid) {
           const form = JSON.parse(JSON.stringify(this.form))
           const tagIds = []
           const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
+          const behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(JSON.parse(JSON.stringify(this.behaviorRulesJson)))
           const dynamicPolicyJson = JSON.parse(
             JSON.stringify(this.dynamicPolicyJson)
           )
           const rules = ruleJson.rules
           const ruleLength = rules.length
+
           const dynamicPolicyRules = dynamicPolicyJson.rules
           const dynamicPolicyRulesLength = dynamicPolicyRules.length
           let i,
             j = 0
           // 如果设置标签和动态因子都没有选rules则报错
-          if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
-            this.$message.error(
-              '请至少填写一个标签块内容或者一个动态因子完整的内容！'
-            )
-            return
-          }
+          // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
+          //   this.$message.error(
+          //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
+          //   )
+          //   return
+          // }
           if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
             if (this.currentLaunchLimitCount > form.limitLaunchCount) {
               this.$message.error('投放数量不能小于上一次设置的限制数量')
@@ -673,6 +749,7 @@ export default {
             crowdName: form.name,
             tagIds: tagIds.join(','),
             rulesJson: JSON.stringify(ruleJson),
+            behaviorRulesJson: JSON.stringify(behaviorRulesJson),
             dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
             remark: form.remark,
             policyId: form.policyId,
@@ -683,31 +760,83 @@ export default {
               ? form.limitLaunchCount
               : undefined
           }
-          if (this.crowdId != null) {
-            data.crowdId = this.crowdId
-            data.priority = this.priority
-            this.$service
-              .crowdUpdate(
-                data,
-                '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
+
+          // 获取到组件中的form  校验必填项
+          // 周期范围
+          const rangeFormList = []
+          const rangeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.range ? this.$refs.multipleActionTagSelect.$refs.range : []
+       
+          rangeRefList.forEach(item => {
+            rangeFormList.push(item.$refs.rangeForm)
+          })
+
+          // value值
+          const typeFormList = []
+          const typeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
+
+          // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
+          typeRefList.forEach(item => {
+            
+            if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+              item.$refs.typeRef.forEach(obj => {
+                typeFormList.push(obj.$refs.typeForm)
               })
-          } else {
-            this.$service
-              .crowdSave(
-                data,
-                '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-              )
-              .then(() => {
-                this.$emit('goBackCrowdListPage', true)
-              })
+            } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {  // 【设备活跃】tab只有一个 type 组件，因此 typeRef 不为数组
+              typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+            }
+            
+          })
+
+          let allList = rangeFormList.concat(typeFormList)
+
+          if (allList.length > 0) {  // 有行为标签的
+            // 使用Promise.all去校验结果
+            Promise.all(allList.map(this.getFormPromise)).then(res => {
+              const validateResult = res.every(item => !!item);
+              if (validateResult) {
+                // 新增或编辑
+                this.fetchAddOrEdit(data)
+              } else {
+                this.$message.error('请输入必填项')
+              }
+            }).catch(() => {
+              this.$message.error('请至少设置一个行为标签规则')
+            })
+          } else { // 没有行为标签的
+            // 新增或编辑
+            this.fetchAddOrEdit(data)
           }
+
         } else {
           return false
         }
       })
+
+    },
+    
+    // 请求新增或编辑接口
+    fetchAddOrEdit(data) {
+      if (this.crowdId != null) {
+        data.crowdId = this.crowdId
+        data.priority = this.priority
+        this.$service
+          .crowdUpdate(
+            data,
+            '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            this.$emit('goBackCrowdListPage', true)
+          })
+      } else {
+        this.$service
+          .crowdSave(
+            data,
+            '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            this.$emit('goBackCrowdListPage', true)
+          })
+      }
     },
     // 取消
     cancelAdd: function() {
@@ -779,15 +908,22 @@ export default {
       .getTagsByPoliceId({ policyId: this.form.policyId })
       .then(data => {
         const normalTags = []
+        const actionTags = []
         const specialTags = []
         data.forEach(item => {
-          if (item.dataSource === 6) {
+          if (item.dataSource === 6) { // 效果指标
             specialTags.push(item)
+          } else if ( item.dataSource === 8 ) { // 行为标签
+            actionTags.push(item)
+          } else if ( item.dataSource === 2 ) { // 大数据标签
+            actionTags.push(item)
+            normalTags.push(item)
           } else {
             normalTags.push(item)
           }
         })
         this.tags = normalTags
+        this.actionTags = actionTags
         this.specialTags = specialTags
       })
     if (this.crowdId != null)
@@ -806,10 +942,14 @@ export default {
           : undefined
         let ruleJsonData = JSON.parse(policyData.rulesJson)
         let cacheIds = []
+        let cacheActionIds = []
         let cacheSpecialIds = []
         ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
           itemParent.rules.forEach(item => {
-            if (item.tagType === 'string' || item.tagType === 'collect') {
+            // 行为标签
+            if (item.dataSource === 8) {
+              cacheActionIds.push(item.tagCode)
+            } else if (item.tagType === 'string' || item.tagType === 'collect') {
               cacheIds.push(item.tagId)
             }
             if (item.tagType === 'mix') {
@@ -835,6 +975,9 @@ export default {
         })
 
         this.rulesJson = ruleJsonData
+
+        this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+
         if (policyData.dynamicPolicyJson) {
           this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
         }
@@ -843,6 +986,14 @@ export default {
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)
         }
+
+        // 行为标签的 id 集合
+        if (cacheActionIds.length !== 0) {
+          cacheActionIds.forEach(tagCode => {
+            this.fetchActionTagSuggestions(tagCode)
+          })
+        }
+
         // 特色标签的 id 集合
         if (cacheSpecialIds.length !== 0) {
           cacheSpecialIds.forEach(item => {
@@ -906,6 +1057,12 @@ i {
     .el-tag__close {
       color: #512DA8;
     }
+  }
+
+  >>> .el-tag--warningCyan {
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
   }
 }
 

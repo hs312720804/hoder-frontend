@@ -3,8 +3,9 @@
         <div class="header">
             <div v-if="!showSelection">
                 <el-button
-                        @click="handleAdd"
-                        type="primary"
+                    v-if="crowdType !== 2"
+                    @click="handleAdd"
+                    type="primary"
                 >
                     新建
                 </el-button>
@@ -64,18 +65,21 @@
                         label="状态"
                 >
                     <template slot-scope="scope">
-                        <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
-                            计算完成
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                        >
-                            <el-button type="text" @click="calculate(scope.row)">计算</el-button>
-                        </div>
-                        <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
-                            计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
-                        </div>
-                        <div v-else>
-                            {{(launchStatusEnum[scope.row.history.status]).name}}
+                        <!-- {{ scope.row.history.status }} -->
+                        <div v-if="scope.row.history.status">
+                            <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+                                计算完成
+                            </div>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                            >
+                                <el-button type="text" @click="calculate(scope.row)">计算</el-button>
+                            </div>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
+                                计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
+                            </div>
+                            <div v-else>
+                                {{(launchStatusEnum[scope.row.history.status]).name}}
+                            </div>
                         </div>
                     </template>
                 </el-table-column>
@@ -102,6 +106,11 @@
                 <el-table-column label="微信数量">
                     <template slot-scope="scope">
                         {{cc_format_number(scope.row.history.totalWxOpenid)}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="dmp人群ID">
+                    <template slot-scope="scope">
+                        {{ scope.row.dmpCrowdId }}
                     </template>
                 </el-table-column>
                 <el-table-column label="版本">
@@ -141,18 +150,25 @@
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item
                                             :command="['edit',scope.row]"
-                                    >编辑
+                                    >
+                                        {{ crowdType === 2 ? '查看' : '编辑' }}
                                     </el-dropdown-item>
+                                    
                                     <!--<el-dropdown-item-->
                                             <!--:command="['monitor',scope.row]"-->
                                             <!--v-permission="'hoder:launch:crowd:ver:index'"-->
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
                                     <el-dropdown-item
-                                            :command="['del',scope.row]"
-                                            v-permission="'hoder:launch:crowd:ver:delete'"
-                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                        v-if="crowdType !== 2 && (scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))"
+                                        :command="['del',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                        :command="['monitor',scope.row]"
+                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                    >数据监控
                                     </el-dropdown-item>
                                 </el-dropdown-menu>
                             </el-dropdown>
@@ -185,6 +201,33 @@
             <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
             <div>{{selectStrategy}}</div>
         </el-dialog>
+        <el-dialog title="数据监控" :visible.sync="monitorDialog">
+            <el-date-picker
+              v-model="monitorRangeTime"
+              type="daterange"
+              align="right"
+              @change="getDataMonitor"
+              class="monitor-time"
+              value-format="yyyy-MM-dd"
+            ></el-date-picker>
+          
+            <c-table
+                :props="monitorTable.props"
+                :header="monitorTable.header"
+                :data="monitorTable.data"
+                class="table-overflow"
+            >
+            </c-table>
+            <div style="margin: 30px 0 0; overflow: auto">
+                <pagination
+                    :currentpage="monitorOutForm.pageNum"
+                    :pagesize="monitorOutForm.pageSize"
+                    :totalcount="monitorTotal"
+                    @handle-size-change="handleMonitorSizeChange"
+                    @handle-current-change="handleMonitorCurrentChange"
+                ></pagination>
+            </div>
+        </el-dialog>
     </div>
 </template>
 
@@ -203,6 +246,9 @@
             },
             checkListParent: {
                 type: Array
+            },
+            crowdType: {
+               type: Number
             }
         },
         data () {
@@ -218,12 +264,77 @@
                 // launchType: undefined,
                 launchTitle: '',
                 selectStrategy: null,//人群条件的选择策略
-                checkList: []
+                checkList: [],
+                monitorDialog: false,
+                monitorRangeTime: undefined,
+                monitorOutForm: {
+                    pageSize: 10,
+                    pageNum: 1
+                },
+                monitorTotal: 0,
+                monitorTable: {
+                    props: {},
+                    header: [
+                        {
+                            label: '人群名称',
+                            prop: 'launch_name'
+                        },
+                        {
+                            label: '投放ID（dmp_crowd_id）',
+                            prop: 'launch_crowd_id'
+                        },
+                        {
+                            label: '临时人群（SQL）指令',
+                            prop: 'crowd_sql',
+                            render: (h, params) => {
+                                return h('el-tooltip',{
+                                    props: {
+                                        effect: 'dark',
+                                        content: params.row.crowd_sql,
+                                        placement:'top',
+                                    }
+                                }, [h('span',
+                                    params.row.crowd_sql.slice(0, 20)
+                                )])
+                            }
+                        },
+                        {
+                            label: '临时人群版本号',
+                            prop: 'version'
+                        },
+                        {
+                            label: '当前版本',
+                            prop: 'cur_version'
+                        },
+                        {
+                            label: '接收设备数量',
+                            prop: 'receive_total_user'
+                        },
+                        {
+                            label: '设备数量',
+                            prop: 'total_user'
+                        },
+                        {
+                            label: '临时人群es index',
+                            prop: 'es_index'
+                        },
+                        {
+                            label: '状态',
+                            prop: 'status_name'
+                        },
+                        {
+                            label: '临时人群同步日期',
+                            prop: 'update_time'
+                        }
+                    ],
+                    data: []
+                },
             }
         },
         created () {
             this.$root.$on('temp-label-list-refresh', this.fetchData)
             this.fetchData()
+            // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
         },
         watch: {
             'refreshFlag': function (val) {
@@ -237,13 +348,61 @@
             }
         },
         methods: {
+            handleMonitor (row) {
+               this.monitorDialog = true
+               this.selectedRow = row
+               this.getDataMonitor()
+            },
+
+            getDataMonitor () {
+                this.handleGetMonitorTableList()
+            },
+
+            handleGetMonitorTableList () {
+                const monitorRangeTime = this.monitorRangeTime || []
+                const startDate = monitorRangeTime[0] || ''
+                const endDate = monitorRangeTime[1] || ''
+                const params = {
+                    launchCrowdId: this.selectedRow.launchCrowdId, 
+                    startDate, 
+                    endDate,
+                    ...this.monitorOutForm
+                }
+                this.$service.launchVersionList(params).then(data => {
+                    if (data) {
+                        this.monitorTotal = data.pageInfo.total
+                        this.monitorTable.data = data.pageInfo.list || []
+                    } else {
+                        this.resultContent = '暂无数据'
+                    }
+                })
+            },
+
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+            handleMonitorSizeChange (val) {
+                this.monitorOutForm.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.monitorOutForm.pageNum = 1
+                this.handleGetMonitorTableList()
+            },
+
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleMonitorCurrentChange (val) {
+                this.monitorOutForm.pageNum = val
+                this.handleGetMonitorTableList()
+            },
+
             fetchData () {
+                // eslint-disable-next-line no-debugger
                 const filter = {
                     pageNum: this.currentPage,
                     pageSize: this.pageSize,
                     launchName: this.launchName
                 }
+                filter.crowdType = this.crowdType // 行为人群
                 this.$service.getTempCrowdList(filter).then(data => {
+                    // eslint-disable-next-line no-debugger
+                    debugger
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total
@@ -265,9 +424,9 @@
                     case 'del':
                         this.del(params)
                         break
-                    // case 'monitor':
-                    //     this.handleMonitor(params)
-                    //     break
+                    case 'monitor':
+                        this.handleMonitor(params)
+                        break
                 }
             },
             // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -399,4 +558,6 @@
     .operate
         margin-left 20px
         cursor pointer
+    .monitor-time
+        margin-bottom 30px
 </style>

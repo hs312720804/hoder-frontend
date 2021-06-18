@@ -11,7 +11,7 @@
         </div>
         <div>
           策略ID：{{selectRow.policyId}}
-          策略纬度:
+          策略维度:
           <el-tag
             size="mini"
             v-for="item in selectRow.tagsList"
@@ -201,6 +201,7 @@
                     ref="crowdStatusResourceRef"
                     :crowd-id="props.row.crowdId"
                     :key="props.row.crowdId"
+                    :status="launchStatusEnum[props.row.status]"
             ></crowdStatusResource>
             <!--</el-form-item>-->
           </el-form>
@@ -248,15 +249,16 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="putway" label="状态" width="70px">
+      <el-table-column prop="status" label="状态" width="70px">
         <template slot-scope="scope">
-          <span v-if="scope.row.putway === 1">生效中</span>
-          <span v-if="scope.row.putway === 0">已下架</span>
+          {{ launchStatusEnum[scope.row.status] }}
+          <!-- <span v-if="scope.row.putway === 1">生效中</span>
+          <span v-if="scope.row.putway === 0">已下架</span> -->
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">
           <template slot-scope="scope">
-              {{abStatusEnum[scope.row.abstatus]}}
+              {{ abStatusEnum[scope.row.abstatus] }}
           </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
@@ -1004,6 +1006,7 @@ export default {
         setShowCommitHistoryDialog: false,
         currentCrowdId: undefined,
         abStatusEnum: {},
+        launchStatusEnum: {},
         checkList: ['creatorName'],
         downloadUrl: undefined,
         launchedExportUrl: undefined,
@@ -1019,7 +1022,8 @@ export default {
             3: '',
             5: 'warning',
             6: 'warningOrange',
-            7: 'warningOrange2'
+            7: 'warningOrange2',
+            8: 'warningCyan'
         },
         conditionEnum: {
           'AND': '且',
@@ -1092,14 +1096,16 @@ export default {
        * 投前测试
        */
       isShowTest (item) {
-        const tagsList = this.selectRow.tagsList // 所有的tags
-        const currentItemTagIds = item.tagIds // 当前行的tags
+        // eslint-disable-next-line no-debugger
+        debugger
+        const tagsList = this.selectRow.tagsList || []// 所有的tags
+        const currentItemTagIds = item.tagIds || ''// 当前行的tags
         const tagsArr = currentItemTagIds.split(',')
         let flag = false
         for (let i = 0; i < tagsArr.length; i++) {
           const tag = tagsList.find((e) => {
             return e.tagId === parseInt(tagsArr[i])
-          })
+          }) || {}
           if (tag.dataSource === 3) {
             flag = true
             break
@@ -1320,6 +1326,7 @@ export default {
         // console.log('this.tableData===', this.tableData[0].rulesJson)
         
         this.abStatusEnum = data.ABStatus
+        this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
         this.initExpandCrowd = []
@@ -2707,6 +2714,11 @@ fieldset>div
     border-color: #7955488c;
     .el-tag__close
       color #512DA8
+  >>> .el-tag--warningCyan
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  
 .button-margin
   margin-top 10px
 .table-header

@@ -2,6 +2,7 @@
   <div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
+        ref="CrowdAdd"
         v-model="form.rulesJson"
         prop-prefix="rulesJson."
         :recordId="recordId"
@@ -55,6 +56,11 @@ export default {
               condition: 'OR',
               rules: []
             },
+            behaviorRulesJson: {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
             dynamicPolicyJson: {
               link: 'AND',
               condition: 'OR',
@@ -94,12 +100,12 @@ export default {
       return this.recordId
     },
     validateForm(rulesJson) {
-      if (rulesJson.length === 0) {
-        this.$message.error(
-          '请至少填写一个标签块内容或者一个动态因子完整的内容！'
-        )
-        return
-      }
+      // if (rulesJson.length === 0) {
+      //   this.$message.error(
+      //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
+      //   )
+      //   return
+      // }
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
         if (!rulesJson[index].crowdName) {
@@ -220,65 +226,188 @@ export default {
       }
       return flag
     },
+
+    // 给 behaviorRulesJson 中的table 添加序号
+    putBehaviorRulesJsonTableIndex (val) {
+      if (val) {
+        let tableIndex = 0
+        let ruleList = val.rules
+        ruleList.forEach(rule => {
+          let ruleGroup = rule.rules
+          ruleGroup.forEach(item => {
+            tableIndex = tableIndex+1
+            item.table = item.table.split('$')[0] + '$' + tableIndex
+            if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+          })
+        })
+      } else {
+        val = {link: 'AND', condition: 'OR', rules:[]}
+        // val = ''
+      }
+      return val
+    },
+    
+    getFormPromise(form) {
+      return new Promise(resolve => {
+        form.validate(res => {
+          resolve(res);
+        })
+      })
+    },
+
     handleSave(mode) {
       let form = JSON.parse(JSON.stringify(this.form))
       // if (form.purpose === undefined || form.purpose === '') {
       //     this.$message.error('人群用途不能为空')
       //     return
       // }
+
+      
+
       this.$refs['form'].validate(valid => {
-        if (valid) {
-          if (!this.validateForm(form.rulesJson)) {
-            return
-          }
-          form.rulesJson = form.rulesJson.map(e => {
-            // e.purpose = form.purpose
-            e.tagIds = e.tagIds.join(',')
-            e.rulesJson.rules = e.rulesJson.rules.map(item => {
-              item.rules.forEach(rulesItem => {
-                if (
-                  rulesItem.tagType === 'string' &&
-                  rulesItem.operator === 'null'
-                ) {
-                  rulesItem.operator = '='
+            if (valid) {
+              if (!this.validateForm(form.rulesJson)) {
+                return
+              }
+
+              // 获取到组件中的form 校验必填项
+              // 周期范围 ref
+              const rangeFormList = []
+              const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
+              rangeRefList && rangeRefList.forEach(item => {
+                rangeFormList.push(item.$refs.rangeForm)
+              })
+              
+              // value值 ref
+              const typeFormList = []
+              const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+              typeRefList && typeRefList.forEach(item => {
+                
+                if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+                  item.$refs.typeRef.forEach(obj => {
+                    typeFormList.push(obj.$refs.typeForm)
+                  })
+                } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
+                  typeFormList.push(item.$refs.typeRef.$refs.typeForm)
                 }
               })
-              return item
-            })
-            e.rulesJson = JSON.stringify(e.rulesJson)
-            e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
-            // e.crowdValidFrom = form.crowdExp[0]
-            // e.crowdValidTo = form.crowdExp[1]
-            e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
-            return e
+
+              let allList = rangeFormList.concat(typeFormList)
+
+              if (allList.length > 0) {
+                // 使用Promise.all去校验结果
+                Promise.all(allList.map(this.getFormPromise)).then(res => {
+                  const validateResult = res.every(item => !!item)
+                  
+                  if (validateResult) {
+                    form.rulesJson = form.rulesJson.map(e => {
+                      // e.purpose = form.purpose
+                      e.tagIds = e.tagIds.join(',')
+                      e.rulesJson.rules = e.rulesJson.rules.map(item => {
+                        item.rules.forEach(rulesItem => {
+                          if (
+                            rulesItem.tagType === 'string' &&
+                            rulesItem.operator === 'null'
+                          ) {
+                            rulesItem.operator = '='
+                          }
+                        })
+                        return item
+                      })
+                      e.rulesJson = JSON.stringify(e.rulesJson)
+                      e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
+                      e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
+                      e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
+                      // e.crowdValidFrom = form.crowdExp[0]
+                      // e.crowdValidTo = form.crowdExp[1]
+                      e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
+                      return e
+                    })
+                    if (mode === 0) {
+                      this.$service
+                        .oneDropSaveCrowd(
+                          { recordId: this.recordId, data: form.rulesJson },
+                          '保存成功'
+                        )
+                        .then(() => {
+                          // this.$root.$emit('stratege-list-refresh')
+                          // this.$router.push({ path: 'launch/strategyList' })
+                          this.$emit('handleDirectStrategyListBrother')
+                          this.$emit('resetFormData')
+                        })
+                    } else {
+                      this.$service
+                        .tempCrowds(
+                          { rulesJson: form.rulesJson, recordId: this.recordId },
+                          '保存成功'
+                        )
+                        .then(data => {
+                          this.$emit('handleToNextStep', this.recordId, data)
+                        })
+                    }
+                  } else {
+                    this.$message.error('请输入必填项')
+                  }
+                }).catch(() => {
+                  this.$message.error('请至少设置一个行为标签规则')
+                })
+              } else { // 没有行为标签的
+                form.rulesJson = form.rulesJson.map(e => {
+                  // e.purpose = form.purpose
+                  e.tagIds = e.tagIds.join(',')
+                  e.rulesJson.rules = e.rulesJson.rules.map(item => {
+                    item.rules.forEach(rulesItem => {
+                      if (
+                        rulesItem.tagType === 'string' &&
+                        rulesItem.operator === 'null'
+                      ) {
+                        rulesItem.operator = '='
+                      }
+                    })
+                    return item
+                  })
+                  e.rulesJson = JSON.stringify(e.rulesJson)
+                  e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
+                  e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
+                  e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
+                  // e.crowdValidFrom = form.crowdExp[0]
+                  // e.crowdValidTo = form.crowdExp[1]
+                  e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
+                  return e
+                })
+                if (mode === 0) {
+                  this.$service
+                    .oneDropSaveCrowd(
+                      { recordId: this.recordId, data: form.rulesJson },
+                      '保存成功'
+                    )
+                    .then(() => {
+                      // this.$root.$emit('stratege-list-refresh')
+                      // this.$router.push({ path: 'launch/strategyList' })
+                      this.$emit('handleDirectStrategyListBrother')
+                      this.$emit('resetFormData')
+                    })
+                } else {
+                  this.$service
+                    .tempCrowds(
+                      { rulesJson: form.rulesJson, recordId: this.recordId },
+                      '保存成功'
+                    )
+                    .then(data => {
+                      this.$emit('handleToNextStep', this.recordId, data)
+                    })
+                }
+              }
+
+              
+            } else {
+              this.$message.error('请检查表单各项是否填写完整')
+              return false
+            }
           })
-          if (mode === 0) {
-            this.$service
-              .oneDropSaveCrowd(
-                { recordId: this.recordId, data: form.rulesJson },
-                '保存成功'
-              )
-              .then(() => {
-                // this.$root.$emit('stratege-list-refresh')
-                // this.$router.push({ path: 'launch/strategyList' })
-                this.$emit('handleDirectStrategyListBrother')
-                this.$emit('resetFormData')
-              })
-          } else {
-            this.$service
-              .tempCrowds(
-                { rulesJson: form.rulesJson, recordId: this.recordId },
-                '保存成功'
-              )
-              .then(data => {
-                this.$emit('handleToNextStep', this.recordId, data)
-              })
-          }
-        } else {
-          this.$message.error('请检查表单各项是否填写完整')
-          return false
-        }
-      })
+
+      
+      
     },
     handleEdit() {
       const recordId = this.recordId
@@ -297,6 +426,7 @@ export default {
           // }
           e.tagIds = e.tagIds.split(',')
           e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
+          e.behaviorRulesJson = JSON.parse(e.behaviorRulesJson)
           e.rulesJson = JSON.parse(e.rulesJson)
           e.rulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {

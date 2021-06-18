@@ -108,6 +108,16 @@ export function freshCache(params) {
     params
   })
 }
+
+// 投放提示
+export function alertLaunch(params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/alertLaunch',
+    params
+  })
+}
+
 //人群估算获取类型
 export function getEstimateType(params) {
   return this.fetch({
@@ -696,7 +706,7 @@ export function smartProgrammeDetail (policyId) {
 }
 
 /**
- * 根据策略id获取策略纬度详情
+ * 根据策略id获取策略维度详情
  * @param policyId
  */
 export function smartProframPolicyInfo (params) {

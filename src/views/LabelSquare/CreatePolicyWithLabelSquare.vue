@@ -5,7 +5,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-          <el-tab-pane label="临时人群/标签" name="tempLabel">
+          <el-tab-pane label="高级人群/标签" name="tempLabel">
             <temp-label-index
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
@@ -98,8 +98,10 @@
         <span class="checkbox--blue">蓝色</span>为账号标签,
         <span class="checkbox--yellow">黄色</span>为实时标签,
         <span class="checkbox--orange">紫色</span>为动态指标,
-        <span class="checkbox--orange2">棕色</span>为组合标签
+        <span class="checkbox--orange2">棕色</span>为组合标签,
+        <span class="checkbox--cyan">青色</span>为行为标签
       </div>
+      <!-- 1111111111111111111111111111111111111 -->
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
         <slot name="isChoosePeople"></slot>
@@ -143,6 +145,7 @@
                     5: 'warning',
                     6: 'warningOrange',
                     7: 'warningOrange2',
+                    8: 'warningCyan',
                 },
                 showSelection: true,
                 addForm: this.genDefaultForm(),
@@ -417,6 +420,11 @@
         border-color: #7955488c;
         .el-tag__close
           color #512DA8
+    >>> .el-tag--warningCyan
+        color: #00bcd4;
+        background-color: rgba(0, 189, 214, .1);
+        border-color: #00bcd42b
+   
   .search-input
     position absolute
     top 0
@@ -451,6 +459,8 @@
     color #512DA8
   .checkbox--orange2
     color #795548
+  .checkbox--cyan
+    color #00bcd4
   .fix-bottom-form
     position fixed
     bottom 0

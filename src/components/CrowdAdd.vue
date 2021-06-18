@@ -17,19 +17,35 @@
               <el-input v-model="crowd.crowdName" placeholder="投放名称"></el-input>
             </el-form-item>
             <div style="position: relative">
-            <el-form-item label="设置标签" required>
-              <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
-            </el-form-item>
 
-            <div class="outer-and" v-if="specialTags.length > 0">
+            <div v-if="tags.length > 0">
+              <el-form-item label="设置标签" required>
+                <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
+              </el-form-item>
+            </div>
+
+            <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
               <el-button
                       type="danger"
-                      v-if="(specialTags.length > 0 && tags.length > 0) && crowd.dynamicPolicyJson"
                       @click="handleConditionChange(crowd)"
                       round
                       :key="i+'condition'"
-              >{{crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且'}}</el-button>
+              >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+            
+            <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+            123
+            {{ crowd.dynamicPolicyJson.link }} -->
             </div>
+
+            <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+              <MultipleActionTagSelect 
+                ref="multipleActionTagSelect"
+                :actionTags="actionTags" 
+                :behaviorRulesJson="crowd.behaviorRulesJson" 
+                :crowd="crowd" 
+                :i="i">
+              </MultipleActionTagSelect>
+            </el-form-item>
 
             <el-form-item label="动态因子" v-if="specialTags.length > 0">
               <MultipleSelect :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MultipleSelect>
@@ -72,10 +88,12 @@
 
 <script>
 import MultipleSelect from './MultipleSelect.vue'
+import MultipleActionTagSelect from './MultipleActionTagSelect/Index.vue'
 // import MUserAction from './MUserAction.vue'
 export default {
   components: {
-    MultipleSelect
+    MultipleSelect,
+    MultipleActionTagSelect
     // MUserAction
   },
   data () {
@@ -88,6 +106,7 @@ export default {
     // }
     return {
       tags: [],
+      actionTags: [],
       specialTags: [],
       cache: {},
       tagSelectMoreShow: false,
@@ -118,14 +137,6 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-          1: 'success',
-          2: 'danger',
-          3: '',
-          5: 'warning',
-          6: 'warningOrange',
-          7: 'warningOrange2'
-      },
       cityData: [],
       provinceValueList: []
     }
@@ -133,6 +144,11 @@ export default {
   props: ['value', 'propPrefix', 'recordId'],
   watch: {
     value: 'setInputValue'
+  },
+  computed: {
+    hasBehaviorTag() {
+      return this.actionTags.some(item => item.dataSource === 8)
+    }
   },
   methods: {
     handleCurrentChange (index) {
@@ -169,6 +185,11 @@ export default {
                       'remark': undefined,
                       'crowdOrder': length + 1,
                       'rulesJson': {
+                          condition: 'OR',
+                          rules: []
+                      },
+                      'behaviorRulesJson': {
+                          link: 'AND',
                           condition: 'OR',
                           rules: []
                       },
@@ -212,6 +233,11 @@ export default {
             condition: 'OR',
             rules: []
           },
+          'behaviorRulesJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+          },
           'dynamicPolicyJson': {
               link: 'AND',
               condition: 'OR',
@@ -247,6 +273,7 @@ export default {
     },
     handleConditionChange (crowd) {
         crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+        crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
     },
    
   },
@@ -256,15 +283,22 @@ export default {
             // this.tags = data
             // console.log(data)
             const normalTags = []
+            const actionTags = []
             const specialTags = []
             data.forEach(item => {
-                if (item.dataSource === 6) {
-                    specialTags.push(item)
+                if (item.dataSource === 6) { // 效果指标
+                  specialTags.push(item)
+                } else if ( item.dataSource === 8 ) { // 行为标签
+                  actionTags.push(item)
+                } else if ( item.dataSource === 2 ) { // 大数据标签
+                  actionTags.push(item)
+                  normalTags.push(item)
                 } else {
-                    normalTags.push(item)
+                  normalTags.push(item)
                 }
             })
             this.tags = normalTags
+            this.actionTags = actionTags
             this.specialTags = specialTags
             this.setInputValue(this.value)
         })
@@ -356,5 +390,9 @@ i
     border-color: #7955488c;
     .el-tag__close
       color #512DA8
-
+  >>> .el-tag--warningCyan {
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  }
 </style>

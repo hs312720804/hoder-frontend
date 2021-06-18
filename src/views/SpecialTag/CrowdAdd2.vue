@@ -148,7 +148,8 @@ export default {
         3: '',
         5: 'warning',
         6: 'warningOrange',
-        7: 'warningOrange2'
+        7: 'warningOrange2',
+        8: 'warningCyan'
       }
     }
   },
@@ -847,6 +848,11 @@ i {
     .el-tag__close {
       color: #512DA8;
     }
+  }
+  >>> .el-tag--warningCyan {
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
   }
 }
 

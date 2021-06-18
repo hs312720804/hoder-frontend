@@ -267,8 +267,8 @@
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >调整波动阀值
                                 </el-dropdown-item>
+                                        <!-- v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))" -->
                                 <el-dropdown-item
-                                        v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))"
                                         :command="['monitor',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
@@ -357,6 +357,17 @@
             </el-form>
             <div v-if="launchType === 1">{{selectStrategy}}</div>
         </el-dialog>
+
+        <!-- 投放提示 -->
+        <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+            <div class="choose-tip">{{ launchTip }}</div>
+            
+            <span slot="footer" class="dialog-footer">
+                <el-button @click="showLaunchTip = false">取 消</el-button>
+                <el-button type="primary" @click="confirmLaunch">投 放</el-button>
+            </span>
+        </el-dialog>
+
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
             <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
@@ -475,7 +486,7 @@
             <el-radio-group v-model="monitorTab">
               <el-radio-button label="mac" >设备数量</el-radio-button>
               <el-radio-button label="wx" >wxopenId</el-radio-button>
-          </el-radio-group>
+            </el-radio-group>
           </div>
           <ve-histogram
                   v-if="(monitorTab ==='mac' && isShowMonitorTab) || (chartMonitorMacData && !isShowMonitorTab)"
@@ -489,6 +500,22 @@
                   :extend="chartExtend"
                   :data="chartMonitorWxData">
           </ve-histogram>
+            <c-table
+                :props="monitorTable.props"
+                :header="monitorTable.header"
+                :data="monitorTable.data"
+                class="table-overflow"
+            >
+            </c-table>
+            <div style="margin: 30px 0 0; overflow: auto">
+                <pagination
+                    :currentpage="monitorOutForm.pageNum"
+                    :pagesize="monitorOutForm.pageSize"
+                    :totalcount="monitorTotal"
+                    @handle-size-change="handleMonitorSizeChange"
+                    @handle-current-change="handleMonitorCurrentChange"
+                ></pagination>
+            </div>
         </el-dialog>
         <el-dialog title="调整波动阀值" :visible.sync="adjustDialog" :width="screenWidth >1100 ? '1020px' : '80%'">
             <ve-line :data="adjustChartdata" :settings="{ yAxisType: ['percent']}" :extend="adjustExtend"></ve-line>
@@ -617,11 +644,57 @@
                 adjustChartdata: undefined, // 调整波动阀值图表数据
                 monitorDialog: false,
                 monitorRangeTime: undefined,
+                monitorOutForm: {
+                    pageSize: 10,
+                    pageNum: 1
+                },
+                monitorTotal: 0,
+                monitorTable: {
+                    props: {},
+                    header: [
+                        {
+                            label: '人群名称',
+                            prop: 'launch_name'
+                        },
+                        {
+                            label: '投放ID（dmp_crowd_id）',
+                            prop: 'launch_crowd_id'
+                        },
+                        {
+                            label: '临时人群（SQL）指令',
+                            prop: 'crowd_sql'
+                        },
+                        {
+                            label: '临时人群版本号',
+                            prop: 'version'
+                        },
+                        {
+                            label: '当前版本',
+                            prop: 'cur_version'
+                        },
+                        {
+                            label: '临时人群es index',
+                            prop: 'es_index'
+                        },
+                        {
+                            label: '状态',
+                            prop: 'status_name'
+                        },
+                        {
+                            label: '临时人群同步日期',
+                            prop: 'update_time'
+                        }
+                    ],
+                    data: []
+                },
                 chartMonitorMacData: undefined, // 数据监控设备图表数据
                 chartMonitorWxData: undefined, // 数据监控设备图表数据
                 selectedRow: {},
                 monitorTab: 'mac',
                 showEstimate: false,
+                showLaunchTip: false,
+                launchTip: '',
+                currentLaunchRow: {},
                 estimateValue: ['0'],
                 estimateItems: [],
                 currentLaunchId: '',
@@ -813,12 +886,40 @@
                 this.criteria = {}
                 this.loadData()
             },
+
             // 修改状态
             lanuch (index, row) {
+                this.currentLaunchRow = row
                 this.currentLaunchId = row.launchCrowdId
+                const parmas = {
+                    crowdIds: this.currentLaunchId
+                }
+                this.$service.alertLaunch(parmas).then((data) => {
+                    // eslint-disable-next-line no-debugger
+                    this.showLaunchTip = true
+                    this.launchTip = data
+                })
+                // this.currentLaunchId = row.launchCrowdId
+                // this.showEstimate = true
+                // // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+                // if (row.setCalculate) {
+                //     this.accountDefine = true
+                //     this.estimateValue = ['0','1','2','3']
+                // } else {
+                //     this.accountDefine = false
+                //     this.estimateValue = ['0']
+                // }
+                // this.$service.getEstimateType().then((data) => {
+                //     this.estimateItems = data
+                // })
+            },
+            
+            // 确认投放
+            confirmLaunch () {
+                this.showLaunchTip = false
                 this.showEstimate = true
                 // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-                if (row.setCalculate) {
+                if (this.currentLaunchId.setCalculate) {
                     this.accountDefine = true
                     this.estimateValue = ['0','1','2','3']
                 } else {
@@ -829,6 +930,7 @@
                     this.estimateItems = data
                 })
             },
+
             handleEstimate (calTypes) {
                 if (calTypes.length === 0) {
                     this.$message.error('请至少选择一个要投放的人群')
@@ -905,8 +1007,8 @@
               const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
               const macInitialValue = crowdDefineForm.macInitialValue
               const wxInitialValue = crowdDefineForm.wxInitialValue
-              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.replace(/,/g, '') : undefined
-              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.replace(/,/g, '') : undefined
+              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.toString().replace(/,/g, '') : undefined
+              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.toString().replace(/,/g, '') : undefined
               this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
                 this.adjustDialog = false
               })
@@ -987,7 +1089,43 @@
                  //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
                  // }
                })
+                this.handleGetMonitorTableList()
             },
+
+            handleGetMonitorTableList () {
+                const monitorRangeTime = this.monitorRangeTime
+                const startDate = monitorRangeTime[0]
+                const endDate = monitorRangeTime[1]
+                const params = {
+                    launchCrowdId: this.selectedRow.launchCrowdId, 
+                    startDate, 
+                    endDate,
+                    ...this.monitorOutForm
+                }
+                this.$service.launchVersionList(params).then(data => {
+                    if (data) {
+                        this.monitorTotal = data.pageInfo.total
+                        this.monitorTable.data = data.pageInfo.list || []
+                    } else {
+                        this.resultContent = '暂无数据'
+                    }
+                })
+            },
+
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+            handleMonitorSizeChange (val) {
+                this.monitorOutForm.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.monitorOutForm.pageNum = 1
+                this.handleGetMonitorTableList()
+            },
+
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleMonitorCurrentChange (val) {
+                this.monitorOutForm.pageNum = val
+                this.handleGetMonitorTableList()
+            },
+
             divideAB (row) {
                 this.showDivide = true
                 this.step = 1
@@ -1030,6 +1168,7 @@
                 }
             },
             finish (saveType) {
+
                 const model = this.divideForm.launchCrowdId
                 // const divideForm = JSON.stringify(this.divideForm)
                 const divideForm = this.divideForm

@@ -61,3 +61,57 @@ export function getTagDictDatabaseList(params) {
     })
 }
 
+// 行为标签
+export function getBavTagList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/getBehaviorTagDict/${params.id}`,
+    })
+}
+
+// 行为标签- 模块活跃-推荐位,板块位，版面位下拉信息
+export function moduleMatch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/module/match/${params.type}`,
+        params
+    })
+}
+
+// 行为标签- 起播行为-查询影视内容接口
+export function tvContentMatch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/play/tvContent/${params.source}`,
+        params
+    })
+}
+
+// 行为标签- 起播行为-查询影视内容接口
+export function getTvEpisodes(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/auto/play/tvEpisodes/${params.source}/${params.id}`,
+        params
+    })
+}
+
+// 指令重发
+export function manualLaunch(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/multiVersionCrowd/manualLaunch`,
+        params
+    })
+}
+
+// 指令重发
+export function getManualLaunchList(params) {
+    return this.fetch({
+        method: 'get',
+        url: `api/multiVersionCrowd/manualLaunchList`,
+        params
+    })
+}
+
+

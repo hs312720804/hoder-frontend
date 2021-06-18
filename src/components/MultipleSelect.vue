@@ -35,6 +35,7 @@
               :key="index + 'tagId' + n"
               :class="{ 'label-item': true, paddingTop: n > 0 }"
             >
+
               <span class="txt">{{ childItem.categoryName }}</span>
               <span class="sel">
                 <el-select
@@ -301,11 +302,10 @@
                     childItem.isDynamicTime = 3
                     childItem.dateAreaType = 0
                     childItem.operator = 'between'
-                    childItem.value =
-                      childItem.startDay + '-' + childItem.endDay
+                    childItem.value = childItem.startDay + '-' + childItem.endDay
                   "
-                  >切换至新方案</el-button
-                >
+                  >切换至新方案
+                </el-button>
                 <el-button
                   v-if="childItem.isDynamicTime === 3"
                   @click="
@@ -653,8 +653,6 @@
 export default {
   data() {
     return {
-      // tags: [],
-      // specialTags: [],
       cache: {},
       tagSelectMoreShow: false,
       showMoreTags: false,
@@ -692,7 +690,8 @@ export default {
         3: '',
         5: 'warning',
         6: 'warningOrange',
-        7: 'warningOrange2'
+        7: 'warningOrange2',
+        8: 'warningCyan',
       },
       cityData: [],
       provinceValueList: []
@@ -730,7 +729,7 @@ export default {
       handler() {
         this.fetchAllTagSuggestions()
       },
-      immediate: true
+      immediate: true,
     },
     dynamicPolicyJson: {
       handler() {
@@ -917,6 +916,7 @@ export default {
           this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
         }
       }
+      // 11111111111111
       this.rulesJson.rules.push({
         condition: 'AND',
         rules: [
@@ -927,6 +927,7 @@ export default {
             tagName: tag.tagName,
             dataSource: tag.dataSource,
             value: '',
+            
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -979,7 +980,6 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      // debugger
       rule.rules.push({
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
@@ -1165,8 +1165,8 @@ export default {
         }
       }
     }
-  },
-  created() {}
+  }
+  
 }
 </script>
 <style scoped  lang="stylus">
@@ -1301,28 +1301,6 @@ i {
   justify-content: center;
 }
 
-.el-collapse {
-  >>> .el-tag--warningOrange {
-    color: #512DA8;
-    background-color: rgba(119, 81, 200, 0.4);
-    border-color: rgba(81, 45, 168, 0.45);
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningOrange2 {
-    color: #795548;
-    background-color: rgba(167, 130, 117, 0.5);
-    border-color: #7955488c;
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-}
-
 .flex-item {
   display: flex;
   margin-right: 10px;
@@ -1374,5 +1352,21 @@ i {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.behavior-label {
+  white-space: nowrap; 
+  overflow-x: auto;
+  display: flex
+}
+.w100 {
+  min-width: 100px;
+}
+.flexColumn {
+  display: flex;
+  flex-direction: column;
+}
+.flexRow {
+  display: flex;
+  flex-direction: row;
 }
 </style>

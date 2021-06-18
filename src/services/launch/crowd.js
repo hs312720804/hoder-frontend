@@ -342,6 +342,15 @@ export function dataMonitor(params) {
       params
   })
 }
+
+// 人群管理-临时人群版本
+export function launchVersionList(params) {
+    return this.fetch({
+        method: 'get',
+        url:'/api/crowd/launchVersionList',
+        params
+    })
+}
 // 人群管理-人群圈定投放-调整波动阈值
 export function fluctuation(params) {
   return this.fetch({

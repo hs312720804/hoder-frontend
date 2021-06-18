@@ -233,7 +233,7 @@
                 <!--<el-form-item label="备注" prop="remark" class="form-width">-->
                     <!--<el-input size="small" v-model="crowdForm.remark"></el-input>-->
                 <!--</el-form-item>-->
-                <el-form-item label="是否做abTest" class="form-width" v-if="!crowdForm.crowdType">
+                <el-form-item label="是否做abTest" class="form-width" v-if="crowdForm.crowdType === 0">
                     <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
@@ -244,12 +244,13 @@
                             v-model="crowdForm.crowdType"
                             :disabled="disabledCrowdType"
                     >
-                        <el-radio :label="false">普通人群</el-radio>
-                        <el-radio :label="true">临时人群/本地人群</el-radio>
+                        <el-radio :label="0">普通人群</el-radio> <!-- false -->
+                        <el-radio :label="1">高级人群/本地人群</el-radio><!-- true -->
+                        <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
                 <el-form-item
-                        v-if="!crowdForm.crowdType"
+                        v-if="crowdForm.crowdType === 0"
                         label="选择策略"
                         prop="policyIds"
                         class="multipleSelect form-width"
@@ -276,7 +277,7 @@
                 <el-form-item
                         label="选择人群"
                         prop="policyCrowdIds"
-                        v-if="!crowdForm.crowdType"
+                        v-if="crowdForm.crowdType === 0"
                 >
                     <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
@@ -285,7 +286,7 @@
                                         v-for="item in v.childs"
                                         :label="v.policyId+'_'+item.crowdId"
                                         :key="item.crowdId+''"
-                                        :disabled="item.canLaunch === false"
+                                        :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
                                 >{{item.crowdName}}
                                 </el-checkbox>
                             </el-checkbox-group>
@@ -309,7 +310,7 @@
                 <el-form-item
                         label="选择人群"
                         prop="tempCrowdId"
-                        v-if="crowdForm.crowdType"
+                        v-if="crowdForm.crowdType === 1"
                 >
                     <el-select
                             filterable
@@ -350,6 +351,31 @@
                         <!--</el-form-item>-->
                     <!--</div>-->
                 </el-form-item>
+
+                <!-- 选择行为人群 -->
+                <el-form-item
+                        label="选择人群"
+                        prop="tempCrowdId"
+                        v-if="crowdForm.crowdType === 3"
+                >
+                    <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
+                    <!-- {{this.crowdForm.policyCrowdIds}} -->
+                    <el-select
+                        filterable
+                        v-model="crowdForm.policyCrowdIds[0]"
+                        @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0], behaviorCrowdList)"
+                    >
+                        <el-option
+                            v-for="item in behaviorCrowdList"
+                            :label="item.launchName"
+                            :value="item.policyIds+'_'+item.policyCrowdIds"
+                            :key="item.launchCrowdId+''"
+
+                        >
+                            {{item.launchName}} -- {{item.launchCrowdId}}
+                        </el-option>
+                    </el-select>
+                </el-form-item>
                 <!--<el-form-item label="数据有效期" prop="expiryDay" class="form-width">-->
                     <!--<el-select-->
                             <!--v-model="crowdForm.expiryDay"-->
@@ -368,7 +394,7 @@
                         label="每天是否更新"
                         prop="autoVersion"
                         class="form-width"
-                        v-if="!crowdForm.crowdType"
+                        v-if="crowdForm.crowdType === 0"
                 >
                     <el-select
                             v-model="crowdForm.autoVersion"
@@ -378,7 +404,7 @@
                         <el-option label="否" :value="0"></el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && !crowdForm.crowdType" class="form-width">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && crowdForm.crowdType === 0" class="form-width">
                     <el-time-picker
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
@@ -392,9 +418,20 @@
                 <el-button
                         v-if="!(status!==undefined && (status === 2 || status === 3))"
                         type="primary"
-                        @click="launchDirectly"
+                        @click="handelLaunch"
                 >直接投放</el-button>
             </div>
+
+            <!-- 投放提示 -->
+            <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+                <div class="choose-tip">{{ launchTip }}</div>
+                
+                <span slot="footer" class="dialog-footer">
+                    <el-button @click="showLaunchTip = false">取 消</el-button>
+                    <el-button type="primary" @click="confirmLaunch">投 放</el-button>
+                </span>
+            </el-dialog>
+
             <!-- 投放提示估算弹窗 -->
             <el-dialog :visible.sync="showEstimate">
                 <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
@@ -503,7 +540,7 @@
                     autoVersion: 0,
                     autoLaunchTime: undefined,
                     setCalculate: false, //，当投放平台只有消息触达时，设置账号关联相关
-                    crowdType: false,
+                    crowdType: 0,
                     tempCrowdId: undefined
                 },
                 // 新增自定义人群
@@ -606,9 +643,14 @@
                 disabledCrowdType: false,
                 isTempCrowd: false,
                 showEstimate: false,
+                showLaunchTip: false,
+                launchTip: '',
+                currentLaunchRow: {},
                 estimateValue: ['0'],
                 accountDefine: false,
-                currentLaunchId: undefined
+                currentLaunchId: undefined,
+                behaviorCrowdList: [],
+                islaunchDirectly: false
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource","showAllParent"],
@@ -636,6 +678,12 @@
                 if (val === '0') {
                     this.crowdDefineForm.videoSourceIds = []
                 }
+            },
+            'crowdForm.crowdType'(val, oldVal) { // 切换时置空
+                if (val === 3 && oldVal === 2) {
+                    // 行为人群
+                    this.crowdForm.policyCrowdIds = ['']
+                }  
             }
         },
         created() {
@@ -649,6 +697,9 @@
                     let abTestRatio = data.ratio || {}
                     // 当row.tempCrowdId=0，就是普通人群
                     this.isTempCrowd = !row.tempCrowdId
+                    // row.crowdType不为null，则 row.crowdType == 1 是临时人群
+                    // row.crowdType为null，当row.tempCrowdId=0，就是普通人群
+                    // this.isTempCrowd = (row.crowdType && row.crowdType === 1) ? true : !row.tempCrowdId
                     if (this.model == 1 && !row.tempCrowdId) {
                             // const biIds = this.distinct(data.launchCrowdBiIds,[])
                             const biIds = data.launchCrowdBiIds
@@ -700,7 +751,8 @@
                         this.crowdForm.dmpCrowdId = row.dmpCrowdId
                         this.crowdForm.launchName = row.launchName
                         this.crowdForm.biIds = data.launchCrowdBiIds
-                        this.crowdForm.crowdType = row.tempCrowdId ? true : false
+                        // this.crowdForm.crowdType = row.tempCrowdId ? 1 : 0
+                        this.crowdForm.crowdType = row.crowdType ? row.crowdType : (row.tempCrowdId ? 1 : 0)
                         this.disabledCrowdType = true
                         // this.crowdForm.remark = row.remark
                         // this.crowdForm.dataSource = row.dataSource
@@ -713,14 +765,33 @@
                         }
                         this.crowdForm.setCalculate = row.setCalculate
                         this.status = this.editStatus
-                        if (row.tempCrowdId) {
+                        // if (row.tempCrowdId) {
+                        if (this.crowdForm.crowdType === 1) { // 临时人群
                             this.crowdForm.tempCrowdId = row.tempCrowdId
                             this.crowdForm.policyIds = []
                             this.crowdForm.policyCrowdIds = []
-                        } else {
+                        } else if (this.crowdForm.crowdType === 3) { // 行为人群
+                            // 行为人群列表
+                            if (data.tempCrowds) {
+                                this.behaviorCrowdList = data.tempCrowds.filter(item => {
+                                    return item.isFxFullSql === 3
+                                })
+                            }
+                            this.crowdForm.tempCrowdId = row.tempCrowdId
+                            this.crowdForm.policyCrowdIds.push(row.policyIds + "_" + row.policyCrowdIds)
+                            
+                        } else if (this.crowdForm.crowdType === 0) { // 普通人群
                             this.crowdForm.tempCrowdId = undefined
                             this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(",")
                             this.getCrowd()
+                            data.respcl && data.respcl.forEach(element => {
+                                element.childs.forEach(v => {
+                                    if (v.choosed)
+                                        this.crowdForm.policyCrowdIds.push(element.policyId + "_" + v.crowdId)
+                                })
+                            })
+                        } else { 
+                            this.crowdForm.tempCrowdId = undefined
                             data.respcl.forEach(element => {
                                 element.childs.forEach(v => {
                                     if (v.choosed)
@@ -736,6 +807,20 @@
             }
         },
         methods: {
+            handelBehaviorCrowdSelectChange(e, selectedV, list) {
+                this.crowdForm.policyIds = selectedV.split('_')[0].split(',')
+                const policyCrowdIds = selectedV.split('_')[1]
+                // item.policyIds+'_'+item.policyCrowdIds
+                this.crowdForm.tempCrowdId = list.find(item => {
+                    // console.log(this.crowdForm.policyIds  +  '===' + item.policyIds)
+                    // console.log(policyCrowdIds  +  '===' + item.policyCrowdIds)
+                    let a = item.policyIds == this.crowdForm.policyIds
+                    let b = item.policyCrowdIds == policyCrowdIds
+                    return a && b
+                }).launchCrowdId
+
+                console.log('this.crowdForm.tempCrowdId ===', this.crowdForm.tempCrowdId )
+            },
             callback () {
                 this.$emit("changeStatus", true)
             },
@@ -770,8 +855,9 @@
             },
             // 新增
             addSubmit () {
+                this.islaunchDirectly = false
                 if (this.model == 1 && this.isTempCrowd)
-                 {
+                {
                    this.saveDefineCrowd()
                 }
                 else
@@ -786,11 +872,19 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         // 选择的是临时人群
-                        if (crowdForm.crowdType) {
+                        if (crowdForm.crowdType === 1) {
                             crowdForm.abTest = false
                             crowdForm.policyIds = undefined
                             crowdForm.policyCrowdIds = undefined
+                        } else if (crowdForm.crowdType === 3) {
+
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
+
                         } else {
+                            
                             crowdForm.tempCrowdId = 0
                             crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
                             crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
@@ -802,12 +896,24 @@
                         //     return v.split("_")[1]
                         // }).join(",")
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then((data) => {
                                 this.callback()
+                                if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
+                                // if (crowdForm.crowdType === 3) { // 行为人群
+                                    this.$service.calculateTempCrowd({launchCrowdId: data.launchCrowdId, calType: data.calType},'成功计算中').then(()=> {
+                                        this.fetchData()
+                                    })
+                                }
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then(() => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
                                 this.callback()
+                                if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
+                                // if (crowdForm.crowdType === 3) { // 行为人群
+                                    this.$service.calculateTempCrowd({launchCrowdId: data.launchCrowdId, calType: data.calType},'成功计算中').then(()=> {
+                                        this.fetchData()
+                                    })
+                                }
                             })
                         }
                     } else {
@@ -821,8 +927,8 @@
               const macBelowPer = crowdForm.macBelowPer
               let wxInitialValue = crowdForm.wxInitialValue
               const wxBelowPer = crowdForm.wxBelowPer
-              macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
-              wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+              macInitialValue = macInitialValue && macInitialValue.toString().replace(/,/g, '')
+              wxInitialValue = wxInitialValue && wxInitialValue.toString().replace(/,/g, '')
               this.validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)
             },
             validateBasicLine (macInitialValue, macBelowPer, wxInitialValue, wxBelowPer) {
@@ -884,8 +990,8 @@
                         }
                         // let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = crowdForm
                         let { macInitialValue, macBelowPer, wxInitialValue, wxBelowPer } = crowdForm
-                        macInitialValue = macInitialValue && macInitialValue.replace(/,/g, '')
-                        wxInitialValue = wxInitialValue && wxInitialValue.replace(/,/g, '')
+                        macInitialValue = macInitialValue && macInitialValue.toString().replace(/,/g, '')
+                        wxInitialValue = wxInitialValue && wxInitialValue.toString().replace(/,/g, '')
                         crowdForm.macInitialValue = macInitialValue
                         crowdForm.wxInitialValue = wxInitialValue
                         if (crowdForm.autoVersion === 1 && !this.validateBasicLine(macInitialValue, macBelowPer, wxInitialValue, wxBelowPer)) {
@@ -1000,6 +1106,12 @@
                             this.effectTimeList = data.efTime.map(item => {
                                 return {label: item + '天', value: item}
                             })
+                            if (data.tempCrowds) {
+                                // 行为人群列表
+                                this.behaviorCrowdList = data.tempCrowds.filter(item => {
+                                    return item.isFxFullSql === 3
+                                })
+                            }
                         })
                     }
                 }
@@ -1056,8 +1168,44 @@
                     this.crowdForm.policyIds = []
                 }
             },
-            // 显示投放弹窗
+            
+            
+            // 投放提示
+            handelLaunch () {
+                this.islaunchDirectly = true
+                // 临时人群/本地人群 直接投放，不展示投放提示
+                if (this.crowdForm.crowdType === 1 || this.crowdForm.crowdType === 3) {
+                    this.launchDirectly()
+                    return
+                }
+                console.log('this.crowdForm==>', this.crowdForm)
+                // let policyCrowdIds = JSON.parse(JSON.stringify(this.crowdForm.policyCrowdIds))
+                const crowdIds = this.crowdForm.policyCrowdIds.map(item => item.split('_')[1]).join(',')
+                // 先进行保存校验
+                this.$refs.crowdForm.validate(valid => {
+                    if (valid) {
+                        const parmas = {
+                            crowdIds
+                        }
+                        this.$service.alertLaunch(parmas).then((data) => {
+                            this.showLaunchTip = true
+                            this.launchTip = data
+                        })
+                    } else {
+                        return false
+                    }
+                })
+
+            },
+            
+            // 确认投放
+            confirmLaunch () {
+                this.showEstimatePop()
+            },
+
+            // 直接投放，没有投放提示
             launchDirectly () {
+                console.log('this.crowdForm==>', this.crowdForm)
                 // 先进行保存校验
                 this.$refs.crowdForm.validate(valid => {
                     if (valid) {
@@ -1067,6 +1215,7 @@
                     }
                 })
             },
+
             showEstimatePop () {
                 this.showEstimate = true
                 // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
@@ -1091,10 +1240,15 @@
                         crowdForm = JSON.parse(crowdForm)
                         crowdForm.biIds = crowdForm.biIds.join(",")
                         // 选择的是临时人群
-                        if (crowdForm.crowdType) {
+                        if (crowdForm.crowdType === 1) {
                             crowdForm.abTest = false
                             crowdForm.policyIds = undefined
                             crowdForm.policyCrowdIds = undefined
+                        } else if (crowdForm.crowdType === 3) {
+                            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+                                return v.split("_")[1]
+                            }).join(",")
                         } else {
                             crowdForm.tempCrowdId = 0
                             crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
@@ -1103,7 +1257,7 @@
                             }).join(",")
                         }
                         if ( this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined ) {
-                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0, data: crowdForm},"编辑成功").then(() => {
+                            this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.currentLaunchId = this.editLaunchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false
@@ -1111,7 +1265,7 @@
                                 })
                             })
                         } else {
-                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType ? 1 : 0,data: crowdForm},"新增成功").then((data) => {
+                            this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
                                 this.currentLaunchId = data.launchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
                                     this.showEstimate = false

@@ -91,13 +91,14 @@
                 slot="header"
                 slot-scope="{ column, $index }"
         >
-          策略纬度（
+          策略维度（
           <span class="checkbox--red">红色</span>为大数据标签,
           <span class="checkbox--green">绿色</span>为自定义/本地标签,
           <span class="checkbox--blue">蓝色</span>为账号标签,
           <span class="checkbox--yellow">黄色</span>为实时标签,
           <span class="checkbox--orange">紫色</span>为动态指标,
-          <span class="checkbox--orange2">棕色</span>为组合标签）
+          <span class="checkbox--orange2">棕色</span>为组合标签,
+          <span class="checkbox--cyan">青色</span>为行为标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -134,7 +135,7 @@
           <div class="el-button-group">
             <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
             <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button>
-            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
+            <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
             <el-button
                     size="small"
                     type="text"
@@ -240,7 +241,7 @@
             <!--<el-option label="自定义" value="1"></el-option>-->
           <!--</el-select>-->
         <!--</el-form-item>-->
-        <!--<el-form-item label="策略纬度" prop="conditionTagIds">-->
+        <!--<el-form-item label="策略维度" prop="conditionTagIds">-->
           <!--<el-tabs tab-position="top" style="height: 200px;">-->
             <!--<el-tab-pane-->
               <!--v-for="item in conditionTagIdsData"-->
@@ -253,8 +254,8 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签</div>
-        <el-form-item label="策略纬度" prop="conditionTagIds" style="margin-top: 30px">
+        <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签</div>
+        <el-form-item label="策略维度" prop="conditionTagIds" style="margin-top: 30px">
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
                     <!--v-for="item in conditionTagIdsData"-->
@@ -429,7 +430,7 @@ export default {
       // 查询的页码
       start: 1,
       addFormVisible: false,
-      conditionTagIdsData: [], //策略纬度
+      conditionTagIdsData: [], //策略维度
       conditionTagsFiltered: [],
       tagList: [],
       defaultProps: {
@@ -472,7 +473,8 @@ export default {
           3: 'checkbox--blue',
           5: 'checkbox--yellow',
           6: 'checkbox--orange',
-          7: 'checkbox--orange2'
+          7: 'checkbox--orange2',
+          8: 'checkbox--cyan'
       },
       dataSourceColorEnum: {
           1: 'success',
@@ -480,7 +482,8 @@ export default {
           3: '',
           5: 'warning',
           6: 'warningOrange',
-          7: 'warningOrange2'
+          7: 'warningOrange2',
+          8: 'warningCyan'
       },
       showAll: false
     }
@@ -1057,6 +1060,8 @@ export default {
   color #512DA8
 .checkbox--orange2
   color #795548
+.checkbox--cyan
+  color #00bcd4
 .strategy-search
   display flex
   margin-bottom 10px
@@ -1156,6 +1161,11 @@ ul > li
     border-color: #7955488c;
     .el-tag__close
       color #512DA8
+  >>> .el-tag--warningCyan
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  
 .header-left
   display flex
   align-items center
