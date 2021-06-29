@@ -737,9 +737,9 @@ export default {
         return
       }
       
-      // if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
-      //   this.crowd.tagIds.push(tag.tagId)
-      // }
+      if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
+        this.crowd.tagIds.push(tag.tagId)
+      }
 
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
