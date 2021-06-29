@@ -42,7 +42,7 @@
                 ref="multipleActionTagSelect"
                 :actionTags="actionTags" 
                 :behaviorRulesJson="crowd.behaviorRulesJson" 
-                :crowd="crowd" 
+                :crowd="crowd"
                 :i="i">
               </MultipleActionTagSelect>
             </el-form-item>

@@ -614,6 +614,9 @@ export default {
 
           const dynamicPolicyRules = dynamicPolicyJson.rules
           const dynamicPolicyRulesLength = dynamicPolicyRules.length
+
+          const behaviorRules = behaviorRulesJson.rules
+
           let i,
             j = 0
           // 如果设置标签和动态因子都没有选rules则报错
@@ -736,6 +739,7 @@ export default {
           //         }
           //     }
           // }
+          // 添加tagIds
           rules.forEach(function(item) {
             item.rules.forEach(function(childItem) {
               if (tagIds.indexOf(childItem.tagId) === -1) {
@@ -745,6 +749,21 @@ export default {
               delete childItem.endDay
             })
           })
+          dynamicPolicyRules.forEach(function(item) {
+            item.rules.forEach(function(childItem) {
+              if (tagIds.indexOf(childItem.tagId) === -1) {
+                tagIds.push(childItem.tagId)
+              }
+            })
+          })
+          behaviorRules.forEach(function(item) {
+            item.rules.forEach(function(childItem) {
+              if (tagIds.indexOf(childItem.tagId) === -1) {
+                tagIds.push(childItem.tagId)
+              }
+            })
+          })
+
           const data = {
             crowdName: form.name,
             tagIds: tagIds.join(','),
