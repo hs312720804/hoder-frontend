@@ -3,7 +3,7 @@
         <div class="header">
             <div v-if="!showSelection">
                 <el-button
-                    v-if="crowdType !== 2"
+                    v-if="crowdType === 2"
                     @click="handleAdd"
                     type="primary"
                 >
@@ -72,7 +72,8 @@
                             </div>
                             <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
                             >
-                                <el-button type="text" @click="calculate(scope.row)">计算</el-button>
+                                <span v-if="crowdType === 4">计算</span>
+                                <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
                             </div>
                             <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
                                 计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
@@ -132,8 +133,9 @@
                                 <!--计算-->
                             <!--</el-button>-->
                             <el-button
-                                    type="text"
-                                    @click="condition(scope.row)"
+                                v-if="crowdType !== 4"
+                                type="text"
+                                @click="condition(scope.row)"
                             >
                                 标签条件
                             </el-button>
@@ -149,9 +151,10 @@
                                 </el-button>
                                 <el-dropdown-menu slot="dropdown">
                                     <el-dropdown-item
-                                            :command="['edit',scope.row]"
+                                        v-if="crowdType !== 4"
+                                        :command="['edit',scope.row]"
                                     >
-                                        {{ crowdType === 2 ? '查看' : '编辑' }}
+                                        {{ crowdType !== 2 ? '查看' : '编辑' }}
                                     </el-dropdown-item>
                                     
                                     <!--<el-dropdown-item-->
@@ -160,7 +163,7 @@
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
                                     <el-dropdown-item
-                                        v-if="crowdType !== 2 && (scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))"
+                                        v-if="crowdType === 2 && (scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))"
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除
@@ -332,9 +335,12 @@
             }
         },
         created () {
-            this.$root.$on('temp-label-list-refresh', this.fetchData)
+            this.$root.$on(`temp-label-list-refresh-${this.crowdType}`, this.fetchData)
             this.fetchData()
             // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+        },
+        beforeDestroy () {
+            this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
         },
         watch: {
             'refreshFlag': function (val) {

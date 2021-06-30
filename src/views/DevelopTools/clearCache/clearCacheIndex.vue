@@ -9,9 +9,9 @@
                 </el-form-item>
             </el-form>
         </div>
-        <div class="clear-form">
+        <!-- <div class="clear-form">
             <el-button v-permission="'sysAdministrative:user:add' || 'hoder:devTool:updateApiCache'" @click="handleAllCacheClean">清理人群查询接口缓存</el-button>
-        </div>
+        </div> -->
     </div>
 
 </template>
