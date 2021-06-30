@@ -286,21 +286,26 @@
                             label: '投放ID（dmp_crowd_id）',
                             prop: 'launch_crowd_id'
                         },
-                        {
-                            label: '临时人群（SQL）指令',
-                            prop: 'crowd_sql',
-                            render: (h, params) => {
-                                return h('el-tooltip',{
-                                    props: {
-                                        effect: 'dark',
-                                        content: params.row.crowd_sql,
-                                        placement:'top',
-                                    }
-                                }, [h('span',
-                                    params.row.crowd_sql.slice(0, 20)
-                                )])
-                            }
-                        },
+                        // {
+                        //     label: '临时人群（SQL）指令',
+                        //     prop: 'crowd_sql',
+                        //     render: (h, params) => {
+                        //         return h('el-tooltip',{
+                        //             props: {
+                        //                 effect: 'dark',
+                        //                 content: params.row.crowd_sql,
+                        //                 placement:'top',
+                        //             }
+                        //         }, 
+                        //         [
+                        //             h('span', () => {
+                        //                 return params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : ''
+                        //             }
+                        //         )]
+                        //         )
+
+                        //     }
+                        // },
                         {
                             label: '临时人群版本号',
                             prop: 'version'
@@ -407,8 +412,6 @@
                 }
                 filter.crowdType = this.crowdType // 行为人群
                 this.$service.getTempCrowdList(filter).then(data => {
-                    // eslint-disable-next-line no-debugger
-                    debugger
                     this.launchStatusEnum = data.launchStatusEnum
                     this.tableData = data.pageInfo.list
                     this.totalCount = data.pageInfo.total

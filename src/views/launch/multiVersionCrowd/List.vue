@@ -359,14 +359,14 @@
         </el-dialog>
 
         <!-- 投放提示 -->
-        <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+        <!-- <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
             <div class="choose-tip">{{ launchTip }}</div>
             
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showLaunchTip = false">取 消</el-button>
                 <el-button type="primary" @click="confirmLaunch">投 放</el-button>
             </span>
-        </el-dialog>
+        </el-dialog> -->
 
         <!-- 投放提示估算弹窗 -->
         <el-dialog :visible.sync="showEstimate">
