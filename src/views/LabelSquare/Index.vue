@@ -4,14 +4,14 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-            <el-tab-pane label="高级人群/标签" name="tempLabel">
+            <el-tab-pane label="临时人群/标签" name="tempLabel">
                 <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
                         :checkList="tempCheckList"
                         @get-table-selected="handleGetTableSelectedData"
                         @change-checkList="handleTempCheckListChange"
-                        @fetch-checkList="fetchTempCheckListData"
+                        :crowdType=2
                 >
                 </temp-label-index>
             </el-tab-pane>
@@ -59,7 +59,6 @@
                         :checkList="tempCheckList"
                         @get-table-selected="handleGetTableSelectedData"
                         @change-checkList="handleTempCheckListChange"
-                        @fetch-checkList="fetchTempCheckListData"
                 >
                 </local-label-index>
             </el-tab-pane>
@@ -70,8 +69,18 @@
                         :checkList="tempCheckList"
                         @get-table-selected="handleGetTableSelectedData"
                         @change-checkList="handleTempCheckListChange"
-                        @fetch-checkList="fetchTempCheckListData"
-                        :crowdType=2
+                        :crowdType=3
+                >
+                </temp-label-index>
+            </el-tab-pane>
+            <el-tab-pane label="广告数字银行/标签" name="bankLabel">
+                <temp-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        :crowdType=4
                 >
                 </temp-label-index>
             </el-tab-pane>
@@ -177,8 +186,9 @@
                         this.$root.$emit('my-collect-list-refresh')
                         break
                     case 'tempLabel':
+                        // 临时人群/标签
                         this.fetchTempCheckListData()
-                        this.$root.$emit('temp-label-list-refresh')
+                        this.$root.$emit('temp-label-list-refresh-2')
                         break
                     case 'specialTag':
                         //    刷新特色标签
@@ -186,12 +196,19 @@
                         this.$root.$emit('special-tag-list-refresh')
                         break
                     case 'localLabel':
+                        // 本地人群/标签
                         this.fetchTempCheckListData()
                         this.$root.$emit('local-label-list-refresh')
                         break
                     case 'behaviorLabel':
+                        // 行为人群/标签
                         this.fetchTempCheckListData()
-                        this.$root.$emit('temp-label-list-refresh')
+                        this.$root.$emit('temp-label-list-refresh-3')
+                        break
+                    case 'bankLabel':
+                        // 广告数字银行/标签
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('temp-label-list-refresh-4')
                         break
                 }
             },

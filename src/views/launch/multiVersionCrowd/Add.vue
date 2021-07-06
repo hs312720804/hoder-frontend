@@ -245,7 +245,7 @@
                             :disabled="disabledCrowdType"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                        <el-radio :label="1">高级人群/本地人群</el-radio><!-- true -->
+                        <el-radio :label="1">临时人群/本地人群</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
@@ -415,22 +415,31 @@
             <div slot="footer" class="footer">
                 <el-button @click="cancelAdd">返回</el-button>
                 <el-button type="primary" @click="addSubmit">保存</el-button>
-                <el-button
+                <!-- 需要投放提示 -->
+                <!-- <el-button
                         v-if="!(status!==undefined && (status === 2 || status === 3))"
                         type="primary"
                         @click="handelLaunch"
+                >直接投放</el-button> -->
+
+                <!-- 不需要投放提示 -->
+                <el-button
+                        v-if="!(status!==undefined && (status === 2 || status === 3))"
+                        type="primary"
+                        @click="launchDirectly"
                 >直接投放</el-button>
+
             </div>
 
             <!-- 投放提示 -->
-            <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
+            <!-- <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
                 <div class="choose-tip">{{ launchTip }}</div>
                 
                 <span slot="footer" class="dialog-footer">
                     <el-button @click="showLaunchTip = false">取 消</el-button>
                     <el-button type="primary" @click="confirmLaunch">投 放</el-button>
                 </span>
-            </el-dialog>
+            </el-dialog> -->
 
             <!-- 投放提示估算弹窗 -->
             <el-dialog :visible.sync="showEstimate">

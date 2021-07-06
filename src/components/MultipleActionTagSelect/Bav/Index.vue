@@ -255,7 +255,7 @@
                         </el-option>
                       </template>
                     </el-select>
-                    <div class="flex-column" >
+                    <div class="flex-column">
                       <ConditionLine :isShow="item2.child.length > 1"></ConditionLine>
                       <span
                         v-for="(item3, index2) in item2.child"

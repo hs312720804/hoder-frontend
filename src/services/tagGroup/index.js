@@ -182,13 +182,13 @@ export function specialTagDetail({specialTagId}) {
     })
 }
 
-export function tempCrowdList(params) {
-    return this.fetch({
-        method: 'get',
-        url: `api/tempCrowd/index`,
-        params
-    })
-}
+// export function tempCrowdList(params) {
+//     return this.fetch({
+//         method: 'get',
+//         url: `api/tempCrowd/index`,
+//         params
+//     })
+// }
 
 // 创建、编辑特色标签第一步保存
 export function saveSpecialTag(params) {

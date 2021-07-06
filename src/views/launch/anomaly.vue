@@ -260,7 +260,7 @@
                         const linesData = data.series.map((key) => {
                             return {name: key.name, data: key.value, type: 'line'}
                         })
-                        this.setLinesEchart('tempCrowd', '临时人群（高级人群）异常情况', data.xaxis, linesData, legendData)
+                        this.setLinesEchart('tempCrowd', '临时人群异常情况', data.xaxis, linesData, legendData)
                     }
                 })
             },
