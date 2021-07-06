@@ -61,22 +61,24 @@
                   "
                 ></el-time-picker>
               </el-form-item>
-              <!--<el-form-item label="更新持续时间" prop="expiryDay" v-if="crowdDefineForm.autoVersion === 1">-->
-              <!--<el-select-->
-              <!--v-model="crowdDefineForm.expiryDay"-->
-              <!--:disabled="status!==undefined && (status === 2 || status === 3)"-->
-              <!--&gt;-->
-              <!--<el-option-->
-              <!--v-for="(item,index) in effectTimeList"-->
-              <!--:key="index"-->
-              <!--:label="item.label"-->
-              <!--:value="item.value"-->
-              <!--&gt;-->
-              <!--</el-option>-->
-              <!--</el-select>-->
-              <!--</el-form-item>-->
+              
+              <!-- <el-form-item label="更新持续时间" prop="expiryDay" v-if="crowdDefineForm.autoVersion === 1">
+                <el-select
+                v-model="crowdDefineForm.expiryDay"
+                :disabled="status!==undefined && (status === 2 || status === 3)"
+                >
+                  <el-option
+                  v-for="(item,index) in effectTimeList"
+                  :key="index"
+                  :label="item.label"
+                  :value="item.value"
+                  >
+                  </el-option>
+                </el-select>
+              </el-form-item> -->
             </div>
-            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1 && crowdType !== 2">
+
+            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1 && crowdType === 2">
               <el-form-item label="Mac数量基准" class="one-line">
                 <el-form-item
                   label=""
