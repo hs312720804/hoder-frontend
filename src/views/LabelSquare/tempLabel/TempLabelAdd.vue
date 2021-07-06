@@ -212,7 +212,7 @@
       </el-row>
       <div slot="footer" class="footer">
         <el-button @click="cancelAdd">返回</el-button>
-        <el-button type="primary" @click="addSubmit" v-if="crowdType !== 2">保存</el-button>
+        <el-button type="primary" @click="addSubmit" v-if="crowdType === 2">保存</el-button>
       </div>
     </div>
   </div>
