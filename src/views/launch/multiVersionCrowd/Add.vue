@@ -1159,7 +1159,7 @@
             getTempCrowdList () {
                 const filter = {
                     pageNum: 1,
-                    pageSize: 100
+                    pageSize: 2000
                 }
                 this.$service.getCalculatedTempCrowdList(filter).then(data => {
                     this.tempCrowdList = data.pageInfo.list
