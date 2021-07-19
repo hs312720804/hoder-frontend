@@ -618,8 +618,8 @@ export default {
     },
     handleAdd() {
       this.$router.push({
-          name: 'oneTouchDrop',
-          params: { source: this.parentSource ? 'myCrowd': undefined}
+        name: 'oneTouchDrop',
+        params: { source: this.parentSource ? 'myCrowd': undefined, refresh: true} // 刷新页面
       })
       // 清空编辑时设置的数据
         this.$store.commit('setSchemeConfigNull')

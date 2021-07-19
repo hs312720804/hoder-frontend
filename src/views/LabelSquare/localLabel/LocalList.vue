@@ -299,17 +299,18 @@
                 // const crowdName = row.launchName
                 const launchCrowdId = row.launchCrowdId
                 // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
-                //     confirmButtonText: "确定",
-                //     cancelButtonText: "取消",
-                //     type: "warning"
-                // })
-                // .then(() => {
+                this.$confirm(`确定要删除吗?`, "提示", {
+                    confirmButtonText: "确定",
+                    cancelButtonText: "取消",
+                    type: "warning"
+                })
+                .then(() => {
                     this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
                         this.fetchData()
                     })
-                // })
-                // .catch(() => {
-                // })
+                })
+                .catch(() => {
+                })
             },
             // 下架
             onOrOffLocalCrowd(row) {

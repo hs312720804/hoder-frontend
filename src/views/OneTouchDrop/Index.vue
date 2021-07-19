@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div v-if="reloadFlag">
         <div class="header">
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
                 <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
@@ -85,10 +85,24 @@
                 initTagList: [],
                 routeSource: undefined,
                 peoplePageCheck: false,
-                programmeId: undefined
+                programmeId: undefined,
+                reloadFlag: true
             }
         },
         watch: {
+            $route: {
+                handler() {
+                   console.log('this.$route.params.refresh==>', this.$route.params.refresh)
+                    if (this.$route.params.refresh) {
+                        // 刷新页面
+                        this.reloadFlag = false
+                        this.$nextTick(() => {
+                            this.reloadFlag = true
+                        })
+                    }
+                },
+                deep: true,
+            },
             '$route.params.source' : function (val, oldVal) {
                 if(val != oldVal) {
                     this.routeSource = val ? val : undefined

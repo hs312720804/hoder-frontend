@@ -662,6 +662,7 @@ export default {
     },
 
     validateForm(rules, dynamicPolicyRules) {
+      this.timeTagKongList = []
       // 判断设置标签里是否有未填写的项
       let i,
           j = 0
