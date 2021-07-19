@@ -419,7 +419,6 @@ export default {
       return (this.propPrefix || '') + key
     },
     setInputValue(val) {
-      // debugger
       // console.log('trigger setInputValue method')
       if (val !== this.inputValue) {
         // debugger

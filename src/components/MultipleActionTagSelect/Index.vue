@@ -199,40 +199,95 @@
                     <template
                       v-else-if="
                         (childItem.tagType === 'string' ||
-                          childItem.tagType === 'collect' ||
-                          childItem.tagType === 'mix') &&
-                        cache[childItem.tagId]
-                      "
+                        childItem.tagType === 'collect' ||
+                        childItem.tagType === 'mix')"
                     >
-                      <el-select
-                        v-if="
-                          childItem.tagType === 'string' &&
-                          childItem.operator === 'null'
-                        "
-                        v-model="childItem.value"
-                        :key="'null'"
-                        disabled
-                      >
-                        <el-option label="空" value="nil"></el-option>
-                      </el-select>
-                      <template v-else>
-                        <!-- 官方-地域标签 -->
-                        <!-- v-model="provinceValueList[(n+1)*(index+1)]" -->
-                        <div
-                          v-if="childItem.tagCode === 'mix_area'"
-                          class="mix-area-select"
+                      <template v-if="cache[childItem.tagId]">
+                        <el-select
+                          v-if="
+                            childItem.tagType === 'string' &&
+                            childItem.operator === 'null'
+                          "
+                          v-model="childItem.value"
+                          :key="'null'"
+                          disabled
                         >
-                          <!-- 省 -->
+                          <el-option label="空" value="nil"></el-option>
+                        </el-select>
+                        <template v-else>
+                          <!-- 官方-地域标签 -->
+                          <!-- v-model="provinceValueList[(n+1)*(index+1)]" -->
+                          <div
+                            v-if="childItem.tagCode === 'mix_area'"
+                            class="mix-area-select"
+                          >
+                            <!-- 省 -->
+                            <el-select
+                              v-model="childItem.provinceValue"
+                              class="inline-input"
+                              filterable
+                              :key="index + 'mix_area_select'"
+                              default-first-option
+                              placeholder="请输入或选择"
+                              :disabled="cache[childItem.tagId].select"
+                              @change="
+                                areaSelectChange($event, childItem.tagCode, childItem)
+                              "
+                            >
+                              <el-option
+                                v-for="item in cache[childItem.tagId].list"
+                                :key="index + item.attrValue + item.attrId"
+                                :label="item.attrName"
+                                :value="item.attrValue"
+                              ></el-option>
+                            </el-select>
+                            <!-- 市 -->
+                            <el-select
+                              v-model="childItem.value"
+                              class="inline-input"
+                              filterable
+                              :key="index + 'mix_area2_select'"
+                              default-first-option
+                              placeholder="请输入或选择"
+                              :disabled="cache[childItem.tagId].select"
+                              @change="
+                                citySelectChange(
+                                  $event,
+                                  childItem,
+                                  cityData[childItem.provinceValue]
+                                )
+                              "
+                            >
+                              <el-option
+                                v-for="item in cityData[childItem.provinceValue]"
+                                :key="index + item.attrValue + item.attrId"
+                                :label="item.attrName"
+                                :value="item.attrValue"
+                              ></el-option>
+                            </el-select>
+                          </div>
+                          <!-- 官方-地域标签 end-->
+
+                          <!-- 
+                            多选下拉框 
+                            当 tagType 为 string 的时候可多选 222
+                          -->
                           <el-select
-                            v-model="childItem.provinceValue"
+                            v-else
+                            v-model="childItem.value"
+                            :multiple="childItem.tagType === 'string'"
                             class="inline-input"
                             filterable
-                            :key="index + 'mix_area_select'"
+                            :key="index + 'select'"
                             default-first-option
-                            placeholder="请输入或选择"
+                            placeholder="请输入或选择222"
                             :disabled="cache[childItem.tagId].select"
                             @change="
-                              areaSelectChange($event, childItem.tagCode, childItem)
+                              citySelectChange(
+                                $event,
+                                childItem,
+                                cache[childItem.tagId].list
+                              )
                             "
                           >
                             <el-option
@@ -242,61 +297,10 @@
                               :value="item.attrValue"
                             ></el-option>
                           </el-select>
-                          <!-- 市 -->
-                          <el-select
-                            v-model="childItem.value"
-                            class="inline-input"
-                            filterable
-                            :key="index + 'mix_area2_select'"
-                            default-first-option
-                            placeholder="请输入或选择"
-                            :disabled="cache[childItem.tagId].select"
-                            @change="
-                              citySelectChange(
-                                $event,
-                                childItem,
-                                cityData[childItem.provinceValue]
-                              )
-                            "
-                          >
-                            <el-option
-                              v-for="item in cityData[childItem.provinceValue]"
-                              :key="index + item.attrValue + item.attrId"
-                              :label="item.attrName"
-                              :value="item.attrValue"
-                            ></el-option>
-                          </el-select>
-                        </div>
-                        <!-- 官方-地域标签 end-->
-
-                        <el-select
-                          v-else
-                          v-model="childItem.value"
-                          multiple
-                          class="inline-input"
-                          filterable
-                          :key="index + 'select'"
-                          default-first-option
-                          placeholder="请输入或选择222"
-                          :disabled="cache[childItem.tagId].select"
-                          @change="
-                            citySelectChange(
-                              $event,
-                              childItem,
-                              cache[childItem.tagId].list
-                            )
-                          "
-                        >
-                          <el-option
-                            v-for="item in cache[childItem.tagId].list"
-                            :key="index + item.attrValue + item.attrId"
-                            :label="item.attrName"
-                            :value="item.attrValue"
-                          ></el-option>
-                        </el-select>
-                        <div class="errorMsg">
-                          {{ childItem.errorMsg ? childItem.errorMsg : '' }}
-                        </div>
+                          <div class="errorMsg">
+                            {{ childItem.errorMsg ? childItem.errorMsg : '' }}
+                          </div>
+                        </template>
                       </template>
                     </template>
                     
@@ -466,7 +470,17 @@
         </el-form-item>
       </el-form>
       <div>
-        <el-radio-group v-model="checkboxValue">
+        <!-- 类型为 string 的 可以多选 -->
+        <el-checkbox-group v-if="currentChildItem.tagType === 'string'" v-model="checkboxValue">
+          <el-checkbox
+            v-for="(tag, index) in tagList"
+            :label="tag.attrValue"
+            :key="tag.attrId + index"
+            >{{ tag.attrName }}
+          </el-checkbox>
+        </el-checkbox-group>
+
+        <el-radio-group v-else v-model="checkboxValue">
           <el-radio
             v-for="(tag, index) in tagList"
             :label="tag.attrValue"
@@ -676,9 +690,10 @@ export default {
         })
     },
     handleSelectMore(child) {
-      this.checkboxValue = ''
+      // this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
+      this.checkboxValue = this.currentChildItem.tagType === 'string' && Array.isArray(this.currentChildItem.value) ? this.currentChildItem.value : ''
       // this.showMoreTags = true
       this.$service
         .getTagAttr({

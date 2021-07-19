@@ -398,8 +398,19 @@ export default {
           return item
         })
         e.rulesJson = JSON.stringify(e.rulesJson)
+
         e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
+        e.behaviorRulesJson.rules = e.behaviorRulesJson.rules.map(item => {
+          item.rules.forEach(rulesItem => {
+            // 多选的值，保存的时候需要转成字符串 2222
+            if (rulesItem.tagType === 'string') {
+              rulesItem.value = rulesItem.value.join(',')
+            }
+          })
+          return item
+        })
         e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
+
         e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
         // e.crowdValidFrom = form.crowdExp[0]
         // e.crowdValidTo = form.crowdExp[1]
@@ -463,6 +474,16 @@ export default {
               }
             })
           })
+
+          e.behaviorRulesJson.rules.forEach(ruleItem => {
+            ruleItem.rules.forEach(rulesEachItem => {
+              // 多选的值，回显的时候需要转成数组 2222
+              if (rulesEachItem.tagType === 'string') {
+                rulesEachItem.value = rulesEachItem.value.split(',')
+              }
+            })
+          })
+
           return e
         })
 

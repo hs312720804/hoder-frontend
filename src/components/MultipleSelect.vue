@@ -173,8 +173,8 @@
                 <!-- string 、 collect 、 mix 类型 -->
                 <template v-else-if="
                     (childItem.tagType === 'string' ||
-                      childItem.tagType === 'collect' ||
-                      childItem.tagType === 'mix')
+                    childItem.tagType === 'collect' ||
+                    childItem.tagType === 'mix')
                   "
                 >
 
@@ -246,7 +246,7 @@
                       
                       <!-- 
                         多选下拉框 
-                        当 tagType 为 string 的时候可多选
+                        当 tagType 为 string 的时候可多选 222
                        -->
                       <el-select
                         v-else

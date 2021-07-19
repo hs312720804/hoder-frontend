@@ -203,7 +203,7 @@ export default {
             let rule = behaviorRules[x]
             for (let y = 0; y < rule.rules.length; y++) {
               let item = rule.rules[y]
-              if (item.bav.rangeType === 'move') {
+              if (item.bav && item.bav.rangeType === 'move') {
                 hasMoveRule = true
                 break;
               }
@@ -230,7 +230,7 @@ export default {
 
     setInputValue (val) {
       // eslint-disable-next-line no-debugger
-      debugger
+      // debugger
       if (val !== this.inputValue) {
         if (val.length > 0) {
           this.inputValue = JSON.parse(JSON.stringify(val))
@@ -275,7 +275,7 @@ export default {
 
       }
       // eslint-disable-next-line no-debugger
-      debugger
+      // debugger
       // console.log('122222222222222222------------>', this.inputValue)
 
     },

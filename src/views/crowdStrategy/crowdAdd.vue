@@ -287,7 +287,7 @@ export default {
             let rule = behaviorRules[x]
             for (let y = 0; y < rule.rules.length; y++) {
               let item = rule.rules[y]
-              if (item.bav.rangeType === 'move') {
+              if (item.bav && item.bav.rangeType === 'move') {
                 hasMoveRule = true
                 break;
               }
@@ -934,9 +934,13 @@ export default {
               if (tagIds.indexOf(childItem.tagId) === -1) {
                 tagIds.push(childItem.tagId)
               }
+              // 多选的值，保存的时候需要转成字符串 2222
+              if (childItem.tagType === 'string') {
+                childItem.value = childItem.value.join(',')
+              }
             })
           })
-
+         
           const data = {
             crowdName: form.name,
             tagIds: tagIds.join(','),
@@ -1217,6 +1221,15 @@ export default {
         this.rulesJson = ruleJsonData
 
         this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+
+        this.behaviorRulesJson.rules.forEach(ruleItem => {
+          ruleItem.rules.forEach(rulesEachItem => {
+            // 多选的值，回显的时候需要转成数组 2222
+            if (rulesEachItem.tagType === 'string') {
+              rulesEachItem.value = rulesEachItem.value.split(',')
+            }
+          })
+        })
 
         if (policyData.dynamicPolicyJson) {
           this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
