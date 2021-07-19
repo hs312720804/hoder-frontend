@@ -93,6 +93,9 @@
                                     v-model="crowdDefineForm.autoLaunchTime"
                                     value-format="HH:mm:ss"
                                     :disabled="status!==undefined && (status === 2 || status === 3)"
+                                    :picker-options="{
+                                        selectableRange: '9:00:00 - 23:59:59'
+                                    }"
                             ></el-time-picker>
                         </el-form-item>
                             </div>
@@ -270,7 +273,7 @@
                                 :key="item.policyId+''"
                                 :label="item.policyName"
                                 :value="item.policyId+''"
-                        >{{item.policyName}}
+                        >{{ item.policyName }}
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -409,6 +412,9 @@
                             v-model="crowdForm.autoLaunchTime"
                             value-format="HH:mm:ss"
                             :disabled="status!==undefined && (status === 2 || status === 3)"
+                            :picker-options="{
+                                selectableRange: '9:00:00 - 23:59:59'
+                            }"
                     ></el-time-picker>
                 </el-form-item>
             </el-form>
@@ -447,10 +453,10 @@
                 <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
                     <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
                 </el-checkbox-group>
-                <span slot="footer" class="dialog-footer">
-                <el-button @click="showEstimate = false">取 消</el-button>
-                <el-button type="primary" @click="handleEstimate(estimateValue)">投放</el-button>
-            </span>
+                    <span slot="footer" class="dialog-footer">
+                    <el-button @click="showEstimate = false">取 消</el-button>
+                    <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
+                </span>
             </el-dialog>
         </div>
     </div>
@@ -827,8 +833,6 @@
                     let b = item.policyCrowdIds == policyCrowdIds
                     return a && b
                 }).launchCrowdId
-
-                console.log('this.crowdForm.tempCrowdId ===', this.crowdForm.tempCrowdId )
             },
             callback () {
                 this.$emit("changeStatus", true)
@@ -1236,6 +1240,7 @@
                     this.estimateValue = ['0']
                 }
             },
+
             handleEstimate (calTypes) {
                 if (calTypes.length === 0) {
                     this.$message.error('请至少选择一个要投放的人群')
@@ -1269,16 +1274,32 @@
                             this.$service.saveEditMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"编辑成功").then(() => {
                                 this.currentLaunchId = this.editLaunchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
-                                    this.showEstimate = false
-                                    this.callback()
+                                    // 行为人群需要 lua 一下
+                                    // if (crowdForm.crowdType === 3) {
+                                    //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+                                    //         this.showEstimate = false
+                                    //         this.callback()
+                                    //     })
+                                    // } else {
+                                        this.showEstimate = false
+                                        this.callback()
+                                    // }
                                 })
                             })
                         } else {
                             this.$service.saveAddMultiVersionCrowd({model: crowdForm.crowdType, data: crowdForm},"新增成功").then((data) => {
                                 this.currentLaunchId = data.launchCrowdId
                                 this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
-                                    this.showEstimate = false
-                                    this.callback()
+                                    // 行为人群需要 lua 一下
+                                    // if (crowdForm.crowdType === 3) { 
+                                    //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+                                    //         this.showEstimate = false
+                                    //         this.callback()
+                                    //     })
+                                    // } else {
+                                        this.showEstimate = false
+                                        this.callback()
+                                    // }
                                 })
                             })
                         }

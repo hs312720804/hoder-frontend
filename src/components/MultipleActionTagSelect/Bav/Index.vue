@@ -278,7 +278,7 @@
                       </span>
                     </div>
                   </span>
-                  <span v-else class="flex-column" >
+                  <span v-else class="flex-column">
                     <!-- 首次购买  -->
                     <!-- 第三级 -->
                     <el-select

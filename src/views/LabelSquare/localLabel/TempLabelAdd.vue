@@ -59,6 +59,9 @@
                   :disabled="
                     status !== undefined && (status === 2 || status === 3)
                   "
+                  :picker-options="{
+                    selectableRange: '9:00:00 - 23:59:59'
+                  }"
                 ></el-time-picker>
               </el-form-item>
               <!--<el-form-item label="更新持续时间" prop="expiryDay" v-if="crowdDefineForm.autoVersion === 1">-->

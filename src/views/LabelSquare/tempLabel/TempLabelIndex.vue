@@ -1,4 +1,10 @@
 <template>
+<!-- 
+  crowdType
+  2：临时人群
+  3：行为人群
+  4：广告数据银行
+-->
   <div class="temp-label">
     <temp-label-list
       v-show="showList"

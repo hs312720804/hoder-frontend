@@ -158,6 +158,7 @@ export default {
   },
   watch: {
     childItem: {
+      
       handler(val) {
         let list = val.bav.behaviorValue
         this.isSelectedDay = false
@@ -170,10 +171,8 @@ export default {
     show(val) {
       this.show3 = val
     },
-    options: {
+    options: { // 下拉框选项
       handler(val) {
-        // eslint-disable-next-line no-debugger
-        debugger
         if (val) {
           const _this = this
           const periodRange = val.dict.periodRange || []

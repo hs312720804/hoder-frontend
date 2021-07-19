@@ -130,12 +130,21 @@
           <span v-else>未投放</span>
         </template>
       </el-table-column>
+
+      <el-table-column prop="past7Active" label="7日是否有命中" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
+          <span v-else> 否 </span>
+        </template>
+      </el-table-column>
+      
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
             <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button>
-            <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
+            <!-- <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button> -->
+            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
             <el-button
                     size="small"
                     type="text"
@@ -539,22 +548,20 @@ export default {
       });
     },
     freshCache(row) {
-            this.$confirm("新建的人群策略将实时生效，旧的策略更新需要延时2小时生效", "提示", {
-                confirmButtonText: "确定",
-                cancelButtonText: "取消",
-                type: "warning"
-            })
-                .then(() => {
-                    this.$service.freshCache({policyId: row.policyId}).then(data => {
-                        this.loadData();
-                        this.$message({
-                            type: "info",
-                            message: data
-                        });
-                    });
-                })
-                .catch(() => {
-                });
+      this.$confirm("新建的人群策略将实时生效，旧的策略更新需要延时2小时生效", "提示", {
+        confirmButtonText: "确定",
+        cancelButtonText: "取消",
+        type: "warning"
+      })
+      .then(() => {
+        this.$service.freshCache({policyId: row.policyId}).then(data => {
+            this.loadData();
+            this.$message({
+                type: "info",
+                message: data
+            });
+        });
+      })
     },
     getTags() {
       // this.addForm.conditionTagIds = [];

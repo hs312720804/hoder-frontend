@@ -73,7 +73,7 @@
                 >
                 </temp-label-index>
             </el-tab-pane>
-            <el-tab-pane label="广告数字银行/标签" name="bankLabel">
+            <el-tab-pane label="广告数据银行/标签" name="bankLabel">
                 <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
@@ -206,7 +206,7 @@
                         this.$root.$emit('temp-label-list-refresh-3')
                         break
                     case 'bankLabel':
-                        // 广告数字银行/标签
+                        // 广告数据银行/标签
                         this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh-4')
                         break

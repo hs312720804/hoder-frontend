@@ -24,14 +24,16 @@ export function updateTempCrowd(data) {
         data
     })
 }
-// 临时人群删除
-export function delTempCrowd(params) {
+
+
+export function delNewTempCrowd(params) {
     return this.fetch({
         method: 'delete',
-        url: 'api/tempCrowd',
+        url: 'api/multiVersionCrowd/delTempCrowd',
         params
     })
 }
+
 // 临时人群获取
 export function getTempCrowd(params) {
     return this.fetch({

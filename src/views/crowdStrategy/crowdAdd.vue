@@ -68,6 +68,14 @@
               ></MultipleSelect>
             </el-form-item>
           </div>
+
+          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" > 
+            <el-radio-group v-model="form.autoVersion">
+              <el-radio :label="false">否</el-radio>
+              <el-radio :label="true">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
           <el-form-item label="是否限制投放数量" prop="limitLaunch">
             <el-radio-group
               v-model="form.limitLaunch"
@@ -202,6 +210,8 @@ export default {
         policyId: null,
         remark: '',
         // crowdExp: [],
+        autoVersion: false,
+        isShowAutoVersion: false,
         limitLaunch: false,
         limitLaunchCount: undefined
       },
@@ -238,7 +248,16 @@ export default {
         8: 'warningCyan'
       },
       cityData: [],
-      provinceValueList: []
+      provinceValueList: [],
+      timeTagKongList: []
+    }
+  },
+  watch: {
+    behaviorRulesJson: {
+      handler() {
+        this.hasMoveBehaviorTagRule()
+      },
+      deep: true
     }
   },
   computed: {
@@ -248,6 +267,49 @@ export default {
   },
   props: ['policyId', 'crowdId', 'limitLaunchDisabled'],
   methods: {
+
+    // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
+    hasMoveBehaviorTagRule() {
+      console.log('this.inputValue11111111===>' ,this.form)
+
+      // eslint-disable-next-line no-debugger
+      // debugger
+        let crowd = this.form
+        const behaviorRules = this.behaviorRulesJson.rules
+        let hasBehaviorRule = false
+        let hasMoveRule = false
+        if (behaviorRules.length > 0) {
+
+          hasBehaviorRule = true
+          // eslint-disable-next-line no-debugger
+          // debugger
+          for (let x = 0; x < behaviorRules.length; x++) {
+            let rule = behaviorRules[x]
+            for (let y = 0; y < rule.rules.length; y++) {
+              let item = rule.rules[y]
+              if (item.bav.rangeType === 'move') {
+                hasMoveRule = true
+                break;
+              }
+            }
+          }
+        }
+
+        if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
+          // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
+          if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) { 
+            crowd.autoVersion = true 
+          } 
+          crowd.isShowAutoVersion = true
+          // crowd.autoVersion = true
+        } else {
+          crowd.isShowAutoVersion = false
+          crowd.autoVersion = false
+        }
+
+
+    },
+
     citySelectChange(val, childRule, cityList) {
       if (childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
@@ -599,6 +661,109 @@ export default {
       })
     },
 
+    validateForm(rules, dynamicPolicyRules) {
+      // 判断设置标签里是否有未填写的项
+      let i,
+          j = 0
+      const ruleLength = rules.length
+      const dynamicPolicyRulesLength = dynamicPolicyRules.length
+      let rulesFlag = true
+      for (i = 0; i < ruleLength; i++) {
+        for (j = 0; j < rules[i].rules.length; j++) {
+          let rulesItem = rules[i].rules[j]
+
+          // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
+          const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
+          if (isTimeTagKong) {
+            if (!this.timeTagKongList.includes(rulesItem.tagName)) {
+              this.timeTagKongList.push(rulesItem.tagName)
+            }
+          }
+
+          else if (rulesItem.value === '') {
+            this.$message.error(
+              '请正确填写第' +
+                (i + 1) +
+                '设置标签块里面的第' +
+                (j + 1) +
+                '行的值！'
+            )
+            rulesFlag = false
+            break
+          } else if (
+            rulesItem.tagType === 'time' &&
+            rulesItem.isDynamicTime === 3
+          ) {
+            if (
+              this.checkNumMostFour(rulesItem.startDay) &&
+              this.checkNumMostFour(rulesItem.endDay)
+            ) {
+              if (
+                parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
+              ) {
+                rulesItem.value =
+                  rulesItem.startDay + '-' + rulesItem.endDay
+              } else {
+                this.$message.error(
+                  '第' +
+                    (i + 1) +
+                    '设置标签块里面的第' +
+                    (j + 1) +
+                    '行的天数值后面的值必须大于前面的'
+                )
+                rulesFlag = false
+                break
+              }
+            } else {
+              this.$message.error(
+                '第' +
+                  (i + 1) +
+                  '设置标签块里面的第' +
+                  (j + 1) +
+                  '行的值是大于等于0的整数且不能超过4位数'
+              )
+              rulesFlag = false
+              break
+            }
+          } else if (
+            rulesItem.tagType === 'string' &&
+            rulesItem.operator === 'null'
+          ) {
+            rulesItem.operator = '='
+          }
+          // 多选的值，保存的时候需要转成字符串 2222
+          if (rulesItem.tagType === 'string') {
+            rulesItem.value = rulesItem.value.join(',')
+          }
+          if (!rulesFlag) break
+        }
+        if (!rulesFlag) break
+      }
+      // if (!rulesFlag) return
+      
+      //判断动态因子里面是否有未填的
+      for (i = 0; i < dynamicPolicyRulesLength; i++) {
+        for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
+          let rulesItem = dynamicPolicyRules[i].rules[j]
+          if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
+            this.$message.error(
+              '请正确填写第' +
+                (i + 1) +
+                '动态因子里面的第' +
+                (j + 1) +
+                '行的值！'
+            )
+            rulesFlag = false
+            break
+          }
+          if (!rulesFlag) break
+        }
+        if (!rulesFlag) break
+      }
+      // if (!dynamicPolicyFlag) return
+      return rulesFlag
+    },
+
     handleSave() {
       this.$refs['form'].validate(valid => {
         if (valid) {
@@ -610,15 +775,11 @@ export default {
             JSON.stringify(this.dynamicPolicyJson)
           )
           const rules = ruleJson.rules
-          const ruleLength = rules.length
-
           const dynamicPolicyRules = dynamicPolicyJson.rules
-          const dynamicPolicyRulesLength = dynamicPolicyRules.length
 
           const behaviorRules = behaviorRulesJson.rules
 
-          let i,
-            j = 0
+          
           // 如果设置标签和动态因子都没有选rules则报错
           // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
           //   this.$message.error(
@@ -632,88 +793,99 @@ export default {
               return
             }
           }
-          // 判断设置标签里是否有未填写的项
-          let rulesFlag = true
-          for (i = 0; i < ruleLength; i++) {
-            for (j = 0; j < rules[i].rules.length; j++) {
-              let rulesItem = rules[i].rules[j]
-              if (rulesItem.value === '') {
-                this.$message.error(
-                  '请正确填写第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值！'
-                )
-                rulesFlag = false
-                break
-              } else if (
-                rulesItem.tagType === 'time' &&
-                rulesItem.isDynamicTime === 3
-              ) {
-                if (
-                  this.checkNumMostFour(rulesItem.startDay) &&
-                  this.checkNumMostFour(rulesItem.endDay)
-                ) {
-                  if (
-                    parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
-                  ) {
-                    rulesItem.value =
-                      rulesItem.startDay + '-' + rulesItem.endDay
-                  } else {
-                    this.$message.error(
-                      '第' +
-                        (i + 1) +
-                        '设置标签块里面的第' +
-                        (j + 1) +
-                        '行的天数值后面的值必须大于前面的'
-                    )
-                    rulesFlag = false
-                    break
-                  }
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的值是大于等于0的整数且不能超过4位数'
-                  )
-                  rulesFlag = false
-                  break
-                }
-              } else if (
-                rulesItem.tagType === 'string' &&
-                rulesItem.operator === 'null'
-              ) {
-                rulesItem.operator = '='
-              }
-              if (!rulesFlag) break
-            }
-            if (!rulesFlag) break
+
+          if (!this.validateForm(rules, dynamicPolicyRules)) {
+            return
           }
-          if (!rulesFlag) return
-          //判断动态因子里面是否有未填的
-          let dynamicPolicyFlag = true
-          for (i = 0; i < dynamicPolicyRulesLength; i++) {
-            for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-              let rulesItem = dynamicPolicyRules[i].rules[j]
-              if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-                this.$message.error(
-                  '请正确填写第' +
-                    (i + 1) +
-                    '动态因子里面的第' +
-                    (j + 1) +
-                    '行的值！'
-                )
-                dynamicPolicyFlag = false
-                break
-              }
-              if (!dynamicPolicyFlag) break
-            }
-            if (!dynamicPolicyFlag) break
-          }
-          if (!dynamicPolicyFlag) return
+          // 判断设置标签里是否有未填写的项 --------------------------------------------
+          // let i,
+          //   j = 0
+          // const ruleLength = rules.length
+          // const dynamicPolicyRulesLength = dynamicPolicyRules.length
+          // let rulesFlag = true
+          // for (i = 0; i < ruleLength; i++) {
+          //   for (j = 0; j < rules[i].rules.length; j++) {
+          //     let rulesItem = rules[i].rules[j]
+          //     if (rulesItem.value === '') {
+          //       this.$message.error(
+          //         '请正确填写第' +
+          //           (i + 1) +
+          //           '设置标签块里面的第' +
+          //           (j + 1) +
+          //           '行的值！'
+          //       )
+          //       rulesFlag = false
+          //       break
+          //     } else if (
+          //       rulesItem.tagType === 'time' &&
+          //       rulesItem.isDynamicTime === 3
+          //     ) {
+          //       if (
+          //         this.checkNumMostFour(rulesItem.startDay) &&
+          //         this.checkNumMostFour(rulesItem.endDay)
+          //       ) {
+          //         if (
+          //           parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
+          //         ) {
+          //           rulesItem.value =
+          //             rulesItem.startDay + '-' + rulesItem.endDay
+          //         } else {
+          //           this.$message.error(
+          //             '第' +
+          //               (i + 1) +
+          //               '设置标签块里面的第' +
+          //               (j + 1) +
+          //               '行的天数值后面的值必须大于前面的'
+          //           )
+          //           rulesFlag = false
+          //           break
+          //         }
+          //       } else {
+          //         this.$message.error(
+          //           '第' +
+          //             (i + 1) +
+          //             '设置标签块里面的第' +
+          //             (j + 1) +
+          //             '行的值是大于等于0的整数且不能超过4位数'
+          //         )
+          //         rulesFlag = false
+          //         break
+          //       }
+          //     } else if (
+          //       rulesItem.tagType === 'string' &&
+          //       rulesItem.operator === 'null'
+          //     ) {
+          //       rulesItem.operator = '='
+          //     }
+          //     if (!rulesFlag) break
+          //   }
+          //   if (!rulesFlag) break
+          // }
+          // if (!rulesFlag) return
+          
+          // //判断动态因子里面是否有未填的
+          // let dynamicPolicyFlag = true
+          // for (i = 0; i < dynamicPolicyRulesLength; i++) {
+          //   for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
+          //     let rulesItem = dynamicPolicyRules[i].rules[j]
+          //     if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
+          //       this.$message.error(
+          //         '请正确填写第' +
+          //           (i + 1) +
+          //           '动态因子里面的第' +
+          //           (j + 1) +
+          //           '行的值！'
+          //       )
+          //       dynamicPolicyFlag = false
+          //       break
+          //     }
+          //     if (!dynamicPolicyFlag) break
+          //   }
+          //   if (!dynamicPolicyFlag) break
+          // }
+          // if (!dynamicPolicyFlag) return
+
+          // --------------------------------------------
           // 如果外层条件是且，则设置标签和动态因子都是必填，如果是或则选填
           // if (dynamicPolicyJson.condition === 'AND') {
           //     if (ruleLength === 0 || dynamicPolicyRulesLength === 0) {
@@ -774,6 +946,8 @@ export default {
             policyId: form.policyId,
             // crowdValidFrom: form.crowdExp[0],
             // crowdValidTo: form.crowdExp[1],
+            autoVersion: form.autoVersion,
+            isShowAutoVersion: form.isShowAutoVersion,
             limitLaunch: form.limitLaunch,
             limitLaunchCount: form.limitLaunch
               ? form.limitLaunchCount
@@ -808,23 +982,59 @@ export default {
 
           let allList = rangeFormList.concat(typeFormList)
 
-          if (allList.length > 0) {  // 有行为标签的
-            // 使用Promise.all去校验结果
-            Promise.all(allList.map(this.getFormPromise)).then(res => {
-              const validateResult = res.every(item => !!item);
-              if (validateResult) {
+          // 选择了属性为空的 time 类型的标签, 需要提示
+          if (this.timeTagKongList.length > 0) {
+            const tip = this.timeTagKongList.join(',')
+            const h = this.$createElement;
+            this.$msgbox({
+              title: '配置提醒',
+              message: h('p', null, [
+                h('span', null, `${tip}`),
+                h('span', null, `标签的属性为空，请确认是否继续?`),
+                h('div', {style: 'color: red'}, 'PS：标签为空代表要圈出该属性为空的人群')
+              ]),
+              showCancelButton: true,
+              confirmButtonText: '继续',
+              cancelButtonText: '取消',
+            }).then(() => {
+              if (allList.length > 0) {  // 有行为标签的
+                // 使用Promise.all去校验结果
+                Promise.all(allList.map(this.getFormPromise)).then(res => {
+                  const validateResult = res.every(item => !!item);
+                  if (validateResult) {
+                    // 新增或编辑
+                    this.fetchAddOrEdit(data)
+                  } else {
+                    this.$message.error('请输入必填项')
+                  }
+                }).catch(() => {
+                  this.$message.error('请至少设置一个行为标签规则')
+                })
+              } else { // 没有行为标签的
                 // 新增或编辑
                 this.fetchAddOrEdit(data)
-              } else {
-                this.$message.error('请输入必填项')
               }
-            }).catch(() => {
-              this.$message.error('请至少设置一个行为标签规则')
             })
-          } else { // 没有行为标签的
-            // 新增或编辑
-            this.fetchAddOrEdit(data)
+          } else {
+            if (allList.length > 0) {  // 有行为标签的
+              // 使用Promise.all去校验结果
+              Promise.all(allList.map(this.getFormPromise)).then(res => {
+                const validateResult = res.every(item => !!item);
+                if (validateResult) {
+                  // 新增或编辑
+                  this.fetchAddOrEdit(data)
+                } else {
+                  this.$message.error('请输入必填项')
+                }
+              }).catch(() => {
+                this.$message.error('请至少设置一个行为标签规则')
+              })
+            } else { // 没有行为标签的
+              // 新增或编辑
+              this.fetchAddOrEdit(data)
+            }
           }
+          
 
         } else {
           return false
@@ -893,19 +1103,19 @@ export default {
         return false
       }
     },
-    bigNum(item) {
-      const startDay = item.startDay
-      const endDay = item.endDay
-      if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
-        } else {
-          item.value = startDay + '-' + endDay
-        }
-      } else {
-        item.value = ''
-      }
-    },
+    // bigNum(item) {
+    //   const startDay = item.startDay
+    //   const endDay = item.endDay
+    //   if (this.checkNumMostFour(endDay)) {
+    //     if (parseInt(startDay) >= parseInt(endDay)) {
+    //       this.$message.error('第二个值必须大于第一个值')
+    //     } else {
+    //       item.value = startDay + '-' + endDay
+    //     }
+    //   } else {
+    //     item.value = ''
+    //   }
+    // },
     handleOperatorChange(item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
@@ -952,6 +1162,12 @@ export default {
         this.form.name = policyData.crowdName
         this.form.remark = policyData.remark
         this.priority = policyData.priority
+
+        // eslint-disable-next-line no-debugger
+        debugger
+        this.form.autoVersion = policyData.autoVersion
+        this.form.isShowAutoVersion = true
+
         this.form.limitLaunch = policyData.limitLaunch
         this.form.limitLaunchCount = policyData.limitLaunch
           ? policyData.limitLaunchCount
@@ -980,6 +1196,10 @@ export default {
             }
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
+            }
+            // 多选的值，回显的时候需要转成数组 2222
+            if (item.tagType === 'string') {
+              item.value = item.value.split(',')
             }
             if (item.tagType === 'time' && item.isDynamicTime === 3) {
               const value = item.value.split('-')

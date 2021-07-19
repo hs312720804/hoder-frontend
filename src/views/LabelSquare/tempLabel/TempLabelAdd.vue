@@ -1,4 +1,10 @@
 <template>
+<!-- 
+  crowdType
+  2：临时人群
+  3：行为人群
+  4：广告数据银行
+-->
   <div class="add">
     <el-row>
       <el-col :span="24">
@@ -59,6 +65,9 @@
                   :disabled="
                     status !== undefined && (status === 2 || status === 3)
                   "
+                  :picker-options="{
+                    selectableRange: '9:00:00 - 23:59:59'
+                  }"
                 ></el-time-picker>
               </el-form-item>
               
@@ -337,7 +346,7 @@ export default {
     this.handleGetVideoList()
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
       this.title = '编辑临时人群'
-      if (this.crowdType !== 2)  this.title = '查看'
+      if (this.crowdType === 3 || this.crowdType === 4)  this.title = '查看'
       // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
       this.$service
         .getTempCrowd({ launchCrowdId: this.editLaunchCrowdId })
@@ -375,7 +384,10 @@ export default {
             videoSourceIds:
               row.videoSource === '0' ? [] : row.videoSource.split(',')
           }
+
           this.status = this.editStatus
+          // 当是行为人群 或者 广告数据银行时，只能查看，不能编辑
+          if (this.crowdType === 3 || this.crowdType === 4) this.status = 2
         })
     } else {
       this.title = '新增临时人群'

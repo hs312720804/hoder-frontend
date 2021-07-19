@@ -68,17 +68,17 @@
                             label: '接口名称',
                             prop: 'name',
                             render: (h, params) => {
-                                        return h('el-button', {
-                                            props: {
-                                                type: 'text'
-                                            },
-                                            on: {
-                                                click: () => {
-                                                    this.handleRead(params)
-                                                }
-                                            }
-                                        }, params.row.name)
+                                return h('el-button', {
+                                    props: {
+                                        type: 'text'
+                                    },
+                                    on: {
+                                        click: () => {
+                                            this.handleRead(params)
+                                        }
                                     }
+                                }, params.row.name)
+                            }
                         },
                         // {
                         //     label: '名称',

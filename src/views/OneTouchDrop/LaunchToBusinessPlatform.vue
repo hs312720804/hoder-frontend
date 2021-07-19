@@ -84,6 +84,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+                
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
@@ -121,8 +122,11 @@
                 </el-form-item>
                 <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
                     <el-time-picker
-                            v-model="crowdForm.autoLaunchTime"
-                            value-format="HH:mm:ss"
+                        v-model="crowdForm.autoLaunchTime"
+                        value-format="HH:mm:ss"
+                        :picker-options="{
+                            selectableRange: '9:00:00 - 23:59:59'
+                        }"
                     ></el-time-picker>
                 </el-form-item>
                 <el-form-item label="数据类型">
@@ -205,6 +209,11 @@
             ...mapGetters(['policyId'])
         },
         methods: {
+            /*
+                行为人群和普通人群不能混用；
+                行为人群只能选择一个；
+                普通人群可以多选；
+            */
             handelCheckoutGroup (val, index, crowdData) {
                 // console.log(val)
                 // console.log(index)
@@ -372,7 +381,6 @@
                                     this.$emit('resetFormData')
                                 }
                             }).catch((err) => {
-                                debugger
                                 if (err.message.indexOf('已存在') === -1) {
                                     if (this.routeSource) {
                                         this.$router.push({

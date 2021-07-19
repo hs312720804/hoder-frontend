@@ -1,4 +1,10 @@
 <template>
+<!-- 
+    crowdType
+    2：临时人群
+    3：行为人群
+    4：广告数据银行
+ -->
     <div class="temp-label-list">
         <div class="header">
             <div v-if="!showSelection">
@@ -52,8 +58,8 @@
                         width="55"
                         v-if="showSelection"
                 ></el-table-column>
-                <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
-                <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
+                <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
+                <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
                 <el-table-column prop="count" label="使用次数">
@@ -79,7 +85,7 @@
                                 计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
                             </div>
                             <div v-else>
-                                {{(launchStatusEnum[scope.row.history.status]).name}}
+                                {{ (launchStatusEnum[scope.row.history.status]).name }}
                             </div>
                         </div>
                     </template>
@@ -162,8 +168,9 @@
                                             <!--v-permission="'hoder:launch:crowd:ver:index'"-->
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
+                                    <!-- v-if="(scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))" -->
                                     <el-dropdown-item
-                                        v-if="crowdType === 2 && (scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))"
+                                        v-if="(scope.row.history.status && (launchStatusEnum[scope.row.history.status]).code !== 2)"
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除
@@ -283,8 +290,8 @@
                             prop: 'launch_name'
                         },
                         {
-                            label: '投放ID（dmp_crowd_id）',
-                            prop: 'launch_crowd_id'
+                            label: 'dmp人群ID',
+                            prop: 'dmp_crowd_id'
                         },
                         // {
                         //     label: '临时人群（SQL）指令',
@@ -333,6 +340,14 @@
                         {
                             label: '临时人群同步日期',
                             prop: 'update_time'
+                        },
+                        {
+                            label: '版本是否删除',
+                            render: (h, params) => {
+                                return h('div', {}, [
+                                    h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+                                ])
+                            }
                         }
                     ],
                     data: []
@@ -469,6 +484,7 @@
                 })
                 .then(() => {
                     this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
+                    // this.$service.delNewTempCrowd({launchCrowdId}, "删除成功").then(() => {
                         this.fetchData()
                     })
                 })

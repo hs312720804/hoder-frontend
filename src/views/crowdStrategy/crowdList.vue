@@ -319,13 +319,13 @@
                     @click="divideAB(scope.row,'addABTest')"
             >AB实验
             </el-button>
-            <el-button
+            <!-- <el-button
                     :disabled="isShowTest(scope.row)"
                     size="small"
                     type="text"
                     @click="handleOpenTestDialog(scope.row)"
             >投前测试
-            </el-button>
+            </el-button> -->
             <el-dropdown @command="handleCommandOpreate">
               <el-button size="small" type="text">
                 更多
@@ -699,26 +699,31 @@
     </el-dialog>
       <!--已划分弹窗显示-->
       <el-dialog :visible.sync="showDivideDetail" title="划分详情">
-          <el-table :data="DivideTableData" style="width: 100%;" stripe border>
-              <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
-              <el-table-column prop="crowdName" label="人群名称"></el-table-column>
-              <el-table-column prop="ratio" label="占比">
-                  <template slot-scope="scope">
-                      {{scope.row.ratio}}%
-                  </template>
-              </el-table-column>
-              <el-table-column prop="count" label="数量">
+
+        <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
+          实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+        </div>
+
+        <el-table :data="DivideTableData" style="width: 100%;" stripe border>
+            <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
+            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+            <el-table-column prop="ratio" label="占比">
                 <template slot-scope="scope">
-                  {{cc_format_number(scope.row.count)}}
+                    {{ scope.row.ratio }}%
                 </template>
-              </el-table-column>
-              <el-table-column label="操作" width="250">
-                  <template slot-scope="scope">
-                      <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                      <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
-                  </template>
-              </el-table-column>
-          </el-table>
+            </el-table-column>
+            <el-table-column prop="count" label="数量">
+              <template slot-scope="scope">
+                {{cc_format_number(scope.row.count)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
       </el-dialog>
       <commit-history-dialog
               :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
@@ -1077,24 +1082,20 @@ export default {
       // }
   },
   methods: {
-    /**
-     * mac 改变的时候触发
-     */
-    handleMacChange () {
-      this.testResult = ''
-    },
-    handleTest () {
-      this.$refs.formTest.$refs.form.validate((valid) => {
-        if (valid) {
-          this.$service.polisyTest(this.formTest).then((data) => {
-             this.testResult = data.result
-          })
-        }
-      })
-    },
-      /**
-       * 投前测试
-       */
+      /* mac 改变的时候触发*/
+      handleMacChange () {
+        this.testResult = ''
+      },
+      handleTest () {
+        this.$refs.formTest.$refs.form.validate((valid) => {
+          if (valid) {
+            this.$service.polisyTest(this.formTest).then((data) => {
+              this.testResult = data.result
+            })
+          }
+        })
+      },
+      /* 投前测试*/
       isShowTest (item) {
         // eslint-disable-next-line no-debugger
         debugger

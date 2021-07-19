@@ -94,15 +94,16 @@
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                     <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds">
+                            <el-checkbox-group v-model="crowdForm.policyCrowdIds"  @change="handelCheckoutGroup($event, index, crowdData)">
                                 <el-checkbox
                                         v-for="item in v.childs"
                                         :label="v.policyId+'_'+item.crowdId"
                                         :key="item.crowdId+''"
-                                        :disabled="item.canLaunch === false"
+                                        :disabled="item.canLaunch === false || item.isDisabledCrowd"
                                 >{{item.crowdName}}
                                 </el-checkbox>
                             </el-checkbox-group>
+                            <span style="color: red">单次仅可投放一个包含行为标签的人群</span>
                         </el-form-item>
                     </div>
                     <div v-else>
@@ -142,8 +143,11 @@
                 </el-form-item>
                 <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1">
                     <el-time-picker
-                            v-model="crowdForm.autoLaunchTime"
-                            value-format="HH:mm:ss"
+                        v-model="crowdForm.autoLaunchTime"
+                        value-format="HH:mm:ss"
+                        :picker-options="{
+                            selectableRange: '9:00:00 - 23:59:59'
+                        }"
                     ></el-time-picker>
                 </el-form-item>
                 <el-form-item label="数据类型">
@@ -224,6 +228,62 @@
             }
         },
         methods: {
+            /*
+                行为人群和普通人群不能混用；
+                行为人群只能选择一个；
+                普通人群可以多选；
+            */
+            handelCheckoutGroup (val, index, crowdData) {
+                // console.log(val)
+                // console.log(index)
+                // console.log(crowdData)
+
+                const crowdList = crowdData[index].childs
+                const policyId = crowdData[index].policyId
+
+                // 选中的对象list
+                let checkedList = crowdList.filter(item => {
+                    const flag = val.includes(policyId+'_'+item.crowdId)
+                    return flag
+                }) || []
+
+                // 若无选中，则全部恢复可选状态
+                if (checkedList.length === 0) {
+                    this.crowdData[index].childs.forEach(item => {
+                        item.isDisabledCrowd = false
+                    })
+                    this.$set(this.crowdData, index, this.crowdData[index])
+                }
+
+                for (let i = 0; i < checkedList.length; i++ ) {
+                    let obj = checkedList[i]
+                    if (obj.isBehaviorCrowd) { // 选了行为人群
+                        this.crowdData[index].childs.forEach(item => {
+                            if (obj.crowdId === item.crowdId) {
+                                item.isDisabledCrowd = false
+                            } else {
+                                item.isDisabledCrowd = true
+                            }
+                        })
+                        this.$set(this.crowdData, index, this.crowdData[index])
+                        break;
+                    } else { // 选了普通人群
+                        this.crowdData[index].childs.forEach(item => {
+                            if (item.isBehaviorCrowd) {
+                                item.isDisabledCrowd = true
+                            } else {
+                                item.isDisabledCrowd = false
+                            }
+                        })
+                        this.$set(this.crowdData, index, this.crowdData[index])
+                        break;
+                    }
+
+                }
+                
+                console.log('this.crowdData==', this.crowdData)
+
+            },
             handleGetCurrentPolicy() {
                 this.$service.getAddCrowdData().then((data) => {
                     this.Platforms = data.biLists
@@ -259,11 +319,26 @@
                             newDataForm.push({Pid: item, childs: data[0].childs[item]})
                         })
                         this.crowdData = newDataForm
-                    }else {
+                    } else {
                         this.crowdData = data
                     }
+                    this.crowdData = this.crowdData.map(policy => {
+                        policy.childs = policy.childs.map(item => {
+                            let isBehaviorCrowd = false
+                            let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+                            if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
+                                isBehaviorCrowd = true
+                            }
+
+                            return {
+                                ...item,
+                                isBehaviorCrowd: isBehaviorCrowd, // 是否为行为人群
+                                isDisabledCrowd: false // 是否禁用
+                            }
+                        })
+                        return policy
+                    })
                 })
-                .catch(() => {})
             },
             // pull模式保存
             savePullData() {
@@ -285,6 +360,11 @@
             },
             // push模式保存
             savePushData () {
+                // crowdForm.policyCrowdIds
+                // v.policyId+'_'+item.crowdId
+                const checkedCrowd = this.crowdData[0].childs.find(item => {
+                    return this.crowdForm.policyCrowdIds[0] === this.crowdData[0].policyId+'_'+item.crowdId
+                })
                 let crowdForm = JSON.stringify(this.crowdForm)
                 crowdForm = JSON.parse(crowdForm)
                 const formData = {
@@ -301,13 +381,16 @@
                     autoLaunchTime: crowdForm.autoLaunchTime,
                     launchCrowdId: crowdForm.launchCrowdId
                 }
+
+                if (checkedCrowd.isBehaviorCrowd) formData.tempCrowdId = checkedCrowd.behaviorTempCrowdId // push 行为人群需要传 tempCrowdId
+
                 const calTypes = crowdForm.calType
                 // crowdForm.biIds = crowdForm.biIds.join(",")
                 // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
                 // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
                 //     return v.split("_")[1]
                 // }).join(",")
-                this.$service.saveAddMultiVersionCrowd({model: 0,data: formData}).then((data) => {
+                this.$service.saveAddMultiVersionCrowd({model: checkedCrowd.isBehaviorCrowd ? 3:0,data: formData}).then((data) => {
                     this.handleEstimate(calTypes,data.launchCrowdId)
                 }).catch(e=> {
                     this.handlePushError(e)
@@ -328,7 +411,7 @@
                     return
                 }
                 let calIdType = calTypes.map((item) => item).join(',')
-                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id,calIdType: calIdType },"push投放成功").then(() => {
+                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id, calIdType: calIdType },"push投放成功").then(() => {
                     if(this.crowdForm.launchMode.pull) {
                         this.savePushDataSuccess = true
                     } else {

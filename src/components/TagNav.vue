@@ -136,7 +136,12 @@ class TagHistory {
             }
         },
         watch: {
-            $route: 'handleRouteChange'
+            $route: 'handleRouteChange',
+            tags: {
+                handler(val) {
+                    this.$emit('setCurrentTags', val)
+                }
+            }
         },
         methods: {
             getTitle ({ meta, name }) {
@@ -190,22 +195,26 @@ class TagHistory {
                 const minValue = 0
                 this.cursor = Math.max(minValue, Math.min(this.cursor + value, maxValue))
             },
+
             handleRouteChange (route) {
                 this.addTag(route)
                 this.$nextTick(this.scrollIntoView)
             },
+
             handleForward () {
                 const history = this.tagHistories[this.$route.meta.tagId]
                 if (history) {
                     history.go(-1)
                 }
             },
+
             handleBack () {
                 const history = this.tagHistories[this.$route.meta.tagId]
                 if (history) {
                     history.go(-1)
                 }
             },
+
             addTag (route) {
                 const meta = route.meta
                 if (meta && meta.tagId) {

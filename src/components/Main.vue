@@ -119,18 +119,20 @@
           </el-dropdown>
         </div>
       </el-header>
-      <TagNav ref="tag" :init-tags="initTags" class="tagNav"/>
+
+      <TagNav ref="tag" :init-tags="initTags" @setCurrentTags="setCurrentTags" class="tagNav"/>
+
       <el-main>
         <keep-alive :exclude="noCacheMenu">
-          <router-view v-if="isKeepAlive"/>
+          <router-view v-if="isKeepAlive && isCache"/>
         </keep-alive>
-        <router-view v-if="!isKeepAlive" :key="$route.fullpath"/>
+        <router-view v-if="!(isKeepAlive && isCache)" :key="$route.fullpath"/>
       </el-main>
     </el-container>
   </el-container>
 </template>
 <script>
-    import TagNav from './TagNav'
+    import TagNav from './TagNav.vue'
     export default {
         components: {
             TagNav
@@ -198,7 +200,9 @@
                 unReadMessage: undefined,
                 showMoreUpdate: false,
                 showMoreSystem: false,
-                noCacheMenu: []
+                noCacheMenu: [],
+                currentTags: [], // 现在已打开的菜单
+                isCache: true // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
             };
         },
         watch: {
@@ -206,8 +210,9 @@
         },
         computed: {
             isKeepAlive() {
-                const meta = this.$route.meta;
-                return meta && meta.isCache !== false;
+              // 根据路由信息判断是否需要缓存
+              const meta = this.$route.meta;
+              return meta && meta.isCache !== false;
             },
             // defaultMenu() {
             //   const mainRoute = this.$router.options.routes.find(item => {
@@ -246,20 +251,37 @@
             }
         },
         methods: {
+            setCurrentTags(val) {
+              this.currentTags = val
+            },
+
             handleRouteChange () {
-                if (this.$route.name === 'oneTouchDrop') {
-                    this.activeRouteName = 'strategyList'
-                } else if (this.$route.name === 'specialTag') {
-                    this.activeRouteName = 'labelSquare'
-                } else {
-                    this.activeRouteName = this.$route.name
-                }
+              if (this.$route.name === 'oneTouchDrop') {
+                  this.activeRouteName = 'strategyList'
+              } else if (this.$route.name === 'specialTag') {
+                  this.activeRouteName = 'labelSquare'
+              } else {
+                  this.activeRouteName = this.$route.name
+              }
+              
+              // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
+              const meta = this.$route.meta;
+
+              const obj = this.currentTags.find(item => {
+                return item.meta.tagId === meta.tagId
+              })
+
+              if (obj) { // 菜单在已打开的菜单中存在，则缓存
+                this.isCache = true // 缓存
+              } else {
+                this.isCache = false // 不缓存
+              }
 
             },
             getRouter (url) {
                 const name = this.routerMap[url] + 'AA'
                 this.noCacheMenu.push(name)
-                this.$router.push({name:this.routerMap[url]})
+                this.$router.push({name: this.routerMap[url]})
                 this.$nextTick(() => {
                     this.noCacheMenu = []
                 })
@@ -267,7 +289,7 @@
             handleDropdownCommand (command) {
                 if (command === "logout") {
                     this.$logout().then(() => {
-                        this.$router.push({ name: "login" });
+                      this.$router.push({ name: "login" });
                     });
                 }
             },

@@ -110,10 +110,16 @@
                             {{(launchStatusEnum[scope.row.history.status]).name}}
                         </span>
                         <span v-else>
-                              <el-tooltip placement="right-start">
+                            {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
+                            <!-- <el-tooltip placement="right-start">
                                 <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
-                                  <span class="uneffective"><span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{(launchStatusEnum[scope.row.history.status]).name}}</span><span class="circle">?</span></span>
-                              </el-tooltip>
+                                <span class="uneffective">
+                                    <span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">
+                                        {{(launchStatusEnum[scope.row.history.status]).name}}
+                                    </span>
+                                    <span class="circle">?</span>
+                                </span>
+                            </el-tooltip> -->
                         </span>
                     </span>
                     <!--<el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>-->
@@ -204,7 +210,7 @@
                                     size="small"
                                     type="text"
                                     @click="lanuch(scope.$index, scope.row)"
-                            >投放</el-button>
+                            >投123放</el-button>
                             <el-button
                                     v-else
                                     v-permission="'hoder:launch:crowd:ver:cancel'"
@@ -414,7 +420,7 @@
                     <div>第三步：勾选计算的类型</div>
                     <el-form-item label="">
                         <el-checkbox-group v-model="divideForm.calType" aria-required="true">
-                            <el-checkbox v-for="(item,index) in divideEstimateItems" :label="parseInt(item.value)" :key="index">{{item.label}}</el-checkbox>
+                            <el-checkbox v-for="(item, index) in divideEstimateItems" :label="parseInt(item.value)" :key="index">{{item.label}}</el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
                     <div>
@@ -429,14 +435,20 @@
         <el-dialog :visible.sync="showCountFailDialog" title="计算失败">
             <div class="count-fail-text">计算失败，原因可能是sql出错或者大数据计算失败，若想再次计算，请重新点击【投放】按钮</div>
         </el-dialog>
+
         <!-- 自定义人群 划分详情弹窗 -->
         <el-dialog :visible.sync="showDivideDetailDialog" title="划分详情">
+
+            <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
+                实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+            </div>
+
             <el-table :data="DivideTableData" style="width: 100%;" stripe border>
                 <el-table-column prop="id" label="投放子ID"></el-table-column>
                 <el-table-column prop="launchName" label="人群名称"></el-table-column>
                 <el-table-column prop="ratio" label="占比">
                     <template slot-scope="scope">
-                        {{scope.row.ratio}}%
+                        {{ scope.row.ratio }}%
                     </template>
                 </el-table-column>
                 <el-table-column prop="count" label="数量"></el-table-column>
@@ -945,6 +957,7 @@
             
             // 修改状态
             lanuch (index, row) {
+                this.currentLaunchRow = row
                 this.currentLaunchId = row.launchCrowdId
                 this.showEstimate = true
                 // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
@@ -959,15 +972,24 @@
                     this.estimateItems = data
                 })
             },
+
             handleEstimate (calTypes) {
                 if (calTypes.length === 0) {
                     this.$message.error('请至少选择一个要投放的人群')
                     return
                 }
                 let calIdType = calTypes.map((item) => item).join(',')
-                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
-                    this.showEstimate = false
-                    this.callback()
+                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType },"投放成功").then(() => {
+                    // 行为人群需要 lua 一下
+                    // if (this.currentLaunchRow.isFxFullSql === 3) {
+                    //     this.$service.freshCache({policyId: this.currentLaunchRow.policyIds}).then(() => {
+                    //         this.showEstimate = false
+                    //         this.callback()
+                    //     })
+                    // } else {
+                        this.showEstimate = false
+                        this.callback()
+                    // }
                 })
             },
 

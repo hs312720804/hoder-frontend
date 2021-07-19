@@ -91,7 +91,17 @@ export default {
             time.getTime() > dateRange
           )
         }
-      }
+      },
+      timeTagKongList: []
+    }
+  },
+  watch: {
+    form: {
+      handler(val){
+        // console.log('form-form-new-val-rules------------', val.rulesJson[0].rulesJson.rules[0].rules[0])
+        // console.log('form-form-new-val-value------------', val.rulesJson[0].rulesJson.rules[0].rules[0].value)
+      },
+      deep: true
     }
   },
   props: ['recordId'],
@@ -106,6 +116,7 @@ export default {
       //   )
       //   return
       // }
+      this.timeTagKongList = []
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
         if (!rulesJson[index].crowdName) {
@@ -138,10 +149,20 @@ export default {
         let i,
           j = 0
         // 判断是否有未填写的项
+
         for (i = 0; i < ruleLength; i++) {
           for (j = 0; j < rules[i].rules.length; j++) {
             let rulesItem = rules[i].rules[j]
-            if (rulesItem.value === '') {
+           
+            // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
+            const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
+            if (isTimeTagKong) {
+              if (!this.timeTagKongList.includes(rulesItem.tagName)) {
+                this.timeTagKongList.push(rulesItem.tagName)
+              }
+            }
+            
+            else if ( rulesItem.value === '') {
               this.$message.error(
                 '请正确填写第' +
                   (index + 1) +
@@ -153,7 +174,8 @@ export default {
               )
               flag = false
               break
-            } else if (
+            } 
+            else if (
               rulesItem.tagType === 'time' &&
               rulesItem.isDynamicTime === 3
             ) {
@@ -262,8 +284,6 @@ export default {
       //     return
       // }
 
-      
-
       this.$refs['form'].validate(valid => {
             if (valid) {
               if (!this.validateForm(form.rulesJson)) {
@@ -293,113 +313,60 @@ export default {
               })
 
               let allList = rangeFormList.concat(typeFormList)
-
-              if (allList.length > 0) {
-                // 使用Promise.all去校验结果
-                Promise.all(allList.map(this.getFormPromise)).then(res => {
-                  const validateResult = res.every(item => !!item)
-                  
-                  if (validateResult) {
-                    form.rulesJson = form.rulesJson.map(e => {
-                      // e.purpose = form.purpose
-                      e.tagIds = e.tagIds.join(',')
-                      e.rulesJson.rules = e.rulesJson.rules.map(item => {
-                        item.rules.forEach(rulesItem => {
-                          if (
-                            rulesItem.tagType === 'string' &&
-                            rulesItem.operator === 'null'
-                          ) {
-                            rulesItem.operator = '='
-                          }
-                        })
-                        return item
-                      })
-                      e.rulesJson = JSON.stringify(e.rulesJson)
-                      e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
-                      e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
-                      e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
-                      // e.crowdValidFrom = form.crowdExp[0]
-                      // e.crowdValidTo = form.crowdExp[1]
-                      e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
-                      return e
-                    })
-                    if (mode === 0) {
-                      this.$service
-                        .oneDropSaveCrowd(
-                          { recordId: this.recordId, data: form.rulesJson },
-                          '保存成功'
-                        )
-                        .then(() => {
-                          // this.$root.$emit('stratege-list-refresh')
-                          // this.$router.push({ path: 'launch/strategyList' })
-                          this.$emit('handleDirectStrategyListBrother')
-                          this.$emit('resetFormData')
-                        })
-                    } else {
-                      this.$service
-                        .tempCrowds(
-                          { rulesJson: form.rulesJson, recordId: this.recordId },
-                          '保存成功'
-                        )
-                        .then(data => {
-                          this.$emit('handleToNextStep', this.recordId, data)
-                        })
-                    }
-                  } else {
-                    this.$message.error('请输入必填项')
-                  }
-                }).catch(() => {
-                  this.$message.error('请至少设置一个行为标签规则')
-                })
-              } else { // 没有行为标签的
-                form.rulesJson = form.rulesJson.map(e => {
-                  // e.purpose = form.purpose
-                  e.tagIds = e.tagIds.join(',')
-                  e.rulesJson.rules = e.rulesJson.rules.map(item => {
-                    item.rules.forEach(rulesItem => {
-                      if (
-                        rulesItem.tagType === 'string' &&
-                        rulesItem.operator === 'null'
-                      ) {
-                        rulesItem.operator = '='
+              
+              // 选择了属性为空的 time 类型的标签, 需要提示
+              if (this.timeTagKongList.length > 0) {
+                const tip = this.timeTagKongList.join(',')
+                const h = this.$createElement;
+                this.$msgbox({
+                  title: '配置提醒',
+                  message: h('p', null, [
+                    h('span', null, `${tip}`),
+                    h('span', null, `标签的属性为空，请确认是否继续?`),
+                    h('div', {style: 'color: red'}, 'PS：标签为空代表要圈出该属性为空的人群')
+                  ]),
+                  showCancelButton: true,
+                  confirmButtonText: '继续',
+                  cancelButtonText: '取消',
+                }).then(() => {
+                  // 有行为标签的
+                  if (allList.length > 0) {
+                    // 使用Promise.all去校验结果
+                    Promise.all(allList.map(this.getFormPromise)).then(res => {
+                      const validateResult = res.every(item => !!item)
+                      
+                      if (validateResult) {
+                        this.fetchSave(form, mode)
+                      } else {
+                        this.$message.error('请输入必填项')
                       }
+                    }).catch(() => {
+                      this.$message.error('请至少设置一个行为标签规则')
                     })
-                    return item
-                  })
-                  e.rulesJson = JSON.stringify(e.rulesJson)
-                  e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
-                  e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
-                  e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
-                  // e.crowdValidFrom = form.crowdExp[0]
-                  // e.crowdValidTo = form.crowdExp[1]
-                  e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
-                  return e
+                  } else { // 没有行为标签的
+                    this.fetchSave(form, mode)
+                  }
                 })
-                if (mode === 0) {
-                  this.$service
-                    .oneDropSaveCrowd(
-                      { recordId: this.recordId, data: form.rulesJson },
-                      '保存成功'
-                    )
-                    .then(() => {
-                      // this.$root.$emit('stratege-list-refresh')
-                      // this.$router.push({ path: 'launch/strategyList' })
-                      this.$emit('handleDirectStrategyListBrother')
-                      this.$emit('resetFormData')
-                    })
-                } else {
-                  this.$service
-                    .tempCrowds(
-                      { rulesJson: form.rulesJson, recordId: this.recordId },
-                      '保存成功'
-                    )
-                    .then(data => {
-                      this.$emit('handleToNextStep', this.recordId, data)
-                    })
+              } else {
+                // 有行为标签的
+                if (allList.length > 0) {
+                  // 使用Promise.all去校验结果
+                  Promise.all(allList.map(this.getFormPromise)).then(res => {
+                    const validateResult = res.every(item => !!item)
+                    
+                    if (validateResult) {
+                      this.fetchSave(form, mode)
+                    } else {
+                      this.$message.error('请输入必填项')
+                    }
+                  }).catch(() => {
+                    this.$message.error('请至少设置一个行为标签规则')
+                  })
+                } else { // 没有行为标签的
+                  this.fetchSave(form, mode)
                 }
               }
-
-              
+          
             } else {
               this.$message.error('请检查表单各项是否填写完整')
               return false
@@ -409,13 +376,67 @@ export default {
       
       
     },
+    // 请求创建人群接口
+    fetchSave(form, mode) {
+      form.rulesJson = form.rulesJson.map(e => {
+        // e.purpose = form.purpose
+        e.tagIds = e.tagIds.join(',')
+        e.rulesJson.rules = e.rulesJson.rules.map(item => {
+          item.rules.forEach(rulesItem => {
+            if (
+              rulesItem.tagType === 'string' &&
+              rulesItem.operator === 'null'
+            ) {
+              rulesItem.operator = '='
+            }
+            // 多选的值，保存的时候需要转成字符串 2222
+            if (rulesItem.tagType === 'string') {
+              rulesItem.value = rulesItem.value.join(',')
+            }
+
+          })
+          return item
+        })
+        e.rulesJson = JSON.stringify(e.rulesJson)
+        e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
+        e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
+        e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
+        // e.crowdValidFrom = form.crowdExp[0]
+        // e.crowdValidTo = form.crowdExp[1]
+        e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
+        return e
+      })
+      if (mode === 0) {
+        this.$service
+          .oneDropSaveCrowd(
+            { recordId: this.recordId, data: form.rulesJson },
+            '保存成功'
+          )
+          .then(() => {
+            // this.$root.$emit('stratege-list-refresh')
+            // this.$router.push({ path: 'launch/strategyList' })
+            this.$emit('handleDirectStrategyListBrother')
+            this.$emit('resetFormData')
+          })
+      } else {
+        this.$service
+          .tempCrowds(
+            { rulesJson: form.rulesJson, recordId: this.recordId },
+            '保存成功'
+          )
+          .then(data => {
+            this.$emit('handleToNextStep', this.recordId, data)
+          })
+      }
+    },
     handleEdit() {
       const recordId = this.recordId
       // let purpose = undefined
       // let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then(data => {
-        console.log(data)
-        data = data.map(e => {
+        // eslint-disable-next-line no-debugger
+        // debugger
+        const data2 = data.map(e => {
           // if (index === 0) {
           // purpose = e.purpose
           // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
@@ -436,15 +457,23 @@ export default {
               ) {
                 rulesEachItem.operator = 'null'
               }
+              // 多选的值，回显的时候需要转成数组 2222
+              if (rulesEachItem.tagType === 'string') {
+                rulesEachItem.value = rulesEachItem.value.split(',')
+              }
             })
           })
           return e
         })
+
+
         this.form = {
           // purpose,
-          rulesJson: data
+          rulesJson: data2
           // crowdExp
         }
+
+        // alert(JSON.stringify(this.form))
       })
     },
     handleBackPrevStep() {

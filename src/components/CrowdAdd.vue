@@ -18,60 +18,77 @@
             </el-form-item>
             <div style="position: relative">
 
-            <div v-if="tags.length > 0">
-              <el-form-item label="设置标签" required>
-                <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
+              <div v-if="tags.length > 0">
+                <el-form-item label="设置标签" required>
+                  <!-- {{ crowd.rulesJson }} -->
+                  <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
+                </el-form-item>
+              </div>
+
+              <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
+                <el-button
+                        type="danger"
+                        @click="handleConditionChange(crowd)"
+                        round
+                        :key="i+'condition'"
+                >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+              
+              <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+              {{ crowd.dynamicPolicyJson.link }} -->
+              </div>
+
+              <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+                <MultipleActionTagSelect 
+                  ref="multipleActionTagSelect"
+                  :actionTags="actionTags" 
+                  :behaviorRulesJson="crowd.behaviorRulesJson" 
+                  :crowd="crowd"
+                  :i="i">
+                </MultipleActionTagSelect>
               </el-form-item>
-            </div>
 
-            <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
-              <el-button
-                      type="danger"
-                      @click="handleConditionChange(crowd)"
-                      round
-                      :key="i+'condition'"
-              >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
-            
-            <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
-            123
-            {{ crowd.dynamicPolicyJson.link }} -->
-            </div>
+              <el-form-item label="动态因子" v-if="specialTags.length > 0">
+                <MultipleSelect 
+                  :specialTags="specialTags" 
+                  :dynamicPolicyJson="crowd.dynamicPolicyJson" 
+                  :crowd="crowd" 
+                  :i="i">
+                </MultipleSelect>
+              </el-form-item>
 
-            <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
-              <MultipleActionTagSelect 
-                ref="multipleActionTagSelect"
-                :actionTags="actionTags" 
-                :behaviorRulesJson="crowd.behaviorRulesJson" 
-                :crowd="crowd"
-                :i="i">
-              </MultipleActionTagSelect>
+              <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
+                <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
+              </el-form-item> -->
+            </div>
+            <!-- {{ crowd.isShowAutoVersion }}
+            {{ crowd.autoVersion }} -->
+            <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion" > 
+              <el-radio-group v-model="crowd.autoVersion">
+                <el-radio :label="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+              </el-radio-group>
             </el-form-item>
 
-            <el-form-item label="动态因子" v-if="specialTags.length > 0">
-              <MultipleSelect :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MultipleSelect>
-            </el-form-item>
-
-            <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
-              <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
-            </el-form-item> -->
-            
-            </div>
             <el-form-item label="是否限制投放数量" prop="limitLaunch">
               <el-radio-group v-model="crowd.limitLaunch">
                 <el-radio  :label="false">否</el-radio>
                 <el-radio  :label="true">是</el-radio>
               </el-radio-group>
             </el-form-item>
+
             <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
               <el-input-number size="medium" placeholder="不能大于100万" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
             </el-form-item>
+
             <el-form-item label="备注" :prop="formProp('remark')">
               <el-input v-model="crowd.remark" placeholder="备注"></el-input>
             </el-form-item>
+
             <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
               <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
             </el-form-item>
           </el-collapse-item>
+
           <a class="app-params__remove-param" @click="handleRemoveParam(i)">
             <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
           </a>
@@ -146,6 +163,7 @@ export default {
     value: 'setInputValue'
   },
   computed: {
+    // 没有行为标签，只有大数据标签这一栏时，不展示【行为标签】这一栏。
     hasBehaviorTag() {
       return this.actionTags.some(item => item.dataSource === 8)
     }
@@ -166,48 +184,103 @@ export default {
     formProp (key) {
       return (this.propPrefix || '') + key
     },
-    setInputValue (val) {
-      if (val !== this.inputValue) {
-          if (val.length > 0) {
-              this.inputValue = val
-              this.setSeq()
-          }else {
-              if (this.inputValue.length > 0) {
-                  return
+
+    // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
+    hasMoveBehaviorTagRule() {
+      // eslint-disable-next-line no-debugger
+      // debugger
+      this.inputValue.forEach((crowd) => {
+        const behaviorRules = crowd.behaviorRulesJson.rules
+        let hasBehaviorRule = false
+        let hasMoveRule = false
+        if (behaviorRules.length > 0) {
+
+          hasBehaviorRule = true
+          // eslint-disable-next-line no-debugger
+          // debugger
+     
+          for (let x = 0; x < behaviorRules.length; x++) {
+            let rule = behaviorRules[x]
+            for (let y = 0; y < rule.rules.length; y++) {
+              let item = rule.rules[y]
+              if (item.bav.rangeType === 'move') {
+                hasMoveRule = true
+                break;
               }
-              this.inputValue.push(
-                  {
-                      'recordId': this.getRecordId(),
-                      'tempCrowdId': undefined,
-                      'crowdName': undefined,
-                      'tagIds': [],
-                      'purpose': undefined,
-                      'remark': undefined,
-                      'crowdOrder': length + 1,
-                      'rulesJson': {
-                          condition: 'OR',
-                          rules: []
-                      },
-                      'behaviorRulesJson': {
-                          link: 'AND',
-                          condition: 'OR',
-                          rules: []
-                      },
-                      'dynamicPolicyJson': {
-                          link: 'AND',
-                          condition: 'AND',
-                          rules: []
-                      },
-                      'limitLaunch': false,
-                      'limitLaunchCount': undefined,
-                      total0: undefined
-                  }
-              )
-              this.setSeq()
+            }
           }
-      }
+        }
+        // eslint-disable-next-line no-debugger
+        // debugger
+        if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
+          // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
+          if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+            crowd.autoVersion = true 
+          }
+          crowd.isShowAutoVersion = true
+          // crowd.autoVersion = true
+        } else {
+          crowd.isShowAutoVersion = false
+          crowd.autoVersion = false
+        }
+
+      })
+
     },
-    emitInputValue () {
+
+    setInputValue (val) {
+      // eslint-disable-next-line no-debugger
+      debugger
+      if (val !== this.inputValue) {
+        if (val.length > 0) {
+          this.inputValue = JSON.parse(JSON.stringify(val))
+          this.setSeq()
+          
+        } else { // 初始化
+            if (this.inputValue.length > 0) {
+              return
+            }
+            this.inputValue.push(
+              {
+                'recordId': this.getRecordId(),
+                'tempCrowdId': undefined,
+                'crowdName': undefined,
+                'tagIds': [],
+                'purpose': undefined,
+                'remark': undefined,
+                'crowdOrder': length + 1,
+                'rulesJson': {
+                    condition: 'OR',
+                    rules: []
+                },
+                'behaviorRulesJson': {
+                    link: 'AND',
+                    condition: 'OR',
+                    rules: []
+                },
+                'dynamicPolicyJson': {
+                    link: 'AND',
+                    condition: 'AND',
+                    rules: []
+                },
+                'autoVersion': false,
+                'isShowAutoVersion': false,
+                'limitLaunch': false,
+                'limitLaunchCount': undefined,
+                total0: undefined
+              }
+            )
+            this.setSeq()
+        }
+
+      }
+      // eslint-disable-next-line no-debugger
+      debugger
+      // console.log('122222222222222222------------>', this.inputValue)
+
+    },
+    emitInputValue (val) {
+      this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
       this.$emit('input', this.inputValue)
     },
     handleAddParam () {
@@ -243,6 +316,8 @@ export default {
               condition: 'OR',
               rules: []
           },
+          'autoVersion': false,
+          'isShowAutoVersion': false,
           'limitLaunch': false,
           'limitLaunchCount': undefined,
           total0: undefined
@@ -256,7 +331,7 @@ export default {
     setSeq () {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
-        e.crowdOrder = index + 1
+        e.crowdOrder = index+1
         return e
       })
     },
@@ -320,7 +395,7 @@ export default {
 .el-icon-remove-outline
   width 20px
   height 20px
-.app-params__remove-param
+.app-params__remove-param 
   display inline-block
   cursor pointer
   width 26px

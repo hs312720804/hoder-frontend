@@ -1,166 +1,188 @@
 <template>
     <div>
-        <el-form :model="outForm" inline label-width="100px" class="first-form">
-            <el-form-item label="MAC地址：">
-                <el-input v-model="outForm.MAC" clearable></el-input>
+        <div class="title">查询指定MAC的命中情况</div>
+        <el-form :model="form" ref="form" :rules="rules" :inline="true">
+            <el-form-item label="人群id：" prop="crowdId">
+                <el-input v-model="form.crowdId" clearable></el-input>
             </el-form-item>
-            <el-form-item label="策略ID：">
-                <el-input v-model="outForm.policyId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label=" ">
-                <el-checkbox v-model="outForm.auto">自动填充参数</el-checkbox>
-            </el-form-item>
-        </el-form>
-        <el-form :model="form" inline label-width="100px" class="second-form">
-            <el-form-item label="devId：">
-                <el-input v-model="form.devId" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="reqSource：">
-                <el-input v-model="form.reqSource" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="devInfo：">
-                <el-input v-model="form.devInfo" clearable></el-input>
-            </el-form-item>
-            <el-form-item label="mac：">
+               <!-- <el-form-item label="设备信息：" prop="mac"> -->
+            <el-form-item label="MAC地址" prop="mac">
                 <el-input v-model="form.mac" clearable></el-input>
             </el-form-item>
-            <el-form-item label="policyIds：">
-                <el-input v-model="form.policyIds" clearable></el-input>
+            <el-form-item label="日期：" prop="date">
+                <!-- <el-select v-model="form.date">
+                    <el-option
+                            v-for="(item,index) in dateList"
+                            :label="item"
+                            :key="index"
+                            :value="item.replace(/-/g,'.')"
+                    ></el-option>
+                </el-select> -->
+                <el-date-picker
+                  v-model="form.date"
+                  type="date"
+                  value-format="yyyy-MM-dd"
+                  :picker-options="pickerOptions"
+                  clearable
+                >
+                </el-date-picker>
             </el-form-item>
-            <el-form-item label="uniqueFlag：">
-                <el-radio :label="true" v-model="form.uniqueFlag">是</el-radio>
-                <el-radio :label="false" v-model="form.uniqueFlag">否</el-radio>
-            </el-form-item>
-            <el-form-item label=""></el-form-item>
-            <el-form-item label=" ">
+            <el-form-item>
                 <el-button type="primary" @click="handleSearch">查询</el-button>
-                <el-button type="info" @click="handleReset">重置</el-button>
-                <el-button v-show="showNext" type="success" @click="handleNext">下一条</el-button>
             </el-form-item>
         </el-form>
-        <div class="content" v-if="resultContent">
-            <pre><code>{{resultContent}}</code></pre>
+        <div>
+            <!-- <div>
+                <div>人群：</div>
+                <div class="result" v-if="crowdForm.crowd">
+                    <div class="result-item">
+                        {{crowdForm.crowd}}
+                    </div>
+                </div>
+                <div v-else class="no-result">暂无数据</div>
+            </div>
+            <div>
+                <div>该设备对应的人群条件是：</div>
+                <div class="result" v-if="crowdForm.condition.length > 0">
+                    <div v-for="(item,index) in crowdForm.condition" :key="index" class="result-item">
+                        <div>{{item.date}}</div>
+                        <div>{{item.thisMacTagValues}}</div>
+                    </div>
+                </div>
+                <div v-else class="no-result">暂无数据</div>
+            </div> -->
+            <div v-if="list.length > 0">
+                <div>
+                    命中情况：
+                    总条数： {{this.pagination.total}}
+                </div>
+                <div class="result">
+                    <div v-for="(item,index) in list" :key="index" class="result-item">
+                        <div>
+                            <span style="display: inline-block; width: 150px;">{{ item.mac }}</span>
+                            <span>命中时间：{{ item.hitDate }}</span>
+                        </div>
+                        <!-- <div>{{item.reason}}</div> -->
+                    </div>
+                </div>
+                <el-pagination
+                    layout="prev, pager, next"
+                    :total="pagination.total"
+                    :page-size="pagination.pageSize"
+                    :current-page="pagination.pageNum"
+                    @current-change="handleCurrentChange"
+                >
+                </el-pagination>
+            </div>
+            <div v-else>{{ noneText }}</div>
         </div>
     </div>
 </template>
 
 <script>
     export default {
-        name: "hitSearchAA",
+        name: "CrowdValidateAA",
         data () {
             return {
-                form: this.genForm(),
-                outForm: this.genOutForm(),
-                pageNum: 0,
-                pageSize: 1,
-                showNext: false,
-                resultContent: undefined
-            }
-        },
-        watch: {
-            'outForm.auto': function(val) {
-                if (val) {
-                    this.handleGetAutoData()
-                } else {
-                    this.form = this.genForm()
-                }
+                form: {
+                    mac: '',
+                    crowdId: '',
+                    date: ''
+                },
+                pagination: {
+                    pageSize: 10,
+                    pageNum: 1,
+                    total: 0
+                },
+                crowdForm: {
+                    crowd: '',
+                    condition: [],
+                    match: []
+                },
+                dateList: [],
+                rules: {
+                    // mac: {required: true, message: '请输入mac', trigger: 'blur'},
+                    crowdId: {required: true, message: '请输入人群id', trigger: 'blur'}
+                },
+                pickerOptions: {
+                    disabledDate:(time)=> {
+                        const day1 =  30 * 24 * 3600 * 1000
+                        let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+                        let minTime = Date.now() - day1
+                        return time.getTime() > maxTime || time.getTime() < minTime
+                    }
+                },
+                list: [],
+                noneText: ''
             }
         },
         methods: {
-            genForm (preset) {
-                return {
-                    devId: undefined,
-                    devInfo: undefined,
-                    policyIds: undefined,
-                    reqSource: undefined,
-                    mac: undefined,
-                    uniqueFlag: undefined,
-                    ...preset
+            getFilter () {
+                const filter = {
+                    mac: this.form.mac,
+                    crowdId: this.form.crowdId,
+                    date: this.form.date,
+                    pageSize: this.pagination.pageSize,
+                    pageNum: this.pagination.pageNum
                 }
-            },
-            genOutForm (present) {
-                return {
-                    MAC: undefined,
-                    policyId: undefined,
-                    auto: false,
-                    ...present
-                }
-            },
-            handleReset () {
-                this.form = this.genForm()
-                this.outForm = this.genOutForm()
-                this.resultContent = undefined
-                this.showNext = false
+                return filter
             },
             handleSearch () {
-                const form = this.form
-                this.$service.getHitSearchData(form).then(data => {
-                    if (data) {
-                       this.resultContent = data
-                    } else {
-                        this.resultContent = '暂无数据'
+                this.$refs.form.validate(valid => {
+                    if(valid) {
+                      const filter = this.getFilter()
+                      // this.$service.launchHelpCrowdIndex(filter).then(data => {
+                      this.$service.newLaunchHelpCrowdIndex(filter).then(data => {
+                        this.pagination.total = data.pageInfo.total
+                        // this.crowdForm.crowd = data.fx || '暂无数据'
+                        // this.crowdForm.condition = data.historyCondition || []
+                        // this.crowdForm.match = data.historyResMatch || []
+                        this.list = data.pageInfo.list || '暂无数据'
+                        if (this.list === undefined || this.list.length === 0) {
+                          this.noneText = '无命中记录'
+                        }
+                      })
                     }
-
                 })
             },
-            checkOutForm () {
-                const form = this.outForm
-                if (form.MAC || form.policyId){
-                    return true
-                } else {
-                    this.$message.error('MAC或策略ID至少得填一项！')
-                    return false
-                }
+            handleCurrentChange(val) {
+                this.pagination.pageNum = val
+                this.handleSearch()
             },
-            parseAutoFilter () {
-                const form = this.outForm
-                return {
-                    MAC: form.MAC,
-                    policyId: form.policyId,
-                    pageSize: this.pageSize,
-                    pageNum: this.pageNum
-                }
+            formatDate (d) {
+                const time = new Date(d)
+                let y = time.getFullYear(); // 年份
+                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
+                let r = time.getDate().toString().padStart(2,'0'); // 日子
+                return `${y}-${m}-${r}`
             },
-            handleGetAutoData () {
-                const checkOutFormFlag = this.checkOutForm()
-                if (checkOutFormFlag) {
-                    const filter = this.parseAutoFilter()
-                    this.$service.getAutoFilledParams(filter).then(data => {
-                        if (data.length > 0) {
-                            this.form = data[0]
-                            this.showNext = true
-                        } else {
-                            this.showNext = false
-                        }
-                    })
+            setDateData () {
+                const a = []
+                for (let i=0;i<5;i++) {
+                    a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
                 }
-            },
-            handleNext () {
-                this.pageNum = this.pageNum + 1
-                this.handleGetAutoData()
+                this.dateList = a
+                this.form.date = a[1]
             }
+        },
+        created () {
+            // this.setDateData()
         }
     }
 </script>
 
 <style lang="stylus" scoped>
-.content
+.result
+    border 1px dashed #333
+    padding 0 20px
     margin 20px
-    border 1px solid #ccc
-    padding 20px
-.first-form
-    border-bottom 1px dashed #ccc
+    overflow auto
+    .result-item
+        margin 20px 0
+.red--text
+    color red
+.title
     margin-bottom 20px
-.first-form >>> .el-form-item--mini.el-form-item,
-.first-form >>> .el-form-item--small.el-form-item
-    width 29%
-.first-form >>> .el-form-item--mini.el-form-item:nth-child(2),
-.first-form >>> .el-form-item--small.el-form-item:nth-child(2)
-    width 26%
-.second-form >>> .el-form-item--mini.el-form-item:nth-child(odd),
-.second-form >>> .el-form-item--small.el-form-item:nth-child(odd)
-    width 55%
-.second-form >>> .el-form-item--mini.el-form-item:nth-child(even),
-.second-form >>> .el-form-item--small.el-form-item:nth-child(even)
-    width 32%
+.no-result
+    margin 20px
 </style>

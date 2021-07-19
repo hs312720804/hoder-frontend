@@ -1,5 +1,5 @@
 import Main from '@/components/Main'
-import Wrapper from '@/components/Wrapper.vue'
+// import Wrapper from '@/components/Wrapper.vue'
 import Login from '@/views/Login'
 import TagGroup from '@/views/TagGroup/Index.vue'
 import strategyList from '@/views/crowdStrategy/index'

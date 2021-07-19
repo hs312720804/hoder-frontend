@@ -78,6 +78,7 @@
                         )
                       "
                     >
+                      <!-- number 类型 -->
                       <template v-if="childItem.tagType === 'number'">
                         <el-option value="="></el-option>
                         <el-option value=">="></el-option>
@@ -85,6 +86,8 @@
                         <el-option value=">"></el-option>
                         <el-option value="<"></el-option>
                       </template>
+
+                      <!-- time 类型 -->
                       <template
                         v-if="
                           childItem.tagType === 'time' &&
@@ -97,6 +100,8 @@
                         <el-option value=">"></el-option>
                         <el-option value="<"></el-option>
                       </template>
+
+                      <!-- string 或者 mix 类型 -->
                       <template
                         v-if="
                           childItem.tagType === 'string' ||
@@ -108,14 +113,19 @@
                         <el-option value="like" label="包含"></el-option>
                         <el-option value="null" label="为空"></el-option>
                       </template>
+
+                      <!-- boolean 类型 -->
                       <template v-if="childItem.tagType === 'boolean'">
                         <el-option value="=" label="="></el-option>
                       </template>
+
+                      <!-- collect 类型 -->
                       <template v-if="childItem.tagType === 'collect'">
                         <el-option value="=" label="是"></el-option>
                         <el-option value="!=" label="不是"></el-option>
                       </template>
                     </el-select>
+
                     <el-select
                       v-show="
                         childItem.tagType === 'time' &&
@@ -131,56 +141,61 @@
                     </el-select>
                   </span>
                   <span class="in">
+                    <!-- time 类型 -->
                     <span v-if="childItem.tagType === 'time'">
-                      <template v-if="childItem.isDynamicTime === 2">
-                        <el-select
-                          class="time-dot-select"
-                          :key="n + 'timeKey'"
-                          v-model="childItem.dynamicTimeType"
-                        >
-                          <el-option :value="1" label="在当日之前"></el-option>
-                          <el-option :value="2" label="在当日之后"></el-option>
-                        </el-select>
-                        <span>
-                          <el-input
-                            class="time-dot-input"
+                      <template v-if="childItem.dateAreaType !== 0">
+                        <template v-if="childItem.isDynamicTime === 2">
+                          <el-select
+                            class="time-dot-select"
+                            :key="n + 'timeKey'"
+                            v-model="childItem.dynamicTimeType"
+                          >
+                            <el-option :value="1" label="在当日之前"></el-option>
+                            <el-option :value="2" label="在当日之后"></el-option>
+                          </el-select>
+                          <span>
+                            <el-input
+                              class="time-dot-input"
+                              v-model="childItem.value"
+                              @blur="checkNum(childItem.value)"
+                            ></el-input
+                            >天
+                          </span>
+                        </template>
+                        <template v-if="childItem.isDynamicTime === 1">
+                          <el-date-picker
                             v-model="childItem.value"
-                            @blur="checkNum(childItem.value)"
-                          ></el-input
-                          >天
-                        </span>
-                      </template>
-                      <template v-if="childItem.isDynamicTime === 1">
-                        <el-date-picker
-                          v-model="childItem.value"
-                          type="date"
-                          placeholder="选择日期"
-                          format="yyyy-MM-dd"
-                          value-format="yyyy-MM-dd"
-                          :key="index + 'key'"
-                        ></el-date-picker>
-                      </template>
-                      <template v-if="childItem.isDynamicTime === 3">
-                        <span>
-                          <el-input
-                            class="time-dot-input"
-                            style="width: 60px"
-                            v-model="childItem.startDay"
-                            @blur="checkNumMostFour(childItem.startDay)"
-                          ></el-input
-                          >天~
-                        </span>
-                        <span>
-                          <el-input
-                            class="time-dot-input"
-                            style="width: 106px"
-                            v-model="childItem.endDay"
-                            @blur="bigNum(childItem)"
-                          ></el-input
-                          >天
-                        </span>
+                            type="date"
+                            placeholder="选择日期"
+                            format="yyyy-MM-dd"
+                            value-format="yyyy-MM-dd"
+                            :key="index + 'key'"
+                          ></el-date-picker>
+                        </template>
+                        <template v-if="childItem.isDynamicTime === 3">
+                          <span>
+                            <el-input
+                              class="time-dot-input"
+                              style="width: 60px"
+                              v-model="childItem.startDay"
+                              @blur="checkNumMostFour(childItem.startDay)"
+                            ></el-input
+                            >天~
+                          </span>
+                          <span>
+                            <el-input
+                              class="time-dot-input"
+                              style="width: 106px"
+                              v-model="childItem.endDay"
+                              @blur="bigNum(childItem)"
+                            ></el-input
+                            >天
+                          </span>
+                        </template>
                       </template>
                     </span>
+
+                    <!-- string 、 collect 、 mix 类型 -->
                     <template
                       v-else-if="
                         (childItem.tagType === 'string' ||
@@ -253,14 +268,16 @@
                           </el-select>
                         </div>
                         <!-- 官方-地域标签 end-->
+
                         <el-select
                           v-else
                           v-model="childItem.value"
+                          multiple
                           class="inline-input"
                           filterable
                           :key="index + 'select'"
                           default-first-option
-                          placeholder="请输入或选择"
+                          placeholder="请输入或选择222"
                           :disabled="cache[childItem.tagId].select"
                           @change="
                             citySelectChange(
@@ -282,12 +299,16 @@
                         </div>
                       </template>
                     </template>
+                    
+                    <!-- number 类型 -->
                     <el-input-number
                       v-else-if="childItem.tagType === 'number'"
                       :key="index + 'input'"
                       v-model="childItem.value"
                       placeholder="请输入内容"
                     ></el-input-number>
+
+                    <!-- 其他 -->
                     <el-select
                       v-else
                       v-model="childItem.value"
@@ -311,38 +332,40 @@
                     </el-select>
                   </span>
                   <span v-if="childItem.tagType === 'time'">
-                    <el-button
-                      :key="childItem.tagId + n"
-                      @click="changeTimeWays(childItem)"
-                      v-if="childItem.isDynamicTime !== 3"
-                    >
-                      <span v-if="childItem.isDynamicTime === 2"
-                        >切换到具体时间点</span
+                    <template v-if="childItem.dateAreaType !== 0">
+                      <el-button
+                        :key="childItem.tagId + n"
+                        @click="changeTimeWays(childItem)"
+                        v-if="childItem.isDynamicTime !== 3"
                       >
-                      <span v-if="childItem.isDynamicTime === 1"
-                        >切换至时间天数</span
+                        <span v-if="childItem.isDynamicTime === 2"
+                          >切换到具体时间点</span
+                        >
+                        <span v-if="childItem.isDynamicTime === 1"
+                          >切换至时间天数</span
+                        >
+                      </el-button>
+                      <el-button
+                        v-if="childItem.isDynamicTime !== 3"
+                        @click="
+                          childItem.isDynamicTime = 3
+                          childItem.dateAreaType = 0
+                          childItem.operator = 'between'
+                          childItem.value = childItem.startDay + '-' + childItem.endDay
+                        "
+                        >切换至新方案
+                      </el-button>
+                      <el-button
+                        v-if="childItem.isDynamicTime === 3"
+                        @click="
+                          childItem.isDynamicTime = 2
+                          childItem.dynamicTimeType = 1
+                          childItem.operator = '='
+                          childItem.value = ''
+                        "
+                        >切换至旧方案</el-button
                       >
-                    </el-button>
-                    <el-button
-                      v-if="childItem.isDynamicTime !== 3"
-                      @click="
-                        childItem.isDynamicTime = 3
-                        childItem.dateAreaType = 0
-                        childItem.operator = 'between'
-                        childItem.value = childItem.startDay + '-' + childItem.endDay
-                      "
-                      >切换至新方案
-                    </el-button>
-                    <el-button
-                      v-if="childItem.isDynamicTime === 3"
-                      @click="
-                        childItem.isDynamicTime = 2
-                        childItem.dynamicTimeType = 1
-                        childItem.operator = '='
-                        childItem.value = ''
-                      "
-                      >切换至旧方案</el-button
-                    >
+                    </template>
                   </span>
                   <template v-if="cache[childItem.tagId]">
                     <span
@@ -378,6 +401,10 @@
                   </span>
               </div>
 
+              <span>
+                <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
+              </span>
+
               <span class="i" @click="handleRemoveSpecialRule(item, childItem)" style="display:inline-block; height: 30px">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
@@ -385,7 +412,7 @@
             </div>
 
             <div class="label-add">
-              <div class="optional-condition" >
+              <div class="optional-condition">
                 <el-tag
                   class="oc-item"
                   v-for="tagItem in actionTags"
@@ -568,8 +595,7 @@ export default {
         this.fetchAllTagSuggestions()
       },
       immediate: true
-    },
-    
+    }
   },
   methods: {
     // 111111111111111111
@@ -712,9 +738,18 @@ export default {
         })
       }
     },
+
+    // 复制标签规则
+    handelCopyRule(rule, childRule, index) {
+      const childRuleCopy = JSON.parse(JSON.stringify(childRule))
+      rule.rules.splice(index+1, 0, childRuleCopy) // 复制到当前选中位置后面
+    },
+
+    // 删除
     handleRemoveSpecialRule(rule, childRule) {
       const rulesJson = this.behaviorRulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
+      // 当没有标签规则时，去除标签栏
       if (rule.rules.length === 0) {
         rulesJson.rules = rulesJson.rules.filter(function(item) {
           return item !== rule

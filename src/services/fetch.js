@@ -42,6 +42,8 @@ export default function fetch({
       }
     })
     .catch(e => {
+      // 异常时，跳转至登录页
+      // location.href = location.origin + location.pathname + '#/login'
       NProgress.done();
       throw e;
     });
