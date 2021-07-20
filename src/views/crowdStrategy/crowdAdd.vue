@@ -675,15 +675,17 @@ export default {
         for (j = 0; j < rules[i].rules.length; j++) {
           let rulesItem = rules[i].rules[j]
 
+          // 多选的值，保存的时候需要转成字符串 2222
+          if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
+            rulesItem.value = rulesItem.value.join(',')
+          }
           // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
           const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
           if (isTimeTagKong) {
             if (!this.timeTagKongList.includes(rulesItem.tagName)) {
               this.timeTagKongList.push(rulesItem.tagName)
             }
-          }
-
-          else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
             this.$message.error(
               '请正确填写第' +
                 (i + 1) +
@@ -693,10 +695,7 @@ export default {
             )
             rulesFlag = false
             break
-          } else if (
-            rulesItem.tagType === 'time' &&
-            rulesItem.isDynamicTime === 3
-          ) {
+          } else if ( rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
             if (
               this.checkNumMostFour(rulesItem.startDay) &&
               this.checkNumMostFour(rulesItem.endDay)
@@ -728,17 +727,10 @@ export default {
               rulesFlag = false
               break
             }
-          } else if (
-            rulesItem.tagType === 'string' &&
-            rulesItem.operator === 'null'
-          ) {
+          } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
             rulesItem.operator = '='
           }
-          // 多选的值，保存的时候需要转成字符串 2222
-          // if (rulesItem.tagType === 'string') {
-          if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
-            rulesItem.value = rulesItem.value.join(',')
-          }
+          
           if (!rulesFlag) break
         }
         if (!rulesFlag) break
