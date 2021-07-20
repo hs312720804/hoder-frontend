@@ -735,7 +735,8 @@ export default {
             rulesItem.operator = '='
           }
           // 多选的值，保存的时候需要转成字符串 2222
-          if (rulesItem.tagType === 'string') {
+          // if (rulesItem.tagType === 'string') {
+          if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
             rulesItem.value = rulesItem.value.join(',')
           }
           if (!rulesFlag) break
@@ -1004,8 +1005,9 @@ export default {
                 tagIds.push(childItem.tagId)
               }
               // 多选的值，保存的时候需要转成字符串 2222
-              if (childItem.tagType === 'string') {
-                childItem.value = childItem.value.join(',')
+              // if (childItem.tagType === 'string') {
+              if (childItem.tagType === 'string' && childItem.operator !== 'null') {
+                childItem.value = Array.isArray(childItem.value) ? childItem.value.join(',') : childItem.value
               }
             })
           })
@@ -1272,7 +1274,8 @@ export default {
               item.operator = 'null'
             }
             // 多选的值，回显的时候需要转成数组 2222
-            if (item.tagType === 'string') {
+            // if (item.tagType === 'string') {
+            if (item.tagType === 'string' && item.operator !== 'null') {
               item.value = item.value.split(',')
             }
             if (item.tagType === 'time' && item.isDynamicTime === 3) {
@@ -1294,7 +1297,8 @@ export default {
         this.behaviorRulesJson.rules.forEach(ruleItem => {
           ruleItem.rules.forEach(rulesEachItem => {
             // 多选的值，回显的时候需要转成数组 2222
-            if (rulesEachItem.tagType === 'string') {
+            // if (rulesEachItem.tagType === 'string') {
+            if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
               rulesEachItem.value = rulesEachItem.value.split(',')
             }
           })

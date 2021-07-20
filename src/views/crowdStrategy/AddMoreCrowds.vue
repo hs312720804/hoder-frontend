@@ -462,7 +462,7 @@ export default {
               rulesItem.operator = '='
             }
             // 多选的值，保存的时候需要转成字符串 2222
-            if (rulesItem.tagType === 'string') {
+            if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
               rulesItem.value = rulesItem.value.join(',')
             }
 
@@ -475,7 +475,8 @@ export default {
         e.behaviorRulesJson.rules = e.behaviorRulesJson.rules.map(item => {
           item.rules.forEach(rulesItem => {
             // 多选的值，保存的时候需要转成字符串 2222
-            if (rulesItem.tagType === 'string') {
+            if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
+            // if (rulesItem.tagType === 'string') {
               rulesItem.value = rulesItem.value.join(',')
             }
           })
@@ -541,7 +542,8 @@ export default {
                 rulesEachItem.operator = 'null'
               }
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string') {
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
+              // if (rulesEachItem.tagType === 'string') {
                 rulesEachItem.value = rulesEachItem.value.split(',')
               }
             })
@@ -550,7 +552,8 @@ export default {
           e.behaviorRulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string') {
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
+              // if (rulesEachItem.tagType === 'string') {
                 rulesEachItem.value = rulesEachItem.value.split(',')
               }
             })

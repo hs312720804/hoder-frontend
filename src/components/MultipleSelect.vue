@@ -251,7 +251,7 @@
                       <el-select
                         v-else
                         v-model="childItem.value"
-                        :multiple="childItem.tagType === 'string'"
+                        :multiple="childItem.tagType === 'string' && childItem.operator !== 'null'"
                         class="inline-input"
                         filterable
                         :key="index + 'select'"
@@ -653,7 +653,7 @@
       </el-form>
       <div>
         <!-- 类型为 string 的 可以多选 -->
-        <el-checkbox-group v-if="currentChildItem.tagType === 'string'" v-model="checkboxValue">
+        <el-checkbox-group v-if="currentChildItem.tagType === 'string' && currentChildItem.operator !== 'null'" v-model="checkboxValue">
           <el-checkbox
             v-for="(tag, index) in tagList"
             :label="tag.attrValue"
