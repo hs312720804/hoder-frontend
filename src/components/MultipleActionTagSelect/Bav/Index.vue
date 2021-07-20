@@ -977,7 +977,7 @@ export default {
 
     qiBoRemoteMethod(query, source) {
       // 重新查询，不是滚动加载
-      if (this.qiboQuery !== query) { 
+      if (this.qiboQuery !== query) {
         this.qiBoOptions = []
         this.qiboParams.page = 1 // 页码归1 
       }

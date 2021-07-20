@@ -252,11 +252,10 @@
                         <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item
-                        v-if="crowdForm.crowdType === 0"
-                        label="选择策略"
-                        prop="policyIds"
-                        class="multipleSelect form-width"
+                <el-form-item v-if="crowdForm.crowdType === 0"
+                    label="选择策略"
+                    prop="policyIds"
+                    class="multipleSelect form-width"
                 >
                     <el-select
                             filterable
@@ -277,10 +276,10 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                <el-form-item
-                        label="选择人群"
-                        prop="policyCrowdIds"
-                        v-if="crowdForm.crowdType === 0"
+                <!-- 选择普通人群 -->
+                <el-form-item v-if="crowdForm.crowdType === 0"
+                    label="选择人群"
+                    prop="policyCrowdIds"
                 >
                     <div v-if="!crowdForm.abTest">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
@@ -309,15 +308,17 @@
                         </el-form-item>
                     </div>
                 </el-form-item>
+                
                 <!-- 选择临时人群 -->
-                <el-form-item
-                        label="选择人群"
-                        prop="tempCrowdId"
-                        v-if="crowdForm.crowdType === 1"
+                <el-form-item v-if="crowdForm.crowdType === 1"
+                    label="选择人群"
+                    prop="tempCrowdId"
+                        
                 >
                     <el-select
-                            filterable
-                            v-model="crowdForm.tempCrowdId"
+                        filterable
+                        v-model="crowdForm.tempCrowdId"
+                        v-loadmore="{'methord': handelLoadmore}"
                     >
                         <el-option
                                 v-for="item in tempCrowdList"
@@ -356,10 +357,9 @@
                 </el-form-item>
 
                 <!-- 选择行为人群 -->
-                <el-form-item
-                        label="选择人群"
-                        prop="tempCrowdId"
-                        v-if="crowdForm.crowdType === 3"
+                <el-form-item v-if="crowdForm.crowdType === 3"
+                    label="选择人群"
+                    prop="tempCrowdId"
                 >
                     <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
                     <!-- {{this.crowdForm.policyCrowdIds}} -->
@@ -665,7 +665,12 @@
                 accountDefine: false,
                 currentLaunchId: undefined,
                 behaviorCrowdList: [],
-                islaunchDirectly: false
+                islaunchDirectly: false,
+                tempListFilter: {
+                    pageNum: 1,
+                    pageSize: 2000
+                },
+                tempListpages: 0
             }
         },
         props: ["editLaunchCrowdId", "model","editStatus","parentSource","showAllParent"],
@@ -702,10 +707,12 @@
             }
         },
         created() {
+            this.tempCrowdList = []
+            this.tempListpages = 0
             this.getTempCrowdList()
             this.getAddList(this.model)
             this.handleGetVideoList()
-            if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
+            if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
                 this.title = "编辑"
                 this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
                     let row = data.launchCrowd
@@ -822,6 +829,14 @@
             }
         },
         methods: {
+            // 临时人群滚动加载
+            handelLoadmore() {
+                if (this.tempListFilter.pageNum < this.tempListpages) {
+                    this.tempListFilter.pageNum++ // 滚动加载翻页
+                    this.getTempCrowdList()
+                }
+            },
+
             handelBehaviorCrowdSelectChange(e, selectedV, list) {
                 this.crowdForm.policyIds = selectedV.split('_')[0].split(',')
                 const policyCrowdIds = selectedV.split('_')[1]
@@ -1161,12 +1176,9 @@
                 }
             },
             getTempCrowdList () {
-                const filter = {
-                    pageNum: 1,
-                    pageSize: 2000
-                }
-                this.$service.getCalculatedTempCrowdList(filter).then(data => {
-                    this.tempCrowdList = data.pageInfo.list
+                this.$service.getCalculatedTempCrowdList(this.tempListFilter).then(data => {
+                    this.tempListpages = data.pageInfo.pages
+                    this.tempCrowdList = this.tempCrowdList.concat(data.pageInfo.list)
                     // this.launchStatusEnum = data.launchStatusEnum
                     // this.tableData = data.pageInfo.list
                     // this.totalCount = data.pageInfo.total

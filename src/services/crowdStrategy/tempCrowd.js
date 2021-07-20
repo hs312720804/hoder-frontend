@@ -58,6 +58,7 @@ export function getNewTreeList(params) {
         params
     })
 }
+
 // 临时人群列表过滤掉还在计算中的
 export function getCalculatedTempCrowdList(params) {
     return this.fetch({
