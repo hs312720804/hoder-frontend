@@ -672,9 +672,30 @@
                             label: '投放ID（dmp_crowd_id）',
                             prop: 'launch_crowd_id'
                         },
+                        // {
+                        //     label: '临时人群（SQL）指令',
+                        //     prop: 'crowd_sql'
+                        // },
                         {
                             label: '临时人群（SQL）指令',
-                            prop: 'crowd_sql'
+                            prop: 'crowd_sql',
+                            render: (h, params) => {
+                                return h('el-tooltip',{
+                                    props: {
+                                        effect: 'dark',
+                                        content: params.row.crowd_sql,
+                                        placement:'top',
+                                    }
+                                }, 
+                                [
+                                    h('el-button', { 
+                                        props: {
+                                            type: 'text' 
+                                        }
+                                    }, params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : '')
+                                ]
+                                )
+                            }
                         },
                         {
                             label: '临时人群版本号',
@@ -1368,4 +1389,5 @@
     .el-button-group >>> .el-button
         float none
         margin 0 3px
+
 </style>

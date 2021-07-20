@@ -35,6 +35,13 @@ export default function fetch({
       } else if(codeFormat === 400001 || codeFormat === 9999) {
           location.href = location.origin + location.pathname + '#/login'
       } else {
+        console.log('errData==>', data)
+      //   if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {  
+      //     console.log(data);  
+      //     var currentUrl = window.location.href;  
+      //     window.location.href = currentUrl;  
+      //     return;  
+      // }  
         throw {
           code: data.code,
           message: data.msg
