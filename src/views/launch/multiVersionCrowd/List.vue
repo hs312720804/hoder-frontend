@@ -1389,5 +1389,4 @@
     .el-button-group >>> .el-button
         float none
         margin 0 3px
-
 </style>
