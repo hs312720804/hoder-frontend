@@ -280,7 +280,7 @@
                             filterable
                             :key="index + 'select'"
                             default-first-option
-                            placeholder="请输入或选择222"
+                            placeholder="请输入或选择"
                             :disabled="cache[childItem.tagId].select"
                             @change="
                               citySelectChange(
@@ -297,6 +297,7 @@
                               :value="item.attrValue"
                             ></el-option>
                           </el-select>
+                          <!-- <div> --------{{ childItem.value }} --- </div> -->
                           <div class="errorMsg">
                             {{ childItem.errorMsg ? childItem.errorMsg : '' }}
                           </div>
@@ -1174,6 +1175,8 @@ export default {
     handleOperatorChange(item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
+      } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
+        item.value = []
       } else {
         item.value = ''
       }

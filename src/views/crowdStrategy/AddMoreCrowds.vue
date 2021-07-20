@@ -141,9 +141,9 @@ export default {
             }
           }
         }
-        const rulesJsonData = JSON.parse(
-          JSON.stringify(rulesJson[index].rulesJson)
-        )
+
+        // ------------------- 普通标签规则校验 --------------------------
+        const rulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].rulesJson))
         const rules = JSON.parse(JSON.stringify(rulesJsonData.rules))
         const ruleLength = rules.length
         let i,
@@ -162,7 +162,7 @@ export default {
               }
             }
             
-            else if ( rulesItem.value === '') {
+            else if ( rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
               this.$message.error(
                 '请正确填写第' +
                   (index + 1) +
@@ -215,12 +215,84 @@ export default {
           }
         }
         if (!flag) break
-        const dynamicPolicyJson = JSON.parse(
-          JSON.stringify(rulesJson[index].dynamicPolicyJson)
-        )
-        const dynamicPolicyJsonRules = JSON.parse(
-          JSON.stringify(dynamicPolicyJson.rules)
-        )
+
+        // ------------------- 行为标签中的大数据标签规则校验 --------------------------
+        const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
+        const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
+        const behaviorRulesLength = behaviorRules.length
+        let x,
+          y = 0
+        // 判断是否有未填写的项
+
+        for (x = 0; x < behaviorRulesLength; x++) {
+          for (y = 0; y < behaviorRules[x].rules.length; y++) {
+            let rulesItem = behaviorRules[x].rules[y]
+           
+            // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
+            const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
+            if (isTimeTagKong) {
+              if (!this.timeTagKongList.includes(rulesItem.tagName)) {
+                this.timeTagKongList.push(rulesItem.tagName)
+              }
+            }
+            
+            else if ( rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+              this.$message.error(
+                '请正确填写第' +
+                  (index + 1) +
+                  '人群里第' +
+                  (x + 1) +
+                  '行为标签块里面的第' +
+                  (y + 1) +
+                  '行的值！'
+              )
+              flag = false
+              break
+            } 
+            else if (
+              rulesItem.tagType === 'time' &&
+              rulesItem.isDynamicTime === 3
+            ) {
+              if (
+                this.checkNum(rulesItem.startDay) &&
+                this.checkNum(rulesItem.endDay)
+              ) {
+                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                } else {
+                  this.$message.error(
+                    '第' +
+                      (index + 1) +
+                      '人群里面的第' +
+                      (x + 1) +
+                      '行为标签块里面的第' +
+                      (y + 1) +
+                      '行的天数值后面的值必须大于前面的'
+                  )
+                  flag = false
+                  break
+                }
+              } else {
+                this.$message.error(
+                  '第' +
+                    (index + 1) +
+                    '人群里面的第' +
+                    (x + 1) +
+                    '行为标签块里面的第' +
+                    (y + 1) +
+                    '行的值是大于等于0的整数且不能超过4位数'
+                )
+                flag = false
+                break
+              }
+            }
+          }
+        }
+        if (!flag) break
+
+        // ------------------- 动态因子规则校验 --------------------------
+        const dynamicPolicyJson = JSON.parse(JSON.stringify(rulesJson[index].dynamicPolicyJson))
+        const dynamicPolicyJsonRules = JSON.parse(JSON.stringify(dynamicPolicyJson.rules))
         const dynamicPolicyJsonRulesLength = dynamicPolicyJsonRules.length
         // 判断是否有未填写的项
         let n,
