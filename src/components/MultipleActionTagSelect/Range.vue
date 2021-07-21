@@ -218,6 +218,7 @@ export default {
       } else if (type === 'move') {
         this.childItem.bav.rang.value = ''
       }
+      if (type) this.$emit('hasMoveBehaviorTagRule')
     },
 
     // 判断是否有选择【天数】选项

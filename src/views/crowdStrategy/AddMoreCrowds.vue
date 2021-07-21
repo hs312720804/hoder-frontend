@@ -544,7 +544,6 @@ export default {
               }
             })
           })
-
           e.behaviorRulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {
               // 多选的值，回显的时候需要转成数组 2222
@@ -554,6 +553,7 @@ export default {
               }
             })
           })
+          e.isShowAutoVersion = false
 
           return e
         })
@@ -564,7 +564,11 @@ export default {
           rulesJson: data2
           // crowdExp
         }
-
+        // eslint-disable-next-line no-debugger
+        // 是否是否每日更新
+        this.$nextTick(()=> {
+          this.$refs.CrowdAdd.hasMoveBehaviorTagRule()
+        })
         // alert(JSON.stringify(this.form))
       })
     },

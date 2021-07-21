@@ -43,7 +43,9 @@
                   :actionTags="actionTags" 
                   :behaviorRulesJson="crowd.behaviorRulesJson" 
                   :crowd="crowd"
-                  :i="i">
+                  :i="i"
+                  @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
+                  >
                 </MultipleActionTagSelect>
               </el-form-item>
 
@@ -68,11 +70,11 @@
                 <el-radio :label="true">是</el-radio>
               </el-radio-group>
             </el-form-item>
-
+            <!-- ---{{ crowd.isShowAutoVersion }}--- -->
             <el-form-item label="是否限制投放数量" prop="limitLaunch">
               <el-radio-group v-model="crowd.limitLaunch">
-                <el-radio  :label="false">否</el-radio>
-                <el-radio  :label="true">是</el-radio>
+                <el-radio :label="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
               </el-radio-group>
             </el-form-item>
 
@@ -215,16 +217,19 @@ export default {
         if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
           // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
           if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
-            crowd.autoVersion = true 
+            crowd.autoVersion = true
           }
           crowd.isShowAutoVersion = true
+          // this.$set(this.inputValue, index, crowd)
           // crowd.autoVersion = true
         } else {
           crowd.isShowAutoVersion = false
           crowd.autoVersion = false
+          // this.$set(this.inputValue, index, crowd)
         }
 
       })
+      console.log('this.inputValue==>', this.inputValue)
 
     },
 
@@ -280,7 +285,7 @@ export default {
 
     },
     emitInputValue (val) {
-      this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
+      // this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
       this.$emit('input', this.inputValue)
     },
     handleAddParam () {
@@ -354,29 +359,30 @@ export default {
   },
   created () {
     if (this.value) {
-        this.$service.tagInfoNew(this.recordId).then(data => {
-            // this.tags = data
-            // console.log(data)
-            const normalTags = []
-            const actionTags = []
-            const specialTags = []
-            data.forEach(item => {
-                if (item.dataSource === 6) { // 效果指标
-                  specialTags.push(item)
-                } else if ( item.dataSource === 8 ) { // 行为标签
-                  actionTags.push(item)
-                } else if ( item.dataSource === 2 ) { // 大数据标签
-                  actionTags.push(item)
-                  normalTags.push(item)
-                } else {
-                  normalTags.push(item)
-                }
-            })
-            this.tags = normalTags
-            this.actionTags = actionTags
-            this.specialTags = specialTags
-            this.setInputValue(this.value)
-        })
+      this.$service.tagInfoNew(this.recordId).then(data => {
+          // this.tags = data
+          // console.log(data)
+          const normalTags = []
+          const actionTags = []
+          const specialTags = []
+          data.forEach(item => {
+              if (item.dataSource === 6) { // 效果指标
+                specialTags.push(item)
+              } else if ( item.dataSource === 8 ) { // 行为标签
+                actionTags.push(item)
+              } else if ( item.dataSource === 2 ) { // 大数据标签
+                actionTags.push(item)
+                normalTags.push(item)
+              } else {
+                normalTags.push(item)
+              }
+          })
+          this.tags = normalTags
+          this.actionTags = actionTags
+          this.specialTags = specialTags
+          this.setInputValue(this.value)
+      })
+      
     }
     this.$watch('inputValue', this.emitInputValue, {
       deep: true

@@ -59,6 +59,7 @@
                 :actionTags="actionTags" 
                 :behaviorRulesJson="behaviorRulesJson" 
               ></MultipleActionTagSelect>
+                <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
             </el-form-item>
 
             <el-form-item label="动态因子" v-if="specialTags.length > 0">

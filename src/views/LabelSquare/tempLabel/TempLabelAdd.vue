@@ -519,6 +519,7 @@ export default {
           ) {
             return
           }
+          if(this.crowdType === 2) {crowdForm.tempCrowd = true}
           if (
             this.editLaunchCrowdId != null &&
             this.editLaunchCrowdId != undefined

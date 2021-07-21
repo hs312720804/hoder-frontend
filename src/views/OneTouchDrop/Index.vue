@@ -95,6 +95,7 @@
                    console.log('this.$route.params.refresh==>', this.$route.params.refresh)
                     if (this.$route.params.refresh) {
                         // 刷新页面
+                        this.initTagList = []
                         this.reloadFlag = false
                         this.$nextTick(() => {
                             this.reloadFlag = true

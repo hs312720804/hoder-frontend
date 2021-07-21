@@ -48,6 +48,7 @@
                     :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
                     :options="bavAttrList[childItem.categoryCode]"
                     :show="showRange"
+                    @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
                   >
                   </Range>
                   <span @click="handelChangeShow" :class="showRange ? 'range-open' : 'range-close'" class="range">{{ showRange ? '收起' : '展开' }}</span> 
@@ -134,6 +135,7 @@
                       class="time-dot-select-new"
                       :key="n + 'timeKey'"
                       v-model="childItem.dateAreaType"
+                      @change="handelTimeTagTypeSelectChange(childItem)"
                     >
                       <el-option :value="0" label="空"></el-option>
                       <el-option :value="1" label="已过期"></el-option>
@@ -613,6 +615,19 @@ export default {
     }
   },
   methods: {
+    handelTimeTagTypeSelectChange(childItem) {
+      // 如果选择 【空】 则将 value 清空
+      if (childItem.dateAreaType == 0) {
+        childItem.value = '-'
+        childItem.startDay = ''
+        childItem.endDay = ''
+      } else {
+        childItem.value = ''
+      }
+    },
+    hasMoveBehaviorTagRule() {
+      this.$emit('hasMoveBehaviorTagRule')
+    },
     // 111111111111111111
     handelChangeShow () {
       // console.log('1234567890--', val)

@@ -706,11 +706,14 @@ export default {
       // this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
+      this.tableData = []
+      this.totalCount = 0
       // 如果是【我的人群】模块进入
       if (!this.showAll){
           this.$service.getMyCrowdList(this.criteria).then(data => {
-              const originalTableData = data.pageInfo.list
-              this.totalCount = data.pageInfo.total
+            if (data.pageInfo){
+              const originalTableData = data.pageInfo && data.pageInfo.list ? data.pageInfo.list : []
+              this.totalCount = data.pageInfo ? data.pageInfo.total : 0
               // 单独获得策略标签维度
               const currentStrategyIds = []
               originalTableData.forEach(item => {
@@ -722,6 +725,7 @@ export default {
                   })
                   this.tableData = originalTableData
               })
+            }
           });
           // this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
