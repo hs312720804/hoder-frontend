@@ -706,8 +706,7 @@ export default {
       // this.checkList = this.checkListFilter
       this.criteria["pageNum"] = this.currentPage
       this.criteria["pageSize"] = this.pageSize
-      this.tableData = []
-      this.totalCount = 0
+      
       // 如果是【我的人群】模块进入
       if (!this.showAll){
           this.$service.getMyCrowdList(this.criteria).then(data => {
@@ -725,11 +724,15 @@ export default {
                   })
                   this.tableData = originalTableData
               })
+            } else {
+              this.tableData = []
+              this.totalCount = 0
             }
           });
           // this.$appState.$set('GlobalStrategySource', this.parentSource)
       }else {
           this.$service.policyList(this.criteria).then(data => {
+            if (data.pageInfo){
               const originalTableData = data.pageInfo.list
               this.totalCount = data.pageInfo.total
               // 单独获得策略标签维度
@@ -743,6 +746,10 @@ export default {
                   })
                   this.tableData = originalTableData
               })
+            } else {
+              this.tableData = []
+              this.totalCount = 0
+            }
           });
           // this.$appState.$set('GlobalStrategySource', '')
       }

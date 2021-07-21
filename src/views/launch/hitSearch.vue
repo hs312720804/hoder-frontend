@@ -107,7 +107,8 @@
                 pickerOptions: {
                     disabledDate:(time)=> {
                         const day1 =  30 * 24 * 3600 * 1000
-                        let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+                        // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+                        let maxTime = Date.now()
                         let minTime = Date.now() - day1
                         return time.getTime() > maxTime || time.getTime() < minTime
                     }
