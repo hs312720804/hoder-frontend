@@ -97,6 +97,7 @@
                         // 刷新页面
                         this.initTagList = []
                         this.reloadFlag = false
+                        this.resetFormData() // 重置数据
                         this.$nextTick(() => {
                             this.reloadFlag = true
                         })

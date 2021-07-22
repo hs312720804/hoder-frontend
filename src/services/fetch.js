@@ -32,16 +32,16 @@ export default function fetch({
       const codeFormat = parseInt(data.code)
       if (codeFormat === 0 || codeFormat === 1000) {
           return isReturnAllInfor ? data : data.data;
-      } else if(codeFormat === 400001 || codeFormat === 9999) {
+      } else if (codeFormat === 400001 || codeFormat === 9999) {
           location.href = location.origin + location.pathname + '#/login'
       } else {
         console.log('errData==>', data)
-      //   if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {  
-      //     console.log(data);  
-      //     var currentUrl = window.location.href;  
-      //     window.location.href = currentUrl;  
-      //     return;  
-      // }  
+        if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {
+          console.log('401==>', data);  
+          var currentUrl = window.location.href;  
+          window.location.href = currentUrl;
+          return;  
+        }
         throw {
           code: data.code,
           message: data.msg
@@ -49,6 +49,8 @@ export default function fetch({
       }
     })
     .catch(e => {
+      console.log('errData==>', e)
+      // Error: Network Error
       // 异常时，跳转至登录页
       // location.href = location.origin + location.pathname + '#/login'
       NProgress.done();
