@@ -66,6 +66,8 @@ export default {
               condition: 'OR',
               rules: []
             },
+            autoVersion: false,
+            isShowAutoVersion: false,
             limitLaunch: false,
             limitLaunchCount: undefined
           }

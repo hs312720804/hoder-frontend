@@ -268,10 +268,10 @@ export default {
                     condition: 'AND',
                     rules: []
                 },
-                'autoVersion': false,
-                'isShowAutoVersion': false,
-                'limitLaunch': false,
-                'limitLaunchCount': undefined,
+                autoVersion: false,
+                isShowAutoVersion: false,
+                limitLaunch: false,
+                limitLaunchCount: undefined,
                 total0: undefined
               }
             )
