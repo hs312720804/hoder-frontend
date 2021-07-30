@@ -210,7 +210,7 @@
                                     size="small"
                                     type="text"
                                     @click="lanuch(scope.$index, scope.row)"
-                            >投123放</el-button>
+                            >投放</el-button>
                             <el-button
                                     v-else
                                     v-permission="'hoder:launch:crowd:ver:cancel'"

@@ -335,7 +335,7 @@
           <span class="w100">{{ item.name }}</span>
           <!-- {{item}} -->
           <span class="flex-row">
-              <!-- 推荐位 -->
+              <!-- 推荐位、板块位 -->
               <el-select
                 v-if="item.field === 'album_id'"
                 v-model="item.value"
@@ -355,7 +355,7 @@
                 </el-option>
               </el-select>
 
-              <!-- 版面版位 -->
+              <!-- 版面 -->
               <el-select
                 v-else
                 v-model="item.value"
@@ -370,7 +370,7 @@
                 <el-option
                   v-for="(item, index) in moOptions['forum_id']"
                   :key="'forum_id' + item.forumId + index"
-                  :label="item.albumName + '(' + item.forumId + ')'"
+                  :label="(item.forumName ? item.forumName : '') + '(' + item.forumId + ')'"
                   :value="item.forumId">
                 </el-option>
                 
