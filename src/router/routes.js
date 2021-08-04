@@ -721,7 +721,7 @@ const children = [
         path: 'specialTag',
         component: specialTag,
         meta: {
-            title: '特色标签',
+            title: '组合标签',
             tagId:"specialTag",
             hideInMenu: true,
             isCache: false

@@ -40,7 +40,7 @@
                 >
                 </my-collect>
             </el-tab-pane>
-            <el-tab-pane label="特色标签" name="specialTag">
+            <el-tab-pane label="组合标签" name="specialTag">
                 <special-tag
                         :tagName="myCollectTagName"
                         :checkList="checkList"
@@ -170,9 +170,7 @@
                     }
                 })
             },
-            handleCheckListChange (val) {
-                this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
-            },
+            
             handleTabChange () {
                 switch (this.activeName) {
                     case 'labelZone':
@@ -191,7 +189,7 @@
                         this.$root.$emit('temp-label-list-refresh-2')
                         break
                     case 'specialTag':
-                        //    刷新特色标签
+                        // 刷新组合标签
                         this.fetchCheckListData()
                         this.$root.$emit('special-tag-list-refresh')
                         break
@@ -257,6 +255,9 @@
                         this.tempCheckList = ['defineRemark']
                     }
                 })
+            },
+            handleCheckListChange (val) {
+                this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
             },
             handleTempCheckListChange (val) {
                 this.$service.saveListDimension({type: 5,behaviorShow: val.join(',')})

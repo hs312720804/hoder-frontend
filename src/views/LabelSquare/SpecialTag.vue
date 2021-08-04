@@ -1,5 +1,24 @@
 <template>
   <div class="my-collect">
+      <div class="header">
+            <div v-if="!showSelection">
+                <el-button
+                    @click="handleAdd"
+                    type="primary"
+                >
+                    新建
+                </el-button>
+            </div>
+            <div class="search-input">
+                <el-input
+                        placeholder="支持按人群名、ID搜索"
+                        class="header-input"
+                        v-model="launchName"
+                        @keyup.enter.native="fetchData"
+                ></el-input>
+                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+            </div>
+        </div>
       <tag-list
         :data-list="dataList"
         :data-source-enum="dataSourceEnum"
@@ -12,6 +31,28 @@
         :show-selection="showSelection"
       >
       </tag-list>
+
+      <el-dialog
+        title="新建种类"
+        :visible.sync="dialogVisible"
+        width="500px">
+            <el-form label-position="left" label-width="80px" :model="form">
+                <el-form-item label="名称" required>
+                    <el-input v-model="form.tagName"></el-input>
+                </el-form-item>
+                <el-form-item label="英文名" required>
+                    <el-input v-model="form.tagKey"></el-input>
+                </el-form-item>
+                <el-form-item label="备注">
+                    <el-input v-model="form.tagKey"></el-input>
+                </el-form-item>
+
+            </el-form>
+            <div slot="footer" class="dialog-footer">
+                <el-button @click="dialogVisible = false">取 消</el-button>
+                <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
+            </div>
+      </el-dialog>
   </div>
 </template>
 
@@ -54,10 +95,25 @@
                 },
                 dataSourceEnum: {},
                 typeEnum: {},
-                multipleSelection: []
+                multipleSelection: [],
+                dialogVisible: false,
+                form: {
+                    tagName: '',
+                    tagKey: ''
+                }
             }
         },
         methods: {
+            // 新增或编辑组合标签种类
+            handleAddOrEdit() {
+                this.$service.addSpecialTagType(this.form).then(res => {
+                    
+                })
+            },
+            // 新增组合标签
+            handleAdd () {
+                this.dialogVisible = true
+            },
             fetchData () {
                 const filter = this.filter
                 this.$service.specialTagList(filter).then(data => {
@@ -93,4 +149,17 @@
             margin 0 5px
     .my-collect
         margin-top 50px
+    .header
+        display flex
+        justify-content space-between
+        margin 10px 0
+    .search-input
+        position relative
+        display flex
+        width 30%
+    .icon-fixed
+        position absolute
+        top 8px
+        right 10px
+        transform rotate(-90deg)
 </style>

@@ -134,7 +134,7 @@ export function collectTagsList(params) {
         params
     })
 }
-// 标签列表之特色标签
+// 标签列表之组合标签
 export function specialTagList(params) {
     return this.fetch({
         method: 'get',
@@ -190,11 +190,20 @@ export function specialTagDetail({specialTagId}) {
 //     })
 // }
 
-// 创建、编辑特色标签第一步保存
+// 创建、编辑组合标签第一步保存
 export function saveSpecialTag(params) {
     return this.fetch({
         method: 'get',
         url: `api/specialTag/tagList`,
         params
+    })
+}
+
+// 组合标签添加
+export function addSpecialTagType(data) {
+    return this.fetch({
+        method: 'post',
+        url: `api/specialTag/tags`,
+        data
     })
 }

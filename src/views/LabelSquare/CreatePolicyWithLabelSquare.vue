@@ -41,7 +41,7 @@
             >
             </my-collect>
           </el-tab-pane>
-          <el-tab-pane label="特色标签" name="specialTag">
+          <el-tab-pane label="组合标签" name="specialTag">
                 <special-tag
                         :tagName="myCollectTagName"
                         :checkList="checkList"

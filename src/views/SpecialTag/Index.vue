@@ -3,30 +3,29 @@
         <div class="header">
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
                 <el-step title="第一步：挑选基础标签" icon="el-icon-edit"></el-step>
-                <el-step title="第二步：编辑特色标签" icon="el-icon-edit"></el-step>
+                <el-step title="第二步：编辑组合标签" icon="el-icon-edit"></el-step>
                 <!-- <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step> -->
             </el-steps>
         </div>
         <div>
                     <!-- :recordId="recordId" -->
             <new-create-policy
-                    @policyNextStep="handlePolicyNextStep"
-                    v-if="activeStep === 0"
-                    :initTagList="initTagList"
-                    :usedTagList="usedTagList"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList"
-            >
+                v-if="activeStep === 0"
+                :initTagList="initTagList"
+                @policyNextStep="handlePolicyNextStep"
+                :usedTagList="usedTagList"
+                @resetFormData="resetFormData"
+                @handleDirectStrategyList="handleDirectStrategyList">
             </new-create-policy>
      
                     <!-- :recordId="recordId" -->
             <create-crowd
-                    :initTagList="initTagList"
-                    @crowdNextStep="handleCrowdNextStep"
-                    @crowdPrevStep="handleCrowdPrevStep"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="activeStep === 1">
+                v-if="activeStep === 1"
+                :initTagList="initTagList"
+                @crowdNextStep="handleCrowdNextStep"
+                @crowdPrevStep="handleCrowdPrevStep"
+                @resetFormData="resetFormData"
+                @handleDirectStrategyList="handleDirectStrategyList">
             </create-crowd>
         
         </div>

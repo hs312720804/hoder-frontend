@@ -25,7 +25,14 @@
                     </el-form-item>
                 </el-form>
             </el-card>
-            <tag-region-tree v-if="tagCategory.tagKey === 'mix_area'" :tagId="tagId" @edit="handleEdit"></tag-region-tree>
+
+            <tag-region-tree
+                v-if="tagCategory.tagKey === 'mix_area'" 
+                :tagId="tagId" 
+                @edit="handleEdit"
+            >
+            </tag-region-tree>
+
             <device-tag-list 
                 v-else-if="tagCategory.tagKey === 'mix_device_level'" 
                 :tagId="tagId" 
@@ -36,7 +43,9 @@
                 @add="handleAdd"
             >
             </device-tag-list>
-            <tag-list :tag-category="tagCategory" v-else/>
+
+            <tag-list v-else :tag-category="tagCategory" />
+
         </template>
         <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
     </div>

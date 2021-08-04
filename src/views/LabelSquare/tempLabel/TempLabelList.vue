@@ -15,25 +15,25 @@
                 >
                     新建
                 </el-button>
-                    <el-popover
-                            placement="top"
-                            trigger="click"
-                            class="popover-button"
+                <el-popover
+                        placement="top"
+                        trigger="click"
+                        class="popover-button"
+                >
+                    <div>
+                        <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                            <el-checkbox label="creatorName">创建人</el-checkbox>
+                            <el-checkbox label="createTime">创建时间</el-checkbox>
+                            <!--<el-checkbox label="status">投放状态</el-checkbox>-->
+                            <el-checkbox label="department">业务部门</el-checkbox>
+                        </el-checkbox-group>
+                    </div>
+                    <i
+                        class="el-icon-cc-setting operate"
+                        slot="reference"
                     >
-                        <div>
-                            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                                <el-checkbox label="creatorName">创建人</el-checkbox>
-                                <el-checkbox label="createTime">创建时间</el-checkbox>
-                                <!--<el-checkbox label="status">投放状态</el-checkbox>-->
-                                <el-checkbox label="department">业务部门</el-checkbox>
-                            </el-checkbox-group>
-                        </div>
-                        <i
-                                class="el-icon-cc-setting operate"
-                                slot="reference"
-                        >
-                        </i>
-                    </el-popover>
+                    </i>
+                </el-popover>
             </div>
             <div class="search-input">
                 <el-input
@@ -553,7 +553,7 @@
                 }
             },
             handleCheckListChange (val) {
-                this.$emit('change-checkList',val)
+                this.$emit('change-checkList', val)
             }
         }
     }

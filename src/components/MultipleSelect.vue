@@ -881,7 +881,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    // 获取特色标签列表
+    // 获取组合标签列表
     fetchSpecialTagSuggestions(tagId, tagKey) {
       const filter = {
         tagId,
@@ -1207,7 +1207,7 @@ export default {
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)
         }
-        // 特色标签的 id 集合
+        // 组合标签的 id 集合
         if (cacheSpecialIds.length !== 0) {
           cacheSpecialIds.forEach(item => {
             this.fetchSpecialTagSuggestions(item.tagId, item.tagCode)
