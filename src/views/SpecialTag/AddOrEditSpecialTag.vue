@@ -61,6 +61,7 @@
         @keyup.enter.native="handleSearch"
       >
       </el-input>
+      
       <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
     </div>
     <el-form

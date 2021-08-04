@@ -21,17 +21,23 @@
               <div v-if="tags.length > 0">
                 <el-form-item label="设置标签" required>
                   <!-- {{ crowd.rulesJson }} -->
-                  <MultipleSelect :tags="tags" :rulesJson="crowd.rulesJson" :crowd="crowd" :i="i"></MultipleSelect>
+                  <MultipleSelect 
+                    :tags="tags" 
+                    :rulesJson="crowd.rulesJson" 
+                    :crowd="crowd" 
+                    :i="i">
+                  </MultipleSelect>
                 </el-form-item>
               </div>
 
               <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
                 <el-button
-                        type="danger"
-                        @click="handleConditionChange(crowd)"
-                        round
-                        :key="i+'condition'"
-                >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+                  type="danger"
+                  @click="handleConditionChange(crowd)"
+                  round
+                  :key="i+'condition'"
+                >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                </el-button>
               
               <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
               {{ crowd.dynamicPolicyJson.link }} -->
@@ -45,7 +51,7 @@
                   :crowd="crowd"
                   :i="i"
                   @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
-                  >
+                >
                 </MultipleActionTagSelect>
               </el-form-item>
 

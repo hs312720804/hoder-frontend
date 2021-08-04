@@ -53,8 +53,8 @@
 
 <script>
     import TagList from '../Tag/List.vue'
-    import TagRegionTree from './TagRegionTree.vue'
     import DeviceTagList from '../Tag/DeviceTagList.vue'
+    import TagRegionTree from './TagRegionTree.vue'
     // import AddOrEditSpecialTag from '../SpecialTag/Index.vue'
     export default {
         components: {

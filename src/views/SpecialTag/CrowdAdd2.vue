@@ -15,30 +15,38 @@
               ></el-input>
             </el-form-item>
             <div style="position: relative">
-              <el-form-item label="设置标签" class="multipleSelect" required>
-                <MultipleSelect
-                  :tags="tags"
-                  :rulesJson="crowd.rulesJson"
-                  :crowd="crowd"
-                  :i="i"
-                ></MultipleSelect>
-              </el-form-item>
-              <div class="outer-and" v-if="specialTags.length > 0">
+              <div v-if="tags.length > 0">
+                <el-form-item label="设置标签" class="multipleSelect" required>
+                  <MultipleSelect
+                    :tags="tags"
+                    :rulesJson="crowd.rulesJson"
+                    :crowd="crowd"
+                    :i="i"
+                  ></MultipleSelect>
+                </el-form-item>
+              </div>
+              <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
                 <el-button
                   type="danger"
-                  v-if="
-                    specialTags.length > 0 &&
-                    tags.length > 0 &&
-                    crowd.dynamicPolicyJson
-                  "
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i + 'condition'"
-                  >{{
-                    crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且'
-                  }}</el-button
                 >
+                  {{ crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
+                </el-button>
               </div>
+
+              <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+                <MultipleActionTagSelect
+                  ref="multipleActionTagSelect"
+                  :actionTags="actionTags"
+                  :behaviorRulesJson="crowd.behaviorRulesJson" 
+                  :crowd="crowd"
+                  :i="i"
+                  >
+                </MultipleActionTagSelect>
+              </el-form-item>
+
               <el-form-item label="动态因子" v-if="specialTags.length > 0">
                 <MultipleSelect
                   :specialTags="specialTags"
@@ -105,13 +113,16 @@
 
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
 export default {
   components: {
-    MultipleSelect
+    MultipleSelect,
+    MultipleActionTagSelect
   },
   data() {
     return {
       tags: [],
+      actionTags: [],
       specialTags: [],
       cache: {},
       tagSelectMoreShow: false,
@@ -156,6 +167,12 @@ export default {
   props: ['value', 'propPrefix', 'initTagList'],
   watch: {
     value: 'setInputValue'
+  },
+  computed: {
+    // 没有行为标签，只有大数据标签这一栏时，不展示【行为标签】这一栏。
+    hasBehaviorTag() {
+      return this.actionTags.some(item => item.dataSource === 8)
+    }
   },
   inject: ['sTagIndex'],
   methods: {
@@ -553,6 +570,7 @@ export default {
         }
       })
     },
+
     handleOperatorChange(item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
@@ -560,6 +578,7 @@ export default {
         item.value = ''
       }
     },
+
     handleConditionChange(crowd) {
       crowd.dynamicPolicyJson.link =
         crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
@@ -578,15 +597,19 @@ export default {
       const data = this.initTagList
       // console.log(data)
       const normalTags = []
+      const actionTags = []
       const specialTags = []
       data.forEach(item => {
-        if (item.dataSource === 6) {
+        if (item.dataSource === 6) { // 效果指标
           specialTags.push(item)
-        } else {
+        } else if (item.dataSource === 8) {
+          actionTags.push(item)
+        }else {
           normalTags.push(item)
         }
       })
       this.tags = normalTags
+      this.actionTags = actionTags
       this.specialTags = specialTags
 
       this.setInputValue(this.value)

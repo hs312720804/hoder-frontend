@@ -1,7 +1,11 @@
 <template>
   <div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
-      <CrowdAdd v-model="form.rulesJson" prop-prefix="rulesJson." :initTagList="initTagList"/>
+      <CrowdAdd
+        ref="CrowdAdd"
+        v-model="form.rulesJson" 
+        prop-prefix="rulesJson." 
+        :initTagList="initTagList"/>
   
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">返回</el-button>
@@ -32,13 +36,18 @@ export default {
                       'remark': undefined,
                       'crowdOrder': 0,
                       'rulesJson': {
-                          condition: 'OR',
-                          rules: []
+                        condition: 'OR',
+                        rules: []
+                      },
+                      'behaviorRulesJson': {
+                        link: 'AND',
+                        condition: 'OR',
+                        rules: []
                       },
                       'dynamicPolicyJson': {
-                          link: 'AND',
-                          condition: 'OR',
-                          rules: []
+                        link: 'AND',
+                        condition: 'OR',
+                        rules: []
                       },
                       // 'limitLaunch': false,
                       // 'limitLaunchCount': undefined
