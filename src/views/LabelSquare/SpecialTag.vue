@@ -24,16 +24,20 @@
         :data-source-enum="dataSourceEnum"
         :type-enum="typeEnum"
         :check-list-parent="checkList"
+        :current-selected-tags="currentSelectTag"
+        :show-selection="showSelection"
+        :show-delete-btn="true"
+        :show-edit-btn="true"
         @fetch-data="fetchData"
         @change-checkList="handleCheckListChange"
         @table-selected="handleTableSelected"
-        :current-selected-tags="currentSelectTag"
-        :show-selection="showSelection"
+        @delete="handleDelete"
+        @edit="handleEdit"
       >
       </tag-list>
 
       <el-dialog
-        title="新建种类"
+        :title="dialogTitle"
         :visible.sync="dialogVisible"
         width="500px">
             <el-form label-position="left" label-width="80px" :model="form">
@@ -44,7 +48,7 @@
                     <el-input v-model="form.tagKey"></el-input>
                 </el-form-item>
                 <el-form-item label="备注">
-                    <el-input v-model="form.tagKey"></el-input>
+                    <el-input v-model="form.remark"></el-input>
                 </el-form-item>
 
             </el-form>
@@ -89,48 +93,80 @@
             return {
                 dataList: [],
                 filter: {
-                    pageNum: 1,
-                    pageSize: 300,
-                    tagName: undefined
+                  pageNum: 1,
+                  pageSize: 300,
+                  tagName: undefined
                 },
                 dataSourceEnum: {},
                 typeEnum: {},
                 multipleSelection: [],
                 dialogVisible: false,
                 form: {
-                    tagName: '',
-                    tagKey: ''
-                }
+                  tagName: '',
+                  tagKey: '',
+                  remark: ''
+                },
+                launchName: '',
+                dialogTitle: ''
             }
         },
         methods: {
+            // 删除
+            handleDelete (id) {
+              this.$service.deleteSpecialTagType(id).then(() => {
+                this.fetchData()
+                this.$message('删除成功')
+              })
+            },
+            handleEdit (row) {
+              const { tagId, tagName, tagKey, remark } = row
+              this.form.tagId = tagId
+              this.form.tagName = tagName,
+              this.form.tagKey = tagKey,
+              this.form.remark = remark || ''
+              this.dialogTitle = '编辑种类'
+              this.dialogVisible = true
+            },
             // 新增或编辑组合标签种类
-            handleAddOrEdit() {
-                this.$service.addSpecialTagType(this.form).then(res => {
-                    
-                })
+            async handleAddOrEdit () {
+              if ( this.form.tagId ) { // 编辑
+                await this.$service.editSpecialTagType(this.form)
+              } else {   // 新增
+                await this.$service.addSpecialTagType(this.form)
+              }
+              this.fetchData()
+              this.dialogVisible = false
+              this.$message.success('保存成功')
             },
             // 新增组合标签
             handleAdd () {
-                this.dialogVisible = true
+              // 数据置空，否则会残留编辑的数据
+              this.form = {
+                tagName: '',
+                tagKey: '',
+                remark: ''
+              }
+              this.dialogTitle = '新增种类'
+              this.dialogVisible = true
             },
             fetchData () {
-                const filter = this.filter
-                this.$service.specialTagList(filter).then(data => {
-                    // eslint-disable-next-line
-                    // debugger
-                    const result = data
-                    this.dataList = result.pageInfo.list
-                    this.dataSourceEnum = result.DataSourceMap
-                    this.typeEnum = result.tagKey
-                })
+              const filter = this.filter
+              this.$service.specialTagList(filter).then(data => {
+                // eslint-disable-next-line
+                // debugger
+                const result = data
+                this.dataList = result.pageInfo.list
+                this.dataSourceEnum = result.DataSourceMap
+                this.typeEnum = result.tagKey
+              })
             },
             handleCheckListChange (val) {
                 this.$emit('change-checkList',val)
             },
             handleTableSelected (val, mode) {
                 this.$emit('get-table-selected',val,mode)
-            }
+            },
+            
         },
         created () {
             this.$root.$on('special-tag-list-refresh', this.fetchData)

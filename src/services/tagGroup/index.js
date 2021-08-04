@@ -199,11 +199,30 @@ export function saveSpecialTag(params) {
     })
 }
 
-// 组合标签添加
+// 添加组合标签
 export function addSpecialTagType(data) {
-    return this.fetch({
-        method: 'post',
-        url: `api/specialTag/tags`,
-        data
-    })
+  return this.fetch({
+    method: 'post',
+    url: `api/specialTag/tags`,
+    data,
+    isJSON: true
+  })
+}
+
+// 编辑组合标签
+export function editSpecialTagType(data) {
+  return this.fetch({
+    method: 'put',
+    url: `api/specialTag/tags`,
+    data,
+    isJSON: true
+  })
+}
+
+// 删除组合标签
+export function deleteSpecialTagType(id) {
+  return this.fetch({
+    method: 'delete',
+    url: `api/specialTag/tags/${id}`
+  })
 }

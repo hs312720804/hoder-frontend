@@ -97,14 +97,28 @@
                 <template slot-scope="scope">
                     <el-button-group>
                         <el-button
-                                type="text"
-                                @click="handleSeeTagCategoryDetail(scope.row)"
+                            type="text"
+                            @click="handleSeeTagCategoryDetail(scope.row)"
                         >
                             查看
                         </el-button>
+                        <el-button
+                            v-if="showEditBtn"
+                            type="text"
+                            @click="handleEdit(scope.row)"
+                        >
+                            编辑
+                        </el-button>
+                        <el-button
+                            v-if="showDeleteBtn"
+                            type="text"
+                            @click="handleDelete(scope.row)"
+                        >
+                            删除
+                        </el-button>
                         <div
-                                :class="scope.row.myCollect ? 'el-icon-cc-star-fill': 'el-icon-cc-star'"
-                                @click="handleCollect(scope.row)"
+                            :class="scope.row.myCollect ? 'el-icon-cc-star-fill': 'el-icon-cc-star'"
+                            @click="handleCollect(scope.row)"
                         >
                         </div>
                     </el-button-group>
@@ -145,6 +159,14 @@
             },
             currentSelectedTags: {
                 type: Array
+            },
+            showDeleteBtn: {
+                type: Boolean,
+                default: false
+            },
+            showEditBtn: {
+                type: Boolean,
+                default: false
             }
         },
         components: {
@@ -170,6 +192,12 @@
             },
             handleSeeTagCategoryDetail (row) {
                 this.tagId = row.tagId
+            },
+            handleDelete (row) {
+                this.$emit('delete', row.tagId)
+            },
+            handleEdit (row) {
+                this.$emit('edit', row)
             },
             handleReadTagCancel () {
                 this.tagId = undefined
