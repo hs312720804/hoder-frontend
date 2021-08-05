@@ -403,8 +403,8 @@ export default {
                   confirmButtonText: '继续',
                   cancelButtonText: '取消',
                 }).then(() => {
-                  // 有行为标签的
-                  if (allList.length > 0) {
+                  
+                  if (allList.length > 0) { // 有行为标签的
                     // 使用Promise.all去校验结果
                     Promise.all(allList.map(this.getFormPromise)).then(res => {
                       const validateResult = res.every(item => !!item)

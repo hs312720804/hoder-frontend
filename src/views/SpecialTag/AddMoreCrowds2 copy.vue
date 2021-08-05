@@ -22,57 +22,57 @@ export default {
     CrowdAdd
   },
   data: function () {
-    return {
-        activeName: 0,
-        form: {
-          // purpose: undefined,
-          rulesJson: [
-            {
-              'recordId': this.getRecordId(),
-              // 'tempCrowdId': undefined,
-              'specialTagName': '',
-              'tagIds': [],
-              // 'purpose': undefined,
-              'remark': undefined,
-              'crowdOrder': 0,
-              'rulesJson': {
-                condition: 'OR',
-                rules: []
-              },
-              'behaviorRulesJson': {
-                link: 'AND',
-                condition: 'OR',
-                rules: []
-              },
-              'dynamicPolicyJson': {
-                link: 'AND',
-                condition: 'OR',
-                rules: []
-              },
-              // 'limitLaunch': false,
-              // 'limitLaunchCount': undefined
-            }
-          ],
-            // crowdExp: []
-        },
-        formRules: {
-            // purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
-            // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
-        },
-        pickerOptions: {
-          disabledDate(time) {
-            // 设置可选时间为今天之后的60天内
-            // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
-            // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
-            const today = new Date().setHours(23, 59, 59)
-            const curDate = new Date(today).getTime()
-            // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
-            const day = 60 * 24 * 3600 * 1000
-            const dateRange = curDate + day
-            return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
+      return {
+          activeName: 0,
+          form: {
+              // purpose: undefined,
+              rulesJson: [
+                  {
+                      'recordId': this.getRecordId(),
+                      // 'tempCrowdId': undefined,
+                      'specialTagName': '',
+                      'tagIds': [],
+                      // 'purpose': undefined,
+                      'remark': undefined,
+                      'crowdOrder': 0,
+                      'rulesJson': {
+                        condition: 'OR',
+                        rules: []
+                      },
+                      'behaviorRulesJson': {
+                        link: 'AND',
+                        condition: 'OR',
+                        rules: []
+                      },
+                      'dynamicPolicyJson': {
+                        link: 'AND',
+                        condition: 'OR',
+                        rules: []
+                      },
+                      // 'limitLaunch': false,
+                      // 'limitLaunchCount': undefined
+                  }
+              ],
+              // crowdExp: []
+          },
+          formRules: {
+              // purpose: [{required: true, max: 10, message: '不超过 10 个字符', trigger: 'blur'}],
+              // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
+          },
+          pickerOptions: {
+              disabledDate(time) {
+                  // 设置可选时间为今天之后的60天内
+                  // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
+                  // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
+                  const today = new Date().setHours(23, 59, 59)
+                  const curDate = new Date(today).getTime()
+                  // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+                  const day = 60 * 24 * 3600 * 1000
+                  const dateRange = curDate + day
+                  return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
+              }
           }
-        }
-    }
+      }
   },
   // props: ['recordId'],
   props: ['initTagList'],
@@ -160,135 +160,79 @@ export default {
       }
       return flag
     },
-
-    getFormPromise(form) {
-      return new Promise(resolve => {
-        form.validate(res => {
-          resolve(res)
-        })
-      })
-    },
-
     handleSave () {
         let form = JSON.parse(JSON.stringify(this.form))
-        
+       
         // debugger
         this.$refs['form'].validate((valid) => {
           // debugger
             if (valid) {
-              if (!this.validateForm(form.rulesJson)) {
-                return
-              }
-
-              // 获取到组件中的form 校验必填项
-              // 周期范围 ref
-              const rangeFormList = []
-              const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
-              rangeRefList && rangeRefList.forEach(item => {
-                rangeFormList.push(item.$refs.rangeForm)
-              })
-              
-              // value值 ref
-              const typeFormList = []
-              const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
-              typeRefList && typeRefList.forEach(item => {
-                
-                if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
-                  item.$refs.typeRef.forEach(obj => {
-                    typeFormList.push(obj.$refs.typeForm)
-                  })
-                } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
-                  typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+                if (!this.validateForm(form.rulesJson)) {
+                  return
                 }
-              })
+                form.rulesJson[0].tagIds = this.initTagList.map((e) => e.tagId)
+                form.rulesJson = form.rulesJson.map((e) => {
+                    // e.purpose = form.purpose
+                    e.tagIds = e.tagIds.join(',')
+                    // e.tagIds = e.tagIds
+                    e.rulesJson.rules = e.rulesJson.rules.map(item => {
+                        item.rules.forEach(rulesItem => {
+                            if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                                rulesItem.operator = '='
+                            }
+                        })
+                        return item
+                    })
+                    e.rulesJson = JSON.stringify(e.rulesJson)
+                    // e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
+                    // e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
+                    
+                    return e
+                })[0]
+                // debugger
+                const detail = this.sTagIndex.specialTagDetail.specialTag
+                if (detail) {
+                  form.rulesJson.belongTagId = detail.belongTagId
+                  form.rulesJson.parentId = detail.parentId
+                  form.rulesJson.specialTagId = detail.specialTagId
+                } else {
+                  form.rulesJson.belongTagId = Number(this.$route.query.belongTagId)
+                  form.rulesJson.parentId =  0
+                }
+                
 
-              let allList = rangeFormList.concat(typeFormList)
-              
-              if (allList.length > 0) { // 有行为标签的
-                // 使用Promise.all去校验结果
-                Promise.all(allList.map(this.getFormPromise)).then(res => {
-                  const validateResult = res.every(item => !!item)
-                  
-                  if (validateResult) {
-                    this.fetchSave(form)
-                  } else {
-                    this.$message.error('请输入必填项')
-                  }
-                }).catch(() => {
-                  this.$message.error('请至少设置一个行为标签规则')
-                })
-              } else { // 没有行为标签的
-                this.fetchSave(form)
-              }
-
+            
+                if (this.$route.query.specialTagId) { // 编辑
+                  this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
+                      // this.$emit('handleToNextStep',this.recordId,data)
+                      // alert('成功！')
+                      // 返回
+                      this.$router.push({
+                        path: '/labelSquare',
+                        query: {
+                            refresh: true
+                        }
+                      })
+                  })
+                } else {
+                  this.$service.addSpecialTag({ rulesJson: form.rulesJson}, '新建成功').then((data) => {
+                      // this.$emit('handleToNextStep',this.recordId,data)
+                      // alert('成功！')
+                      // 返回
+                      this.$router.push({
+                        path: '/labelSquare',
+                        query: {
+                            refresh: true
+                        }
+                      })
+                  })
+                }
             } else {
-              this.$message.error('请检查表单各项是否填写完整')
-              return false
+                this.$message.error('请检查表单各项是否填写完整')
+                return false
             }
         })
     },
-
-    // 请求创建人群接口
-    fetchSave(form) {
-      form.rulesJson[0].tagIds = this.initTagList.map((e) => e.tagId)
-      form.rulesJson = form.rulesJson.map((e) => {
-          // e.purpose = form.purpose
-          e.tagIds = e.tagIds.join(',')
-          // e.tagIds = e.tagIds
-          e.rulesJson.rules = e.rulesJson.rules.map(item => {
-              item.rules.forEach(rulesItem => {
-                  if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-                      rulesItem.operator = '='
-                  }
-              })
-              return item
-          })
-          e.rulesJson = JSON.stringify(e.rulesJson)
-          // e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
-          // e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
-          
-          return e
-      })[0]
-      // debugger
-      const detail = this.sTagIndex.specialTagDetail.specialTag
-      if (detail) {
-        form.rulesJson.belongTagId = detail.belongTagId
-        form.rulesJson.parentId = detail.parentId
-        form.rulesJson.specialTagId = detail.specialTagId
-      } else {
-        form.rulesJson.belongTagId = Number(this.$route.query.belongTagId)
-        form.rulesJson.parentId =  0
-      }
-      
-
-  
-      if (this.$route.query.specialTagId) { // 编辑
-        this.$service.editSpecialTag({ rulesJson: form.rulesJson}, '保存成功').then((data) => {
-            // this.$emit('handleToNextStep',this.recordId,data)
-            // alert('成功！')
-            // 返回
-            this.$router.push({
-              path: '/labelSquare',
-              query: {
-                  refresh: true
-              }
-            })
-        })
-      } else {
-        this.$service.addSpecialTag({ rulesJson: form.rulesJson}, '新建成功').then((data) => {
-            // this.$emit('handleToNextStep',this.recordId,data)
-            // alert('成功！')
-            // 返回
-            this.$router.push({
-              path: '/labelSquare',
-              query: {
-                  refresh: true
-              }
-            })
-        })
-      }
-    },
-
     handleEdit () {
       const initTagList = this.initTagList
       // this.$service.getCrowdsDetail(recordId).then((data) => {
