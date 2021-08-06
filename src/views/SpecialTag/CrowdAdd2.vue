@@ -460,6 +460,11 @@ export default {
               condition: 'OR',
               rules: []
             },
+            behaviorRulesJson: {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
             dynamicPolicyJson: {
               link: 'AND',
               condition: 'AND',
@@ -602,9 +607,12 @@ export default {
       data.forEach(item => {
         if (item.dataSource === 6) { // 效果指标
           specialTags.push(item)
-        } else if (item.dataSource === 8) {
+        } else if ( item.dataSource === 8 ) { // 行为标签
           actionTags.push(item)
-        }else {
+        } else if ( item.dataSource === 2 ) { // 大数据标签
+          actionTags.push(item)
+          normalTags.push(item)
+        } else {
           normalTags.push(item)
         }
       })
@@ -651,11 +659,24 @@ export default {
             this.$set(item, 'dateAreaType', '')
             this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
           }
+          // 多选的值，回显的时候需要转成数组 2222
+          if (item.tagType === 'string' && item.operator !== 'null') {
+            item.value = item.value.split(',')
+          }
         })
         return itemParent
       })
       // this.inputValue[0].rulesJson.rules = ruleJsonData.rules
       this.inputValue[0].rulesJson = ruleJsonData
+      this.inputValue[0].behaviorRulesJson = JSON.parse(this.sTagIndex.specialTagDetail.specialTag.behaviorRulesJson)
+      this.inputValue[0].behaviorRulesJson.rules.forEach(ruleItem => {
+        ruleItem.rules.forEach(rulesEachItem => {
+          // 多选的值，回显的时候需要转成数组 2222
+          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
+            rulesEachItem.value = rulesEachItem.value.split(',')
+          }
+        })
+      })
       // console.log('ruleJsonData.rules===', ruleJsonData.rules)
     }
 

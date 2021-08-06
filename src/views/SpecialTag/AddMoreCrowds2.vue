@@ -10,7 +10,7 @@
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">返回</el-button>
         <!-- <el-button type="warning" @click="handleSave(0)">跳过保存</el-button> -->
-        <el-button type="primary" @click="handleSave(1)">保存</el-button>
+        <el-button type="primary" @click="handleSave()">保存</el-button>
       </el-form-item>
     </el-form>
   </div>
@@ -169,6 +169,26 @@ export default {
       })
     },
 
+    // 给 behaviorRulesJson 中的 table 添加序号
+    putBehaviorRulesJsonTableIndex (val) {
+      if (val) {
+        let tableIndex = 0
+        let ruleList = val.rules
+        ruleList.forEach(rule => {
+          let ruleGroup = rule.rules
+          ruleGroup.forEach(item => {
+            tableIndex = tableIndex+1
+            item.table = item.table.split('$')[0] + '$' + tableIndex
+            if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+          })
+        })
+      } else {
+        val = {link: 'AND', condition: 'OR', rules:[]}
+        // val = ''
+      }
+      return val
+    },
+
     handleSave () {
         let form = JSON.parse(JSON.stringify(this.form))
         
@@ -236,14 +256,31 @@ export default {
           e.tagIds = e.tagIds.join(',')
           // e.tagIds = e.tagIds
           e.rulesJson.rules = e.rulesJson.rules.map(item => {
-              item.rules.forEach(rulesItem => {
-                  if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-                      rulesItem.operator = '='
-                  }
-              })
-              return item
+            item.rules.forEach(rulesItem => {
+              if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+                rulesItem.operator = '='
+              }
+              // 多选的值，保存的时候需要转成字符串 2222
+              if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
+                rulesItem.value = rulesItem.value.join(',')
+              }
+            })
+            return item
           })
           e.rulesJson = JSON.stringify(e.rulesJson)
+
+          e.behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(e.behaviorRulesJson)
+          e.behaviorRulesJson.rules = e.behaviorRulesJson.rules.map(item => {
+            item.rules.forEach(rulesItem => {
+              // 多选的值，保存的时候需要转成字符串 2222
+              if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
+              // if (rulesItem.tagType === 'string') {
+                rulesItem.value = rulesItem.value.join(',')
+              }
+            })
+            return item
+          })
+          e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
           // e.dynamicPolicyJson = JSON.stringify(e.dynamicPolicyJson)
           // e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
           
@@ -289,47 +326,49 @@ export default {
       }
     },
 
-    handleEdit () {
-      const initTagList = this.initTagList
-      // this.$service.getCrowdsDetail(recordId).then((data) => {
-      //   console.log(data)
-        const data = initTagList.map((e) => {
-          e.tagIds = e.tagIds
-          e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
-          e.rulesJson = JSON.parse(e.rulesJson)
-          e.rulesJson.rules.forEach(ruleItem => {
-              ruleItem.rules.forEach(rulesEachItem => {
-                  if (rulesEachItem.tagType === 'string' && rulesEachItem.value === 'nil') {
-                      rulesEachItem.operator = 'null'
-                  }
-              })
-          })
-          e.rulesJson.specialTagId = this.sTagIndex.specialTagDetail.specialTag.specialTagName
-          return e
-        })
-        this.form = {
-          rulesJson: data,
-        }
-        // debugger
-        // console.log('123=======', this.$route.params.specialTagId)
-        // this.$service.specialTagDetail({ specialTagId: this.$route.params.specialTagId }).then((data) => {
-        //     debugger
-        // })
-        // this.form = {
-        //   rulesJson: []
-        // }
-      // })
-    },
+    // handleEdit () {
+    //   const initTagList = this.initTagList
+    //   // this.$service.getCrowdsDetail(recordId).then((data) => {
+    //   //   console.log(data)
+    //   // eslint-disable-next-line no-debugger
+    //   debugger
+    //     const data = initTagList.map((e) => {
+    //       e.tagIds = e.tagIds
+    //       e.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
+    //       e.rulesJson = JSON.parse(e.rulesJson)
+    //       e.rulesJson.rules.forEach(ruleItem => {
+    //           ruleItem.rules.forEach(rulesEachItem => {
+    //               if (rulesEachItem.tagType === 'string' && rulesEachItem.value === 'nil') {
+    //                   rulesEachItem.operator = 'null'
+    //               }
+    //           })
+    //       })
+    //       e.rulesJson.specialTagId = this.sTagIndex.specialTagDetail.specialTag.specialTagName
+    //       return e
+    //     })
+    //     this.form = {
+    //       rulesJson: data,
+    //     }
+    //     // debugger
+    //     // console.log('123=======', this.$route.params.specialTagId)
+    //     // this.$service.specialTagDetail({ specialTagId: this.$route.params.specialTagId }).then((data) => {
+    //     //     debugger
+    //     // })
+    //     // this.form = {
+    //     //   rulesJson: []
+    //     // }
+    //   // })
+    // },
     handleBackPrevStep () {
         this.$emit('handleBackPrevStep',this.recordId)
     },
     checkNum(num) {
         const numInt = parseInt(num)
         if((/(^\d+$)/).test(num) && numInt <= 9999) {
-            return true
-        }else {
-            this.$message.error('该值为必填项，且必须是大于等于0的整数且不能超过4位数')
-            return false
+          return true
+        } else {
+          this.$message.error('该值为必填项，且必须是大于等于0的整数且不能超过4位数')
+          return false
         }
     },
   },

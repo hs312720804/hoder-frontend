@@ -457,12 +457,12 @@ export default {
         e.tagIds = e.tagIds.join(',')
         e.rulesJson.rules = e.rulesJson.rules.map(item => {
           item.rules.forEach(rulesItem => {
+            if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+              rulesItem.operator = '='
+            }
             // 多选的值，保存的时候需要转成字符串 2222
             if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
               rulesItem.value = rulesItem.value.join(',')
-            }
-            if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-              rulesItem.operator = '='
             }
           })
           return item
