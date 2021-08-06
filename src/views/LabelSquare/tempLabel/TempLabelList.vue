@@ -115,6 +115,11 @@
                         {{cc_format_number(scope.row.history.totalWxOpenid)}}
                     </template>
                 </el-table-column>
+                <el-table-column label="总体耗时">
+                    <template slot-scope="scope">
+                        {{ scope.row.history.spentTotalTime }}
+                    </template>
+                </el-table-column>
                 <el-table-column label="dmp人群ID">
                     <template slot-scope="scope">
                         {{ scope.row.dmpCrowdId }}
