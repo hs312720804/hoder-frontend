@@ -88,7 +88,7 @@ export default {
       // }
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
-        if (rulesJson[index].rulesJson.rules.length === 0) {
+        if (rulesJson[index].rulesJson.rules.length === 0 && rulesJson[index].behaviorRulesJson.rules.length === 0) {
           this.$message.error('请设置标签条件')
           flag = false
           break
