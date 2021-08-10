@@ -15,6 +15,7 @@
                             <el-input size="small"
                                       v-model="crowdDefineForm.launchName"
                                       :disabled="status!==undefined && (status === 2 || status === 3)"
+                                      :maxlength="50"
                             ></el-input>
                         </el-form-item>
                         <el-form-item label="SQL语句" prop="crowdSql">
@@ -110,10 +111,10 @@
                                     </cc-input-thousands-int>
                                   </el-form-item>
                                   <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
-                                    <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                    <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2" @change="handleRule" :min="1" ></el-input-number>
                                   </el-form-item>&nbsp;&nbsp;%，则告警
                                   <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer" class="inline-block ratio">
-                                    <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                                    <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" ></el-input-number>
                                   </el-form-item>&nbsp;&nbsp;%，则告警
                                   <span>请至少填写一组基准和环比阀值</span>
                               </el-form-item>
@@ -125,10 +126,10 @@
                                     </cc-input-thousands-int>
                                   </el-form-item>
                                   <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
-                                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" @change="handleRule" :min="1" ></el-input-number>
                                   </el-form-item>&nbsp;&nbsp;%，则告警
                                   <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer" class="inline-block ratio">
-                                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2" @change="handleRule" :min="1" :max="100"></el-input-number>
+                                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2" @change="handleRule" :min="1" ></el-input-number>
 
                                   </el-form-item>&nbsp;&nbsp;%，则告警
                                     <span>请至少填写一组基准和环比阀值</span>

@@ -2,7 +2,7 @@
   <div>
   <div class="crowd-list">
     <fieldset>
-      <legend>{{selectRow.policyName}}</legend>
+      <legend>{{ selectRow.policyName }}</legend>
       <div class="crowd-top">
         <div class="crowd-top-back">
           <el-button type="text" @click="goBack">

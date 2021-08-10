@@ -26,7 +26,7 @@
       <template #default="slotData">
         <!-- {{ slotData }} -->
         <el-form-item label="人群名称">
-          <el-input v-model="slotData.slotData.name"></el-input>
+          <el-input v-model="slotData.slotData.name" :maxlength="50"></el-input>
         </el-form-item>
       </template>
     </group-image-add>

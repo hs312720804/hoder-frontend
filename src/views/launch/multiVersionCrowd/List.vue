@@ -541,7 +541,7 @@
                 <el-row>
                    <el-col :span="18">
                  <el-form-item label="环比高于" label-width="100px"  prop="macAbovePer">
-                      <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                      <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2" :min="1" ></el-input-number>
                   </el-form-item>
                   </el-col>
                     <el-col :span="6">
@@ -561,7 +561,7 @@
                  <el-row>
                    <el-col :span="18">
                  <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer">
-                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2"  :min="1"></el-input-number>
+                      <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" :min="1"></el-input-number>
                   </el-form-item>
                    </el-col>
                    <el-col :span="6">
@@ -574,7 +574,7 @@
                  <el-row>
                    <el-col :span="18">
                   <el-form-item label="环比高于" label-width="100px"  prop="wxAbovePer">
-                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" :max="100"></el-input-number>
+                      <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2"  :min="1" ></el-input-number>
                   </el-form-item>
                      </el-col>
                   <el-col :span="6">

@@ -65,7 +65,12 @@ export default {
       //回到第一层页面，即策略列表页
       this.$emit("goBack")
     },
-    addCrowd(row) {
+
+    addCrowd (row) {
+      const tableData = this.$refs.list.tableData
+      if (tableData.length > 49) {
+        return this.$message.warning('策略下人群数量已达最大值')
+      }
       //编辑添加
       const crowdId = row ? row.crowdId : undefined
       this.mode = ''
@@ -75,7 +80,7 @@ export default {
         this.crowdId=crowdId
           // 当策略在投放中且在有效期内，人群限制投放不可编辑
         this.effectCrowd = (this.selectRow.useStatus === '投放中' && row.crowdValidStatus == 2)
-      }else{
+      } else {
         this.crowdId=null
         this.effectCrowd = false
       }

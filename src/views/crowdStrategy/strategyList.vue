@@ -11,11 +11,11 @@
           </div>
           <div class="search-input">
             <el-input
-                    v-model="searchForm.policyName"
-                    style="width: 350px"
-                    placeholder="支持按策略、人群、创建人、部门搜索"
-                    :clearable='true'
-                    @keyup.enter.native="handleSearch"
+              v-model="searchForm.policyName"
+              style="width: 350px"
+              placeholder="支持按策略、人群、创建人、部门搜索"
+              :clearable='true'
+              @keyup.enter.native="handleSearch"
             ></el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
           </div>

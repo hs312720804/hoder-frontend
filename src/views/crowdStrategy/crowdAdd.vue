@@ -20,6 +20,7 @@
               size="small"
               v-model="form.name"
               placeholder="投放名称"
+              :maxlength="50"
             ></el-input>
           </el-form-item>
           <div style="position: relative">

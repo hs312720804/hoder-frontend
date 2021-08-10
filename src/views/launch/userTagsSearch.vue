@@ -41,6 +41,7 @@
                             clearable
                     >
                     </el-input>
+                    <div v-if="formData.type === 3" style="font-size: 12px; color: red"> 微信/QQ/openID/酷开openid至少输入一个 </div>
                 </el-form-item>
                 <el-form-item v-if="formData.type === 3">
                     <el-input

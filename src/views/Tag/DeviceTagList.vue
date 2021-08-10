@@ -9,9 +9,9 @@
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
                     <el-button
-                            type="primary"
-                            @click="handleAddTag"
-                            v-if="tagCategory.dataSource !== 2"
+                        type="primary"
+                        @click="handleAddTag"
+                        v-if="tagCategory.dataSource !== 2"
                     >
                         新建标签
                     </el-button>

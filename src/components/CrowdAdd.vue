@@ -14,7 +14,7 @@
               </div>
             </template>
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
-              <el-input v-model="crowd.crowdName" placeholder="投放名称"></el-input>
+              <el-input v-model="crowd.crowdName" placeholder="投放名称" :maxlength="50"></el-input>
             </el-form-item>
             <div style="position: relative">
 
