@@ -101,12 +101,12 @@
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签
       </div>
-      <!-- 1111111111111111111111111111111111111 -->
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
         <slot name="isChoosePeople"></slot>
       </el-form-item>
       <el-form-item>
+        <el-button type="warning" @click="handelBack">返回</el-button>
         <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
         <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
       </el-form-item>
@@ -159,6 +159,10 @@
             }
         },
         methods: {
+            // 返回策略列表
+            handelBack () {
+                this.$router.push({ name: 'strategyList'})
+            },
             genDefaultForm () {
                 return {
                     recordId: undefined,

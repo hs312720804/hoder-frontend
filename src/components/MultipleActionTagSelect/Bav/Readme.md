@@ -6,3 +6,5 @@
 6 功能点击,
 7 设备活跃,
 8 起播行为
+
+childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []

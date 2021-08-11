@@ -15,9 +15,9 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange"
+        @change="handelBehavirSelectChange(childItem)"
       >
-        <template v-for="item in getBehaviorAttrList(1)">
+        <template v-for="item in getBehaviorAttrList(childItem, 1)">
           <el-option
             :value="item.value"
             :label="item.name"
@@ -45,14 +45,9 @@
               style="width: 150px"
               name="asdq"
               class="input-inline"
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                isLast: true,
-                extra: {extra: item.childCheckedVal},
-                selectPropKeyValue: 'selectKey'
-              })"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2, {extra: item.childCheckedVal}, 'selectKey')"
             >
-              <template v-for="attrChildItem in getBehaviorAttrList(2, {extra: item.childCheckedVal} )">
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2, {extra: item.childCheckedVal} )">
                 <el-option
                   :value="attrChildItem.selectKey"
                   :label="attrChildItem.name"
@@ -75,21 +70,15 @@
                 class="flex-row"
               >
               <!-- {{item2}} -->
-                <!-- @change="handelChildBehavirSelectChange(item2, false, childItem, 3, {extra: item.childCheckedVal})" -->
                 <el-select
                   multiple
                   v-model="item2.childCheckedVal"
                   style="width: 200px"
                   name="asdq"
                   class="input-inline"
-                  @change="handelChildBehavirSelectChange({
-                    childItem: item2,
-                    isLast: false,
-                    level: 3,
-                    extra: {extra: item.childCheckedVal}
-                  })"
+                  @change="handelChildBehavirSelectChange(item2, false, childItem, 3, {extra: item.childCheckedVal})"
                 >
-                  <template v-for="attrChildItem in getBehaviorAttrList(3, {extra: item.childCheckedVal})">
+                  <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3, {extra: item.childCheckedVal})">
                     <el-option
                       :value="attrChildItem.value"
                       :label="attrChildItem.name"
@@ -126,9 +115,9 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange"
+        @change="handelBehavirSelectChange(childItem)"
       >
-        <template v-for="item in getBehaviorAttrList(1)">
+        <template v-for="item in getBehaviorAttrList(childItem, 1)">
           <el-option
             :value="item.value"
             :label="item.name"
@@ -147,20 +136,15 @@
           <span class="flex-column">
             <!-- 第二级 -->
             <!-- {{ item.childCheckedVal }} -->
-            <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 2)" -->
-
             <el-select
               multiple
               v-model="item.childCheckedVal"
               style="width: 110px"
               name="asdq"
               class="input-inline"
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                isLast: true,
-              })"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
             >
-              <template v-for="attrChildItem in getBehaviorAttrList(2)">
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
                 <el-option
                   :value="attrChildItem.value"
                   :label="attrChildItem.name"
@@ -204,9 +188,9 @@
           style="width: 120px"
           name="oxve"
           class="input-inline"
-          @change="handelBehavirSelectChange(false, 1, [], 'field')"
+          @change="handelBehavirSelectChange(childItem, false, 1, [], 'field')"
         >
-          <template v-for="item in getBehaviorAttrList(1)">
+          <template v-for="item in getBehaviorAttrList(childItem, 1)">
             <el-option
               :value="item.field"
               :label="item.name"
@@ -228,19 +212,15 @@
           <span class="flex-column">
             <!-- 第二级 -->
             <!-- {{ item }} -->
-            <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 2)" -->
             <el-select
               multiple
               v-model="item.childCheckedVal"
               style="width: 110px"
               name="asdq"
               class="input-inline"
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                isLast: true,
-              })"
+              @change="handelChildBehavirSelectChange(item, true, childItem, 2)"
             >
-              <template v-for="attrChildItem in getBehaviorAttrList(2)">
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
                 <el-option
                   :value="attrChildItem.value"
                   :label="attrChildItem.name"
@@ -263,20 +243,15 @@
                   <span v-if="item.field === 'purchase_recent_two_years'" class="flex-column" >
                     <!-- 历史购买 -->
                     <!-- 第三级 -->
-                    <!-- @change="handelChildBehavirSelectChange(item2, true, childItem, 3)" -->
                     <el-select
                       multiple
                       v-model="item2.childCheckedVal"
                       style="width: 110px"
                       name="asdq"
                       class="input-inline"
-                      @change="handelChildBehavirSelectChange({
-                        childItem: item2,
-                        isLast: true,
-                        level: 3
-                      })"
+                      @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
                     >
-                      <template v-for="attrChildItem in getBehaviorAttrList(3)">
+                      <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
                         <el-option
                           :value="attrChildItem.value"
                           :label="attrChildItem.name"
@@ -311,19 +286,14 @@
                   <span v-else class="flex-column">
                     <!-- 首次购买  -->
                     <!-- 第三级 -->
-                    <!-- @change="handelChildBehavirSelectChange(item2, true, childItem, 3)" -->
                     <el-select
                       v-model="item2.childCheckedVal"
                       style="width: 110px"
                       name="asdq"
                       class="input-inline"
-                      @change="handelChildBehavirSelectChange({
-                        childItem: item2,
-                        isLast: true,
-                        level: 3
-                      })"
+                      @change="handelChildBehavirSelectChange(item2, true, childItem, 3)"
                     >
-                      <template v-for="attrChildItem in getBehaviorAttrList(3)">
+                      <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
                         <el-option
                           :value="attrChildItem.value"
                           :label="attrChildItem.name"
@@ -350,9 +320,9 @@
         style="width: 100px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange(false, 1, moDefaultChild, 'selectKey', true)"
+        @change="handelBehavirSelectChange(childItem, false, 1, moDefaultChild, 'selectKey', true)"
       >
-        <template v-for="item in getBehaviorAttrList">
+        <template v-for="item in getBehaviorAttrList(childItem)">
           <el-option
             :value="item.selectKey"
             :label="item.name"
@@ -420,19 +390,14 @@
                   <!-- 次数、天数 -->
                   <!-- <Type ref="typeRef" :item3="item3"></Type> -->
                   <!-- 1111111111111111111111111111111111111111111111111 -->
-                  <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 3)" -->
                   <el-select
                     v-model="item.childCheckedVal"
                     style="width: 100px"
                     name="oxve"
                     class="input-inline"
-                    @change="handelChildBehavirSelectChange({
-                      childItem: item,
-                      isLast: true,
-                      level: 3
-                    })"
+                    @change="handelChildBehavirSelectChange(item, true, childItem, 3)"
                   >
-                    <template v-for="attrChildItem in getBehaviorAttrList(3)">
+                    <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3)">
                       <el-option
                         :value="attrChildItem.value"
                         :label="attrChildItem.name"
@@ -472,9 +437,9 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange(true)"
+        @change="handelBehavirSelectChange(childItem, true)"
       >
-        <template v-for="item in getBehaviorAttrList">
+        <template v-for="item in getBehaviorAttrList(childItem)">
           <el-option
             :value="item.value"
             :label="item.name"
@@ -520,9 +485,9 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange(false, 1, childItem.bav.behaviorValue[0].child)"
+        @change="handelBehavirSelectChange(childItem, false, 1, childItem.bav.behaviorValue[0].child)"
       >
-        <template v-for="item in getBehaviorAttrList(1)">
+        <template v-for="item in getBehaviorAttrList(childItem, 1)">
           <el-option
             :value="item.value"
             :label="item.name"
@@ -537,9 +502,8 @@
       >
         <!-- <span class="w100">{{ item.name }}</span> -->
           <!-- {{ item.childCheckedVal }} -->
+        <!-- handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) { -->
         <!-- {{ item.childCheckedVal}} -->
-        <!-- @change="handelQiBoChildBehavirSelectChange(item, false, childItem, 2, {}, 'value', true, item.child[0].child)" -->
-
         <!-- 第二级 -->
         <el-select
           v-model="item.childCheckedVal[0]"
@@ -548,13 +512,9 @@
           name="asdq"
           class="input-inline"
           clearable
-          @change="handelQiBoChildBehavirSelectChange({
-            childItem: item,
-            isValueClear: true,
-            defaultChild: item.child[0].child
-          })"
+          @change="handelQiBoChildBehavirSelectChange(item, false, childItem, 2, {}, 'value', true, item.child[0].child)"
         >
-          <template v-for="attrChildItem in getBehaviorAttrList(2)">
+          <template v-for="attrChildItem in getBehaviorAttrList(childItem, 2)">
             <el-option
               :value="attrChildItem.value"
               :label="attrChildItem.name"
@@ -572,8 +532,6 @@
           <!-- <span class="w100">{{ item2.name }}</span> -->
           <!-- {{ item2.child }} -->
           <!-- 第三级 -->
-          <!-- childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] -->
-          <!-- @change="handelQiBoChildBehavirSelectChange(item2, false, childItem, 3, {type: item.childCheckedVal[0]}, 'value', false, item2.child[0].child)" -->
           <el-select
             v-model="item2.childCheckedVal[0]"
             placeholder="请选择二级分类"
@@ -581,15 +539,9 @@
             name="asdq"
             class="input-inline"
             clearable
-            @change="handelQiBoChildBehavirSelectChange({
-              childItem: item2,
-              level: 3,
-              extra: {type: item.childCheckedVal[0]},
-              isValueClear: true,
-              defaultChild: item2.child[0].child
-            })"
+            @change="handelQiBoChildBehavirSelectChange(item2, false, childItem, 3, {type: item.childCheckedVal[0]}, 'value', false, item2.child[0].child)"
           >
-            <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal[0]})">
+            <template v-for="attrChildItem in getBehaviorAttrList(childItem, 3, {type: item.childCheckedVal[0]})">
               <el-option
                 :value="attrChildItem.value"
                 :label="attrChildItem.name"
@@ -606,7 +558,6 @@
             <!-- {{ item3.name }} -->
             <!-- <span class="w100">{{ item3.name }}</span> -->
             <!-- 第四级 -->
-              <!-- @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)" -->
             <el-select
               v-model="item3.childCheckedVal[0]"
               style="width: 110px"
@@ -614,15 +565,9 @@
               class="input-inline"
               placeholder="请选择内容源"
               clearable
-              @change="handelQiBoChildBehavirSelectChange({
-                childItem: item3,
-                level: 4,
-                isValueClear: true,
-                defaultChild: item3.child[0].child
-              })"
-              
+              @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)"
             >
-              <template v-for="attrChildItem in getBehaviorAttrList(4)">
+              <template v-for="attrChildItem in getBehaviorAttrList(childItem, 4)">
 
                 <el-option
                   :value="attrChildItem.value"
@@ -640,7 +585,6 @@
               <!-- <span class="w100">{{ item4.name }}</span> -->
               <!-- {{ item4.childCheckedVal }} -->
               —
-              <!-- @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)" -->
               <!-- 第五级 -->
               <el-select
                 v-model="item4.childCheckedVal[0]"
@@ -653,11 +597,7 @@
                 :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
                 :loading="loading2"
                 v-loadmore="{'methord': handelQiboLoadmore}"
-                @change="handelQiBoChildBehavirSelectChange({
-                  childItem: item4,
-                  level: 5,
-                  isValueClear: true
-                })"
+                @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)"
               >
                 <el-option
                   v-for="tv in qiBoOptions"
@@ -680,7 +620,6 @@
               >
                 <!-- {{ item5 }} -->
                 <!-- 选择了视频源下的视频 -->
-                <!-- @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)" -->
                 <span v-if="!!item5.value" class="flex-column">
                   <!-- // 是电影的 -->
                   <span v-if="item5.videoType === '电影'" class="flex-row"> 
@@ -689,15 +628,11 @@
                         style="width: 150px;"
                         placeholder="请选择"
                         clearable
-                        @change="handelQiBoChildBehavirSelectChange({
-                          childItem: item5,
-                          isLast: true,
-                          level: 7
-                        })"
+                        @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)"
                       >
                         
                         <el-option
-                          v-for="attrChildItem in getBehaviorAttrList(7)"
+                          v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
                           :key="attrChildItem.value"
                           :label="attrChildItem.name"
                           :value="attrChildItem.value">
@@ -709,22 +644,15 @@
                           :key="index"
                           class="flex-row child"
                         >
-                          <!-- @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)" -->
                           <el-select
                             v-model="item6.childCheckedVal[0]"
                             style="width: 150px;"
                             placeholder="请选择"
                             clearable
-                            @change="handelQiBoChildBehavirSelectChange({
-                              childItem: item6,
-                              isLast: false,
-                              level: 8,
-                              selectPropKeyValue: 'type',
-                              isValueClear: true
-                            })"
+                            @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)"
                           >
                             <el-option
-                              v-for="attrChildItem in getBehaviorAttrList(8)"
+                              v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
                               :key="attrChildItem.type"
                               :label="attrChildItem.name"
                               :value="attrChildItem.type">
@@ -760,18 +688,13 @@
                       </span>
                   </span>
                   <!-- // 不是电影的 -->
-                    <!-- @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
                   <span v-else>
                     <el-select
                       multiple
                       v-model="item5.childCheckedVal"
                       style="width: 100px;"
                       placeholder="请选择集数"
-                      @change="handelQiBoChildBehavirSelectChange({
-                        childItem: item5,
-                        isLast: false,
-                        level: 6
-                      })"
+                      @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)"
                     >
                       <el-option
                         v-for="(tv, index) in qiBoCollectionOptions"
@@ -789,20 +712,15 @@
                         class="flex-row child"
                       >
                         <span class="w100">{{ item6.name }}</span>
-                          <!-- @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)" -->
                         <el-select
                           v-model="item6.childCheckedVal[0]"
                           style="width: 150px;"
                           placeholder="请选择"
                           clearable
-                          @change="handelQiBoChildBehavirSelectChange({
-                            childItem: item6,
-                            isLast: true,
-                            level: 7
-                          })"
+                          @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)"
                         >
                           <el-option
-                            v-for="attrChildItem in getBehaviorAttrList(7)"
+                            v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
                             :key="attrChildItem.value"
                             :label="attrChildItem.name"
                             :value="attrChildItem.value">
@@ -815,44 +733,32 @@
                             class="flex-row child"
                           > 
                             <!-- 没有选择集 -->
-                              <!-- @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)" -->
                             <el-select
                               v-if="item6.name === ''"
                               v-model="item7.childCheckedVal[0]"
                               style="width: 150px;"
                               placeholder="请选择"
                               clearable
-                              @change="handelQiBoChildBehavirSelectChange({
-                                childItem: item7,
-                                level: 8,
-                                selectPropKeyValue: 'type',
-                                isValueClear: true
-                              })"
+                              @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)"
                             >
                               <el-option
-                                v-for="attrChildItem in getBehaviorAttrList(8)"
+                                v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
                                 :key="attrChildItem.type"
                                 :label="attrChildItem.name"
                                 :value="attrChildItem.type">
                               </el-option>
                             </el-select>
                             <!-- 选择了集数，下拉选项只有【单集观看时长】 -->
-                              <!-- @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 9, {}, 'type', true)" -->
                             <el-select
                               v-else
                               v-model="item7.childCheckedVal[0]"
                               style="width: 150px;"
                               placeholder="请选择"
                               clearable
-                              @change="handelQiBoChildBehavirSelectChange({
-                                childItem: item7,
-                                level: 9,
-                                selectPropKeyValue: 'type',
-                                isValueClear: true
-                              })"
+                              @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 9, {}, 'type', true)"
                             >
                               <el-option
-                                v-for="attrChildItem in getBehaviorAttrList(9)"
+                                v-for="attrChildItem in getBehaviorAttrList(childItem, 9)"
                                 :key="attrChildItem.type"
                                 :label="attrChildItem.name"
                                 :value="attrChildItem.type">
@@ -896,21 +802,15 @@
                   <!-- {{ item5 }} -->
                   <span class="flex-row"
                   >
-                      <!-- @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)" -->
                     <el-select
                       v-model="item5.childCheckedVal[0]"
                       style="width: 150px;"
                       placeholder="请选择"
                       clearable
-                      @change="handelQiBoChildBehavirSelectChange({
-                        childItem: item5,
-                        level: 8,
-                        selectPropKeyValue: 'type',
-                        isValueClear: true
-                      })"
+                      @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)"
                     >
                       <el-option
-                        v-for="attrChildItem in getBehaviorAttrList(8)"
+                        v-for="attrChildItem in getBehaviorAttrList(childItem, 8)"
                         :key="attrChildItem.type"
                         :label="attrChildItem.name"
                         :value="attrChildItem.type">
@@ -1160,15 +1060,14 @@ export default {
     // level -- 层级 为获取下拉框list
     // defaultChild -- 下一级child对象的默认赋值，默认为[]
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    handelBehavirSelectChange(isLast = false, level=1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
+    handelBehavirSelectChange(childItem, isLast = false, level=1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       // eslint-disable-next-line no-debugger
       debugger
-      const childItem = this.childItem
       console.log('childItem==>', childItem)
       // const vals = childItem.bav.value 
       const vals = (typeof(childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const checkedList = childItem.bav.behaviorValue
-      const behaviorAttrList = this.getBehaviorAttrList(level)
+      const behaviorAttrList = this.getBehaviorAttrList(childItem, level)
       
       childItem.bav.behaviorValue = this.getValListByVals(
         vals,
@@ -1245,17 +1144,14 @@ export default {
     // level -- 层级 为获取下拉框list
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
-    handelChildBehavirSelectChange(params) {
-
-      let { childItem, isLast = false, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
+    handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
 
       // eslint-disable-next-line no-debugger
       debugger
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
-      const behaviorAttrList = this.getBehaviorAttrList(level, extra)
+      const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
       childItem.child = this.getValListByVals(
         vals,
         checkedList,
@@ -1384,17 +1280,14 @@ export default {
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 一二级联动时，一级下拉切换，将二级下拉框清空
-    // handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
-    handelQiBoChildBehavirSelectChange(params) {
-      let {childItem, isLast = false, level=2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []} = params
-
-      // console.log('123childItem==>', childItem)
-      // console.log('123item==>', item)
+    handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
+      console.log('123childItem==>', childItem)
+      console.log('123item==>', item)
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // eslint-disable-next-line no-debugger
       debugger
-      const behaviorAttrList = this.getBehaviorAttrList(level, extra)
+      const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
       // const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
       if (level === 4) { // 切换视频源时，清空下拉选项
         this.qiBoOptions = [] 
@@ -1434,9 +1327,9 @@ export default {
       })
     },
 
-    // 获取下拉框选项
-    getBehaviorAttrList(level=1, extra={}) {
-      const childItem = this.childItem // 组件参数：该个行为标签规则
+    getBehaviorAttrList(childItem, level=1, extra={}) {
+      // eslint-disable-next-line no-debugger
+      debugger
       if (this.bavAttrList) {
         let attrlist = []
   
@@ -1481,6 +1374,8 @@ export default {
             attrlist = dict.func_click
           }
         } else if (childItem.tagCode === 'BAV0008') {
+          // eslint-disable-next-line no-debugger
+          debugger
           if (level === 1) {
             attrlist = dict.business_type
           } else if (level === 2) {

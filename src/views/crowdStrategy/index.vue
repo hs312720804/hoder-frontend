@@ -20,7 +20,7 @@ import SchemeIndex from './schemeIndex'
 export default {
     name: "strategyListAA",
     data() {
-        return{
+        return {
           selectRow:null,//选中的一行策略数据
           isShowStrategyList:true,
           historyFilter: null,
@@ -33,7 +33,7 @@ export default {
     },
     props: ["source"],
     methods: {
-        openCrowdPage(row,filter,checkList,showAll){
+        openCrowdPage (row,filter,checkList,showAll) {
           this.selectRow=row
           this.isShowStrategyList=false
           this.historyFilter = filter
