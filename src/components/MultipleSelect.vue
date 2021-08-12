@@ -83,7 +83,7 @@
                   >
                     <el-option value="=" label="是"></el-option>
                     <el-option value="!=" label="不是"></el-option>
-                    <el-option value="like" label="包含"></el-option>
+                    <!-- <el-option value="like" label="包含"></el-option> -->
                     <el-option value="null" label="为空"></el-option>
                   </template>
 

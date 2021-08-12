@@ -540,18 +540,16 @@ export default {
                 rulesEachItem.operator = 'null'
               }
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
-              // if (rulesEachItem.tagType === 'string') {
-                rulesEachItem.value = rulesEachItem.value.split(',')
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+                rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
               }
             })
           })
           e.behaviorRulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
-              // if (rulesEachItem.tagType === 'string') {
-                rulesEachItem.value = rulesEachItem.value.split(',')
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+                rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
               }
             })
           })

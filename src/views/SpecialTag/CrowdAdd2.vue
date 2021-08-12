@@ -660,8 +660,8 @@ export default {
             this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
           }
           // 多选的值，回显的时候需要转成数组 2222
-          if (item.tagType === 'string' && item.operator !== 'null') {
-            item.value = item.value.split(',')
+          if (item.tagType === 'string' && item.operator !== 'null' && typeof(item.value) === 'string') {
+            item.value = item.value === '' ? [] : item.value.split(',')
           }
         })
         return itemParent
@@ -672,8 +672,8 @@ export default {
       this.inputValue[0].behaviorRulesJson.rules.forEach(ruleItem => {
         ruleItem.rules.forEach(rulesEachItem => {
           // 多选的值，回显的时候需要转成数组 2222
-          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null') {
-            rulesEachItem.value = rulesEachItem.value.split(',')
+          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+            rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
           }
         })
       })

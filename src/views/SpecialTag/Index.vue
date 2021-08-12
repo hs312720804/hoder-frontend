@@ -9,14 +9,14 @@
         </div>
         <div>
                     <!-- :recordId="recordId" -->
-            <new-create-policy
+            <AddOrEditSpecialTag
                 v-if="activeStep === 0"
                 :initTagList="initTagList"
                 @policyNextStep="handlePolicyNextStep"
                 :usedTagList="usedTagList"
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList">
-            </new-create-policy>
+            </AddOrEditSpecialTag>
      
                     <!-- :recordId="recordId" -->
             <create-crowd
@@ -34,14 +34,14 @@
 
 <script>
     import createCrowd from './CreateCrowd'
-    import newCreatePolicy from './AddOrEditSpecialTag'
+    import AddOrEditSpecialTag from './AddOrEditSpecialTag'
     export default {
         name: "index",
         components: {
             // createPolicy,
             createCrowd,
             // LaunchToBusiness,
-            newCreatePolicy
+            AddOrEditSpecialTag
         },
         provide () {
             return {
