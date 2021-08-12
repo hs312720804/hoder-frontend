@@ -303,7 +303,7 @@
     .icon-fixed
         position absolute
         top 8px
-        right 20px
+        left 1px
         transform rotate(-90deg)
     .header
         width 100%

@@ -343,7 +343,7 @@ export default {
     this.handleGetVideoList()
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
       this.title = '编辑临时人群'
-      if (this.crowdType === 3 || this.crowdType === 4)  this.title = '查看'
+      if (this.crowdType === 3 || this.crowdType === 4) this.title = '查看'
       // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
       this.$service
         .getTempCrowd({ launchCrowdId: this.editLaunchCrowdId })

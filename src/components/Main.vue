@@ -82,8 +82,8 @@
                 <el-tab-pane label="升级通知" name="first">
                   <div v-for="updateItem in updateMessage" :key="updateItem.noticeId" class="tab-content">
                     <div
-                        :class="['notice-title',updateItem.noticeStatus === 0 ? 'red-dot-title': '']"
-                        @click="handleReadMessage(updateItem.noticeId)"
+                      :class="['notice-title', updateItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                      @click="handleReadMessage(updateItem.noticeId)"
                     >{{updateItem.noticeTitle}}</div>
                     <div class="notice-time">{{updateItem.pushTime}}</div>
                   </div>
@@ -92,8 +92,8 @@
                 <el-tab-pane label="系统通知" name="second">
                   <div v-for="systemItem in systemMessage" :key="systemItem.noticeId" class="tab-content">
                     <div
-                        :class="['notice-title',systemItem.noticeStatus === 0 ? 'red-dot-title': '']"
-                        @click="handleReadMessage(systemItem.noticeId)"
+                      :class="['notice-title',systemItem.noticeStatus === 0 ? 'red-dot-title': '']"
+                      @click="handleReadMessage(systemItem.noticeId)"
                     >{{systemItem.noticeTitle}}</div>
                     <div class="notice-time">{{systemItem.pushTime}}</div>
                   </div>

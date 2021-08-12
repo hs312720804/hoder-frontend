@@ -1,21 +1,21 @@
 <template>
-    <div>
-        <list v-show="isShowList"
-              :parentSource="parentSource"
-              :showAllParent="showAllParent"
-              @changeStatus="changeStatus"
-              ref="list">
-        </list>
-        <add v-if="!isShowList"
-             @changeStatus="changeStatus"
-             :model="addModel"
-             @goBack="goBack"
-             :showAllParent="showAllParent"
-             :editLaunchCrowdId="editLaunchCrowdId"
-             :editStatus="editStatus"
-             :parentSource="parentSource"
-        ></add>
-    </div>
+  <div>
+    <list v-show="isShowList"
+      :parentSource="parentSource"
+      :showAllParent="showAllParent"
+      @changeStatus="changeStatus"
+      ref="list">
+    </list>
+    <add v-if="!isShowList"
+      @changeStatus="changeStatus"
+      :model="addModel"
+      @goBack="goBack"
+      :showAllParent="showAllParent"
+      :editLaunchCrowdId="editLaunchCrowdId"
+      :editStatus="editStatus"
+      :parentSource="parentSource"
+    ></add>
+  </div>
 </template>
 <script>
     import List from "./List"
