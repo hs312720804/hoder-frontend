@@ -419,7 +419,6 @@
                 >
                   <!-- 次数、天数 -->
                   <!-- <Type ref="typeRef" :item3="item3"></Type> -->
-                  <!-- 1111111111111111111111111111111111111111111111111 -->
                   <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 3)" -->
                   <el-select
                     v-model="item.childCheckedVal"
@@ -987,7 +986,6 @@ export default {
         }
         // 起播行为标签需要查询影片集数
         else if (val && val.tagCode === 'BAV0008') {
-          console.log('val.bav', val)
           this.getQiboTvEpisodes(val.bav.behaviorValue)
         }
       },

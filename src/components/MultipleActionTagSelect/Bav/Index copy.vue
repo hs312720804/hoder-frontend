@@ -389,7 +389,6 @@
                 >
                   <!-- 次数、天数 -->
                   <!-- <Type ref="typeRef" :item3="item3"></Type> -->
-                  <!-- 1111111111111111111111111111111111111111111111111 -->
                   <el-select
                     v-model="item.childCheckedVal"
                     style="width: 100px"

@@ -37,7 +37,7 @@
               :key="index + 'tagId' + n"
               :class="{ 'label-item': true, paddingTop: n > 0 }"
             >
-              <!-- 行为标签专属日期选项 111111111111111111111111111-->
+              <!-- 行为标签专属日期选项 -->
               <!-- 会员状态 不需要周期范围的所有下拉框选项 -->
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
@@ -415,7 +415,7 @@
               <span class="i" @click="handleRemoveSpecialRule(item, childItem)" style="display:inline-block; height: 30px">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
-              <!-- 行为标签专属日期选项 end111111111111111111111111111-->
+              <!-- 行为标签专属日期选项 end-->
             </div>
 
             <div class="label-add">
@@ -628,7 +628,6 @@ export default {
     hasMoveBehaviorTagRule() {
       this.$emit('hasMoveBehaviorTagRule')
     },
-    // 111111111111111111
     handelChangeShow () {
       // console.log('1234567890--', val)
       this.showRange = !this.showRange

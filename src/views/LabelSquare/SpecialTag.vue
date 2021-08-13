@@ -35,6 +35,15 @@
         @edit="handleEdit"
       >
       </tag-list>
+        <div align="right">
+            <pagination
+                    :currentpage="filter.pageNum"
+                    :pagesize="filter.pageSize"
+                    :totalcount="totalCount"
+                    @handle-size-change="handleSizeChange"
+                    @handle-current-change="handleCurrentChange"
+            ></pagination>
+        </div>
 
       <el-dialog
         :title="dialogTitle"
@@ -94,7 +103,7 @@
                 dataList: [],
                 filter: {
                   pageNum: 1,
-                  pageSize: 300,
+                  pageSize: 10,
                   tagName: undefined
                 },
                 dataSourceEnum: {},
@@ -107,7 +116,8 @@
                   remark: ''
                 },
                 launchName: '',
-                dialogTitle: ''
+                dialogTitle: '',
+                totalCount: 0,
             }
         },
         methods: {
@@ -156,8 +166,10 @@
                 // debugger
                 const result = data
                 this.dataList = result.pageInfo.list
+                this.totalCount = result.pageInfo.total
                 this.dataSourceEnum = result.DataSourceMap
                 this.typeEnum = result.tagKey
+                
               })
             },
             handleCheckListChange (val) {
@@ -165,6 +177,19 @@
             },
             handleTableSelected (val, mode) {
                 this.$emit('get-table-selected',val,mode)
+            },
+
+            // 每页显示数据量变更, 如每页显示10条变成每页显示20时, val=20
+            handleSizeChange (val) {
+                this.filter.pageSize = val
+                //每次切换页码条，都把页面数重置为1
+                this.filter.pageNum = 1
+                this.fetchData()
+            },
+            // 页码变更, 如第1页变成第2页时,val=2
+            handleCurrentChange (val) {
+                this.filter.pageNum = val
+                this.fetchData()
             },
             
         },

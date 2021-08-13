@@ -4,8 +4,8 @@
       <el-tabs v-model="activeName" @tab-click="handleTabChange">
         <el-tab-pane label="临时人群/标签" name="tempLabel">
           <temp-label-index
-            :show-selection="showSelection"
             :currentSelectTag="tagList"
+            :show-selection="showSelection"
             :checkList="tempCheckList"
             @get-table-selected="handleGetTableSelectedData"
             @change-checkList="handleTempCheckListChange"
@@ -15,6 +15,7 @@
         </el-tab-pane>
         <el-tab-pane label="标签专区" name="labelZone">
           <label-zone
+            :currentSelectTag="tagList"
             :tagName="labelZoneTagName"
             @clear-search="handleClearSearch"
             :checkList="checkList"
@@ -22,26 +23,25 @@
             @fetch-checkList="fetchCheckListData"
             @get-table-selected="handleGetTableSelectedData"
             :show-selection="showSelection"
-            :currentSelectTag="tagList"
           >
           </label-zone>
         </el-tab-pane>
         <el-tab-pane label="我的收藏" name="myCollect">
           <my-collect
+            :currentSelectTag="tagList"
             :tagName="myCollectTagName"
             :checkList="checkList"
             @clear-search="handleClearSearch"
             @change-checkList="handleCheckListChange"
             @get-table-selected="handleGetTableSelectedData"
             :show-selection="showSelection"
-            :currentSelectTag="tagList"
           >
           </my-collect>
         </el-tab-pane>
         <el-tab-pane label="本地人群/标签" name="localLabel">
           <local-label-index
-            :show-selection="showSelection"
             :currentSelectTag="tagList"
+            :show-selection="showSelection"
             :checkList="tempCheckList"
             @get-table-selected="handleGetTableSelectedData"
             @change-checkList="handleTempCheckListChange"
@@ -98,6 +98,26 @@
         <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
       </el-form-item>
     </el-form>
+    <el-dialog
+      title="同一组合标签只能选择以下两种组合之一："
+      :visible.sync="Successdialog" 
+      :show-close="false" 
+      :close-on-click-modal="false"
+      :close-on-press-escape="false"
+      width="30%"
+    >
+      <div style="margin: 10px 0">
+        组合一：<span class="checkbox--red">大数据标签</span>、<span class="checkbox--cyan">行为标签</span>
+      </div>
+      <div>
+        组合二：<span class="checkbox--red">大数据标签</span>、<span class="checkbox--blue">账号标签</span>、<span class="checkbox--green">临时标签/自定义标签</span>、<span class="checkbox--yellow">实时标签</span>
+      </div>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handelClose" type="primary" :disabled="isDisabled">知道了 {{Sencond}}s</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 
@@ -135,7 +155,15 @@ export default {
       showSelection: true,
       addForm: this.genDefaultForm(),
       tempCheckList: [],
-      bottomHeight: 169 + 'px'
+      bottomHeight: 169 + 'px',
+      // 0 - 组合一：大数据标签、行为标签           // 1 - 组合二：大数据标签、账号标签、临时标签/自定义标签、实时标签          // 2 - 无限制
+      //              红 - 2    青 - 8                            红 - 2    蓝 - 3       绿 - 1          黄 - 5       
+      // 不包含 动态因子（ 紫色 - 6 ）
+      uniteType: 2,
+      Successdialog: false, // 控制弹出
+      Sencond: 5, // 设置初始倒计时
+      isDisabled: false,
+      interval: ''
     }
   },
 
@@ -147,9 +175,42 @@ export default {
         this.tagList = val
       },
       deep: true
-    }
+    },
+    tagList: {
+      handler(val) {
+        // || this.uniteType === 2) {
+        // if (val.length === 0 ) { // 当清空时， uniteType 为 2
+        //   this.uniteType = 2
+        // }
+        // if (this.uniteType === 2) {
+          if (val.every(item => item.dataSource === 2)) {
+            this.uniteType = 2
+          } else if (val.every(item => [2, 8].indexOf(item.dataSource) > -1)) {
+            this.uniteType = 0
+          } else {
+            this.uniteType = 1
+          }
+        // }
+      },
+      immediate: true
+    } 
   },
   methods: {
+    getSencond () {
+      this.Sencond = 5 
+      const that = this
+      this.interval = window.setInterval(function () {
+        --that.Sencond
+        if (that.Sencond === 0) {
+          that.isDisabled = false
+          that.handelClose()//倒计时结束时运行的业务逻辑，这里的是关闭当前页面
+        }
+      }, 1000)
+    },
+    handelClose () {
+      window.clearInterval(this.interval)
+      this.Successdialog = false
+    },
     back() {
       this.$router.push({
         path: 'labelSquare'
@@ -233,6 +294,7 @@ export default {
       // 只支持单数组，多数组要多次调用这个
       const tagList = this.tagList
       if (mode === 'add') {
+        
         // 如果有匹配的，就直接return
         let firstIndex = -1
         for (var i = 0; i < tagList.length; i++) {
@@ -241,12 +303,28 @@ export default {
             return
           }
         }
+      
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
+          
+          // 判断是否与其他标签类型冲突，若有冲突就删除该标签
+          if (this.uniteType === 0 && [2, 8].indexOf(val.dataSource) === -1) {
+            this.tagList.pop() // 删除前面 push 添加的
+            this.Successdialog = true
+            this.getSencond()
+            return
+          } else if (this.uniteType === 1 && [2, 3, 1, 5].indexOf(val.dataSource) === -1) {
+            this.tagList.pop() // 删除前面 push 添加的
+            this.Successdialog = true
+            this.getSencond()
+            return
+          }
+
           this.addForm.conditionTagIds.push(val.tagId)
           this.setContentBottomMargin()
         }
+        
       } else {
         // 取消选中的则删除这一项
         let index = -1

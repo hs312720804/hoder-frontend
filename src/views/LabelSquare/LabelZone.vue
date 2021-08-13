@@ -1,11 +1,13 @@
 <template>
     <div class="label-zone">
         <div v-if="tagName === undefined || tagName === ''">
+            
             <div
                     v-for="item in treeData"
                     :key="item.parentId"
                     class="tab-content"
             >
+                
                 <div class="title">{{item.parentName}}<span v-if="item.newOrUpdateCount" class="small-red">·</span></div>
                 <el-tabs
                         v-model="activeTab"
@@ -43,26 +45,26 @@
         </div>
         <div class="other-form" v-else>
             <tag-list
-                    :data-list="dataList"
-                    :data-source-enum="dataSourceEnum"
-                    :type-enum="typeEnum"
-                    :loading="loading"
-                    :check-list-parent="checkList"
-                    :show-selection="showSelection"
-                    @fetch-data="fetchTagAllList"
-                    @change-checkList="handleCheckListChange"
-                    @table-selected="handleTableSelected"
-                    :current-selected-tags="currentSelectTag"
+                :data-list="dataList"
+                :data-source-enum="dataSourceEnum"
+                :type-enum="typeEnum"
+                :loading="loading"
+                :check-list-parent="checkList"
+                :show-selection="showSelection"
+                @fetch-data="fetchTagAllList"
+                @change-checkList="handleCheckListChange"
+                @table-selected="handleTableSelected"
+                :current-selected-tags="currentSelectTag"
             >
             </tag-list>
         </div>
         <TagCategoryUpsert
-                ref="tagCategoryUpsert"
-                :current-tag-category="tagCategory"
-                :type-enum="typeEnum"
-                :data-source-enum="dataSourceEnum"
-                @upsert-end="fetchTagList"
-                :definedTagId="definedTagId"
+            ref="tagCategoryUpsert"
+            :current-tag-category="tagCategory"
+            :type-enum="typeEnum"
+            :data-source-enum="dataSourceEnum"
+            @upsert-end="fetchTagList"
+            :definedTagId="definedTagId"
         />
     </div>
 </template>
