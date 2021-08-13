@@ -352,7 +352,7 @@
         class="input-inline"
         @change="handelBehavirSelectChange(false, 1, moDefaultChild, 'selectKey', true)"
       >
-        <template v-for="item in getBehaviorAttrList">
+        <template v-for="item in getBehaviorAttrList()">
           <el-option
             :value="item.selectKey"
             :label="item.name"
@@ -473,7 +473,7 @@
         class="input-inline"
         @change="handelBehavirSelectChange(true)"
       >
-        <template v-for="item in getBehaviorAttrList">
+        <template v-for="item in getBehaviorAttrList()">
           <el-option
             :value="item.value"
             :label="item.name"
@@ -951,7 +951,6 @@
         </span>
       </div>
     </span>
-
 
   </div>
 </template>

@@ -67,3 +67,12 @@ export function getCalculatedTempCrowdList(params) {
         params
     })
 }
+
+// 新增、编辑投放获取临时人群列表; 获取行为人群列表
+export function getTempLaunchList(data) {
+    return this.fetch({
+        method: 'post',
+        url: 'api/multiVersionCrowd/getTempLaunchList',
+        data
+    })
+}

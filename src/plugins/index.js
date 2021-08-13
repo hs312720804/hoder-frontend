@@ -32,11 +32,8 @@ Vue.directive('loadmore', {
       // 获取element-ui定义好的scroll盒子
       const SELECTWRAP_DOM = el.querySelector('.el-select-dropdown .el-select-dropdown__wrap')
       SELECTWRAP_DOM.addEventListener('scroll', function () {
-        console.log('el==>', el)
-        console.log('binding==>', binding)
         const CONDITION = this.scrollHeight - this.scrollTop <= this.clientHeight
         if (CONDITION) {
-            // this.binding.expression()
           binding.value.methord(binding.value.params)
         }
       })
