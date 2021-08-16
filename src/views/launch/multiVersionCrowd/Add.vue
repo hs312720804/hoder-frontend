@@ -321,7 +321,7 @@
                         remote
                         clearable
                         v-model="crowdForm.tempCrowdId"
-                        v-loadmore="{'methord': handelLoadmore(1)}"
+                        v-loadmore="{'methord': handelLoadmore}"
                         :remote-method="getTempCrowdList"
                     >
                         <el-option
@@ -374,7 +374,7 @@
                         clearable
                         v-model="crowdForm.policyCrowdIds[0]"
                         @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0], behaviorCrowdList)"
-                        v-loadmore="{'methord': handelLoadmore(3)}"
+                        v-loadmore="{'methord': handelLoadmore}"
                         :remote-method="getBehaviorCrowdList"
                         @clear="getBehaviorCrowdList"
                     >
@@ -735,16 +735,14 @@
         
         methods: {
             // 滚动加载
-            handelLoadmore (crowdType) {
+            handelLoadmore () {
+                const crowdType = this.crowdForm.crowdType
                 if (crowdType === 1 && !this.loading) { // 临时人群
-                    console.log('11111==>', this.loading)
                     if (this.tempListFilter.pageNum < this.tempListpages) {
                         this.tempListFilter.pageNum++ // 滚动加载翻页
                         this.getTempCrowdList()
                     }
                 } else if (crowdType === 3 && !this.loading) {  // 行为人群 
-                    console.log('22222==>')
-                    console.log('22222==>', this.loading)
                     if (this.behaviorCrowdListFilter.pageNum < this.behaviorCrowdListpages) {
                         this.behaviorCrowdListFilter.pageNum++ // 滚动加载翻页
                         this.getBehaviorCrowdList()
