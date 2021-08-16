@@ -39,6 +39,7 @@
           <span class="w100">{{ item.name }}</span>
           <span class="flex-row">
             <!-- 第二级 -->
+            <!-- {{ item.childCheckedVal }} -->
             <el-select
               v-model="item.childCheckedVal"
               style="width: 150px"
@@ -143,79 +144,52 @@
           class="flex-row child-attr-wrap"
         >
           <span class="w100">{{ item.name }}</span>
-          <!-- 二期新增字段：第二级 -->
-          <el-select
-            v-model="item.childCheckedVal"
-            style="width: 120px"
-            name="oxve"
-            class="input-inline"
-            @change="handelChildBehavirSelectChange({
-              childItem: item,
-              level: 2
-            })"
-          >
-            <template v-for="item in getBehaviorAttrList(2)">
-              <el-option
-                :value="item.value"
-                :label="item.name"
-                :key="item.value"
-              ></el-option>
-            </template>
-          </el-select>
-          <span
-            v-for="(item2, index2) in item.child"
-            :key="'typeInputValue' + index2"
-            class="flex-row"
-          >
-            <span class="flex-column">
-              <!-- 第三级 -->
-              <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 2)" -->
-              <el-select
-                multiple
-                v-model="item2.childCheckedVal"
-                style="width: 110px"
-                name="asdq"
-                class="input-inline"
-                @change="handelChildBehavirSelectChange({
-                  childItem: item2,
-                  isLast: true,
-                  level: 3,
-                  extra: {type: item.childCheckedVal}
-                })"
-              >
-                <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal})">
-                  <el-option
-                    :value="attrChildItem.value"
-                    :label="attrChildItem.name"
-                    :key="attrChildItem.value"
-                  >
-                  </el-option>
-                </template>
-              </el-select>
-              <div class="flex-column">
-                <ConditionLine :isShow="item2.child && item2.child.length > 1"></ConditionLine>
-                <span
-                  v-for="(item3, index) in item2.child"
-                  :key="index"
-                  class="flex-row child"
+          <span class="flex-column">
+            <!-- 第二级 -->
+            <!-- {{ item.childCheckedVal }} -->
+            <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 2)" -->
+
+            <el-select
+              multiple
+              v-model="item.childCheckedVal"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                isLast: true,
+              })"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(2)">
+                <el-option
+                  :value="attrChildItem.value"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.value"
                 >
-                  <!-- {{ item2 }} -->
-                  <span class="w100">{{ item3.name }}</span>
-                  <!-- 第三级 -->
-                  <span
-                    v-for="(item4, index2) in item3.child"
-                    :key="'typeInputValue' + index2"
-                    class="flex-row"
-                  >
-                    <!-- 次数、天数 -->
-                    <!-- 选择【激活】时，不展示次数天数 -->
-                    <Type v-if="item.value !== '激活'" ref="typeRef" :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
-                  </span>
+                </el-option>
+              </template>
+            </el-select>
+            <div class="flex-column">
+              <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
+              <span
+                v-for="(item2, index) in item.child"
+                :key="index"
+                class="flex-row child"
+              >
+                <span class="w100">{{ item2.name }}</span>
+                <!-- 第三级 -->
+                <span
+                  v-for="(item3, index2) in item2.child"
+                  :key="'typeInputValue' + index2"
+                  class="flex-row"
+                >
+                  <!-- 次数、天数 -->
+                  <!-- 选择【激活】时，不展示次数天数 -->
+                  <Type v-if="item.value !== '激活'" ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                 </span>
-              </div>
-            </span>
+              </span>
+            </div>
           </span>
-          
         </div>
       </div>
     </span>
@@ -1235,12 +1209,7 @@ export default {
     },
 
     // 通过 vals 获取完整的 valList
-    // vals -- value 集合, checkedList -- 已经组装好的集合
-    // attrList -- 下拉框列表
-    // isLast -- 是否是最后一级
-    // defaultChild -- 清空下一级 child 时的默认赋值 
-    // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // isValueClear -- 是否清空下一级 child
+    // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
     getValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       
@@ -1249,7 +1218,8 @@ export default {
         const aa = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-       
+        // eslint-disable-next-line no-debugger
+        debugger
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
           // checkedList.find(item => item[selectPropKeyValue] === val) ||
@@ -1265,23 +1235,29 @@ export default {
           if (isValueClear) obj.value = ''
         }
         
+        // eslint-disable-next-line no-debugger
+        debugger
         console.log('obj.childCheckedVal==>', obj.childCheckedVal)
         // obj.child = obj.child || aa
-     
+        // eslint-disable-next-line no-debugger
+        debugger
         // console.log('obj.child=>>', obj.child)
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位
           defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string' , child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }]}]
         }
+        // eslint-disable-next-line no-debugger
+        debugger
 
-        obj.child = obj.child || (isLast ? aa : defaultchild) // 根据是否最后一级，添加不同的 child
+        obj.child = obj.child || (isLast ? aa : defaultchild)
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
         
         if (defaultchild.length > 0) {
           obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
+        
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
@@ -1291,24 +1267,23 @@ export default {
     },
     
     // childItem -- 当前选项的obj
-    // isLast -- 是否是最后一级
+    // isLast -- 最后一级
     // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
     // level -- 层级 为获取下拉框list
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // isValueClear -- 是否清空下一级 child
-    // defaultChild -- 清空下一级 child 时的默认赋值 
     // handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelChildBehavirSelectChange(params) {
-      // eslint-disable-next-line no-debugger
-      debugger
+
       let { childItem, isLast = false, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
 
+      // eslint-disable-next-line no-debugger
+      debugger
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
-      childItem.child = this.getValListByVals( // 组装数据
+      childItem.child = this.getValListByVals(
         vals,
         checkedList,
         behaviorAttrList,
@@ -1503,28 +1478,13 @@ export default {
             attrlist = dict.vip_expire_use
           } else if (level === 3 && extra.extra === 'no_effective') {
             attrlist = dict.vip_expire
-          }
-
+          } 
         } else if (childItem.tagCode === 'BAV0002') {
           if (level === 1) {
             attrlist = dict.app_operation
           } else if (level === 2) {
-            attrlist = dict.app_type || []
-          } else if (level === 3 && extra.type === '教育学习') {
-            attrlist = dict.app_type_educate
-          } else if (level === 3 && extra.type === '生活实用') {
-            attrlist = dict.app_type_life
-          } else if (level === 3 && extra.type === '视频娱乐') {
-            attrlist = dict.app_type_video
-          } else if (level === 3 && extra.type === '体育竞技') {
-            attrlist = dict.app_type_physical_educate
-          } else if (level === 3 && extra.type === '系统工具') {
-            attrlist = dict.app_type_system
-          } else if (level === 3 && extra.type === '音乐K歌') {
-            attrlist = dict.app_type_music
-          } else if (level === 3 && extra.type === '运动健康') {
-            attrlist = dict.app_type_sports
-          }
+            attrlist = dict.app_name
+          } 
         } else if (childItem.tagCode === 'BAV0003') {
           if (level === 1) {
             attrlist = dict.buy_operation
