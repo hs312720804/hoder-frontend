@@ -453,6 +453,7 @@ export default {
     // 请求创建人群接口
     fetchSave(form, mode) {
       form.rulesJson = form.rulesJson.map(e => {
+        e.versionNum = 1
         // e.purpose = form.purpose
         e.tagIds = e.tagIds.join(',')
         e.rulesJson.rules = e.rulesJson.rules.map(item => {

@@ -41,7 +41,7 @@
               <!-- 会员状态 不需要周期范围的所有下拉框选项 -->
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <div v-if="childItem.tagCode !== 'BAV0001'" style="display: flex; flex-direction: row;" >
+                <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
                   <Range
                     ref="range"
                     :childItem="childItem" 
@@ -526,7 +526,9 @@ export default {
         'BAV0005': 5,
         'BAV0006': 6,
         'BAV0007': 7,
-        'BAV0008': 8
+        'BAV0008': 8,
+        'BAV0009': 9,
+        'BAV0010': 10
       },
 // ----------------
       cache: {},

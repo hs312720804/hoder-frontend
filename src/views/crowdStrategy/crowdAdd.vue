@@ -1021,7 +1021,8 @@ export default {
             limitLaunch: form.limitLaunch,
             limitLaunchCount: form.limitLaunch
               ? form.limitLaunchCount
-              : undefined
+              : undefined,
+            versionNum: 1
           }
 
           // 获取到组件中的form  校验必填项
@@ -1232,7 +1233,7 @@ export default {
         this.form.name = policyData.crowdName
         this.form.remark = policyData.remark
         this.priority = policyData.priority
-
+        const versionNum = policyData.versionNum || 0
         // eslint-disable-next-line no-debugger
         debugger
         this.form.autoVersion = policyData.autoVersion
@@ -1287,11 +1288,34 @@ export default {
 
         this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
 
+        const defaultChild = [
+          { name: '', value: '', filed: '', operator: '=', type: 'string', child: []}
+        ]
+
         this.behaviorRulesJson.rules.forEach(ruleItem => {
           ruleItem.rules.forEach(rulesEachItem => {
             // 多选的值，回显的时候需要转成数组 2222
             if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+            }
+            // 手动构建数据 二期数据格式兼容一期
+            if (versionNum === 0) { 
+             
+              if (rulesEachItem.tagCode === 'BAV0001') { // 会员状态
+                const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
+                rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
+                rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
+                rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
+
+              }
+              else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
+                rulesEachItem.bav.behaviorValue.forEach(rule => {
+                  const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
+                  rule.child = JSON.parse(JSON.stringify(defaultChild))
+                  rule.child[0].child = ruleCopy.child
+                  rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
+                })
+              }
             }
           })
         })
