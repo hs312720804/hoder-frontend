@@ -44,11 +44,11 @@
                 <special-tag
                         :tagName="myCollectTagName"
                         :checkList="checkList"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
                         @clear-search="handleClearSearch"
                         @change-checkList="handleCheckListChange"
                         @get-table-selected="handleGetTableSelectedData"
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
                 >
                 </special-tag>
             </el-tab-pane>
@@ -84,12 +84,37 @@
                 >
                 </temp-label-index>
             </el-tab-pane>
+        
+            <el-tab-pane label="自定义标签" name="customTag">
+                <custom-tag
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                >
+                </custom-tag>
+            </el-tab-pane>
+
+            <el-tab-pane label="第三方标签" name="ThirdPartyTag">
+                <third-party-tag
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                >
+                </third-party-tag>
+            </el-tab-pane>
+
         </el-tabs>
         <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
             <el-input
-                    v-model="searchVal"
-                    placeholder="支持按标签名、Code、描述搜索"
-                    @keyup.enter.native="handleSearch"
+                v-model="searchVal"
+                placeholder="支持按标签名、Code、描述搜索"
+                @keyup.enter.native="handleSearch"
             >
             </el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
@@ -114,6 +139,9 @@
     import tempLabelIndex from './tempLabel/TempLabelIndex'
     import LocalLabelIndex from './localLabel/Index'
     import specialTag from './SpecialTag'
+    import CustomTag from './CustomTag'
+    import ThirdPartyTag from './ThirdPartyTag'
+    
     
     
     export default {
@@ -123,7 +151,9 @@
             myCollect,
             tempLabelIndex,
             specialTag,
-            LocalLabelIndex
+            LocalLabelIndex,
+            CustomTag,
+            ThirdPartyTag
         },
         data () {
             return {
@@ -174,12 +204,12 @@
             handleTabChange () {
                 switch (this.activeName) {
                     case 'labelZone':
-                        //    刷新标签广场页
+                        // 刷新标签广场页
                         this.fetchCheckListData()
                         this.$root.$emit('label-zone-list-refresh')
                         break
                     case 'myCollect':
-                        //    刷新我的收藏
+                        // 刷新我的收藏
                         this.fetchCheckListData()
                         this.$root.$emit('my-collect-list-refresh')
                         break
@@ -207,6 +237,16 @@
                         // 广告数据银行/标签
                         this.fetchTempCheckListData()
                         this.$root.$emit('temp-label-list-refresh-4')
+                        break
+                    case 'customTag':
+                        // 自定义标签
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('custom-tag-list-refresh')
+                        break
+                    case 'ThirdPartyTag':
+                        // 自定义标签
+                        this.fetchTempCheckListData()
+                        this.$root.$emit('third-tag-list-refresh')
                         break
                 }
             },

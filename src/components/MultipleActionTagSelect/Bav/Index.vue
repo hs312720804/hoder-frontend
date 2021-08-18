@@ -1510,8 +1510,6 @@ export default {
     // isValueClear -- 是否清空下一级 child
     // defaultChild -- 清空下一级 child 时的默认赋值 
     handelChildBehavirSelectChange(params) {
-      // eslint-disable-next-line no-debugger
-      debugger
       let { childItem, isLast = false, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
 
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal

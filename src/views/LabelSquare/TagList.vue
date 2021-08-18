@@ -1,57 +1,57 @@
 <template>
     <div class="tag-list">
         <el-table
-                ref="changeTable"
-                v-show="!tagId"
-                v-loading="loading"
-                element-loading-text="拼命加载中"
-                element-loading-spinner="el-icon-loading"
-                border
-                :data="dataList"
-                @select="handleSelectOrCancel"
-                @select-all="handleSelectAllOrCancel"
+            ref="changeTable"
+            v-show="!tagId"
+            v-loading="loading"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            border
+            :data="dataList"
+            @select="handleSelectOrCancel"
+            @select-all="handleSelectAllOrCancel"
         >
             <el-table-column
-                    type="selection"
-                    width="55"
-                    v-if="showSelection"
+                type="selection"
+                width="55"
+                v-if="showSelection"
             >
             </el-table-column>
             <el-table-column prop="tagId" label="ID">
             </el-table-column>
             <el-table-column prop="tagName" label="名称">
                 <template slot-scope="scope">
-                    {{scope.row.tagName}}
-                    <span v-if="scope.row.newOrUpdate" class="red-new">{{scope.row.newOrUpdate}}</span>
+                    {{ scope.row.tagName }}
+                    <span v-if="scope.row.newOrUpdate" class="red-new">{{ scope.row.newOrUpdate }}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="dataSource" label="数据来源" >
+            <el-table-column prop="dataSource" label="数据来源">
                 <template slot-scope="scope">
                     {{ dataSourceEnum[scope.row.dataSource] }}
                 </template>
             </el-table-column>
             <el-table-column
-                    v-if="(checkList.indexOf('defineRemark') > -1)"
-                    prop="defineRemark"
-                    label="标签定义"
+                v-if="(checkList.indexOf('defineRemark') > -1)"
+                prop="defineRemark"
+                label="标签定义"
             >
             </el-table-column>
             <el-table-column
-                    v-if="(checkList.indexOf('tagValues') > -1)"
-                    prop="tagValues"
-                    label="示例值"
+                v-if="(checkList.indexOf('tagValues') > -1)"
+                prop="tagValues"
+                label="示例值"
             >
             </el-table-column>
             <el-table-column
-                    v-if="(checkList.indexOf('tagKey') > -1)"
-                    prop="tagKey"
-                    label="标签code"
+                v-if="(checkList.indexOf('tagKey') > -1)"
+                prop="tagKey"
+                label="标签code"
             >
             </el-table-column>
             <el-table-column
-                    v-if="(checkList.indexOf('tagType') > -1)"
-                    prop="tagType"
-                    label="类型"
+                v-if="(checkList.indexOf('tagType') > -1)"
+                prop="tagType"
+                label="类型"
             >
                 <template slot-scope="scope">
                     {{ typeEnum[scope.row.tagType] }}

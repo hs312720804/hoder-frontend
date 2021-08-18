@@ -226,3 +226,12 @@ export function deleteSpecialTagType(id) {
     url: `api/specialTag/tags/${id}`
   })
 }
+
+// 标签列表之组合标签
+export function searchByGroup(params) {
+    return this.fetch({
+        method: 'get',
+        url: 'api/label/searchByGroup',
+        params
+    })
+}

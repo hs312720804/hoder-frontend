@@ -1,6 +1,6 @@
 const ENV = process.env.NODE_ENV
-// const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
-const BACKEND = process.env.BACKEND || '172.20.135.124:8011'
+const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
+// const BACKEND = process.env.BACKEND || '172.20.135.124:8011'
 
 //const devHost = '127.0.0.1'
 //const path = require('path')
