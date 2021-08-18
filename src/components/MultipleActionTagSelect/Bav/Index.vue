@@ -230,15 +230,13 @@
                   <!-- {{item.child}} -->
                   <!-- {{ item2.childCheckedVal }} -->
                   <!-- 第四级 -->
+                  <!-- 有效 Vip 、无效 Vip -->
                   <span v-if="item2.childCheckedVal === 'effective' || item2.childCheckedVal === 'no_effective'">
-                  
                     <span
                       v-for="(item3, index2) in item2.child"
                       :key="'typeInputValue' + index2"
-                      class="flex-row"
+                      class="flex-column"
                     >
-                    <!-- {{item2}} -->
-                      <!-- @change="handelChildBehavirSelectChange(item2, false, childItem, 3, {extra: item.childCheckedVal})" -->
                       <el-select
                         multiple
                         v-model="item3.childCheckedVal"
@@ -261,9 +259,25 @@
                           </el-option>
                         </template>
                       </el-select>
+                      <div
+                        v-for="(item4, index2) in item3.child"
+                        :key="'typeInputValue' + index2"
+                        class="flex-row"
+                      >
+                        <div v-if="item4.name.indexOf('自定义') > -1" class="flex-row">
+                          <span style="min-width: 200px;">{{ item4.name }}</span>
+                          <el-input-number :value="item4.value1" @input="handelInputBetween($event, item4, 'value1')" controls-position="right"></el-input-number>
+                          <!-- <el-input :value="item4.value1" @input="handelInputBetween($event, item4, 'value1')" type="number"></el-input> -->
+                          <div style="padding: 0 10px"><=到期时间<=</div>
+                          <el-input-number :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" controls-position="right"></el-input-number>
+                          <!-- <el-input :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" type="number"></el-input> -->
+                        </div>
+                      </div>
+
+                    <!-- {{item3.child}} -->
                     </span>
                   </span>
-
+                  <!-- 买过单点 -->
                   <span v-else-if="item2.childCheckedVal === 'paid_single'">
                     <span
                       v-for="(item3, index2) in item2.child"
@@ -370,7 +384,6 @@
                   :key="index"
                   class="flex-row child"
                 >
-                  <!-- {{ item2 }} -->
                   <span class="w100">{{ item3.name }}</span>
                   <!-- 第三级 -->
                   <span
@@ -470,7 +483,6 @@
                   <span v-if="item.field === 'purchase_recent_two_years'" class="flex-column" >
                     <!-- 历史购买 -->
                     <!-- 第三级 -->
-                    <!-- @change="handelChildBehavirSelectChange(item2, true, childItem, 3)" -->
                     <el-select
                       multiple
                       v-model="item2.childCheckedVal"
@@ -1201,6 +1213,7 @@ export default {
   watch: {
     childItem: {
       handler(val) {
+        console.log('childItem=====>>>', val)
         // 编辑回显
         // 模块活跃需要查询版面、板块ID
         if (val && val.tagCode === 'BAV0004') {
@@ -1268,6 +1281,14 @@ export default {
   },
   created() {},
   methods: {
+    handelInputBetween (val, item, key) {
+      this.$set(item, key, val)
+      if (!item.value1) {this.$set(item, 'value1', 0)}
+      if (!item.value2) {this.$set(item, 'value2', 0)}
+      item.value = `${item.value1}-${item.value2}`
+    },
+
+    // 反选
     changeAAA(val, behaviorValue) {
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
@@ -1489,7 +1510,8 @@ export default {
     // isValueClear -- 是否清空下一级 child
     // defaultChild -- 清空下一级 child 时的默认赋值 
     handelChildBehavirSelectChange(params) {
-      
+      // eslint-disable-next-line no-debugger
+      debugger
       let { childItem, isLast = false, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
 
       const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
