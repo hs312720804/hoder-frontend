@@ -80,7 +80,7 @@
                                 :key="item.policyId+''"
                                 :label="item.policyName"
                                 :value="item.policyId"
-                        >{{item.policyName}}
+                        >{{ item.policyName }}
                         </el-option>
                     </el-select>
                 </el-form-item>
@@ -89,11 +89,12 @@
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
                                 <el-checkbox
-                                        v-for="item in v.childs"
-                                        :label="v.policyId+'_'+item.tempCrowdId"
-                                        :key="item.tempCrowdId+''"
-                                        :disabled="item.canLaunch === false || item.isDisabledCrowd"
-                                >{{item.crowdName}}
+                                    v-for="item in v.childs"
+                                    :label="v.policyId+'_'+item.tempCrowdId"
+                                    :key="item.tempCrowdId+''"
+                                    :disabled="item.canLaunch === false || item.isDisabledCrowd"
+                                >
+                                {{ item.crowdName }}
                                 </el-checkbox>
                             </el-checkbox-group>
                             <span style="color: red">单次仅可投放一个包含行为标签的人群</span>
