@@ -1525,11 +1525,8 @@ export default {
           businessType
         }
         this.$service.moduleMatch(params).then(res => {
-
           this.loading = false;
-          // this.moOptions[field] = res.data || []
           this.$set(this.moOptions, field, res.data)
-          console.log('this.moOptions==>', this.moOptions)
 
         })
       } else {

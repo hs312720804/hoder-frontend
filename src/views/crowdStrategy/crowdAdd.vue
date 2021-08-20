@@ -1301,7 +1301,7 @@ export default {
             // 手动构建数据 二期数据格式兼容一期
             if (versionNum === 0) { 
              
-              if (rulesEachItem.tagCode === 'BAV0001') { // 会员状态
+              if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004') { // 会员状态、购买行为、模块活跃 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
                 rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
