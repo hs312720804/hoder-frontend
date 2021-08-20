@@ -21,38 +21,39 @@
       </div>
 
       <el-tabs
-        v-model="filter.tagName"
+        v-if="showTypeTab"
+        v-model="activeName"
         @tab-click="handleTabChange"
         style="margin-top: 13px"
       >
         <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
-
-          <tag-list
-            :data-list="dataList"
-            :data-source-enum="dataSourceEnum"
-            :type-enum="typeEnum"
-            :check-list-parent="checkList"
-            :current-selected-tags="currentSelectTag"
-            :show-selection="showSelection"
-            @fetch-data="fetchData"
-            @change-checkList="handleCheckListChange"
-            @table-selected="handleTableSelected"
-            @delete="handleDelete"
-            @edit="handleEdit"
-          >
-          </tag-list>
-
-          <div align="right">
-            <pagination
-                :currentpage="filter.pageNum"
-                :pagesize="filter.pageSize"
-                :totalcount="totalCount"
-                @handle-size-change="handleSizeChange"
-                @handle-current-change="handleCurrentChange"
-            ></pagination>
-          </div>
         </el-tab-pane>
       </el-tabs>
+
+      <tag-list
+        :data-list="dataList"
+        :data-source-enum="dataSourceEnum"
+        :type-enum="typeEnum"
+        :check-list-parent="checkList"
+        :current-selected-tags="currentSelectTag"
+        :show-selection="showSelection"
+        @fetch-data="fetchData"
+        @change-checkList="handleCheckListChange"
+        @table-selected="handleTableSelected"
+        @delete="handleDelete"
+        @edit="handleEdit"
+      >
+      </tag-list>
+
+      <div align="right">
+        <pagination
+            :currentpage="filter.pageNum"
+            :pagesize="filter.pageSize"
+            :totalcount="totalCount"
+            @handle-size-change="handleSizeChange"
+            @handle-current-change="handleCurrentChange"
+        ></pagination>
+      </div>
 
 
       <el-dialog
@@ -130,10 +131,13 @@
                 dialogTitle: '',
                 totalCount: 0,
                 typeTabsList: [],
+                activeName: '',
+                showTypeTab: true
             }
         },
         methods: {
-            handleTabChange() {
+            handleTabChange () {
+              this.filter.tagName = this.activeName
               this.fetchData()
             },
             // 删除
@@ -175,16 +179,14 @@
               this.dialogVisible = true
             },
             async fetchData () {
-              // const typeFilter = {
-              //   searchType: 2,
-              //   tagType: 2,
-              //   pageNum: 1,
-              //   pageSize: 10
-              // }
+              // 搜索时名称为空时，默认赋值为类型第一个
+              if (!this.filter.tagName) {
+                this.filter.tagName = this.typeTabsList[0].groupName
+                this.activeName = this.typeTabsList[0].groupName
+              }
+              this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
+              
 
-              // this.typeTabsList = await this.$service.searchByGroup(typeFilter)
-
-              // this.filter.tagName = this.typeTabsList[0].groupName
               const filter = this.filter
               this.$service.searchByGroup(filter).then(data => {
                 const result = data
@@ -225,6 +227,7 @@
               this.typeTabsList = await this.$service.searchByGroup(typeFilter)
 
               this.filter.tagName = this.typeTabsList[0].groupName
+              this.activeName = this.typeTabsList[0].groupName
             }
         },
         created () {
