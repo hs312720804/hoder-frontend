@@ -168,8 +168,11 @@ export default {
       deep: true,
       immediate: true
     },
-    show(val) {
-      this.show3 = val
+    show: {
+      handler(val) {
+        this.show3 = val
+      },
+      immediate: true
     },
     options: { // 下拉框选项
       handler(val) {

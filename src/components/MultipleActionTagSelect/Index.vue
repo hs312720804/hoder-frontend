@@ -51,7 +51,15 @@
                     @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
                   >
                   </Range>
-                  <span @click="handelChangeShow" :class="showRange ? 'range-open' : 'range-close'" class="range">{{ showRange ? '收起' : '展开' }}</span> 
+
+                  <i
+                    :class="showRange ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'" 
+                    class="range animated shake"
+                    @click="handelChangeShow"
+                  >
+                  </i>
+
+                  <!-- <span @click="handelChangeShow" :class="showRange ? 'range-open' : 'range-close'" class="range">{{ showRange ? '收起' : '展开' }}</span>  -->
                 </div>
                 <!-- {{childItem}} -->
                 <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
@@ -631,7 +639,6 @@ export default {
       this.$emit('hasMoveBehaviorTagRule')
     },
     handelChangeShow () {
-      // console.log('1234567890--', val)
       this.showRange = !this.showRange
     },
     handleCheckboxOk() {
@@ -1452,13 +1459,10 @@ i {
 }
 
 .range {
-  line-height: 0px;
-  padding-left: 0px;
-  color: dimgray;
-  text-indent: 23px;
-  osition: absolute;
-  width: 0;
-  height: 0;
+  padding: 0 18px 0 0
+  color: #9e9e9e;
+  font-size: 18px
+  line-height: 36px;
 }
 .range-open {
   text-indent: -52px;
@@ -1482,4 +1486,28 @@ i {
   border-right: 54px solid #e2e2e2;
 }
 
+.animated {
+  -webkit-animation-duration: 1s;
+  -moz-animation-duration: 1s;
+  -o-animation-duration: 1s;
+  animation-duration: 1s;
+  -webkit-animation-fill-mode: both;
+  -moz-animation-fill-mode: both;
+  -o-animation-fill-mode: both;
+  animation-fill-mode: both;
+  animation-iteration-count: 1;
+}
+.animated.shake {
+  -webkit-animation-name: shake;
+  -moz-animation-name: shake;
+  -o-animation-name: shake;
+  animation-name: shake;
+}
+@-webkit-keyframes shake {
+  0%, 100% {transform: translateX(0);}
+  // 10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
+  // 20%, 40%, 60%, 80% {transform: translateX(5px);}
+  10%, 50%, 90% {transform: translateX(-5px);}
+  30%, 60%{transform: translateX(5px);}
+}
 </style>
