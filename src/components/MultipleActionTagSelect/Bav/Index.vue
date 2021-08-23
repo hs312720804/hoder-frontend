@@ -1,3 +1,4 @@
+/* eslint-disable no-mixed-operators */
 <template>
   <div class="bav-attr-warp">
     <el-tag class="oc-item" :type="dataSourceColorEnum[childItem.dataSource]">
@@ -52,9 +53,9 @@
               ></el-option>
             </template>
           </el-select>
-          
+
           <div class="flex-column">
-            
+
             <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
 
             <div
@@ -62,7 +63,7 @@
               :key="item2.value"
               class="flex-row child-attr-wrap"
             >
-              
+
               <span class="w100">{{ item2.name }}</span>
               <span class="flex-row">
                 <!-- 第三级 -->
@@ -147,7 +148,7 @@
                     v-for="(item3, index2) in item2.child"
                     :key="'typeInputValue' + index2"
                     class="flex-row"
-                  >   
+                  >
                   <!-- {{item2}} -->
                     <!-- 次数、天数 -->
                     <Type ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
@@ -262,7 +263,7 @@
               </div>
             </span>
           </span>
-          
+
         </div>
       </div>
     </span>
@@ -352,7 +353,7 @@
 
                   <!-- 历史购买才有反选 -->
                   <el-checkbox
-                    v-if="item2.field === 'purchase_recent_two_years'" 
+                    v-if="item2.field === 'purchase_recent_two_years'"
                     class="reverse-check"
                     v-model="childItem.bav.reverseSelect"
                     @change="changeAAA($event, childItem.bav.behaviorValue)"
@@ -561,9 +562,9 @@
                       :label="(item2.forumName ? item2.forumName : '') + '(' + item2.forumId + ')'"
                       :value="item2.forumId">
                     </el-option>
-                    
+
                   </el-select>
-                  
+
                   <!-- 推荐位 -->
                   <span v-if="item2.selectKey === 'album_id1'">
                     <span class="flex-row child">
@@ -860,7 +861,7 @@
                 isValueClear: true,
                 defaultChild: item3.child[0].child
               })"
-              
+
             >
               <template v-for="attrChildItem in getBehaviorAttrList(4)">
 
@@ -923,7 +924,7 @@
                 <!-- @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)" -->
                 <span v-if="!!item5.value" class="flex-column">
                   <!-- // 是电影的 -->
-                  <span v-if="item5.videoType === '电影'" class="flex-row"> 
+                  <span v-if="item5.videoType === '电影'" class="flex-row">
                     <el-select
                         v-model="item5.childCheckedVal[0]"
                         style="width: 150px;"
@@ -935,7 +936,7 @@
                           level: 7
                         })"
                       >
-                        
+
                         <el-option
                           v-for="attrChildItem in getBehaviorAttrList(7)"
                           :key="attrChildItem.value"
@@ -1053,7 +1054,7 @@
                             v-for="(item7, index) in item6.child"
                             :key="index"
                             class="flex-row child"
-                          > 
+                          >
                             <!-- 没有选择集 -->
                               <!-- @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)" -->
                             <el-select
@@ -1188,7 +1189,7 @@
               </span>
             </span>
           </span>
-          
+
         </span>
       </div>
     </span>
@@ -1244,7 +1245,7 @@
             :key="item2.value"
             class="flex-row"
           >
-            
+
             <span class="flex-row">
               <!-- 第三级 -->
               <el-select
@@ -1323,7 +1324,7 @@
               ></el-option>
             </template>
           </el-select>
-        
+
         </div>
       </div>
     </span>
@@ -1353,15 +1354,12 @@ export default {
   },
   watch: {
     childItem: {
-      handler(val) {
+      handler (val) {
         console.log('childItem=====>>>', val)
         // 编辑回显
-        // 模块活跃需要查询版面、板块ID
-        if (val && val.tagCode === 'BAV0004') {
+        if (val && val.tagCode === 'BAV0004') { // 模块活跃需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)
-        }
-        // 起播行为标签需要查询影片集数
-        else if (val && val.tagCode === 'BAV0008') {
+        } else if (val && val.tagCode === 'BAV0008') { // 起播行为标签需要查询影片集数
           this.getQiboTvEpisodes(val.bav.behaviorValue)
         }
       },
@@ -1369,7 +1367,7 @@ export default {
       immediate: true
     }
   },
-  data() {
+  data () {
     return {
       value1: [],
       checkedVal: [],
@@ -1420,17 +1418,17 @@ export default {
       // }]
     }
   },
-  created() {},
+  created () {},
   methods: {
     handelInputBetween (val, item, key) {
       this.$set(item, key, val)
-      if (!item.value1) {this.$set(item, 'value1', 0)}
-      if (!item.value2) {this.$set(item, 'value2', 0)}
+      if (!item.value1) { this.$set(item, 'value1', 0) }
+      if (!item.value2) { this.$set(item, 'value2', 0) }
       item.value = `${item.value1}-${item.value2}`
     },
 
     // 反选
-    changeAAA(val, behaviorValue) {
+    changeAAA (val, behaviorValue) {
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
       behaviorValue.forEach(item => {
@@ -1439,13 +1437,13 @@ export default {
           this.childItem.bav.reverseSelect = true
         } else {
           item.operator = '='
-          this.childItem.bav.reverseSelect = false 
+          this.childItem.bav.reverseSelect = false
         }
       })
     },
 
     // 起播行为影片搜索更多
-    handelQiboLoadmore() {
+    handelQiboLoadmore () {
       this.qiboParams.page++ // 滚动加载翻页
       this.qiBoRemoteMethod(this.qiboQuery, this.qiboSource)
     },
@@ -1455,7 +1453,7 @@ export default {
       console.log('bavVal====', bavVal)
       bavVal && bavVal.forEach(obj => {
         console.log('obj===', obj)
-        if (obj.value!== '' && obj.field === 'album_id' || obj.field === 'forum_id') {
+        if (obj.value !== '' && (obj.field === 'album_id' || obj.field === 'forum_id')) {
           this.remoteMethod(obj.value, obj.field, this.childItem.bav.value)
         } else {
           this.getModuleId(obj.child) // 递归
@@ -1464,7 +1462,7 @@ export default {
     },
 
     // 起播行为编辑，获取影片集数
-    getQiboTvEpisodes(bavVal) {
+    getQiboTvEpisodes (bavVal) {
       // eslint-disable-next-line no-debugger
       debugger
       bavVal.forEach(obj => {
@@ -1476,22 +1474,22 @@ export default {
       })
     },
 
-    qiBoRemoteMethod(query, source) {
+    qiBoRemoteMethod (query, source) {
       // 重新查询，不是滚动加载
       if (this.qiboQuery !== query) {
         this.qiBoOptions = []
-        this.qiboParams.page = 1 // 页码归1 
+        this.qiboParams.page = 1 // 页码归1 s
       }
 
       if (source === '') return this.$message.error('请先选择内容源')
       if (query !== '') {
-        this.loading2 = true;
+        this.loading2 = true
 
         this.qiboParams.source = source
         this.qiboParams.keywords = query
 
         this.$service.tvContentMatch(this.qiboParams).then(res => {
-          this.loading2 = false;
+          this.loading2 = false
           this.qiboQuery = query // 记录查询关键字，滚动加载时要用到
           this.qiboSource = source
           let list = res.rows
@@ -1508,15 +1506,15 @@ export default {
           })
           this.qiBoOptions.push(...list)
         }).catch(() => {
-          this.loading2 = false;
+          this.loading2 = false
         })
       } else {
-        this.qiBoOptions = [];
+        this.qiBoOptions = []
       }
     },
-    remoteMethod(query, field, businessType) {
+    remoteMethod (query, field, businessType) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         let params = {
           type: field === 'forum_id' ? 'forum' : 'album', // 'album_id', 'forum_id'
           keywords: query,
@@ -1525,30 +1523,27 @@ export default {
           businessType
         }
         this.$service.moduleMatch(params).then(res => {
-          this.loading = false;
+          this.loading = false
           this.$set(this.moOptions, field, res.data)
-
         })
       } else {
-        this.moOptions[field] = [];
+        this.moOptions[field] = []
         this.$set(this.moOptions, field, [])
       }
     },
 
-    getDefaultChildObj() {
+    getDefaultChildObj () {
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
-
-    
 
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, checkedList -- 已经组装好的集合
     // attrList -- 下拉框列表
     // isLast -- 是否是最后一级
-    // defaultChild -- 清空下一级 child 时的默认赋值 
+    // defaultChild -- 清空下一级 child 时的默认赋值
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 是否清空下一级 child
-    getValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false, level) {
+    getValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       // eslint-disable-next-line no-debugger
       debugger
@@ -1557,11 +1552,11 @@ export default {
         const lastNumberObj = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-       
+
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-          // checkedList.find(item => item[selectPropKeyValue] === val) ||
-          // attrList.find(item => item[selectPropKeyValue] === val)
+        // checkedList.find(item => item[selectPropKeyValue] === val) ||
+        // attrList.find(item => item[selectPropKeyValue] === val)
         const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
@@ -1587,7 +1582,7 @@ export default {
           }]
         }
         if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃, 切换数据时，下一级清空，下下级保持存在
-          defaultchild = [{ 
+          defaultchild = [{
             name: '',
             value: '',
             filed: '',
@@ -1597,13 +1592,12 @@ export default {
           }]
         }
 
-
         obj.child = obj.child || (isLast ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 
-        obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
-        
+        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
+
         if (defaultchild.length > 0) {
-          obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
+          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
 
         if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃
@@ -1616,21 +1610,20 @@ export default {
       // console.log('list===>', list)
       return list
     },
-    
+
     // childItem -- 当前选项的obj
     // isLast -- 最后一级
     // level -- 层级 为获取下拉框list
     // defaultChild -- 下一级child对象的默认赋值，默认为[]
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    handelBehavirSelectChange(isLast = false, level=1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
-      
+    handelBehavirSelectChange (isLast = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       const childItem = this.childItem
       console.log('childItem==>', childItem)
-      // const vals = childItem.bav.value 
-      const vals = (typeof(childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
+      // const vals = childItem.bav.value
+      const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const checkedList = childItem.bav.behaviorValue
       const behaviorAttrList = this.getBehaviorAttrList(level)
-      
+
       childItem.bav.behaviorValue = this.getValListByVals(
         vals,
         checkedList,
@@ -1649,14 +1642,14 @@ export default {
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 是否清空下一级 child
-    // defaultChild -- 清空下一级 child 时的默认赋值 
-    handelChildBehavirSelectChange(params) {
-      let { childItem, isLast = false, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
+    // defaultChild -- 清空下一级 child 时的默认赋值
+    handelChildBehavirSelectChange (params) {
+      let { childItem, isLast = false, level = 2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
 
-      const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
+      const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
-     
+
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
       childItem.child = this.getValListByVals( // 组装数据
         vals,
@@ -1672,7 +1665,7 @@ export default {
 
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    getQiBoValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false, level) {
+    getQiBoValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       if (vals.length === 0 && level === 6) { // 清空集数
@@ -1687,12 +1680,12 @@ export default {
         const aa = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-        
+
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-     
-          // checkedList.find(item => item[selectPropKeyValue] === val) ||
-          // attrList.find(item => item[selectPropKeyValue] === val)
+
+        // checkedList.find(item => item[selectPropKeyValue] === val) ||
+        // attrList.find(item => item[selectPropKeyValue] === val)
         const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
@@ -1704,21 +1697,21 @@ export default {
         // console.log('obj.child=>>', obj.child)
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
-        
+
         obj.child = obj.child || (isLast ? aa : defaultchild)
 
-        obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
-        
+        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
+
         if (defaultchild.length > 0) {
-          obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
+          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
         if (isValueClear) { // 清空当前对象的child里面的值 (一二级联动时的交互)
           obj.childCheckedVal = []
-          if (obj.child.length > 0 ) {
+          if (obj.child.length > 0) {
             obj.child[0].value = ''
             obj.child[0].name = ''
             obj.child[0].field = ''
-            if (level !== 2 && level !== 4 && obj.child[0].child && obj.child[0].child.length > 0 ) {
+            if (level !== 2 && level !== 4 && obj.child[0].child && obj.child[0].child.length > 0) {
               obj.child[0].childCheckedVal = []
               obj.child[0].child[0].value = ''
               obj.child[0].child[0].name = ''
@@ -1729,7 +1722,7 @@ export default {
         }
         if (level === 3) { // 选择二级分类时，operator: 'like',  value: '%抗日%'
           obj.operator = 'like'
-          if (obj.value !== '') {obj.value = '%' + obj.value + '%'}
+          if (obj.value !== '') { obj.value = '%' + obj.value + '%' }
         }
         if (level === 4) { // 视频源, value 和 name 都是中文
           obj.value = obj.name
@@ -1759,13 +1752,12 @@ export default {
                     value: '',
                     filed: '',
                     operator: '=',
-                    type: 'string',
+                    type: 'string'
                   }
                 ]
               }
             ]
           }]
-         
         }
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
@@ -1774,7 +1766,7 @@ export default {
       // console.log('list===>', list)
       return list
     },
-    
+
     // childItem -- 当前选项的obj
     // isLast -- 最后一级
     // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
@@ -1783,12 +1775,12 @@ export default {
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 一二级联动时，一级下拉切换，将二级下拉框清空
     // handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
-    handelQiBoChildBehavirSelectChange(params) {
-      let {childItem, isLast = false, level=2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []} = params
+    handelQiBoChildBehavirSelectChange (params) {
+      let { childItem, isLast = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] } = params
 
       // console.log('123childItem==>', childItem)
       // console.log('123item==>', item)
-      const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
+      const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // eslint-disable-next-line no-debugger
       debugger
@@ -1797,7 +1789,7 @@ export default {
       if (level === 4) { // 切换视频源时，清空下拉选项
         this.qiBoOptions = []
         this.qiboParams.page = 1 // 页码归1
-      } 
+      }
       childItem.child = this.getQiBoValListByVals(
         vals,
         checkedList,
@@ -1811,14 +1803,14 @@ export default {
     },
 
     // 获取影片集数
-    getTvEpisodes(source, id) {
+    getTvEpisodes (source, id) {
       const params = {
         source,
         id,
         page: 1,
         pageSize: 200
       }
-      
+
       this.$service.getTvEpisodes(params).then(res => {
         this.qiBoCollectionOptions = res.rows || []
         this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
@@ -1833,12 +1825,11 @@ export default {
     },
 
     // 获取下拉框选项 getBehaviorAttrListgetBehaviorAttrList
-    getBehaviorAttrList(level=1, extra={}) {
-    
+    getBehaviorAttrList (level = 1, extra = {}) {
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
-  
+
         const dict = this.bavAttrList.dict
         if (childItem.tagCode === 'BAV0001') {
           // eslint-disable-next-line no-debugger
@@ -1855,7 +1846,6 @@ export default {
           } else if (level === 4 && extra.extra === 'no_effective') {
             attrlist = dict.vip_expire
           }
-
         } else if (childItem.tagCode === 'BAV0002') {
           if (level === 1) {
             attrlist = dict.app_operation
@@ -1876,7 +1866,7 @@ export default {
             // attrlist = dict.vip_package
           } else if (level === 4) {
             attrlist = dict.buy_type
-          } 
+          }
         } else if (childItem.tagCode === 'BAV0004') {
           if (level === 1) {
             attrlist = dict.business_type
@@ -1919,9 +1909,9 @@ export default {
             return this.qiBoCollectionOptions
           } else if (level === 7) {
             attrlist = dict.pay_type
-          } else if (level === 8 ) {
+          } else if (level === 8) {
             attrlist = dict.watch_time
-          } else if (level === 9 ) {
+          } else if (level === 9) {
             attrlist = dict.single_episode
           }
         } else if (childItem.tagCode === 'BAV0009') {
@@ -1967,16 +1957,16 @@ export default {
           }
           if (childItem.tagCode === 'BAV0001') {
             let operator = '='
-            if ( level === 3 && item.filedType === 'effective') { operator = '>=' } // 有效
+            if (level === 3 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
-              (level === 3 && item.filedType === 'no_effective')
-            || item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
-            if ( item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
+              (level === 3 && item.filedType === 'no_effective') ||
+            item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
+            if (item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
             if (
-               item.filedType === '7vip_expire_use30' 
-            || item.filedType === '7vip_expire_use'
-            || item.filedType === '7vip_expire30'
-            || item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+              item.filedType === '7vip_expire_use30' ||
+            item.filedType === '7vip_expire_use' ||
+            item.filedType === '7vip_expire30' ||
+            item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
             list = {
               name: item.dictLabel,
               value: item.dictValue,
@@ -1993,7 +1983,7 @@ export default {
         return attrlist
       }
     },
-    getChildBehaviorAttrList() {
+    getChildBehaviorAttrList () {
       return [
         {
           value: 'mg',
