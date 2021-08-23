@@ -387,7 +387,8 @@
   <!-- 估算弹窗 -->
   <el-dialog :visible.sync="showEstimate">
     <div class="estimate-tips">说明：
-      <div>1、会自动过滤自定义条件，只估算包含大数据标签的人群数量</div>
+      <!-- <div>1、会自动过滤自定义条件，只估算包含大数据标签的人群数量</div> -->
+      <div>1、仅支持大数据标签、行为标签或二者混用的估算</div>
       <div>2、依据人群优先级去重估算，重合部分算入优先级高的人群</div>
       <div>3、该策略下上架中的人群将参与去重估算</div>
     </div>
@@ -875,13 +876,13 @@ import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
 export default {
   components: {
-     // Table,
-      priorityEdit,
-      crowdStatusResource,
-      CommitHistoryDialog,
-      numOrTextEdit
+    // Table,
+    priorityEdit,
+    crowdStatusResource,
+    CommitHistoryDialog,
+    numOrTextEdit
   },
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
@@ -894,12 +895,12 @@ export default {
       rules: {
         mac: [{ required: true, message: '请输入Mac', trigger: 'blur' }]
       },
-      //搜索条件
+      // 搜索条件
       criteria: {
         //  policyId:selectRow.policyId
       },
       searchForm: {
-        crowdName: "",
+        crowdName: ''
         // putway: ''
       },
       // 编辑页
@@ -916,423 +917,423 @@ export default {
       estimateValue: ['0'],
       testDialogVisible: false,
       estimateId: '',
-        showResult: false,
-        total1: undefined,
-        total2: undefined,
-        total3: undefined,
-        totalUser: undefined,
-        total4: undefined,
-        time0: [],
-        time1: [],
-        time2: [],
-        time3: [],
-        time4: [],
-        time5: [],
-        time6: [],
-        time7: [],
-        showStatistics: false,
-        hitLinesTitle: '',
-        hitPieTitle: '',
-        exposeLinesTitle: '',
-        exposePieTitle: '',
-        clickLinesTitle: '',
-        clickPieTitle: '',
-        crowdLaunchTitle: '',
-        exposeProvinceTitle: '',
-        startDate: '',
-        endDate: '',
-        currentCid: undefined,
-        showUpDownDialog: false,
-        upDownTips: '',
-        currentTag: '',
-        showCopyDialog: false,
-        allPolices: [],
-        policyCopyForm: {
-          policyIds: []
-        },
-        copyRules: {
-            policyIds: [
-                {type: 'array', required: true, message: '请至少选择一个策略', trigger: 'change'}
-            ]
-        },
-        showEstimateEcharts: false,
-        table: {
-            props: {},
-            header: [
-                {
-                    label: '排名',
-                    width: '50',
-                    type: 'index'
-                },
-                {
-                    label: '省份',
-                    prop: 'name'
-                },
-                {
-                    label: '活跃数量',
-                    prop: 'value'
-                },
-                {
-                    label: '占比',
-                    prop: 'PCT'
-                }
-            ],
-            data: []
-        },
-        cityData: null,
-        memberList: [],
-        memberListType: '',
-        memberListByPay: '',
-        expirationDayList: {
-          '7': '近7日',
-          '30': '近30日'
-        },
-        expirationDay: '7',
-        fillEmptyData: {
-          data: [{name: '总量',value: 0}],
-          name: {data: ['总量']}
-        },
-        putwayOptions: [
-            {
-                value: '',
-                label: '全部状态'
-            },
-            {
-                value: 1,
-                label: '上架'
-            },
-            {
-                value: 0,
-                label: '下架'
-            }
+      showResult: false,
+      total1: undefined,
+      total2: undefined,
+      total3: undefined,
+      totalUser: undefined,
+      total4: undefined,
+      time0: [],
+      time1: [],
+      time2: [],
+      time3: [],
+      time4: [],
+      time5: [],
+      time6: [],
+      time7: [],
+      showStatistics: false,
+      hitLinesTitle: '',
+      hitPieTitle: '',
+      exposeLinesTitle: '',
+      exposePieTitle: '',
+      clickLinesTitle: '',
+      clickPieTitle: '',
+      crowdLaunchTitle: '',
+      exposeProvinceTitle: '',
+      startDate: '',
+      endDate: '',
+      currentCid: undefined,
+      showUpDownDialog: false,
+      upDownTips: '',
+      currentTag: '',
+      showCopyDialog: false,
+      allPolices: [],
+      policyCopyForm: {
+        policyIds: []
+      },
+      copyRules: {
+        policyIds: [
+          { type: 'array', required: true, message: '请至少选择一个策略', trigger: 'change' }
+        ]
+      },
+      showEstimateEcharts: false,
+      table: {
+        props: {},
+        header: [
+          {
+            label: '排名',
+            width: '50',
+            type: 'index'
+          },
+          {
+            label: '省份',
+            prop: 'name'
+          },
+          {
+            label: '活跃数量',
+            prop: 'value'
+          },
+          {
+            label: '占比',
+            prop: 'PCT'
+          }
         ],
-        showDivideDetail: false,
-        DivideTableData: [],
-        setShowCommitHistoryDialog: false,
-        currentCrowdId: undefined,
-        abStatusEnum: {},
-        launchStatusEnum: {},
-        checkList: ['creatorName'],
-        downloadUrl: undefined,
-        launchedExportUrl: undefined,
-        crowdValidEnum: {},
-        canBatchEstimate: false,
-        estimateType: undefined,
-        showLimitLaunchDialog: false,
-        showLimitLaunchCount: undefined,
-        // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-        dataSourceColorEnum: {
-            1: 'success',
-            2: 'danger',
-            3: '',
-            5: 'warning',
-            6: 'warningOrange',
-            7: 'warningOrange2',
-            8: 'warningCyan'
+        data: []
+      },
+      cityData: null,
+      memberList: [],
+      memberListType: '',
+      memberListByPay: '',
+      expirationDayList: {
+        '7': '近7日',
+        '30': '近30日'
+      },
+      expirationDay: '7',
+      fillEmptyData: {
+        data: [{ name: '总量', value: 0 }],
+        name: { data: ['总量'] }
+      },
+      putwayOptions: [
+        {
+          value: '',
+          label: '全部状态'
         },
-        conditionEnum: {
-          'AND': '且',
-          'OR': '或'
+        {
+          value: 1,
+          label: '上架'
         },
-        showBypassDialog: false,
-        showBypassStep: 1,
-        byPassForm: this.genBypassForm(),
-        ratioEnum: this.genInitApart(),
-        selectList: [],
-        bypassSaveFlag: '',
-        showByPassColumn: false,
-        tableMerge: [],
-        initTableMerge: [],
-        showConfiguration: false,
-        configTextarea: '',
-        initExpandCrowd: []
+        {
+          value: 0,
+          label: '下架'
+        }
+      ],
+      showDivideDetail: false,
+      DivideTableData: [],
+      setShowCommitHistoryDialog: false,
+      currentCrowdId: undefined,
+      abStatusEnum: {},
+      launchStatusEnum: {},
+      checkList: ['creatorName'],
+      downloadUrl: undefined,
+      launchedExportUrl: undefined,
+      crowdValidEnum: {},
+      canBatchEstimate: false,
+      estimateType: undefined,
+      showLimitLaunchDialog: false,
+      showLimitLaunchCount: undefined,
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorEnum: {
+        1: 'success',
+        2: 'danger',
+        3: '',
+        5: 'warning',
+        6: 'warningOrange',
+        7: 'warningOrange2',
+        8: 'warningCyan'
+      },
+      conditionEnum: {
+        'AND': '且',
+        'OR': '或'
+      },
+      showBypassDialog: false,
+      showBypassStep: 1,
+      byPassForm: this.genBypassForm(),
+      ratioEnum: this.genInitApart(),
+      selectList: [],
+      bypassSaveFlag: '',
+      showByPassColumn: false,
+      tableMerge: [],
+      initTableMerge: [],
+      showConfiguration: false,
+      configTextarea: '',
+      initExpandCrowd: []
     }
   },
-  props: ["selectRow"],
-  created() {
-        // 高阶函数
-      // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
+  props: ['selectRow'],
+  created () {
+    // 高阶函数
+    // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
 
-      this.loadData()
-      const start = new Date()
-      const end = new Date()
-      this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
-      this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+    this.loadData()
+    const start = new Date()
+    const end = new Date()
+    this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
+    this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
   watch: {
-      memberListType(val,oldVal) {
-          if(val !== oldVal && oldVal.length !== 0){
-              this.getUserType()
-          }
-      },
-      memberListByPay(val,oldVal) {
-          if(val !== oldVal && oldVal.length !== 0){
-              this.getPayDetail()
-          }
-      },
-      expirationDay(val,oldVal) {
-          if(val !== oldVal && oldVal.length !== 0){
-              this.getWatchBehavior()
-          }
+    memberListType (val, oldVal) {
+      if (val !== oldVal && oldVal.length !== 0) {
+        this.getUserType()
       }
-      // percent(val) {
-      //     this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
-      //         return prev + cur
-      //     })
-      // }
+    },
+    memberListByPay (val, oldVal) {
+      if (val !== oldVal && oldVal.length !== 0) {
+        this.getPayDetail()
+      }
+    },
+    expirationDay (val, oldVal) {
+      if (val !== oldVal && oldVal.length !== 0) {
+        this.getWatchBehavior()
+      }
+    }
+    // percent(val) {
+    //     this.percentTotal = val.reduce((prev ,cur ,index ,array) => {
+    //         return prev + cur
+    //     })
+    // }
   },
   methods: {
-      /* mac 改变的时候触发*/
-      handleMacChange () {
-        this.testResult = ''
-      },
-      handleTest () {
-        this.$refs.formTest.$refs.form.validate((valid) => {
-          if (valid) {
-            this.$service.polisyTest(this.formTest).then((data) => {
-              this.testResult = data.result
-            })
-          }
-        })
-      },
-      /* 投前测试*/
-      isShowTest (item) {
-        // eslint-disable-next-line no-debugger
-        debugger
-        const tagsList = this.selectRow.tagsList || []// 所有的tags
-        const currentItemTagIds = item.tagIds || ''// 当前行的tags
-        const tagsArr = currentItemTagIds.split(',')
-        let flag = false
-        for (let i = 0; i < tagsArr.length; i++) {
-          const tag = tagsList.find((e) => {
-            return e.tagId === parseInt(tagsArr[i])
-          }) || {}
-          if (tag.dataSource === 3) {
-            flag = true
-            break
-          }
+    /* mac 改变的时候触发 */
+    handleMacChange () {
+      this.testResult = ''
+    },
+    handleTest () {
+      this.$refs.formTest.$refs.form.validate((valid) => {
+        if (valid) {
+          this.$service.polisyTest(this.formTest).then((data) => {
+            this.testResult = data.result
+          })
         }
-        return flag
-      },
-      /**
+      })
+    },
+    /* 投前测试 */
+    isShowTest (item) {
+      // eslint-disable-next-line no-debugger
+      debugger
+      const tagsList = this.selectRow.tagsList || []// 所有的tags
+      const currentItemTagIds = item.tagIds || ''// 当前行的tags
+      const tagsArr = currentItemTagIds.split(',')
+      let flag = false
+      for (let i = 0; i < tagsArr.length; i++) {
+        const tag = tagsList.find((e) => {
+          return e.tagId === parseInt(tagsArr[i])
+        }) || {}
+        if (tag.dataSource === 3) {
+          flag = true
+          break
+        }
+      }
+      return flag
+    },
+    /**
        * 打开投前测试弹出框
        */
-      handleOpenTestDialog (item) {
-        this.testDialogVisible = true
-        this.formTest.policyId = item.policyId
-        this.formTest.crowdId = item.crowdId
-      },
-      genInitApart () {
-          return [
-              {
-                  label: 1,
-                  value: 1
-              },
-              {
-                  label: 2,
-                  value: 2
-              },
-              {
-                  label: 3,
-                  value: 3
-              },
-              {
-                  label: 4,
-                  value: 4
-              },
-              {
-                  label: 5,
-                  value: 5
-              }
-          ]
-      },
-      genBypassForm (present) {
-          return {
-              apart: 2,
-              // bypass: [{name: '',ratio: '',crowds: [{ crowdId: '',crowdName: '',priority: 1 }]}],
-              bypass: [],
-              ...present
-              // crowds: [{ crowdId: '',crowdName: '',priority: 1 }]
-          }
-      },
-      handleInputTime (index, val, method) {
-          const key = 'time' + index
-          const oldVal = this[key]
-          if(this.currentCid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this[key] = val
-                  this[method](this.currentCid,val[0],val[1])
-              }else{
-                  this.$message.error('日期间隔最多只能是30天！请重新选择日期')
-              }
-          }
-      },
-    goBack() {
-      this.$emit("goBack")
+    handleOpenTestDialog (item) {
+      this.testDialogVisible = true
+      this.formTest.policyId = item.policyId
+      this.formTest.crowdId = item.crowdId
     },
-    initTime() {
-        this.time0 = [this.startDate,this.endDate]
-        this.time1 = [this.startDate,this.endDate]
-        this.time2 = [this.startDate,this.endDate]
-        this.time3 = [this.startDate,this.endDate]
-        this.time4 = [this.startDate,this.endDate]
-        this.time5 = [this.startDate,this.endDate]
-        this.time6 = [this.startDate,this.endDate]
-        this.time7 = [this.startDate,this.endDate]
+    genInitApart () {
+      return [
+        {
+          label: 1,
+          value: 1
+        },
+        {
+          label: 2,
+          value: 2
+        },
+        {
+          label: 3,
+          value: 3
+        },
+        {
+          label: 4,
+          value: 4
+        },
+        {
+          label: 5,
+          value: 5
+        }
+      ]
     },
-    callback() {
-        this.loadData()
+    genBypassForm (present) {
+      return {
+        apart: 2,
+        // bypass: [{name: '',ratio: '',crowds: [{ crowdId: '',crowdName: '',priority: 1 }]}],
+        bypass: [],
+        ...present
+        // crowds: [{ crowdId: '',crowdName: '',priority: 1 }]
+      }
     },
-    handleAdd() {
-      this.$emit("addCrowd")
+    handleInputTime (index, val, method) {
+      const key = 'time' + index
+      const oldVal = this[key]
+      if (this.currentCid && oldVal.length !== 0) {
+        if (this.setDataInMonth(val[0], val[1])) {
+          this[key] = val
+          this[method](this.currentCid, val[0], val[1])
+        } else {
+          this.$message.error('日期间隔最多只能是30天！请重新选择日期')
+        }
+      }
     },
-    edit(row) {
-      this.$emit("addCrowd", row)
+    goBack () {
+      this.$emit('goBack')
+    },
+    initTime () {
+      this.time0 = [this.startDate, this.endDate]
+      this.time1 = [this.startDate, this.endDate]
+      this.time2 = [this.startDate, this.endDate]
+      this.time3 = [this.startDate, this.endDate]
+      this.time4 = [this.startDate, this.endDate]
+      this.time5 = [this.startDate, this.endDate]
+      this.time6 = [this.startDate, this.endDate]
+      this.time7 = [this.startDate, this.endDate]
+    },
+    callback () {
+      this.loadData()
+    },
+    handleAdd () {
+      this.$emit('addCrowd')
+    },
+    edit (row) {
+      this.$emit('addCrowd', row)
     },
     // 编辑ab test人群
-    divideAB(row,mode) {
-        this.$emit("editABCrowd", row, mode)
+    divideAB (row, mode) {
+      this.$emit('editABCrowd', row, mode)
     },
-    del(row) {
+    del (row) {
       var id = row.crowdId
-      this.$confirm("确定要删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          this.$service.strategyCrowdDel({ crowdId: id},"删除人群会影响该策略下所有人群的估算数量，请点击“估算”重新估算其他人群的圈定数据").then(()=>{
+          this.$service.strategyCrowdDel({ crowdId: id }, '删除人群会影响该策略下所有人群的估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
             this.loadData()
           })
-        }).catch(function(){
+        }).catch(function () {
 
         })
     },
     // 批量估算
-    handleBatchEstimate() {
-        this.estimateType = 'batch'
-        this.showEstimate = true
-        this.$service.getEstimateType().then((data) => {
-            this.estimateItems = data
-        })
-        //    初始化值
-        this.estimateValue = ['0']
+    handleBatchEstimate () {
+      this.estimateType = 'batch'
+      this.showEstimate = true
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
+      //    初始化值
+      this.estimateValue = ['0']
     },
     // 点击估算按钮
-    handleClickEstimate(row) {
-        this.estimateId = row.crowdId
-        this.showEstimate = true
-        this.estimateType = 'single'
-        this.$service.getEstimateType().then((data) => {
-            this.estimateItems = data
-        })
-    //    初始化值
-        this.estimateValue = ['0']
+    handleClickEstimate (row) {
+      this.estimateId = row.crowdId
+      this.showEstimate = true
+      this.estimateType = 'single'
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
+      //    初始化值
+      this.estimateValue = ['0']
     },
-      // 提交估算
+    // 提交估算
     handleEstimate () {
-        let calIdType = this.estimateValue.map((item) => item).join(',')
-        const formData = {
-            policyId: this.selectRow.policyId,
-            crowdId: this.estimateType === 'single'? this.estimateId : undefined,
-            triggerUser: this.getUserName(),
-            triggerTime: (new Date()).valueOf(),
-            calIdType
-        }
-        if (this.estimateType === 'single') {
-            this.$service.estimatePeople({crowdId: this.estimateId,calIdType: calIdType},"提交估算成功").then(
-                () => {
-                    this.showEstimate = false
-                    this.loadData()
-                }
-            )
-        } else {
-            this.$service.batchCrowdEstimate(formData,"提交估算成功").then(
-                () => {
-                    this.showEstimate = false
-                    this.loadData()
-                    this.canBatchEstimate = true
-                    setTimeout(() => {
-                        this.$set(this,'canBatchEstimate',false)
-                    },5000)
-                }
-            )
-        }
+      let calIdType = this.estimateValue.map((item) => item).join(',')
+      const formData = {
+        policyId: this.selectRow.policyId,
+        crowdId: this.estimateType === 'single' ? this.estimateId : undefined,
+        triggerUser: this.getUserName(),
+        triggerTime: (new Date()).valueOf(),
+        calIdType
+      }
+      if (this.estimateType === 'single') {
+        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }, '提交估算成功').then(
+          () => {
+            this.showEstimate = false
+            this.loadData()
+          }
+        )
+      } else {
+        this.$service.batchCrowdEstimate(formData, '提交估算成功').then(
+          () => {
+            this.showEstimate = false
+            this.loadData()
+            this.canBatchEstimate = true
+            setTimeout(() => {
+              this.$set(this, 'canBatchEstimate', false)
+            }, 5000)
+          }
+        )
+      }
     },
     // 获取当前用户拼音
     getUserName () {
-          return this.$appState.user.name.split('@')[0]
+      return this.$appState.user.name.split('@')[0]
     },
     // 显示估算结果
     showCountResult (id) {
-        const crowdId = id
-        this.showResult = true
-        this.$service.estimateResult({crowdId: crowdId}).then((data) => {
-            this.total1 = data[0].total1 === null ? '暂无数据': data[0].total1
-            const {total1,total2,total3,totalUser} = data[0] || {}
-            // const {totalUser} = data[0] || {}
-            this.total1 = this.cc_format_number(total1) || '暂无数据'
-            this.total2 = this.cc_format_number(total2) || '暂无数据'
-            this.total3 = this.cc_format_number(total3) || '暂无数据'
-            this.totalUser = this.cc_format_number(totalUser) || '暂无数据'
-        })
+      const crowdId = id
+      this.showResult = true
+      this.$service.estimateResult({ crowdId: crowdId }).then((data) => {
+        this.total1 = data[0].total1 === null ? '暂无数据' : data[0].total1
+        const { total1, total2, total3, totalUser } = data[0] || {}
+        // const {totalUser} = data[0] || {}
+        this.total1 = this.cc_format_number(total1) || '暂无数据'
+        this.total2 = this.cc_format_number(total2) || '暂无数据'
+        this.total3 = this.cc_format_number(total3) || '暂无数据'
+        this.totalUser = this.cc_format_number(totalUser) || '暂无数据'
+      })
     },
     // 从服务器读取数据
     loadData () {
-      this.$service.getListDimension({type: 2}).then(data => {
-          if (data) {
-              if (data.behaviorShow) {
-                  this.checkList = data.behaviorShow.split(',')
-              }
+      this.$service.getListDimension({ type: 2 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
           }
+        }
       })
-      this.criteria["pageNum"] = this.currentPage
-      this.criteria["pageSize"] = this.pageSize
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
       this.$service.viewCrowd(this.criteria).then(data => {
         if (data.bypass === 1) {
-            // 分流的人群
-            const tableArr = []
-            const apartArr = []
-            const tableMerge = []
-            if(data.bypassList) {
-                data.bypassList.forEach(item => {
-                    tableMerge.push(item.crowdsList.length)
-                    item.crowdsList.forEach((crowdItem, index) => {
-                        if (index < item.crowdsList.length - 1) {
-                            tableMerge.push(0)
-                        }
-                        tableArr.push({
-                            bypassName: item.bypassName,
-                            id: item.id,
-                            ratio: item.ratio,
-                            policyId: item.policyId,
-                            ...crowdItem,
-                            bypassId: item.bypassId
-                        })
-                    })
-                    apartArr.push(item.crowdsList.length)
+          // 分流的人群
+          const tableArr = []
+          const apartArr = []
+          const tableMerge = []
+          if (data.bypassList) {
+            data.bypassList.forEach(item => {
+              tableMerge.push(item.crowdsList.length)
+              item.crowdsList.forEach((crowdItem, index) => {
+                if (index < item.crowdsList.length - 1) {
+                  tableMerge.push(0)
+                }
+                tableArr.push({
+                  bypassName: item.bypassName,
+                  id: item.id,
+                  ratio: item.ratio,
+                  policyId: item.policyId,
+                  ...crowdItem,
+                  bypassId: item.bypassId
                 })
-                this.initTableMerge = JSON.parse(JSON.stringify(tableMerge))
-                this.tableMerge = tableMerge
-                this.totalCount = apartArr.reduce((prev, cur) => {
-                    return prev + cur
-                })
-                this.tableData = tableArr
-            }
+              })
+              apartArr.push(item.crowdsList.length)
+            })
+            this.initTableMerge = JSON.parse(JSON.stringify(tableMerge))
+            this.tableMerge = tableMerge
+            this.totalCount = apartArr.reduce((prev, cur) => {
+              return prev + cur
+            })
+            this.tableData = tableArr
+          }
         } else {
-            this.tableData = data.pageInfo.list
-            this.totalCount = data.pageInfo.total
+          this.tableData = data.pageInfo.list
+          this.totalCount = data.pageInfo.total
         }
         // console.log('this.tableData===', this.tableData[0].rulesJson)
-        
+
         this.abStatusEnum = data.ABStatus
         this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
         this.showByPassColumn = data.bypass === 1
         this.initExpandCrowd = []
         if (this.tableData.length > 0) {
-            this.initExpandCrowd.push(this.tableData[0].crowdId)
+          this.initExpandCrowd.push(this.tableData[0].crowdId)
         }
         // 再插入一项
         this.tableMerge[0] = this.tableMerge[0] + 1
@@ -1349,1151 +1350,1147 @@ export default {
       this.loadData()
     },
     handleSearch () {
-        this.criteria = this.searchForm
-        this.loadData()
+      this.criteria = this.searchForm
+      this.loadData()
     },
     // 重置
     handleReset () {
       this.$refs.searchForm.resetFields()
-        this.loadData()
+      this.loadData()
     },
-      // 通用多线性参数设置
-      setLinesEchart (element,title,xData,yData,legend) {
-          const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title
+    // 通用多线性参数设置
+    setLinesEchart (element, title, xData, yData, legend) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
+          }
+        },
+        legend: {
+          data: legend
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: yData
+      })
+    },
+    // 通用柱状图参数设置
+    setBarEchart (element, title, xData, yData) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: [{
+          data: yData.length === 0 ? this.fillEmptyData.data : yData,
+          type: 'bar',
+          barWidth: 30
+        }]
+      })
+    },
+    // 圆饼图
+    setCircleEcharts (element, title, legend, data, showDetail) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title,
+          left: 'center'
+        },
+        // tooltip: {
+        //     trigger: 'item',
+        //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value) + '(' + a.percent + ')%'
+          }
+        },
+        legend: {
+          orient: 'vertical',
+          x: 'right',
+          data: legend
+        },
+        series: [
+          {
+            name: '',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            // center: ['50%', '60%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              normal: { label: {
+                show: showDetail,
+                formatter: '{b} : {c} ({d}%)'
               },
-              // tooltip: {
-              //     trigger: 'axis'
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return _this.cc_format_number(a.data)
+              labelLine: { show: showDetail } },
+              emphasis: {
+                label: {
+                  show: showDetail,
+                  formatter: '{b}\n{c} ({d}%)',
+                  position: 'center',
+                  textStyle: {
+                    fontSize: '20',
+                    fontWeight: 'bold'
                   }
-              },
-              legend: {
-                  data: legend
-              },
-              xAxis: {
-                  type: 'category',
-                  data: xData,
-                  axisLabel: {
-                      interval: 0,
-                      rotate: -45
-                  }
-              },
-              yAxis: {
-                  type: 'value',
-                  axisTick: {
-                      inside: true
-                  },
-                  scale: true,
-                  axisLabel: {
-                      margin: 2,
-                      formatter: function (value) {
-                          if (value >= 10000 && value < 10000000) {
-                              value = value / 10000 + "万"
-                          }
-                          else if (value >= 10000000) {
-                              value = value / 10000000 + "千万"
-                          } return value
-                      }
-                  },
-              },
-              series: yData
-          })
-      },
-      // 通用柱状图参数设置
-      setBarEchart (element,title,xData,yData) {
-          const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title
-              },
-              // tooltip: {
-              //     trigger: 'axis'
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return _this.cc_format_number(a.data)
-                  }
-              },
-              xAxis: {
-                  type: 'category',
-                  data: xData,
-                  axisLabel: {
-                      interval: 0,
-                      rotate: -45
-                  }
-              },
-              yAxis: {
-                  type: 'value',
-                  axisTick: {
-                      inside: true
-                  },
-                  scale: true,
-                  axisLabel: {
-                      margin: 2,
-                      formatter: function (value) {
-                          if (value >= 10000 && value < 10000000) {
-                              value = value / 10000 + "万";
-                          }
-                          else if (value >= 10000000) {
-                              value = value / 10000000 + "千万";
-                          } return value;
-                      }
-                  },
-              },
-              series: [{
-                  data: yData.length === 0 ? this.fillEmptyData.data : yData,
-                  type: 'bar',
-                  barWidth : 30
-              }]
-          })
-      },
-      // 圆饼图
-      setCircleEcharts(element,title,legend,data,showDetail){
-          const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title,
-                  left: 'center'
-              },
-              // tooltip: {
-              //     trigger: 'item',
-              //     formatter: "{a} <br/>{b}: {c} ({d}%)"
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
-                  }
-              },
-              legend: {
-                  orient: 'vertical',
-                  x: 'right',
-                  data: legend
-              },
-              series: [
-                  {
-                      name:'',
-                      type:'pie',
-                      radius: ['50%', '70%'],
-                      // center: ['50%', '60%'],
-                      avoidLabelOverlap: false,
-                      itemStyle: {
-                          normal: {label:{
-                                  show:showDetail,
-                                  formatter:'{b} : {c} ({d}%)'
-                              },
-                              labelLine:{show:showDetail}},
-                          emphasis: {
-                              label: {
-                                  show: showDetail,
-                                  formatter: "{b}\n{c} ({d}%)",
-                                  position: 'center',
-                                  textStyle: {
-                                      fontSize: '20',
-                                      fontWeight: 'bold'
-                                  }
-                              }
-                          }
-                      },
-                      data: (data.length === 0) ? this.fillEmptyData.data : data
-                  }
-              ]
-          })
-      },
-      // 双层夹心圆饼图
-      // setNestedCircleEcharts(element,title,legend,innerData,outData,showDetail){
-      //     let echarts = require('echarts')
-      //     let myChart = echarts.init(this.$refs[element])
-      //     myChart.setOption({
-      //         title: {
-      //             text: title,
-      //             left: 'center'
-      //         },
-      //         tooltip: {
-      //             trigger: 'item',
-      //             formatter: "{a} <br/>{b}: {c} ({d}%)"
-      //         },
-      //         legend: {
-      //             orient: 'vertical',
-      //             x: 'right',
-      //             data: legend
-      //         },
-      //         series: [
-      //
-      //             {
-      //                 name: '访问来源',
-      //                 type: 'pie',
-      //                 selectedMode: 'single',
-      //                 radius: [0, '30%'],
-      //
-      //                 label: {
-      //                     position: 'inner'
-      //                 },
-      //                 labelLine: {
-      //                     show: false
-      //                 },
-      //                 // 里层所有数据
-      //                 data: innerData
-      //             },
-      //             {
-      //                 name: '',
-      //                 type: 'pie',
-      //                 radius: ['40%', '55%'],
-      //                 label: {
-      //                     formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
-      //                     backgroundColor: '#eee',
-      //                     borderColor: '#aaa',
-      //                     borderWidth: 1,
-      //                     borderRadius: 4,
-      //                     // shadowBlur:3,
-      //                     // shadowOffsetX: 2,
-      //                     // shadowOffsetY: 2,
-      //                     // shadowColor: '#999',
-      //                     // padding: [0, 7],
-      //                     rich: {
-      //                         a: {
-      //                             color: '#999',
-      //                             lineHeight: 22,
-      //                             align: 'center'
-      //                         },
-      //                         // abg: {
-      //                         //     backgroundColor: '#333',
-      //                         //     width: '100%',
-      //                         //     align: 'right',
-      //                         //     height: 22,
-      //                         //     borderRadius: [4, 4, 0, 0]
-      //                         // },
-      //                         hr: {
-      //                             borderColor: '#aaa',
-      //                             width: '100%',
-      //                             borderWidth: 0.5,
-      //                             height: 0
-      //                         },
-      //                         b: {
-      //                             fontSize: 16,
-      //                             lineHeight: 33
-      //                         },
-      //                         per: {
-      //                             color: '#eee',
-      //                             backgroundColor: '#334455',
-      //                             padding: [2, 4],
-      //                             borderRadius: 2
-      //                         }
-      //                     }
-      //                 },
-      //                 data: (outData.length === 0) ? this.fillEmptyData.data : outData // 外层所有数据
-      //             }
-      //
-      //         ]
-      //     })
-      // },
+                }
+              }
+            },
+            data: (data.length === 0) ? this.fillEmptyData.data : data
+          }
+        ]
+      })
+    },
+    // 双层夹心圆饼图
+    // setNestedCircleEcharts(element,title,legend,innerData,outData,showDetail){
+    //     let echarts = require('echarts')
+    //     let myChart = echarts.init(this.$refs[element])
+    //     myChart.setOption({
+    //         title: {
+    //             text: title,
+    //             left: 'center'
+    //         },
+    //         tooltip: {
+    //             trigger: 'item',
+    //             formatter: "{a} <br/>{b}: {c} ({d}%)"
+    //         },
+    //         legend: {
+    //             orient: 'vertical',
+    //             x: 'right',
+    //             data: legend
+    //         },
+    //         series: [
+    //
+    //             {
+    //                 name: '访问来源',
+    //                 type: 'pie',
+    //                 selectedMode: 'single',
+    //                 radius: [0, '30%'],
+    //
+    //                 label: {
+    //                     position: 'inner'
+    //                 },
+    //                 labelLine: {
+    //                     show: false
+    //                 },
+    //                 // 里层所有数据
+    //                 data: innerData
+    //             },
+    //             {
+    //                 name: '',
+    //                 type: 'pie',
+    //                 radius: ['40%', '55%'],
+    //                 label: {
+    //                     formatter: '{a|{a}}{abg|}\n{hr|}\n  {b|{b}：}{c}  {per|{d}%}  ',
+    //                     backgroundColor: '#eee',
+    //                     borderColor: '#aaa',
+    //                     borderWidth: 1,
+    //                     borderRadius: 4,
+    //                     // shadowBlur:3,
+    //                     // shadowOffsetX: 2,
+    //                     // shadowOffsetY: 2,
+    //                     // shadowColor: '#999',
+    //                     // padding: [0, 7],
+    //                     rich: {
+    //                         a: {
+    //                             color: '#999',
+    //                             lineHeight: 22,
+    //                             align: 'center'
+    //                         },
+    //                         // abg: {
+    //                         //     backgroundColor: '#333',
+    //                         //     width: '100%',
+    //                         //     align: 'right',
+    //                         //     height: 22,
+    //                         //     borderRadius: [4, 4, 0, 0]
+    //                         // },
+    //                         hr: {
+    //                             borderColor: '#aaa',
+    //                             width: '100%',
+    //                             borderWidth: 0.5,
+    //                             height: 0
+    //                         },
+    //                         b: {
+    //                             fontSize: 16,
+    //                             lineHeight: 33
+    //                         },
+    //                         per: {
+    //                             color: '#eee',
+    //                             backgroundColor: '#334455',
+    //                             padding: [2, 4],
+    //                             borderRadius: 2
+    //                         }
+    //                     }
+    //                 },
+    //                 data: (outData.length === 0) ? this.fillEmptyData.data : outData // 外层所有数据
+    //             }
+    //
+    //         ]
+    //     })
+    // },
+    // 中国地图
+    setMapEcharts (element, title, data, minValue, maxValue) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       // 中国地图
-      setMapEcharts (element,title,data,minValue,maxValue) {
-          const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          // 中国地图
-          myChart.setOption({
-              title : {
-                  text: title,
-                  // subtext: '副标题',
-                  left: 'center'
+      myChart.setOption({
+        title: {
+          text: title,
+          // subtext: '副标题',
+          left: 'center'
+        },
+        // tooltip : {
+        //     trigger: 'item',
+        //     formatter: '{b}<br/>({c})'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+          }
+        },
+        visualMap: {
+          min: minValue || 0,
+          max: maxValue || 20000000,
+          text: ['High', 'Low'],
+          realtime: false,
+          calculable: true,
+          inRange: {
+            color: ['lightskyblue', 'yellow', 'orangered']
+          }
+        },
+        series: [
+          {
+            name: '省份分布',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+              normal: {
+                show: false
               },
-              // tooltip : {
-              //     trigger: 'item',
-              //     formatter: '{b}<br/>({c})'
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return a.data.name + ':' + _this.cc_format_number(a.data.value)
-                  }
-              },
-              visualMap: {
-                  min: minValue ? minValue : 0,
-                  max: maxValue ? maxValue : 20000000,
-                  text: ['High', 'Low'],
-                  realtime: false,
-                  calculable: true,
-                  inRange: {
-                      color: ['lightskyblue', 'yellow', 'orangered']
-                  }
-              },
-              series : [
-                  {
-                      name: '省份分布',
-                      type: 'map',
-                      mapType: 'china',
-                      roam: false,
-                      label: {
-                          normal: {
-                              show: false
-                          },
-                          emphasis: {
-                              show: true
-                          }
-                      },
-                      data:data
-                  },
-              ]
-          })
-      },
-      // 漏斗图
-      setFunnelEcharts(element,title,legend,data){
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title
-              },
-              tooltip: {
-                  trigger: 'item',
-                  formatter: "{a} <br/>{b}: {c} ({d}%)"
-              },
-              legend: {
-                  data: legend
-              },
-              calculable: true,
-              series: [
-                  {
-                      name:'漏斗图',
-                      type:'funnel',
-                      left: '10%',
-                      top: 60,
-                      //x2: 80,
-                      bottom: 60,
-                      width: '80%',
-                      // height: {totalHeight} - y - y2,
-                      min: 0,
-                      max: 100,
-                      minSize: '0%',
-                      maxSize: '100%',
-                      sort: 'descending',
-                      gap: 2,
-                      label: {
-                          show: true,
-                          position: 'inside'
-                      },
-                      labelLine: {
-                          length: 10,
-                          lineStyle: {
-                              width: 1,
-                              type: 'solid'
-                          }
-                      },
-                      itemStyle: {
-                          borderColor: '#fff',
-                          borderWidth: 1
-                      },
-                      emphasis: {
-                          label: {
-                              fontSize: 20
-                          }
-                      },
-                      data: data
-                  }
-              ]
-          })
-      },
-      // 策略使用以及各业务使用次数统计
-      handleCommandStastic(scope) {
-          const type = scope[0]
-          this.currentCid = scope[1].crowdId
-          switch (type) {
-              // 统计投后效果
-              case 'detail':
-                  this.showCrowdDetailDialog()
-                  break
-              // 人群画像估算
-              case 'estimatedDetail':
-                  this.showEstimateEcharts = true
-                  this.getCrowdBaseInfo()
-                  this.getCrowdProvinceInfo()
-                  this.getTopActiveRank()
-                  this.getMemberBenefits()
-                  this.getWatchBehavior()
-                  this.getActiveBehavior()
-                  break
-              case 'homepageData':
-                  this.handleSeeHomepageData(this.currentCid,scope[1].crowdName)
-                  break
-              case 'redirectCrowd':
-                  this.handleClickRedirectList(this.currentCid)
-          }
-      },
-      // 显示投后效果弹窗
-      showCrowdDetailDialog() {
-          this.showStatistics = true
-          this.initTime()
-          this.drawCrowdPie(this.currentCid,this.time1[0],this.time1[1])
-          this.drawCrowdLine(this.currentCid,this.time0[0],this.time0[1])
-          this.drawExposePie(this.currentCid,this.time3[0],this.time3[1])
-          this.drawExposeLine(this.currentCid,this.time2[0],this.time2[1])
-          this.drawClickPie(this.currentCid,this.time5[0],this.time5[1])
-          this.drawClickLine(this.currentCid,this.time4[0],this.time4[1])
-          this.crowdLaunchDetail(this.currentCid,this.time6[0],this.time6[1])
-          this.setProvinceData(this.currentCid,this.time7[0],this.time7[1])
-      },
-      // 统计投后效果---开始
-      drawCrowdPie(id,startTime,endTime){
-        this.$service.hitAndBiToTalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-            if(data.data.length === 0){this.hitPieTitle = '累计命中次数按业务分布暂无数据'}
-            else{this.hitPieTitle = '累计命中次数按业务分布'}
-            this.setCircleEcharts('hitPie','',data.name,data.data,true)
-        })
-      },
-      drawCrowdLine(id,startTime,endTime){
-          this.$service.hitAndBiToTalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              const legendData = data.series.map((key) => {
-                  return key.name
-              })
-              const linesData = data.series.map((key) => {
-                  return {name:key.name, data:key.data, type: 'line'}
-              })
-              this.hitLinesTitle = '该人群总命中量以及各业务的命中量'
-              this.setLinesEchart('hitLine','',data.date,linesData,legendData)
-          })
-      },
-      drawExposePie(id,startTime,endTime){
-          this.$service.exposeCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              if(data.data.length === 0){this.exposePieTitle = '累计曝光数按业务分布暂无数据'}
-              else{this.exposePieTitle = '累计曝光数按业务分布'}
-              this.setCircleEcharts('exposePie','',data.name,data.data,true)
-          })
-      },
-      drawExposeLine(id,startTime,endTime){
-          this.$service.exposeCrowdTotalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              const legendData = data.series.map((key) => {
-                  return key.name
-              })
-              const linesData = data.series.map((key) => {
-                  return {name:key.name, data:key.data, type: 'line'}
-              })
-              this.exposeLinesTitle = '该人群总曝光量以及各业务的曝光量'
-              this.setLinesEchart('exposeLine','',data.date,linesData,legendData)
-          })
-      },
-      drawClickPie(id,startTime,endTime){
-          this.$service.clickCrowdTotalPie({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              if(data.data.length === 0){this.clickPieTitle = '累计点击次数按业务分布暂无数据'}
-              else{this.clickPieTitle = '累计点击次数按业务分布'}
-              this.setCircleEcharts('clickPie','',data.name,data.data,true)
-          })
-      },
-      drawClickLine(id,startTime,endTime){
-          this.$service.clickCrowdTotalLine({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              const legendData = data.series.map((key) => {
-                  return key.name
-              })
-              const linesData = data.series.map((key) => {
-                  return {name:key.name, data:key.data, type: 'line'}
-              })
-              this.clickLinesTitle = '该人群总点击以及各业务的点击次数'
-              this.setLinesEchart('clickLine','',data.date,linesData,legendData)
-          })
-      },
-      crowdLaunchDetail(id,startTime,endTime){
-          this.$service.crowdLanuchData({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              if(data.data.length === 0){this.crowdLaunchTitle = '该人群投放数据漏斗基本详情暂无数据'}
-              else{this.crowdLaunchTitle = '该人群投放数据漏斗基本详情'}
-              this.setFunnelEcharts('crowdLaunch','',data.names,data.data)
-          })
-      },
-      setProvinceData(id,startTime,endTime){
-          this.$service.exposeProvinceScale({cid:id,startTime:startTime,endTime:endTime}).then((data)=> {
-              const newData = data.map((item)=> {
-                  return {name: item.name,value: parseFloat(item.value)}
-              })
-              this.exposeProvinceTitle = '曝光人群省份分布'
-              this.setMapEcharts('exposeProvince','',newData)
-          })
-      },
-      // 统计投后效果---结束
-      formatDate (d) {
-          const time = new Date(d)
-          let y = time.getFullYear() // 年份
-          let m = (time.getMonth() + 1).toString().padStart(2,'0') // 月份
-          let r = time.getDate().toString().padStart(2,'0') // 日子
-          return `${y}-${m}-${r}`
-      },
-      setDataInMonth(startDate,endDate){
-          const startTime = new Date(startDate).getTime()
-          const endTime = new Date(endDate).getTime()
-          const oneMonth = 3600*1000*24*30
-          return endTime - startTime <= oneMonth
-      },
-      upDownCrowd(row) {
-        this.showUpDownDialog = true
-        this.upDownTips = row.putway === 1 ? '确定下架人群吗？下架后该人群将无法使用，不再命中、返回' : '确定上架人群吗？点击确认后，该人群将可以用'
-        this.currentTag = row
-      },
-      handleUpDown() {
-        const row = this.currentTag
-        this.$service.crowdUpDown({crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 },(row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据')
-              .then(()=>{
-                  this.showUpDownDialog = false
-                  this.loadData()
-              })
-      },
-      copyCrowd (row) {
-        this.showCopyDialog = true
-        this.$service.getAllPolicyList().then(data => {
-            this.allPolices = data
-        })
-        this.currentTag = row
-      },
-      handleCopy (formName) {
-          const row = this.currentTag
-          let policyIds = this.policyCopyForm.policyIds.join(',')
-          this.$refs[formName].validate((valid) => {
-              if(valid) {
-                  this.$service.crowdCopy({crowdId: row.crowdId, policyIds}, '复制成功')
-                      .then(()=>{
-                          this.handleCancelCopy('policyCopyForm')
-                          this.loadData()
-                      })
-              }else {
-                  return false
+              emphasis: {
+                show: true
               }
-          })
-      },
-      handleCancelCopy(formName) {
-        this.showCopyDialog = false
-        this.$refs[formName].resetFields()
-      },
-      handleCommandOpreate(scope) {
-          const type = scope[0]
-          const params = scope[1]
-          switch (type) {
-              case 'edit':
-                  if (params.abMainCrowd === 1) {
-                      this.divideAB(params,'editABTest')
-                  } else {
-                      this.edit(params)
-                  }
-                  break
-              case 'del':
-                  this.del(params)
-                  break
-              case 'upDown':
-                  this.upDownCrowd(params)
-                  break
-              case 'copy':
-                  this.copyCrowd(params)
-                  break
-              case 'divide':
-                  this.divideAB(params,'addABTest')
-                  break
-              case 'commitHistory':
-                  this.handleCommitHistory(params)
-                  break
+            },
+            data: data
           }
-      },
-      tableRowClassName({row}) {
-        if(row.putway === 0) {return 'gray-row'}
-      },
-      // 人群画像估算---开始
-      getCrowdBaseInfo() {
-        // const crdId = this.currentCid
-        // 性别，年龄，产品等级
-        const typeEnum = ['portrait.family.sex','portrait.family.age.range','portrait.product.grade']
-        // this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
-        //     const [names,values] = [[],[]]
-        //     data.dataList.forEach(item => {
-        //         names.push(item.name)
-        //         values.push({value: item.value, name: item.name})
-        //     })
-        //     this.setCircleEcharts('circleSex', '性别分布', names, values,false)
-        // })
-        // this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
-        //     const [names,values] = [[],[]]
-        //     data.dataList.forEach(item => {
-        //         names.push(item.name)
-        //         values.push({value: item.value, name: item.name})
-        //     })
-        //     this.setCircleEcharts('circleAge', '年龄分布', names, values,false)
-        // })
-        this.$service.getCrowdCountMap({params: {type: typeEnum[2]},crowdId: this.currentCid}).then(data => {
-            const [names,values] = [[],[]]
-            data.dataList.forEach(item => {
-                names.push(item.name)
-                values.push({value: item.value, name: item.name})
-            })
-            this.setCircleEcharts('circleDevice', '产品等级分布', names, values,true)
-        })
-      },
-      getCrowdProvinceInfo() {
-        // const crdId = this.currentCid
-          // 省份、城市活跃度
-          const typeEnum = ['portrait.province','portrait.cities.rank']
-          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
-              const [names,nameWithValues,values,length] = [[],[],[],data.dataList.length]
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push(parseInt(item.value))
-                  nameWithValues.push({value: parseInt(item.value), name: item.name})
-              })
-              const bubbleArr = this.bubbleSort(values)
-              const max = bubbleArr[length-1]
-              const min = bubbleArr[0]
-              this.setMapEcharts('provinceMap','省份分布',nameWithValues,min,max)
-          })
-          this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
-              this.cityData = data.dataList
-          })
-      },
-      getTopActiveRank() {
-          const typeEnum = ['portrait.top50.active.city']
-          this.$service.getCrowdCountMap({params: {type: typeEnum[0], orderBy: 'value',sortOrder: 'desc'},crowdId: this.currentCid}).then(data => {
-              const arr = data.dataList
-              var sum = 0
-              arr.forEach(item => {
-                  sum += parseInt(item.value)
-              })
-              this.table.data = arr.reduce((result, item) => {
-                  return result.concat({ name: item.name, value: parseInt(item.value), PCT:((parseInt(item.value)/sum)*100).toFixed(2)+ '%' })
-              }, [])
-          })
-      },
-      getMemberBenefits() {
-        this.$service.getEstimatedTvEnumData().then(data => {
-            const memberListData = this.objectToArray(data)
-            this.memberList = memberListData
-            // 设置两个默认的下拉框选值
-            this.memberListType = memberListData[0].value
-            this.memberListByPay = memberListData[0].value
-            this.getUserType()
-            this.getPayDetail()
-        })
-      },
-      // 对象转成数组
-      objectToArray (obj) {
-          let arr = []
-          for (let i in obj) {
-              arr.push({ value: i, label: obj[i] })
-          }
-          return arr
-      },
-      getUserType() {
-          // 正常用户类型
-          const typeWithSelectEnum = {
-              'jyVIP': "portrait.user.category.education.vip.member",
-              'sjyVIP': "portrait.user.category.education.super.vip.member",
-              'djPlatform': "portrait.user.category.premier.theater.member",
-              'cjyVIP': "portrait.user.category.education.kids.vip.member",
-              'aqy': "portrait.user.category.iqiyi.member",
-              'multAqy': "portrait.user.category.mixed.source.iqiyi.member",
-              'fkGarden': "portrait.user.category.4k.garden.member",
-              'phyVIP': "portrait.user.category.sports.vip.member",
-              'tencent': "portrait.user.category.tencent.movie.member",
-              'kmVIP': "portrait.user.category.cool.meow.vip.member"
-          }
-          // 非会员
-          const typeWithNoVipSelectEnum = {
-              'jyVIP': "portrait.user.category.education.vip.nonmember",
-              'sjyVIP': "portrait.user.category.education.super.vip.nonmember",
-              'djPlatform': "portrait.user.category.premier.theater.nonmember",
-              'cjyVIP': "portrait.user.category.education.kids.vip.nonmember",
-              'aqy': "portrait.user.category.iqiyi.nonmember",
-              'multAqy': "portrait.user.category.mixed.source.iqiyi.nonmember",
-              'fkGarden': "portrait.user.category.4k.garden.nonmember",
-              'phyVIP': "portrait.user.category.sports.vip.nonmember",
-              'tencent': "portrait.user.category.tencent.movie.nonmember",
-              'kmVIP': "portrait.user.category.cool.meow.vip.nonmember"
-          }
-          // 有效期会员
-          const typeWithVipSelectEnum = {
-              'jyVIP': "portrait.user.category.education.vip.validdate.member",
-              'sjyVIP': "portrait.user.category.education.super.vip.validdate.member",
-              'djPlatform': "portrait.user.category.premier.theater.validdate.member",
-              'cjyVIP': "portrait.user.category.education.kids.vip.validdate.member",
-              'aqy': "portrait.user.category.iqiyi.validdate.member",
-              'multAqy': "portrait.user.category.mixed.source.iqiyi.validdate.member",
-              'fkGarden': "portrait.user.category.4k.garden.validdate.member",
-              'phyVIP': "portrait.user.category.sports.vip.validdate.member",
-              'tencent': "portrait.user.category.tencent.movie.validdate.member",
-              'kmVIP': "portrait.user.category.cool.meow.vip.validdate.member"
-          }
-          // 已过期会员
-          const typeWithVipNoValidSelectEnum = {
-              'jyVIP': "portrait.user.category.education.vip.expireddate.member",
-              'sjyVIP': "portrait.user.category.education.super.vip.expireddate.member",
-              'djPlatform': "portrait.user.category.premier.theater.expireddate.member",
-              'cjyVIP': "portrait.user.category.education.kids.vip.expireddate.member",
-              'aqy': "portrait.user.category.iqiyi.expireddate.member",
-              'multAqy': "portrait.user.category.mixed.source.iqiyi.expireddate.member",
-              'fkGarden': "portrait.user.category.4k.garden.expireddate.member",
-              'phyVIP': "portrait.user.category.sports.vip.expireddate.member",
-              'tencent': "portrait.user.category.tencent.movie.expireddate.member",
-              'kmVIP': "portrait.user.category.cool.meow.vip.expireddate.member"
-          }
-          this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-              })
-              this.setCircleEcharts('member','会员用户的分布情况',names,values,true)
-          })
-          this.$service.getCrowdCountMap({params: {type: typeWithNoVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              // var dataCount = 0
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-                  // dataCount += parseInt(item.value)
-              })
-              this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',names,values,false)
-          })
-          this.$service.getCrowdCountMap({params: {type: typeWithVipSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              // var dataCount = 0
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-                  // dataCount += parseInt(item.value)
-              })
-              this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',names,values,false)
-          })
-          this.$service.getCrowdCountMap({params: {type: typeWithVipNoValidSelectEnum[this.memberListType]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              // var dataCount = 0
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-                  // dataCount += parseInt(item.value)
-              })
-              this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',names,values,false)
-          })
-        // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
-        //     // 当data直接为空对象，里面uCgyTal啥都没有
-        //     let spread,effectiveTime,activate,expire = {}
-        //     if(Object.keys(data).length === 0) {
-        //         spread = this.fillEmptyData
-        //         effectiveTime = this.fillEmptyData
-        //         activate = this.fillEmptyData
-        //         expire = this.fillEmptyData
-        //     }else {
-        //         spread = data.uCgyTal
-        //         effectiveTime = data.vipPrdTtl
-        //         activate = data.nvActHptTtl
-        //         expire = data.ovToutTtl
-        //     }
-        //     this.setCircleEcharts('member','会员用户的分布情况',spread.name,spread.data,true)
-        //     this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',effectiveTime.name,effectiveTime.data,false)
-        //     this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',activate.name,activate.data,false)
-        //     this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',expire.name,expire.data,false)
-        // })
-      },
-      getPayDetail() {
-          const typeWithSelectEnum = {
-              'jyVIP': "portrait.last.payment.education.vip",
-              'sjyVIP': "portrait.last.payment.education.super.vip",
-              'djPlatform': "portrait.last.payment.premier.theater",
-              'cjyVIP': "portrait.last.payment.education.kids.vip",
-              'aqy': "portrait.last.payment.iqiyi",
-              'multAqy': "portrait.last.payment.mixed.source.iqiyi",
-              'fkGarden': "portrait.last.payment.4k.garden",
-              'phyVIP': "portrait.last.payment.sports.vip",
-              'tencent': "portrait.last.payment.tencent.movie",
-              'kmVIP': "portrait.last.payment.cool.meow.vip"
-          }
-          this.$service.getCrowdCountMap({params: {type: typeWithSelectEnum[this.memberListByPay]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-              })
-              this.setCircleEcharts('payDetail','上次付费的会员产品包情况',names,values,true)
-          })
-      },
-      getWatchBehavior() {
-          const typeEnum = ['portrait.user.viewing.preferences','portrait.broadcast.rate.within.seven.days','portrait.broadcast.rate.within.thirty.days']
-          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
-              const [names,values] = [[],[]]
-              data.dataList.forEach(item => {
-                  names.push(item.name)
-                  values.push({value: item.value, name: item.name})
-              })
-              this.setCircleEcharts('watchPrefer','观影偏好',names,values)
-          })
-          if (this.expirationDay === '7') {
-              this.$service.getCrowdCountMap({params: {type: typeEnum[1]}, crowdId: this.currentCid}).then(data => {
-                  const [names, values] = [[], []]
-                  data.dataList.forEach(item => {
-                      names.push(item.name)
-                      values.push({value: item.value, name: item.name})
-                  })
-                  this.setCircleEcharts('userBehavior', '', names, values)
-              })
-          } else {
-              this.$service.getCrowdCountMap({params: {type: typeEnum[2]}, crowdId: this.currentCid}).then(data => {
-                  const [names, values] = [[], []]
-                  data.dataList.forEach(item => {
-                      names.push(item.name)
-                      values.push({value: item.value, name: item.name})
-                  })
-                  this.setCircleEcharts('userBehavior', '', names, values)
-              })
-          }
-      },
-      getActiveBehavior() {
-          const typeEnum = ['portrait.active.device.amount.yesterday']
-          const [names,values] = [[],[]]
-          this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
-             data.dataList.forEach(item => {
-                 names.push(item.name)
-                 values.push({value: item.value, name: item.name})
-             })
-             this.setBarEchart('activeBehavior','圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)',names,values)
-          })
-      },
-      // 人群画像估算---结束
-      // 显示划分详情
-      showDivideResult (crowdId) {
-          this.$service.getAbChilds(crowdId).then(data => {
-              this.showDivideDetail = true
-              this.DivideTableData = data
-          })
-
-      },
-      // 提交历史数据
-      handleCommitHistory (row) {
-          this.setShowCommitHistoryDialog = true
-          this.currentCrowdId = row.crowdId
-      },
-      handleSubmitHistory (formData) {
-          let submitForm = {
-              isSubmit: formData.isSubmit,
-              crowdId: formData.id,
-              dateNum: formData.dateNum
-          }
-          this.$service.submitPolicyHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
-              this.setShowCommitHistoryDialog = false
-          })
-      },
-      // 查看主页数据
-      handleSeeHomepageData (crowdId, crowdName) {
-          this.showDivideDetail = false
-          this.$appState.$set("homepageReleaseCrowdName", crowdName)
-          this.$router.push({name: 'homepageReleaseRecord', params: {homepageReleaseRecordId: crowdId, crowdName: crowdName}})
-      },
-      //  导出估算画像数据
-      handleDownload () {
-          // this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
-          // this.$nextTick(() => {
-          //     this.$refs.download_Url.click()
-          // })
-          this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
-          // this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
-          this.$nextTick(() => {
-              this.$refs.download_Url.click()
-          })
-      },
-      //  导出投后效果数据
-      handleLaunchedExport () {
-          this.launchedExportUrl =
-              '/api/crowdAndPolicyStatistics/export/' + this.currentCid
-              +'?sHitLineTime='+ this.time0[0] + '&eHitLineTime='+ this.time0[1]
-              +'&sHitPieTime='+ this.time1[0] + '&eHitPieTime='+ this.time1[1]
-              +'&sExposeLineTime='+ this.time2[0] + '&eExposeLineTime='+ this.time2[1]
-              +'&sExposePieTime='+ this.time3[0] + '&eExposePieTime='+ this.time3[1]
-              +'&sClickLineTime='+ this.time4[0] + '&eClickLineTime='+ this.time4[1]
-              +'&sClickPieTime='+ this.time5[0] + '&eClickPieTime='+ this.time5[1]
-              +'&sFunnelTime='+ this.time6[0] + '&eFunnelTime='+ this.time6[1]
-              +'&sProvinceTime='+ this.time7[0] + '&eProvinceTime='+ this.time7[1]
-          this.$nextTick(() => {
-              this.$refs.launchedDownLoad.click()
-          })
-      },
-      unActiveTips(activeType) {
-          if (activeType == 1 || activeType == 3) {
-              return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
-          } else {
-              return '人群未生效，因为未点击该策略的"同步按钮"'
-          }
-      },
-      // 显示限制数量
-      handleShowLimitLaunch (launchCount) {
-          this.showLimitLaunchDialog = true
-          this.showLimitLaunchCount = launchCount
-      },
-      handleClickRedirect () {
-        this.$router.push({
-            path: '/redirectAdd?policyId='+this.selectRow.policyId
-        })
-      },
-      handleClickRedirectWithId (crowd) {
-          this.$router.push({
-              path: '/redirectAdd?policyId='+this.selectRow.policyId +'&crowdId=' + crowd.crowdId + '&crowdName=' + crowd.crowdName
-          })
-      },
-      handleClickRedirectList (crowdId) {
-          this.$router.push({
-              params: {redirectListId : crowdId},
-              name: 'redirectAdd'
-          })
-      },
-      bubbleSort(arr) {
-          // 冒泡排序
-          const len = arr.length
-          for(var i=0;i< len;i++) {
-              for (var j=0;j<len-1-i;j++) {
-                  if (arr[j] > arr[j + 1]) {
-                      var temp = arr[j + 1]
-                      arr[j + 1] = arr[j]
-                      arr[j] = temp
-                  }
+        ]
+      })
+    },
+    // 漏斗图
+    setFunnelEcharts (element, title, legend, data) {
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: '{a} <br/>{b}: {c} ({d}%)'
+        },
+        legend: {
+          data: legend
+        },
+        calculable: true,
+        series: [
+          {
+            name: '漏斗图',
+            type: 'funnel',
+            left: '10%',
+            top: 60,
+            // x2: 80,
+            bottom: 60,
+            width: '80%',
+            // height: {totalHeight} - y - y2,
+            min: 0,
+            max: 100,
+            minSize: '0%',
+            maxSize: '100%',
+            sort: 'descending',
+            gap: 2,
+            label: {
+              show: true,
+              position: 'inside'
+            },
+            labelLine: {
+              length: 10,
+              lineStyle: {
+                width: 1,
+                type: 'solid'
               }
-          }
-          return arr
-      },
-      handleCheckListChange (val) {
-          this.$service.saveListDimension({type: 2,behaviorShow: val.join(',')})
-      },
-      handleByPass () {
-          this.handleGetEditDetail()
-          this.handleGetBypassCrowdList()
-      },
-      handleBypassApartChange () {
-          const aparts = this.byPassForm.apart
-          const bypassList = this.byPassForm.bypass
-          const addLength = aparts - bypassList.length
-          if(addLength > 0) {
-              for (let i=0 ;i < addLength; i++) {
-                  this.byPassForm.bypass.push({name: '分组'+((bypassList.length || 0)+1), ratio: 0, crowds: []})
+            },
+            itemStyle: {
+              borderColor: '#fff',
+              borderWidth: 1
+            },
+            emphasis: {
+              label: {
+                fontSize: 20
               }
-          } else {
-              this.byPassForm.bypass.splice(bypassList.length+addLength, -addLength)
+            },
+            data: data
           }
-      },
-      handleGetEditDetail () {
-          this.$service.getBypassCrowdDetail({policyId: this.selectRow.policyId}).then(data => {
-              if (data.bypassList.length === 0) {
-                  // 没有找到分流的信息，走新增保存接口
-                  this.bypassSaveFlag = 'add'
-                  // 分组初始化为1,2,3,4,5
-                  this.ratioEnum = this.genInitApart()
-                  this.byPassForm = this.genBypassForm()
-                  this.handleBypassApartChange()
-              } else {
-                  //    有分流的信息，走编辑保存接口
-                  this.bypassSaveFlag = 'edit'
-                  this.byPassForm.apart = data.size
-                  this.byPassForm.bypass = data.bypassList.map(item => {
-                      return { name: item.bypassName, ratio: item.ratio,
-                          id: item.id, bypassId: item.bypassId ,
-                          crowds: item.crowdsList, policyId: item.policyId,crowdSelect: ''}
-                  })
-                  // 分组只能选择比当前分组大的
-                  this.ratioEnum = this.ratioEnum.filter(item => {
-                      return item.value >= data.size
-                  })
-              }
-          })
-      },
-      handleCancelBypass () {
-          this.showBypassDialog = false
-          this.byPassForm = this.genBypassForm()
-          this.showBypassStep = 1
-      },
-      handleSaveBypass () {
-        // 校验 每一个分组是否都填写
-        // 校验 份数是否小于等于100%
-          const byPassDetail = JSON.parse(JSON.stringify(this.byPassForm.bypass))
-          const bypassLength = byPassDetail.length
-          const apiData = []
-          let ratioTotal = 0
-          if(bypassLength === 0) {
-              this.$message.error('请选择人群填写分流信息！')
-              return
-          }
-          for (let i=0; i<bypassLength; i++) {
-              const eachPartLength = byPassDetail[i].crowds.length
-              if (eachPartLength === 0) {
-                  // 校验是否填写了分流人群
-                  this.$message.error('请在第'+(i+1)+'块勾选需要分流的人群！')
-                  return
-              } else {
-                  // 判断人群分流的每组优先级是否存在相同
-                  for (let j=0; j<eachPartLength-1; j++) {
-                      for (let n=j+1; n< eachPartLength; n++) {
-                          if(byPassDetail[i].crowds[j].priority === byPassDetail[i].crowds[n].priority){
-                              this.$message.error('第'+(i+1)+'分组里人群第'+(j+1)+'和'+(n+1)+'人群优先级有重复，请修改之后再保存！')
-                              return
-                          }
-                      }
-                  }
-                  ratioTotal += byPassDetail[i].ratio
-                  if (this.bypassSaveFlag === 'add') {
-                      apiData.push({ name: byPassDetail[i].name,ratio: parseInt(byPassDetail[i].ratio), crowds: byPassDetail[i].crowds })
-                  } else {
-                      apiData.push({
-                          bypassId: byPassDetail[i].bypassId,
-                          id: byPassDetail[i].id,
-                          policyId: byPassDetail[i].policyId,
-                          name: byPassDetail[i].name,
-                          ratio: parseInt(byPassDetail[i].ratio),
-                          crowds: byPassDetail[i].crowds.map(crowdItem => {
-                              return {crowdId: crowdItem.crowdId, crowdName: crowdItem.crowdName, priority: crowdItem.priority}
-                          })
-                      })
-                  }
-
-              }
-          }
-          if (ratioTotal > 100 || ratioTotal < 0) {
-              this.$message.error('分流总比例不得大于100%或者小于0')
-              return
-          }
-          // 新增接口数据格式
-          // bypass:[{name: '一组',ratio: 30,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
-
-          // 编辑保存接口数据格式
-          // bypass:[{id: 123,name: '一组',ratio: 30,policyId: 123,bypassId: 1,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
-          if (this.bypassSaveFlag === 'edit') {
-              // 编辑保存
-              this.$service.saveBypassCrowdEdit({data: {bypass: apiData}, params: {policyId: this.selectRow.policyId}},'分流编辑保存成功！').then(() => {
-                  this.showBypassDialog = false
-                  this.loadData()
-              })
-          } else {
-              // 新增保存
-              this.$service.saveBypassCrowdAdd({data: {bypass: apiData}, params: {policyId: this.selectRow.policyId}},'分流新增保存成功！').then(() => {
-                  this.showBypassDialog = false
-                  this.loadData()
-              })
-          }
-      },
-      handleGetBypassCrowdList () {
-          this.$service.getBypassCrowdList({policyId: this.selectRow.policyId}).then(data => {
-              this.selectList = data
-              // 如果可选的人群数小于2，则不显示分流按钮
-              if (this.selectList.length < 1) {
-                  this.$message.error('只有当前人群数量大于0才能分流！')
-                  return
-              }
-              this.showBypassDialog = true
-          })
-      },
-      handleCrowdSelectChange (item) {
-          const currentCrowds = item.crowds.map(item => { return item.crowdId }).join(',')
-          if (currentCrowds.indexOf(item.crowdSelect) > -1) {
-              return
-          } else {
-              const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === item.crowdSelect })
-              item.crowds.push({ crowdId: filterCrowd[0].crowdId,crowdName: filterCrowd[0].crowdName,priority: item.crowds.length+1 })
-          }
-      },
-      handleRemoveCrowds (tableItem, crowdId) {
-          const idMap = tableItem.crowds.map(item => {
-              return item.crowdId
-          })
-          const index = idMap.indexOf(crowdId)
-          tableItem.crowds.splice(index, 1)
-          if (tableItem.crowds.length === 0) {
-              tableItem.crowdSelect = ''
-          }
-      },
-      handleNextBypass () {
-          this.showBypassStep = 2
-      },
-      handleExpandChange (row,expandedRows) {
-          if (this.showByPassColumn) {
-              const currentCrowds = expandedRows.map(item => {
-                  return item.crowdId
-              })
-              let currentIndex = 0
-              for (let i=0;i < this.tableData.length;i++) {
-                  if(this.tableData[i].crowdId === row.crowdId) {
-                      currentIndex = i
-                      break
-                  }
-              }
-              // 递归找到父类的expandIndex
-              let lengthTotal = 0
-              const testIndex = (current, i, arr) => {
-                  lengthTotal += arr[i]
-                  if (current >= i && current < lengthTotal) {
-                      return i
-                  } else {
-                      i = i + arr[i]
-                      return testIndex(current, i, arr)
-                  }
-              }
-              const parentExpandIndex = testIndex(currentIndex, 0, this.initTableMerge)
-              if (currentCrowds.indexOf(row.crowdId) > -1) {
-                  // 当包含当前列，则是展开
-                  // tableMerge[I] >= 1则表示只有一行，只用把当前的tableMerge + 1
-                  // 如果tableMerge = 0,则表示当前的要等于2，并且它前面合并集要+1
-                  // 合并行的头
-                  if (this.initTableMerge[currentIndex] !== 0) {
-                      // 属于合并行
-                      this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 1
-                  }
-                  if (currentIndex !== parentExpandIndex) {
-                      this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] + 1
-                  }
-                  // this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 2
-                  // if (currentIndex > 0) {
-                  //     this.tableMerge[currentIndex-1] = this.tableMerge[currentIndex-1] + 1
-                  // }
-              } else {
-                  // 关闭当前展开行
-                  if (this.initTableMerge[currentIndex] !== 0) {
-                      // 属于合并行
-                      this.tableMerge[currentIndex] = this.tableMerge[currentIndex] - 1
-                  }
-                  if (currentIndex !== parentExpandIndex) {
-                      this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] - 1
-                  }
-              }
-          }
-      },
-      objectSpanMethod({ rowIndex, columnIndex }) {
-          if (this.showByPassColumn) {
-              if (columnIndex === 0) {
-                  const row1 = this.tableMerge[rowIndex]
-                  const col1 = row1 > 0 ? 1 : 0 // 如果被合并了row = 0; 则他这个列需要取消
-                  return {
-                      rowspan: row1,
-                      colspan: col1
-                  }
-              }
-          }
-      },
-      handleEditBypass () {
-          this.handleByPass()
-          this.showBypassStep = 2
-      },
-      handleDeleteBypass (row) {
-          this.$service.delBypassCrowd({pid: row.id},'删除分流成功！').then(() => {
-              this.loadData()
-          })
-      },
-      handleSeeConfigBypass (id) {
-          this.$service.seeDevFile({policyId:id}).then((data) => {
-              this.showConfiguration = true
-              this.configTextarea = data.content
-          }).
-          catch(() => {
-              // this.showConfiguration = true
-              // this.configTextarea = '该策略没有配置文件'
-          })
+        ]
+      })
+    },
+    // 策略使用以及各业务使用次数统计
+    handleCommandStastic (scope) {
+      const type = scope[0]
+      this.currentCid = scope[1].crowdId
+      switch (type) {
+        // 统计投后效果
+        case 'detail':
+          this.showCrowdDetailDialog()
+          break
+          // 人群画像估算
+        case 'estimatedDetail':
+          this.showEstimateEcharts = true
+          this.getCrowdBaseInfo()
+          this.getCrowdProvinceInfo()
+          this.getTopActiveRank()
+          this.getMemberBenefits()
+          this.getWatchBehavior()
+          this.getActiveBehavior()
+          break
+        case 'homepageData':
+          this.handleSeeHomepageData(this.currentCid, scope[1].crowdName)
+          break
+        case 'redirectCrowd':
+          this.handleClickRedirectList(this.currentCid)
       }
+    },
+    // 显示投后效果弹窗
+    showCrowdDetailDialog () {
+      this.showStatistics = true
+      this.initTime()
+      this.drawCrowdPie(this.currentCid, this.time1[0], this.time1[1])
+      this.drawCrowdLine(this.currentCid, this.time0[0], this.time0[1])
+      this.drawExposePie(this.currentCid, this.time3[0], this.time3[1])
+      this.drawExposeLine(this.currentCid, this.time2[0], this.time2[1])
+      this.drawClickPie(this.currentCid, this.time5[0], this.time5[1])
+      this.drawClickLine(this.currentCid, this.time4[0], this.time4[1])
+      this.crowdLaunchDetail(this.currentCid, this.time6[0], this.time6[1])
+      this.setProvinceData(this.currentCid, this.time7[0], this.time7[1])
+    },
+    // 统计投后效果---开始
+    drawCrowdPie (id, startTime, endTime) {
+      this.$service.hitAndBiToTalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        if (data.data.length === 0) { this.hitPieTitle = '累计命中次数按业务分布暂无数据' } else { this.hitPieTitle = '累计命中次数按业务分布' }
+        this.setCircleEcharts('hitPie', '', data.name, data.data, true)
+      })
+    },
+    drawCrowdLine (id, startTime, endTime) {
+      this.$service.hitAndBiToTalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        const legendData = data.series.map((key) => {
+          return key.name
+        })
+        const linesData = data.series.map((key) => {
+          return { name: key.name, data: key.data, type: 'line' }
+        })
+        this.hitLinesTitle = '该人群总命中量以及各业务的命中量'
+        this.setLinesEchart('hitLine', '', data.date, linesData, legendData)
+      })
+    },
+    drawExposePie (id, startTime, endTime) {
+      this.$service.exposeCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        if (data.data.length === 0) { this.exposePieTitle = '累计曝光数按业务分布暂无数据' } else { this.exposePieTitle = '累计曝光数按业务分布' }
+        this.setCircleEcharts('exposePie', '', data.name, data.data, true)
+      })
+    },
+    drawExposeLine (id, startTime, endTime) {
+      this.$service.exposeCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        const legendData = data.series.map((key) => {
+          return key.name
+        })
+        const linesData = data.series.map((key) => {
+          return { name: key.name, data: key.data, type: 'line' }
+        })
+        this.exposeLinesTitle = '该人群总曝光量以及各业务的曝光量'
+        this.setLinesEchart('exposeLine', '', data.date, linesData, legendData)
+      })
+    },
+    drawClickPie (id, startTime, endTime) {
+      this.$service.clickCrowdTotalPie({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        if (data.data.length === 0) { this.clickPieTitle = '累计点击次数按业务分布暂无数据' } else { this.clickPieTitle = '累计点击次数按业务分布' }
+        this.setCircleEcharts('clickPie', '', data.name, data.data, true)
+      })
+    },
+    drawClickLine (id, startTime, endTime) {
+      this.$service.clickCrowdTotalLine({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        const legendData = data.series.map((key) => {
+          return key.name
+        })
+        const linesData = data.series.map((key) => {
+          return { name: key.name, data: key.data, type: 'line' }
+        })
+        this.clickLinesTitle = '该人群总点击以及各业务的点击次数'
+        this.setLinesEchart('clickLine', '', data.date, linesData, legendData)
+      })
+    },
+    crowdLaunchDetail (id, startTime, endTime) {
+      this.$service.crowdLanuchData({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        if (data.data.length === 0) { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情暂无数据' } else { this.crowdLaunchTitle = '该人群投放数据漏斗基本详情' }
+        this.setFunnelEcharts('crowdLaunch', '', data.names, data.data)
+      })
+    },
+    setProvinceData (id, startTime, endTime) {
+      this.$service.exposeProvinceScale({ cid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        const newData = data.map((item) => {
+          return { name: item.name, value: parseFloat(item.value) }
+        })
+        this.exposeProvinceTitle = '曝光人群省份分布'
+        this.setMapEcharts('exposeProvince', '', newData)
+      })
+    },
+    // 统计投后效果---结束
+    formatDate (d) {
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
+    },
+    setDataInMonth (startDate, endDate) {
+      const startTime = new Date(startDate).getTime()
+      const endTime = new Date(endDate).getTime()
+      const oneMonth = 3600 * 1000 * 24 * 30
+      return endTime - startTime <= oneMonth
+    },
+    upDownCrowd (row) {
+      this.showUpDownDialog = true
+      this.upDownTips = row.putway === 1 ? '确定下架人群吗？下架后该人群将无法使用，不再命中、返回' : '确定上架人群吗？点击确认后，该人群将可以用'
+      this.currentTag = row
+    },
+    handleUpDown () {
+      const row = this.currentTag
+      this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据')
+        .then(() => {
+          this.showUpDownDialog = false
+          this.loadData()
+        })
+    },
+    copyCrowd (row) {
+      this.showCopyDialog = true
+      this.$service.getAllPolicyList().then(data => {
+        this.allPolices = data
+      })
+      this.currentTag = row
+    },
+    handleCopy (formName) {
+      const row = this.currentTag
+      let policyIds = this.policyCopyForm.policyIds.join(',')
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          this.$service.crowdCopy({ crowdId: row.crowdId, policyIds }, '复制成功')
+            .then(() => {
+              this.handleCancelCopy('policyCopyForm')
+              this.loadData()
+            })
+        } else {
+          return false
+        }
+      })
+    },
+    handleCancelCopy (formName) {
+      this.showCopyDialog = false
+      this.$refs[formName].resetFields()
+    },
+    handleCommandOpreate (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      switch (type) {
+        case 'edit':
+          if (params.abMainCrowd === 1) {
+            this.divideAB(params, 'editABTest')
+          } else {
+            this.edit(params)
+          }
+          break
+        case 'del':
+          this.del(params)
+          break
+        case 'upDown':
+          this.upDownCrowd(params)
+          break
+        case 'copy':
+          this.copyCrowd(params)
+          break
+        case 'divide':
+          this.divideAB(params, 'addABTest')
+          break
+        case 'commitHistory':
+          this.handleCommitHistory(params)
+          break
+      }
+    },
+    tableRowClassName ({ row }) {
+      if (row.putway === 0) { return 'gray-row' }
+    },
+    // 人群画像估算---开始
+    getCrowdBaseInfo () {
+      // const crdId = this.currentCid
+      // 性别，年龄，产品等级
+      const typeEnum = ['portrait.family.sex', 'portrait.family.age.range', 'portrait.product.grade']
+      // this.$service.getCrowdCountMap({params: {type: typeEnum[0]},crowdId: this.currentCid}).then(data => {
+      //     const [names,values] = [[],[]]
+      //     data.dataList.forEach(item => {
+      //         names.push(item.name)
+      //         values.push({value: item.value, name: item.name})
+      //     })
+      //     this.setCircleEcharts('circleSex', '性别分布', names, values,false)
+      // })
+      // this.$service.getCrowdCountMap({params: {type: typeEnum[1]},crowdId: this.currentCid}).then(data => {
+      //     const [names,values] = [[],[]]
+      //     data.dataList.forEach(item => {
+      //         names.push(item.name)
+      //         values.push({value: item.value, name: item.name})
+      //     })
+      //     this.setCircleEcharts('circleAge', '年龄分布', names, values,false)
+      // })
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[2] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+        })
+        this.setCircleEcharts('circleDevice', '产品等级分布', names, values, true)
+      })
+    },
+    getCrowdProvinceInfo () {
+      // const crdId = this.currentCid
+      // 省份、城市活跃度
+      const typeEnum = ['portrait.province', 'portrait.cities.rank']
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[0] }, crowdId: this.currentCid }).then(data => {
+        const [names, nameWithValues, values, length] = [[], [], [], data.dataList.length]
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push(parseInt(item.value))
+          nameWithValues.push({ value: parseInt(item.value), name: item.name })
+        })
+        const bubbleArr = this.bubbleSort(values)
+        const max = bubbleArr[length - 1]
+        const min = bubbleArr[0]
+        this.setMapEcharts('provinceMap', '省份分布', nameWithValues, min, max)
+      })
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[1] }, crowdId: this.currentCid }).then(data => {
+        this.cityData = data.dataList
+      })
+    },
+    getTopActiveRank () {
+      const typeEnum = ['portrait.top50.active.city']
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[0], orderBy: 'value', sortOrder: 'desc' }, crowdId: this.currentCid }).then(data => {
+        const arr = data.dataList
+        var sum = 0
+        arr.forEach(item => {
+          sum += parseInt(item.value)
+        })
+        this.table.data = arr.reduce((result, item) => {
+          return result.concat({ name: item.name, value: parseInt(item.value), PCT: ((parseInt(item.value) / sum) * 100).toFixed(2) + '%' })
+        }, [])
+      })
+    },
+    getMemberBenefits () {
+      this.$service.getEstimatedTvEnumData().then(data => {
+        const memberListData = this.objectToArray(data)
+        this.memberList = memberListData
+        // 设置两个默认的下拉框选值
+        this.memberListType = memberListData[0].value
+        this.memberListByPay = memberListData[0].value
+        this.getUserType()
+        this.getPayDetail()
+      })
+    },
+    // 对象转成数组
+    objectToArray (obj) {
+      let arr = []
+      for (let i in obj) {
+        arr.push({ value: i, label: obj[i] })
+      }
+      return arr
+    },
+    getUserType () {
+      // 正常用户类型
+      const typeWithSelectEnum = {
+        'jyVIP': 'portrait.user.category.education.vip.member',
+        'sjyVIP': 'portrait.user.category.education.super.vip.member',
+        'djPlatform': 'portrait.user.category.premier.theater.member',
+        'cjyVIP': 'portrait.user.category.education.kids.vip.member',
+        'aqy': 'portrait.user.category.iqiyi.member',
+        'multAqy': 'portrait.user.category.mixed.source.iqiyi.member',
+        'fkGarden': 'portrait.user.category.4k.garden.member',
+        'phyVIP': 'portrait.user.category.sports.vip.member',
+        'tencent': 'portrait.user.category.tencent.movie.member',
+        'kmVIP': 'portrait.user.category.cool.meow.vip.member'
+      }
+      // 非会员
+      const typeWithNoVipSelectEnum = {
+        'jyVIP': 'portrait.user.category.education.vip.nonmember',
+        'sjyVIP': 'portrait.user.category.education.super.vip.nonmember',
+        'djPlatform': 'portrait.user.category.premier.theater.nonmember',
+        'cjyVIP': 'portrait.user.category.education.kids.vip.nonmember',
+        'aqy': 'portrait.user.category.iqiyi.nonmember',
+        'multAqy': 'portrait.user.category.mixed.source.iqiyi.nonmember',
+        'fkGarden': 'portrait.user.category.4k.garden.nonmember',
+        'phyVIP': 'portrait.user.category.sports.vip.nonmember',
+        'tencent': 'portrait.user.category.tencent.movie.nonmember',
+        'kmVIP': 'portrait.user.category.cool.meow.vip.nonmember'
+      }
+      // 有效期会员
+      const typeWithVipSelectEnum = {
+        'jyVIP': 'portrait.user.category.education.vip.validdate.member',
+        'sjyVIP': 'portrait.user.category.education.super.vip.validdate.member',
+        'djPlatform': 'portrait.user.category.premier.theater.validdate.member',
+        'cjyVIP': 'portrait.user.category.education.kids.vip.validdate.member',
+        'aqy': 'portrait.user.category.iqiyi.validdate.member',
+        'multAqy': 'portrait.user.category.mixed.source.iqiyi.validdate.member',
+        'fkGarden': 'portrait.user.category.4k.garden.validdate.member',
+        'phyVIP': 'portrait.user.category.sports.vip.validdate.member',
+        'tencent': 'portrait.user.category.tencent.movie.validdate.member',
+        'kmVIP': 'portrait.user.category.cool.meow.vip.validdate.member'
+      }
+      // 已过期会员
+      const typeWithVipNoValidSelectEnum = {
+        'jyVIP': 'portrait.user.category.education.vip.expireddate.member',
+        'sjyVIP': 'portrait.user.category.education.super.vip.expireddate.member',
+        'djPlatform': 'portrait.user.category.premier.theater.expireddate.member',
+        'cjyVIP': 'portrait.user.category.education.kids.vip.expireddate.member',
+        'aqy': 'portrait.user.category.iqiyi.expireddate.member',
+        'multAqy': 'portrait.user.category.mixed.source.iqiyi.expireddate.member',
+        'fkGarden': 'portrait.user.category.4k.garden.expireddate.member',
+        'phyVIP': 'portrait.user.category.sports.vip.expireddate.member',
+        'tencent': 'portrait.user.category.tencent.movie.expireddate.member',
+        'kmVIP': 'portrait.user.category.cool.meow.vip.expireddate.member'
+      }
+      this.$service.getCrowdCountMap({ params: { type: typeWithSelectEnum[this.memberListType] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+        })
+        this.setCircleEcharts('member', '会员用户的分布情况', names, values, true)
+      })
+      this.$service.getCrowdCountMap({ params: { type: typeWithNoVipSelectEnum[this.memberListType] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        // var dataCount = 0
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+          // dataCount += parseInt(item.value)
+        })
+        this.setCircleEcharts('memberMainPageActiveTime', '从未是会员-按主页激活时间', names, values, false)
+      })
+      this.$service.getCrowdCountMap({ params: { type: typeWithVipSelectEnum[this.memberListType] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        // var dataCount = 0
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+          // dataCount += parseInt(item.value)
+        })
+        this.setCircleEcharts('memberActiveTime', '会员-按会员有效期时长', names, values, false)
+      })
+      this.$service.getCrowdCountMap({ params: { type: typeWithVipNoValidSelectEnum[this.memberListType] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        // var dataCount = 0
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+          // dataCount += parseInt(item.value)
+        })
+        this.setCircleEcharts('memberExpirationTime', '过期会员-按会员过期时长', names, values, false)
+      })
+      // this.$service.getEstimatedUserTypeData({id: this.currentCid,category: this.memberListType}).then(data => {
+      //     // 当data直接为空对象，里面uCgyTal啥都没有
+      //     let spread,effectiveTime,activate,expire = {}
+      //     if(Object.keys(data).length === 0) {
+      //         spread = this.fillEmptyData
+      //         effectiveTime = this.fillEmptyData
+      //         activate = this.fillEmptyData
+      //         expire = this.fillEmptyData
+      //     }else {
+      //         spread = data.uCgyTal
+      //         effectiveTime = data.vipPrdTtl
+      //         activate = data.nvActHptTtl
+      //         expire = data.ovToutTtl
+      //     }
+      //     this.setCircleEcharts('member','会员用户的分布情况',spread.name,spread.data,true)
+      //     this.setCircleEcharts('memberActiveTime','会员-按会员有效期时长',effectiveTime.name,effectiveTime.data,false)
+      //     this.setCircleEcharts('memberMainPageActiveTime','从未是会员-按主页激活时间',activate.name,activate.data,false)
+      //     this.setCircleEcharts('memberExpirationTime','过期会员-按会员过期时长',expire.name,expire.data,false)
+      // })
+    },
+    getPayDetail () {
+      const typeWithSelectEnum = {
+        'jyVIP': 'portrait.last.payment.education.vip',
+        'sjyVIP': 'portrait.last.payment.education.super.vip',
+        'djPlatform': 'portrait.last.payment.premier.theater',
+        'cjyVIP': 'portrait.last.payment.education.kids.vip',
+        'aqy': 'portrait.last.payment.iqiyi',
+        'multAqy': 'portrait.last.payment.mixed.source.iqiyi',
+        'fkGarden': 'portrait.last.payment.4k.garden',
+        'phyVIP': 'portrait.last.payment.sports.vip',
+        'tencent': 'portrait.last.payment.tencent.movie',
+        'kmVIP': 'portrait.last.payment.cool.meow.vip'
+      }
+      this.$service.getCrowdCountMap({ params: { type: typeWithSelectEnum[this.memberListByPay] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+        })
+        this.setCircleEcharts('payDetail', '上次付费的会员产品包情况', names, values, true)
+      })
+    },
+    getWatchBehavior () {
+      const typeEnum = ['portrait.user.viewing.preferences', 'portrait.broadcast.rate.within.seven.days', 'portrait.broadcast.rate.within.thirty.days']
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[0] }, crowdId: this.currentCid }).then(data => {
+        const [names, values] = [[], []]
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+        })
+        this.setCircleEcharts('watchPrefer', '观影偏好', names, values)
+      })
+      if (this.expirationDay === '7') {
+        this.$service.getCrowdCountMap({ params: { type: typeEnum[1] }, crowdId: this.currentCid }).then(data => {
+          const [names, values] = [[], []]
+          data.dataList.forEach(item => {
+            names.push(item.name)
+            values.push({ value: item.value, name: item.name })
+          })
+          this.setCircleEcharts('userBehavior', '', names, values)
+        })
+      } else {
+        this.$service.getCrowdCountMap({ params: { type: typeEnum[2] }, crowdId: this.currentCid }).then(data => {
+          const [names, values] = [[], []]
+          data.dataList.forEach(item => {
+            names.push(item.name)
+            values.push({ value: item.value, name: item.name })
+          })
+          this.setCircleEcharts('userBehavior', '', names, values)
+        })
+      }
+    },
+    getActiveBehavior () {
+      const typeEnum = ['portrait.active.device.amount.yesterday']
+      const [names, values] = [[], []]
+      this.$service.getCrowdCountMap({ params: { type: typeEnum[0] }, crowdId: this.currentCid }).then(data => {
+        data.dataList.forEach(item => {
+          names.push(item.name)
+          values.push({ value: item.value, name: item.name })
+        })
+        this.setBarEchart('activeBehavior', '圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)', names, values)
+      })
+    },
+    // 人群画像估算---结束
+    // 显示划分详情
+    showDivideResult (crowdId) {
+      this.$service.getAbChilds(crowdId).then(data => {
+        this.showDivideDetail = true
+        this.DivideTableData = data
+      })
+    },
+    // 提交历史数据
+    handleCommitHistory (row) {
+      this.setShowCommitHistoryDialog = true
+      this.currentCrowdId = row.crowdId
+    },
+    handleSubmitHistory (formData) {
+      let submitForm = {
+        isSubmit: formData.isSubmit,
+        crowdId: formData.id,
+        dateNum: formData.dateNum
+      }
+      this.$service.submitPolicyHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(() => {
+        this.setShowCommitHistoryDialog = false
+      })
+    },
+    // 查看主页数据
+    handleSeeHomepageData (crowdId, crowdName) {
+      this.showDivideDetail = false
+      this.$appState.$set('homepageReleaseCrowdName', crowdName)
+      this.$router.push({ name: 'homepageReleaseRecord', params: { homepageReleaseRecordId: crowdId, crowdName: crowdName } })
+    },
+    //  导出估算画像数据
+    handleDownload () {
+      // this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
+      // this.$nextTick(() => {
+      //     this.$refs.download_Url.click()
+      // })
+      this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
+      // this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+    //  导出投后效果数据
+    handleLaunchedExport () {
+      this.launchedExportUrl =
+              '/api/crowdAndPolicyStatistics/export/' + this.currentCid +
+              '?sHitLineTime=' + this.time0[0] + '&eHitLineTime=' + this.time0[1] +
+              '&sHitPieTime=' + this.time1[0] + '&eHitPieTime=' + this.time1[1] +
+              '&sExposeLineTime=' + this.time2[0] + '&eExposeLineTime=' + this.time2[1] +
+              '&sExposePieTime=' + this.time3[0] + '&eExposePieTime=' + this.time3[1] +
+              '&sClickLineTime=' + this.time4[0] + '&eClickLineTime=' + this.time4[1] +
+              '&sClickPieTime=' + this.time5[0] + '&eClickPieTime=' + this.time5[1] +
+              '&sFunnelTime=' + this.time6[0] + '&eFunnelTime=' + this.time6[1] +
+              '&sProvinceTime=' + this.time7[0] + '&eProvinceTime=' + this.time7[1]
+      this.$nextTick(() => {
+        this.$refs.launchedDownLoad.click()
+      })
+    },
+    unActiveTips (activeType) {
+      if (activeType == 1 || activeType == 3) {
+        return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
+      } else {
+        return '人群未生效，因为未点击该策略的"同步按钮"'
+      }
+    },
+    // 显示限制数量
+    handleShowLimitLaunch (launchCount) {
+      this.showLimitLaunchDialog = true
+      this.showLimitLaunchCount = launchCount
+    },
+    handleClickRedirect () {
+      this.$router.push({
+        path: '/redirectAdd?policyId=' + this.selectRow.policyId
+      })
+    },
+    handleClickRedirectWithId (crowd) {
+      this.$router.push({
+        path: '/redirectAdd?policyId=' + this.selectRow.policyId + '&crowdId=' + crowd.crowdId + '&crowdName=' + crowd.crowdName
+      })
+    },
+    handleClickRedirectList (crowdId) {
+      this.$router.push({
+        params: { redirectListId: crowdId },
+        name: 'redirectAdd'
+      })
+    },
+    bubbleSort (arr) {
+      // 冒泡排序
+      const len = arr.length
+      for (var i = 0; i < len; i++) {
+        for (var j = 0; j < len - 1 - i; j++) {
+          if (arr[j] > arr[j + 1]) {
+            var temp = arr[j + 1]
+            arr[j + 1] = arr[j]
+            arr[j] = temp
+          }
+        }
+      }
+      return arr
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 2, behaviorShow: val.join(',') })
+    },
+    handleByPass () {
+      this.handleGetEditDetail()
+      this.handleGetBypassCrowdList()
+    },
+    handleBypassApartChange () {
+      const aparts = this.byPassForm.apart
+      const bypassList = this.byPassForm.bypass
+      const addLength = aparts - bypassList.length
+      if (addLength > 0) {
+        for (let i = 0; i < addLength; i++) {
+          this.byPassForm.bypass.push({ name: '分组' + ((bypassList.length || 0) + 1), ratio: 0, crowds: [] })
+        }
+      } else {
+        this.byPassForm.bypass.splice(bypassList.length + addLength, -addLength)
+      }
+    },
+    handleGetEditDetail () {
+      this.$service.getBypassCrowdDetail({ policyId: this.selectRow.policyId }).then(data => {
+        if (data.bypassList.length === 0) {
+          // 没有找到分流的信息，走新增保存接口
+          this.bypassSaveFlag = 'add'
+          // 分组初始化为1,2,3,4,5
+          this.ratioEnum = this.genInitApart()
+          this.byPassForm = this.genBypassForm()
+          this.handleBypassApartChange()
+        } else {
+          //    有分流的信息，走编辑保存接口
+          this.bypassSaveFlag = 'edit'
+          this.byPassForm.apart = data.size
+          this.byPassForm.bypass = data.bypassList.map(item => {
+            return { name: item.bypassName,
+              ratio: item.ratio,
+              id: item.id,
+              bypassId: item.bypassId,
+              crowds: item.crowdsList,
+              policyId: item.policyId,
+              crowdSelect: '' }
+          })
+          // 分组只能选择比当前分组大的
+          this.ratioEnum = this.ratioEnum.filter(item => {
+            return item.value >= data.size
+          })
+        }
+      })
+    },
+    handleCancelBypass () {
+      this.showBypassDialog = false
+      this.byPassForm = this.genBypassForm()
+      this.showBypassStep = 1
+    },
+    handleSaveBypass () {
+      // 校验 每一个分组是否都填写
+      // 校验 份数是否小于等于100%
+      const byPassDetail = JSON.parse(JSON.stringify(this.byPassForm.bypass))
+      const bypassLength = byPassDetail.length
+      const apiData = []
+      let ratioTotal = 0
+      if (bypassLength === 0) {
+        this.$message.error('请选择人群填写分流信息！')
+        return
+      }
+      for (let i = 0; i < bypassLength; i++) {
+        const eachPartLength = byPassDetail[i].crowds.length
+        if (eachPartLength === 0) {
+          // 校验是否填写了分流人群
+          this.$message.error('请在第' + (i + 1) + '块勾选需要分流的人群！')
+          return
+        } else {
+          // 判断人群分流的每组优先级是否存在相同
+          for (let j = 0; j < eachPartLength - 1; j++) {
+            for (let n = j + 1; n < eachPartLength; n++) {
+              if (byPassDetail[i].crowds[j].priority === byPassDetail[i].crowds[n].priority) {
+                this.$message.error('第' + (i + 1) + '分组里人群第' + (j + 1) + '和' + (n + 1) + '人群优先级有重复，请修改之后再保存！')
+                return
+              }
+            }
+          }
+          ratioTotal += byPassDetail[i].ratio
+          if (this.bypassSaveFlag === 'add') {
+            apiData.push({ name: byPassDetail[i].name, ratio: parseInt(byPassDetail[i].ratio), crowds: byPassDetail[i].crowds })
+          } else {
+            apiData.push({
+              bypassId: byPassDetail[i].bypassId,
+              id: byPassDetail[i].id,
+              policyId: byPassDetail[i].policyId,
+              name: byPassDetail[i].name,
+              ratio: parseInt(byPassDetail[i].ratio),
+              crowds: byPassDetail[i].crowds.map(crowdItem => {
+                return { crowdId: crowdItem.crowdId, crowdName: crowdItem.crowdName, priority: crowdItem.priority }
+              })
+            })
+          }
+        }
+      }
+      if (ratioTotal > 100 || ratioTotal < 0) {
+        this.$message.error('分流总比例不得大于100%或者小于0')
+        return
+      }
+      // 新增接口数据格式
+      // bypass:[{name: '一组',ratio: 30,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
+
+      // 编辑保存接口数据格式
+      // bypass:[{id: 123,name: '一组',ratio: 30,policyId: 123,bypassId: 1,crowds: [{crowdId: 123,crowdName: '123name',priority: 1}]}]
+      if (this.bypassSaveFlag === 'edit') {
+        // 编辑保存
+        this.$service.saveBypassCrowdEdit({ data: { bypass: apiData }, params: { policyId: this.selectRow.policyId } }, '分流编辑保存成功！').then(() => {
+          this.showBypassDialog = false
+          this.loadData()
+        })
+      } else {
+        // 新增保存
+        this.$service.saveBypassCrowdAdd({ data: { bypass: apiData }, params: { policyId: this.selectRow.policyId } }, '分流新增保存成功！').then(() => {
+          this.showBypassDialog = false
+          this.loadData()
+        })
+      }
+    },
+    handleGetBypassCrowdList () {
+      this.$service.getBypassCrowdList({ policyId: this.selectRow.policyId }).then(data => {
+        this.selectList = data
+        // 如果可选的人群数小于2，则不显示分流按钮
+        if (this.selectList.length < 1) {
+          this.$message.error('只有当前人群数量大于0才能分流！')
+          return
+        }
+        this.showBypassDialog = true
+      })
+    },
+    handleCrowdSelectChange (item) {
+      const currentCrowds = item.crowds.map(item => { return item.crowdId }).join(',')
+      if (currentCrowds.indexOf(item.crowdSelect) > -1) {
+
+      } else {
+        const filterCrowd = this.selectList.filter(crowdItem => { return crowdItem.crowdId === item.crowdSelect })
+        item.crowds.push({ crowdId: filterCrowd[0].crowdId, crowdName: filterCrowd[0].crowdName, priority: item.crowds.length + 1 })
+      }
+    },
+    handleRemoveCrowds (tableItem, crowdId) {
+      const idMap = tableItem.crowds.map(item => {
+        return item.crowdId
+      })
+      const index = idMap.indexOf(crowdId)
+      tableItem.crowds.splice(index, 1)
+      if (tableItem.crowds.length === 0) {
+        tableItem.crowdSelect = ''
+      }
+    },
+    handleNextBypass () {
+      this.showBypassStep = 2
+    },
+    handleExpandChange (row, expandedRows) {
+      if (this.showByPassColumn) {
+        const currentCrowds = expandedRows.map(item => {
+          return item.crowdId
+        })
+        let currentIndex = 0
+        for (let i = 0; i < this.tableData.length; i++) {
+          if (this.tableData[i].crowdId === row.crowdId) {
+            currentIndex = i
+            break
+          }
+        }
+        // 递归找到父类的expandIndex
+        let lengthTotal = 0
+        const testIndex = (current, i, arr) => {
+          lengthTotal += arr[i]
+          if (current >= i && current < lengthTotal) {
+            return i
+          } else {
+            i = i + arr[i]
+            return testIndex(current, i, arr)
+          }
+        }
+        const parentExpandIndex = testIndex(currentIndex, 0, this.initTableMerge)
+        if (currentCrowds.indexOf(row.crowdId) > -1) {
+          // 当包含当前列，则是展开
+          // tableMerge[I] >= 1则表示只有一行，只用把当前的tableMerge + 1
+          // 如果tableMerge = 0,则表示当前的要等于2，并且它前面合并集要+1
+          // 合并行的头
+          if (this.initTableMerge[currentIndex] !== 0) {
+            // 属于合并行
+            this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 1
+          }
+          if (currentIndex !== parentExpandIndex) {
+            this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] + 1
+          }
+          // this.tableMerge[currentIndex] = this.tableMerge[currentIndex] + 2
+          // if (currentIndex > 0) {
+          //     this.tableMerge[currentIndex-1] = this.tableMerge[currentIndex-1] + 1
+          // }
+        } else {
+          // 关闭当前展开行
+          if (this.initTableMerge[currentIndex] !== 0) {
+            // 属于合并行
+            this.tableMerge[currentIndex] = this.tableMerge[currentIndex] - 1
+          }
+          if (currentIndex !== parentExpandIndex) {
+            this.tableMerge[parentExpandIndex] = this.tableMerge[parentExpandIndex] - 1
+          }
+        }
+      }
+    },
+    objectSpanMethod ({ rowIndex, columnIndex }) {
+      if (this.showByPassColumn) {
+        if (columnIndex === 0) {
+          const row1 = this.tableMerge[rowIndex]
+          const col1 = row1 > 0 ? 1 : 0 // 如果被合并了row = 0; 则他这个列需要取消
+          return {
+            rowspan: row1,
+            colspan: col1
+          }
+        }
+      }
+    },
+    handleEditBypass () {
+      this.handleByPass()
+      this.showBypassStep = 2
+    },
+    handleDeleteBypass (row) {
+      this.$service.delBypassCrowd({ pid: row.id }, '删除分流成功！').then(() => {
+        this.loadData()
+      })
+    },
+    handleSeeConfigBypass (id) {
+      this.$service.seeDevFile({ policyId: id }).then((data) => {
+        this.showConfiguration = true
+        this.configTextarea = data.content
+      })
+        .catch(() => {
+          // this.showConfiguration = true
+          // this.configTextarea = '该策略没有配置文件'
+        })
+    }
   }
 }
 </script>
@@ -2719,7 +2716,7 @@ fieldset>div
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
-  
+
 .button-margin
   margin-top 10px
 .table-header

@@ -61,7 +61,7 @@
         @keyup.enter.native="handleSearch"
       >
       </el-input>
-      
+
       <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
     </div>
     <el-form
@@ -100,8 +100,8 @@
     </el-form>
     <el-dialog
       title="同一组合标签只能选择以下两种组合之一："
-      :visible.sync="Successdialog" 
-      :show-close="false" 
+      :visible.sync="Successdialog"
+      :show-close="false"
       :close-on-click-modal="false"
       :close-on-press-escape="false"
       width="30%"
@@ -135,7 +135,7 @@ export default {
     LocalLabelIndex
   },
   props: ['recordId', 'initTagList', 'usedTagList'],
-  data() {
+  data () {
     return {
       activeName: 'labelZone',
       searchVal: '',
@@ -157,7 +157,7 @@ export default {
       tempCheckList: [],
       bottomHeight: 169 + 'px',
       // 0 - 组合一：大数据标签、行为标签           // 1 - 组合二：大数据标签、账号标签、临时标签/自定义标签、实时标签          // 2 - 无限制
-      //              红 - 2    青 - 8                            红 - 2    蓝 - 3       绿 - 1          黄 - 5       
+      //              红 - 2    青 - 8                            红 - 2    蓝 - 3       绿 - 1          黄 - 5
       // 不包含 动态因子（ 紫色 - 6 ）
       uniteType: 2,
       Successdialog: false, // 控制弹出
@@ -170,40 +170,40 @@ export default {
   inject: ['sTagIndex'],
   watch: {
     initTagList: {
-      handler: function(val) {
+      handler: function (val) {
         // debugger
         this.tagList = val
       },
       deep: true
     },
     tagList: {
-      handler(val) {
+      handler (val) {
         // || this.uniteType === 2) {
         // if (val.length === 0 ) { // 当清空时， uniteType 为 2
         //   this.uniteType = 2
         // }
         // if (this.uniteType === 2) {
-          if (val.every(item => item.dataSource === 2)) {
-            this.uniteType = 2
-          } else if (val.every(item => [2, 8].indexOf(item.dataSource) > -1)) {
-            this.uniteType = 0
-          } else {
-            this.uniteType = 1
-          }
+        if (val.every(item => item.dataSource === 2)) {
+          this.uniteType = 2
+        } else if (val.every(item => [2, 8].indexOf(item.dataSource) > -1)) {
+          this.uniteType = 0
+        } else {
+          this.uniteType = 1
+        }
         // }
       },
       immediate: true
-    } 
+    }
   },
   methods: {
     getSencond () {
-      this.Sencond = 5 
+      this.Sencond = 5
       const that = this
       this.interval = window.setInterval(function () {
         --that.Sencond
         if (that.Sencond === 0) {
           that.isDisabled = false
-          that.handelClose()//倒计时结束时运行的业务逻辑，这里的是关闭当前页面
+          that.handelClose()// 倒计时结束时运行的业务逻辑，这里的是关闭当前页面
         }
       }, 1000)
     },
@@ -211,19 +211,19 @@ export default {
       window.clearInterval(this.interval)
       this.Successdialog = false
     },
-    back() {
+    back () {
       this.$router.push({
         path: 'labelSquare'
       })
     },
-    genDefaultForm() {
+    genDefaultForm () {
       return {
         recordId: undefined,
         policyName: '',
         conditionTagIds: []
       }
     },
-    handleSearch() {
+    handleSearch () {
       // 全局搜索
       if (this.activeName === 'labelZone') {
         this.labelZoneTagName = this.searchVal
@@ -231,12 +231,12 @@ export default {
         this.myCollectTagName = this.searchVal
       }
     },
-    handleClearSearch() {
+    handleClearSearch () {
       this.searchVal = undefined
       this.labelZoneTagName = undefined
       this.myCollectTagName = undefined
     },
-    fetchCheckListData() {
+    fetchCheckListData () {
       this.$service.getListDimension({ type: 4 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -249,10 +249,10 @@ export default {
         }
       })
     },
-    handleCheckListChange(val) {
+    handleCheckListChange (val) {
       this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
     },
-    fetchTempCheckListData() {
+    fetchTempCheckListData () {
       this.$service.getListDimension({ type: 5 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -265,10 +265,10 @@ export default {
         }
       })
     },
-    handleTempCheckListChange(val) {
+    handleTempCheckListChange (val) {
       this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
     },
-    handleTabChange() {
+    handleTabChange () {
       switch (this.activeName) {
         case 'labelZone':
           //    刷新标签广场页
@@ -290,11 +290,10 @@ export default {
           break
       }
     },
-    handleGetTableSelectedData(val, mode) {
+    handleGetTableSelectedData (val, mode) {
       // 只支持单数组，多数组要多次调用这个
       const tagList = this.tagList
       if (mode === 'add') {
-        
         // 如果有匹配的，就直接return
         let firstIndex = -1
         for (var i = 0; i < tagList.length; i++) {
@@ -303,11 +302,11 @@ export default {
             return
           }
         }
-      
+
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
-          
+
           // 判断是否与其他标签类型冲突，若有冲突就删除该标签
           if (this.uniteType === 0 && [2, 8].indexOf(val.dataSource) === -1) {
             this.tagList.pop() // 删除前面 push 添加的
@@ -324,7 +323,6 @@ export default {
           this.addForm.conditionTagIds.push(val.tagId)
           this.setContentBottomMargin()
         }
-        
       } else {
         // 取消选中的则删除这一项
         let index = -1
@@ -341,7 +339,7 @@ export default {
         }
       }
     },
-    setContentBottomMargin() {
+    setContentBottomMargin () {
       this.$nextTick(() => {
         const bottomMargin = document.getElementsByClassName(
           'fix-bottom-form'
@@ -349,7 +347,7 @@ export default {
         this.bottomHeight = bottomMargin + 'px'
       })
     },
-    removeTag(tag) {
+    removeTag (tag) {
       // 标签已经在使用中，无法删不掉
       if (this.usedTagList.includes(tag.tagId)) {
         this.$message.error('标签已经在使用中')
@@ -363,10 +361,10 @@ export default {
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       this.setContentBottomMargin()
     },
-    saveAndNext(mode) {
+    saveAndNext (mode) {
       // debugger
       const conditionTagIds =
-        this.tagList.map(function(v) {
+        this.tagList.map(function (v) {
           return parseInt(v.tagId)
         }) || []
       this.addForm = {
@@ -381,11 +379,11 @@ export default {
       // this.$emit('policyNextStep', this.tagList)
 
       const tagIds = addForm.conditionTagIds
-      this.$service.saveSpecialTag({tagIds}).then((data) => {
+      this.$service.saveSpecialTag({ tagIds }).then((data) => {
         this.$emit('policyNextStep', data)
       })
     },
-    getPolicyDetail() {
+    getPolicyDetail () {
       // this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
       //     const formData = data
       //     formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
@@ -405,7 +403,7 @@ export default {
           const formData = data
           formData.conditionTagIds = formData.conditionTagIds
             .split(',')
-            .map(function(v) {
+            .map(function (v) {
               return parseInt(v)
             })
           this.addForm = {
@@ -415,7 +413,7 @@ export default {
         })
     }
   },
-  created() {
+  created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
 

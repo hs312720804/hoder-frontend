@@ -2,30 +2,30 @@
   <div class="label-content">
     <div class="table-list" :style="{marginBottom: bottomHeight}">
         <el-tabs
-                v-model="activeName"
-                @tab-click="handleTabChange"
+            v-model="activeName"
+            @tab-click="handleTabChange"
         >
           <el-tab-pane label="临时人群/标签" name="tempLabel">
             <temp-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                    @fetch-checkList="fetchTempCheckListData"
+                :show-selection="showSelection"
+                :currentSelectTag="tagList"
+                :checkList="tempCheckList"
+                @get-table-selected="handleGetTableSelectedData"
+                @change-checkList="handleTempCheckListChange"
+                @fetch-checkList="fetchTempCheckListData"
             >
             </temp-label-index>
           </el-tab-pane>
           <el-tab-pane label="标签专区" name="labelZone">
             <label-zone
-                    :tagName="labelZoneTagName"
-                    @clear-search="handleClearSearch"
-                    :checkList="checkList"
-                    @change-checkList="handleCheckListChange"
-                    @fetch-checkList="fetchCheckListData"
-                    @get-table-selected="handleGetTableSelectedData"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
+                :tagName="labelZoneTagName"
+                @clear-search="handleClearSearch"
+                :checkList="checkList"
+                @change-checkList="handleCheckListChange"
+                @fetch-checkList="fetchCheckListData"
+                @get-table-selected="handleGetTableSelectedData"
+                :show-selection="showSelection"
+                :currentSelectTag="tagList"
             >
             </label-zone>
           </el-tab-pane>
@@ -45,22 +45,22 @@
                 <special-tag
                         :tagName="myCollectTagName"
                         :checkList="checkList"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
                         @clear-search="handleClearSearch"
                         @change-checkList="handleCheckListChange"
                         @get-table-selected="handleGetTableSelectedData"
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
                 >
                 </special-tag>
             </el-tab-pane>
             <el-tab-pane label="本地人群/标签" name="localLabel">
                 <local-label-index
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
-                        :checkList="tempCheckList"
-                        @get-table-selected="handleGetTableSelectedData"
-                        @change-checkList="handleTempCheckListChange"
-                        @fetch-checkList="fetchTempCheckListData"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    :checkList="tempCheckList"
+                    @get-table-selected="handleGetTableSelectedData"
+                    @change-checkList="handleTempCheckListChange"
+                    @fetch-checkList="fetchTempCheckListData"
                 >
                 </local-label-index>
             </el-tab-pane>
@@ -115,289 +115,289 @@
 </template>
 
 <script>
-    import labelZone from './LabelZone'
-    import myCollect from './MyCollect'
-    import tempLabelIndex from './tempLabel/TempLabelIndex'
-    import LocalLabelIndex from './localLabel/Index'
-    import specialTag from './SpecialTag'
-    export default {
-        name: "labelSquareAA",
-        components: {
-            labelZone,
-            myCollect,
-            tempLabelIndex,
-            LocalLabelIndex,
-            specialTag
-        },
-        props: ['recordId','initTagList'],
-        data () {
-            return {
-                activeName: 'labelZone',
-                searchVal: '',
-                labelZoneTagName: undefined,
-                myCollectTagName: undefined,
-                checkList: [],
-                tagList: [],
-                dataSourceColorEnum: {
-                    1: 'success',
-                    2: 'danger',
-                    3: '',
-                    5: 'warning',
-                    6: 'warningOrange',
-                    7: 'warningOrange2',
-                    8: 'warningCyan',
-                },
-                showSelection: true,
-                addForm: this.genDefaultForm(),
-                addFormRules: {
-                    policyName: [
-                        { required: true, message: "请填写策略名称", trigger: "blur" }
-                    ]
-                },
-                tempCheckList: [],
-                bottomHeight: 169+'px'
-            }
-        },
-        methods: {
-            // 返回策略列表
-            handelBack () {
-                this.$router.push({ name: 'strategyList'})
-            },
-            genDefaultForm () {
-                return {
-                    recordId: undefined,
-                    policyName: "",
-                    conditionTagIds: []
-                }
-            },
-            handleSearch () {
-                // 全局搜索
-                if(this.activeName === 'labelZone') {
-                    this.labelZoneTagName = this.searchVal
-                } else {
-                    this.myCollectTagName = this.searchVal
-                }
-            },
-            handleClearSearch () {
-                this.searchVal = undefined
-                this.labelZoneTagName = undefined
-                this.myCollectTagName = undefined
-            },
-            fetchCheckListData () {
-                this.$service.getListDimension({type: 4}).then(data => {
-                    if (data) {
-                        if (data.behaviorShow) {
-                            this.checkList = data.behaviorShow.split(',')
-                        } else {
-                            this.checkList = ['defineRemark']
-                        }
-                    } else {
-                        this.checkList = ['defineRemark']
-                    }
-                })
-            },
-            handleCheckListChange (val) {
-                this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
-            },
-            fetchTempCheckListData () {
-                this.$service.getListDimension({type: 5}).then(data => {
-                    if (data) {
-                        if (data.behaviorShow) {
-                            this.tempCheckList = data.behaviorShow.split(',')
-                        } else {
-                            this.tempCheckList = ['defineRemark']
-                        }
-                    } else {
-                        this.tempCheckList = ['defineRemark']
-                    }
-                })
-            },
-            handleTempCheckListChange (val) {
-                this.$service.saveListDimension({type: 5,behaviorShow: val.join(',')})
-            },
-            handleTabChange () {
-                switch (this.activeName) {
-                    case 'labelZone':
-                        //    刷新标签广场页
-                        this.fetchCheckListData()
-                        this.$root.$emit('label-zone-list-refresh')
-                        break
-                    case 'myCollect':
-                        //    刷新我的收藏
-                        this.fetchCheckListData()
-                        this.$root.$emit('my-collect-list-refresh')
-                        break
-                    case 'tempLabel':
-                        this.fetchTempCheckListData()
-                        this.$root.$emit('temp-label-list-refresh-2')
-                        break
-                    case 'localLabel':
-                        this.fetchTempCheckListData()
-                        this.$root.$emit('local-label-list-refresh')
-                        break
-                }
-            },
-            handleGetTableSelectedData (val,mode) {
-                // 只支持单数组，多数组要多次调用这个
-                const tagList = this.tagList
-                if(mode === 'add') {
-                    // 如果有匹配的，就直接return
-                    let firstIndex = -1
-                    for (var i=0; i < tagList.length;i++) {
-                        if (tagList[i].tagId === val.tagId) {
-                            firstIndex = i
-                            return
-                        }
-                    }
-                    // 如果没有匹配的，就执行新增
-                    if (firstIndex === -1) {
-                        this.tagList.push(val)
-                        this.addForm.conditionTagIds.push(val.tagId)
-                        this.setContentBottomMargin()
-                    }
-                } else {
-                    // 取消选中的则删除这一项
-                    let index = -1
-                    for (var j=0; j < tagList.length;j++) {
-                        if (tagList[j].tagId === val.tagId) {
-                            index = j
-                            this.tagList.splice(index,1)
-                            this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
-                            this.setContentBottomMargin()
-                            return
-                        }
-                    }
-                }
-            },
-            setContentBottomMargin () {
-                this.$nextTick(() => {
-                    const bottomMargin = document.getElementsByClassName('fix-bottom-form')[0].offsetHeight
-                    this.bottomHeight = bottomMargin + 'px'
-                })
-            },
-            removeTag(tag) {
-                const addForm = this.addForm
-                addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-                this.tagList.splice(this.tagList.indexOf(tag),1)
-                this.setContentBottomMargin()
-            },
-            saveAndNext(mode) {
-                this.$refs.addForm.validate(valid => {
-                    if (valid) {
-                        let addForm = JSON.stringify(this.addForm)
-                        addForm = JSON.parse(addForm)
-                        if (addForm.conditionTagIds.length === 0) {
-                            this.$message.error('请选择策略维度！')
-                            return
-                        }
-                        if (this.$parent.peoplePageCheck) {
-                            let result = this.tagList.filter(item => {
-                                return item.dataSource === 6
-                            });
-                            if (!result.length) {
-                                this.$message.error('创建智能人群策略，需要选择动态指标！')
-                                return;
-                            }
-                        }
-                        addForm.conditionTagIds = addForm.conditionTagIds.join(",")
-                        if (mode === 1) {
-                            if (this.addForm.recordId) {
-                                this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                                    if (data.policyId) {
-                                        this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                            confirmButtonText: '确定',
-                                            cancelButtonText: '取消',
-                                            type: 'warning'
-                                        }).then(() => {
-                                            this.$message({
-                                                type: 'success',
-                                                message: '即将自动跳转至策略列表页'
-                                            })
-                                            this.$emit('handleDirectStrategyList')
-                                            // this.$router.push({ path: 'launch/strategyList' })
-                                        }).catch(() => {
-                                        })
-                                    } else {
-                                        this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                                    }
-                                })
-                            } else {
-                                this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                                    if (data.policyId) {
-                                        this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                            confirmButtonText: '确定',
-                                            cancelButtonText: '取消',
-                                            type: 'warning'
-                                        }).then(() => {
-                                            this.$message({
-                                                type: 'success',
-                                                message: '即将自动跳转至策略列表页'
-                                            })
-                                            this.$emit('handleDirectStrategyList')
-                                        }).catch(() => {
-                                        })
-                                    } else {
-                                        this.addForm.recordId = data.recordId
-                                        this.$emit('policyNextStep',this.addForm.recordId,this.tagList)
-                                    }
-                                })
-                            }
-                        } else {
-                            let oldFormData = {
-                                policyName: addForm.policyName,
-                                conditionTagIds: addForm.conditionTagIds
-                            }
-                            this.$service.policyAddSave(oldFormData).then((data) => {
-                                if (data.policyId) {
-                                    this.$confirm('保存失败，该策略维度已存在！请在策略'+data.policyId+'中新建人群即可', '提示', {
-                                        confirmButtonText: '确定',
-                                        cancelButtonText: '取消',
-                                        type: 'warning'
-                                    }).then(() => {
-                                        this.$message({
-                                            type: 'success',
-                                            message: '即将自动跳转至策略列表页'
-                                        })
-                                        this.$emit('handleDirectStrategyList')
-                                        // this.$router.push({ path: 'launch/strategyList' })
-                                    }).catch(() => {
-                                    })
-                                } else {
-                                    // this.$root.$emit('stratege-list-refresh')
-                                    // this.$router.push({path: 'launch/strategyList'})
-                                    this.$emit('handleDirectStrategyList')
-                                    this.$emit('resetFormData')
-                                }
-                            })
-                        }
-                    } else {
-                        return false
-                    }
-                })
-            },
-            getPolicyDetail () {
-                this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
-                    const formData = data
-                    formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
-                        return parseInt(v)
-                    })
-                    this.addForm = {
-                        recordId: this.recordId,
-                        policyName: formData.policyName,
-                        conditionTagIds: formData.conditionTagIds
-                    }
-                })
-            }
-        },
-        created () {
-            this.fetchCheckListData()
-            this.fetchTempCheckListData()
-            if (this.recordId) {
-                this.getPolicyDetail()
-                this.tagList = this.initTagList
-            }
-        }
+import labelZone from './LabelZone'
+import myCollect from './MyCollect'
+import tempLabelIndex from './tempLabel/TempLabelIndex'
+import LocalLabelIndex from './localLabel/Index'
+import specialTag from './SpecialTag'
+export default {
+  name: 'labelSquareAA',
+  components: {
+    labelZone,
+    myCollect,
+    tempLabelIndex,
+    LocalLabelIndex,
+    specialTag
+  },
+  props: ['recordId', 'initTagList'],
+  data () {
+    return {
+      activeName: 'labelZone',
+      searchVal: '',
+      labelZoneTagName: undefined,
+      myCollectTagName: undefined,
+      checkList: [],
+      tagList: [],
+      dataSourceColorEnum: {
+        1: 'success',
+        2: 'danger',
+        3: '',
+        5: 'warning',
+        6: 'warningOrange',
+        7: 'warningOrange2',
+        8: 'warningCyan'
+      },
+      showSelection: true,
+      addForm: this.genDefaultForm(),
+      addFormRules: {
+        policyName: [
+          { required: true, message: '请填写策略名称', trigger: 'blur' }
+        ]
+      },
+      tempCheckList: [],
+      bottomHeight: 169 + 'px'
     }
+  },
+  methods: {
+    // 返回策略列表
+    handelBack () {
+      this.$router.push({ name: 'strategyList' })
+    },
+    genDefaultForm () {
+      return {
+        recordId: undefined,
+        policyName: '',
+        conditionTagIds: []
+      }
+    },
+    handleSearch () {
+      // 全局搜索
+      if (this.activeName === 'labelZone') {
+        this.labelZoneTagName = this.searchVal
+      } else {
+        this.myCollectTagName = this.searchVal
+      }
+    },
+    handleClearSearch () {
+      this.searchVal = undefined
+      this.labelZoneTagName = undefined
+      this.myCollectTagName = undefined
+    },
+    fetchCheckListData () {
+      this.$service.getListDimension({ type: 4 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
+          } else {
+            this.checkList = ['defineRemark']
+          }
+        } else {
+          this.checkList = ['defineRemark']
+        }
+      })
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
+    },
+    fetchTempCheckListData () {
+      this.$service.getListDimension({ type: 5 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.tempCheckList = data.behaviorShow.split(',')
+          } else {
+            this.tempCheckList = ['defineRemark']
+          }
+        } else {
+          this.tempCheckList = ['defineRemark']
+        }
+      })
+    },
+    handleTempCheckListChange (val) {
+      this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
+    },
+    handleTabChange () {
+      switch (this.activeName) {
+        case 'labelZone':
+          //    刷新标签广场页
+          this.fetchCheckListData()
+          this.$root.$emit('label-zone-list-refresh')
+          break
+        case 'myCollect':
+          //    刷新我的收藏
+          this.fetchCheckListData()
+          this.$root.$emit('my-collect-list-refresh')
+          break
+        case 'tempLabel':
+          this.fetchTempCheckListData()
+          this.$root.$emit('temp-label-list-refresh-2')
+          break
+        case 'localLabel':
+          this.fetchTempCheckListData()
+          this.$root.$emit('local-label-list-refresh')
+          break
+      }
+    },
+    handleGetTableSelectedData (val, mode) {
+      // 只支持单数组，多数组要多次调用这个
+      const tagList = this.tagList
+      if (mode === 'add') {
+        // 如果有匹配的，就直接return
+        let firstIndex = -1
+        for (var i = 0; i < tagList.length; i++) {
+          if (tagList[i].tagId === val.tagId) {
+            firstIndex = i
+            return
+          }
+        }
+        // 如果没有匹配的，就执行新增
+        if (firstIndex === -1) {
+          this.tagList.push(val)
+          this.addForm.conditionTagIds.push(val.tagId)
+          this.setContentBottomMargin()
+        }
+      } else {
+        // 取消选中的则删除这一项
+        let index = -1
+        for (var j = 0; j < tagList.length; j++) {
+          if (tagList[j].tagId === val.tagId) {
+            index = j
+            this.tagList.splice(index, 1)
+            this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
+            this.setContentBottomMargin()
+            return
+          }
+        }
+      }
+    },
+    setContentBottomMargin () {
+      this.$nextTick(() => {
+        const bottomMargin = document.getElementsByClassName('fix-bottom-form')[0].offsetHeight
+        this.bottomHeight = bottomMargin + 'px'
+      })
+    },
+    removeTag (tag) {
+      const addForm = this.addForm
+      addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      this.tagList.splice(this.tagList.indexOf(tag), 1)
+      this.setContentBottomMargin()
+    },
+    saveAndNext (mode) {
+      this.$refs.addForm.validate(valid => {
+        if (valid) {
+          let addForm = JSON.stringify(this.addForm)
+          addForm = JSON.parse(addForm)
+          if (addForm.conditionTagIds.length === 0) {
+            this.$message.error('请选择策略维度！')
+            return
+          }
+          if (this.$parent.peoplePageCheck) {
+            let result = this.tagList.filter(item => {
+              return item.dataSource === 6
+            })
+            if (!result.length) {
+              this.$message.error('创建智能人群策略，需要选择动态指标！')
+              return
+            }
+          }
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          if (mode === 1) {
+            if (this.addForm.recordId) {
+              this.$service.oneDropPolicyAddSave(addForm).then((data) => {
+                if (data.policyId) {
+                  this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    this.$message({
+                      type: 'success',
+                      message: '即将自动跳转至策略列表页'
+                    })
+                    this.$emit('handleDirectStrategyList')
+                    // this.$router.push({ path: 'launch/strategyList' })
+                  }).catch(() => {
+                  })
+                } else {
+                  this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
+                }
+              })
+            } else {
+              this.$service.oneDropPolicyAddSave(addForm).then((data) => {
+                if (data.policyId) {
+                  this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    this.$message({
+                      type: 'success',
+                      message: '即将自动跳转至策略列表页'
+                    })
+                    this.$emit('handleDirectStrategyList')
+                  }).catch(() => {
+                  })
+                } else {
+                  this.addForm.recordId = data.recordId
+                  this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
+                }
+              })
+            }
+          } else {
+            let oldFormData = {
+              policyName: addForm.policyName,
+              conditionTagIds: addForm.conditionTagIds
+            }
+            this.$service.policyAddSave(oldFormData).then((data) => {
+              if (data.policyId) {
+                this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+                  confirmButtonText: '确定',
+                  cancelButtonText: '取消',
+                  type: 'warning'
+                }).then(() => {
+                  this.$message({
+                    type: 'success',
+                    message: '即将自动跳转至策略列表页'
+                  })
+                  this.$emit('handleDirectStrategyList')
+                  // this.$router.push({ path: 'launch/strategyList' })
+                }).catch(() => {
+                })
+              } else {
+                // this.$root.$emit('stratege-list-refresh')
+                // this.$router.push({path: 'launch/strategyList'})
+                this.$emit('handleDirectStrategyList')
+                this.$emit('resetFormData')
+              }
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    getPolicyDetail () {
+      this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
+        const formData = data
+        formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
+          return parseInt(v)
+        })
+        this.addForm = {
+          recordId: this.recordId,
+          policyName: formData.policyName,
+          conditionTagIds: formData.conditionTagIds
+        }
+      })
+    }
+  },
+  created () {
+    this.fetchCheckListData()
+    this.fetchTempCheckListData()
+    if (this.recordId) {
+      this.getPolicyDetail()
+      this.tagList = this.initTagList
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
@@ -428,7 +428,6 @@
         color: #00bcd4;
         background-color: rgba(0, 189, 214, .1);
         border-color: #00bcd42b
-   
   .search-input
     position absolute
     top 0

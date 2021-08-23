@@ -1544,9 +1544,6 @@ export default {
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 是否清空下一级 child
     getValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
-      // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      // eslint-disable-next-line no-debugger
-      debugger
       let list = []
       vals.forEach(val => {
         const lastNumberObj = [
@@ -1567,8 +1564,7 @@ export default {
           // 清空对象中的 value （模块活跃特殊 value不等于下拉选项的value，而是后面查询出来的结果）
           if (isValueClear) obj.value = ''
         }
-        // eslint-disable-next-line no-debugger
-        debugger
+
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位

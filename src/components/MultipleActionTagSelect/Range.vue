@@ -108,22 +108,22 @@
 <script>
 // import types from '../types'
 export default {
-  data() {
+  data () {
     return {
       rangeTypeList: [],
       weekRange: [],
       timeRange: [],
       pickerOptions0: {
-        disabledDate:(time)=> {
-          const day1 =  31 * 24 * 3600 * 1000
+        disabledDate: (time) => {
+          const day1 = 90 * 24 * 3600 * 1000
           let maxTime = Date.now() - 1 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
         }
       },
       pickerOptions720: {
-        disabledDate:(time)=> {
-          const day1 =  720 * 24 * 3600 * 1000
+        disabledDate: (time) => {
+          const day1 = 720 * 24 * 3600 * 1000
           let maxTime = Date.now() - 1 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
@@ -133,7 +133,7 @@ export default {
       isSelectedDay: false,
       rangeFormRules: {
         'bav.rang.value': [
-          { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur']},
+          { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur'] }
         ]
       }
     }
@@ -158,8 +158,7 @@ export default {
   },
   watch: {
     childItem: {
-      
-      handler(val) {
+      handler (val) {
         let list = val.bav.behaviorValue
         this.isSelectedDay = false
         // 判断是否选择了【天数】
@@ -169,13 +168,13 @@ export default {
       immediate: true
     },
     show: {
-      handler(val) {
+      handler (val) {
         this.show3 = val
       },
       immediate: true
     },
     options: { // 下拉框选项
-      handler(val) {
+      handler (val) {
         if (val) {
           const _this = this
           const periodRange = val.dict.periodRange || []
@@ -204,17 +203,17 @@ export default {
             }
           })
           // this.childItem.bav.range.field = this.rangeTypeList[0].field || ''
-       }
+        }
       },
       // deep: true,
       immediate: true
     }
   },
   methods: {
-    openOrClose() {
+    openOrClose () {
       this.show3 = !this.show3
     },
-    handelSelectChange(item, list, type) {
+    handelSelectChange (item, list, type) {
       item.field = list[0].field
       if (type === 'fixed') {
         this.childItem.bav.rang.value = []
@@ -225,18 +224,18 @@ export default {
     },
 
     // 判断是否有选择【天数】选项
-    handelIsSelectedDay(list) {
-        for(let i = 0; i < list.length; i++) {
-          if (list[i].type === 'day') { // 判断是否选了【天数】
-            this.isSelectedDay = true
-            break;
-          } else if (list[i].child) {
-            this.handelIsSelectedDay(list[i].child)
-          }
+    handelIsSelectedDay (list) {
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].type === 'day') { // 判断是否选了【天数】
+          this.isSelectedDay = true
+          break
+        } else if (list[i].child) {
+          this.handelIsSelectedDay(list[i].child)
         }
+      }
     }
   },
-  created() {
+  created () {
     // console.log('rulesJson==', this.rulesJson)
     // this.weekRange = Object.keys(types.weekRange).map(item => {
     //   return {
