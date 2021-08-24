@@ -44,7 +44,7 @@
                 <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
                   <Range
                     ref="range"
-                    :childItem="childItem" 
+                    :childItem="childItem"
                     :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
                     :options="bavAttrList[childItem.categoryCode]"
                     :show="showRange"
@@ -53,7 +53,7 @@
                   </Range>
 
                   <i
-                    :class="showRange ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'" 
+                    :class="showRange ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"
                     class="range animated shake"
                     @click="handelChangeShow"
                   >
@@ -65,7 +65,7 @@
                 <!-- <component :is=" 'bav-'+ tagCodeValue[childItem.tagCode] " :childItem="childItem"> </component> -->
                 <Bav
                   ref="bav"
-                  :childItem="childItem" 
+                  :childItem="childItem"
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
                 >
                 </Bav>
@@ -278,8 +278,8 @@
                           </div>
                           <!-- 官方-地域标签 end-->
 
-                          <!-- 
-                            多选下拉框 
+                          <!--
+                            多选下拉框
                             当 tagType 为 string 的时候可多选 222
                           -->
                           <el-select
@@ -314,7 +314,7 @@
                         </template>
                       </template>
                     </template>
-                    
+
                     <!-- number 类型 -->
                     <el-input-number
                       v-else-if="childItem.tagType === 'number'"
@@ -523,7 +523,7 @@
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
 export default {
-  data() {
+  data () {
     return {
       bavAttrList: {},
       tagCodeValue: {
@@ -536,9 +536,11 @@ export default {
         'BAV0007': 7,
         'BAV0008': 8,
         'BAV0009': 9,
-        'BAV0010': 10
+        'BAV0010': 10,
+        'BAV0011': 11,
+        'BAV0012': 12
       },
-// ----------------
+      // ----------------
       cache: {},
       tagSelectMoreShow: false,
       showMoreTags: false,
@@ -577,11 +579,11 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan',
+        8: 'warningCyan'
       },
       cityData: [],
       provinceValueList: [],
-      showRange: true,
+      showRange: true
     }
   },
   components: {
@@ -617,7 +619,7 @@ export default {
   },
   watch: {
     behaviorRulesJson: {
-      handler() {
+      handler () {
         // console.log('behaviorRulesJson==>', val)
         this.fetchAllTagSuggestions()
       },
@@ -625,7 +627,7 @@ export default {
     }
   },
   methods: {
-    handelTimeTagTypeSelectChange(childItem) {
+    handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType == 0) {
         childItem.value = '-'
@@ -635,17 +637,17 @@ export default {
         childItem.value = ''
       }
     },
-    hasMoveBehaviorTagRule() {
+    hasMoveBehaviorTagRule () {
       this.$emit('hasMoveBehaviorTagRule')
     },
     handelChangeShow () {
       this.showRange = !this.showRange
     },
-    handleCheckboxOk() {
+    handleCheckboxOk () {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
-    handleCurrentChange(index) {
+    handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service
         .getTagAttr({
@@ -657,7 +659,7 @@ export default {
           this.tagList = data.pageInfo.list
         })
     },
-    citySelectChange(val, childRule, cityList) {
+    citySelectChange (val, childRule, cityList) {
       if (childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
           return val === item.attrName
@@ -670,7 +672,7 @@ export default {
       }
     },
     // 根据省id获取市列表
-    areaSelectChange(val, tagCode, childItem) {
+    areaSelectChange (val, tagCode, childItem) {
       if (childItem) childItem.value = ''
       if (tagCode === 'mix_area') {
         const params = {
@@ -689,7 +691,7 @@ export default {
         })
       }
     },
-    changeTimeWays(childItem) {
+    changeTimeWays (childItem) {
       childItem.value = ''
       if (childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
@@ -697,10 +699,10 @@ export default {
         this.$set(childItem, 'isDynamicTime', 2)
       }
     },
-    getDefaultOperator() {
+    getDefaultOperator () {
       return '='
     },
-    onSubmit() {
+    onSubmit () {
       this.$service
         .getTagAttr({
           tagId: this.currentChildItem.tagId,
@@ -713,7 +715,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    handleSelectMore(child) {
+    handleSelectMore (child) {
       // this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
@@ -731,23 +733,23 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    
+
     // 获取行为标签下拉选项
-    fetchActionTagSuggestions(tagCode) {
+    fetchActionTagSuggestions (tagCode) {
       // 重复的不查
       if (this.bavAttrList[tagCode]) return
       // 获取行为标签下拉选项
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {
-          this.bavAttrList[tagCode] = res || {}
-          this.$set(this.bavAttrList, tagCode, res)
-          this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+        this.bavAttrList[tagCode] = res || {}
+        this.$set(this.bavAttrList, tagCode, res)
+        this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
         // })
       })
     },
-    
-    fetchTagSuggestions(tagId) {
+
+    fetchTagSuggestions (tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .getTagAttr({ tagId: tagId, pageNum: 1 })
@@ -758,7 +760,7 @@ export default {
           })
         })
     },
-    handleRemoveRule(rule, childRule) {
+    handleRemoveRule (rule, childRule) {
       const rulesJson = this.rulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       const tagIds = []
@@ -772,34 +774,34 @@ export default {
       if (this.crowd && this.crowd.rulesJson) this.crowd.tagIds = tagIds
 
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
 
     // 复制标签规则
-    handelCopyRule(rule, childRule, index) {
+    handelCopyRule (rule, childRule, index) {
       const childRuleCopy = JSON.parse(JSON.stringify(childRule))
-      rule.rules.splice(index+1, 0, childRuleCopy) // 复制到当前选中位置后面
+      rule.rules.splice(index + 1, 0, childRuleCopy) // 复制到当前选中位置后面
     },
 
     // 删除
-    handleRemoveSpecialRule(rule, childRule) {
+    handleRemoveSpecialRule (rule, childRule) {
       const rulesJson = this.behaviorRulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       // 当没有标签规则时，去除标签栏
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    /*添加一级标签 */
+    /* 添加一级标签 */
     /**
      * tag 为标签
      */
-    handleAddActionRule(tag) {
+    handleAddActionRule (tag) {
       // eslint-disable-next-line no-debugger
       debugger
       if (tag.dataSource === 2) { // 大数据标签
@@ -810,7 +812,7 @@ export default {
         this.$message.error('已达最大数量')
         return
       }
-      
+
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
@@ -872,7 +874,7 @@ export default {
                         type: 'string',
                         field: '',
                         operator: '=',
-                        value: '',
+                        value: ''
                       }]
                     }]
                   }]
@@ -898,15 +900,15 @@ export default {
                 value: [],
                 behaviorValue: defaultBehaviorValue,
                 rangeType: 'fixed',
-                rang:  {
+                rang: {
                   name: '',
                   value: [],
-                  field: '',
+                  field: ''
                 },
                 weekRang: {
                   name: '',
                   value: [],
-                  field:''
+                  field: ''
                 },
                 timeRange: {
                   name: '',
@@ -920,7 +922,7 @@ export default {
       })
     },
 
-    handleAddActionChildRule(rule, tag) {
+    handleAddActionChildRule (rule, tag) {
       if (tag.dataSource === 2) { // 大数据标签
         this.handleAddChildRule(rule, tag)
         return
@@ -936,7 +938,7 @@ export default {
       this.$service.getBavTagList({ id: this.tagCodeValue[tag.tagKey] }).then(res => {
         // eslint-disable-next-line no-debugger
         this.bavAttrList[tag.tagKey] = res || {}
-        
+
         // 【设备活跃】 、【起播行为】特殊赋值
         let defaultBehaviorValue = []
         if (tag.tagKey === 'BAV0007') {
@@ -991,7 +993,7 @@ export default {
                         type: 'string',
                         field: '',
                         operator: '=',
-                        value: '',
+                        value: ''
                       }]
                     }]
                   }]
@@ -1000,7 +1002,7 @@ export default {
             }
           ]
         }
-   
+
         rule.rules.push({
           operator: '=',
           tagCode: tag.tagKey,
@@ -1015,15 +1017,15 @@ export default {
             value: [],
             behaviorValue: defaultBehaviorValue,
             rangeType: 'fixed',
-            rang:  {
+            rang: {
               name: '',
               value: [],
-              field: '',
+              field: ''
             },
             weekRang: {
               name: '',
               value: [],
-              field:''
+              field: ''
             },
             timeRange: {
               name: '',
@@ -1033,10 +1035,9 @@ export default {
           }
         })
       })
-
     },
     // 大数据
-    handleAddRule(tag) {
+    handleAddRule (tag) {
       if (this.behaviorRulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1101,7 +1102,7 @@ export default {
     },
 
     // 大数据
-    handleAddChildRule(rule, tag) {
+    handleAddChildRule (rule, tag) {
       if (rule.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1151,7 +1152,7 @@ export default {
     },
 
     // 数组去重
-    distinct(a, b) {
+    distinct (a, b) {
       let arr = a.concat(b)
       let result = []
       let obj = {}
@@ -1163,7 +1164,7 @@ export default {
       }
       return result
     },
-    checkNum(num) {
+    checkNum (num) {
       if (/(^\d+$)/.test(num)) {
         return true
       } else {
@@ -1171,7 +1172,7 @@ export default {
         return false
       }
     },
-    checkNumMostFour(num) {
+    checkNumMostFour (num) {
       const numInt = parseInt(num)
       if (/(^\d+$)/.test(num) && numInt <= 9999) {
         return true
@@ -1182,7 +1183,7 @@ export default {
         return false
       }
     },
-    bigNum(item) {
+    bigNum (item) {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
@@ -1195,7 +1196,7 @@ export default {
         item.value = ''
       }
     },
-    handleOperatorChange(item) {
+    handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
@@ -1204,15 +1205,15 @@ export default {
         item.value = ''
       }
     },
-    handleRulesConditionChange(item) {
+    handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
 
     // 获取标签下拉选项
-    fetchAllTagSuggestions() {
+    fetchAllTagSuggestions () {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
-    
+
       let ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
@@ -1261,7 +1262,7 @@ export default {
         }
       }
     }
-  },
+  }
 
 }
 </script>
@@ -1452,7 +1453,7 @@ i {
   justify-content: center;
 }
 .behavior-label {
-  white-space: nowrap; 
+  white-space: nowrap;
   overflow-x: auto;
   overflow-y: hidden;
   display: flex

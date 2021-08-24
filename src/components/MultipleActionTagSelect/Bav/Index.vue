@@ -74,7 +74,7 @@
                   class="input-inline"
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
-                    isLast: true,
+                    hasChild: true,
                     extra: {type: childItem.bav.value},
                     level: 3,
                     selectPropKeyValue: 'selectKey'
@@ -110,7 +110,7 @@
                       class="input-inline"
                       @change="handelChildBehavirSelectChange({
                         childItem: item3,
-                        isLast: false,
+                        hasChild: false,
                         level: 4,
                         extra: {extra: item2.childCheckedVal}
                       })"
@@ -171,7 +171,7 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange"
+        @change="handelBehavirSelectChange()"
       >
         <template v-for="item in getBehaviorAttrList(1)">
           <el-option
@@ -225,7 +225,7 @@
                 class="input-inline"
                 @change="handelChildBehavirSelectChange({
                   childItem: item2,
-                  isLast: true,
+                  hasChild: true,
                   level: 3,
                   extra: {type: item.childCheckedVal}
                 })"
@@ -336,7 +336,7 @@
                     class="input-inline"
                     @change="handelChildBehavirSelectChange({
                       childItem: item2,
-                      isLast: true,
+                      hasChild: true,
                       level: 3,
                       extra: {type: childItem.bav.value}
                     })"
@@ -384,7 +384,7 @@
                           class="input-inline"
                           @change="handelChildBehavirSelectChange({
                             childItem: item3,
-                            isLast: true,
+                            hasChild: true,
                             level: 4
                           })"
                         >
@@ -431,7 +431,7 @@
                           class="input-inline"
                           @change="handelChildBehavirSelectChange({
                             childItem: item3,
-                            isLast: false,
+                            hasChild: false,
                             level: 4
                           })"
                         >
@@ -577,7 +577,7 @@
                         class="input-inline"
                         @change="handelChildBehavirSelectChange({
                           childItem: item2,
-                          isLast: true,
+                          hasChild: true,
                           level: 4
                         })"
                       >
@@ -700,7 +700,7 @@
               class="input-inline"
               @change="handelChildBehavirSelectChange({
                 childItem: item,
-                isLast: true,
+                hasChild: true,
                 level: 2,
                 extra: {type: childItem.bav.value}
               })"
@@ -776,11 +776,6 @@
         :key="item.value"
         class="flex-row"
       >
-        <!-- <span class="w100">{{ item.name }}</span> -->
-          <!-- {{ item.childCheckedVal }} -->
-        <!-- {{ item.childCheckedVal}} -->
-        <!-- @change="handelQiBoChildBehavirSelectChange(item, false, childItem, 2, {}, 'value', true, item.child[0].child)" -->
-
         <!-- 第二级 -->
         <el-select
           v-model="item.childCheckedVal[0]"
@@ -810,11 +805,7 @@
           :key="index"
           class="flex-row child"
         >
-          <!-- <span class="w100">{{ item2.name }}</span> -->
-          <!-- {{ item2.child }} -->
           <!-- 第三级 -->
-          <!-- childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] -->
-          <!-- @change="handelQiBoChildBehavirSelectChange(item2, false, childItem, 3, {type: item.childCheckedVal[0]}, 'value', false, item2.child[0].child)" -->
           <el-select
             v-model="item2.childCheckedVal[0]"
             placeholder="请选择二级分类"
@@ -844,10 +835,8 @@
             :key="index"
             class="flex-row child"
           >
-            <!-- {{ item3.name }} -->
-            <!-- <span class="w100">{{ item3.name }}</span> -->
+            <!-- @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)" -->
             <!-- 第四级 -->
-              <!-- @change="handelQiBoChildBehavirSelectChange(item3, false, childItem, 4, {}, 'value', true, item3.child[0].child)" -->
             <el-select
               v-model="item3.childCheckedVal[0]"
               style="width: 110px"
@@ -861,7 +850,6 @@
                 isValueClear: true,
                 defaultChild: item3.child[0].child
               })"
-
             >
               <template v-for="attrChildItem in getBehaviorAttrList(4)">
 
@@ -878,8 +866,6 @@
               :key="index"
               class="flex-row child"
             >
-              <!-- <span class="w100">{{ item4.name }}</span> -->
-              <!-- {{ item4.childCheckedVal }} -->
               —
               <!-- @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)" -->
               <!-- 第五级 -->
@@ -913,15 +899,12 @@
                   :value="item4.childCheckedVal[0]">
                 </el-option>
               </el-select>
-              <!-- {{ item4 }} -->
               <span
                 v-for="(item5, index) in item4.child"
                 :key="index"
                 class="flex-row child"
               >
-                <!-- {{ item5 }} -->
                 <!-- 选择了视频源下的视频 -->
-                <!-- @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)" -->
                 <span v-if="!!item5.value" class="flex-column">
                   <!-- // 是电影的 -->
                   <span v-if="item5.videoType === '电影'" class="flex-row">
@@ -932,11 +915,10 @@
                         clearable
                         @change="handelQiBoChildBehavirSelectChange({
                           childItem: item5,
-                          isLast: true,
+                          hasChild: true,
                           level: 7
                         })"
                       >
-
                         <el-option
                           v-for="attrChildItem in getBehaviorAttrList(7)"
                           :key="attrChildItem.value"
@@ -950,7 +932,7 @@
                           :key="index"
                           class="flex-row child"
                         >
-                          <!-- @change="handelQiBoChildBehavirSelectChange(item6, false, childItem, 8, {}, 'type', true)" -->
+                          <!-- @change="handelQiBoChildBehavi666rSelectChange(item6, false, childItem, 8, {}, 'type', true)" -->
                           <el-select
                             v-model="item6.childCheckedVal[0]"
                             style="width: 150px;"
@@ -958,7 +940,7 @@
                             clearable
                             @change="handelQiBoChildBehavirSelectChange({
                               childItem: item6,
-                              isLast: false,
+                              hasChild: false,
                               level: 8,
                               selectPropKeyValue: 'type',
                               isValueClear: true
@@ -1001,7 +983,7 @@
                       </span>
                   </span>
                   <!-- // 不是电影的 -->
-                    <!-- @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
+                    <!-- @change="handelQiBoChildBehavi666rSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
                   <span v-else>
                     <el-select
                       multiple
@@ -1010,7 +992,7 @@
                       placeholder="请选择集数"
                       @change="handelQiBoChildBehavirSelectChange({
                         childItem: item5,
-                        isLast: false,
+                        hasChild: false,
                         level: 6
                       })"
                     >
@@ -1030,7 +1012,7 @@
                         class="flex-row child"
                       >
                         <span class="w100">{{ item6.name }}</span>
-                          <!-- @change="handelQiBoChildBehavirSelectChange(item6, true, childItem, 7, {}, 'value', false)" -->
+                          <!-- @change="handelQiBoChildBehavi666rSelectChange(item6, true, childItem, 7, {}, 'value', false)" -->
                         <el-select
                           v-model="item6.childCheckedVal[0]"
                           style="width: 150px;"
@@ -1038,7 +1020,7 @@
                           clearable
                           @change="handelQiBoChildBehavirSelectChange({
                             childItem: item6,
-                            isLast: true,
+                            hasChild: true,
                             level: 7
                           })"
                         >
@@ -1056,7 +1038,7 @@
                             class="flex-row child"
                           >
                             <!-- 没有选择集 -->
-                              <!-- @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)" -->
+                              <!-- @change="handelQiBoChildB666ehavirSelectChange(item7, false, childItem, 8, {}, 'type', true)" -->
                             <el-select
                               v-if="item6.name === ''"
                               v-model="item7.childCheckedVal[0]"
@@ -1078,7 +1060,7 @@
                               </el-option>
                             </el-select>
                             <!-- 选择了集数，下拉选项只有【单集观看时长】 -->
-                              <!-- @change="handelQiBoChildBehavirSelectChange(item7, false, childItem, 9, {}, 'type', true)" -->
+                              <!-- @change="handelQiBoChil666dBehavirSelectChange(item7, false, childItem, 9, {}, 'type', true)" -->
                             <el-select
                               v-else
                               v-model="item7.childCheckedVal[0]"
@@ -1137,7 +1119,7 @@
                   <!-- {{ item5 }} -->
                   <span class="flex-row"
                   >
-                      <!-- @change="handelQiBoChildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)" -->
+                      <!-- @change="handelQiBoCh666ildBehavirSelectChange(item5, false, childItem, 8, {}, 'type', true)" -->
                     <el-select
                       v-model="item5.childCheckedVal[0]"
                       style="width: 150px;"
@@ -1256,7 +1238,7 @@
                 class="input-inline"
                 @change="handelChildBehavirSelectChange({
                   childItem: item2,
-                  isLast: true,
+                  hasChild: true,
                   extra: {type: item.childCheckedVal},
                   level: 3,
                 })"
@@ -1329,18 +1311,323 @@
       </div>
     </span>
 
+    <!-- 起播活跃 -->
+    <span class="flex-row" v-if="childItem.tagCode === 'BAV0011'">
+       <!-- 第一级 -->
+       <!-- {{childItem.bav.value}} -->
+       <!-- {{childItem.bav}} -->
+      <el-select
+        v-model="childItem.bav.value"
+        placeholder="请选择业务分类"
+        style="width: 120px"
+        name="oxve"
+        class="input-inline"
+        @change="handelBehavirSelectChange()"
+      >
+        <template v-for="item in getBehaviorAttrList(1)">
+          <el-option
+            :value="item.value"
+            :label="item.name"
+            :key="item.value"
+          ></el-option>
+        </template>
+      </el-select>
+      <div
+        v-for="item in childItem.bav.behaviorValue"
+        :key="item.value"
+        class="flex-row"
+      >
+        <!-- {{item.childCheckedVal}} -->
+        <!-- 第二级 -->
+        <el-select
+          v-model="item.childCheckedVal[0]"
+          placeholder="请选择"
+          style="width: 110px"
+          name="asdq"
+          class="input-inline"
+          clearable
+          @change="handelChildBehavirSelectChange({
+            childItem: item,
+            extra: {type: childItem.bav.value},
+          })"
+        >
+          <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})">
+            <el-option
+              :value="attrChildItem.value"
+              :label="attrChildItem.name"
+              :key="attrChildItem.value"
+            >
+            </el-option>
+          </template>
+        </el-select>
+        <!-- {{item.child}} -->
+        <span
+          v-for="(item2, index) in item.child"
+          :key="index"
+          class="flex-row child"
+        >
+        <!-- {{ item.childCheckedVal[0] }} -->
+          <!-- 第三级 搜索关注博主-->
+          <div v-if="item.childCheckedVal[0] === '关注'" class="flex-row">
+
+            <el-select
+              v-model="item2.childCheckedVal[0]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="请输入博主"
+              no-data-text='暂无数据'
+              clearable
+              :remote-method="(query) => { GetShortVideoAuthor(query) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item2,
+                level: 3,
+                extra: {type: '关注'},
+                hasChild: true
+              })"
+            >
+              <el-option
+                v-for="follow in followOptions"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+              <!-- 编辑回显 选项-->
+              <!-- <el-option
+                v-if="qiBoOptions.length === 0"
+                :label="item3.child[0].name"
+                :value="item3.childCheckedVal[0]">
+              </el-option> -->
+            </el-select>
+            <!-- {{item2.child}} -->
+
+            <span
+              v-for="(item3, index2) in item2.child"
+              :key="'typeInputValue' + index2"
+              class="flex-row"
+            >
+              <!-- 次数、天数 -->
+              <Type ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+            </span>
+          </div>
+
+          <!-- 第三级 分类或者影片-->
+          <div v-else class="flex-row">
+            <el-select
+              v-model="item2.childCheckedVal[0]"
+              placeholder="请选择"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item2,
+                isValueClear: false,
+                level: 3,
+                extra: {type: item.childCheckedVal[0], list: getBehaviorAttrList(2, {type: childItem.bav.value})},
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal[0], list: getBehaviorAttrList(2, {type: childItem.bav.value})})">
+                <el-option
+                  :value="attrChildItem.name"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.name"
+                >
+                </el-option>
+              </template>
+            </el-select>
+            <span
+              v-for="(item3, index) in item2.child"
+              :key="index"
+              class="flex-row child"
+            >
+              <!-- 第四级 分类 -->
+              <div v-if="item2.childCheckedVal[0] === '分类'" class="flex-row">
+                <el-select
+                  v-model="item3.childCheckedVal[0]"
+                  placeholder="请选择"
+                  style="width: 110px"
+                  name="asdq"
+                  class="input-inline"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item3,
+                    isValueClear: false,
+                    hasChild: true,
+                    level: 4,
+                    extra: {type: item2.childCheckedVal[0]},
+                    selectPropKeyValue: 'name'
+                  })"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(4, {type: item2.childCheckedVal[0]})">
+                    <el-option
+                      :value="attrChildItem.name"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.name"
+                    >
+                    </el-option>
+                  </template>
+                </el-select>
+                <span
+                  v-for="(item4, index2) in item3.child"
+                  :key="'typeInputValue' + index2"
+                  class="flex-row"
+                >
+                  <!-- 次数、天数 -->
+                  <Type ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+              {{item2}}
+                </span>
+              </div>
+
+              <!-- 第四级 影片  -->
+              <div v-else class="flex-row">
+              <!-- {{item3.childCheckedVal[0]}} -->
+              <!-- {{item3.child}} -->
+                <div v-if="childItem.bav.value === '影视'" class="flex-row">    <!-- 影视 -->
+                  <el-select
+                    v-model="item3.childCheckedVal[0]"
+                    style="width: 110px"
+                    name="asdq"
+                    class="input-inline"
+                    placeholder="请选择内容源"
+                    clearable
+                    @change="handelChildBehavirSelectChange({
+                      childItem: item3,
+                      level: 4,
+                      extra: {type: '视频源'}
+                    })"
+                  >
+                    <template v-for="attrChildItem in getBehaviorAttrList(4, {type: '视频源'})">
+
+                      <el-option
+                        :value="attrChildItem.value"
+                        :label="attrChildItem.name"
+                        :key="attrChildItem.value"
+                      >
+                      </el-option>
+                    </template>
+                  </el-select>
+                  <span
+                    v-for="(item4, index) in item3.child"
+                    :key="index"
+                    class="flex-row child"
+                  >
+
+                    <!-- qiBoRemoteMethod 参数(keyWords, 视频源) -->
+                    <el-select
+                      v-model="item4.childCheckedVal[0]"
+                      style="width: 150px;"
+                      filterable
+                      remote
+                      placeholder="请输入片名或ID"
+                      no-data-text='没有找到该片'
+                      clearable
+                      :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
+                      :loading="loading2"
+                      v-loadmore="{'methord': handelQiboLoadmore}"
+                      @change="handelChildBehavirSelectChange({
+                        childItem: item4,
+                        level: 5,
+                        extra: {type: '影片', source: childItem.bav.value}
+                      })"
+                    >
+                      <el-option
+                        v-for="tv in qiBoOptions"
+                        :key="tv.value"
+                        :label="tv.name +'('+ tv.value+')'"
+                        :value="tv.value">
+                      </el-option>
+                      <!-- 编辑回显 选项-->
+                      <!-- <el-option
+                        v-if="qiBoOptions.length === 0"
+                        :label="item3.child[0].name"
+                        :value="item3.childCheckedVal[0]">
+                      </el-option> -->
+                    </el-select>
+                    <span
+                      v-for="(item5, index) in item4.child"
+                      :key="index"
+                      class="flex-row child"
+                    >
+                      <el-select
+                        multiple
+                        v-model="item5.childCheckedVal[0]"
+                        style="width: 100px;"
+                        placeholder="请选择集数"
+                        @change="handelQiBoChildBehavirSelectChange({
+                          childItem: item5,
+                          hasChild: false,
+                          level: 6
+                        })"
+                      >
+                        <el-option
+                          v-for="(tv, index) in getVideoEpisode({tvId:item4.childCheckedVal[0], businessType: childItem.bav.value, source: item4.childCheckedVal[0]})"
+                          :key="tv.value + index"
+                          :label="tv.name"
+                          :value="tv.value">
+                        </el-option>
+                      </el-select>
+                    </span>
+                    <!-- {{item4.child}} -->
+                  </span>
+                </div>
+
+                <div v-else class="flex-row">   <!-- 短视频、电竞 -->  <!-- GetVideo 参数 ：(keyWords, 业务类型) -->
+                  <el-select
+                    v-model="item3.childCheckedVal[0]"
+                    style="width: 150px;"
+                    filterable
+                    remote
+                    placeholder="请输入片名或ID"
+                    no-data-text='没有找到该片'
+                    clearable
+                    :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+                    :loading="loading2"
+                    @change="handelChildBehavirSelectChange({
+                      childItem: item3,
+                      level: 4,
+                      extra: {type: '影片'}
+                    })"
+                  >
+                    <el-option
+                      v-for="video in videoOptions"
+                      :key="video.value"
+                      :label="video.name"
+                      :value="video.value">
+                    </el-option>
+                    <!-- 编辑回显 选项-->
+                    <!-- <el-option
+                      v-if="qiBoOptions.length === 0"
+                      :label="item3.child[0].name"
+                      :value="item3.childCheckedVal[0]">
+                    </el-option> -->
+                  </el-select>
+                </div>
+
+              </div>
+
+            </span>
+          </div>
+        </span>
+      </div>
+    </span>
+
+    <!-- <div>{{childItem.bav}}</div> -->
   </div>
 </template>
 
 <script>
 import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
+import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 
 export default {
   name: 'bavList',
   components: {
     Type,
-    ConditionLine
+    ConditionLine,
+    LabelZone
   },
   props: {
     childItem: {
@@ -1355,7 +1642,7 @@ export default {
   watch: {
     childItem: {
       handler (val) {
-        console.log('childItem=====>>>', val)
+        console.log('childItem=====>>>', val.bav)
         // 编辑回显
         if (val && val.tagCode === 'BAV0004') { // 模块活跃需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)
@@ -1410,12 +1697,10 @@ export default {
         keywords: '',
         page: 1,
         pageSize: 10
-      }
-      // jiList: [{
-      //   name: '',
-      //   value: 1,
-      //   filed: '',
-      // }]
+      },
+      followOptions: [],
+      videoOptions: []
+
     }
   },
   created () {},
@@ -1474,6 +1759,72 @@ export default {
       })
     },
 
+    GetVideo (keywords, businessType = '') {
+      if (keywords !== '') {
+        this.loading2 = true
+
+        const params = {
+          keywords,
+          businessType,
+          page: 1,
+          pageSize: 20
+        }
+
+        this.$service.getVideo(params).then(res => {
+          this.loading2 = false
+          let list = res.rows || []
+
+          list = list.map(obj => {
+            return {
+              name: `${obj.title}+(${obj.coocaaBVId})`,
+              value: obj.coocaaBVId,
+              field: obj.tableField,
+              type: 'string'
+            }
+          })
+          this.videoOptions = list
+          console.log('this.followOptions===>', this.videoOptions)
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.videoOptions = []
+      }
+    },
+
+    GetShortVideoAuthor (query) {
+      if (query !== '') {
+        this.loading2 = true
+
+        const params = {
+          keywords: query,
+          page: 1,
+          pageSize: 20
+        }
+
+        this.$service.getShortVideoAuthor(params).then(res => {
+          this.loading2 = false
+          let list = res.rows
+
+          list = list.map(obj => {
+            return {
+              name: obj.userName + '(' + obj.mcn + ')',
+              value: obj.authorId,
+              field: obj.tableField,
+              type: 'string',
+              mcn: obj.mcn
+            }
+          })
+          this.followOptions.push(...list)
+          console.log('this.followOptions===>', this.followOptions)
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.followOptions = []
+      }
+    },
+
     qiBoRemoteMethod (query, source) {
       // 重新查询，不是滚动加载
       if (this.qiboQuery !== query) {
@@ -1512,6 +1863,7 @@ export default {
         this.qiBoOptions = []
       }
     },
+
     remoteMethod (query, field, businessType) {
       if (query !== '') {
         this.loading = true
@@ -1536,38 +1888,41 @@ export default {
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
 
-    // 通过 vals 获取完整的 valList
-    // vals -- value 集合, checkedList -- 已经组装好的集合
-    // attrList -- 下拉框列表
-    // isLast -- 是否是最后一级
-    // defaultChild -- 清空下一级 child 时的默认赋值
-    // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // isValueClear -- 是否清空下一级 child
-    getValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
+    /**
+     * 组装数据格式
+     * @param {Array} vals 选中值的集合
+     * @param {Array} behaviorValue 完整的组装好的集合
+     * @param {Array} attrList 下拉框列表
+     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+     * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
+     * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+     * @param {Number} level 第几级（为获取下拉框list）
+     */
+    getValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       let list = []
       vals.forEach(val => {
         const lastNumberObj = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
 
-        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-        // checkedList.find(item => item[selectPropKeyValue] === val) ||
-        // attrList.find(item => item[selectPropKeyValue] === val)
-        const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
+
+        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
+        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
         if (matchObj) {
           obj = matchObj
         } else if (matchObj2) {
           obj = matchObj2
-          // 清空对象中的 value （模块活跃特殊 value不等于下拉选项的value，而是后面查询出来的结果）
+          // 清空对象中的 value（模块活跃特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
           if (isValueClear) obj.value = ''
         }
 
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
-        if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位
+        if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 推荐位
           defaultchild = [{
             name: '',
             value: '',
@@ -1588,7 +1943,7 @@ export default {
           }]
         }
 
-        obj.child = obj.child || (isLast ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
+        obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
 
@@ -1607,51 +1962,60 @@ export default {
       return list
     },
 
-    // childItem -- 当前选项的obj
-    // isLast -- 最后一级
-    // level -- 层级 为获取下拉框list
-    // defaultChild -- 下一级child对象的默认赋值，默认为[]
-    // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    handelBehavirSelectChange (isLast = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
+    /**
+     * 行为标签下拉框切换绑定事件
+     * @param {Object} childItem 当前选项的 obj
+     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Number} level = 1 第几级（为获取下拉框 list ）
+     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+     * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
+     * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+     */
+    handelBehavirSelectChange (hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       const childItem = this.childItem
       console.log('childItem==>', childItem)
       // const vals = childItem.bav.value
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
-      const checkedList = childItem.bav.behaviorValue
+      const behaviorValue = childItem.bav.behaviorValue
       const behaviorAttrList = this.getBehaviorAttrList(level)
 
       childItem.bav.behaviorValue = this.getValListByVals(
         vals,
-        checkedList,
+        behaviorValue,
         behaviorAttrList,
-        isLast,
+        hasChild,
         defaultChild,
         selectPropKeyValue,
         isValueClear
       )
     },
 
-    // childItem -- 当前选项的obj
-    // isLast -- 是否是最后一级
-    // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
-    // level -- 层级 为获取下拉框list
-    // extra -- 附加信息，根据选项判断，为获取不同下拉框list
-    // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // isValueClear -- 是否清空下一级 child
-    // defaultChild -- 清空下一级 child 时的默认赋值
+    /**
+     * 行为标签下拉框切换绑定事件
+     * @param {Object} childItem 当前选项的obj
+     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Number} level = 2 第几级（为获取下拉框 list ）
+     * @param {Object} extra 附加信息（根据选项判断，为获取不同下拉框list）
+     * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
+     * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+     */
     handelChildBehavirSelectChange (params) {
-      let { childItem, isLast = false, level = 2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
+      let { childItem, hasChild = false, level = 2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
 
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
-      const checkedList = childItem.child || []
+      const behaviorValue = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
-
+      if (extra.type === '影片') {
+        this.getVideoEpisode()
+        // this.getTvEpisodes(obj.source, obj.value)
+      }
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
       childItem.child = this.getValListByVals( // 组装数据
         vals,
-        checkedList,
+        behaviorValue,
         behaviorAttrList,
-        isLast,
+        hasChild,
         defaultChild,
         selectPropKeyValue,
         isValueClear,
@@ -1660,12 +2024,24 @@ export default {
     },
 
     // 通过 vals 获取完整的 valList
-    // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    getQiBoValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
+    // vals -- value 集合, behaviorValue -- 已经组装好的集合, attrList -- 下拉框列表
+    /**
+     * 组装数据格式
+     * @param {Array} vals 选中值的集合
+     * @param {Array} behaviorValue 已经组装好的集合
+     * @param {Array} attrList 下拉框列表
+     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+     * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
+     * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+     * @param {Number} level 第几级（为获取下拉框list）
+     */
+    getQiBoValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
+      debugger
       let list = []
       if (vals.length === 0 && level === 6) { // 清空集数
-        let obj = checkedList[0] // 不改变子级的数据
+        let obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
         obj.value = ''
         obj.field = ''
@@ -1673,16 +2049,16 @@ export default {
       }
 
       vals.forEach(val => {
-        const aa = [
+        const lastNumberObj = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-
+        debugger
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
 
-        // checkedList.find(item => item[selectPropKeyValue] === val) ||
+        // behaviorValue.find(item => item[selectPropKeyValue] === val) ||
         // attrList.find(item => item[selectPropKeyValue] === val)
-        const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
+        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
         if (matchObj) {
@@ -1694,7 +2070,7 @@ export default {
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
-        obj.child = obj.child || (isLast ? aa : defaultchild)
+        obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild)
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
 
@@ -1763,21 +2139,22 @@ export default {
       return list
     },
 
-    // childItem -- 当前选项的obj
-    // isLast -- 最后一级
-    // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
-    // level -- 层级 为获取下拉框list
-    // extra -- 附加信息，根据选项判断，为获取不同下拉框list
-    // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    // isValueClear -- 一二级联动时，一级下拉切换，将二级下拉框清空
-    // handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
+    /**
+     * 【起播行为】绑定事件
+     * @param {Object} childItem 当前选项的obj
+     * @param {Boolean} hasChild 最后一级
+     * @param {Number} level 第几级（为获取下拉框list）
+     * @param {Object} extra 附加信息（根据选项判断，为获取不同下拉框list）
+     * @param {String} selectPropKeyValue 所下拉框的 value和key 字段的 key值
+     * @param {Boolean} isValueClear 一二级联动时，一级下拉切换，将二级下拉框清空
+     * @param {Object} defaultChild 所清空下一级 child 时的默认赋值
+     */
+    // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params) {
-      let { childItem, isLast = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] } = params
+      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] } = params
 
-      // console.log('123childItem==>', childItem)
-      // console.log('123item==>', item)
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
-      const checkedList = childItem.child || []
+      const behaviorValue = childItem.child || []
       // eslint-disable-next-line no-debugger
       debugger
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
@@ -1788,14 +2165,36 @@ export default {
       }
       childItem.child = this.getQiBoValListByVals(
         vals,
-        checkedList,
+        behaviorValue,
         behaviorAttrList,
-        isLast,
+        hasChild,
         defaultChild,
         selectPropKeyValue,
         isValueClear,
         level
       )
+    },
+
+    getVideoEpisode (tvId, businessType, source) {
+      const params = {
+        tvId,
+        businessType,
+        source,
+        page: 1,
+        pageSize: 200
+      }
+
+      this.$service.getVideoEpisode(params).then(res => {
+        this.qiBoCollectionOptions = res.rows || []
+        this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
+          return {
+            name: '第' + obj.urlCollection + '集',
+            value: obj.urlCollection,
+            field: obj.tableField,
+            type: 'string'
+          }
+        })
+      })
     },
 
     // 获取影片集数
@@ -1820,12 +2219,11 @@ export default {
       })
     },
 
-    // 获取下拉框选项 getBehaviorAttrListgetBehaviorAttrList
+    // 获取下拉框选项
     getBehaviorAttrList (level = 1, extra = {}) {
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
-
         const dict = this.bavAttrList.dict
         if (childItem.tagCode === 'BAV0001') {
           // eslint-disable-next-line no-debugger
@@ -1916,7 +2314,7 @@ export default {
           } else if (level === 2) {
             attrlist = dict.app_type
           } else if (level === 3) {
-            const obj = dict.app_type.find(item => item.dictValue === extra.type)
+            const obj = dict.app_type.find(item => item.dictValue === extra.type) || {}
             attrlist = dict[obj.mapName] || []
           }
         } else if (childItem.tagCode === 'BAV0010') {
@@ -1925,6 +2323,58 @@ export default {
           } else if (level === 2) {
             attrlist = dict.user_type
           }
+        } else if (childItem.tagCode === 'BAV0011') { // 起播活跃
+          if (level === 1) {
+            attrlist = dict.business_type
+          } else if (level === 2) {
+            const obj = dict.business_type.find(item => item.dictValue === extra.type) || {}
+            attrlist = dict[obj.mapName] || []
+          } else if (level === 3) {
+            if (extra.type === '关注') {
+              return this.followOptions
+            }
+            const list = extra.list
+            const obj = list.find(item => item.value === extra.type) || {}
+            attrlist = dict[obj.mapName] || []
+            console.log('list===>', list)
+            console.log('obj===>', obj)
+          } else if (level === 4) {
+            if (extra.type === '影片') {
+              return this.videoOptions
+            } else if (extra.type === '视频源') {
+              attrlist = dict.video_source
+            } else {
+              const obj = dict.business_video_category.find(item => item.dictLabel === extra.type) || {}
+              attrlist = dict[obj.mapName] || []
+            }
+          } else if (level === 5) {
+            if (extra.type === '影片' && extra.source && extra.source === '影视') {
+              return this.qiBoOptions
+            }
+          }
+          // } else if (level === 3 && extra.type === '电影') {
+          //   attrlist = dict.movie_category
+          // } else if (level === 3 && extra.type === '综艺') {
+          //   attrlist = dict.show_category
+          // } else if (level === 3 && extra.type === '记录片') {
+          //   attrlist = dict.documentary_category
+          // } else if (level === 3 && extra.type === '电视剧') {
+          //   attrlist = dict.tv_category
+          // } else if (level === 3 && extra.type === '动漫') {
+          //   attrlist = dict.anime_category
+          // } else if (level === 4) {
+          //   attrlist = dict.source
+          // } else if (level === 5) {
+          //   return this.qiBoOptions
+          // } else if (level === 6) {
+          //   return this.qiBoCollectionOptions
+          // } else if (level === 7) {
+          //   attrlist = dict.pay_type
+          // } else if (level === 8) {
+          //   attrlist = dict.watch_time
+          // } else if (level === 9) {
+          //   attrlist = dict.single_episode
+          // }
         } else {
           attrlist = [
             {

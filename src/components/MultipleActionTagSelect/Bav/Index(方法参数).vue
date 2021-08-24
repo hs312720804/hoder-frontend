@@ -25,9 +25,9 @@
           ></el-option>
         </template>
       </el-select>
-      
+
       <div class="flex-column">
-         
+
         <ConditionLine :isShow="childItem.bav.behaviorValue.length > 1"></ConditionLine>
 
         <div
@@ -35,7 +35,7 @@
           :key="item.value"
           class="flex-row child-attr-wrap"
         >
-          
+
           <span class="w100">{{ item.name }}</span>
           <span class="flex-row">
             <!-- 第二级 -->
@@ -63,7 +63,7 @@
             <!-- {{item.childCheckedVal}}
             {{item.child}} -->
             <span v-if="item.childCheckedVal === 'effective' || item.childCheckedVal === 'no_effective'">
-            
+
               <span
                 v-for="(item2, index2) in item.child"
                 :key="'typeInputValue' + index2"
@@ -95,7 +95,7 @@
                 v-for="(item2, index2) in item.child"
                 :key="'typeInputValue' + index2"
                 class="flex-row"
-              >   
+              >
               <!-- {{item2}} -->
                 <!-- 次数、天数 -->
                 <Type ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
@@ -378,7 +378,7 @@
                   :label="(item.forumName ? item.forumName : '') + '(' + item.forumId + ')'"
                   :value="item.forumId">
                 </el-option>
-                
+
               </el-select>
               <!-- {{ item.field }} -->
               <span v-if="item.selectKey === 'album_id1'">
@@ -621,7 +621,7 @@
                 <!-- 选择了视频源下的视频 -->
                 <span v-if="!!item5.value" class="flex-column">
                   <!-- // 是电影的 -->
-                  <span v-if="item5.videoType === '电影'" class="flex-row"> 
+                  <span v-if="item5.videoType === '电影'" class="flex-row">
                     <el-select
                         v-model="item5.childCheckedVal[0]"
                         style="width: 150px;"
@@ -629,7 +629,7 @@
                         clearable
                         @change="handelQiBoChildBehavirSelectChange(item5, true, childItem, 7, {}, 'value', false)"
                       >
-                        
+
                         <el-option
                           v-for="attrChildItem in getBehaviorAttrList(childItem, 7)"
                           :key="attrChildItem.value"
@@ -730,7 +730,7 @@
                             v-for="(item7, index) in item6.child"
                             :key="index"
                             class="flex-row child"
-                          > 
+                          >
                             <!-- 没有选择集 -->
                             <el-select
                               v-if="item6.name === ''"
@@ -847,11 +847,10 @@
               </span>
             </span>
           </span>
-          
+
         </span>
       </div>
     </span>
-
 
   </div>
 </template>
@@ -878,7 +877,7 @@ export default {
   },
   watch: {
     childItem: {
-      handler(val) {
+      handler (val) {
         // 编辑回显
         // 模块活跃需要查询版面、板块ID
         if (val && val.tagCode === 'BAV0004') {
@@ -894,7 +893,7 @@ export default {
       immediate: true
     }
   },
-  data() {
+  data () {
     return {
       value1: [],
       checkedVal: [],
@@ -945,9 +944,9 @@ export default {
       // }]
     }
   },
-  created() {},
+  created () {},
   methods: {
-    changeAAA(val, a) {
+    changeAAA (val, a) {
       console.log('val===>', val)
       console.log('a===>', a)
       a.forEach(item => {
@@ -959,7 +958,7 @@ export default {
       })
     },
     // 起播行为影片搜索更多
-    handelQiboLoadmore() {
+    handelQiboLoadmore () {
       this.qiboParams.page++ // 滚动加载翻页
       this.qiBoRemoteMethod(this.qiboQuery, this.qiboSource)
     },
@@ -969,7 +968,7 @@ export default {
       console.log('bavVal====', bavVal)
       bavVal && bavVal.forEach(obj => {
         console.log('obj===', obj)
-        if (obj.value!== '' && obj.field === 'album_id' || obj.field === 'forum_id') {
+        if (obj.value !== '' && obj.field === 'album_id' || obj.field === 'forum_id') {
           this.remoteMethod(obj.value, obj.field)
         } else {
           this.getModuleId(obj.child) // 递归
@@ -978,7 +977,7 @@ export default {
     },
 
     // 起播行为编辑，获取影片集数
-    getQiboTvEpisodes(bavVal) {
+    getQiboTvEpisodes (bavVal) {
       // eslint-disable-next-line no-debugger
       debugger
       bavVal.forEach(obj => {
@@ -990,22 +989,22 @@ export default {
       })
     },
 
-    qiBoRemoteMethod(query, source) {
+    qiBoRemoteMethod (query, source) {
       // 重新查询，不是滚动加载
       if (this.qiboQuery !== query) {
         this.qiBoOptions = []
-        this.qiboParams.page = 1 // 页码归1 
+        this.qiboParams.page = 1 // 页码归1
       }
 
       if (source === '') return this.$message.error('请先选择内容源')
       if (query !== '') {
-        this.loading2 = true;
+        this.loading2 = true
 
         this.qiboParams.source = source
         this.qiboParams.keywords = query
 
         this.$service.tvContentMatch(this.qiboParams).then(res => {
-          this.loading2 = false;
+          this.loading2 = false
           this.qiboQuery = query // 记录查询关键字，滚动加载时要用到
           this.qiboSource = source
           let list = res.rows
@@ -1022,15 +1021,15 @@ export default {
           })
           this.qiBoOptions.push(...list)
         }).catch(() => {
-          this.loading2 = false;
+          this.loading2 = false
         })
       } else {
-        this.qiBoOptions = [];
+        this.qiBoOptions = []
       }
     },
-    remoteMethod(query, field) {
+    remoteMethod (query, field) {
       if (query !== '') {
-        this.loading = true;
+        this.loading = true
         let params = {
           type: field === 'forum_id' ? 'forum' : 'album', // 'album_id', 'forum_id'
           keywords: query,
@@ -1038,19 +1037,18 @@ export default {
           pageSize: 10
         }
         this.$service.moduleMatch(params).then(res => {
-          this.loading = false;
+          this.loading = false
           // this.moOptions[field] = res.data || []
           this.$set(this.moOptions, field, res.data)
           console.log('this.moOptions==>', this.moOptions)
-
         })
       } else {
-        this.moOptions[field] = [];
+        this.moOptions[field] = []
         this.$set(this.moOptions, field, [])
       }
     },
 
-    getDefaultChildObj() {
+    getDefaultChildObj () {
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
 
@@ -1059,15 +1057,15 @@ export default {
     // level -- 层级 为获取下拉框list
     // defaultChild -- 下一级child对象的默认赋值，默认为[]
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    handelBehavirSelectChange(childItem, isLast = false, level=1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
+    handelBehavirSelectChange (childItem, isLast = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       // eslint-disable-next-line no-debugger
       debugger
       console.log('childItem==>', childItem)
-      // const vals = childItem.bav.value 
-      const vals = (typeof(childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
+      // const vals = childItem.bav.value
+      const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const checkedList = childItem.bav.behaviorValue
       const behaviorAttrList = this.getBehaviorAttrList(childItem, level)
-      
+
       childItem.bav.behaviorValue = this.getValListByVals(
         vals,
         checkedList,
@@ -1081,9 +1079,9 @@ export default {
 
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    getValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false) {
+    getValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      
+
       let list = []
       vals.forEach(val => {
         const aa = [
@@ -1093,8 +1091,8 @@ export default {
         debugger
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-          // checkedList.find(item => item[selectPropKeyValue] === val) ||
-          // attrList.find(item => item[selectPropKeyValue] === val)
+        // checkedList.find(item => item[selectPropKeyValue] === val) ||
+        // attrList.find(item => item[selectPropKeyValue] === val)
         const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
@@ -1105,7 +1103,7 @@ export default {
           // 清空对象中的 value （模块活跃特殊 value不等于下拉选项的value，而是后面查询出来的结果）
           if (isValueClear) obj.value = ''
         }
-        
+
         // eslint-disable-next-line no-debugger
         debugger
         console.log('obj.childCheckedVal==>', obj.childCheckedVal)
@@ -1116,19 +1114,18 @@ export default {
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位
-          defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string' , child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }]}]
+          defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string', child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }] }]
         }
         // eslint-disable-next-line no-debugger
         debugger
 
         obj.child = obj.child || (isLast ? aa : defaultchild)
 
-        obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
-        
+        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
+
         if (defaultchild.length > 0) {
-          obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
+          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
-        
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
@@ -1136,18 +1133,17 @@ export default {
       // console.log('list===>', list)
       return list
     },
-    
+
     // childItem -- 当前选项的obj
     // isLast -- 最后一级
     // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
     // level -- 层级 为获取下拉框list
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
-    handelChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
-
+    handelChildBehavirSelectChange (childItem, isLast = false, item, level = 2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
       // eslint-disable-next-line no-debugger
       debugger
-      const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
+      const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
       const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
@@ -1164,7 +1160,7 @@ export default {
 
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, checkedList -- 已经组装好的集合, attrList -- 下拉框列表
-    getQiBoValListByVals(vals, checkedList, attrList, isLast = false, defaultChild=[], selectPropKeyValue = 'value', isValueClear = false, level) {
+    getQiBoValListByVals (vals, checkedList, attrList, isLast = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       if (vals.length === 0 && level === 6) { // 清空集数
@@ -1179,12 +1175,12 @@ export default {
         const aa = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-        
+
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
-     
-          // checkedList.find(item => item[selectPropKeyValue] === val) ||
-          // attrList.find(item => item[selectPropKeyValue] === val)
+
+        // checkedList.find(item => item[selectPropKeyValue] === val) ||
+        // attrList.find(item => item[selectPropKeyValue] === val)
         const matchObj = checkedList.find(item => item[selectPropKeyValue] === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
 
@@ -1196,21 +1192,21 @@ export default {
         // console.log('obj.child=>>', obj.child)
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
-        
+
         obj.child = obj.child || (isLast ? aa : defaultchild)
 
-        obj.childCheckedVal = obj.childCheckedVal || (typeof(obj.childCheckedVal) === 'string' ? '' : [])
-        
+        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
+
         if (defaultchild.length > 0) {
-          obj.childCheckedVal = typeof(obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
+          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
         if (isValueClear) { // 清空当前对象的child里面的值 (一二级联动时的交互)
           obj.childCheckedVal = []
-          if (obj.child.length > 0 ) {
+          if (obj.child.length > 0) {
             obj.child[0].value = ''
             obj.child[0].name = ''
             obj.child[0].field = ''
-            if (level !== 2 && level !== 4 && obj.child[0].child && obj.child[0].child.length > 0 ) {
+            if (level !== 2 && level !== 4 && obj.child[0].child && obj.child[0].child.length > 0) {
               obj.child[0].childCheckedVal = []
               obj.child[0].child[0].value = ''
               obj.child[0].child[0].name = ''
@@ -1226,7 +1222,7 @@ export default {
         }
         if (level === 3) { // 选择二级分类时，operator: 'like',  value: '%抗日%'
           obj.operator = 'like'
-          if (obj.value !== '') {obj.value = '%' + obj.value + '%'}
+          if (obj.value !== '') { obj.value = '%' + obj.value + '%' }
         }
         if (level === 4) { // 视频源, value 和 name 都是中文
           obj.value = obj.name
@@ -1256,13 +1252,12 @@ export default {
                     value: '',
                     filed: '',
                     operator: '=',
-                    type: 'string',
+                    type: 'string'
                   }
                 ]
               }
             ]
           }]
-         
         }
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
@@ -1271,7 +1266,7 @@ export default {
       // console.log('list===>', list)
       return list
     },
-    
+
     // childItem -- 当前选项的obj
     // isLast -- 最后一级
     // item -- 所有选项的obj 主要为获取 tagCode, 为获取下拉框list
@@ -1279,19 +1274,19 @@ export default {
     // extra -- 附加信息，根据选项判断，为获取不同下拉框list
     // selectPropKeyValue -- 下拉框的 value和key 字段的 key值
     // isValueClear -- 一二级联动时，一级下拉切换，将二级下拉框清空
-    handelQiBoChildBehavirSelectChange(childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
+    handelQiBoChildBehavirSelectChange (childItem, isLast = false, item, level = 2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
       console.log('123childItem==>', childItem)
       console.log('123item==>', item)
-      const vals = typeof(childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
+      const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const checkedList = childItem.child || []
       // eslint-disable-next-line no-debugger
       debugger
       const behaviorAttrList = this.getBehaviorAttrList(item, level, extra)
       // const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
       if (level === 4) { // 切换视频源时，清空下拉选项
-        this.qiBoOptions = [] 
+        this.qiBoOptions = []
         this.qiboParams.page = 1 // 页码归1
-      } 
+      }
       childItem.child = this.getQiBoValListByVals(
         vals,
         checkedList,
@@ -1305,14 +1300,14 @@ export default {
     },
 
     // 获取影片集数
-    getTvEpisodes(source, id) {
+    getTvEpisodes (source, id) {
       const params = {
         source,
         id,
         page: 1,
         pageSize: 200
       }
-      
+
       this.$service.getTvEpisodes(params).then(res => {
         this.qiBoCollectionOptions = res.rows || []
         this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
@@ -1326,12 +1321,12 @@ export default {
       })
     },
 
-    getBehaviorAttrList(childItem, level=1, extra={}) {
+    getBehaviorAttrList (childItem, level = 1, extra = {}) {
       // eslint-disable-next-line no-debugger
       debugger
       if (this.bavAttrList) {
         let attrlist = []
-  
+
         const dict = this.bavAttrList.dict
         if (childItem.tagCode === 'BAV0001') {
           // eslint-disable-next-line no-debugger
@@ -1343,13 +1338,13 @@ export default {
             attrlist = dict.vip_expire_use
           } else if (level === 3 && extra.extra === 'no_effective') {
             attrlist = dict.vip_expire
-          } 
+          }
         } else if (childItem.tagCode === 'BAV0002') {
           if (level === 1) {
             attrlist = dict.app_operation
           } else if (level === 2) {
             attrlist = dict.app_name
-          } 
+          }
         } else if (childItem.tagCode === 'BAV0003') {
           if (level === 1) {
             attrlist = dict.buy_operation
@@ -1357,7 +1352,7 @@ export default {
             attrlist = dict.vip_package
           } else if (level === 3) {
             attrlist = dict.buy_type
-          } 
+          }
         } else if (childItem.tagCode === 'BAV0004') {
           if (level === 1) {
             attrlist = dict.block_location
@@ -1397,9 +1392,9 @@ export default {
             return this.qiBoCollectionOptions
           } else if (level === 7) {
             attrlist = dict.pay_type
-          } else if (level === 8 ) {
+          } else if (level === 8) {
             attrlist = dict.watch_time
-          } else if (level === 9 ) {
+          } else if (level === 9) {
             attrlist = dict.single_episode
           }
         } else {
@@ -1429,16 +1424,16 @@ export default {
           }
           if (childItem.tagCode === 'BAV0001') {
             let operator = '='
-            if ( level === 2 && item.filedType === 'effective') { operator = '>=' } // 有效
+            if (level === 2 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
-              (level === 2 && item.filedType === 'no_effective')
-            || item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
-            if ( item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
+              (level === 2 && item.filedType === 'no_effective') ||
+            item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
+            if (item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
             if (
-               item.filedType === '7vip_expire_use30' 
-            || item.filedType === '7vip_expire_use'
-            || item.filedType === '7vip_expire30'
-            || item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+              item.filedType === '7vip_expire_use30' ||
+            item.filedType === '7vip_expire_use' ||
+            item.filedType === '7vip_expire30' ||
+            item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
             list = {
               name: item.dictLabel,
               value: item.dictValue,
@@ -1454,7 +1449,7 @@ export default {
         return attrlist
       }
     },
-    getChildBehaviorAttrList() {
+    getChildBehaviorAttrList () {
       return [
         {
           value: 'mg',
