@@ -113,6 +113,14 @@ export function getManualLaunchList (params) {
   })
 }
 
+// 行为标签 - 查询影片
+export function getVideo (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/auto/getVideo',
+    params
+  })
+}
 // 行为标签 - 查询博主
 export function getShortVideoAuthor (params) {
   return this.fetch({
@@ -122,7 +130,7 @@ export function getShortVideoAuthor (params) {
   })
 }
 
-// 行为标签 - 查询影片
+// 行为标签 - 查询影片集数
 export function getVideoEpisode (params) {
   return this.fetch({
     method: 'get',
