@@ -1574,7 +1574,6 @@
                 <div v-else class="flex-row">
                 <!-- {{item3.childCheckedVal[0]}} -->
                 <!-- {{item3.child}} -->
-                <!-- 1111111111111111 -->
                   <div class="flex-row">   <!-- 短视频、电竞 -->  <!-- GetVideo 参数 ：(keyWords, 业务类型) -->
                     <el-select
                       v-model="item3.childCheckedVal[0]"
@@ -1778,6 +1777,14 @@
 
             </span>
           </div>
+          
+          <el-checkbox
+            class="reverse-check"
+            v-model="childItem.bav.reverseSelect"
+            @change="changeAAA($event, childItem.bav.behaviorValue)"
+          >
+            圈出未活跃
+          </el-checkbox>
         </span>
       </div>
     </span>
