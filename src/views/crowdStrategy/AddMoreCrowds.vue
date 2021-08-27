@@ -38,7 +38,7 @@ export default {
   components: {
     CrowdAdd
   },
-  data: function() {
+  data: function () {
     return {
       activeName: 0,
       form: {
@@ -79,7 +79,7 @@ export default {
         // crowdExp: [{required: true, message: '请填写人群名称', trigger: 'blur'}],
       },
       pickerOptions: {
-        disabledDate(time) {
+        disabledDate (time) {
           // 设置可选时间为今天之后的60天内
           // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
           // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
@@ -99,7 +99,7 @@ export default {
   },
   watch: {
     form: {
-      handler(val){
+      handler (val) {
         // console.log('form-form-new-val-rules------------', val.rulesJson[0].rulesJson.rules[0].rules[0])
         // console.log('form-form-new-val-value------------', val.rulesJson[0].rulesJson.rules[0].rules[0].value)
       },
@@ -108,10 +108,10 @@ export default {
   },
   props: ['recordId'],
   methods: {
-    getRecordId() {
+    getRecordId () {
       return this.recordId
     },
-    validateForm(rulesJson) {
+    validateForm (rulesJson) {
       // if (rulesJson.length === 0) {
       //   this.$message.error(
       //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
@@ -148,23 +148,21 @@ export default {
         const rulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].rulesJson))
         const rules = JSON.parse(JSON.stringify(rulesJsonData.rules))
         const ruleLength = rules.length
-        let i,
-          j = 0
+        let i
+        let j = 0
         // 判断是否有未填写的项
 
         for (i = 0; i < ruleLength; i++) {
           for (j = 0; j < rules[i].rules.length; j++) {
             let rulesItem = rules[i].rules[j]
-           
+
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
             if (isTimeTagKong) {
               if (!this.timeTagKongList.includes(rulesItem.tagName)) {
                 this.timeTagKongList.push(rulesItem.tagName)
               }
-            }
-            
-            else if ( rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+            } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
               this.$message.error(
                 '请正确填写第' +
                   (index + 1) +
@@ -176,8 +174,7 @@ export default {
               )
               flag = false
               break
-            } 
-            else if (
+            } else if (
               rulesItem.tagType === 'time' &&
               rulesItem.isDynamicTime === 3
             ) {
@@ -222,23 +219,21 @@ export default {
         const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
         const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
         const behaviorRulesLength = behaviorRules.length
-        let x,
-          y = 0
+        let x
+        let y = 0
         // 判断是否有未填写的项
 
         for (x = 0; x < behaviorRulesLength; x++) {
           for (y = 0; y < behaviorRules[x].rules.length; y++) {
             let rulesItem = behaviorRules[x].rules[y]
-           
+
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
             if (isTimeTagKong) {
               if (!this.timeTagKongList.includes(rulesItem.tagName)) {
                 this.timeTagKongList.push(rulesItem.tagName)
               }
-            }
-            
-            else if ( rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+            } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
               this.$message.error(
                 '请正确填写第' +
                   (index + 1) +
@@ -250,8 +245,7 @@ export default {
               )
               flag = false
               break
-            } 
-            else if (
+            } else if (
               rulesItem.tagType === 'time' &&
               rulesItem.isDynamicTime === 3
             ) {
@@ -297,8 +291,8 @@ export default {
         const dynamicPolicyJsonRules = JSON.parse(JSON.stringify(dynamicPolicyJson.rules))
         const dynamicPolicyJsonRulesLength = dynamicPolicyJsonRules.length
         // 判断是否有未填写的项
-        let n,
-          m = 0
+        let n
+        let m = 0
         for (n = 0; n < dynamicPolicyJsonRulesLength; n++) {
           for (m = 0; m < dynamicPolicyJsonRules[n].rules.length; m++) {
             let rulesItem = dynamicPolicyJsonRules[n].rules[m]
@@ -331,27 +325,27 @@ export default {
         ruleList.forEach(rule => {
           let ruleGroup = rule.rules
           ruleGroup.forEach(item => {
-            tableIndex = tableIndex+1
+            tableIndex = tableIndex + 1
             item.table = item.table.split('$')[0] + '$' + tableIndex
             if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
           })
         })
       } else {
-        val = {link: 'AND', condition: 'OR', rules:[]}
+        val = { link: 'AND', condition: 'OR', rules: [] }
         // val = ''
       }
       return val
     },
-    
-    getFormPromise(form) {
+
+    getFormPromise (form) {
       return new Promise(resolve => {
         form.validate(res => {
-          resolve(res);
+          resolve(res)
         })
       })
     },
 
-    handleSave(mode) {
+    handleSave (mode) {
       let form = JSON.parse(JSON.stringify(this.form))
       // if (form.purpose === undefined || form.purpose === '') {
       //     this.$message.error('人群用途不能为空')
@@ -359,99 +353,102 @@ export default {
       // }
 
       this.$refs['form'].validate(valid => {
-            if (valid) {
-              if (!this.validateForm(form.rulesJson)) {
-                return
-              }
+        if (valid) {
+          if (!this.validateForm(form.rulesJson)) {
+            return
+          }
 
-              // 获取到组件中的form 校验必填项
-              // 周期范围 ref
-              const rangeFormList = []
-              const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
-              rangeRefList && rangeRefList.forEach(item => {
-                rangeFormList.push(item.$refs.rangeForm)
-              })
-              
-              // value值 ref
-              const typeFormList = []
-              const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
-              typeRefList && typeRefList.forEach(item => {
-                
-                if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
-                  item.$refs.typeRef.forEach(obj => {
-                    typeFormList.push(obj.$refs.typeForm)
-                  })
-                } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {
-                  typeFormList.push(item.$refs.typeRef.$refs.typeForm)
-                }
-              })
+          // 获取到组件中的form 校验必填项
+          // 周期范围 ref
+          const rangeFormList = []
+          const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
+          rangeRefList && rangeRefList.forEach(item => {
+            rangeFormList.push(item.$refs.rangeForm)
+          })
 
-              let allList = rangeFormList.concat(typeFormList)
-              
-              // 选择了属性为空的 time 类型的标签, 需要提示
-              if (this.timeTagKongList.length > 0) {
-                const tip = this.timeTagKongList.join(',')
-                const h = this.$createElement;
-                this.$msgbox({
-                  title: '配置提醒',
-                  message: h('p', null, [
-                    h('span', null, `${tip}`),
-                    h('span', null, `标签的属性为空，请确认是否继续?`),
-                    h('div', {style: 'color: red'}, 'PS：标签为空代表要圈出该属性为空的人群')
-                  ]),
-                  showCancelButton: true,
-                  confirmButtonText: '继续',
-                  cancelButtonText: '取消',
-                }).then(() => {
-                  
-                  if (allList.length > 0) { // 有行为标签的
-                    // 使用Promise.all去校验结果
-                    Promise.all(allList.map(this.getFormPromise)).then(res => {
-                      const validateResult = res.every(item => !!item)
-                      
-                      if (validateResult) {
-                        this.fetchSave(form, mode)
-                      } else {
-                        this.$message.error('请输入必填项')
-                      }
-                    }).catch(() => {
-                      this.$message.error('请至少设置一个行为标签规则')
-                    })
-                  } else { // 没有行为标签的
-                    this.fetchSave(form, mode)
-                  }
-                })
-              } else {
-                // 有行为标签的
-                if (allList.length > 0) {
-                  // 使用Promise.all去校验结果
-                  Promise.all(allList.map(this.getFormPromise)).then(res => {
-                    const validateResult = res.every(item => !!item)
-                    
-                    if (validateResult) {
-                      this.fetchSave(form, mode)
-                    } else {
-                      this.$message.error('请输入必填项')
-                    }
-                  }).catch(() => {
-                    this.$message.error('请至少设置一个行为标签规则')
-                  })
-                } else { // 没有行为标签的
-                  this.fetchSave(form, mode)
-                }
-              }
-          
-            } else {
-              this.$message.error('请检查表单各项是否填写完整')
-              return false
+          // value值 ref
+          const typeFormList = []
+          const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+          typeRefList && typeRefList.forEach(item => {
+            if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
+              item.$refs.typeRef.forEach(obj => {
+                typeFormList.push(obj.$refs.typeForm)
+              })
+            } else if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') {
+              typeFormList.push(item.$refs.typeRef.$refs.typeForm)
             }
           })
 
-      
-      
+          let allList = rangeFormList.concat(typeFormList)
+
+          // 选择了属性为空的 time 类型的标签, 需要提示
+          if (this.timeTagKongList.length > 0) {
+            const tip = this.timeTagKongList.join(',')
+            const h = this.$createElement
+            this.$msgbox({
+              title: '配置提醒',
+              message: h('p', null, [
+                h('span', null, `${tip}`),
+                h('span', null, `标签的属性为空，请确认是否继续?`),
+                h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
+              ]),
+              showCancelButton: true,
+              confirmButtonText: '继续',
+              cancelButtonText: '取消'
+            }).then(() => {
+              if (allList.length > 0) { // 有行为标签的
+                // 使用Promise.all去校验结果
+                Promise.all(allList.map(this.getFormPromise)).then(res => {
+                  const validateResult = res.every(item => !!item)
+
+                  if (validateResult) {
+                    this.fetchSave(form, mode)
+                  } else {
+                    this.$message.error('请输入必填项')
+                  }
+                }).catch(() => {
+                  this.$message.error('请至少设置一个行为标签规则')
+                })
+              } else { // 没有行为标签的
+                this.fetchSave(form, mode)
+              }
+            })
+          } else {
+            // 有行为标签的
+            if (allList.length > 0) {
+              // 使用Promise.all去校验结果
+              Promise.all(allList.map(this.getFormPromise)).then(res => {
+                const validateResult = res.every(item => !!item)
+
+                if (validateResult) {
+                  this.fetchSave(form, mode)
+                } else {
+                  this.$message.error('请输入必填项')
+                }
+              }).catch(() => {
+                this.$message.error('请至少设置一个行为标签规则')
+              })
+            } else { // 没有行为标签的
+              this.fetchSave(form, mode)
+            }
+          }
+        } else {
+          this.$message.error('请检查表单各项是否填写完整')
+          return false
+        }
+      })
+    },
+    getValue (val) {
+      val.forEach(item => {
+        if (item.child.length === 0) {
+
+        } else {
+          this.getValue(item.child)
+        }
+      })
     },
     // 请求创建人群接口
-    fetchSave(form, mode) {
+    fetchSave (form, mode) {
       form.rulesJson = form.rulesJson.map(e => {
         e.versionNum = 1
         // e.purpose = form.purpose
@@ -478,7 +475,27 @@ export default {
             // if (rulesItem.tagType === 'string') {
               rulesItem.value = rulesItem.value.join(',')
             }
+
+            if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+              console.log('123141==>', rulesItem.bav.behaviorValue)
+              let ccc = []
+              const showBehaviorValue = rulesItem.bav.showBehaviorValue
+              showBehaviorValue.forEach(item => {
+                const itemCopy = JSON.parse(JSON.stringify(item))
+
+                // const aaa = this.getValue(itemCopy.child)
+                const aaa = itemCopy.child
+                const bbb = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+                bbb.child = aaa
+                // itemCopy.child[0] = bbb
+                itemCopy.child = [bbb]
+                ccc.push(itemCopy)
+              })
+              rulesItem.bav.behaviorValue = ccc
+              console.log('123141==>', rulesItem.bav.behaviorValue)
+            }
           })
+
           return item
         })
         e.behaviorRulesJson = JSON.stringify(e.behaviorRulesJson)
@@ -512,7 +529,7 @@ export default {
           })
       }
     },
-    handleEdit() {
+    handleEdit () {
       const recordId = this.recordId
       // let purpose = undefined
       // let crowdExp = []
@@ -541,7 +558,7 @@ export default {
                 rulesEachItem.operator = 'null'
               }
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
                 rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
               }
             })
@@ -549,7 +566,7 @@ export default {
           e.behaviorRulesJson.rules.forEach(ruleItem => {
             ruleItem.rules.forEach(rulesEachItem => {
               // 多选的值，回显的时候需要转成数组 2222
-              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+              if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
                 rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
               }
             })
@@ -559,7 +576,6 @@ export default {
           return e
         })
 
-
         this.form = {
           // purpose,
           rulesJson: data2
@@ -567,16 +583,16 @@ export default {
         }
         // eslint-disable-next-line no-debugger
         // 是否是否每日更新
-        this.$nextTick(()=> {
+        this.$nextTick(() => {
           this.$refs.CrowdAdd.hasMoveBehaviorTagRule()
         })
         // alert(JSON.stringify(this.form))
       })
     },
-    handleBackPrevStep() {
+    handleBackPrevStep () {
       this.$emit('handleBackPrevStep', this.recordId)
     },
-    checkNum(num) {
+    checkNum (num) {
       const numInt = parseInt(num)
       if (/(^\d+$)/.test(num) && numInt <= 9999) {
         return true
@@ -588,7 +604,7 @@ export default {
       }
     }
   },
-  created() {
+  created () {
     this.handleEdit()
   }
 }

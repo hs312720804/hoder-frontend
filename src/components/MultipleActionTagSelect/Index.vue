@@ -899,6 +899,14 @@ export default {
                 table: res.tableName + '$' || '',
                 value: [],
                 behaviorValue: defaultBehaviorValue,
+                showBehaviorValue: [], // 【综合起播】特殊数据
+                countValue: {
+                  name: '',
+                  type: '',
+                  field: '',
+                  operator: '=',
+                  value: ''
+                },
                 rangeType: 'fixed',
                 rang: {
                   name: '',
@@ -1016,6 +1024,14 @@ export default {
             table: res.tableName + '$',
             value: [],
             behaviorValue: defaultBehaviorValue,
+            showBehaviorValue: [], // 【综合起播】特殊数据
+            countValue: {
+              name: '',
+              type: '',
+              field: '',
+              operator: '=',
+              value: ''
+            },
             rangeType: 'fixed',
             rang: {
               name: '',

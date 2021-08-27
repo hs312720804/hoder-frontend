@@ -47,7 +47,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       attrList: [],
       isDisableDaySelect: false,
@@ -55,7 +55,7 @@ export default {
         value: [
           { required: true, message: '请输入值', trigger: 'blur' },
           { required: true, message: '请输入值', trigger: 'change' }
-        ],
+        ]
       }
     }
   },
@@ -73,15 +73,14 @@ export default {
       type: Object,
       default: () => {}
     }
-  
   },
   watch: {
     childItem: {
-      handler(val) {
+      handler (val) {
         const weekRang = val.bav.weekRang.value
         const timeRange = val.bav.timeRange.value
         // 当选择了星期范围或者时间区间时，禁用【天数】选项
-        if (weekRang.length === 0 && timeRange.length === 0 ) {
+        if (weekRang.length === 0 && timeRange.length === 0) {
           this.isDisableDaySelect = false
         } else {
           this.isDisableDaySelect = true
@@ -91,12 +90,12 @@ export default {
       immediate: true
     },
     options: {
-      handler(val) {
+      handler (val) {
         this.attrList = val.map(item => {
           return {
             name: item.dictLabel,
             value: item.dictValue,
-            field: item.tableField,
+            field: item.tableField
           }
         })
         console.log('2222===>', this.attrList)
@@ -105,10 +104,7 @@ export default {
       immediate: true
     }
   },
-  methods: {},
-  created() {
-    
-  }
+  methods: {}
 }
 </script>
 <style scoped  lang="stylus">

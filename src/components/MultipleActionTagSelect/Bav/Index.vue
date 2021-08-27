@@ -162,7 +162,7 @@
     </span>
 
     <!-- 应用活跃 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0002'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0002'">
       <!-- 第一级 -->
 
       <el-select
@@ -269,7 +269,7 @@
     </span>
 
     <!-- 购买行为 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0003'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0003'">
       <div class="flex-row">
         <!-- 新增一级 -->
         <el-select
@@ -456,7 +456,7 @@
     </span>
 
     <!-- 模块活跃 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0004'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0004'">
       <div class="flex-row">
         <!-- 新增一级 -->
         <el-select
@@ -615,7 +615,7 @@
     </span>
 
     <!-- 页面活跃 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0005'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0005'">
       <!-- 第一级 -->
       <div>
         <el-select
@@ -666,7 +666,7 @@
     </span>
 
     <!-- 功能使用 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0006'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0006'">
       <div class="flex-row">
         <!-- 新增一级 -->
         <el-select
@@ -747,13 +747,13 @@
     </span>
 
     <!-- 设备活跃 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0007'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0007'">
       <!-- 次数、天数 -->
       <Type ref="typeRef" :item3="childItem.bav.behaviorValue[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
     </span>
 
     <!-- 起播行为 -->
-    <span class="flex-row" v-if="childItem.tagCode === 'BAV0008'">
+    <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0008'">
        <!-- 第一级 -->
       <el-select
         v-model="childItem.bav.value"
@@ -1177,7 +1177,7 @@
     </span>
 
     <!-- 应用状态 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0009'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0009'">
       <div class="flex-row">
         <!-- 新增一级 -->
         <el-select
@@ -1260,7 +1260,7 @@
     </span>
 
     <!-- 用户活跃 -->
-    <span class="flex-column" v-if="childItem.tagCode === 'BAV0010'">
+    <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0010'">
       <div class="flex-row">
         <!-- 新增一级 -->
         <el-select
@@ -1312,7 +1312,7 @@
     </span>
 
     <!-- 起播活跃 -->
-    <span class="flex-row" v-if="childItem.tagCode === 'BAV0011'">
+    <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0011'">
        <!-- 第一级 -->
        <!-- {{childItem.bav.value}} -->
        <!-- {{childItem.bav}} -->
@@ -1729,7 +1729,7 @@
                       :label="video.name"
                       :value="video.value">
                     </el-option>
-                    <!-- 编辑回显 选项-->   
+                    <!-- 编辑回显 选项 -->
                     <el-option
                       v-if="videoOptions.length === 0 && item5.child[0]"
                       :label="item5.child[0].name"
@@ -1777,7 +1777,7 @@
 
             </span>
           </div>
-          
+
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
@@ -1789,7 +1789,156 @@
       </div>
     </span>
 
-    <!-- <div>{{childItem.bav}}</div> -->
+    <!-- <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0012'">
+      <Bav0012 :childItem="childItem" :bavAttrList="bavAttrList"></Bav0012>
+    </span> -->
+    <span class="flex-row" v-if="childItem.tagCode === 'BAV0012'">
+      <!-- {{ childItem }} -->
+      <!-- 第一级 -->
+      <el-select
+        v-model="childItem.bav.value"
+        placeholder="请选择业务分类"
+        style="width: 120px"
+        name="oxve"
+        class="input-inline"
+        @change="handelBehavirSelectChange()"
+      >
+        <template v-for="item in getBehaviorAttrList(1)">
+          <el-option
+            :value="item.value"
+            :label="item.name"
+            :key="item.value"
+          ></el-option>
+        </template>
+      </el-select>
+      <!-- 综合起播的数据特殊处理 使用 showBehaviorValue 而不是 behaviorValue-->
+      <span
+        v-for="item in childItem.bav.showBehaviorValue"
+        :key="item.value"
+        class="flex-row child"
+      >
+        <span class="flex-row">
+          <!-- 第二级 -->
+          <el-select
+            v-model="item.childCheckedVal[0]"
+            style="width: 100px"
+            name="oxve"
+            class="input-inline"
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 2,
+              extra: {listMapName: item.mapName},
+              selectPropKeyValue: 'name',
+            })"
+          >
+            <template v-for="item in getBehaviorAttrList(2, {listMapName: item.mapName})">
+              <el-option
+                :value="item.name"
+                :label="item.name"
+                :key="item.name"
+              ></el-option>
+            </template>
+          </el-select>
+          <!-- {{ item.mapName }} -->
+          <Bav0012 v-if="!!item.mapName" :aaa="item"></Bav0012>
+        </span>
+
+        <!------ 查询影片-搜索集数 ------->
+        <span class="flex-row">
+          <!-- 第 3 级  搜索片子 -->
+          <el-select
+            v-model="item.childCheckedVal[1]"
+            style="width: 150px;"
+            filterable
+            remote
+            placeholder="请输入片名或ID"
+            no-data-text='没有找到该片'
+            clearable
+            :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+            :loading="loading2"
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 3,
+              selectPropKeyValue: 'name'
+            })"
+          >
+            <el-option
+              v-for="video in videoOptions"
+              :key="video.name"
+              :label="video.name"
+              :value="video.value">
+            </el-option>
+            <!-- 编辑回显 选项 -->
+            <el-option
+              v-if="videoOptions.length === 0 && item.childCheckedVal[1]"
+              :label="item.child[1].name"
+              :value="item.childCheckedVal[1]">
+            </el-option>
+          </el-select>
+          <div
+            v-for="(item2) in item.child"
+            :key="item2.value"
+            class="flex-row child"
+          >
+          <!-- {{item2}} -->
+            <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0">
+              <!-- 选择集数 -->
+              <el-select
+                v-model="item2.childCheckedVal[0]"
+                style="width: 100px;"
+                placeholder="请选择集数"
+                @change="handelChildBehavirSelectChange({
+                  childItem: item2,
+                  hasChild: false,
+                  level: 4
+                })"
+              >
+                  <!-- v-for="(tv, index) in getVideoEpisode({tvId: item.childCheckedVal[1], businessType: childItem.bav.value})" -->
+                <el-option
+                  v-for="(tv, index) in qiBoCollectionOptions"
+                  :key="tv.value + index"
+                  :label="tv.name"
+                  :value="tv.value">
+                </el-option>
+              </el-select>
+            </span>
+          </div>
+        </span>
+
+        <!-- 选择【免费、会员..】 -->
+        <span class="flex-row">
+          <!-- 第 5 级 -->
+          <el-select
+            v-model="item.childCheckedVal[2]"
+            style="width: 100px"
+            name="oxve"
+            class="input-inline"
+            clearable
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 5,
+              selectPropKeyValue: 'name'
+            })"
+          >
+            <template v-for="item in getBehaviorAttrList(5)">
+              <el-option
+                :value="item.name"
+                :label="item.name"
+                :key="item.name"
+              ></el-option>
+            </template>
+          </el-select>
+        </span>
+
+        <!-- 选了集数 -->
+        <Type v-if="item.childCheckedVal[1] && item.child[1].childCheckedVal.length > 0" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
+        <!-- 没有选集数 -->
+        <Type v-else ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+
+      </span>
+
+    </span>
+    <div>{{childItem.bav}}</div>
   </div>
 </template>
 
@@ -1797,13 +1946,15 @@
 import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
 import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
+import Bav0012 from './Bav0012.vue'
 
 export default {
   name: 'bavList',
   components: {
     Type,
     ConditionLine,
-    LabelZone
+    LabelZone,
+    Bav0012
   },
   props: {
     childItem: {
@@ -1820,15 +1971,39 @@ export default {
       handler (val) {
         console.log('childItem=====>>>', val.bav)
         // 编辑回显
-        if (val && val.tagCode === 'BAV0004') { // 模块活跃需要查询版面、板块ID
+        if (val && val.tagCode === 'BAV0004') { // 【模块活跃】需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)
-        } else if (val && val.tagCode === 'BAV0008') { // 起播行为标签需要查询影片集数
+        } else if (val && val.tagCode === 'BAV0008') { // 起播行为】标签需要查询影片集数
           this.getQiboTvEpisodes(val.bav.behaviorValue)
         }
       },
       // deep: true,
       immediate: true
     }
+    // 'childItem.bav.showBehaviorValue': {
+    //   handler (val) {
+    // debugger
+    // if (this.childItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组
+    //   console.log('123141==>', this.childItem.bav.behaviorValue)
+    //   debugger
+    //   alert(23)
+    //   let ccc = []
+    //   const showBehaviorValue = this.childItem.bav.showBehaviorValue
+    //   showBehaviorValue.forEach(item => {
+    //     const itemCopy = JSON.parse(JSON.stringify(item))
+    //     const aaa = itemCopy.child
+    //     const bbb = JSON.parse(JSON.stringify(this.childItem.bav.countValue))
+    //     bbb.child = aaa
+    //     // itemCopy.child[0] = bbb
+    //     itemCopy.child = [bbb]
+    //     ccc.push(itemCopy)
+    //   })
+    //   this.childItem.bav.behaviorValue = ccc
+    //   console.log('123141==>', this.childItem.bav.behaviorValue)
+    // }
+    //   },
+    //   deep: true
+    // }
   },
   data () {
     return {
@@ -1924,8 +2099,6 @@ export default {
 
     // 起播行为编辑，获取影片集数
     getQiboTvEpisodes (bavVal) {
-      // eslint-disable-next-line no-debugger
-      debugger
       bavVal.forEach(obj => {
         if (obj.videoType && obj.videoType !== '电影' && obj.source && obj.value) {
           this.getTvEpisodes(obj.source, obj.value)
@@ -1956,16 +2129,17 @@ export default {
                 name: `${obj.title}+(${obj.coocaaBVId})`,
                 value: obj.coocaaBVId,
                 field: obj.tableField,
-                type: 'string'
+                type: 'string',
+                source: obj.source || ''
               }
             } else {
               return {
                 name: `${obj.title}+(${obj.coocaaVId})`,
                 value: obj.coocaaVId,
                 field: obj.tableField,
-                type: 'string'
+                type: 'string',
+                source: obj.source || ''
               }
-
             }
           })
           this.videoOptions = list
@@ -2091,11 +2265,10 @@ export default {
         const lastNumberObj = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-
         let obj = []
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
-        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val)
-        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val)
+        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
+        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
         if (matchObj) {
           obj = matchObj
         } else if (matchObj2) {
@@ -2157,21 +2330,36 @@ export default {
      */
     handelBehavirSelectChange (hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
       const childItem = this.childItem
-      console.log('childItem==>', childItem)
-      // const vals = childItem.bav.value
-      const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
-      const behaviorValue = childItem.bav.behaviorValue
-      const behaviorAttrList = this.getBehaviorAttrList(level)
 
-      childItem.bav.behaviorValue = this.getValListByVals(
-        vals,
-        behaviorValue,
-        behaviorAttrList,
-        hasChild,
-        defaultChild,
-        selectPropKeyValue,
-        isValueClear
-      )
+      const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
+
+      if (childItem.tagCode === 'BAV0012') { // 综合起播的数据放在 showBehaviorValue 字段中
+        const behaviorValue = childItem.bav.showBehaviorValue
+        const behaviorAttrList = this.getBehaviorAttrList(level)
+
+        childItem.bav.showBehaviorValue = this.getValListByVals( // 组装数据
+          vals,
+          behaviorValue,
+          behaviorAttrList,
+          hasChild,
+          defaultChild,
+          selectPropKeyValue,
+          isValueClear
+        )
+      } else {
+        const behaviorValue = childItem.bav.behaviorValue
+        const behaviorAttrList = this.getBehaviorAttrList(level)
+
+        childItem.bav.behaviorValue = this.getValListByVals( // 组装数据
+          vals,
+          behaviorValue,
+          behaviorAttrList,
+          hasChild,
+          defaultChild,
+          selectPropKeyValue,
+          isValueClear
+        )
+      }
     },
 
     /**
@@ -2186,13 +2374,14 @@ export default {
      */
     handelChildBehavirSelectChange (params) {
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
-      debugger
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
-      // if (extra.type && extra.type === '影片') {
-      //   this.getVideoEpisode()
-      // }
+      if (this.childItem.tagCode === 'BAV0012' && level === 3) { // 综合起播
+        // this.getVideoEpisode()
+        console.log('childItem==', childItem)
+        this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
+      }
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
       childItem.child = this.getValListByVals( // 组装数据
         vals,
@@ -2221,7 +2410,6 @@ export default {
      */
     getQiBoValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
-      debugger
       let list = []
       if (vals.length === 0 && level === 6) { // 清空集数
         let obj = behaviorValue[0] // 不改变子级的数据
@@ -2235,7 +2423,6 @@ export default {
         const lastNumberObj = [
           { name: '', value: '', filed: '', operator: '=', type: 'count' }
         ]
-        debugger
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
 
@@ -2338,8 +2525,7 @@ export default {
 
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
-      // eslint-disable-next-line no-debugger
-      debugger
+
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
       // const behaviorAttrList = selectPropKeyValue === 'value' ? this.getBehaviorAttrList(item, level, extra) : this.qiBoOptions
       if (level === 4) { // 切换视频源时，清空下拉选项
@@ -2358,11 +2544,14 @@ export default {
       )
     },
 
-    getVideoEpisode (tvId, businessType, source) {
+    getVideoEpisode ({ tvId, businessType }) {
+      if (!tvId) return // 没有tvId，直接返回
+      const matchingVideo = this.videoOptions.find(item => item.value === tvId)
+
       const params = {
         tvId,
         businessType,
-        source,
+        source: matchingVideo.source,
         page: 1,
         pageSize: 200
       }
@@ -2371,7 +2560,7 @@ export default {
         this.qiBoCollectionOptions = res.rows || []
         this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
           return {
-            name: '第' + obj.urlCollection + '集',
+            name: `第${obj.urlCollection}集 - ${obj.urlTitle}`,
             value: obj.urlCollection,
             field: obj.tableField,
             type: 'string'
@@ -2536,7 +2725,19 @@ export default {
           } else if (level === 7) {
             attrlist = dict.is_vip
           }
-
+        } else if (childItem.tagCode === 'BAV0012') { // 综合起播
+          if (extra.listMapName) {
+            attrlist = dict[extra.listMapName]
+          } else if (level === 1) {
+            attrlist = dict.business_type
+          } else if (level === 3) {
+            return this.videoOptions
+          } else if (level === 4) {
+            return this.qiBoCollectionOptions
+          } else if (level === 5) {
+            attrlist = dict.is_vip
+          } else {
+          }
         } else {
           attrlist = [
             {
