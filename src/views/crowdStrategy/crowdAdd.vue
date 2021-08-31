@@ -55,10 +55,10 @@
 
             <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
               <!-- {{behaviorRulesJson}} -->
-              <MultipleActionTagSelect 
+              <MultipleActionTagSelect
                 ref="multipleActionTagSelect"
-                :actionTags="actionTags" 
-                :behaviorRulesJson="behaviorRulesJson" 
+                :actionTags="actionTags"
+                :behaviorRulesJson="behaviorRulesJson"
               ></MultipleActionTagSelect>
                 <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
             </el-form-item>
@@ -71,7 +71,7 @@
             </el-form-item>
           </div>
 
-          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" > 
+          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" >
             <el-radio-group v-model="form.autoVersion">
               <el-radio :label="false">否</el-radio>
               <el-radio :label="true">是</el-radio>
@@ -168,7 +168,7 @@ export default {
     MultipleSelect,
     MultipleActionTagSelect
   },
-  data() {
+  data () {
     var checkIntNumber = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('限制投放数量不能为空'))
@@ -180,7 +180,7 @@ export default {
       }
     }
     return {
-      //attrs: [[${attrs}]] || {},
+      // attrs: [[${attrs}]] || {},
       cache: {},
       tags: [],
       actionTags: [],
@@ -223,7 +223,7 @@ export default {
         limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
       pickerOptions: {
-        disabledDate(time) {
+        disabledDate (time) {
           // 设置可选时间为今天之后的60天内
           // 为了解当前时间不是23.59.59,第60选不了当前时间点之后的时间点
           // 比如当前是10.10.10,选不了第60天的10.10.10之后的点
@@ -256,14 +256,14 @@ export default {
   },
   watch: {
     behaviorRulesJson: {
-      handler() {
+      handler () {
         this.hasMoveBehaviorTagRule()
       },
       deep: true
     }
   },
   computed: {
-    hasBehaviorTag() {
+    hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
@@ -271,48 +271,45 @@ export default {
   methods: {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
-    hasMoveBehaviorTagRule() {
-      console.log('this.inputValue11111111===>' ,this.form)
+    hasMoveBehaviorTagRule () {
+      console.log('this.inputValue11111111===>', this.form)
 
       // eslint-disable-next-line no-debugger
       // debugger
-        let crowd = this.form
-        const behaviorRules = this.behaviorRulesJson.rules
-        let hasBehaviorRule = false
-        let hasMoveRule = false
-        if (behaviorRules.length > 0) {
-
-          hasBehaviorRule = true
-          // eslint-disable-next-line no-debugger
-          // debugger
-          for (let x = 0; x < behaviorRules.length; x++) {
-            let rule = behaviorRules[x]
-            for (let y = 0; y < rule.rules.length; y++) {
-              let item = rule.rules[y]
-              if (item.bav && item.bav.rangeType === 'move') {
-                hasMoveRule = true
-                break;
-              }
+      let crowd = this.form
+      const behaviorRules = this.behaviorRulesJson.rules
+      let hasBehaviorRule = false
+      let hasMoveRule = false
+      if (behaviorRules.length > 0) {
+        hasBehaviorRule = true
+        // eslint-disable-next-line no-debugger
+        // debugger
+        for (let x = 0; x < behaviorRules.length; x++) {
+          let rule = behaviorRules[x]
+          for (let y = 0; y < rule.rules.length; y++) {
+            let item = rule.rules[y]
+            if (item.bav && item.bav.rangeType === 'move') {
+              hasMoveRule = true
+              break
             }
           }
         }
+      }
 
-        if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
-          // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
-          if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) { 
-            crowd.autoVersion = true 
-          } 
-          crowd.isShowAutoVersion = true
-          // crowd.autoVersion = true
-        } else {
-          crowd.isShowAutoVersion = false
-          crowd.autoVersion = false
+      if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
+        // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
+        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+          crowd.autoVersion = true
         }
-
-
+        crowd.isShowAutoVersion = true
+        // crowd.autoVersion = true
+      } else {
+        crowd.isShowAutoVersion = false
+        crowd.autoVersion = false
+      }
     },
 
-    citySelectChange(val, childRule, cityList) {
+    citySelectChange (val, childRule, cityList) {
       if (childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
           return val === item.attrName
@@ -325,7 +322,7 @@ export default {
       }
     },
     // 根据省id获取市列表
-    areaSelectChange(val, tagCode, childItem) {
+    areaSelectChange (val, tagCode, childItem) {
       // this.provinceValueList[index] = val
       // console.log(this.provinceValueList==='', this.provinceValueList)
       if (childItem) childItem.value = ''
@@ -347,7 +344,7 @@ export default {
         })
       }
     },
-    changeTimeWays(childItem) {
+    changeTimeWays (childItem) {
       childItem.value = ''
       if (childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
@@ -355,29 +352,29 @@ export default {
         this.$set(childItem, 'isDynamicTime', 2)
       }
     },
-    handleRemoveRule(rule, childRule) {
+    handleRemoveRule (rule, childRule) {
       const rulesJson = this.rulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    handleRemoveSpecialRule(rule, childRule) {
+    handleRemoveSpecialRule (rule, childRule) {
       const rulesJson = this.dynamicPolicyJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    /*添加一级标签 */
+    /* 添加一级标签 */
     /**
      * tag 为标签
      */
-    handleAddRule(tag) {
+    handleAddRule (tag) {
       if (this.rulesJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -433,7 +430,7 @@ export default {
         ]
       })
     },
-    handleAddChildRule(rule, tag) {
+    handleAddChildRule (rule, tag) {
       if (rule.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -475,7 +472,7 @@ export default {
         specialCondition: ''
       })
     },
-    handleAddSpecialRule(tag) {
+    handleAddSpecialRule (tag) {
       if (this.dynamicPolicyJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -505,7 +502,7 @@ export default {
         ]
       })
     },
-    handleAddSpecialChildRule(rule, tag) {
+    handleAddSpecialChildRule (rule, tag) {
       if (rule.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -531,7 +528,7 @@ export default {
       })
     },
     // 获取组合标签列表
-    fetchSpecialTagSuggestions(tagId, tagKey) {
+    fetchSpecialTagSuggestions (tagId, tagKey) {
       const filter = {
         tagId,
         pageSize: 100
@@ -561,20 +558,20 @@ export default {
     },
 
     // 获取行为标签下拉选项
-    fetchActionTagSuggestions(tagCode) {
+    fetchActionTagSuggestions (tagCode) {
       if (this.bavAttrList[tagCode]) return
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
         // eslint-disable-next-line no-debugger
         // this.$nextTick(() => {
-          this.bavAttrList[tagCode] = res || {}
-          this.$set(this.bavAttrList, tagCode, res)
-          this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
-          console.log('this.bavAttrList==>', this.bavAttrList)
+        this.bavAttrList[tagCode] = res || {}
+        this.$set(this.bavAttrList, tagCode, res)
+        this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+        console.log('this.bavAttrList==>', this.bavAttrList)
         // })
       })
     },
 
-    fetchTagSuggestions(tagId) {
+    fetchTagSuggestions (tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .getTagAttr({ tagId: tagId, pageNum: 1 })
@@ -585,11 +582,11 @@ export default {
           })
         })
     },
-    handleCheckboxOk() {
+    handleCheckboxOk () {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
-    handleSelectMore(child) {
+    handleSelectMore (child) {
       this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
@@ -606,7 +603,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    handleCurrentChange(index) {
+    handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service
         .getTagAttr({
@@ -618,7 +615,7 @@ export default {
           this.tagList = data.pageInfo.list
         })
     },
-    onSubmit() {
+    onSubmit () {
       this.$service
         .getTagAttr({
           tagId: this.currentChildItem.tagId,
@@ -631,7 +628,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    getDefaultOperator() {
+    getDefaultOperator () {
       return '='
     },
 
@@ -643,31 +640,31 @@ export default {
         ruleList.forEach(rule => {
           let ruleGroup = rule.rules
           ruleGroup.forEach(item => {
-            tableIndex = tableIndex+1
+            tableIndex = tableIndex + 1
             item.table = item.table.split('$')[0] + '$' + tableIndex
             if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
           })
         })
       } else {
-        val = {link: 'AND', condition: 'OR', rules:[]}
+        val = { link: 'AND', condition: 'OR', rules: [] }
         // val = ''
       }
       return val
     },
 
-    getFormPromise(form) {
+    getFormPromise (form) {
       return new Promise(resolve => {
         form.validate(res => {
-          resolve(res);
+          resolve(res)
         })
       })
     },
 
-    validateForm(rules, dynamicPolicyRules, behaviorRules = []) {
+    validateForm (rules, dynamicPolicyRules, behaviorRules = []) {
       this.timeTagKongList = []
       // 判断设置标签里是否有未填写的项
       let i,
-          j = 0
+        j = 0
       const ruleLength = rules.length
       const dynamicPolicyRulesLength = dynamicPolicyRules.length
       let rulesFlag = true
@@ -687,7 +684,7 @@ export default {
             if (!this.timeTagKongList.includes(rulesItem.tagName)) {
               this.timeTagKongList.push(rulesItem.tagName)
             }
-          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
             this.$message.error(
               '请正确填写第' +
                 (i + 1) +
@@ -697,7 +694,7 @@ export default {
             )
             rulesFlag = false
             break
-          } else if ( rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
+          } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
             if (
               this.checkNumMostFour(rulesItem.startDay) &&
               this.checkNumMostFour(rulesItem.endDay)
@@ -732,12 +729,12 @@ export default {
           } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
             rulesItem.operator = '='
           }
-          
+
           if (!rulesFlag) break
         }
         if (!rulesFlag) break
       }
-      
+
       // ------------------- 行为标签中的大数据标签规则校验 --------------------------
       // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
       // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
@@ -749,16 +746,14 @@ export default {
       for (x = 0; x < behaviorRulesLength; x++) {
         for (y = 0; y < behaviorRules[x].rules.length; y++) {
           let rulesItem = behaviorRules[x].rules[y]
-          
+
           // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
           const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
           if (isTimeTagKong) {
             if (!this.timeTagKongList.includes(rulesItem.tagName)) {
               this.timeTagKongList.push(rulesItem.tagName)
             }
-          }
-          
-          else if ( rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0 )) {
+          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
             this.$message.error(
               '请正确填写第' +
                 (x + 1) +
@@ -768,8 +763,7 @@ export default {
             )
             rulesFlag = false
             break
-          } 
-          else if (
+          } else if (
             rulesItem.tagType === 'time' &&
             rulesItem.isDynamicTime === 3
           ) {
@@ -804,7 +798,7 @@ export default {
           }
         }
       }
-        // if (!rulesFlag) break
+      // if (!rulesFlag) break
 
       // ------------------- 动态因子规则校验 --------------------------
       for (i = 0; i < dynamicPolicyRulesLength; i++) {
@@ -829,7 +823,29 @@ export default {
       return rulesFlag
     },
 
-    handleSave() {
+    checkIfChildrenExist (data1, data2) {
+      if (data1.child == null || data1.child.length === 0) {
+        data1.child.push(data2)
+        return data1
+      }
+      // 递归
+      this.checkIfChildrenExist(data1.child, data2)
+    },
+
+    ReorganizationData (data) { // 将数组变成层级关系
+      let rData = []
+      let len = data.length
+      for (var i = len - 1; i > -1; i--) {
+        rData = data[i]
+        if (data[i - 1]) {
+          rData = this.checkIfChildrenExist(data[i - 1], rData)
+        }
+      }
+      return rData
+    },
+
+    handleSave () {
+      const _this = this
       this.$refs['form'].validate(valid => {
         if (valid) {
           const form = JSON.parse(JSON.stringify(this.form))
@@ -844,7 +860,6 @@ export default {
 
           const behaviorRules = behaviorRulesJson.rules
 
-          
           // 如果设置标签和动态因子都没有选rules则报错
           // if (ruleLength === 0 && dynamicPolicyRulesLength === 0) {
           //   this.$message.error(
@@ -927,7 +942,7 @@ export default {
           //   if (!rulesFlag) break
           // }
           // if (!rulesFlag) return
-          
+
           // //判断动态因子里面是否有未填的
           // let dynamicPolicyFlag = true
           // for (i = 0; i < dynamicPolicyRulesLength; i++) {
@@ -977,8 +992,8 @@ export default {
           //     }
           // }
           // 添加tagIds
-          rules.forEach(function(item) {
-            item.rules.forEach(function(childItem) {
+          rules.forEach(function (item) {
+            item.rules.forEach(function (childItem) {
               if (tagIds.indexOf(childItem.tagId) === -1) {
                 tagIds.push(childItem.tagId)
               }
@@ -986,26 +1001,42 @@ export default {
               delete childItem.endDay
             })
           })
-          dynamicPolicyRules.forEach(function(item) {
-            item.rules.forEach(function(childItem) {
+          dynamicPolicyRules.forEach(function (item) {
+            item.rules.forEach(function (childItem) {
               if (tagIds.indexOf(childItem.tagId) === -1) {
                 tagIds.push(childItem.tagId)
               }
             })
           })
-          behaviorRules.forEach(function(item) {
-            item.rules.forEach(function(childItem) {
-              if (tagIds.indexOf(childItem.tagId) === -1) {
-                tagIds.push(childItem.tagId)
+          behaviorRules.forEach(function (item) {
+            item.rules.forEach(function (rulesItem) {
+              if (tagIds.indexOf(rulesItem.tagId) === -1) {
+                tagIds.push(rulesItem.tagId)
               }
               // 多选的值，保存的时候需要转成字符串 2222
               // if (childItem.tagType === 'string') {
-              if (childItem.tagType === 'string' && childItem.operator !== 'null') {
-                childItem.value = Array.isArray(childItem.value) ? childItem.value.join(',') : childItem.value
+              if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
+                rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
+              }
+
+              if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+                console.log('123141==>', rulesItem.bav.behaviorValue)
+                let rData = []
+                const showBehaviorValue = rulesItem.bav.showBehaviorValue
+                showBehaviorValue.forEach(item => {
+                  const itemCopy = JSON.parse(JSON.stringify(item))
+                  const childArray = _this.ReorganizationData(itemCopy.child)
+                  const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+                  countValue.child = childArray
+                  itemCopy.child = [countValue]
+                  rData.push(itemCopy)
+                })
+                rulesItem.bav.behaviorValue = rData
+                console.log('123141==>', rulesItem.bav.behaviorValue)
               }
             })
           })
-         
+
           const data = {
             crowdName: form.name,
             tagIds: tagIds.join(','),
@@ -1029,7 +1060,7 @@ export default {
           // 周期范围
           const rangeFormList = []
           const rangeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.range ? this.$refs.multipleActionTagSelect.$refs.range : []
-       
+
           rangeRefList.forEach(item => {
             rangeFormList.push(item.$refs.rangeForm)
           })
@@ -1040,15 +1071,13 @@ export default {
 
           // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
           typeRefList.forEach(item => {
-            
-            if ( item.$refs.typeRef && Array.isArray(item.$refs.typeRef) ) {
+            if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
               item.$refs.typeRef.forEach(obj => {
                 typeFormList.push(obj.$refs.typeForm)
               })
-            } else if ( item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object' ) {  // 【设备活跃】tab只有一个 type 组件，因此 typeRef 不为数组
+            } else if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') { // 【设备活跃】tab只有一个 type 组件，因此 typeRef 不为数组
               typeFormList.push(item.$refs.typeRef.$refs.typeForm)
             }
-            
           })
 
           let allList = rangeFormList.concat(typeFormList)
@@ -1056,22 +1085,22 @@ export default {
           // 选择了属性为空的 time 类型的标签, 需要提示
           if (this.timeTagKongList.length > 0) {
             const tip = this.timeTagKongList.join(',')
-            const h = this.$createElement;
+            const h = this.$createElement
             this.$msgbox({
               title: '配置提醒',
               message: h('p', null, [
                 h('span', null, `${tip}`),
                 h('span', null, `标签的属性为空，请确认是否继续?`),
-                h('div', {style: 'color: red'}, 'PS：标签为空代表要圈出该属性为空的人群')
+                h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
               ]),
               showCancelButton: true,
               confirmButtonText: '继续',
-              cancelButtonText: '取消',
+              cancelButtonText: '取消'
             }).then(() => {
-              if (allList.length > 0) {  // 有行为标签的
+              if (allList.length > 0) { // 有行为标签的
                 // 使用Promise.all去校验结果
                 Promise.all(allList.map(this.getFormPromise)).then(res => {
-                  const validateResult = res.every(item => !!item);
+                  const validateResult = res.every(item => !!item)
                   if (validateResult) {
                     // 新增或编辑
                     this.fetchAddOrEdit(data)
@@ -1087,10 +1116,10 @@ export default {
               }
             })
           } else {
-            if (allList.length > 0) {  // 有行为标签的
+            if (allList.length > 0) { // 有行为标签的
               // 使用Promise.all去校验结果
               Promise.all(allList.map(this.getFormPromise)).then(res => {
-                const validateResult = res.every(item => !!item);
+                const validateResult = res.every(item => !!item)
                 if (validateResult) {
                   // 新增或编辑
                   this.fetchAddOrEdit(data)
@@ -1105,17 +1134,14 @@ export default {
               this.fetchAddOrEdit(data)
             }
           }
-          
-
         } else {
           return false
         }
       })
-
     },
-    
+
     // 请求新增或编辑接口
-    fetchAddOrEdit(data) {
+    fetchAddOrEdit (data) {
       if (this.crowdId != null) {
         data.crowdId = this.crowdId
         data.priority = this.priority
@@ -1139,11 +1165,11 @@ export default {
       }
     },
     // 取消
-    cancelAdd: function() {
+    cancelAdd: function () {
       this.$emit('goBackCrowdListPage')
     },
     // 数组去重
-    distinct(a, b) {
+    distinct (a, b) {
       let arr = a.concat(b)
       let result = []
       let obj = {}
@@ -1155,7 +1181,7 @@ export default {
       }
       return result
     },
-    checkNum(num) {
+    checkNum (num) {
       if (/(^\d+$)/.test(num)) {
         return true
       } else {
@@ -1163,7 +1189,7 @@ export default {
         return false
       }
     },
-    checkNumMostFour(num) {
+    checkNumMostFour (num) {
       const numInt = parseInt(num)
       if (/(^\d+$)/.test(num) && numInt <= 9999) {
         return true
@@ -1187,22 +1213,22 @@ export default {
     //     item.value = ''
     //   }
     // },
-    handleOperatorChange(item) {
+    handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
       } else {
         item.value = ''
       }
     },
-    handleRulesConditionChange(item) {
+    handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
-    handleConditionChange() {
+    handleConditionChange () {
       this.dynamicPolicyJson.link =
         this.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
     }
   },
-  created() {
+  created () {
     this.form.policyId = this.policyId
     this.$service
       .getTagsByPoliceId({ policyId: this.form.policyId })
@@ -1213,9 +1239,9 @@ export default {
         data.forEach(item => {
           if (item.dataSource === 6) { // 效果指标
             specialTags.push(item)
-          } else if ( item.dataSource === 8 ) { // 行为标签
+          } else if (item.dataSource === 8) { // 行为标签
             actionTags.push(item)
-          } else if ( item.dataSource === 2 ) { // 大数据标签
+          } else if (item.dataSource === 2) { // 大数据标签
             actionTags.push(item)
             normalTags.push(item)
           } else {
@@ -1226,8 +1252,8 @@ export default {
         this.actionTags = actionTags
         this.specialTags = specialTags
       })
-    if (this.crowdId != null)
-      //编辑
+      // 编辑
+    if (this.crowdId != null) {
       this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
         let policyData = data.policyCrowds
         this.form.name = policyData.crowdName
@@ -1269,7 +1295,7 @@ export default {
               item.operator = 'null'
             }
             // 多选的值，回显的时候需要转成数组 2222
-            if (item.tagType === 'string' && item.operator !== 'null' && typeof(item.value) === 'string') {
+            if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
               item.value = item.value === '' ? [] : item.value.split(',')
             }
             if (item.tagType === 'time' && item.isDynamicTime === 3) {
@@ -1289,26 +1315,23 @@ export default {
         this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
 
         const defaultChild = [
-          { name: '', value: '', filed: '', operator: '=', type: 'string', child: []}
+          { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }
         ]
 
         this.behaviorRulesJson.rules.forEach(ruleItem => {
           ruleItem.rules.forEach(rulesEachItem => {
-            // 多选的值，回显的时候需要转成数组 2222
-            if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+          // 多选的值，回显的时候需要转成数组 2222
+            if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
             // 手动构建数据 二期数据格式兼容一期
-            if (versionNum === 0) { 
-             
-              if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006' ) { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
+            if (versionNum === 0) {
+              if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
                 rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
                 rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
-
-              }
-              else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
+              } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
                 rulesEachItem.bav.behaviorValue.forEach(rule => {
                   const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
                   rule.child = JSON.parse(JSON.stringify(defaultChild))
@@ -1344,6 +1367,7 @@ export default {
           })
         }
       })
+    }
   }
 }
 </script>
@@ -1430,5 +1454,3 @@ i {
   justify-content: center;
 }
 </style>
-
-

@@ -447,6 +447,28 @@ export default {
         }
       })
     },
+
+    checkIfChildrenExist (data1, data2) {
+      if (data1.child == null || data1.child.length === 0) {
+        data1.child.push(data2)
+        return data1
+      }
+      // 递归
+      this.checkIfChildrenExist(data1.child, data2)
+    },
+
+    ReorganizationData (data) { // 将数组变成层级关系
+      let rData = []
+      let len = data.length
+      for (var i = len - 1; i > -1; i--) {
+        rData = data[i]
+        if (data[i - 1]) {
+          rData = this.checkIfChildrenExist(data[i - 1], rData)
+        }
+      }
+      return rData
+    },
+
     // 请求创建人群接口
     fetchSave (form, mode) {
       form.rulesJson = form.rulesJson.map(e => {
@@ -478,20 +500,17 @@ export default {
 
             if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
               console.log('123141==>', rulesItem.bav.behaviorValue)
-              let ccc = []
+              let rData = []
               const showBehaviorValue = rulesItem.bav.showBehaviorValue
               showBehaviorValue.forEach(item => {
                 const itemCopy = JSON.parse(JSON.stringify(item))
-
-                // const aaa = this.getValue(itemCopy.child)
-                const aaa = itemCopy.child
-                const bbb = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
-                bbb.child = aaa
-                // itemCopy.child[0] = bbb
-                itemCopy.child = [bbb]
-                ccc.push(itemCopy)
+                const childArray = this.ReorganizationData(itemCopy.child)
+                const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+                countValue.child = childArray
+                itemCopy.child = [countValue]
+                rData.push(itemCopy)
               })
-              rulesItem.bav.behaviorValue = ccc
+              rulesItem.bav.behaviorValue = rData
               console.log('123141==>', rulesItem.bav.behaviorValue)
             }
           })
