@@ -27,15 +27,15 @@
             </el-card>
 
             <tag-region-tree
-                v-if="tagCategory.tagKey === 'mix_area'" 
-                :tagId="tagId" 
+                v-if="tagCategory.tagKey === 'mix_area'"
+                :tagId="tagId"
                 @edit="handleEdit"
             >
             </tag-region-tree>
 
-            <device-tag-list 
-                v-else-if="tagCategory.tagKey === 'mix_device_level'" 
-                :tagId="tagId" 
+            <device-tag-list
+                v-else-if="tagCategory.tagKey === 'mix_device_level'"
+                :tagId="tagId"
                 :tagCategory="tagCategory"
                 :dataSourceEnum="dataSourceEnum"
                 :typeEnum="typeEnum"
@@ -45,80 +45,78 @@
             </device-tag-list>
 
             <tag-list v-else :tag-category="tagCategory" />
-
         </template>
         <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
     </div>
 </template>
 
 <script>
-    import TagList from '../Tag/List.vue'
-    import DeviceTagList from '../Tag/DeviceTagList.vue'
-    import TagRegionTree from './TagRegionTree.vue'
-    // import AddOrEditSpecialTag from '../SpecialTag/Index.vue'
-    export default {
-        components: {
-            TagList,
-            TagRegionTree,
-            DeviceTagList
-            // AddOrEditSpecialTag
-        },
-        props: {
-            tagId: {
-                type: Number
-            }
-        },
-        data() {
-            return {
-                tagCategory: null,
-                dataSourceEnum: {},
-                typeEnum: {},
-                showEdit: false,
-                paramsData: {}
-            }
-        },
-        methods: {
-            getFilter() {
-                return {
-                    id: this.tagId
-                }
-            },
-            fetchData() {
-                const filter = this.getFilter()
-                this.$service.readTagCategory(filter).then((data) => {
-                    this.dataSourceEnum = data.dataSourceEnum
-                    this.typeEnum = data.typeEnum
-                    this.tagCategory = data.tagCategory
-                })
-                
-            },
-            handleAdd() {
-                this.$router.push({name: 'specialTag', query: {belongTagId: this.tagId}})
-            },
-            handleEdit (specialTagId) {
-                // console.log('parentId===', parentId)
-                // this.paramsData = {
-                //     parentId,
-                //     belongTagId: this.tagId,
-                //     specialTagId,
-                //     specialTagName
-                // }
-                // this.$router.push({
-                //     name: 'specialTag',
-                //     params: this.paramsData
-                // })
-                if (specialTagId) {
-                    this.$router.push({name: 'specialTag', query: {specialTagId}})
-                } 
-                // this.$router.push({path: '/specialTag'})
-                
-                // this.showEdit = true
-            }
-        },
-        created() {
-            this.fetchData()
-        }
+import TagList from '../Tag/List.vue'
+import DeviceTagList from '../Tag/DeviceTagList.vue'
+import TagRegionTree from './TagRegionTree.vue'
+// import AddOrEditSpecialTag from '../SpecialTag/Index.vue'
+export default {
+  components: {
+    TagList,
+    TagRegionTree,
+    DeviceTagList
+    // AddOrEditSpecialTag
+  },
+  props: {
+    tagId: {
+      type: Number
     }
+  },
+  data () {
+    return {
+      tagCategory: null,
+      dataSourceEnum: {},
+      typeEnum: {},
+      showEdit: false,
+      paramsData: {}
+    }
+  },
+  methods: {
+    getFilter () {
+      return {
+        id: this.tagId
+      }
+    },
+    fetchData () {
+      const filter = this.getFilter()
+      this.$service.readTagCategory(filter).then((data) => {
+        this.dataSourceEnum = data.dataSourceEnum
+        this.typeEnum = data.typeEnum
+        this.tagCategory = data.tagCategory
+      })
+    },
+    handleAdd () {
+      this.$router.push({ name: 'specialTag', query: { belongTagId: this.tagId } })
+    },
+    handleEdit (specialTagId) {
+      // console.log('parentId===', parentId)
+      // this.paramsData = {
+      //     parentId,
+      //     belongTagId: this.tagId,
+      //     specialTagId,
+      //     specialTagName
+      // }
+      // this.$router.push({
+      //     name: 'specialTag',
+      //     params: this.paramsData
+      // })
+      if (specialTagId) {
+        this.$router.push({ name: 'specialTag', query: { specialTagId } })
+      }
+      // this.$router.push({path: '/specialTag'})
+
+      // this.showEdit = true
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 
 </script>
 <style lang="stylus" scoped>

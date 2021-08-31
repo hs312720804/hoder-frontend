@@ -87,77 +87,77 @@
 import TagUpsert from './Upsert.vue'
 import BatchUpload from './batchUpload.vue'
 export default {
-    components: {
-        TagUpsert,
-        BatchUpload
-    },
-    data() {
-        return {
-            itemList: [],
-            tag: {},
-            pagination: {
+  components: {
+    TagUpsert,
+    BatchUpload
+  },
+  data () {
+    return {
+      itemList: [],
+      tag: {},
+      pagination: {
 
-            },
-            filter: {
-                name: undefined,
-            },
-            statusList: {
-                '1': '启用',
-                '2': '禁用'
-            }
-        }
-    },
-    props: ['tagCategory'],
-    methods: {
-        getFilter() {
-            return {
-                tagCategoryId: this.tagCategory.tagId,
-                ...this.filter,
-                ...this.pagination
-            }
-        },
-        fetchData() {
-            const filter = this.getFilter()
-            this.$service.getTagList(filter).then(({itemList, pagination}) => {
-                this.itemList = itemList
-                this.pagination = pagination
-            })
-        },
-        handleAddTag() {
-            this.tag = {
-                tagId: this.tagCategory.tagId,
-            }
-            this.tag.tagType = this.tagCategory.tagType
-            this.$refs.tagUpsert.showCreateDialog = true
-        },
-        handleAddBatchTag () {
-            this.tag = {
-                tagId: this.tagCategory.tagId,
-            }
-            this.tag.tagType = this.tagCategory.tagType
-            this.$refs.BatchUpload.showBatchDialog = true
-        },
-        handleEditTag(row) {
-            this.tag = JSON.parse(JSON.stringify(row))
-            this.tag.tagType = this.tagCategory.tagType
-            this.tag.tagId = this.tagCategory.tagId
-            this.$refs.tagUpsert.showCreateDialog = true
-        },
-        handleDeleteTag(row) {
-            this.$confirm('确定删除？')
-            .then(() => {
-                this.$service.deleteTag(row, '删除成功').then(() => {
-                    this.fetchData()
-                })
-            })
-            .catch(() => {
-                //
-            })
-        }
-    },
-    created() {
-        this.fetchData()
+      },
+      filter: {
+        name: undefined
+      },
+      statusList: {
+        '1': '启用',
+        '2': '禁用'
+      }
     }
+  },
+  props: ['tagCategory'],
+  methods: {
+    getFilter () {
+      return {
+        tagCategoryId: this.tagCategory.tagId,
+        ...this.filter,
+        ...this.pagination
+      }
+    },
+    fetchData () {
+      const filter = this.getFilter()
+      this.$service.getTagList(filter).then(({ itemList, pagination }) => {
+        this.itemList = itemList
+        this.pagination = pagination
+      })
+    },
+    handleAddTag () {
+      this.tag = {
+        tagId: this.tagCategory.tagId
+      }
+      this.tag.tagType = this.tagCategory.tagType
+      this.$refs.tagUpsert.showCreateDialog = true
+    },
+    handleAddBatchTag () {
+      this.tag = {
+        tagId: this.tagCategory.tagId
+      }
+      this.tag.tagType = this.tagCategory.tagType
+      this.$refs.BatchUpload.showBatchDialog = true
+    },
+    handleEditTag (row) {
+      this.tag = JSON.parse(JSON.stringify(row))
+      this.tag.tagType = this.tagCategory.tagType
+      this.tag.tagId = this.tagCategory.tagId
+      this.$refs.tagUpsert.showCreateDialog = true
+    },
+    handleDeleteTag (row) {
+      this.$confirm('确定删除？')
+        .then(() => {
+          this.$service.deleteTag(row, '删除成功').then(() => {
+            this.fetchData()
+          })
+        })
+        .catch(() => {
+          //
+        })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
 }
 </script>
 <style lang="stylus" scoped>

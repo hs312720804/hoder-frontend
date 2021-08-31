@@ -33,34 +33,34 @@
 <script>
 import TagList from '../Tag/List.vue'
 export default {
-    components: {
-        TagList
-    },
-    data() {
-        return {
-            tagCategory: null,
-            dataSourceEnum: {},
-            typeEnum: {},
-        }
-    },
-    methods: {
-        getFilter() {
-            return {
-                id: this.$route.params.id
-            }
-        },
-        fetchData() {
-            const filter = this.getFilter()
-            this.$service.readTagCategory(filter).then((data) => {
-                this.dataSourceEnum = data.dataSourceEnum
-                this.typeEnum = data.typeEnum
-                this.tagCategory = data.tagCategory
-            })
-        }
-    },
-    created() {
-        this.fetchData()
+  components: {
+    TagList
+  },
+  data () {
+    return {
+      tagCategory: null,
+      dataSourceEnum: {},
+      typeEnum: {}
     }
+  },
+  methods: {
+    getFilter () {
+      return {
+        id: this.$route.params.id
+      }
+    },
+    fetchData () {
+      const filter = this.getFilter()
+      this.$service.readTagCategory(filter).then((data) => {
+        this.dataSourceEnum = data.dataSourceEnum
+        this.typeEnum = data.typeEnum
+        this.tagCategory = data.tagCategory
+      })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
 }
 
 </script>
