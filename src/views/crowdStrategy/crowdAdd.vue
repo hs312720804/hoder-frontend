@@ -272,18 +272,12 @@ export default {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
     hasMoveBehaviorTagRule () {
-      console.log('this.inputValue11111111===>', this.form)
-
-      // eslint-disable-next-line no-debugger
-      // debugger
       let crowd = this.form
       const behaviorRules = this.behaviorRulesJson.rules
       let hasBehaviorRule = false
       let hasMoveRule = false
       if (behaviorRules.length > 0) {
         hasBehaviorRule = true
-        // eslint-disable-next-line no-debugger
-        // debugger
         for (let x = 0; x < behaviorRules.length; x++) {
           let rule = behaviorRules[x]
           for (let y = 0; y < rule.rules.length; y++) {
@@ -548,7 +542,6 @@ export default {
             rulesJson: item.rulesJson
           }
         })
-        // debugger
         this.$set(this.cache, tagId, {
           select: false,
           list
@@ -561,8 +554,6 @@ export default {
     fetchActionTagSuggestions (tagCode) {
       if (this.bavAttrList[tagCode]) return
       this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
-        // eslint-disable-next-line no-debugger
-        // this.$nextTick(() => {
         this.bavAttrList[tagCode] = res || {}
         this.$set(this.bavAttrList, tagCode, res)
         this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
@@ -1260,8 +1251,7 @@ export default {
         this.form.remark = policyData.remark
         this.priority = policyData.priority
         const versionNum = policyData.versionNum || 0
-        // eslint-disable-next-line no-debugger
-        debugger
+
         this.form.autoVersion = policyData.autoVersion
         this.form.isShowAutoVersion = true
 
@@ -1338,6 +1328,17 @@ export default {
                   rule.child[0].child = ruleCopy.child
                   rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
                 })
+              } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
+                const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
+                if (matchIndex > -1) {
+                  rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
+                  rulesEachItem.bav.behaviorValue.forEach(rule => {
+                    if (rule.value === '产品页') {
+                      rule.value = '影视收银台'
+                      rule.name = '影视收银台'
+                    }
+                  })
+                }
               }
             }
           })
