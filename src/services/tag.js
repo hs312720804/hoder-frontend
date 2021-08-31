@@ -95,6 +95,15 @@ export function getTvEpisodes (params) {
   })
 }
 
+// 预约功能
+export function getAppointmentInfo (params) {
+  return this.fetch({
+    method: 'get',
+    url: `api/auto/getAppointmentInfo`,
+    params
+  })
+}
+
 // 指令重发
 export function manualLaunch (params) {
   return this.fetch({

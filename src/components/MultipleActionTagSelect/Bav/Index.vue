@@ -868,43 +868,51 @@
             >
               —
               <!-- @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)" -->
-              <!-- 第五级 -->
-              <el-select
-                v-model="item4.childCheckedVal[0]"
-                style="width: 150px;"
-                filterable
-                remote
-                placeholder="请输入片名或ID"
-                no-data-text='没有找到该片'
-                clearable
-                :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
-                :loading="loading2"
-                v-loadmore="{'methord': handelQiboLoadmore}"
-                @change="handelQiBoChildBehavirSelectChange({
-                  childItem: item4,
-                  level: 5,
-                  isValueClear: true
-                })"
-              >
-                <el-option
-                  v-for="tv in qiBoOptions"
-                  :key="tv.value"
-                  :label="tv.name +'('+ tv.value+')'"
-                  :value="tv.value">
-                </el-option>
-                <!-- 编辑回显 选项-->
-                <el-option
-                  v-if="qiBoOptions.length === 0 && item4.child[0]"
-                  :label="item4.child[0].name"
-                  :value="item4.childCheckedVal[0]">
-                </el-option>
-              </el-select>
+              <span class="flex-column">
+                <!-- 第五级 -->
+                <el-select
+                  v-model="item4.childCheckedVal[0]"
+                  style="width: 150px;"
+                  filterable
+                  remote
+                  placeholder="请输入片名或ID"
+                  no-data-text='没有找到该片'
+                  clearable
+                  :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
+                  :loading="loading2"
+                  v-loadmore="{'methord': handelQiboLoadmore}"
+                  @change="handelQiBoChildBehavirSelectChange({
+                    childItem: item4,
+                    level: 5,
+                    isValueClear: true
+                  })"
+                >
+                  <el-option
+                    v-for="tv in qiBoOptions"
+                    :key="tv.value"
+                    :label="tv.name +'('+ tv.value+')'"
+                    :value="tv.value">
+                  </el-option>
+                  <!-- 编辑回显 选项-->
+
+                  <el-option
+                    v-if="qiBoOptions.length === 0 && item4.childCheckedVal[0]"
+                    :label="item4.child[0].name"
+                    :value="item4.childCheckedVal[0]">
+                  </el-option>
+                </el-select>
+                <span class="appoint-text" v-if="!!item4.childCheckedVal[0] && appointmentInfo.length > 0">
+                  <span style="">该片的统计时间为:</span>
+                  <span v-for="item in appointmentInfo" :key="item.start + item.end" style="color: red">{{item.start}} - {{item.end}}</span>
+                  <span> ，请选择合理的周期范围</span>
+                </span>
+              </span>
               <span
                 v-for="(item5, index) in item4.child"
                 :key="index"
                 class="flex-row child"
               >
-                <!-- 选择了视频源下的视频 -->
+                <!-- 选择了视频源下的视频 需要选择集数-->
                 <span v-if="!!item5.value" class="flex-column">
                   <!-- // 是电影的 -->
                   <span v-if="item5.videoType === '电影'" class="flex-row">
@@ -2050,8 +2058,8 @@ export default {
         pageSize: 10
       },
       followOptions: [],
-      videoOptions: []
-
+      videoOptions: [],
+      appointmentInfo: []
     }
   },
   created () {},
@@ -2097,13 +2105,14 @@ export default {
       })
     },
 
-    // 起播行为编辑，获取影片集数
+    // 起播行为编辑，获取影片集数、预约时间
     getQiboTvEpisodes (bavVal) {
       bavVal.forEach(obj => {
         if (obj.videoType && obj.videoType !== '电影' && obj.source && obj.value) {
-          this.getTvEpisodes(obj.source, obj.value)
+          this.getTvEpisodes(obj.source, obj.value) // 获取影片集数
+          this.getAppointmentInfo(obj.source, obj.value) // 获取影片预约时间
         } else if (obj.child) {
-          this.getQiboTvEpisodes(obj.child)
+          this.getQiboTvEpisodes(obj.child) // 递归
         }
       })
     },
@@ -2469,9 +2478,10 @@ export default {
         if (level === 4) { // 视频源, value 和 name 都是中文
           obj.value = obj.name
         }
-        if (level === 5 || level === 6) { // 输入了影片名称之后，需要查询集数/期数
+        if (level === 5 || level === 6) { // 输入了影片名称之后，需要查询集数/期数 需要查询预约信息
           if (obj.videoType !== '电影' && obj.source && obj.value) {
             this.getTvEpisodes(obj.source, obj.value)
+            this.getAppointmentInfo(obj.source, obj.value)
           }
           obj.child = [{
             name: '',
@@ -2588,6 +2598,24 @@ export default {
             type: 'string'
           }
         })
+      })
+    },
+
+    // 影片预约时间
+    getAppointmentInfo (source, id) {
+      const params = {
+        source,
+        id
+      }
+      this.$service.getAppointmentInfo(params).then(res => {
+        const data = res
+        this.appointmentInfo = data.map(item => {
+          return {
+            start: item.appointmentStart,
+            end: item.appointmentEnd
+          }
+        })
+        console.log('this.appointmentInfo==>', this.appointmentInfo)
       })
     },
 
@@ -2874,4 +2902,14 @@ export default {
 }
 .reverse-check
   margin-left 20px
+
+.appoint-text
+  width: 263px;
+  font-size: 12px;
+  white-space: break-spaces;
+  position: absolute;
+  margin-top: 36px;
+  height: 107px;
+  line-height: 17px;
+  color gray
 </style>
