@@ -125,13 +125,15 @@
                 </template>
             </el-table-column>
         </el-table>
-        <slot></slot>
+
         <tag-detail-list
           v-if="tagId"
           :tag-id="tagId"
           @read-cancel="handleReadTagCancel"
         >
         </tag-detail-list>
+        <!-- 分页 -->
+        <slot v-else></slot>
     </div>
 </template>
 
