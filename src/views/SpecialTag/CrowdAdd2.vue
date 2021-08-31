@@ -40,7 +40,7 @@
                 <MultipleActionTagSelect
                   ref="multipleActionTagSelect"
                   :actionTags="actionTags"
-                  :behaviorRulesJson="crowd.behaviorRulesJson" 
+                  :behaviorRulesJson="crowd.behaviorRulesJson"
                   :crowd="crowd"
                   :i="i"
                   >
@@ -119,7 +119,7 @@ export default {
     MultipleSelect,
     MultipleActionTagSelect
   },
-  data() {
+  data () {
     return {
       tags: [],
       actionTags: [],
@@ -170,13 +170,13 @@ export default {
   },
   computed: {
     // 没有行为标签，只有大数据标签这一栏时，不展示【行为标签】这一栏。
-    hasBehaviorTag() {
+    hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
   inject: ['sTagIndex'],
   methods: {
-    changeTimeWays(childItem) {
+    changeTimeWays (childItem) {
       childItem.value = ''
       if (childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
@@ -184,10 +184,10 @@ export default {
         this.$set(childItem, 'isDynamicTime', 2)
       }
     },
-    getDefaultOperator() {
+    getDefaultOperator () {
       return '='
     },
-    onSubmit() {
+    onSubmit () {
       this.$service
         .getTagAttr({
           tagId: this.currentChildItem.tagId,
@@ -200,11 +200,11 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    handleCheckboxOk() {
+    handleCheckboxOk () {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
-    handleSelectMore(child) {
+    handleSelectMore (child) {
       this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
@@ -221,7 +221,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    fetchTagSuggestions(tagId) {
+    fetchTagSuggestions (tagId) {
       this.$service
         .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .then(data => {
@@ -231,7 +231,7 @@ export default {
           })
         })
     },
-    handleCurrentChange(index) {
+    handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service
         .getTagAttr({
@@ -243,7 +243,7 @@ export default {
           this.tagList = data.pageInfo.list
         })
     },
-    handleRemoveRule(crowd, rule, childRule) {
+    handleRemoveRule (crowd, rule, childRule) {
       const rulesJson = crowd.rulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       const tagIds = []
@@ -256,25 +256,25 @@ export default {
       })
       crowd.tagIds = tagIds
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    handleRemoveSpecialRule(crowd, rule, childRule) {
+    handleRemoveSpecialRule (crowd, rule, childRule) {
       const rulesJson = crowd.dynamicPolicyJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    /*添加一级标签 */
+    /* 添加一级标签 */
     /**
      * tag 为标签
      */
-    handleAddRule(crowd, tag) {
+    handleAddRule (crowd, tag) {
       if (crowd.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -326,7 +326,7 @@ export default {
         ]
       })
     },
-    handleAddChildRule(crowd, rule, tag) {
+    handleAddChildRule (crowd, rule, tag) {
       if (rule.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -369,7 +369,7 @@ export default {
         initValue: tag.initValue
       })
     },
-    handleAddSpecialRule(crowd, tag) {
+    handleAddSpecialRule (crowd, tag) {
       if (crowd.dynamicPolicyJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -396,7 +396,7 @@ export default {
         ]
       })
     },
-    handleAddSpecialChildRule(crowd, rule, tag) {
+    handleAddSpecialChildRule (crowd, rule, tag) {
       if (rule.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -425,17 +425,17 @@ export default {
       })
       // console.log('crowd====', crowd)
     },
-    changeSeq() {
-      this.inputValue.sort(function(x, y) {
+    changeSeq () {
+      this.inputValue.sort(function (x, y) {
         return x.crowdOrder - y.crowdOrder
       })
       this.setSeq()
     },
-    formProp(key) {
+    formProp (key) {
       // debugger
       return (this.propPrefix || '') + key
     },
-    setInputValue(val) {
+    setInputValue (val) {
       // console.log('trigger setInputValue method')
       if (val !== this.inputValue) {
         // debugger
@@ -478,7 +478,7 @@ export default {
         }
       }
     },
-    emitInputValue() {
+    emitInputValue () {
       this.$emit('input', this.inputValue)
     },
     // handleAddParam () {
@@ -516,10 +516,10 @@ export default {
     //   )
     //   this.setSeq()
     // },
-    getRecordId() {
+    getRecordId () {
       return this.recordId
     },
-    setSeq() {
+    setSeq () {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
@@ -532,11 +532,11 @@ export default {
         return e
       })
     },
-    handleRemoveParam(index) {
+    handleRemoveParam (index) {
       this.inputValue.splice(index, 1)
       this.setSeq()
     },
-    checkNum(num) {
+    checkNum (num) {
       if (/(^\d+$)/.test(num)) {
         return true
       } else {
@@ -544,7 +544,7 @@ export default {
         return false
       }
     },
-    checkNumMostFour(num) {
+    checkNumMostFour (num) {
       const numInt = parseInt(num)
       if (/(^\d+$)/.test(num) && numInt <= 9999) {
         return true
@@ -555,7 +555,7 @@ export default {
         return false
       }
     },
-    bigNum(item) {
+    bigNum (item) {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
@@ -568,7 +568,7 @@ export default {
         item.value = ''
       }
     },
-    handleEstimate(formData) {
+    handleEstimate (formData) {
       this.$service.estimateTemp(formData.rulesJson).then(data => {
         if (data || data === 0) {
           this.$set(formData, 'total0', data)
@@ -576,7 +576,7 @@ export default {
       })
     },
 
-    handleOperatorChange(item) {
+    handleOperatorChange (item) {
       if (item.tagType === 'string' && item.operator === 'null') {
         item.value = 'nil'
       } else {
@@ -584,16 +584,16 @@ export default {
       }
     },
 
-    handleConditionChange(crowd) {
+    handleConditionChange (crowd) {
       crowd.dynamicPolicyJson.link =
         crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
     },
-    handleRulesConditionChange(item) {
+    handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
       // console.log(item.condition)
     }
   },
-  created() {
+  created () {
     // console.log('this.params===', this.$route.params)
     // console.log('this.value==>', this.value)
     if (this.value) {
@@ -607,9 +607,9 @@ export default {
       data.forEach(item => {
         if (item.dataSource === 6) { // 效果指标
           specialTags.push(item)
-        } else if ( item.dataSource === 8 ) { // 行为标签
+        } else if (item.dataSource === 8) { // 行为标签
           actionTags.push(item)
-        } else if ( item.dataSource === 2 ) { // 大数据标签
+        } else if (item.dataSource === 2) { // 大数据标签
           actionTags.push(item)
           normalTags.push(item)
         } else {
@@ -629,7 +629,7 @@ export default {
 
     // const detail = this.sTagIndex.specialTagDetail.specialTag
 
-    //编辑
+    // 编辑
     // this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
     // let policyData = data.policyCrowds
     // this.form.name = policyData.crowdName
@@ -660,7 +660,7 @@ export default {
             this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
           }
           // 多选的值，回显的时候需要转成数组 2222
-          if (item.tagType === 'string' && item.operator !== 'null' && typeof(item.value) === 'string') {
+          if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
             item.value = item.value === '' ? [] : item.value.split(',')
           }
         })
@@ -672,7 +672,7 @@ export default {
       this.inputValue[0].behaviorRulesJson.rules.forEach(ruleItem => {
         ruleItem.rules.forEach(rulesEachItem => {
           // 多选的值，回显的时候需要转成数组 2222
-          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof(rulesEachItem.value) === 'string') {
+          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
             rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
           }
         })
