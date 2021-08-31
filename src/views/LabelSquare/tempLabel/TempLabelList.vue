@@ -1,5 +1,5 @@
 <template>
-<!-- 
+<!--
     crowdType
     2：临时人群
     3：行为人群
@@ -117,7 +117,7 @@
                 </el-table-column>
                 <el-table-column label="总体耗时">
                     <template slot-scope="scope">
-                        {{ scope.row.history.spentTotalTime }}
+                        {{ scope.row.spentTotalTime }}
                     </template>
                 </el-table-column>
                 <el-table-column label="dmp人群ID">
@@ -167,7 +167,7 @@
                                     >
                                         {{ crowdType !== 2 ? '查看' : '编辑' }}
                                     </el-dropdown-item>
-                                    
+
                                     <!--<el-dropdown-item-->
                                             <!--:command="['monitor',scope.row]"-->
                                             <!--v-permission="'hoder:launch:crowd:ver:index'"-->
@@ -225,7 +225,7 @@
               class="monitor-time"
               value-format="yyyy-MM-dd"
             ></el-date-picker>
-          
+
             <c-table
                 :props="monitorTable.props"
                 :header="monitorTable.header"
@@ -247,321 +247,321 @@
 </template>
 
 <script>
-    export default {
-        name: "TempLabel",
-        props: {
-            refreshFlag: {
-                type: Boolean
-            },
-            showSelection: {
-                type: Boolean
-            },
-            currentSelectTag: {
-                type: Array
-            },
-            checkListParent: {
-                type: Array
-            },
-            crowdType: {
-               type: Number
-            }
-        },
-        data () {
-            return {
-                tableData: [],
-                filter: {},
-                launchName: undefined,
-                launchStatusEnum: {},
-                pageSize: 10,
-                currentPage: 1,
-                totalCount: 1,
-                isShowCondition: false,
-                // launchType: undefined,
-                launchTitle: '',
-                selectStrategy: null,//人群条件的选择策略
-                checkList: [],
-                monitorDialog: false,
-                monitorRangeTime: undefined,
-                monitorOutForm: {
-                    pageSize: 10,
-                    pageNum: 1
-                },
-                monitorTotal: 0,
-                monitorTable: {
-                    props: {},
-                    header: [
-                        {
-                            label: '人群名称',
-                            prop: 'launch_name'
-                        },
-                        {
-                            label: 'dmp人群ID',
-                            prop: 'dmp_crowd_id'
-                        },
-                        // {
-                        //     label: '临时人群（SQL）指令',
-                        //     prop: 'crowd_sql',
-                        //     render: (h, params) => {
-                        //         return h('el-tooltip',{
-                        //             props: {
-                        //                 effect: 'dark',
-                        //                 content: params.row.crowd_sql,
-                        //                 placement:'top',
-                        //             }
-                        //         }, 
-                        //         [
-                        //             h('span', () => {
-                        //                 return params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : ''
-                        //             }
-                        //         )]
-                        //         )
-
-                        //     }
-                        // },
-                        {
-                            label: '临时人群版本号',
-                            prop: 'version'
-                        },
-                        {
-                            label: '当前版本',
-                            prop: 'cur_version'
-                        },
-                        {
-                            label: '接收设备数量',
-                            prop: 'receive_total_user'
-                        },
-                        {
-                            label: '设备数量',
-                            prop: 'total_user'
-                        },
-                        {
-                            label: '临时人群es index',
-                            prop: 'es_index'
-                        },
-                        {
-                            label: '状态',
-                            prop: 'status_name'
-                        },
-                        {
-                            label: '临时人群同步日期',
-                            prop: 'update_time'
-                        },
-                        {
-                            label: '版本是否删除',
-                            render: (h, params) => {
-                                return h('div', {}, [
-                                    h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-                                ])
-                            }
-                        }
-                    ],
-                    data: []
-                },
-            }
-        },
-        created () {
-            this.$root.$on(`temp-label-list-refresh-${this.crowdType}`, this.fetchData)
-            this.fetchData()
-            // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
-        },
-        beforeDestroy () {
-            this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
-        },
-        watch: {
-            'refreshFlag': function (val) {
-                if (val) {
-                    this.fetchData()
-                }
-            },
-            'currentSelectTag': 'updateTableSelected',
-            checkListParent: function (val) {
-                this.checkList = val
-            }
-        },
-        methods: {
-            handleMonitor (row) {
-               this.monitorDialog = true
-               this.selectedRow = row
-               this.getDataMonitor()
-            },
-
-            getDataMonitor () {
-                this.handleGetMonitorTableList()
-            },
-
-            handleGetMonitorTableList () {
-                const monitorRangeTime = this.monitorRangeTime || []
-                const startDate = monitorRangeTime[0] || ''
-                const endDate = monitorRangeTime[1] || ''
-                const params = {
-                    launchCrowdId: this.selectedRow.launchCrowdId, 
-                    startDate, 
-                    endDate,
-                    ...this.monitorOutForm
-                }
-                this.$service.launchVersionList(params).then(data => {
-                    if (data) {
-                        this.monitorTotal = data.pageInfo.total
-                        this.monitorTable.data = data.pageInfo.list || []
-                    } else {
-                        this.resultContent = '暂无数据'
-                    }
-                })
-            },
-
-            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-            handleMonitorSizeChange (val) {
-                this.monitorOutForm.pageSize = val
-                //每次切换页码条，都把页面数重置为1
-                this.monitorOutForm.pageNum = 1
-                this.handleGetMonitorTableList()
-            },
-
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleMonitorCurrentChange (val) {
-                this.monitorOutForm.pageNum = val
-                this.handleGetMonitorTableList()
-            },
-
-            fetchData () {
-                // eslint-disable-next-line no-debugger
-                const filter = {
-                    pageNum: this.currentPage,
-                    pageSize: this.pageSize,
-                    launchName: this.launchName
-                }
-                filter.crowdType = this.crowdType // 行为人群
-                this.$service.getTempCrowdList(filter).then(data => {
-                    this.launchStatusEnum = data.launchStatusEnum
-                    this.tableData = data.pageInfo.list
-                    this.totalCount = data.pageInfo.total
-                    if (this.showSelection) {
-                        this.updateTableSelected()
-                    }
-                    this.tableData.forEach(item => {
-                        item.dataSource = 1
-                    })
-                })
-            },
-            handleCommandOpreate(scope) {
-                const type = scope[0]
-                const params = scope[1]
-                switch (type) {
-                    case 'edit':
-                        this.handleEdit(params)
-                        break
-                    case 'del':
-                        this.del(params)
-                        break
-                    case 'monitor':
-                        this.handleMonitor(params)
-                        break
-                }
-            },
-            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-            handleSizeChange (val) {
-                this.pageSize = val
-                //每次切换页码条，都把页面数重置为1
-                this.currentPage = 1
-                this.fetchData()
-            },
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleCurrentChange (val) {
-                this.currentPage = val
-                this.fetchData()
-            },
-            condition(row) {
-                this.isShowCondition = true
-                this.$service
-                .getTempCrowd({ launchCrowdId: row.launchCrowdId })
-                .then(data => {
-                    this.launchTitle = '人群条件'
-                    this.selectStrategy = data.crowdSql
-                })
-            },
-            // 删除
-            del(row) {
-                const launchCrowdId = row.launchCrowdId
-                this.$confirm("确定要删除吗?", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                .then(() => {
-                    this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
-                    // this.$service.delNewTempCrowd({launchCrowdId}, "删除成功").then(() => {
-                        this.fetchData()
-                    })
-                })
-                .catch(() => {
-                })
-            },
-            // 编辑
-            handleEdit(launchCrowdItem) {
-                this.$emit("show-add", launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
-            },
-            // minitor (row) {},
-            // 计算
-            calculate (row) {
-                this.$service.calculateTempCrowd({launchCrowdId: row.launchCrowdId,calType: row.calType},'成功计算中').then(()=> {
-                    this.fetchData()
-                })
-            },
-            // 新增
-            handleAdd () {
-                this.$emit('show-add')
-            },
-            handleSelectOrCancel (select, row) {
-                const selectedFlag = select.length && select.indexOf(row) !== -1
-                // true就是选中，0或者false是取消选中
-                if (selectedFlag) {
-                    this.$refs.tempChangeTable.toggleRowSelection(row,true)
-                    this.$emit('table-selected',row, 'add')
-                } else {
-                    this.$refs.tempChangeTable.toggleRowSelection(row,false)
-                    this.$emit('table-selected',row, 'del')
-                }
-            },
-            handleSelectAllOrCancel (select) {
-                // 当select长度为0，则是取消全选，否则是全选
-                const data = this.tableData
-                if (select.length === 0) {
-                    for (var i=0;i<data.length;i++) {
-                        this.$emit('table-selected',data[i], 'del')
-                    }
-                } else {
-                    for (var j=0;j<data.length;j++) {
-                        this.$emit('table-selected',data[j], 'add')
-                    }
-                }
-            },
-            updateTableSelected () {
-                const arr = []
-                const currentSelectRows = this.currentSelectTag
-                this.tableData.forEach((item, index) => {
-                    currentSelectRows.forEach((i) => {
-                        if (item.tagId === i.tagId) {
-                            arr.push(this.tableData[index])
-                        }
-                    })
-                })
-                if (arr.length > 0) {
-                    // 如果存在，则先清空选中，再赋值
-                    this.$nextTick(() => {
-                        this.$refs.tempChangeTable.clearSelection()
-                        arr.forEach(row => {
-                            this.$refs.tempChangeTable.toggleRowSelection(row,true)
-                        })
-                    })
-                } else {
-                    this.$refs.tempChangeTable.clearSelection()
-                }
-            },
-            handleCheckListChange (val) {
-                this.$emit('change-checkList', val)
-            }
-        }
+export default {
+  name: 'TempLabel',
+  props: {
+    refreshFlag: {
+      type: Boolean
+    },
+    showSelection: {
+      type: Boolean
+    },
+    currentSelectTag: {
+      type: Array
+    },
+    checkListParent: {
+      type: Array
+    },
+    crowdType: {
+      type: Number
     }
+  },
+  data () {
+    return {
+      tableData: [],
+      filter: {},
+      launchName: undefined,
+      launchStatusEnum: {},
+      pageSize: 10,
+      currentPage: 1,
+      totalCount: 1,
+      isShowCondition: false,
+      // launchType: undefined,
+      launchTitle: '',
+      selectStrategy: null, // 人群条件的选择策略
+      checkList: [],
+      monitorDialog: false,
+      monitorRangeTime: undefined,
+      monitorOutForm: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      monitorTotal: 0,
+      monitorTable: {
+        props: {},
+        header: [
+          {
+            label: '人群名称',
+            prop: 'launch_name'
+          },
+          {
+            label: 'dmp人群ID',
+            prop: 'dmp_crowd_id'
+          },
+          // {
+          //     label: '临时人群（SQL）指令',
+          //     prop: 'crowd_sql',
+          //     render: (h, params) => {
+          //         return h('el-tooltip',{
+          //             props: {
+          //                 effect: 'dark',
+          //                 content: params.row.crowd_sql,
+          //                 placement:'top',
+          //             }
+          //         },
+          //         [
+          //             h('span', () => {
+          //                 return params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : ''
+          //             }
+          //         )]
+          //         )
+
+          //     }
+          // },
+          {
+            label: '临时人群版本号',
+            prop: 'version'
+          },
+          {
+            label: '当前版本',
+            prop: 'cur_version'
+          },
+          {
+            label: '接收设备数量',
+            prop: 'receive_total_user'
+          },
+          {
+            label: '设备数量',
+            prop: 'total_user'
+          },
+          {
+            label: '临时人群es index',
+            prop: 'es_index'
+          },
+          {
+            label: '状态',
+            prop: 'status_name'
+          },
+          {
+            label: '临时人群同步日期',
+            prop: 'update_time'
+          },
+          {
+            label: '版本是否删除',
+            render: (h, params) => {
+              return h('div', {}, [
+                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+              ])
+            }
+          }
+        ],
+        data: []
+      }
+    }
+  },
+  created () {
+    this.$root.$on(`temp-label-list-refresh-${this.crowdType}`, this.fetchData)
+    this.fetchData()
+    // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+  },
+  beforeDestroy () {
+    this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
+  },
+  watch: {
+    'refreshFlag': function (val) {
+      if (val) {
+        this.fetchData()
+      }
+    },
+    'currentSelectTag': 'updateTableSelected',
+    checkListParent: function (val) {
+      this.checkList = val
+    }
+  },
+  methods: {
+    handleMonitor (row) {
+      this.monitorDialog = true
+      this.selectedRow = row
+      this.getDataMonitor()
+    },
+
+    getDataMonitor () {
+      this.handleGetMonitorTableList()
+    },
+
+    handleGetMonitorTableList () {
+      const monitorRangeTime = this.monitorRangeTime || []
+      const startDate = monitorRangeTime[0] || ''
+      const endDate = monitorRangeTime[1] || ''
+      const params = {
+        launchCrowdId: this.selectedRow.launchCrowdId,
+        startDate,
+        endDate,
+        ...this.monitorOutForm
+      }
+      this.$service.launchVersionList(params).then(data => {
+        if (data) {
+          this.monitorTotal = data.pageInfo.total
+          this.monitorTable.data = data.pageInfo.list || []
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
+
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleMonitorSizeChange (val) {
+      this.monitorOutForm.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.monitorOutForm.pageNum = 1
+      this.handleGetMonitorTableList()
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleMonitorCurrentChange (val) {
+      this.monitorOutForm.pageNum = val
+      this.handleGetMonitorTableList()
+    },
+
+    fetchData () {
+      // eslint-disable-next-line no-debugger
+      const filter = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+        launchName: this.launchName
+      }
+      filter.crowdType = this.crowdType // 行为人群
+      this.$service.getTempCrowdList(filter).then(data => {
+        this.launchStatusEnum = data.launchStatusEnum
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        if (this.showSelection) {
+          this.updateTableSelected()
+        }
+        this.tableData.forEach(item => {
+          item.dataSource = 1
+        })
+      })
+    },
+    handleCommandOpreate (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      switch (type) {
+        case 'edit':
+          this.handleEdit(params)
+          break
+        case 'del':
+          this.del(params)
+          break
+        case 'monitor':
+          this.handleMonitor(params)
+          break
+      }
+    },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleSizeChange (val) {
+      this.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.currentPage = 1
+      this.fetchData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.fetchData()
+    },
+    condition (row) {
+      this.isShowCondition = true
+      this.$service
+        .getTempCrowd({ launchCrowdId: row.launchCrowdId })
+        .then(data => {
+          this.launchTitle = '人群条件'
+          this.selectStrategy = data.crowdSql
+        })
+    },
+    // 删除
+    del (row) {
+      const launchCrowdId = row.launchCrowdId
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.delTempCrowd({ launchCrowdId }, '删除成功').then(() => {
+            // this.$service.delNewTempCrowd({launchCrowdId}, "删除成功").then(() => {
+            this.fetchData()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    // 编辑
+    handleEdit (launchCrowdItem) {
+      this.$emit('show-add', launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+    },
+    // minitor (row) {},
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.fetchData()
+      })
+    },
+    // 新增
+    handleAdd () {
+      this.$emit('show-add')
+    },
+    handleSelectOrCancel (select, row) {
+      const selectedFlag = select.length && select.indexOf(row) !== -1
+      // true就是选中，0或者false是取消选中
+      if (selectedFlag) {
+        this.$refs.tempChangeTable.toggleRowSelection(row, true)
+        this.$emit('table-selected', row, 'add')
+      } else {
+        this.$refs.tempChangeTable.toggleRowSelection(row, false)
+        this.$emit('table-selected', row, 'del')
+      }
+    },
+    handleSelectAllOrCancel (select) {
+      // 当select长度为0，则是取消全选，否则是全选
+      const data = this.tableData
+      if (select.length === 0) {
+        for (var i = 0; i < data.length; i++) {
+          this.$emit('table-selected', data[i], 'del')
+        }
+      } else {
+        for (var j = 0; j < data.length; j++) {
+          this.$emit('table-selected', data[j], 'add')
+        }
+      }
+    },
+    updateTableSelected () {
+      const arr = []
+      const currentSelectRows = this.currentSelectTag
+      this.tableData.forEach((item, index) => {
+        currentSelectRows.forEach((i) => {
+          if (item.tagId === i.tagId) {
+            arr.push(this.tableData[index])
+          }
+        })
+      })
+      if (arr.length > 0) {
+        // 如果存在，则先清空选中，再赋值
+        this.$nextTick(() => {
+          this.$refs.tempChangeTable.clearSelection()
+          arr.forEach(row => {
+            this.$refs.tempChangeTable.toggleRowSelection(row, true)
+          })
+        })
+      } else {
+        this.$refs.tempChangeTable.clearSelection()
+      }
+    },
+    handleCheckListChange (val) {
+      this.$emit('change-checkList', val)
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
