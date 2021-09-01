@@ -1981,8 +1981,10 @@ export default {
         // 编辑回显
         if (val && val.tagCode === 'BAV0004') { // 【模块活跃】需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)
-        } else if (val && val.tagCode === 'BAV0008') { // 起播行为】标签需要查询影片集数
+        } else if (val && val.tagCode === 'BAV0008') { // 【起播行为】标签需要查询影片集数
           this.getQiboTvEpisodes(val.bav.behaviorValue)
+        } else if (val && val.tagCode === 'BAV0012') { // 【综合起播】标签需要查询影片集数
+          this.getZongheVideoEpisodes(val.bav.showBehaviorValue)
         }
       },
       // deep: true,
@@ -2105,7 +2107,7 @@ export default {
       })
     },
 
-    // 起播行为编辑，获取影片集数、预约时间
+    // 起播行为编辑，获取影片集数、预约时间 回显
     getQiboTvEpisodes (bavVal) {
       bavVal.forEach(obj => {
         if (obj.videoType && obj.videoType !== '电影' && obj.source && obj.value) {
@@ -2113,6 +2115,15 @@ export default {
           this.getAppointmentInfo(obj.source, obj.value) // 获取影片预约时间
         } else if (obj.child) {
           this.getQiboTvEpisodes(obj.child) // 递归
+        }
+      })
+    },
+
+    // 综合起播编辑，获取影片集数 回显
+    getZongheVideoEpisodes (bavVal) {
+      bavVal.forEach(obj => {
+        if (obj.childCheckedVal && obj.childCheckedVal[1] && obj.child && obj.child[1] && obj.child[1].child.length > 0) { // 有选择集数
+          this.getVideoEpisode({ tvId: obj.childCheckedVal[1], businessType: bavVal[0].value, source: obj.child[1].source })
         }
       })
     },
@@ -2555,14 +2566,14 @@ export default {
       )
     },
 
-    getVideoEpisode ({ tvId, businessType }) {
+    getVideoEpisode ({ tvId, businessType, source }) {
       if (!tvId) return // 没有tvId，直接返回
       const matchingVideo = this.videoOptions.find(item => item.value === tvId)
 
       const params = {
         tvId,
         businessType,
-        source: matchingVideo.source,
+        source: source || matchingVideo.source,
         page: 1,
         pageSize: 200
       }
