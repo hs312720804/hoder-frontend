@@ -1473,7 +1473,7 @@
                 style="width: 150px;"
                 filterable
                 remote
-                placeholder="请输入博主"
+                placeholder="搜博主"
                 no-data-text='暂无数据'
                 clearable
                 :remote-method="(query) => { GetShortVideoAuthor(query) }"
@@ -1825,8 +1825,8 @@
         :key="item.value"
         class="flex-row child"
       >
+        <!-- 第二级   item.childCheckedVal[0]-->
         <span class="flex-row">
-          <!-- 第二级 -->
           <el-select
             v-model="item.childCheckedVal[0]"
             style="width: 100px"
@@ -1851,7 +1851,40 @@
           <Bav0012 v-if="!!item.mapName" :aaa="item"></Bav0012>
         </span>
 
-        <!------ 查询影片-搜索集数 ------->
+        <!-- 搜博主  item.childCheckedVal[3] -->
+        <span v-if="childItem.bav.value === '短视频'" class="flex-row">
+          <el-select
+            v-model="item.childCheckedVal[3]"
+            style="width: 150px;"
+            filterable
+            remote
+            placeholder="搜博主"
+            no-data-text='暂无数据'
+            clearable
+            :remote-method="(query) => { GetShortVideoAuthor(query) }"
+            :loading="loading2"
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 6,
+              selectPropKeyValue: 'name'
+            })"
+          >
+            <el-option
+              v-for="follow in followOptions"
+              :key="follow.value"
+              :label="follow.name"
+              :value="follow.value">
+            </el-option>
+            <!-- 编辑回显 选项-->
+            <el-option
+              v-if="followOptions.length === 0 && item.childCheckedVal[3]"
+              :label="getMatchName(item.childCheckedVal[3], item.child)"
+              :value="item.childCheckedVal[3]">
+            </el-option>
+          </el-select>
+        </span>
+
+        <!------ 查询影片-搜索集数  item.childCheckedVal[1]------->
         <span class="flex-row">
           <!-- 第 3 级  搜索片子 -->
           <el-select
@@ -1879,7 +1912,7 @@
             <!-- 编辑回显 选项 -->
             <el-option
               v-if="videoOptions.length === 0 && item.childCheckedVal[1]"
-              :label="item.child[1].name"
+              :label="getMatchName(item.childCheckedVal[1], item.child)"
               :value="item.childCheckedVal[1]">
             </el-option>
           </el-select>
@@ -1913,7 +1946,7 @@
           </div>
         </span>
 
-        <!-- 选择【免费、会员..】 -->
+        <!-- 选择【免费、会员..】   item.childCheckedVal[2]-->
         <span class="flex-row">
           <!-- 第 5 级 -->
           <el-select
@@ -2066,6 +2099,10 @@ export default {
   },
   created () {},
   methods: {
+    getMatchName (val, list) {
+      return list.find(item => item.value === val).name
+    },
+
     handelInputBetween (val, item, key) {
       this.$set(item, key, val)
       if (!item.value1) { this.$set(item, 'value1', 0) }
@@ -2283,6 +2320,7 @@ export default {
     getValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       let list = []
       vals.forEach(val => {
+        debugger
         const lastNumberObj = [
           { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
@@ -2633,6 +2671,7 @@ export default {
 
     // 获取下拉框选项
     getBehaviorAttrList (level = 1, extra = {}) {
+      debugger
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
@@ -2771,11 +2810,13 @@ export default {
           } else if (level === 1) {
             attrlist = dict.business_type
           } else if (level === 3) {
-            return this.videoOptions
+            return this.videoOptions // 视频
           } else if (level === 4) {
-            return this.qiBoCollectionOptions
+            return this.qiBoCollectionOptions // 集数
           } else if (level === 5) {
             attrlist = dict.is_vip
+          } else if (level === 6) { // 博主
+            return this.followOptions
           } else {
           }
         } else {
