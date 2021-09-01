@@ -147,3 +147,21 @@ export function getVideoEpisode (params) {
     params
   })
 }
+
+// 行为标签 - 查询歌曲
+export function getMusicByName (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/auto/getMusicByName',
+    params
+  })
+}
+
+// 行为标签 - 查询歌手
+export function getMusicByAuthor (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/auto/getMusicByAuthor',
+    params
+  })
+}

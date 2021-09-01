@@ -1884,8 +1884,71 @@
           </el-select>
         </span>
 
+        <!-- 搜歌曲  item.childCheckedVal[4] -->
+        <span v-if="childItem.bav.value === 'K歌'" class="flex-row">
+          <el-select
+            v-model="item.childCheckedVal[4]"
+            style="width: 150px;"
+            filterable
+            remote
+            placeholder="搜歌曲"
+            no-data-text='暂无数据'
+            clearable
+            :remote-method="(query) => { getMusicByName(query) }"
+            :loading="loading2"
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 7,
+              selectPropKeyValue: 'name'
+            })"
+          >
+            <el-option
+              v-for="follow in musicList"
+              :key="follow.value"
+              :label="follow.name"
+              :value="follow.value">
+            </el-option>
+            <!-- 编辑回显 选项-->
+            <el-option
+              v-if="musicList.length === 0 && item.childCheckedVal[4]"
+              :label="getMatchName(item.childCheckedVal[4], item.child)"
+              :value="item.childCheckedVal[4]">
+            </el-option>
+          </el-select>
+
+          <el-select
+            v-model="item.childCheckedVal[5]"
+            style="width: 150px;"
+            filterable
+            remote
+            placeholder="搜歌手"
+            no-data-text='暂无数据'
+            clearable
+            :remote-method="(query) => { getMusicByAuthor(query) }"
+            :loading="loading2"
+            @change="handelChildBehavirSelectChange({
+              childItem: item,
+              level: 8,
+              selectPropKeyValue: 'name'
+            })"
+          >
+            <el-option
+              v-for="item in singerList"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value">
+            </el-option>
+            <!-- 编辑回显 选项-->
+            <el-option
+              v-if="singerList.length === 0 && item.childCheckedVal[5]"
+              :label="getMatchName(item.childCheckedVal[5], item.child)"
+              :value="item.childCheckedVal[5]">
+            </el-option>
+          </el-select>
+        </span>
+
         <!------ 查询影片-搜索集数  item.childCheckedVal[1]------->
-        <span class="flex-row">
+        <span v-else class="flex-row" >
           <!-- 第 3 级  搜索片子 -->
           <el-select
             v-model="item.childCheckedVal[1]"
@@ -2094,7 +2157,9 @@ export default {
       },
       followOptions: [],
       videoOptions: [],
-      appointmentInfo: []
+      appointmentInfo: [],
+      musicList: [],
+      singerList: []
     }
   },
   created () {},
@@ -2209,6 +2274,71 @@ export default {
       }
     },
 
+    // 搜歌手
+    getMusicByAuthor (query) {
+      if (query !== '') {
+        this.loading2 = true
+
+        const params = {
+          keywords: query,
+          page: 1,
+          pageSize: 200
+        }
+
+        this.$service.getMusicByAuthor(params).then(res => {
+          this.loading2 = false
+          let list = res.rows || []
+          list = list.map(obj => {
+            return {
+              name: obj.name,
+              value: obj.id,
+              field: obj.tableField,
+              type: 'string'
+            }
+          })
+          this.singerList = list
+          console.log('this.singerList===>', this.singerList)
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.singerList = []
+      }
+    },
+
+    // 搜歌曲
+    getMusicByName (query) {
+      if (query !== '') {
+        this.loading2 = true
+
+        const params = {
+          keywords: query,
+          page: 1,
+          pageSize: 200
+        }
+
+        this.$service.getMusicByName(params).then(res => {
+          this.loading2 = false
+          let list = res.rows || []
+          debugger
+          list = list.map(obj => {
+            return {
+              name: obj.title,
+              value: obj.id,
+              field: obj.tableField,
+              type: 'string'
+            }
+          })
+          this.musicList = list
+          console.log('this.musicList===>', this.musicList)
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this.musicList = []
+      }
+    },
+
     GetShortVideoAuthor (query) {
       if (query !== '') {
         this.loading2 = true
@@ -2320,7 +2450,6 @@ export default {
     getValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
       let list = []
       vals.forEach(val => {
-        debugger
         const lastNumberObj = [
           { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
@@ -2671,7 +2800,6 @@ export default {
 
     // 获取下拉框选项
     getBehaviorAttrList (level = 1, extra = {}) {
-      debugger
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
@@ -2817,6 +2945,10 @@ export default {
             attrlist = dict.is_vip
           } else if (level === 6) { // 博主
             return this.followOptions
+          } else if (level === 7) { // 歌曲
+            return this.musicList
+          } else if (level === 8) { // 歌手
+            return this.singerList
           } else {
           }
         } else {
