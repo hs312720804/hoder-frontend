@@ -1946,7 +1946,7 @@
       </span>
 
     </span>
-    <div>{{childItem.bav}}</div>
+    <!-- <div>{{childItem.bav}}</div> -->
   </div>
 </template>
 

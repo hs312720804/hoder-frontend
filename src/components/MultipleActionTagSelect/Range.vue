@@ -5,6 +5,7 @@
       <div v-show="show3">
         <div style="display: flex; flex-direction: row">
           <div class="range-wrap" v-if="type.indexOf('range') > -1">
+                <!-- {{childItem.bav.rang.newValue}} -->
             <span>周期范围</span>
             <span>
               <el-select
@@ -25,19 +26,41 @@
                 </template>
               </el-select>
             </span>
-            <span style="max-width: 220px; min-width: 220px; display: inline-block">
-              <el-form-item label="" prop="bav.rang.value" v-if="childItem.bav.rangeType === 'fixed'">
-                <el-date-picker
-                  v-model="childItem.bav.rang.value"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  value-format="yyyy-MM-dd"
-                  :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
-                >
-                </el-date-picker>
+            <span style="max-width: 252px; min-width: 252px; display: inline-block">
+              <el-form-item v-if="childItem.bav.rangeType === 'fixed'" label="" prop="bav.rang.value">
+                <span style="display: flex; flex-direction: row; align-items: flex-start;">
+                  <span v-if="!newRangeFlag">
+                    <el-date-picker
+                      style="width: 220px;"
+                      v-model="childItem.bav.rang.value"
+                      type="daterange"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      value-format="yyyy-MM-dd"
+                      :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
+                    >
+                    </el-date-picker>
+                  </span>
+                  <span v-else  style="display: flex; flex-direction: column">
+                    <el-date-picker
+                      style="width: 220px;"
+                      v-for="(item, index) in childItem.bav.rang.newValue"
+                      :key="index"
+                      v-model="item.value"
+                      type="daterange"
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      value-format="yyyy-MM-dd"
+                      :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
+                    >
+                    </el-date-picker>
+                  </span>
+                  <el-button type="text" @click="addRange">添加</el-button>
+                </span>
               </el-form-item>
+
               <span v-else style="display: inline-block; width: 200px">
                 最近
                 <!-- 购买行为730天 其他30天 -->
@@ -50,6 +73,7 @@
                 ></el-input-number>
                 天
               </span>
+
             </span>
           </div>
           <div class="range-wrap" v-if="type.indexOf('week') > -1">
@@ -135,7 +159,8 @@ export default {
         'bav.rang.value': [
           { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur'] }
         ]
-      }
+      },
+      newRangeFlag: false
     }
   },
   props: {
@@ -210,6 +235,15 @@ export default {
     }
   },
   methods: {
+    addRange () {
+      this.newRangeFlag = true
+
+      if (!this.childItem.bav.rang.newValue) {
+        this.$set(this.childItem.bav.rang, 'newValue', [{ value: [] }])
+      } else {
+        this.childItem.bav.rang.newValue.push({ value: [] })
+      }
+    },
     openOrClose () {
       this.show3 = !this.show3
     },
