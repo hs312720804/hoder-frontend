@@ -5,6 +5,7 @@
       style="max-width: 100px; min-width: 100px;"
       name="oxve"
       class="input-inline"
+      @change="handleChange"
     >
       <!-- <el-option value="cishu" label="次数"></el-option>
       <el-option value="tianshu" label="天数"></el-option> -->
@@ -104,7 +105,13 @@ export default {
       immediate: true
     }
   },
-  methods: {}
+  methods: {
+    handleChange (val) {
+      const obj = this.attrList.find(item => item.value === val)
+      console.log('obj==>', obj)
+      this.item3.field = obj.field
+    }
+  }
 }
 </script>
 <style scoped  lang="stylus">

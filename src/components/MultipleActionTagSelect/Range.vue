@@ -28,7 +28,7 @@
             </span>
             <span style="max-width: 252px; min-width: 252px; display: inline-block">
               <el-form-item v-if="childItem.bav.rangeType === 'fixed'" label="" prop="bav.rang.value">
-                <span style="display: flex; flex-direction: row; align-items: flex-start;">
+                <span style="display: flex; flex-direction: column; align-items: flex-start;">
                   <span v-if="!newRangeFlag">
                     <el-date-picker
                       style="width: 220px;"
@@ -42,11 +42,9 @@
                     >
                     </el-date-picker>
                   </span>
-                  <span v-else  style="display: flex; flex-direction: column">
+                  <span v-for="(item, index) in childItem.bav.rang.newValue" :key="index" v-else style="display: flex; flex-direction: row">
                     <el-date-picker
                       style="width: 220px;"
-                      v-for="(item, index) in childItem.bav.rang.newValue"
-                      :key="index"
                       v-model="item.value"
                       type="daterange"
                       range-separator="至"
@@ -56,8 +54,9 @@
                       :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
                     >
                     </el-date-picker>
+                    <el-button v-if="index !== 0" type="text" @click="removeRange" class="remove-btn">删除</el-button>
                   </span>
-                  <el-button type="text" @click="addRange">添加</el-button>
+                  <el-button type="text" @click="addRange" class="add-btn">添加</el-button>
                 </span>
               </el-form-item>
 
@@ -237,16 +236,22 @@ export default {
   methods: {
     addRange () {
       this.newRangeFlag = true
-
+      const date = this.childItem.bav.rang.value
       if (!this.childItem.bav.rang.newValue) {
-        this.$set(this.childItem.bav.rang, 'newValue', [{ value: [] }])
+        this.$set(this.childItem.bav.rang, 'newValue', [{ value: date }, { value: [] }])
       } else {
         this.childItem.bav.rang.newValue.push({ value: [] })
       }
     },
+
+    removeRange () {
+
+    },
+
     openOrClose () {
       this.show3 = !this.show3
     },
+
     handelSelectChange (item, list, type) {
       item.field = list[0].field
       if (type === 'fixed') {
@@ -299,4 +304,12 @@ export default {
   margin-bottom: 20px;
   display: flex;
 }
+
+.add-btn
+  position: absolute;
+  right: 1px;
+  top: 1px;
+
+.remove-btn
+  margin-left 5px
 </style>
