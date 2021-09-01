@@ -1493,7 +1493,7 @@
                 </el-option>
                 <!-- 编辑回显 选项-->
                 <el-option
-                  v-if="followOptions.length === 0 && item2.child[0]"
+                  v-if="followOptions.length === 0 && item2.childCheckedVal[0]"
                   :label="item2.child[0].name"
                   :value="item2.childCheckedVal[0]">
                 </el-option>
@@ -2168,12 +2168,13 @@ export default {
         const params = {
           keywords: query,
           page: 1,
-          pageSize: 20
+          pageSize: 200,
+          tagCode: this.childItem.tagCode
         }
 
         this.$service.getShortVideoAuthor(params).then(res => {
           this.loading2 = false
-          let list = res.rows
+          let list = res.rows || []
 
           list = list.map(obj => {
             return {
@@ -2184,7 +2185,7 @@ export default {
               mcn: obj.mcn
             }
           })
-          this.followOptions.push(...list)
+          this.followOptions = list
           console.log('this.followOptions===>', this.followOptions)
         }).catch(() => {
           this.loading2 = false
