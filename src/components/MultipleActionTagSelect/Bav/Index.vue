@@ -1985,8 +1985,8 @@
             class="flex-row child"
           >
           <!-- {{item2}} -->
+            <!-- 选择集数 -->
             <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0">
-              <!-- 选择集数 -->
               <el-select
                 v-model="item2.childCheckedVal[0]"
                 style="width: 100px;"
@@ -1997,7 +1997,6 @@
                   level: 4
                 })"
               >
-                  <!-- v-for="(tv, index) in getVideoEpisode({tvId: item.childCheckedVal[1], businessType: childItem.bav.value})" -->
                 <el-option
                   v-for="(tv, index) in qiBoCollectionOptions"
                   :key="tv.value + index"
@@ -2291,7 +2290,7 @@ export default {
           list = list.map(obj => {
             return {
               name: obj.name,
-              value: obj.id,
+              value: obj.name,
               field: obj.tableField,
               type: 'string'
             }
