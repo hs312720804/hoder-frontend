@@ -2043,7 +2043,7 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      moDefaultChild: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }],
+      moDefaultChild: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }],
       moOptions: {},
       loading: false,
       qiBoOptions: [],
@@ -2272,7 +2272,7 @@ export default {
       let list = []
       vals.forEach(val => {
         const lastNumberObj = [
-          { name: '', value: '', filed: '', operator: '=', type: 'count' }
+          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
         let obj = []
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
@@ -2295,7 +2295,7 @@ export default {
             filed: '',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
           }]
         }
         if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃, 切换数据时，下一级清空，下下级保持存在
@@ -2305,7 +2305,7 @@ export default {
             filed: '',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
           }]
         }
 
@@ -2430,7 +2430,7 @@ export default {
 
       vals.forEach(val => {
         const lastNumberObj = [
-          { name: '', value: '', filed: '', operator: '=', type: 'count' }
+          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []

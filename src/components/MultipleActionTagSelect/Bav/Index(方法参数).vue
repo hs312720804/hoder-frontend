@@ -923,7 +923,7 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      moDefaultChild: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }],
+      moDefaultChild: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }],
       moOptions: {},
       loading: false,
       qiBoOptions: [],
@@ -1085,7 +1085,7 @@ export default {
       let list = []
       vals.forEach(val => {
         const aa = [
-          { name: '', value: '', filed: '', operator: '=', type: 'count' }
+          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
         // eslint-disable-next-line no-debugger
         debugger
@@ -1114,7 +1114,7 @@ export default {
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // 推荐位
-          defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string', child: [{ name: '', value: '', filed: '', operator: '=', type: 'count' }] }]
+          defaultchild = [{ name: '', value: '', filed: '', operator: '=', type: 'string', child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }] }]
         }
         // eslint-disable-next-line no-debugger
         debugger
@@ -1173,7 +1173,7 @@ export default {
 
       vals.forEach(val => {
         const aa = [
-          { name: '', value: '', filed: '', operator: '=', type: 'count' }
+          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
         ]
 
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值

@@ -454,7 +454,7 @@ export default {
         return data1
       }
       // 递归
-      this.checkIfChildrenExist(data1.child, data2)
+      this.checkIfChildrenExist(data1.child[0], data2)
     },
 
     ReorganizationData (data) { // 将数组变成层级关系
