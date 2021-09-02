@@ -1986,7 +1986,7 @@
           >
           <!-- {{item2}} -->
             <!-- 选择集数 -->
-            <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0">
+            <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
               <el-select
                 v-model="item2.childCheckedVal[0]"
                 style="width: 100px;"

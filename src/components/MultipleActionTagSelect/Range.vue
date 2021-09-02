@@ -42,7 +42,8 @@
                     >
                     </el-date-picker>
                   </span>
-                  <span v-for="(item, index) in childItem.bav.rang.newValue" :key="index" v-else style="display: flex; flex-direction: row">
+
+                  <span v-else v-for="(item, index) in childItem.bav.rang.newValue" :key="index" style="display: flex; flex-direction: row">
                     <el-date-picker
                       style="width: 220px;"
                       v-model="item.value"
@@ -52,9 +53,10 @@
                       end-placeholder="结束日期"
                       value-format="yyyy-MM-dd"
                       :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
+                      @change="HandleChange"
                     >
                     </el-date-picker>
-                    <el-button v-if="index !== 0" type="text" @click="removeRange" class="remove-btn">删除</el-button>
+                    <el-button v-if="index !== 0" type="text" @click="removeRange(index)" class="remove-btn">删除</el-button>
                   </span>
                   <el-button type="text" @click="addRange" class="add-btn">添加</el-button>
                 </span>
@@ -158,8 +160,13 @@ export default {
         'bav.rang.value': [
           { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur'] }
         ]
-      },
-      newRangeFlag: false
+      }
+      // newRangeFlag: false
+    }
+  },
+  computed: {
+    newRangeFlag () {
+      return !!this.childItem.bav.rang.newValue || (this.childItem.bav.rang.newValue && this.childItem.bav.rang.newValue.length > 0)
     }
   },
   props: {
@@ -234,6 +241,9 @@ export default {
     }
   },
   methods: {
+    HandleChange (val) {
+      this.childItem.bav.rang.value = val // 给一个值，避免出现必选红框
+    },
     addRange () {
       this.newRangeFlag = true
       const date = this.childItem.bav.rang.value
@@ -244,8 +254,8 @@ export default {
       }
     },
 
-    removeRange () {
-
+    removeRange (index) {
+      this.childItem.bav.rang.newValue.splice(index, 1)
     },
 
     openOrClose () {

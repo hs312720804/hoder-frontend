@@ -498,8 +498,19 @@ export default {
               rulesItem.value = rulesItem.value.join(',')
             }
 
+            if (rulesItem.bav.rang.newValue) { // 日期多选
+              const newValue = rulesItem.bav.rang.newValue
+              let data = []
+              newValue.forEach(item => {
+                if (item.value && item.value.length > 0) data.push({ value: item.value })
+              })
+              rulesItem.bav.rang.newValue = data
+              rulesItem.bav.rang.value = newValue.map(item => {
+                if (item.value) return item.value
+              }).flat()
+            }
+
             if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
-              console.log('123141==>', rulesItem.bav.behaviorValue)
               let rData = []
               const showBehaviorValue = rulesItem.bav.showBehaviorValue
               showBehaviorValue.forEach(item => {
@@ -511,7 +522,6 @@ export default {
                 rData.push(itemCopy)
               })
               rulesItem.bav.behaviorValue = rData
-              console.log('123141==>', rulesItem.bav.behaviorValue)
             }
           })
 
