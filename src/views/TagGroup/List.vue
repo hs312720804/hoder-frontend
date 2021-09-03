@@ -88,152 +88,152 @@
 import TagGroupCreate from './Create.vue'
 import ChooseTagGroup from '@/components/ChooseTagGroup.vue'
 export default {
-    components: {
-        TagGroupCreate,
-        ChooseTagGroup
-    },
-    data() {
-        return {
-            filterText: '',
-            tagGroupList: [],
-            treeData: [],
-            showCheckBox: false,
-            editTitle: '',
-            showEditDialog: false,
-            mode : '',
-            currentLabelData: undefined,
-            delGroupIds: undefined,
-            editGroupName: '',
-            defaultExpanded: []
-        }
-    },
-    watch: {
-        filterText(val) {
-            this.$refs.tree.filter(val)
-            // const filterText = this.filterText
-            // if (!filterText) {
-            //     return this.tagGroupList
-            // } else {
-            //     return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
-            // }
-        },
-        '$route.params.id':function (val) {
-            //  解决id在其他页面命名冲突带来的跳转bug
-            const routeFlag = this.$route.name === 'tag-group-read'
-            if(val === undefined && routeFlag) {
-                this.handleReadAllTagGroup()
-            }
-        }
-    },
-    methods: {
-        // fetchData() {
-        //     return this.$service.getTagGroupList().then((data) => {
-        //         this.tagGroupList = data
-        //     })
-        // },
-        fetchData() {
-            this.$service.getParentIdList().then((data) => {
-                this.treeData = data
-            })
-        },
-        handleReadTagGroup(item) {
-            this.$emit('read-tag-group', item)
-        },
-        handleReadAllTagGroup() {
-            const item = {id:0,name: '全部'}
-            this.$emit('read-tag-group', item)
-        },
-        handleNodeClick(data) {
-            if(!this.showCheckBox){
-                const item = { id:data.groupId,name: data.groupName }
-                // let item = undefined
-                // if( data.groupId === undefined ) {
-                //     // item = { id:data.id,name: data.groupName }
-                //     item = {}
-                // }else{
-                //     item = { id:data.groupId,name: data.groupName }
-                // }
-                this.$emit('read-tag-group', item)
-            }else{return }
-        },
-        filterNode(value,data) {
-            if(!value) return true
-            return data.groupName.indexOf(value) !== -1
-        },
-        edit(node, data) {
-            this.showEditDialog = true
-            this.editTitle = '修改标签组名'
-            this.mode = 'edit'
-            this.currentLabelData = data
-            this.editGroupName = data.groupName
-        },
-        checkboxChooseIdentify () {
-            const select = this.$refs.tree.getCheckedNodes()
-            if(select.length > 0) {
-                this.delGroupIds = select.map(item => item.groupId).join(',')
-                return true
-            } else {
-                this.$message.error('请勾选至少一个标签！')
-                return false
-            }
-        },
-        remove() {
-            // const select = this.$refs.tree.getCheckedNodes()
-            this.showEditDialog = true
-            this.editTitle = '删除标签组'
-            this.mode = 'del'
-            // this.delGroupIds = select.map(item => item.groupId).join(',')
-        },
-        copyTag () {
-            this.$refs.chooseTagGroup.showCreateDialog = true
-        },
-        handleConfirm() {
-            if(this.mode === 'edit') {
-                const currentData = this.currentLabelData
-                this.$service.editLabelGroupName({groupId: currentData.groupId,groupName: this.editGroupName,Pid: currentData.pid},'修改成功')
-                    .then(() => {
-                        this.showEditDialog = false
-                        this.fetchData()
-                    })}
-            else if(this.mode === 'del') {
-                if(this.checkboxChooseIdentify()){
-                    this.$service.delLabelGroup({groupIds: this.delGroupIds},'删除成功')
-                    .then(() => {
-                        this.showEditDialog = false
-                        this.fetchData()
-                    })
-                }
-            }
-        },
-        handleSaveCopyForm (pid) {
-            if(this.checkboxChooseIdentify()){
-                this.$service.copyLabelGroup({tagGroupId: pid,groupIds: this.delGroupIds},'复制成功')
-                .then(() => {
-                    this.$refs.chooseTagGroup.showCreateDialog = false
-                    this.fetchData()
-                })
-            }
-        },
-        handleTagEdit(){
-            this.showCheckBox = true
-        },
-        nodeExpand(node){
-            this.defaultExpanded.push(node.groupId)
-        },
-        nodeCollapse(node){
-            this.defaultExpanded = this.defaultExpanded.filter(item => item !== node.groupId)
-        },
-        handleRedirectLabelSquare() {
-            this.$router.push({ name: 'labelSquare' })
-        }
-    },
-    created() {
-        const activeId = this.$route.params.id
-        this.fetchData()
-        if (!activeId) {
-            this.handleReadAllTagGroup()
-        }
+  components: {
+    TagGroupCreate,
+    ChooseTagGroup
+  },
+  data () {
+    return {
+      filterText: '',
+      tagGroupList: [],
+      treeData: [],
+      showCheckBox: false,
+      editTitle: '',
+      showEditDialog: false,
+      mode: '',
+      currentLabelData: undefined,
+      delGroupIds: undefined,
+      editGroupName: '',
+      defaultExpanded: []
     }
+  },
+  watch: {
+    filterText (val) {
+      this.$refs.tree.filter(val)
+      // const filterText = this.filterText
+      // if (!filterText) {
+      //     return this.tagGroupList
+      // } else {
+      //     return this.tagGroupList.filter(({name}) => name.indexOf(filterText) > -1)
+      // }
+    },
+    '$route.params.id': function (val) {
+      //  解决id在其他页面命名冲突带来的跳转bug
+      const routeFlag = this.$route.name === 'tag-group-read'
+      if (val === undefined && routeFlag) {
+        this.handleReadAllTagGroup()
+      }
+    }
+  },
+  methods: {
+    // fetchData() {
+    //     return this.$service.getTagGroupList().then((data) => {
+    //         this.tagGroupList = data
+    //     })
+    // },
+    fetchData () {
+      this.$service.getParentIdList().then((data) => {
+        this.treeData = data
+      })
+    },
+    handleReadTagGroup (item) {
+      this.$emit('read-tag-group', item)
+    },
+    handleReadAllTagGroup () {
+      const item = { id: 0, name: '全部' }
+      this.$emit('read-tag-group', item)
+    },
+    handleNodeClick (data) {
+      if (!this.showCheckBox) {
+        const item = { id: data.groupId, name: data.groupName }
+        // let item = undefined
+        // if( data.groupId === undefined ) {
+        //     // item = { id:data.id,name: data.groupName }
+        //     item = {}
+        // }else{
+        //     item = { id:data.groupId,name: data.groupName }
+        // }
+        this.$emit('read-tag-group', item)
+      } else { }
+    },
+    filterNode (value, data) {
+      if (!value) return true
+      return data.groupName.indexOf(value) !== -1
+    },
+    edit (node, data) {
+      this.showEditDialog = true
+      this.editTitle = '修改标签组名'
+      this.mode = 'edit'
+      this.currentLabelData = data
+      this.editGroupName = data.groupName
+    },
+    checkboxChooseIdentify () {
+      const select = this.$refs.tree.getCheckedNodes()
+      if (select.length > 0) {
+        this.delGroupIds = select.map(item => item.groupId).join(',')
+        return true
+      } else {
+        this.$message.error('请勾选至少一个标签！')
+        return false
+      }
+    },
+    remove () {
+      // const select = this.$refs.tree.getCheckedNodes()
+      this.showEditDialog = true
+      this.editTitle = '删除标签组'
+      this.mode = 'del'
+      // this.delGroupIds = select.map(item => item.groupId).join(',')
+    },
+    copyTag () {
+      this.$refs.chooseTagGroup.showCreateDialog = true
+    },
+    handleConfirm () {
+      if (this.mode === 'edit') {
+        const currentData = this.currentLabelData
+        this.$service.editLabelGroupName({ groupId: currentData.groupId, groupName: this.editGroupName, Pid: currentData.pid }, '修改成功')
+          .then(() => {
+            this.showEditDialog = false
+            this.fetchData()
+          })
+      } else if (this.mode === 'del') {
+        if (this.checkboxChooseIdentify()) {
+          this.$service.delLabelGroup({ groupIds: this.delGroupIds }, '删除成功')
+            .then(() => {
+              this.showEditDialog = false
+              this.fetchData()
+            })
+        }
+      }
+    },
+    handleSaveCopyForm (pid) {
+      if (this.checkboxChooseIdentify()) {
+        this.$service.copyLabelGroup({ tagGroupId: pid, groupIds: this.delGroupIds }, '复制成功')
+          .then(() => {
+            this.$refs.chooseTagGroup.showCreateDialog = false
+            this.fetchData()
+          })
+      }
+    },
+    handleTagEdit () {
+      this.showCheckBox = true
+    },
+    nodeExpand (node) {
+      this.defaultExpanded.push(node.groupId)
+    },
+    nodeCollapse (node) {
+      this.defaultExpanded = this.defaultExpanded.filter(item => item !== node.groupId)
+    },
+    handleRedirectLabelSquare () {
+      this.$router.push({ name: 'labelSquare' })
+    }
+  },
+  created () {
+    const activeId = this.$route.params.id
+    this.fetchData()
+    if (!activeId) {
+      this.handleReadAllTagGroup()
+    }
+  }
 }
 </script>
 <style lang="stylus" scoped>

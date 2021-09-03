@@ -1,13 +1,13 @@
 <template>
     <div class="label-zone">
         <div v-if="tagName === undefined || tagName === ''">
-            
+
             <div
                     v-for="item in treeData"
                     :key="item.parentId"
                     class="tab-content"
             >
-                
+
                 <div class="title">{{item.parentName}}<span v-if="item.newOrUpdateCount" class="small-red">·</span></div>
                 <el-tabs
                         v-model="activeTab"
@@ -70,174 +70,174 @@
 </template>
 
 <script>
-    import tagList from './TagList'
-    import TagCategoryUpsert from '../TagCategory/Upsert.vue'
-    export default {
-        name: "LabelZone",
-        components: {
-            tagList,
-            TagCategoryUpsert
-        },
-        props: {
-            tagName: {
-                type: String
-            },
-            checkList: {
-                type: Array
-            },
-            showSelection: {
-                type: Boolean
-            },
-            currentSelectTag: {
-                type: Array
-            }
-        },
-        data () {
-            return {
-                treeData: [],
-                activeTab: undefined,
-                dataList: [],
-                filter: {
-                    pageNum: 1,
-                    pageSize: 300,
-                    groupId: undefined,
-                    tagName: undefined
-                },
-                dataSourceEnum: {},
-                typeEnum: {},
-                toggleShow: false,
-                loading: true,
-                tagCategory: {},
-                definedTagId: undefined
-            }
-        },
-        watch: {
-            'tagName': function (val) {
-                if (val !== undefined && val !== '') {
-                    this.filter.tagName = val
-                    this.fetchTagAllList()
-                }else {
-                    this.filter.tagName = val
-                    this.fetchTagList()
-                }
-            }
-        },
-        methods: {
-            fetchData() {
-                this.$service.getNewTreeList().then(data => {
-                    const result = []
-                    data.forEach(item => {
-                        item.children.forEach(secondChild => {
-                            const childList = secondChild.children.map(childItem => {
-                                if (childItem.groupName === '自定义标签') {
-                                    this.definedTagId = childItem.groupId
-                                }
-                                return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
-                            })
-                            result.push({ parentName:secondChild.groupName,newOrUpdateCount: secondChild.newOrUpdateCount,parentId: secondChild.groupId, children: childList })
-                        })
-                    })
-                    this.treeData = result
-                    // this.activeTab = result[0].children[0].groupId
-                    // this.filter.groupId = this.activeTab
-                    this.fetchTagList()
-                })
-                // this.$service.getParentIdList().then((data) => {
-                //     const result = []
-                //     data.forEach(item => {
-                //         item.children.forEach(secondChild => {
-                //             const childList = secondChild.children.map(childItem => {
-                //                 if (childItem.groupName === '自定义标签') {
-                //                     this.definedTagId = childItem.groupId
-                //                 }
-                //                 return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
-                //             })
-                //             result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
-                //         })
-                //     })
-                //     this.treeData = result
-                //     // this.activeTab = result[0].children[0].groupId
-                //     // this.filter.groupId = this.activeTab
-                //     this.fetchTagList()
-                // })
-            },
-            fetchTagList () {
-                const filter = this.filter
-                if (this.filter.groupId) {
-                    this.$service.getTagGroupTreeList(filter).then((data) => {
-                        this.dataList = data.pageInfo.list
-                        this.dataSourceEnum = data.lableDataSourceEnum
-                        this.typeEnum = data.tagsTypeEnum
-                        this.loading = false
-                    })
-                }
-            },
-            fetchTagAllList () {
-                const filter = JSON.parse(JSON.stringify(this.filter))
-                filter.groupId = 0
-                this.$service.getTagGroupTreeList(filter).then((data) => {
-                    this.dataList = data.pageInfo.list
-                    this.dataSourceEnum = data.lableDataSourceEnum
-                    this.typeEnum = data.tagsTypeEnum
-                    this.loading = false
-                })
-            },
-            handleTabClick () {
-                // 当前tab再次点击收缩表格
-                if (this.filter.groupId !== this.activeTab) {
-                    this.toggleShow = true
-                    this.filter.groupId = this.activeTab
-                    this.loading = true
-                } else {
-                    this.toggleShow = !this.toggleShow
-                    return
-                }
-                // 切换tab清空搜索框的值
-                this.filter.tagName = undefined
-                // this.dataList = []
-                this.$emit('clear-search')
-                this.$emit('fetch-checkList')
-                this.fetchTagList()
-            },
-            handleCheckListChange (val) {
-                this.$emit('change-checkList',val)
-            },
-            handleAddTagCategory() {
-                this.tagCategory = {
-                    groupId: this.definedTagId
-                }
-                this.$refs.tagCategoryUpsert.showCreateDialog = true
-            },
-            handleTableSelected (val, mode) {
-                this.$emit('get-table-selected',val, mode)
-            }
-            // getNewTree () {
-            //     this.$service.getNewTreeList().then(data => {
-            //         console.log(data)
-            //         const result = []
-            //         data.forEach(item => {
-            //             item.children.forEach(secondChild => {
-            //                 const childList = secondChild.children.map(childItem => {
-            //                     if (childItem.groupName === '自定义标签') {
-            //                         this.definedTagId = childItem.groupId
-            //                     }
-            //                     return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
-            //                 })
-            //                 result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
-            //             })
-            //         })
-            //         this.treeData = result
-            //         // this.activeTab = result[0].children[0].groupId
-            //         // this.filter.groupId = this.activeTab
-            //         this.fetchTagList()
-            //     })
-            // }
-        },
-        created () {
-            this.$root.$on('label-zone-list-refresh', this.fetchData)
-            this.fetchData()
-        }
+import tagList from './TagList'
+import TagCategoryUpsert from '../TagCategory/Upsert.vue'
+export default {
+  name: 'LabelZone',
+  components: {
+    tagList,
+    TagCategoryUpsert
+  },
+  props: {
+    tagName: {
+      type: String
+    },
+    checkList: {
+      type: Array
+    },
+    showSelection: {
+      type: Boolean
+    },
+    currentSelectTag: {
+      type: Array
     }
+  },
+  data () {
+    return {
+      treeData: [],
+      activeTab: undefined,
+      dataList: [],
+      filter: {
+        pageNum: 1,
+        pageSize: 300,
+        groupId: undefined,
+        tagName: undefined
+      },
+      dataSourceEnum: {},
+      typeEnum: {},
+      toggleShow: false,
+      loading: true,
+      tagCategory: {},
+      definedTagId: undefined
+    }
+  },
+  watch: {
+    'tagName': function (val) {
+      if (val !== undefined && val !== '') {
+        this.filter.tagName = val
+        this.fetchTagAllList()
+      } else {
+        this.filter.tagName = val
+        this.fetchTagList()
+      }
+    }
+  },
+  methods: {
+    fetchData () {
+      this.$service.getNewTreeList().then(data => {
+        const result = []
+        data.forEach(item => {
+          item.children.forEach(secondChild => {
+            const childList = secondChild.children.map(childItem => {
+              if (childItem.groupName === '自定义标签') {
+                this.definedTagId = childItem.groupId
+              }
+              return { groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount }
+            })
+            result.push({ parentName: secondChild.groupName, newOrUpdateCount: secondChild.newOrUpdateCount, parentId: secondChild.groupId, children: childList })
+          })
+        })
+        this.treeData = result
+        // this.activeTab = result[0].children[0].groupId
+        // this.filter.groupId = this.activeTab
+        this.fetchTagList()
+      })
+      // this.$service.getParentIdList().then((data) => {
+      //     const result = []
+      //     data.forEach(item => {
+      //         item.children.forEach(secondChild => {
+      //             const childList = secondChild.children.map(childItem => {
+      //                 if (childItem.groupName === '自定义标签') {
+      //                     this.definedTagId = childItem.groupId
+      //                 }
+      //                 return {groupId: childItem.groupId.toString(), groupName: childItem.groupName}
+      //             })
+      //             result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
+      //         })
+      //     })
+      //     this.treeData = result
+      //     // this.activeTab = result[0].children[0].groupId
+      //     // this.filter.groupId = this.activeTab
+      //     this.fetchTagList()
+      // })
+    },
+    fetchTagList () {
+      const filter = this.filter
+      if (this.filter.groupId) {
+        this.$service.getTagGroupTreeList(filter).then((data) => {
+          this.dataList = data.pageInfo.list
+          this.dataSourceEnum = data.lableDataSourceEnum
+          this.typeEnum = data.tagsTypeEnum
+          this.loading = false
+        })
+      }
+    },
+    fetchTagAllList () {
+      const filter = JSON.parse(JSON.stringify(this.filter))
+      filter.groupId = 0
+      this.$service.getTagGroupTreeList(filter).then((data) => {
+        this.dataList = data.pageInfo.list
+        this.dataSourceEnum = data.lableDataSourceEnum
+        this.typeEnum = data.tagsTypeEnum
+        this.loading = false
+      })
+    },
+    handleTabClick () {
+      // 当前tab再次点击收缩表格
+      if (this.filter.groupId !== this.activeTab) {
+        this.toggleShow = true
+        this.filter.groupId = this.activeTab
+        this.loading = true
+      } else {
+        this.toggleShow = !this.toggleShow
+        return
+      }
+      // 切换tab清空搜索框的值
+      this.filter.tagName = undefined
+      // this.dataList = []
+      this.$emit('clear-search')
+      this.$emit('fetch-checkList')
+      this.fetchTagList()
+    },
+    handleCheckListChange (val) {
+      this.$emit('change-checkList', val)
+    },
+    handleAddTagCategory () {
+      this.tagCategory = {
+        groupId: this.definedTagId
+      }
+      this.$refs.tagCategoryUpsert.showCreateDialog = true
+    },
+    handleTableSelected (val, mode) {
+      this.$emit('get-table-selected', val, mode)
+    }
+    // getNewTree () {
+    //     this.$service.getNewTreeList().then(data => {
+    //         console.log(data)
+    //         const result = []
+    //         data.forEach(item => {
+    //             item.children.forEach(secondChild => {
+    //                 const childList = secondChild.children.map(childItem => {
+    //                     if (childItem.groupName === '自定义标签') {
+    //                         this.definedTagId = childItem.groupId
+    //                     }
+    //                     return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
+    //                 })
+    //                 result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
+    //             })
+    //         })
+    //         this.treeData = result
+    //         // this.activeTab = result[0].children[0].groupId
+    //         // this.filter.groupId = this.activeTab
+    //         this.fetchTagList()
+    //     })
+    // }
+  },
+  created () {
+    this.$root.$on('label-zone-list-refresh', this.fetchData)
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

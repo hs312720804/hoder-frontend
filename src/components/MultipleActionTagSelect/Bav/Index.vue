@@ -228,7 +228,8 @@
                     childItem: item2,
                     hasChild: true,
                     level: 3,
-                    extra: {type: item.childCheckedVal}
+                    extra: {type: item.childCheckedVal},
+                    reverseSelectAttr: true
                   })"
                 >
                   <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal})">
@@ -347,7 +348,8 @@
                       childItem: item2,
                       hasChild: true,
                       level: 3,
-                      extra: {type: childItem.bav.value}
+                      extra: {type: childItem.bav.value},
+                      reverseSelectAttr: true
                     })"
                   >
                     <template v-for="attrChildItem in getBehaviorAttrList(3, {type: childItem.bav.value})">
@@ -503,7 +505,8 @@
                 level: 2,
                 defaultChild: moDefaultChild,
                 selectPropKeyValue: 'selectKey',
-                isValueClear: true
+                isValueClear: true,
+                reverseSelectAttr: true
               })"
             >
               <template v-for="item in getBehaviorAttrList(2)">
@@ -633,7 +636,10 @@
           style="width: 120px"
           name="oxve"
           class="input-inline"
-          @change="handelBehavirSelectChange(true)"
+          @change="handelBehavirSelectChange({
+            hasChild: true,
+            reverseSelectAttr: true
+          })"
         >
           <template v-for="item in getBehaviorAttrList()">
             <el-option
@@ -711,7 +717,8 @@
                 childItem: item,
                 hasChild: true,
                 level: 2,
-                extra: {type: childItem.bav.value}
+                extra: {type: childItem.bav.value},
+                reverseSelectAttr: true
               })"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})">
@@ -770,8 +777,11 @@
         style="width: 120px"
         name="oxve"
         class="input-inline"
-        @change="handelBehavirSelectChange(false, 1, childItem.bav.behaviorValue[0].child)"
+        @change="handelBehavirSelectChange({
+          defaultChild: childItem.bav.behaviorValue[0].child
+        })"
       >
+
         <template v-for="item in getBehaviorAttrList(1)">
           <el-option
             :value="item.value"
@@ -2455,8 +2465,10 @@ export default {
      * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      * @param {Number} level 第几级（为获取下拉框list）
      */
-    getValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
+    getValListByVals (params) {
+      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
       let list = []
+      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
       vals.forEach(val => {
         const lastNumberObj = [
           { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
@@ -2471,6 +2483,10 @@ export default {
           obj = matchObj2
           // 清空对象中的 value（模块活跃特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
           if (isValueClear) obj.value = ''
+        }
+
+        if (reverseSelect) { // 反选
+          obj.operator = '!='
         }
 
         // 模块活跃，默认 child 值特殊处理
@@ -2524,7 +2540,8 @@ export default {
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
      * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      */
-    handelBehavirSelectChange (hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false) {
+    handelBehavirSelectChange (params) {
+      let { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
       const childItem = this.childItem
 
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
@@ -2532,29 +2549,30 @@ export default {
       if (childItem.tagCode === 'BAV0012') { // 综合起播的数据放在 showBehaviorValue 字段中
         const behaviorValue = childItem.bav.showBehaviorValue
         const behaviorAttrList = this.getBehaviorAttrList(level)
-
-        childItem.bav.showBehaviorValue = this.getValListByVals( // 组装数据
+        childItem.bav.showBehaviorValue = this.getValListByVals({ // 组装数据
           vals,
           behaviorValue,
-          behaviorAttrList,
+          attrList: behaviorAttrList,
           hasChild,
           defaultChild,
           selectPropKeyValue,
-          isValueClear
-        )
+          isValueClear,
+          reverseSelectAttr
+        })
       } else {
         const behaviorValue = childItem.bav.behaviorValue
         const behaviorAttrList = this.getBehaviorAttrList(level)
 
-        childItem.bav.behaviorValue = this.getValListByVals( // 组装数据
+        childItem.bav.behaviorValue = this.getValListByVals({ // 组装数据
           vals,
           behaviorValue,
-          behaviorAttrList,
+          attrList: behaviorAttrList,
           hasChild,
           defaultChild,
           selectPropKeyValue,
-          isValueClear
-        )
+          isValueClear,
+          reverseSelectAttr
+        })
       }
     },
 
@@ -2569,7 +2587,7 @@ export default {
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      */
     handelChildBehavirSelectChange (params) {
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild } = params
+      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
@@ -2579,16 +2597,18 @@ export default {
         this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
       }
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
-      childItem.child = this.getValListByVals( // 组装数据
+
+      childItem.child = this.getValListByVals({ // 组装数据
         vals,
         behaviorValue,
-        behaviorAttrList,
+        attrList: behaviorAttrList,
         hasChild,
         defaultChild,
         selectPropKeyValue,
         isValueClear,
-        level
-      )
+        level,
+        reverseSelectAttr
+      })
     },
 
     // 通过 vals 获取完整的 valList

@@ -4,77 +4,79 @@
           :title="tagCategory.tagId ? '编辑种类' : '新建种类111'"
           :visible.sync="showCreateDialog"
         >
-            <c-gate-schema-form v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
-                <div key="/groupId">
-                    <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
-                    <el-input size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
-                    <!--<el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>-->
-                </div>
-                <!--<el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">-->
-                    <!--<el-option-->
-                        <!--v-for="item in tagGroupList"-->
-                        <!--:key="item.groupId"-->
-                        <!--:label="item.groupName"-->
-                        <!--:value="item.groupId"-->
-                        <!--:disabled="item.groupId === 79"-->
-                    <!--&gt;-->
-                    <!--</el-option>-->
-                <!--</el-select>-->
-                <el-select
-                  key="/dataSource"
-                  :value="tagCategory.dataSource"
-                  @input="handleInput('/dataSource', $event)" placeholder="请选择"
-                >
-                    <el-option
-                            v-for="item in dataSourceList"
-                            :key="item.value"
-                            :label="item.label"
-                            :value="item.value"
-                            :disabled="item.value == 2"
-                    >
-                    </el-option>
-                </el-select>
-                <el-select
-                        key="/thirdPartyApiId"
-                        :value="tagCategory.thirdPartyApiId"
-                        @input="handleInput('/thirdPartyApiId', $event)" placeholder="请选择"
-                >
-                    <el-option
-                            v-for="item in thirdInterfaces"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
-                    >
-                    </el-option>
-                </el-select>
-                <el-select
-                        key="/tagType"
-                        :value="tagCategory.tagType"
-                        :disabled="tagCategory.dataSource === 2"
-                        @input="handleInput('/tagType', $event)" placeholder="请选择"
-                >
-                    <el-option
-                        v-for="item in typeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                    >
-                    </el-option>
-                </el-select>
-            </c-gate-schema-form>
+
+          <c-gate-schema-form v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
+              <div key="/groupId">
+                  <el-input style="display: none"  v-model="tagCategory.groupId" placeholder="请选择父类"></el-input>
+                  <el-input size="small" readonly v-model="parentGroupName" placeholder="请选择父类"></el-input>
+                  <!--<el-button  size="small" type="primary" icon="search" @click="selectParent">选择</el-button>-->
+              </div>
+              <!--<el-select key="/groupId" :value="tagCategory.groupId" @input="handleInput('/groupId', $event)"   placeholder="请选择">-->
+                  <!--<el-option-->
+                      <!--v-for="item in tagGroupList"-->
+                      <!--:key="item.groupId"-->
+                      <!--:label="item.groupName"-->
+                      <!--:value="item.groupId"-->
+                      <!--:disabled="item.groupId === 79"-->
+                  <!--&gt;-->
+                  <!--</el-option>-->
+              <!--</el-select>-->
+
+              <el-select
+                key="/dataSource"
+                :value="tagCategory.dataSource"
+                @input="handleInput('/dataSource', $event)" placeholder="请选择"
+              >
+                  <el-option
+                          v-for="item in dataSourceList"
+                          :key="item.value"
+                          :label="item.label"
+                          :value="item.value"
+                          :disabled="item.value == 2"
+                  >
+                  </el-option>
+              </el-select>
+              <el-select
+                      key="/thirdPartyApiId"
+                      :value="tagCategory.thirdPartyApiId"
+                      @input="handleInput('/thirdPartyApiId', $event)" placeholder="请选择"
+              >
+                  <el-option
+                          v-for="item in thirdInterfaces"
+                          :key="item.id"
+                          :label="item.name"
+                          :value="item.id"
+                  >
+                  </el-option>
+              </el-select>
+              <el-select
+                      key="/tagType"
+                      :value="tagCategory.tagType"
+                      :disabled="tagCategory.dataSource === 2"
+                      @input="handleInput('/tagType', $event)" placeholder="请选择"
+              >
+                  <el-option
+                      v-for="item in typeList"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value"
+                  >
+                  </el-option>
+              </el-select>
+          </c-gate-schema-form>
         </el-dialog>
         <!--选择父类弹窗-->
         <el-dialog
-                title="选择父类"
-                :visible.sync="showSelectDialog"
-                width="30%"
-                class="organSelect"
+          title="选择父类"
+          :visible.sync="showSelectDialog"
+          width="30%"
+          class="organSelect"
         >
             <el-tree
-                    :data="parentTree"
-                    :props="parentProps"
-                    accordion
-                    @node-click="handleSelectNodeClick">
+              :data="parentTree"
+              :props="parentProps"
+              accordion
+              @node-click="handleSelectNodeClick">
             </el-tree>
             <span slot="footer" class="dialog-footer">
             <el-button @click="parentSelectCancel">取 消</el-button>
@@ -164,10 +166,16 @@ export default {
     }
   },
   watch: {
-    'tagCategory.dataSource':
-           function (newVal) {
-             if (newVal === 3) { this.hideThirdparam = false } else { this.hideThirdparam = true }
-           },
+    'tagCategory.groupId': {
+      handler (val) {
+        console.log('123val==>', val)
+      }
+    },
+
+    'tagCategory.dataSource': function (newVal) {
+      if (newVal === 3) { this.hideThirdparam = false } else { this.hideThirdparam = true }
+    },
+
     currentTagCategory (val) {
       const form = this.$refs.gForm
       if (form) {
