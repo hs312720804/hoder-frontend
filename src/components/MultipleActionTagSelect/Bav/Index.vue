@@ -2459,7 +2459,7 @@ export default {
      * @param {Array} vals 选中值的集合
      * @param {Array} behaviorValue 完整的组装好的集合
      * @param {Array} attrList 下拉框列表
-     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
      * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
@@ -2534,7 +2534,7 @@ export default {
     /**
      * 行为标签下拉框切换绑定事件
      * @param {Object} childItem 当前选项的 obj
-     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
      * @param {Number} level = 1 第几级（为获取下拉框 list ）
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
@@ -2579,7 +2579,7 @@ export default {
     /**
      * 行为标签下拉框切换绑定事件
      * @param {Object} childItem 当前选项的obj
-     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
      * @param {Number} level = 2 第几级（为获取下拉框 list ）
      * @param {Object} extra 附加信息（根据选项判断，为获取不同下拉框list）
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
@@ -2618,7 +2618,7 @@ export default {
      * @param {Array} vals 选中值的集合
      * @param {Array} behaviorValue 已经组装好的集合
      * @param {Array} attrList 下拉框列表
-     * @param {Boolean} hasChild = false 是否有 child
+     * @param {Boolean} hasChild = false 是否有 child (如果下一级是下拉框，则应选为false)
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
      * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）

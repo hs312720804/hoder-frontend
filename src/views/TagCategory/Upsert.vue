@@ -1,7 +1,7 @@
 <template>
     <div>
         <el-dialog
-          :title="tagCategory.tagId ? '编辑种类' : '新建种类111'"
+          :title="tagCategory.tagId ? '编辑种类' : '新建种类'"
           :visible.sync="showCreateDialog"
         >
 
@@ -166,26 +166,20 @@ export default {
     }
   },
   watch: {
-    'tagCategory.groupId': {
-      handler (val) {
-        console.log('123val==>', val)
-      }
-    },
-
     'tagCategory.dataSource': function (newVal) {
       if (newVal === 3) { this.hideThirdparam = false } else { this.hideThirdparam = true }
     },
 
     currentTagCategory (val) {
-      const form = this.$refs.gForm
-      if (form) {
-        form.activePaths = {}
-      }
-      this.tagCategory = val ? cloneDeep(val) : {}
-      if (this.tagCategory) {
-        this.oldGroupId = this.tagCategory.groupId
-      }
-      this.getParentInfo()
+      // const form = this.$refs.gForm
+      // if (form) {
+      //   form.activePaths = {}
+      // }
+      // this.tagCategory = val ? cloneDeep(val) : {}
+      // if (this.tagCategory) {
+      //   this.oldGroupId = this.tagCategory.groupId
+      // }
+      // this.getParentInfo()
     },
     showCreateDialog (val) {
       if (!val) {
@@ -195,7 +189,7 @@ export default {
     },
     definedTagId (val) {
       if (val) {
-        this.tagCategory.groupId = this.definedTagId
+        this.tagCategory.groupId = val
       }
     }
   },
