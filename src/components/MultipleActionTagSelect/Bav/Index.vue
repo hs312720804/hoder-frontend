@@ -2540,7 +2540,7 @@ export default {
      * @param {String} selectPropKeyValue = 'value' 下拉框的 value 和 key 字段的 key 值
      * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      */
-    handelBehavirSelectChange (params) {
+    handelBehavirSelectChange (params = {}) {
       let { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
       const childItem = this.childItem
 
@@ -2586,7 +2586,7 @@ export default {
      * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      */
-    handelChildBehavirSelectChange (params) {
+    handelChildBehavirSelectChange (params = {}) {
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
@@ -2737,7 +2737,7 @@ export default {
      * @param {Object} defaultChild 所清空下一级 child 时的默认赋值
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
-    handelQiBoChildBehavirSelectChange (params) {
+    handelQiBoChildBehavirSelectChange (params = {}) {
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] } = params
 
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
