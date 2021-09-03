@@ -216,29 +216,38 @@
           >
             <!-- {{item.childCheckedVal}} -->
             <span class="flex-column">
-              <!-- 第三级 -->
-              <el-select
-                multiple
-                v-model="item2.childCheckedVal"
-                style="width: 110px"
-                name="asdq"
-                class="input-inline"
-                @change="handelChildBehavirSelectChange({
-                  childItem: item2,
-                  hasChild: true,
-                  level: 3,
-                  extra: {type: item.childCheckedVal}
-                })"
-              >
-                <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal})">
-                  <el-option
-                    :value="attrChildItem.value"
-                    :label="attrChildItem.name"
-                    :key="attrChildItem.value"
-                  >
-                  </el-option>
-                </template>
-              </el-select>
+              <div class="flex-row">
+                <!-- 第三级 -->
+                <el-select
+                  multiple
+                  v-model="item2.childCheckedVal"
+                  style="width: 110px"
+                  name="asdq"
+                  class="input-inline"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    hasChild: true,
+                    level: 3,
+                    extra: {type: item.childCheckedVal}
+                  })"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(3, {type: item.childCheckedVal})">
+                    <el-option
+                      :value="attrChildItem.value"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.value"
+                    >
+                    </el-option>
+                  </template>
+                </el-select>
+                <el-checkbox
+                  class="reverse-check"
+                  v-model="childItem.bav.reverseSelect"
+                  @change="ReverseSelect($event, item2.child)"
+                >
+                  圈出未活跃
+                </el-checkbox>
+              </div>
               <div class="flex-column">
                 <!-- {{ item2.child }}
                 {{ item2.childCheckedVal }} -->
