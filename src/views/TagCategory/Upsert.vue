@@ -1,8 +1,8 @@
 <template>
     <div>
         <el-dialog
-                :title="tagCategory.tagId ? '编辑种类' : '新建种类'"
-                :visible.sync="showCreateDialog"
+          :title="tagCategory.tagId ? '编辑种类' : '新建种类111'"
+          :visible.sync="showCreateDialog"
         >
             <c-gate-schema-form v-if="showCreateDialog" ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tagCategory">
                 <div key="/groupId">
@@ -21,9 +21,9 @@
                     <!--</el-option>-->
                 <!--</el-select>-->
                 <el-select
-                        key="/dataSource"
-                        :value="tagCategory.dataSource"
-                        @input="handleInput('/dataSource', $event)" placeholder="请选择"
+                  key="/dataSource"
+                  :value="tagCategory.dataSource"
+                  @input="handleInput('/dataSource', $event)" placeholder="请选择"
                 >
                     <el-option
                             v-for="item in dataSourceList"
