@@ -888,38 +888,49 @@
               —
               <!-- @change="handelQiBoChildBehavirSelectChange(item4, false, childItem, 5, {}, 'value', true)" -->
               <span class="flex-column">
-                <!-- 第五级 -->
-                <el-select
-                  v-model="item4.childCheckedVal[0]"
-                  style="width: 150px;"
-                  filterable
-                  remote
-                  placeholder="请输入片名或ID"
-                  no-data-text='没有找到该片'
-                  clearable
-                  :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
-                  :loading="loading2"
-                  v-loadmore="{'methord': handelQiboLoadmore}"
-                  @change="handelQiBoChildBehavirSelectChange({
-                    childItem: item4,
-                    level: 5,
-                    isValueClear: true
-                  })"
-                >
-                  <el-option
-                    v-for="tv in qiBoOptions"
-                    :key="tv.value"
-                    :label="tv.name +'('+ tv.value+')'"
-                    :value="tv.value">
-                  </el-option>
-                  <!-- 编辑回显 选项-->
+                <div class="flex-row">
+                  <!-- 第五级 -->
+                  <el-select
+                    v-model="item4.childCheckedVal[0]"
+                    style="width: 150px;"
+                    filterable
+                    remote
+                    placeholder="请输入片名或ID"
+                    no-data-text='没有找到该片'
+                    clearable
+                    :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
+                    :loading="loading2"
+                    v-loadmore="{'methord': handelQiboLoadmore}"
+                    @change="handelQiBoChildBehavirSelectChange({
+                      childItem: item4,
+                      level: 5,
+                      isValueClear: true,
+                      reverseSelectAttr: true
+                    })"
+                  >
+                    <el-option
+                      v-for="tv in qiBoOptions"
+                      :key="tv.value"
+                      :label="tv.name +'('+ tv.value+')'"
+                      :value="tv.value">
+                    </el-option>
+                    <!-- 编辑回显 选项-->
 
-                  <el-option
-                    v-if="qiBoOptions.length === 0 && item4.childCheckedVal[0]"
-                    :label="item4.child[0].name"
-                    :value="item4.childCheckedVal[0]">
-                  </el-option>
-                </el-select>
+                    <el-option
+                      v-if="qiBoOptions.length === 0 && item4.childCheckedVal[0]"
+                      :label="item4.child[0].name"
+                      :value="item4.childCheckedVal[0]">
+                    </el-option>
+                  </el-select>
+                  <el-checkbox
+                    class="reverse-check"
+                    v-model="childItem.bav.reverseSelect"
+                    @change="ReverseSelect($event, item4.child)"
+                  >
+                    圈出未起播
+                  </el-checkbox>
+                </div>
+
                 <span class="appoint-text" v-if="!!item4.childCheckedVal[0] && appointmentInfo.length > 0">
                   <span style="">该片的统计时间为:</span>
                   <span v-for="item in appointmentInfo" :key="item.start + item.end" style="color: red">{{item.start}} - {{item.end}}</span>
@@ -953,7 +964,8 @@
                           :value="attrChildItem.value">
                         </el-option>
                       </el-select>
-                      <span>
+                      <!-- 天数次数等 -->
+                      <span v-if="!childItem.bav.reverseSelect">
                         <span
                           v-for="(item6, index) in item5.child"
                           :key="index"
@@ -1058,7 +1070,8 @@
                             :value="attrChildItem.value">
                           </el-option>
                         </el-select>
-                        <span>
+                        <!-- 天数次数等 -->
+                        <span v-if="!childItem.bav.reverseSelect">
                           <span
                             v-for="(item7, index) in item6.child"
                             :key="index"
@@ -1422,37 +1435,48 @@
               class="flex-row child"
             >
               <!-- qiBoRemoteMethod 参数(keyWords, 视频源) -->
-              <el-select
-                v-model="item4.childCheckedVal[0]"
-                style="width: 150px;"
-                filterable
-                remote
-                placeholder="请输入片名或ID"
-                no-data-text='没有找到该片'
-                clearable
-                :remote-method="(query) => { qiBoRemoteMethod(query, item2.childCheckedVal[0]) }"
-                :loading="loading2"
-                v-loadmore="{'methord': handelQiboLoadmore}"
-                @change="handelChildBehavirSelectChange({
-                  childItem: item4,
-                  level: 4,
-                  extra: {type: '影片', source: childItem.bav.value},
-                  hasChild: true
-                })"
-              >
-                <el-option
-                  v-for="tv in qiBoOptions"
-                  :key="tv.value"
-                  :label="tv.name +'('+ tv.value+')'"
-                  :value="tv.value">
-                </el-option>
-                <!-- 编辑回显 选项-->
-                <el-option
-                  v-if="qiBoOptions.length === 0 && item4.child[0]"
-                  :label="item4.child[0].name"
-                  :value="item4.childCheckedVal[0]">
-                </el-option>
-              </el-select>
+              <div class="flex-row">
+                <el-select
+                  v-model="item4.childCheckedVal[0]"
+                  style="width: 150px;"
+                  filterable
+                  remote
+                  placeholder="请输入片名或ID"
+                  no-data-text='没有找到该片'
+                  clearable
+                  :remote-method="(query) => { qiBoRemoteMethod(query, item2.childCheckedVal[0]) }"
+                  :loading="loading2"
+                  v-loadmore="{'methord': handelQiboLoadmore}"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item4,
+                    level: 4,
+                    extra: {type: '影片', source: childItem.bav.value},
+                    hasChild: true,
+                    reverseSelectAttr: true
+                  })"
+                >
+                  <el-option
+                    v-for="tv in qiBoOptions"
+                    :key="tv.value"
+                    :label="tv.name +'('+ tv.value+')'"
+                    :value="tv.value">
+                  </el-option>
+                  <!-- 编辑回显 选项-->
+                  <el-option
+                    v-if="qiBoOptions.length === 0 && item4.child[0]"
+                    :label="item4.child[0].name"
+                    :value="item4.childCheckedVal[0]">
+                  </el-option>
+                </el-select>
+                <el-checkbox
+                  class="reverse-check"
+                  v-model="childItem.bav.reverseSelect"
+                  @change="ReverseSelect($event, item4.child)"
+                >
+                  圈出未活跃
+                </el-checkbox>
+              </div>
+
               <span
                 v-for="(item5, index) in item4.child"
                 :key="index"
@@ -1478,7 +1502,7 @@
                   </el-option>
                 </el-select> -->
                 <!-- 次数、天数 -->
-                <Type ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
               </span>
               <!-- {{item4.child}} -->
             </span>
@@ -1501,7 +1525,8 @@
                   childItem: item2,
                   level: 3,
                   extra: {type: '关注'},
-                  hasChild: true
+                  hasChild: true,
+                  reverseSelectAttr: true
                 })"
               >
                 <el-option
@@ -1517,6 +1542,13 @@
                   :value="item2.childCheckedVal[0]">
                 </el-option>
               </el-select>
+              <el-checkbox
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect($event, item2.child)"
+              >
+                圈出未活跃
+              </el-checkbox>
               <!-- {{item2.child}} -->
 
               <span
@@ -1525,7 +1557,7 @@
                 class="flex-row"
               >
                 <!-- 次数、天数 -->
-                <Type ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
               </span>
             </div>
             <!-- 第三级 搜索影片-->
@@ -1592,7 +1624,7 @@
                     class="flex-row"
                   >
                     <!-- 次数、天数 -->
-                    <Type ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                     <!-- {{item2}} -->
                   </span>
                 </div>
@@ -1616,7 +1648,8 @@
                         childItem: item3,
                         level: 4,
                         extra: {type: '影片'},
-                        hasChild: true
+                        hasChild: true,
+                        reverseSelectAttr: true
                       })"
                     >
                       <el-option
@@ -1632,13 +1665,20 @@
                         :value="item3.childCheckedVal[0]">
                       </el-option>
                     </el-select>
+                    <el-checkbox
+                      class="reverse-check"
+                      v-model="childItem.bav.reverseSelect"
+                      @change="ReverseSelect($event, item3.child)"
+                    >
+                      圈出未活跃
+                    </el-checkbox>
 
                     <span
                       v-for="(item4, index) in item3.child"
                       :key="index"
                       class="flex-row child"
                     >
-                      <Type ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                     </span>
                   </div>
 
@@ -1747,7 +1787,8 @@
                     @change="handelChildBehavirSelectChange({
                       childItem: item5,
                       level: 6,
-                      extra: {type: '电竞'}
+                      extra: {type: '电竞'},
+                      reverseSelectAttr: true
                     })"
                   >
                     <el-option
@@ -1763,6 +1804,14 @@
                       :value="item5.childCheckedVal[0]">
                     </el-option>
                   </el-select>
+                  <el-checkbox
+                    class="reverse-check"
+                    v-model="childItem.bav.reverseSelect"
+                    @change="ReverseSelect($event, item5.child)"
+                  >
+                    圈出未活跃
+                  </el-checkbox>
+
                   <span
                     v-for="(item6, index) in item5.child"
                     :key="index"
@@ -1795,7 +1844,7 @@
                       :key="index"
                       class="flex-row child"
                     >
-                      <Type ref="typeRef" :item3="item7.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item7.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                     </span>
                   </span>
                 </span>
@@ -1805,13 +1854,6 @@
             </span>
           </div>
 
-          <el-checkbox
-            class="reverse-check"
-            v-model="childItem.bav.reverseSelect"
-            @change="ReverseSelect($event, childItem.bav.behaviorValue)"
-          >
-            圈出未活跃
-          </el-checkbox>
         </span>
       </div>
     </span>
@@ -2053,9 +2095,9 @@
         </span>
 
         <!-- 选了集数 -->
-        <Type v-if="item.childCheckedVal[1] && item.child[1].childCheckedVal.length > 0" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
+        <Type v-if="item.childCheckedVal[1] && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
         <!-- 没有选集数 -->
-        <Type v-else ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+        <Type v-else-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
 
       </span>
     </span>
@@ -2624,9 +2666,12 @@ export default {
      * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      * @param {Number} level 第几级（为获取下拉框list）
      */
-    getQiBoValListByVals (vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level) {
+    getQiBoValListByVals (params = {}) {
+      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
+      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
+
       if (vals.length === 0 && level === 6) { // 清空集数
         let obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
@@ -2653,6 +2698,11 @@ export default {
           obj = matchObj2
         }
         // console.log('obj.child=>>', obj.child)
+
+        if (reverseSelect) { // 反选
+          obj.operator = '!='
+        }
+
         // 模块活跃，默认 child 值特殊处理
         let defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
@@ -2738,7 +2788,7 @@ export default {
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [] } = params
+      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
@@ -2749,7 +2799,7 @@ export default {
         this.qiBoOptions = []
         this.qiboParams.page = 1 // 页码归1
       }
-      childItem.child = this.getQiBoValListByVals(
+      childItem.child = this.getQiBoValListByVals({
         vals,
         behaviorValue,
         behaviorAttrList,
@@ -2757,8 +2807,9 @@ export default {
         defaultChild,
         selectPropKeyValue,
         isValueClear,
-        level
-      )
+        level,
+        reverseSelectAttr
+      })
     },
 
     getVideoEpisode ({ tvId, businessType, source }) {
