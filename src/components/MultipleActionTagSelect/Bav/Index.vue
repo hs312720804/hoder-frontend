@@ -356,7 +356,7 @@
                     v-if="item2.field === 'purchase_recent_two_years'"
                     class="reverse-check"
                     v-model="childItem.bav.reverseSelect"
-                    @change="changeAAA($event, childItem.bav.behaviorValue)"
+                    @change="ReverseSelect($event, item2.child)"
                   >
                     圈出未购买
                   </el-checkbox>
@@ -373,7 +373,7 @@
                   <!-- {{item2}} -->
                     <span class="flex-row">
                       <span class="w100">{{ item3.name }}</span>
-                      <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column" >
+                      <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column">
                         <!-- 历史购买 -->
                         <!-- 第三级 -->
                         <el-select
@@ -508,7 +508,7 @@
             <el-checkbox
               class="reverse-check"
               v-model="childItem.bav.reverseSelect"
-              @change="changeAAA($event, childItem.bav.behaviorValue)"
+              @change="ReverseSelect($event, item.child)"
             >
               圈出未活跃
             </el-checkbox>
@@ -637,7 +637,7 @@
         <el-checkbox
           class="reverse-check"
           v-model="childItem.bav.reverseSelect"
-          @change="changeAAA($event, childItem.bav.behaviorValue)"
+          @change="ReverseSelect($event, childItem.bav.behaviorValue)"
         >
           圈出未活跃
         </el-checkbox>
@@ -716,7 +716,7 @@
             <el-checkbox
               class="reverse-check"
               v-model="childItem.bav.reverseSelect"
-              @change="changeAAA($event, childItem.bav.behaviorValue)"
+              @change="ReverseSelect($event, item.child)"
             >
               圈出未使用
             </el-checkbox>
@@ -1789,7 +1789,7 @@
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
-            @change="changeAAA($event, childItem.bav.behaviorValue)"
+            @change="ReverseSelect($event, childItem.bav.behaviorValue)"
           >
             圈出未活跃
           </el-checkbox>
@@ -2039,9 +2039,9 @@
         <Type v-else ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
 
       </span>
-
     </span>
-    <!-- <div>{{childItem.bav}}</div> -->
+
+    <div>{{childItem.bav}}</div>
   </div>
 </template>
 
@@ -2175,7 +2175,7 @@ export default {
     },
 
     // 反选
-    changeAAA (val, behaviorValue) {
+    ReverseSelect (val, behaviorValue) {
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
       behaviorValue.forEach(item => {

@@ -11,9 +11,9 @@
         <div class="version">{{$appState.user.version}}</div>
       </div>
       <el-menu
-              :default-active="activeRouteName"
-              class="main_menu menu"
-              :collapse="isCollapseMenu"
+        :default-active="activeRouteName"
+        class="main_menu menu"
+        :collapse="isCollapseMenu"
       >
         <template v-for="(item, index) in $appState.menus">
           <el-menu-item
@@ -72,7 +72,8 @@
         ></el-button>
         <c-breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
-          <el-button type="text" @click="handelGoToHelp">帮助文档</el-button>
+          <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')">数据部应用平台</el-button>
+          <el-button type="text" @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')">帮助文档</el-button>
           <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
               <i class="el-icon-bell"></i>
@@ -133,310 +134,307 @@
   </el-container>
 </template>
 <script>
-    import TagNav from './TagNav.vue'
-    export default {
-        components: {
-            TagNav
-        },
-        props: ["menu"],
-        data() {
-            return {
-                activeRouteName: '',
-                activeIndex: '',
-                breadcrumb: [],
-                isCollapseMenu: false,
-                routerMap: {
-                    "label/index": "labelSquare",
-                    // "label/index": "tag",
-                    "launchHelp/index": "validate",
-                    "launchCrowd/index": "crowd",
-                    "launchPolicy/index": "strategy",
-                    "/policy/index": "strategyList",
-                    "/manage/menu/index": "menuSetting",
-                    "/manage/email/index": "emailNotice",
-                    "/manage/user/index": "personManage",
-                    "/manage/office/index": "organManage",
-                    "/manage/role/index": "roleManage",
-                    "/manage/user/personalInformation": "personalInformation",
-                    "/manage/user/modifyPassword": "password",
-                    "/manage/loginLog/index": "loginLog",
-                    "/manage/operateLog/index": "operateLog",
-                    "/crowdDataPos/index": "dataManage",
-                    "/tagDict/index": "tagDictDatabase",
-                    "/total/index": "statisticsHomePage",
-                    "/indexTotal/index": "OverallDeliveryStatistics",
-                    "/crowTotal/index": "OverallCrowdStatistics",
-                    "/tagStructure/index": "tabStructure",
-                    "/crowdCategory/index": "CurrentPopulationClassification",
-                    "/crowdPortrayal/index": "crowdPortrayal",
-                    "/biIndex/index": "indexBI",
-                    "/ottIndex/index": "OTTBigscreenIndex",
-                    "/thirdDMP/index": "thirdPartyDMP",
-                    "/monitor/index": "DeliveryMonitor",
-                    "/portrayal/index": "DeliveryAfterPeopleDraw",
-                    "/dataAnalyze/index": "DeliveryDataAnalyse",
-                    "/thirdInterfaceConf/index": "thirdInterface",
-                    "/devTool/clearCache":"clearCache",
-                    "/webApiServers/index":"ipManage",
-                    "/multiVersionCrowd/index":"multiVersionCrowd",
-                    "/manager/biList":"launchSettings",
-                    "/manager/notice/index":"notice",
-                    "/launchAdmin": "launchTabList",
-                    "/anomaly/index": "anomalyEcharts",
-                    "/myPolicy/index": "myPolicy",
-                    "/groupImageInsight/index": "groupImageInsight",
-                    "/userTagsSearch/index": "userTagsSearch",
-                    "/hitSearch/index": "hitSearch",
-                    "/oneTouchDrop/index": "oneTouchDrop",
-                    "/specialTag/index": "specialTag",
-                    "/launchHelper/resendCommand": "resendCommand"
-                },
-                activeName: 'first',
-                updateMessage: [],
-                systemMessage: [],
-                messageTypeEnum: {
-                    'first': 1,
-                    'second': 2
-                },
-                unReadMessage: undefined,
-                showMoreUpdate: false,
-                showMoreSystem: false,
-                noCacheMenu: [],
-                currentTags: [], // 现在已打开的菜单
-                isCache: true // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
-            };
-        },
-        watch: {
-            $route: 'handleRouteChange'
-        },
-        computed: {
-            isKeepAlive() {
-              // 根据路由信息判断是否需要缓存
-              const meta = this.$route.meta;
-              return meta && meta.isCache !== false;
-            },
-            // defaultMenu() {
-            //   const mainRoute = this.$router.options.routes.find(item => {
-            //     return item.path === "/";
-            //   });
-            //   function gen({ name, meta = {}, children }) {
-            //     if (!meta.hideInMenu) {
-            //       const currentMenuItem = {
-            //         title: meta.title,
-            //         icon: meta.icon,
-            //         route: name
-            //       };
-            //       if (children) {
-            //         currentMenuItem.children = children.reduce((result, item) => {
-            //           const menuItem = gen(item);
-            //           if (menuItem) {
-            //             result.push(menuItem);
-            //           }
-            //           return result;
-            //         }, []);
-            //       }
-            //       return currentMenuItem;
-            //     }
-            //   }
-            //   const items = gen(mainRoute).children;
-            //   return items;
-            // },
-            initTags() {
-                const tagsInfo = this.$appState.$get("tags")
-                if (tagsInfo && tagsInfo.userName === this.$appState.user.name) {
-                    return tagsInfo.tags
-                } else {
-                    return []
-                }
-                // return this.$appState.$get("tags") || [];
+import TagNav from './TagNav.vue'
+export default {
+  components: {
+    TagNav
+  },
+  props: ['menu'],
+  data () {
+    return {
+      activeRouteName: '',
+      activeIndex: '',
+      breadcrumb: [],
+      isCollapseMenu: false,
+      routerMap: {
+        'label/index': 'labelSquare',
+        // "label/index": "tag",
+        'launchHelp/index': 'validate',
+        'launchCrowd/index': 'crowd',
+        'launchPolicy/index': 'strategy',
+        '/policy/index': 'strategyList',
+        '/manage/menu/index': 'menuSetting',
+        '/manage/email/index': 'emailNotice',
+        '/manage/user/index': 'personManage',
+        '/manage/office/index': 'organManage',
+        '/manage/role/index': 'roleManage',
+        '/manage/user/personalInformation': 'personalInformation',
+        '/manage/user/modifyPassword': 'password',
+        '/manage/loginLog/index': 'loginLog',
+        '/manage/operateLog/index': 'operateLog',
+        '/crowdDataPos/index': 'dataManage',
+        '/tagDict/index': 'tagDictDatabase',
+        '/total/index': 'statisticsHomePage',
+        '/indexTotal/index': 'OverallDeliveryStatistics',
+        '/crowTotal/index': 'OverallCrowdStatistics',
+        '/tagStructure/index': 'tabStructure',
+        '/crowdCategory/index': 'CurrentPopulationClassification',
+        '/crowdPortrayal/index': 'crowdPortrayal',
+        '/biIndex/index': 'indexBI',
+        '/ottIndex/index': 'OTTBigscreenIndex',
+        '/thirdDMP/index': 'thirdPartyDMP',
+        '/monitor/index': 'DeliveryMonitor',
+        '/portrayal/index': 'DeliveryAfterPeopleDraw',
+        '/dataAnalyze/index': 'DeliveryDataAnalyse',
+        '/thirdInterfaceConf/index': 'thirdInterface',
+        '/devTool/clearCache': 'clearCache',
+        '/webApiServers/index': 'ipManage',
+        '/multiVersionCrowd/index': 'multiVersionCrowd',
+        '/manager/biList': 'launchSettings',
+        '/manager/notice/index': 'notice',
+        '/launchAdmin': 'launchTabList',
+        '/anomaly/index': 'anomalyEcharts',
+        '/myPolicy/index': 'myPolicy',
+        '/groupImageInsight/index': 'groupImageInsight',
+        '/userTagsSearch/index': 'userTagsSearch',
+        '/hitSearch/index': 'hitSearch',
+        '/oneTouchDrop/index': 'oneTouchDrop',
+        '/specialTag/index': 'specialTag',
+        '/launchHelper/resendCommand': 'resendCommand'
+      },
+      activeName: 'first',
+      updateMessage: [],
+      systemMessage: [],
+      messageTypeEnum: {
+        'first': 1,
+        'second': 2
+      },
+      unReadMessage: undefined,
+      showMoreUpdate: false,
+      showMoreSystem: false,
+      noCacheMenu: [],
+      currentTags: [], // 现在已打开的菜单
+      isCache: true // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
+    }
+  },
+  watch: {
+    $route: 'handleRouteChange'
+  },
+  computed: {
+    isKeepAlive () {
+      // 根据路由信息判断是否需要缓存
+      const meta = this.$route.meta
+      return meta && meta.isCache !== false
+    },
+    // defaultMenu() {
+    //   const mainRoute = this.$router.options.routes.find(item => {
+    //     return item.path === "/";
+    //   });
+    //   function gen({ name, meta = {}, children }) {
+    //     if (!meta.hideInMenu) {
+    //       const currentMenuItem = {
+    //         title: meta.title,
+    //         icon: meta.icon,
+    //         route: name
+    //       };
+    //       if (children) {
+    //         currentMenuItem.children = children.reduce((result, item) => {
+    //           const menuItem = gen(item);
+    //           if (menuItem) {
+    //             result.push(menuItem);
+    //           }
+    //           return result;
+    //         }, []);
+    //       }
+    //       return currentMenuItem;
+    //     }
+    //   }
+    //   const items = gen(mainRoute).children;
+    //   return items;
+    // },
+    initTags () {
+      const tagsInfo = this.$appState.$get('tags')
+      if (tagsInfo && tagsInfo.userName === this.$appState.user.name) {
+        return tagsInfo.tags
+      } else {
+        return []
+      }
+      // return this.$appState.$get("tags") || [];
+    }
+  },
+  methods: {
+    handelGo (url) {
+      // const url = 'http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290'
+      window.open(url, '_blank')
+    },
+
+    setCurrentTags (val) {
+      this.currentTags = val
+    },
+
+    handleRouteChange () {
+      if (this.$route.name === 'oneTouchDrop') {
+        this.activeRouteName = 'strategyList'
+      } else if (this.$route.name === 'specialTag') {
+        this.activeRouteName = 'labelSquare'
+      } else {
+        this.activeRouteName = this.$route.name
+      }
+
+      // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
+      const meta = this.$route.meta
+
+      const obj = this.currentTags.find(item => {
+        return item.meta.tagId === meta.tagId
+      })
+
+      if (obj) { // 菜单在已打开的菜单中存在，则缓存
+        this.isCache = true // 缓存
+      } else {
+        this.isCache = false // 不缓存
+      }
+    },
+    getRouter (url) {
+      const name = this.routerMap[url] + 'AA'
+      this.noCacheMenu.push(name)
+      this.$router.push({ name: this.routerMap[url] })
+      this.$nextTick(() => {
+        this.noCacheMenu = []
+      })
+    },
+    handleDropdownCommand (command) {
+      if (command === 'logout') {
+        this.$logout().then(() => {
+          this.$router.push({ name: 'login' })
+        })
+      }
+    },
+    toggleMenu () {
+      const isCollapseMenu = !this.isCollapseMenu
+      this.$appState.$set('isCollapseMenu', isCollapseMenu)
+      this.isCollapseMenu = isCollapseMenu
+    },
+    saveTags () {
+      const tags = { tags: this.$refs.tag.tags, userName: this.$appState.user.name }
+      this.$appState.$set('tags', tags)
+    },
+    setMetaTitle () {
+      const routes = this.$router.options.routes
+      const findRouteByName = (name, route) => {
+        if (Array.isArray(route)) {
+          let length = route.length
+          while (--length >= 0) {
+            const found = findRouteByName(name, route[length])
+            if (found) {
+              return found
             }
-        },
-        methods: {
-          handelGoToHelp () {
-            const url = 'http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290'
-            window.open(url, '_blank');
-          },
-
-          setCurrentTags (val) {
-            this.currentTags = val
-          },
-
-          handleRouteChange () {
-            if (this.$route.name === 'oneTouchDrop') {
-                this.activeRouteName = 'strategyList'
-            } else if (this.$route.name === 'specialTag') {
-                this.activeRouteName = 'labelSquare'
-            } else {
-                this.activeRouteName = this.$route.name
-            }
-            
-            // 打开的菜单页面可以缓存，未打开的菜单页面不能缓存
-            const meta = this.$route.meta;
-
-            const obj = this.currentTags.find(item => {
-              return item.meta.tagId === meta.tagId
-            })
-
-            if (obj) { // 菜单在已打开的菜单中存在，则缓存
-              this.isCache = true // 缓存
-            } else {
-              this.isCache = false // 不缓存
-            }
-
-          },
-          getRouter (url) {
-              const name = this.routerMap[url] + 'AA'
-              this.noCacheMenu.push(name)
-              this.$router.push({name: this.routerMap[url]})
-              this.$nextTick(() => {
-                  this.noCacheMenu = []
-              })
-          },
-          handleDropdownCommand (command) {
-              if (command === "logout") {
-                  this.$logout().then(() => {
-                    this.$router.push({ name: "login" });
-                  });
-              }
-          },
-          toggleMenu () {
-              const isCollapseMenu = !this.isCollapseMenu;
-              this.$appState.$set("isCollapseMenu", isCollapseMenu);
-              this.isCollapseMenu = isCollapseMenu;
-          },
-          saveTags () {
-              const tags = {tags: this.$refs.tag.tags, userName: this.$appState.user.name};
-              this.$appState.$set("tags", tags);
-          },
-          setMetaTitle () {
-              const routes = this.$router.options.routes
-              const findRouteByName = (name, route) => {
-                  if (Array.isArray(route)) {
-                      let length = route.length
-                      while(--length >= 0) {
-                          const found = findRouteByName(name, route[length])
-                          if (found) {
-                              return found
-                          }
-                      }
-                  } else {
-                      if (route.name === name) {
-                          return route
-                      } else if (route.children) {
-                          return findRouteByName(name, route.children)
-                      }
-                  }
-              }
-              const menus = this.$appState.menus
-              const findMenuByUrl = (url, menu) => {
-                  if (Array.isArray(menu)) {
-                      let length =  menu.length
-                      while(--length >= 0) {
-                          const found = findMenuByUrl(url, menu[length])
-                          if (found) {
-                              return found
-                          }
-                      }
-                  } else {
-                      if (menu.url === url) {
-                          return menu
-                      } else if (menu.child) {
-                          return findMenuByUrl(url, menu.child)
-                      }
-                  }
-              }
-              const routerMap = this.routerMap
-              Object.keys(routerMap).forEach((url) => {
-                  const menu = findMenuByUrl(url, menus)
-                  const route = findRouteByName(routerMap[url], routes)
-                  if (route && route.meta && menu) {
-                      route.meta.title = menu.name
-                  }
-
-              })
-          },
-          handleLogoClick() {
-              this.$router.push({
-                  path: '/statisticsHomePage'
-              })
-          },
-          handleClick(tab) {
-              this.getNoticeMessages(this.messageTypeEnum[tab.name])
-          },
-          getNoticeMessages (type) {
-              const noticeType = type
-              this.$service.getNoticeHeaderList({noticeType}).then((data) => {
-                  let interfaceData = data['消息列表']
-                  let statusData = data['消息状态']
-                  this.unReadMessage = data['未读数量'] > 0 ? data['未读数量'] : undefined
-                  interfaceData.forEach((item,index)=> {
-                      item.noticeStatus = statusData[index]
-                  })
-                  let dataList = interfaceData
-                  if (type === 1) {
-                      if (dataList.length > 5) {
-                          this.showMoreUpdate = true
-                          // 只取前五条
-                          this.updateMessage = dataList.slice(0, 5)
-                      } else {
-                          this.updateMessage = dataList
-                      }
-                  }
-                  else {
-                      if (dataList.length > 5) {
-                          this.showMoreSystem = true
-                          this.systemMessage = dataList.slice(0, 5)
-                      } else {
-                          this.systemMessage = dataList
-                      }
-                  }
-              })
-          },
-          handleSeeAllMessage () {
-              this.$router.push({name: 'notice'})
-          },
-          handleReadMessage (noticeId) {
-              this.$router.push({
-                  name: 'notice',
-                  query: {noticeId: noticeId, mode: 'read'}
-              })
-          },
-          scrollMenuIntoView () {
-              setTimeout(() => {
-                  const $activeSubMenu = document.querySelector('.el-submenu.is-active')
-                  const $activeMenu = document.querySelector('.el-menu-item.is-active')
-                  if ($activeMenu) {
-                      $activeMenu.scrollIntoViewIfNeeded()
-                  }
-                  if ($activeSubMenu) {
-                      $activeSubMenu.scrollIntoViewIfNeeded()
-                  }
-              }, 1000)
           }
-          // handleDropDownChange() {
-          //     this.getNoticeMessages(this.messageTypeEnum[this.activeName])
-          // }
-        },
-        created() {
-            this.isCollapseMenu = !!this.$appState.$get("isCollapseMenu");
-            this.$bus.$on("breadcrumb-change", breadcrumb => {
-                this.breadcrumb = breadcrumb
-                this.scrollMenuIntoView()
-            });
-            this.setMetaTitle()
-            this.getNoticeMessages(this.messageTypeEnum[this.activeName])
-            this.$root.$on('refresh-notifications', () => {
-                this.getNoticeMessages(this.messageTypeEnum[this.activeName])
-            })
-        },
-        mounted() {
-            this.activeRouteName = this.$route.name
-            window.addEventListener("beforeunload", this.saveTags);
-        },
-        destroyed() {
-            window.removeEventListener("beforeunload", this.saveTags);
+        } else {
+          if (route.name === name) {
+            return route
+          } else if (route.children) {
+            return findRouteByName(name, route.children)
+          }
         }
-    };
+      }
+      const menus = this.$appState.menus
+      const findMenuByUrl = (url, menu) => {
+        if (Array.isArray(menu)) {
+          let length = menu.length
+          while (--length >= 0) {
+            const found = findMenuByUrl(url, menu[length])
+            if (found) {
+              return found
+            }
+          }
+        } else {
+          if (menu.url === url) {
+            return menu
+          } else if (menu.child) {
+            return findMenuByUrl(url, menu.child)
+          }
+        }
+      }
+      const routerMap = this.routerMap
+      Object.keys(routerMap).forEach((url) => {
+        const menu = findMenuByUrl(url, menus)
+        const route = findRouteByName(routerMap[url], routes)
+        if (route && route.meta && menu) {
+          route.meta.title = menu.name
+        }
+      })
+    },
+    handleLogoClick () {
+      this.$router.push({
+        path: '/statisticsHomePage'
+      })
+    },
+    handleClick (tab) {
+      this.getNoticeMessages(this.messageTypeEnum[tab.name])
+    },
+    getNoticeMessages (type) {
+      const noticeType = type
+      this.$service.getNoticeHeaderList({ noticeType }).then((data) => {
+        let interfaceData = data['消息列表']
+        let statusData = data['消息状态']
+        this.unReadMessage = data['未读数量'] > 0 ? data['未读数量'] : undefined
+        interfaceData.forEach((item, index) => {
+          item.noticeStatus = statusData[index]
+        })
+        let dataList = interfaceData
+        if (type === 1) {
+          if (dataList.length > 5) {
+            this.showMoreUpdate = true
+            // 只取前五条
+            this.updateMessage = dataList.slice(0, 5)
+          } else {
+            this.updateMessage = dataList
+          }
+        } else {
+          if (dataList.length > 5) {
+            this.showMoreSystem = true
+            this.systemMessage = dataList.slice(0, 5)
+          } else {
+            this.systemMessage = dataList
+          }
+        }
+      })
+    },
+    handleSeeAllMessage () {
+      this.$router.push({ name: 'notice' })
+    },
+    handleReadMessage (noticeId) {
+      this.$router.push({
+        name: 'notice',
+        query: { noticeId: noticeId, mode: 'read' }
+      })
+    },
+    scrollMenuIntoView () {
+      setTimeout(() => {
+        const $activeSubMenu = document.querySelector('.el-submenu.is-active')
+        const $activeMenu = document.querySelector('.el-menu-item.is-active')
+        if ($activeMenu) {
+          $activeMenu.scrollIntoViewIfNeeded()
+        }
+        if ($activeSubMenu) {
+          $activeSubMenu.scrollIntoViewIfNeeded()
+        }
+      }, 1000)
+    }
+    // handleDropDownChange() {
+    //     this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+    // }
+  },
+  created () {
+    this.isCollapseMenu = !!this.$appState.$get('isCollapseMenu')
+    this.$bus.$on('breadcrumb-change', breadcrumb => {
+      this.breadcrumb = breadcrumb
+      this.scrollMenuIntoView()
+    })
+    this.setMetaTitle()
+    this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+    this.$root.$on('refresh-notifications', () => {
+      this.getNoticeMessages(this.messageTypeEnum[this.activeName])
+    })
+  },
+  mounted () {
+    this.activeRouteName = this.$route.name
+    window.addEventListener('beforeunload', this.saveTags)
+  },
+  destroyed () {
+    window.removeEventListener('beforeunload', this.saveTags)
+  }
+}
 </script>
 <style lang="stylus" scoped>
   .header
