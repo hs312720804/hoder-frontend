@@ -43,7 +43,7 @@
         </div>
       </tag-list>
 
-      <el-dialog
+      <!-- <el-dialog
         :title="dialogTitle"
         :visible.sync="dialogVisible"
         width="500px">
@@ -63,16 +63,25 @@
                 <el-button @click="dialogVisible = false">取 消</el-button>
                 <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
             </div>
-      </el-dialog>
+      </el-dialog> -->
+      <TagCategoryUpsert
+        ref="tagCategoryUpsert"
+        :current-tag-category="tagCategory"
+        :type-enum="typeEnum"
+        :data-source-enum="dataSourceEnum"
+        @upsert-end="fetchData"
+      />
   </div>
 </template>
 
 <script>
 import tagList from './TagList'
+import TagCategoryUpsert from '../TagCategory/Upsert.vue'
 export default {
   name: 'MyCollect',
   components: {
-    tagList
+    tagList,
+    TagCategoryUpsert
   },
   props: {
     // tagName: {
@@ -116,7 +125,8 @@ export default {
         remark: ''
       },
       dialogTitle: '',
-      totalCount: 0
+      totalCount: 0,
+      tagCategory: {}
     }
   },
   methods: {
@@ -149,14 +159,16 @@ export default {
     },
     // 新增组合标签
     handleAdd () {
-      // 数据置空，否则会残留编辑的数据
-      this.form = {
-        tagName: '',
-        tagKey: '',
-        remark: ''
-      }
-      this.dialogTitle = '新增种类'
-      this.dialogVisible = true
+      // // 数据置空，否则会残留编辑的数据
+      // this.form = {
+      //   tagName: '',
+      //   tagKey: '',
+      //   remark: ''
+      // }
+      // this.dialogTitle = '新增种类'
+      // this.dialogVisible = true
+      this.tagCategory = {}
+      this.$refs.tagCategoryUpsert.showCreateDialog = true
     },
     fetchData () {
       const filter = this.filter

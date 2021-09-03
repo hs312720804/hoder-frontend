@@ -2,12 +2,12 @@
   <div class="my-collect">
       <div class="header">
           <div v-if="!showSelection">
-              <el-button
-                  @click="handleAdd"
-                  type="primary"
-              >
-                  新建
-              </el-button>
+            <!-- <el-button
+                @click="handleAdd"
+                type="primary"
+            >
+                新建
+            </el-button> -->
           </div>
           <div class="search-input">
               <el-input
@@ -24,7 +24,7 @@
         v-if="showTypeTab"
         v-model="activeName"
         @tab-click="handleTabChange"
-        style="margin-top: 13px"
+        style="margin-top: -9px"
       >
         <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
         </el-tab-pane>

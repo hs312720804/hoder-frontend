@@ -23,7 +23,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="fetchData">查询</el-button>
-                    <el-button type="primary" @click="handleAddTagCategory"  v-permission="'hoder:label:add'">新建种类</el-button>
+                    <el-button type="primary" @click="handleAddTagCategory" v-permission="'hoder:label:add'">新建种类</el-button>
                 </el-form-item>
             </el-form>
         </el-header>
@@ -104,15 +104,15 @@
             </el-pagination>
         </el-main>
         <TagCategoryUpsert
-            ref="tagCategoryUpsert"
-            :current-tag-category="tagCategory"
-            :type-enum="typeEnum"
-            :data-source-enum="dataSourceEnum"
-            @upsert-end="fetchData"
+          ref="tagCategoryUpsert"
+          :current-tag-category="tagCategory"
+          :type-enum="typeEnum"
+          :data-source-enum="dataSourceEnum"
+          @upsert-end="fetchData"
         />
         <choose-tag-group
-                ref="chooseTagGroup"
-                @saveCopyTag="handleSaveCopyForm"
+          ref="chooseTagGroup"
+          @saveCopyTag="handleSaveCopyForm"
         ></choose-tag-group>
     </el-container>
 </template>
@@ -122,147 +122,147 @@ import { cloneDeep } from 'lodash'
 import TagCategoryUpsert from '../TagCategory/Upsert.vue'
 import ChooseTagGroup from '@/components/ChooseTagGroup.vue'
 export default {
-    components: {
-        TagCategoryUpsert,
-        ChooseTagGroup
-    },
-    props:['filterHistoryToList','useFilterHistory'],
-    data() {
-        return {
-            tagCategory: {},
-            tagCategoryList: [],
-            dataSourceEnum: {},
-            typeEnum: {},
-            filter: {
-                tagName: undefined
-            },
-            pagination: {
-                pageNum: undefined,
-                pageSize: undefined,
-                total: undefined
-            },
-            filterAll : undefined,
-            checkList: ['defineRemark'],
-            currentTagId: undefined
-        }
-    },
-    computed: {
-        tagGroupId() {
-            return +this.$route.params.id
-        }
-    },
-    watch: {
-        '$route.params.id': 'handleTagGroupIdChange'
-    },
-    methods: {
-        getFilter() {
-            const filterHistoryToList = this.filterHistoryToList
-            if(filterHistoryToList && this.useFilterHistory){
-                this.$emit('change-history-filter', false)
-                this.filter.tagName = filterHistoryToList.tagName
-                return {
-                    groupId: this.tagGroupId,
-                    pageNum: filterHistoryToList.pageNum,
-                    pageSize: filterHistoryToList.pageSize,
-                    ...this.filter
-                }
-            } else {
-                return {
-                    groupId: this.tagGroupId,
-                    pageNum: this.pagination.pageNum,
-                    pageSize: this.pagination.pageSize,
-                    ...this.filter
-                }
-            }
-        },
-        resetFilter() {
-            this.filter = {
-                tagName: undefined
-            }
-        },
-        handleTagGroupIdChange() {
-            this.resetFilter()
-            this.fetchData()
-        },
-        handleAddTagCategory() {
-            this.tagCategory = {}
-            this.$refs.tagCategoryUpsert.showCreateDialog = true
-        },
-        handleSeeTagCategoryDetail (row) {
-            this.$emit('read-tag-category', row, this.filterAll)
-        },
-        handleEditTagCategory(row) {
-            this.tagCategory = cloneDeep(row)
-            this.$nextTick(()=> {
-                this.$refs.tagCategoryUpsert.showCreateDialog = true
-            })
-        },
-        handleDeleteTagCategory(row) {
-            this.$confirm('确认删除？')
-            .then(() => {
-                this.$service.deleteTagCategory({tagId: row.tagId,groupId: row.groupId}, '删除成功').then(this.fetchData)
-            })
-            .catch(() => {
-                //
-            })
-        },
-        handleCopyToTag (row) {
-            this.$refs.chooseTagGroup.showCreateDialog = true
-            this.currentTagId = row.tagId
-        },
-        handleSaveCopyForm (pid) {
-            this.$service.copyLabelSingle({tagGroupId: pid,tagIds: this.currentTagId},'复制成功')
-            .then(() => {
-                this.$refs.chooseTagGroup.showCreateDialog = false
-                this.fetchData()
-            })
-        },
-        fetchData() {
-            this.$service.getListDimension({type: 4}).then(data => {
-                if (data) {
-                    if (data.behaviorShow) {
-                        this.checkList = data.behaviorShow.split(',')
-                    }
-                }
-            })
-            this.filterAll = this.getFilter()
-            this.$service.getTagGroupTreeList(this.filterAll).then((data) => {
-                this.tagCategoryList = data.pageInfo.list
-                this.dataSourceEnum = data.lableDataSourceEnum
-                this.typeEnum = data.tagsTypeEnum
-                this.pagination.total = data.pageInfo.total
-                this.pagination.pageNum = data.pageInfo.pageNum
-                this.pagination.pageSize = data.pageInfo.pageSize
-            })
-            // this.$service.getTagCategoryList(filter).then(({itemList, pagination, dataSourceEnum, typeEnum}) => {
-            //     this.tagCategoryList = itemList
-            //     this.dataSourceEnum = dataSourceEnum
-            //     this.typeEnum = typeEnum
-            //     this.pagination = pagination
-            // })
-        },
-        handleCollect (currentTag) {
-            const flag = currentTag.myCollect
-            const tagId = currentTag.tagId
-            if (flag) {
-            //    取消收藏
-                this.$service.cancelCollectTags({tagId},'已取消收藏！').then(() => {
-                    this.fetchData()
-                })
-            } else {
-            //    收藏
-                this.$service.collectTags({tagId},'已成功收藏！').then(() => {
-                    this.fetchData()
-                })
-            }
-        },
-        handleCheckListChange (val) {
-            this.$service.saveListDimension({type: 4,behaviorShow: val.join(',')})
-        }
-    },
-    created() {
-        this.fetchData()
+  components: {
+    TagCategoryUpsert,
+    ChooseTagGroup
+  },
+  props: ['filterHistoryToList', 'useFilterHistory'],
+  data () {
+    return {
+      tagCategory: {},
+      tagCategoryList: [],
+      dataSourceEnum: {},
+      typeEnum: {},
+      filter: {
+        tagName: undefined
+      },
+      pagination: {
+        pageNum: undefined,
+        pageSize: undefined,
+        total: undefined
+      },
+      filterAll: undefined,
+      checkList: ['defineRemark'],
+      currentTagId: undefined
     }
+  },
+  computed: {
+    tagGroupId () {
+      return +this.$route.params.id
+    }
+  },
+  watch: {
+    '$route.params.id': 'handleTagGroupIdChange'
+  },
+  methods: {
+    getFilter () {
+      const filterHistoryToList = this.filterHistoryToList
+      if (filterHistoryToList && this.useFilterHistory) {
+        this.$emit('change-history-filter', false)
+        this.filter.tagName = filterHistoryToList.tagName
+        return {
+          groupId: this.tagGroupId,
+          pageNum: filterHistoryToList.pageNum,
+          pageSize: filterHistoryToList.pageSize,
+          ...this.filter
+        }
+      } else {
+        return {
+          groupId: this.tagGroupId,
+          pageNum: this.pagination.pageNum,
+          pageSize: this.pagination.pageSize,
+          ...this.filter
+        }
+      }
+    },
+    resetFilter () {
+      this.filter = {
+        tagName: undefined
+      }
+    },
+    handleTagGroupIdChange () {
+      this.resetFilter()
+      this.fetchData()
+    },
+    handleAddTagCategory () {
+      this.tagCategory = {}
+      this.$refs.tagCategoryUpsert.showCreateDialog = true
+    },
+    handleSeeTagCategoryDetail (row) {
+      this.$emit('read-tag-category', row, this.filterAll)
+    },
+    handleEditTagCategory (row) {
+      this.tagCategory = cloneDeep(row)
+      this.$nextTick(() => {
+        this.$refs.tagCategoryUpsert.showCreateDialog = true
+      })
+    },
+    handleDeleteTagCategory (row) {
+      this.$confirm('确认删除？')
+        .then(() => {
+          this.$service.deleteTagCategory({ tagId: row.tagId, groupId: row.groupId }, '删除成功').then(this.fetchData)
+        })
+        .catch(() => {
+          //
+        })
+    },
+    handleCopyToTag (row) {
+      this.$refs.chooseTagGroup.showCreateDialog = true
+      this.currentTagId = row.tagId
+    },
+    handleSaveCopyForm (pid) {
+      this.$service.copyLabelSingle({ tagGroupId: pid, tagIds: this.currentTagId }, '复制成功')
+        .then(() => {
+          this.$refs.chooseTagGroup.showCreateDialog = false
+          this.fetchData()
+        })
+    },
+    fetchData () {
+      this.$service.getListDimension({ type: 4 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
+          }
+        }
+      })
+      this.filterAll = this.getFilter()
+      this.$service.getTagGroupTreeList(this.filterAll).then((data) => {
+        this.tagCategoryList = data.pageInfo.list
+        this.dataSourceEnum = data.lableDataSourceEnum
+        this.typeEnum = data.tagsTypeEnum
+        this.pagination.total = data.pageInfo.total
+        this.pagination.pageNum = data.pageInfo.pageNum
+        this.pagination.pageSize = data.pageInfo.pageSize
+      })
+      // this.$service.getTagCategoryList(filter).then(({itemList, pagination, dataSourceEnum, typeEnum}) => {
+      //     this.tagCategoryList = itemList
+      //     this.dataSourceEnum = dataSourceEnum
+      //     this.typeEnum = typeEnum
+      //     this.pagination = pagination
+      // })
+    },
+    handleCollect (currentTag) {
+      const flag = currentTag.myCollect
+      const tagId = currentTag.tagId
+      if (flag) {
+        //    取消收藏
+        this.$service.cancelCollectTags({ tagId }, '已取消收藏！').then(() => {
+          this.fetchData()
+        })
+      } else {
+        //    收藏
+        this.$service.collectTags({ tagId }, '已成功收藏！').then(() => {
+          this.fetchData()
+        })
+      }
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
 }
 </script>
 <style lang="stylus" scoped>
