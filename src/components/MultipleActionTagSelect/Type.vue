@@ -73,9 +73,24 @@ export default {
     childItem: {
       type: Object,
       default: () => {}
+    },
+    isRequired: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
+    isRequired: {
+      handler (val) {
+        this.typeFormRules = {
+          value: [
+            { required: val, message: '请输入值', trigger: 'blur' },
+            { required: val, message: '请输入值', trigger: 'change' }
+          ]
+        }
+      },
+      immediate: true
+    },
     childItem: {
       handler (val) {
         const weekRang = val.bav.weekRang.value
