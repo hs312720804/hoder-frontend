@@ -910,7 +910,7 @@
                   >
                     <el-option
                       v-for="tv in qiBoOptions"
-                      :key="tv.value"
+                      :key="tv.value + tv.name"
                       :label="tv.name +'('+ tv.value+')'"
                       :value="tv.value">
                     </el-option>
@@ -2639,7 +2639,6 @@ export default {
         this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
       }
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
-
       childItem.child = this.getValListByVals({ // 组装数据
         vals,
         behaviorValue,
@@ -2698,7 +2697,6 @@ export default {
           obj = matchObj2
         }
         // console.log('obj.child=>>', obj.child)
-
         if (reverseSelect) { // 反选
           obj.operator = '!='
         }
@@ -2802,7 +2800,7 @@ export default {
       childItem.child = this.getQiBoValListByVals({
         vals,
         behaviorValue,
-        behaviorAttrList,
+        attrList: behaviorAttrList,
         hasChild,
         defaultChild,
         selectPropKeyValue,
@@ -2991,7 +2989,7 @@ export default {
             if (extra.type === '关注') {
               return this.followOptions
             }
-            attrlist = dict[extra.listMapName]
+            attrlist = dict[extra.listMapName] || []
           } else if (level === 4) {
             if (extra.type === '影片' && extra.source) {
               return this.qiBoOptions
