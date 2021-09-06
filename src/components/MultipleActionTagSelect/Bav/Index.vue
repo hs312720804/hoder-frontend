@@ -1960,7 +1960,8 @@
             @change="handelChildBehavirSelectChange({
               childItem: item,
               level: 7,
-              selectPropKeyValue: 'name'
+              selectPropKeyValue: 'name',
+              reverseSelectAttr: true
             })"
           >
             <el-option
@@ -1976,6 +1977,14 @@
               :value="item.childCheckedVal[4]">
             </el-option>
           </el-select>
+
+          <el-checkbox
+            class="reverse-check"
+            v-model="childItem.bav.reverseSelect"
+            @change="ReverseSelect($event, item.child, item.childCheckedVal[4])"
+          >
+            圈出未起播
+          </el-checkbox>
 
           <el-select
             v-model="item.childCheckedVal[5]"
@@ -2006,6 +2015,7 @@
               :value="item.childCheckedVal[5]">
             </el-option>
           </el-select>
+
         </span>
 
         <!------ 查询影片-搜索集数  item.childCheckedVal[1]------->
@@ -2024,7 +2034,8 @@
             @change="handelChildBehavirSelectChange({
               childItem: item,
               level: 3,
-              selectPropKeyValue: 'name'
+              selectPropKeyValue: 'name',
+              reverseSelectAttr: true
             })"
           >
             <el-option
@@ -2040,6 +2051,15 @@
               :value="item.childCheckedVal[1]">
             </el-option>
           </el-select>
+
+          <el-checkbox
+            class="reverse-check"
+            v-model="childItem.bav.reverseSelect"
+            @change="ReverseSelect($event, item.child, item.childCheckedVal[1])"
+          >
+            圈出未起播
+          </el-checkbox>
+
           <div
             v-for="(item2) in item.child"
             :key="item2.value"
@@ -2095,7 +2115,7 @@
         </span>
 
         <!-- 选了集数 -->
-        <Type v-if="item.childCheckedVal[1] && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
+        <Type v-if="item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
         <!-- 没有选集数 -->
         <Type v-else-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
 
@@ -2236,16 +2256,20 @@ export default {
     },
 
     // 反选
-    ReverseSelect (val, behaviorValue) {
+    ReverseSelect (val, behaviorValue, seclectVal = '') {
+      // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
+      if (val) {
+        this.childItem.bav.reverseSelect = true
+      } else {
+        this.childItem.bav.reverseSelect = false
+      }
       behaviorValue.forEach(item => {
-        if (val) {
+        if (val && (seclectVal === '' || seclectVal === item.value)) {
           item.operator = '!='
-          this.childItem.bav.reverseSelect = true
         } else {
           item.operator = '='
-          this.childItem.bav.reverseSelect = false
         }
       })
     },
@@ -3163,7 +3187,7 @@ export default {
   }
 }
 .reverse-check
-  margin-left 20px
+  margin 0 20px
 
 .appoint-text
   width: 263px;
