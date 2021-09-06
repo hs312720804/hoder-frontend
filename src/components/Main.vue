@@ -65,14 +65,14 @@
     <el-container direction="vertical">
       <el-header class="header">
         <el-button
-                class="collpase-btn"
-                type="text"
-                :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
-                @click="toggleMenu"
+          class="collpase-btn"
+          type="text"
+          :icon="isCollapseMenu? 'el-icon-cc-indent' : 'el-icon-cc-outdent'"
+          @click="toggleMenu"
         ></el-button>
         <c-breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
-          <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')">数据部应用平台</el-button>
+          <!-- <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')">数据部应用平台</el-button> -->
           <el-button type="text" @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')">帮助文档</el-button>
           <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
