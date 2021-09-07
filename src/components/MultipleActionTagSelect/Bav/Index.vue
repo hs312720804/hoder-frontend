@@ -3224,4 +3224,7 @@ export default {
   height: 107px;
   line-height: 17px;
   color gray
+.flex-column
+  >>> .el-form-item
+    margin-bottom 0!important
 </style>

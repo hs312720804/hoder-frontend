@@ -21,10 +21,10 @@
               <div v-if="tags.length > 0">
                 <el-form-item label="设置标签" required>
                   <!-- {{ crowd.rulesJson }} -->
-                  <MultipleSelect 
-                    :tags="tags" 
-                    :rulesJson="crowd.rulesJson" 
-                    :crowd="crowd" 
+                  <MultipleSelect
+                    :tags="tags"
+                    :rulesJson="crowd.rulesJson"
+                    :crowd="crowd"
                     :i="i">
                   </MultipleSelect>
                 </el-form-item>
@@ -38,16 +38,16 @@
                   :key="i+'condition'"
                 >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
                 </el-button>
-              
+
               <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
               {{ crowd.dynamicPolicyJson.link }} -->
               </div>
 
               <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
-                <MultipleActionTagSelect 
+                <MultipleActionTagSelect
                   ref="multipleActionTagSelect"
-                  :actionTags="actionTags" 
-                  :behaviorRulesJson="crowd.behaviorRulesJson" 
+                  :actionTags="actionTags"
+                  :behaviorRulesJson="crowd.behaviorRulesJson"
                   :crowd="crowd"
                   :i="i"
                   @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
@@ -56,10 +56,10 @@
               </el-form-item>
 
               <el-form-item label="动态因子" v-if="specialTags.length > 0">
-                <MultipleSelect 
-                  :specialTags="specialTags" 
-                  :dynamicPolicyJson="crowd.dynamicPolicyJson" 
-                  :crowd="crowd" 
+                <MultipleSelect
+                  :specialTags="specialTags"
+                  :dynamicPolicyJson="crowd.dynamicPolicyJson"
+                  :crowd="crowd"
                   :i="i">
                 </MultipleSelect>
               </el-form-item>
@@ -70,7 +70,7 @@
             </div>
             <!-- {{ crowd.isShowAutoVersion }}
             {{ crowd.autoVersion }} -->
-            <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion" > 
+            <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion">
               <el-radio-group v-model="crowd.autoVersion">
                 <el-radio :label="false">否</el-radio>
                 <el-radio :label="true">是</el-radio>
@@ -107,7 +107,7 @@
         <i class="el-icon-plus"></i>&nbsp;添加
       </el-button>
     </el-form-item>
-    
+
   </el-collapse>
 </template>
 
@@ -172,7 +172,7 @@ export default {
   },
   computed: {
     // 没有行为标签，只有大数据标签这一栏时，不展示【行为标签】这一栏。
-    hasBehaviorTag() {
+    hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
@@ -194,7 +194,7 @@ export default {
     },
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
-    hasMoveBehaviorTagRule() {
+    hasMoveBehaviorTagRule () {
       // eslint-disable-next-line no-debugger
       // debugger
       this.inputValue.forEach((crowd) => {
@@ -202,18 +202,17 @@ export default {
         let hasBehaviorRule = false
         let hasMoveRule = false
         if (behaviorRules.length > 0) {
-
           hasBehaviorRule = true
           // eslint-disable-next-line no-debugger
           // debugger
-     
+
           for (let x = 0; x < behaviorRules.length; x++) {
             let rule = behaviorRules[x]
             for (let y = 0; y < rule.rules.length; y++) {
               let item = rule.rules[y]
               if (item.bav && item.bav.rangeType === 'move') {
                 hasMoveRule = true
-                break;
+                break
               }
             }
           }
@@ -233,10 +232,8 @@ export default {
           crowd.autoVersion = false
           // this.$set(this.inputValue, index, crowd)
         }
-
       })
       console.log('this.inputValue==>', this.inputValue)
-
     },
 
     setInputValue (val) {
@@ -246,49 +243,46 @@ export default {
         if (val.length > 0) {
           this.inputValue = JSON.parse(JSON.stringify(val))
           this.setSeq()
-          
         } else { // 初始化
-            if (this.inputValue.length > 0) {
-              return
+          if (this.inputValue.length > 0) {
+            return
+          }
+          this.inputValue.push(
+            {
+              'recordId': this.getRecordId(),
+              'tempCrowdId': undefined,
+              'crowdName': undefined,
+              'tagIds': [],
+              'purpose': undefined,
+              'remark': undefined,
+              'crowdOrder': length + 1,
+              'rulesJson': {
+                condition: 'OR',
+                rules: []
+              },
+              'behaviorRulesJson': {
+                link: 'AND',
+                condition: 'OR',
+                rules: []
+              },
+              'dynamicPolicyJson': {
+                link: 'AND',
+                condition: 'AND',
+                rules: []
+              },
+              autoVersion: false,
+              isShowAutoVersion: false,
+              limitLaunch: false,
+              limitLaunchCount: undefined,
+              total0: undefined
             }
-            this.inputValue.push(
-              {
-                'recordId': this.getRecordId(),
-                'tempCrowdId': undefined,
-                'crowdName': undefined,
-                'tagIds': [],
-                'purpose': undefined,
-                'remark': undefined,
-                'crowdOrder': length + 1,
-                'rulesJson': {
-                    condition: 'OR',
-                    rules: []
-                },
-                'behaviorRulesJson': {
-                    link: 'AND',
-                    condition: 'OR',
-                    rules: []
-                },
-                'dynamicPolicyJson': {
-                    link: 'AND',
-                    condition: 'AND',
-                    rules: []
-                },
-                autoVersion: false,
-                isShowAutoVersion: false,
-                limitLaunch: false,
-                limitLaunchCount: undefined,
-                total0: undefined
-              }
-            )
-            this.setSeq()
+          )
+          this.setSeq()
         }
-
       }
       // eslint-disable-next-line no-debugger
       // debugger
       // console.log('122222222222222222------------>', this.inputValue)
-
     },
     emitInputValue (val) {
       // this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
@@ -318,14 +312,14 @@ export default {
             rules: []
           },
           'behaviorRulesJson': {
-              link: 'AND',
-              condition: 'OR',
-              rules: []
+            link: 'AND',
+            condition: 'OR',
+            rules: []
           },
           'dynamicPolicyJson': {
-              link: 'AND',
-              condition: 'OR',
-              rules: []
+            link: 'AND',
+            condition: 'OR',
+            rules: []
           },
           'autoVersion': false,
           'isShowAutoVersion': false,
@@ -342,7 +336,7 @@ export default {
     setSeq () {
       let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
-        e.crowdOrder = index+1
+        e.crowdOrder = index + 1
         return e
       })
     },
@@ -350,45 +344,44 @@ export default {
       this.inputValue.splice(index, 1)
       this.setSeq()
     },
-    handleEstimate(formData) {
-        this.$service.estimateTemp(formData.rulesJson).then((data)=> {
-            if (data || data === 0) {
-                this.$set(formData,'total0',data)
-            }
-        })
+    handleEstimate (formData) {
+      this.$service.estimateTemp(formData.rulesJson).then((data) => {
+        if (data || data === 0) {
+          this.$set(formData, 'total0', data)
+        }
+      })
     },
     handleConditionChange (crowd) {
-        crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
-        crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
-    },
-   
+      crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+      crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
+    }
+
   },
   created () {
     if (this.value) {
       this.$service.tagInfoNew(this.recordId).then(data => {
-          // this.tags = data
-          // console.log(data)
-          const normalTags = []
-          const actionTags = []
-          const specialTags = []
-          data.forEach(item => {
-              if (item.dataSource === 6) { // 效果指标
-                specialTags.push(item)
-              } else if ( item.dataSource === 8 ) { // 行为标签
-                actionTags.push(item)
-              } else if ( item.dataSource === 2 ) { // 大数据标签
-                actionTags.push(item)
-                normalTags.push(item)
-              } else {
-                normalTags.push(item)
-              }
-          })
-          this.tags = normalTags
-          this.actionTags = actionTags
-          this.specialTags = specialTags
-          this.setInputValue(this.value)
+        // this.tags = data
+        // console.log(data)
+        const normalTags = []
+        const actionTags = []
+        const specialTags = []
+        data.forEach(item => {
+          if (item.dataSource === 6) { // 效果指标
+            specialTags.push(item)
+          } else if (item.dataSource === 8) { // 行为标签
+            actionTags.push(item)
+          } else if (item.dataSource === 2) { // 大数据标签
+            actionTags.push(item)
+            normalTags.push(item)
+          } else {
+            normalTags.push(item)
+          }
+        })
+        this.tags = normalTags
+        this.actionTags = actionTags
+        this.specialTags = specialTags
+        this.setInputValue(this.value)
       })
-      
     }
     this.$watch('inputValue', this.emitInputValue, {
       deep: true
@@ -407,7 +400,7 @@ export default {
 .el-icon-remove-outline
   width 20px
   height 20px
-.app-params__remove-param 
+.app-params__remove-param
   display inline-block
   cursor pointer
   width 26px
