@@ -1070,6 +1070,11 @@ export default {
           const typeFormList = []
           const typeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
 
+          const bavFormList = []
+          typeRefList.forEach(item => {
+            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
+          })
+
           // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
           typeRefList.forEach(item => {
             if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
@@ -1081,7 +1086,7 @@ export default {
             }
           })
 
-          let allList = rangeFormList.concat(typeFormList)
+          let allList = rangeFormList.concat(typeFormList, bavFormList)
 
           // 选择了属性为空的 time 类型的标签, 需要提示
           if (this.timeTagKongList.length > 0) {
