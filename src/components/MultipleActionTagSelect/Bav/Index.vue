@@ -2113,7 +2113,7 @@
           </span>
 
           <!-- 选择【免费、会员..】   item.childCheckedVal[2]-->
-          <span class="flex-row">
+          <span class="flex-row" v-if="childItem.bav.value !== '短视频'">
             <!-- 第 5 级 -->
             <el-select
               v-model="item.childCheckedVal[2]"

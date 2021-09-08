@@ -902,8 +902,8 @@ export default {
                 showBehaviorValue: [], // 【综合起播】特殊数据
                 countValue: {
                   name: '',
-                  type: '',
-                  field: '',
+                  filed: 'mac',
+                  type: 'count',
                   operator: '=',
                   value: ''
                 },
@@ -1027,8 +1027,8 @@ export default {
             showBehaviorValue: [], // 【综合起播】特殊数据
             countValue: {
               name: '',
-              type: '',
-              field: '',
+              type: 'count',
+              filed: 'mac',
               operator: '=',
               value: ''
             },

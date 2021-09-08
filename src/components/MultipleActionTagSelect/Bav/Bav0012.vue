@@ -74,14 +74,14 @@ export default {
   },
   methods: {
     handelBehavirSelectChange () {
-      return this.$parent.handelBehavirSelectChange(...arguments)
+      return this.$parent.$parent.handelBehavirSelectChange(...arguments)
     },
     handelChildBehavirSelectChange () {
-      return this.$parent.handelChildBehavirSelectChange(...arguments)
+      return this.$parent.$parent.handelChildBehavirSelectChange(...arguments)
     },
     getBehaviorAttrList () {
       // 调用父级的方法
-      return this.$parent.getBehaviorAttrList(...arguments)
+      return this.$parent.$parent.getBehaviorAttrList(...arguments)
     }
   },
   created () {
