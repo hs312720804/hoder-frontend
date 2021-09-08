@@ -1010,7 +1010,7 @@ export default {
                 rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
               }
 
-              if (rulesItem.bav.rang.newValue) { // 日期多选
+              if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
                 const newValue = rulesItem.bav.rang.newValue
                 let data = []
                 newValue.forEach(item => {
@@ -1071,12 +1071,10 @@ export default {
           const typeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
 
           const bavFormList = []
-          typeRefList.forEach(item => {
-            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
-          })
 
           // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
-          typeRefList.forEach(item => {
+          typeRefList && typeRefList.forEach(item => {
+            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
             if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
               item.$refs.typeRef.forEach(obj => {
                 typeFormList.push(obj.$refs.typeForm)

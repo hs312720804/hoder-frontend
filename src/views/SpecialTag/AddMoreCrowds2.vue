@@ -231,7 +231,11 @@ export default {
           // value值 ref
           const typeFormList = []
           const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+
+          const bavFormList = []
+
           typeRefList && typeRefList.forEach(item => {
+            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
             if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
               item.$refs.typeRef.forEach(obj => {
                 typeFormList.push(obj.$refs.typeForm)
@@ -297,7 +301,7 @@ export default {
               rulesItem.value = rulesItem.value.join(',')
             }
 
-            if (rulesItem.bav.rang.newValue) { // 日期多选
+            if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
               const newValue = rulesItem.bav.rang.newValue
               let data = []
               newValue.forEach(item => {
