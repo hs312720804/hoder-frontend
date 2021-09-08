@@ -377,7 +377,7 @@
                   </div>
 
                   <!-- {{ item.childCheckedVal }} -->
-                  <div class="flex-column">
+                  <div v-if="!childItem.bav.reverseSelect" class="flex-column">
                     <ConditionLine :isShow="item2.child.length > 1"></ConditionLine>
                     <span
                       v-for="(item3, index) in item2.child"
@@ -530,7 +530,7 @@
                 圈出未活跃
               </el-checkbox>
             </div>
-            <div class="flex-column">
+            <div v-if="!childItem.bav.reverseSelect" class="flex-column">
               <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
               <div
                 v-for="(item2, index) in item.child"
@@ -951,6 +951,7 @@
                     <span> ，请选择合理的周期范围</span>
                   </span>
                 </span>
+                <span v-if="!childItem.bav.reverseSelect">
                 <span
                   v-for="(item5, index) in item4.child"
                   :key="index"
@@ -1225,6 +1226,7 @@
                       </span>
                     </span>
                   </span>
+                </span>
                 </span>
               </span>
             </span>
@@ -1834,12 +1836,14 @@
                       圈出未活跃
                     </el-checkbox>
 
+                    <!-- 反选时不展示 -->
                     <span
                       v-for="(item6, index) in item5.child"
                       :key="index"
                       class="flex-row"
                     >
                       <el-select
+                        v-if="!childItem.bav.reverseSelect"
                         v-model="item6.childCheckedVal[0]"
                         placeholder="请选择"
                         style="width: 110px"
@@ -1975,6 +1979,36 @@
               style="width: 150px;"
               filterable
               remote
+              placeholder="搜歌手"
+              no-data-text='暂无数据'
+              clearable
+              :remote-method="(query) => { getMusicByAuthor(query) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 8,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="item in singerList"
+                :key="item.value"
+                :label="item.name"
+                :value="item.value">
+              </el-option>
+              <!-- 编辑回显 选项-->
+              <el-option
+                v-if="singerList.length === 0 && item.childCheckedVal[4]"
+                :label="getMatchName(item.childCheckedVal[4], item.child)"
+                :value="item.childCheckedVal[4]">
+              </el-option>
+            </el-select>
+
+            <el-select
+              v-model="item.childCheckedVal[5]"
+              style="width: 150px;"
+              filterable
+              remote
               placeholder="搜歌曲"
               no-data-text='暂无数据'
               clearable
@@ -1995,49 +2029,19 @@
               </el-option>
               <!-- 编辑回显 选项-->
               <el-option
-                v-if="musicList.length === 0 && item.childCheckedVal[4]"
-                :label="getMatchName(item.childCheckedVal[4], item.child)"
-                :value="item.childCheckedVal[4]">
+                v-if="musicList.length === 0 && item.childCheckedVal[5]"
+                :label="getMatchName(item.childCheckedVal[5], item.child)"
+                :value="item.childCheckedVal[5]">
               </el-option>
             </el-select>
 
             <el-checkbox
               class="reverse-check"
               v-model="childItem.bav.reverseSelect"
-              @change="ReverseSelect($event, item.child, item.childCheckedVal[4])"
+              @change="ReverseSelect($event, item.child, item.childCheckedVal[5], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
             >
               圈出未起播
             </el-checkbox>
-
-            <el-select
-              v-model="item.childCheckedVal[5]"
-              style="width: 150px;"
-              filterable
-              remote
-              placeholder="搜歌手"
-              no-data-text='暂无数据'
-              clearable
-              :remote-method="(query) => { getMusicByAuthor(query) }"
-              :loading="loading2"
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                level: 8,
-                selectPropKeyValue: 'name'
-              })"
-            >
-              <el-option
-                v-for="item in singerList"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value">
-              </el-option>
-              <!-- 编辑回显 选项-->
-              <el-option
-                v-if="singerList.length === 0 && item.childCheckedVal[5]"
-                :label="getMatchName(item.childCheckedVal[5], item.child)"
-                :value="item.childCheckedVal[5]">
-              </el-option>
-            </el-select>
 
           </span>
 
@@ -2078,7 +2082,7 @@
             <el-checkbox
               class="reverse-check"
               v-model="childItem.bav.reverseSelect"
-              @change="ReverseSelect($event, item.child, item.childCheckedVal[1])"
+              @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
             >
               圈出未起播
             </el-checkbox>
@@ -2090,7 +2094,8 @@
             >
             <!-- {{item2}} -->
               <!-- 选择集数 -->
-              <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
+              <!-- 反选时不展示 -->
+              <span v-if="!childItem.bav.reverseSelect && item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
                 <el-select
                   v-model="item2.childCheckedVal[0]"
                   style="width: 100px;"
@@ -2113,7 +2118,8 @@
           </span>
 
           <!-- 选择【免费、会员..】   item.childCheckedVal[2]-->
-          <span class="flex-row" v-if="childItem.bav.value !== '短视频'">
+          <!-- 反选时不展示 -->
+          <span class="flex-row" v-if="!childItem.bav.reverseSelect && childItem.bav.value !== '短视频'">
             <!-- 第 5 级 -->
             <el-select
               v-model="item.childCheckedVal[2]"
@@ -2301,7 +2307,7 @@ export default {
     },
 
     // 反选
-    ReverseSelect (val, behaviorValue, seclectVal = '') {
+    ReverseSelect (val, behaviorValue, seclectVal = '', { clearVal, bavChildItem }) {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
@@ -2313,8 +2319,20 @@ export default {
       behaviorValue.forEach(item => {
         if (val && (seclectVal === '' || seclectVal === item.value)) {
           item.operator = '!='
+          this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
+            name: '',
+            filed: 'mac',
+            type: 'count',
+            operator: '=',
+            value: ''
+          }
         } else {
           item.operator = '='
+        }
+        if (clearVal && clearVal === item.value) { // 需要清空的 value 值
+          item.value = ''
+          const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
+          bavChildItem.childCheckedVal[index] = null
         }
       })
     },
