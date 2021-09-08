@@ -2735,7 +2735,7 @@ export default {
      * @param {Number} level 第几级（为获取下拉框list）
      */
     getQiBoValListByVals (params = {}) {
-      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
+      let { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
@@ -2747,7 +2747,27 @@ export default {
         obj.field = ''
         list.push(obj)
       }
-
+      if (level === 4) { // 当切换视频源时，后面的数据清空
+        defaultChild = [{
+          name: '',
+          value: '',
+          field: '',
+          operator: '=',
+          type: 'string',
+          child: [{
+            name: '',
+            value: '',
+            field: '',
+            operator: '=',
+            type: 'string',
+            child: [],
+            childCheckedVal: []
+          }],
+          videoType: '',
+          source: '',
+          childCheckedVal: ['']
+        }]
+      }
       vals.forEach(val => {
         const lastNumberObj = [
           { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
