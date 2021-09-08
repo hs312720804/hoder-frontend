@@ -985,7 +985,7 @@
                             :key="index"
                             class="flex-row child"
                           >
-                            <!-- @change="handelQiBoChildBehavi666rSelectChange(item6, false, childItem, 8, {}, 'type', true)" -->
+                            <!-- <Type ref="typeRef" :item3="item6.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type> -->
                             <el-select
                               v-model="item6.childCheckedVal[0]"
                               style="width: 150px;"
@@ -1003,7 +1003,8 @@
                                 v-for="attrChildItem in getBehaviorAttrList(8)"
                                 :key="attrChildItem.type"
                                 :label="attrChildItem.name"
-                                :value="attrChildItem.type">
+                                :value="attrChildItem.type"
+                                :disabled="attrChildItem.type === 'day' && isDisableDaySelect">
                               </el-option>
                             </el-select>
                             <span
@@ -1023,7 +1024,6 @@
                                 <el-option value=">"></el-option>
                                 <el-option value="<"></el-option>
                               </el-select>
-                              <!-- <el-input v-model="item3.value" placeholder="请输入" style="max-width: 100px; min-width: 100px;"></el-input> -->
                               <el-input
                                 placeholder="请输入"
                                 v-model="item7.value"
@@ -1110,7 +1110,8 @@
                                   v-for="attrChildItem in getBehaviorAttrList(8)"
                                   :key="attrChildItem.type"
                                   :label="attrChildItem.name"
-                                  :value="attrChildItem.type">
+                                  :value="attrChildItem.type"
+                                  :disabled="attrChildItem.type === 'day' && isDisableDaySelect">
                                 </el-option>
                               </el-select>
                               <!-- 选择了集数，下拉选项只有【单集观看时长】 -->
@@ -1131,8 +1132,9 @@
                                 <el-option
                                   v-for="attrChildItem in getBehaviorAttrList(9)"
                                   :key="attrChildItem.type"
+                                  :value="attrChildItem.type"
                                   :label="attrChildItem.name"
-                                  :value="attrChildItem.type">
+                                  :disabled="attrChildItem.type === 'day' && isDisableDaySelect">
                                 </el-option>
                               </el-select>
                               <span
@@ -1190,7 +1192,8 @@
                           v-for="attrChildItem in getBehaviorAttrList(8)"
                           :key="attrChildItem.type"
                           :label="attrChildItem.name"
-                          :value="attrChildItem.type">
+                          :value="attrChildItem.type"
+                          :disabled="attrChildItem.type === 'day' && isDisableDaySelect">
                         </el-option>
                       </el-select>
                       <span
@@ -2172,6 +2175,21 @@ export default {
     }
   },
   watch: {
+    'childItem.bav': {
+      handler (val) {
+        console.log('1111111111====', val)
+        const weekRang = val.weekRang.value
+        const timeRange = val.timeRange.value
+        // 当选择了星期范围或者时间区间时，禁用【天数】选项
+        if (weekRang.length === 0 && timeRange.length === 0) {
+          this.isDisableDaySelect = false
+        } else {
+          this.isDisableDaySelect = true
+        }
+      },
+      deep: true,
+      immediate: true
+    },
     childItem: {
       handler (val) {
         console.log('childItem=====>>>', val.bav)
@@ -2214,6 +2232,7 @@ export default {
   },
   data () {
     return {
+      isDisableDaySelect: false,
       bavFormRules: {
         'bav.value': [
           { required: true, message: '请选择', trigger: 'change' }
