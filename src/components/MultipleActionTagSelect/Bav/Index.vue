@@ -2616,9 +2616,8 @@ export default {
         }
 
         if (reverseSelect) { // 反选
-          if (this.childItem.tagCode === 'BAV0012' && level === 7) { // 切换歌曲
-            debugger
-            if (vals[5] === obj.value) {
+          if (this.childItem.tagCode === 'BAV0012') {
+            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value)) { // 切换歌曲 或者 切换影片
               obj.operator = '!='
             } else {
               obj.operator = '='
