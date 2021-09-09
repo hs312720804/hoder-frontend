@@ -2307,7 +2307,7 @@ export default {
     },
 
     // 反选
-    ReverseSelect (val, behaviorValue, seclectVal = '', { clearVal, bavChildItem }) {
+    ReverseSelect (val, behaviorValue, seclectVal = '', { clearVal, bavChildItem } = {}) {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
