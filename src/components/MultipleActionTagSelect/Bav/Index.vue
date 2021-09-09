@@ -134,8 +134,8 @@
                           <span style="min-width: 200px;">{{ item4.name }}</span>
                           <el-input-number :value="item4.value1" @input="handelInputBetween($event, item4, 'value1')" controls-position="right"></el-input-number>
                           <!-- <el-input :value="item4.value1" @input="handelInputBetween($event, item4, 'value1')" type="number"></el-input> -->
-                          <div style="padding: 0 10px"><=到期时间<=</div>
-                          <el-input-number :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" controls-position="right"></el-input-number>
+                          <div style="padding: 0 10px"><= {{ item4.name.substr(-4, 4) }} <=</div>
+                          <el-input-number :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" controls-position="right"></el-input-number>天
                           <!-- <el-input :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" type="number"></el-input> -->
                         </div>
                       </div>
@@ -530,7 +530,7 @@
                 圈出未活跃
               </el-checkbox>
             </div>
-            <div v-if="!childItem.bav.reverseSelect" class="flex-column">
+            <div class="flex-column">
               <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
               <div
                 v-for="(item2, index) in item.child"
