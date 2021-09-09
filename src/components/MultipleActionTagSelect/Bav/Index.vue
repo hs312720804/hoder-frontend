@@ -2316,7 +2316,7 @@ export default {
       } else {
         this.childItem.bav.reverseSelect = false
       }
-      behaviorValue.forEach(item => {
+      behaviorValue.forEach((item) => {
         if (val && (seclectVal === '' || seclectVal === item.value)) {
           item.operator = '!='
           this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
@@ -2596,6 +2596,7 @@ export default {
      */
     getValListByVals (params) {
       const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
+      // console.log('params==>', params)
       let list = []
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
       vals.forEach(val => {
@@ -2615,7 +2616,16 @@ export default {
         }
 
         if (reverseSelect) { // 反选
-          obj.operator = '!='
+          if (this.childItem.tagCode === 'BAV0012' && level === 7) { // 切换歌曲
+            debugger
+            if (vals[5] === obj.value) {
+              obj.operator = '!='
+            } else {
+              obj.operator = '='
+            }
+          } else {  // 其他属性切换正常操作
+            obj.operator = '!='
+          }
         }
 
         // 模块活跃，默认 child 值特殊处理
