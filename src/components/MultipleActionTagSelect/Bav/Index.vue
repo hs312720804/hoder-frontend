@@ -2674,10 +2674,12 @@ export default {
       const childItem = this.childItem
 
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
+      const behaviorAttrList = this.getBehaviorAttrList(level)
 
-      if (childItem.tagCode === 'BAV0012') { // 综合起播的数据放在 showBehaviorValue 字段中
+      if (childItem.tagCode === 'BAV0012') { // 【综合起播】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
+        this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
         const behaviorValue = childItem.bav.showBehaviorValue
-        const behaviorAttrList = this.getBehaviorAttrList(level)
+
         childItem.bav.showBehaviorValue = this.getValListByVals({ // 组装数据
           vals,
           behaviorValue,
@@ -2690,7 +2692,6 @@ export default {
         })
       } else {
         const behaviorValue = childItem.bav.behaviorValue
-        const behaviorAttrList = this.getBehaviorAttrList(level)
 
         childItem.bav.behaviorValue = this.getValListByVals({ // 组装数据
           vals,
@@ -2720,10 +2721,15 @@ export default {
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
-      if (this.childItem.tagCode === 'BAV0012' && level === 3) { // 综合起播
+
+      if (this.childItem.tagCode === 'BAV0012' && level === 3) { // 【综合起播】 选择了影视后需要搜集数
         // this.getVideoEpisode()
         console.log('childItem==', childItem)
         this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
+      }
+
+      if (extra.type === '视频源') { // 【起播活跃】 切换视频源时，清空影视列表
+        this.qiBoOptions = []
       }
       const behaviorAttrList = this.getBehaviorAttrList(level, extra)
       childItem.child = this.getValListByVals({ // 组装数据
