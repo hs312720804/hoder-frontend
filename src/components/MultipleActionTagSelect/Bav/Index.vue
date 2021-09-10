@@ -352,7 +352,7 @@
                         hasChild: true,
                         level: 3,
                         extra: {type: childItem.bav.value},
-                        reverseSelectAttr: true
+                        reverseSelectAttr: item2.field === 'purchase_recent_two_years' ? true : false
                       })"
                     >
                       <template v-for="attrChildItem in getBehaviorAttrList(3, {type: childItem.bav.value})">
@@ -2151,7 +2151,7 @@
         </span>
       </span>
 
-      <!-- <div>{{childItem.bav}}</div> -->
+      <div>{{childItem.bav}}</div>
     </div>
   </el-form>
 </template>

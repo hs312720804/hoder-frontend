@@ -27,14 +27,14 @@
             </el-card>
 
             <tag-region-tree
-                v-if="tagCategory.tagKey === 'mix_area'"
+                v-if="tagCategory.composeType === 0"
                 :tagId="tagId"
                 @edit="handleEdit"
             >
             </tag-region-tree>
 
             <device-tag-list
-                v-else-if="tagCategory.tagKey === 'mix_device_level'"
+                v-else-if="tagCategory.composeType === 1"
                 :tagId="tagId"
                 :tagCategory="tagCategory"
                 :dataSourceEnum="dataSourceEnum"
