@@ -2142,16 +2142,19 @@
               </template>
             </el-select>
           </span>
-
+<!-- {{ item.childCheckedVal[1] }} ---  -->
+<!-- {{ item.child }} ---  -->
+<!-- {{ item.child[1] }} --- -->
           <!-- 选了集数 -->
-          <Type v-if="item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
+          <!-- <Type v-if="item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type> -->
+          <Type v-if="isCheckEpisodes(item) && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
           <!-- 没有选集数 -->
           <Type v-else-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
 
         </span>
       </span>
 
-      <div>{{childItem.bav}}</div>
+      <!-- <div>{{childItem.bav}}</div> -->
     </div>
   </el-form>
 </template>
@@ -2295,6 +2298,17 @@ export default {
   },
   created () {},
   methods: {
+    isCheckEpisodes (item) {
+      let flag = false
+      const videoId = item.childCheckedVal[1]
+      const arr = item.child || []
+      const videoObj = arr.find(obj => obj.value === videoId)
+      if (videoObj && videoObj.childCheckedVal.length > 0) {
+        flag = true
+      }
+      return flag
+      // return item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal && item.child[1].childCheckedVal.length > 0
+    },
     getMatchName (val, list) {
       return list.find(item => item.value === val).name
     },
@@ -2687,6 +2701,13 @@ export default {
 
       if (childItem.tagCode === 'BAV0012') { // 【综合起播】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
         this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
+        this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
+          name: '',
+          filed: 'mac',
+          type: 'count',
+          operator: '=',
+          value: ''
+        }
         const behaviorValue = childItem.bav.showBehaviorValue
 
         childItem.bav.showBehaviorValue = this.getValListByVals({ // 组装数据
@@ -2734,6 +2755,14 @@ export default {
       if (this.childItem.tagCode === 'BAV0012' && level === 3) { // 【综合起播】 选择了影视后需要搜集数
         // this.getVideoEpisode()
         console.log('childItem==', childItem)
+        this.qiBoCollectionOptions = []
+        // this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
+        //   name: '',
+        //   filed: 'mac',
+        //   type: 'count',
+        //   operator: '=',
+        //   value: ''
+        // }
         this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
       }
 
