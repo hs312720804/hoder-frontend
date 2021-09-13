@@ -2321,7 +2321,7 @@ export default {
     },
 
     // 反选
-    ReverseSelect (val, behaviorValue, seclectVal = '', { clearVal, bavChildItem } = {}) {
+    ReverseSelect (val, behaviorValue, seclectVal = 'default', { clearVal, bavChildItem } = {}) {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
@@ -2331,7 +2331,7 @@ export default {
         this.childItem.bav.reverseSelect = false
       }
       behaviorValue.forEach((item) => {
-        if (val && (seclectVal === '' || seclectVal === item.value)) {
+        if (val && seclectVal !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
           item.operator = '!='
           this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
             name: '',
