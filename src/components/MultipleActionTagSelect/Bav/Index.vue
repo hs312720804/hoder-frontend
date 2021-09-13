@@ -377,7 +377,7 @@
                   </div>
 
                   <!-- {{ item.childCheckedVal }} -->
-                  <div v-if="!childItem.bav.reverseSelect" class="flex-column">
+                  <div class="flex-column">
                     <ConditionLine :isShow="item2.child.length > 1"></ConditionLine>
                     <span
                       v-for="(item3, index) in item2.child"
@@ -387,7 +387,7 @@
                     <!-- {{item2}} -->
                       <span class="flex-row">
                         <span class="w100">{{ item3.name }}</span>
-                        <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column">
+                        <span v-if="!childItem.bav.reverseSelect && item2.field === 'purchase_recent_two_years'" class="flex-column">
                           <!-- 历史购买 -->
                           <!-- 第三级 -->
                           <el-select
@@ -434,7 +434,7 @@
                             </span>
                           </div>
                         </span>
-                        <span v-else class="flex-column">
+                        <span v-else-if="item2.field !== 'purchase_recent_two_years'" class="flex-column">
                           <!-- 首次购买  -->
                           <!-- 第三级 -->
                           <!-- {{ item3 }} -->
