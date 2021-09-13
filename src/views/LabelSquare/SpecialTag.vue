@@ -160,7 +160,11 @@ export default {
       this.dialogVisible = true
     },
     fetchData () {
-      const filter = this.filter
+      // const filter = this.filter
+      const filter = {
+        ...this.filter,
+        launchName: this.launchName
+      }
       this.$service.specialTagList(filter).then(data => {
         // eslint-disable-next-line
                 // debugger
