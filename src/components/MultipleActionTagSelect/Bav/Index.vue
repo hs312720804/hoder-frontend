@@ -1487,7 +1487,7 @@
                     </el-option>
                     <!-- 编辑回显 选项-->
                     <el-option
-                      v-if="qiBoOptions.length === 0 && item4.child[0]"
+                      v-if="qiBoOptions.length === 0 && item4.child[0] && item4.childCheckedVal[0]"
                       :label="item4.child[0].name"
                       :value="item4.childCheckedVal[0]">
                     </el-option>
@@ -2142,9 +2142,9 @@
               </template>
             </el-select>
           </span>
-<!-- {{ item.childCheckedVal[1] }} ---  -->
-<!-- {{ item.child }} ---  -->
-<!-- {{ item.child[1] }} --- -->
+          <!-- {{ item.childCheckedVal[1] }} ---  -->
+          <!-- {{ item.child }} ---  -->
+          <!-- {{ item.child[1] }} --- -->
           <!-- 选了集数 -->
           <!-- <Type v-if="item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal && item.child[1].childCheckedVal.length > 0 && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type> -->
           <Type v-if="isCheckEpisodes(item) && !childItem.bav.reverseSelect" ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.single_episode : []"  :childItem="childItem"></Type>
@@ -2331,7 +2331,7 @@ export default {
         this.childItem.bav.reverseSelect = false
       }
       behaviorValue.forEach((item) => {
-        if (val && seclectVal !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
+        if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
           item.operator = '!='
           this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
             name: '',
