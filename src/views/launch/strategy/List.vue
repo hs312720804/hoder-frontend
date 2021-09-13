@@ -13,7 +13,6 @@
                                 v-model="filter.search"
                                 style="width: 350px"
                                 placeholder="请输入策略名称或ID"
-                                :clearable='true'
                                 @keyup.enter.native="handleSearch"
                         ></el-input>
                         <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
@@ -303,7 +302,7 @@
     .icon-fixed
         position absolute
         top 8px
-        left 1px
+        right 20px
         transform rotate(-90deg)
     .header
         width 100%

@@ -14,7 +14,6 @@
               v-model="searchForm.policyName"
               style="width: 350px"
               placeholder="支持按策略、人群、创建人、部门搜索"
-              :clearable='true'
               @keyup.enter.native="handleSearch"
             ></el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
@@ -1153,7 +1152,7 @@ ul > li
 .icon-fixed
   position absolute
   top 8px
-  left 1px
+  right 28px
   transform rotate(-90deg)
 .header
   width 100%
