@@ -1342,7 +1342,7 @@ export default {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
             // 手动构建数据 二期数据格式兼容一期
-            if (versionNum === 0) {
+            if (versionNum !== 1) {
               if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))

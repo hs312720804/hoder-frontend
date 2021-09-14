@@ -177,7 +177,7 @@
                       <!-- 圈人群二期 -->
                       <template v-if="childItem.version === 1">
 
-                        <span v-if="childItem.dateAreaType === 1" style="display: flex">   <!-- 动态时间 -->
+                        <span v-if="childItem.dateAreaType === 2" style="display: flex">   <!-- 固定时间 -->
                           <el-date-picker
                             v-model="childItem.startDay"
                             type="date"
@@ -199,7 +199,7 @@
                           ></el-date-picker>
                         </span>
 
-                        <span v-else>   <!-- 固定时间 -->
+                        <span v-else>   <!-- 动态时间 -->
                           <el-input
                             class="time-dot-input"
                             style="width: 60px"

@@ -2636,7 +2636,7 @@ export default {
             } else {
               obj.operator = '='
             }
-          } else {  // 其他属性切换正常操作
+          } else { // 其他属性切换正常操作
             obj.operator = '!='
           }
         }
@@ -3032,7 +3032,9 @@ export default {
       if (this.bavAttrList) {
         let attrlist = []
         const dict = this.bavAttrList.dict
+        console.log('dict===', dict)
         if (childItem.tagCode === 'BAV0001') {
+          debugger
           // eslint-disable-next-line no-debugger
           if (level === 1) {
             attrlist = dict.business_type
