@@ -87,6 +87,7 @@
                   <!-- 二期 -->
                   <template v-if="childItem.version === 1">
                     <el-select
+                      style="width: 130px"
                       class="time-dot-select-new"
                       :key="n + 'timeKey'"
                       v-model="childItem.dateAreaType"

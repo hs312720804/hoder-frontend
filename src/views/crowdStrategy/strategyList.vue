@@ -136,7 +136,6 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
-      
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
@@ -394,9 +393,9 @@ import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 export default {
   components: {
-      LaunchToBusiness
+    LaunchToBusiness
   },
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
@@ -404,22 +403,22 @@ export default {
       //   1: "自定义",
       //   2: "数据平台"
       // },
-      //搜索条件
+      // 搜索条件
       criteria: {},
       initPageSize: 500,
       tagsListTotal: 0,
       initCurrentPage: 1,
       // 列表页
       searchForm: {
-        policyName: ""
+        policyName: ''
         // constType: 'POLICY_NAME'
       },
       // policyNameHolder: '请输入策略名称',
-      title: "",
+      title: '',
       showConfiguration: false,
       showStatistics: false,
       linesTitle: '',
-      pieTitle:'',
+      pieTitle: '',
       time: [],
       time1: [],
       startDate: '',
@@ -427,7 +426,7 @@ export default {
       currentPid: undefined,
       configTextarea: '',
       showLaunch: false,
-      launchItems:[],
+      launchItems: [],
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
       // 默认每页数据量:pageSize
@@ -438,36 +437,36 @@ export default {
       // 查询的页码
       start: 1,
       addFormVisible: false,
-      conditionTagIdsData: [], //策略维度
+      conditionTagIdsData: [], // 策略维度
       conditionTagsFiltered: [],
       tagList: [],
       defaultProps: {
-        children: "child",
-        label: "groupName"
+        children: 'child',
+        label: 'groupName'
       },
       // 默认数据总数
       addForm: {
-        policyId: "",
-        policyName: "",
+        policyId: '',
+        policyName: '',
         // dataSource: "2",
         conditionTagIds: []
         // 以上为表单提交的参数
       },
       addFormRules: {
         policyName: [
-          { required: true, message: "请填写策略名称", trigger: "blur" }
+          { required: true, message: '请填写策略名称', trigger: 'blur' }
         ]
       },
       statusTip: undefined,
       searchValue: '',
       reloadHistory: true,
       placeHolderInputObject: {
-          'POLICY_NAME': '请输入策略名称',
-          'POLICY_ID': '请输入策略id',
-          'TAG_NAME': '请输入策略维度',
-          'CREATOR_NAME': '请输入创建人名称',
-          'OFFICE_NAME': '请输入创建人部门名称',
-          'CROWD_ID': '请输入人群ID'
+        'POLICY_NAME': '请输入策略名称',
+        'POLICY_ID': '请输入策略id',
+        'TAG_NAME': '请输入策略维度',
+        'CREATOR_NAME': '请输入创建人名称',
+        'OFFICE_NAME': '请输入创建人部门名称',
+        'CROWD_ID': '请输入人群ID'
       },
       recordId: undefined,
       tempPolicyAndCrowd: {},
@@ -476,28 +475,28 @@ export default {
       checkList: [],
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
       dataSourceColorClassEnum: {
-          1: 'checkbox--green',
-          2: 'checkbox--red',
-          3: 'checkbox--blue',
-          5: 'checkbox--yellow',
-          6: 'checkbox--orange',
-          7: 'checkbox--orange2',
-          8: 'checkbox--cyan'
+        1: 'checkbox--green',
+        2: 'checkbox--red',
+        3: 'checkbox--blue',
+        5: 'checkbox--yellow',
+        6: 'checkbox--orange',
+        7: 'checkbox--orange2',
+        8: 'checkbox--cyan'
       },
       dataSourceColorEnum: {
-          1: 'success',
-          2: 'danger',
-          3: '',
-          5: 'warning',
-          6: 'warningOrange',
-          7: 'warningOrange2',
-          8: 'warningCyan'
+        1: 'success',
+        2: 'danger',
+        3: '',
+        5: 'warning',
+        6: 'warningOrange',
+        7: 'warningOrange2',
+        8: 'warningCyan'
       },
       showAll: false
     }
   },
-  props: ["historyFilter","checkListFilter","parentSource","showAllParent"],
-  created() {
+  props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
+  created () {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
     // this.setGlobalStrategySource()
@@ -507,73 +506,73 @@ export default {
     this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
   watch: {
-      // refresh: function (val) {
-      //     debugger
-      //     if(val === true) {
-      //         this.loadData()
-      //     }
-      // },
-      // 'searchForm.constType': function (val) {
-      //     this.policyNameHolder = this.placeHolderInputObject[val]
-      // },
-      time(val,oldVal) {
-          if(this.currentPid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawLines(this.currentPid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time = oldVal
-              }
-          }
-      },
-      time1(val,oldVal) {
-          if(this.currentPid && oldVal.length !== 0){
-              if(this.setDataInMonth(val[0],val[1])){
-                  this.drawPie(this.currentPid,val[0],val[1])
-              }else{
-                  this.$message('日期间隔最多只能是30天！请重新选择日期')
-                  this.time1 = oldVal
-              }
-          }
+    // refresh: function (val) {
+    //     debugger
+    //     if(val === true) {
+    //         this.loadData()
+    //     }
+    // },
+    // 'searchForm.constType': function (val) {
+    //     this.policyNameHolder = this.placeHolderInputObject[val]
+    // },
+    time (val, oldVal) {
+      if (this.currentPid && oldVal.length !== 0) {
+        if (this.setDataInMonth(val[0], val[1])) {
+          this.drawLines(this.currentPid, val[0], val[1])
+        } else {
+          this.$message('日期间隔最多只能是30天！请重新选择日期')
+          this.time = oldVal
+        }
       }
+    },
+    time1 (val, oldVal) {
+      if (this.currentPid && oldVal.length !== 0) {
+        if (this.setDataInMonth(val[0], val[1])) {
+          this.drawPie(this.currentPid, val[0], val[1])
+        } else {
+          this.$message('日期间隔最多只能是30天！请重新选择日期')
+          this.time1 = oldVal
+        }
+      }
+    }
   },
   methods: {
-    freshService() {
+    freshService () {
       this.$service.freshService().then(data => {
         this.$message({
-          type: "info",
+          type: 'info',
           message: data
-        });
-      });
-    },
-    freshCache(row) {
-      this.$confirm("新建的人群策略将实时生效，旧的策略更新需要延时2小时生效", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+        })
       })
-      .then(() => {
-        this.$service.freshCache({policyId: row.policyId}).then(data => {
-            this.loadData();
+    },
+    freshCache (row) {
+      this.$confirm('新建的人群策略将实时生效，旧的策略更新需要延时2小时生效', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.freshCache({ policyId: row.policyId }).then(data => {
+            this.loadData()
             this.$message({
-                type: "info",
-                message: data
-            });
-        });
-      })
+              type: 'info',
+              message: data
+            })
+          })
+        })
     },
-    getTags() {
+    getTags () {
       // this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ pageNum: this.initCurrentPage ,pageSize: this.initPageSize,s: this.searchValue})
+        .policyTagSeach({ pageNum: this.initCurrentPage, pageSize: this.initPageSize, s: this.searchValue })
         .then(data => {
           //  let checkboxData = []
           // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
           //  this.conditionTagIdsData = checkboxData
           //  this.conditionTagsFiltered = checkboxData
-            this.conditionTagsFiltered = data.pageInfo.list
-            this.tagsListTotal = data.pageInfo.total
-        });
+          this.conditionTagsFiltered = data.pageInfo.list
+          this.tagsListTotal = data.pageInfo.total
+        })
     },
     // searchTag() {
     //     let searchValue = this.searchValue
@@ -589,39 +588,38 @@ export default {
     //             this.conditionTagsFiltered = data.pageInfo.list
     //         })
     // },
-    handleTagCurrentChange(pages) {
-        this.initCurrentPage = pages
-        this.getTags()
+    handleTagCurrentChange (pages) {
+      this.initCurrentPage = pages
+      this.getTags()
     },
-    removeTag(tag) {
-        const addForm = this.addForm
-        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-        this.tagList.splice(this.tagList.indexOf(tag),1)
-        // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
+    removeTag (tag) {
+      const addForm = this.addForm
+      addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      this.tagList.splice(this.tagList.indexOf(tag), 1)
+      // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
     },
-    handleTagChange(flag,item) {
+    handleTagChange (flag, item) {
       var arr = []
-      if(flag) {this.tagList.push(item)}
-      else {
-          arr = this.tagList
-          for(var i=arr.length-1;i>=0;i--) {
-              if(arr[i].tagId == item.tagId) {arr.splice(i,1)}
-          }
+      if (flag) { this.tagList.push(item) } else {
+        arr = this.tagList
+        for (var i = arr.length - 1; i >= 0; i--) {
+          if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
+        }
       }
     },
     resetSearch () {
-        this.searchValue = ''
-        let currentTagsId = this.addForm.conditionTagIds
-        this.getTags()
-        this.addForm.conditionTagIds = currentTagsId
+      this.searchValue = ''
+      let currentTagsId = this.addForm.conditionTagIds
+      this.getTags()
+      this.addForm.conditionTagIds = currentTagsId
     },
-    handleAdd() {
+    handleAdd () {
       this.$router.push({
         name: 'oneTouchDrop',
-        params: { source: this.parentSource ? 'myCrowd': undefined, refresh: true} // 刷新页面
+        params: { source: this.parentSource ? 'myCrowd' : undefined, refresh: true } // 刷新页面
       })
       // 清空编辑时设置的数据
-        this.$store.commit('setSchemeConfigNull')
+      this.$store.commit('setSchemeConfigNull')
       // this.addFormVisible = true;
       // this.addForm.policyName = "";
       // this.addForm.policyId = "";
@@ -631,42 +629,42 @@ export default {
       // this.tagList = []
       // this.addForm.conditionTagIds = [];
     },
-    handleEdit(row) {
+    handleEdit (row) {
       const Row = cloneDeep(row)
-      this.addFormVisible = true;
-      this.title = "编辑";
-      this.addForm.policyId = Row.policyId;
-      this.addForm.policyName = Row.policyName;
+      this.addFormVisible = true
+      this.title = '编辑'
+      this.addForm.policyId = Row.policyId
+      this.addForm.policyName = Row.policyName
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
-      this.getTags();
+      this.getTags()
       this.tagList = Row.tagsList
       this.addForm.conditionTagIds = Row.conditionTagIds
-        .split(",")
-        .map(function(v) {
-          return parseInt(v);
-        });
-      //row.conditionTagIds.split(",");
+        .split(',')
+        .map(function (v) {
+          return parseInt(v)
+        })
+      // row.conditionTagIds.split(",");
     },
-    crowdList(row) {
-      this.$emit("openCrowdPage", row, this.criteria, this.checkList, this.showAll)
+    crowdList (row) {
+      this.$emit('openCrowdPage', row, this.criteria, this.checkList, this.showAll)
     },
     smartScheme (row) {
-      this.$emit("openSchemePage", row)
+      this.$emit('openSchemePage', row)
     },
-    del(row) {
-      var id = row.policyId;
-      this.$confirm("确定要删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    del (row) {
+      var id = row.policyId
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          this.$service.policyDel({ policyId: id }, "删除成功").then(() => {
-            this.loadData();
-          });
+          this.$service.policyDel({ policyId: id }, '删除成功').then(() => {
+            this.loadData()
+          })
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // setGlobalStrategySource ()  {
     //     if (this.parentSource){
@@ -677,105 +675,105 @@ export default {
     // },
     // 从服务器读取数据
     loadData () {
-     this.$service.getListDimension({type: 1}).then(data => {
-         if (data) {
-             if (data.behaviorShow) {
-                 this.checkList = data.behaviorShow.split(',')
-             }
-         }
-     })
+      this.$service.getListDimension({ type: 1 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
+          }
+        }
+      })
       // 从列表返回第一次加载的时候，要保留上一次的页码数和size
-      if(this.reloadHistory){
-          if(this.historyFilter != null) {
-              this.criteria = this.historyFilter
-              this.searchForm = {
-                  policyName: this.historyFilter.policyName
-                  // constType: this.historyFilter.constType || 'POLICY_NAME'
-              },
-              this.currentPage = this.historyFilter.pageNum || this.currentPage
-              this.pageSize = this.historyFilter.pageSize || this.pageSize
+      if (this.reloadHistory) {
+        if (this.historyFilter != null) {
+          this.criteria = this.historyFilter
+          this.searchForm = {
+            policyName: this.historyFilter.policyName
+            // constType: this.historyFilter.constType || 'POLICY_NAME'
           }
-          if(this.showAllParent) {
-              this.showAll = this.showAllParent
-          } else {
-              this.showAll = false
-          }
-          this.reloadHistory = false
+          this.currentPage = this.historyFilter.pageNum || this.currentPage
+          this.pageSize = this.historyFilter.pageSize || this.pageSize
+        }
+        if (this.showAllParent) {
+          this.showAll = this.showAllParent
+        } else {
+          this.showAll = false
+        }
+        this.reloadHistory = false
       }
       // this.checkList = this.checkListFilter
-      this.criteria["pageNum"] = this.currentPage
-      this.criteria["pageSize"] = this.pageSize
-      
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
+
       // 如果是【我的人群】模块进入
-      if (!this.showAll){
-          this.$service.getMyCrowdList(this.criteria).then(data => {
-            if (data.pageInfo){
-              const originalTableData = data.pageInfo && data.pageInfo.list ? data.pageInfo.list : []
-              this.totalCount = data.pageInfo ? data.pageInfo.total : 0
-              // 单独获得策略标签维度
-              const currentStrategyIds = []
-              originalTableData.forEach(item => {
-                  currentStrategyIds.push(item.policyId)
+      if (!this.showAll) {
+        this.$service.getMyCrowdList(this.criteria).then(data => {
+          if (data.pageInfo) {
+            const originalTableData = data.pageInfo && data.pageInfo.list ? data.pageInfo.list : []
+            this.totalCount = data.pageInfo ? data.pageInfo.total : 0
+            // 单独获得策略标签维度
+            const currentStrategyIds = []
+            originalTableData.forEach(item => {
+              currentStrategyIds.push(item.policyId)
+            })
+            this.$service.getSrtategyTagsList({ policyIds: currentStrategyIds.join(',') }).then(tagList => {
+              originalTableData.forEach((item) => {
+                item.tagsList = tagList[item.policyId]
               })
-              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
-                  originalTableData.forEach((item) => {
-                      item.tagsList = tagList[item.policyId]
-                  })
-                  this.tableData = originalTableData
+              this.tableData = originalTableData
+            })
+          } else {
+            this.tableData = []
+            this.totalCount = 0
+          }
+        })
+        // this.$appState.$set('GlobalStrategySource', this.parentSource)
+      } else {
+        this.$service.policyList(this.criteria).then(data => {
+          if (data.pageInfo) {
+            const originalTableData = data.pageInfo.list
+            this.totalCount = data.pageInfo.total
+            // 单独获得策略标签维度
+            const currentStrategyIds = []
+            originalTableData.forEach(item => {
+              currentStrategyIds.push(item.policyId)
+            })
+            this.$service.getSrtategyTagsList({ policyIds: currentStrategyIds.join(',') }).then(tagList => {
+              originalTableData.forEach((item) => {
+                item.tagsList = tagList[item.policyId]
               })
-            } else {
-              this.tableData = []
-              this.totalCount = 0
-            }
-          });
-          // this.$appState.$set('GlobalStrategySource', this.parentSource)
-      }else {
-          this.$service.policyList(this.criteria).then(data => {
-            if (data.pageInfo){
-              const originalTableData = data.pageInfo.list
-              this.totalCount = data.pageInfo.total
-              // 单独获得策略标签维度
-              const currentStrategyIds = []
-              originalTableData.forEach(item => {
-                  currentStrategyIds.push(item.policyId)
-              })
-              this.$service.getSrtategyTagsList({policyIds: currentStrategyIds.join(',')}).then(tagList => {
-                  originalTableData.forEach((item) => {
-                      item.tagsList = tagList[item.policyId]
-                  })
-                  this.tableData = originalTableData
-              })
-            } else {
-              this.tableData = []
-              this.totalCount = 0
-            }
-          });
-          // this.$appState.$set('GlobalStrategySource', '')
+              this.tableData = originalTableData
+            })
+          } else {
+            this.tableData = []
+            this.totalCount = 0
+          }
+        })
+        // this.$appState.$set('GlobalStrategySource', '')
       }
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
+    handleSizeChange: function (val) {
       this.pageSize = val
-      this.loadData();
+      this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
     },
     // 搜索,提交表单
     handleSearch () {
-       this.criteria = this.searchForm
-       // pageNum重置为1
-       this.currentPage = 1
-       this.loadData()
+      this.criteria = this.searchForm
+      // pageNum重置为1
+      this.currentPage = 1
+      this.loadData()
     },
     // 重置
     handleReset () {
-        this.searchForm.policyName = ''
-        // this.searchForm.constType = 'POLICY_NAME'
-        this.criteria = {}
-        this.loadData()
+      this.searchForm.policyName = ''
+      // this.searchForm.constType = 'POLICY_NAME'
+      this.criteria = {}
+      this.loadData()
       // this.$refs.searchForm.resetFields();
     },
     // 查看详情
@@ -784,273 +782,270 @@ export default {
     //   // todo: 以后再做
     // },
     // 新增
-    addSubmit: function() {
+    addSubmit: function () {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          let addForm = JSON.stringify(this.addForm);
-          addForm = JSON.parse(addForm);
-          addForm.conditionTagIds = addForm.conditionTagIds.join(",");
-          if (this.addForm.policyId != "") {
-            this.$service.policyUpate(addForm, "编辑成功").then(() => {
-              this.loadData();
-              this.addFormVisible = false;
-            });
+          let addForm = JSON.stringify(this.addForm)
+          addForm = JSON.parse(addForm)
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          if (this.addForm.policyId != '') {
+            this.$service.policyUpate(addForm, '编辑成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
           } else {
-            this.$service.policyAddSave(addForm, "添加成功").then(() => {
-              this.loadData();
-              this.addFormVisible = false;
-            });
+            this.$service.policyAddSave(addForm, '添加成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 取消
-    cancelAdd: function() {
-      this.addFormVisible = false;
+    cancelAdd: function () {
+      this.addFormVisible = false
     },
-    seeDevDetail(row) {
-        this.$service.seeDevFile({policyId:row.policyId}).then((data) => {
-            this.showConfiguration = true
-            this.configTextarea = data.content
-        }).
-        catch(() => {
-            // this.showConfiguration = true
-            // this.configTextarea = '该策略没有配置文件'
+    seeDevDetail (row) {
+      this.$service.seeDevFile({ policyId: row.policyId }).then((data) => {
+        this.showConfiguration = true
+        this.configTextarea = data.content
+      })
+        .catch(() => {
+          // this.showConfiguration = true
+          // this.configTextarea = '该策略没有配置文件'
         })
     },
-    handleCommand(scope) {
-        const type = scope[0]
-        const params = scope[1]
-        if (type === 'edit') {
-            this.handleEdit(params)
-            // 如果是smart=true 则证明是流程图创建人群 否则普通人群创建
-            // if (params.smart) {
-            //     this.$router.push({
-            //         name: 'oneTouchDrop',
-            //         params: {
-            //             source: this.parentSource ? 'myCrowd': undefined,
-            //         },
-            //         query: {
-            //             policyId: params.policyId
-            //         }
-            //     })
-            // }
-        } else if (type === 'del') {
-            this.del(params)
-        } else if (type === 'detail') {
-            this.seeDevDetail(params)
-        } else if (type === 'collect') {
-            this.handlePolicyCollect(params)
-        } else if(type === 'statics') {
-            this.currentPid = scope[1].policyId
-            this.showStatistics = true
-            // 重置时间
-            this.time = [this.startDate,this.endDate]
-            this.time1 = [this.startDate,this.endDate]
-            this.drawPie(this.currentPid,this.startDate,this.endDate)
-            this.drawLines(this.currentPid,this.startDate,this.endDate)
-        }
+    handleCommand (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      if (type === 'edit') {
+        this.handleEdit(params)
+        // 如果是smart=true 则证明是流程图创建人群 否则普通人群创建
+        // if (params.smart) {
+        //     this.$router.push({
+        //         name: 'oneTouchDrop',
+        //         params: {
+        //             source: this.parentSource ? 'myCrowd': undefined,
+        //         },
+        //         query: {
+        //             policyId: params.policyId
+        //         }
+        //     })
+        // }
+      } else if (type === 'del') {
+        this.del(params)
+      } else if (type === 'detail') {
+        this.seeDevDetail(params)
+      } else if (type === 'collect') {
+        this.handlePolicyCollect(params)
+      } else if (type === 'statics') {
+        this.currentPid = scope[1].policyId
+        this.showStatistics = true
+        // 重置时间
+        this.time = [this.startDate, this.endDate]
+        this.time1 = [this.startDate, this.endDate]
+        this.drawPie(this.currentPid, this.startDate, this.endDate)
+        this.drawLines(this.currentPid, this.startDate, this.endDate)
+      }
     },
-      // 通用多线性参数设置
-      setLinesEchart (element,title,xData,yData,legend) {
-          const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title
-              },
-              // tooltip: {
-              //     trigger: 'axis'
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return _this.cc_format_number(a.data)
-                  }
-              },
-              legend: {
-                  data: legend
-              },
-              xAxis: {
-                  type: 'category',
-                  data: xData,
-                  axisLabel: {
-                      interval: 0,
-                      rotate: -45
-                  }
-              },
-              yAxis: {
-                  type: 'value',
-                  axisTick: {
-                      inside: true
-                  },
-                  scale: true,
-                  axisLabel: {
-                      margin: 2,
-                      formatter: function (value) {
-                          if (value >= 10000 && value < 10000000) {
-                              value = value / 10000 + "万";
-                          }
-                          else if (value >= 10000000) {
-                              value = value / 10000000 + "千万";
-                          } return value;
-                      }
-                  },
-              },
-              series: yData
-          })
-      },
-      setCircleEcharts(element,title,legend,data){
-        const _this = this
-          let echarts = require('echarts')
-          let myChart = echarts.init(this.$refs[element])
-          myChart.setOption({
-              title: {
-                  text: title
-              },
-              // tooltip: {
-              //     trigger: 'item',
-              //     formatter: "{a} <br/>{b}: {c} ({d}%)"
-              // },
-              tooltip: {
-                  trigger: 'item',
-                  formatter:function (a) {
-                      return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
-                  }
-              },
-              legend: {
-                  orient: 'vertical',
-                  x: 'right',
-                  data: legend
-              },
-              series: [
-                  {
-                      name:'',
-                      type:'pie',
-                      radius: ['50%', '70%'],
-                      avoidLabelOverlap: false,
-                      itemStyle: {
-                          normal: {label:{
-                                  show:true,
-                                  formatter:'{b} : {c} ({d}%)'
-                              },
-                              labelLine:{show:true}},
-                          emphasis: {
-                              label: {
-                                  show: true,
-                                  formatter: "{b}\n{c} ({d}%)",
-                                  position: 'center',
-                                  textStyle: {
-                                      fontSize: '20',
-                                      fontWeight: 'bold'
-                                  }
-                              }
-                          }
-                      },
-                      // label: {
-                      //     normal: {
-                      //         show: true,
-                      //         formatter: "{a}{b}: {c} ({d}%)"
-                      //     },
-                      //     emphasis: {
-                      //         show: true,
-                      //         textStyle: {
-                      //             fontSize: '30',
-                      //             fontWeight: 'bold'
-                      //         }
-                      //     }
-                      // },
-                      // labelLine: {
-                      //     normal: {
-                      //         show: false
-                      //     }
-                      // },
-                      data: data
-                  }
-              ]
-          });
-      },
-      // 策略使用以及各业务使用次数统计
-      handleCommandStastic(scope) {
-          const type = scope[0]
-          this.currentPid = scope[1].policyId
-          this.showStatistics = true
-          if(type === 'detail') {
-              // 重置时间
-              this.time = [this.startDate,this.endDate]
-              this.time1 = [this.startDate,this.endDate]
-              this.drawPie(this.currentPid,this.startDate,this.endDate)
-              this.drawLines(this.currentPid,this.startDate,this.endDate)
+    // 通用多线性参数设置
+    setLinesEchart (element, title, xData, yData, legend) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
           }
-      },
-      drawPie(id,startTime,endTime){
-        this.$service.policyWithBiTotalPie({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
-          if(data.data.length === 0){this.pieTitle = '累计使用次数按业务分部暂无数据'}
-          else{this.pieTitle = '累计使用次数按业务分部'}
-          this.setCircleEcharts('hitBiTotal','',data.name,data.data)
+        },
+        legend: {
+          data: legend
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: yData
+      })
+    },
+    setCircleEcharts (element, title, legend, data) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'item',
+        //     formatter: "{a} <br/>{b}: {c} ({d}%)"
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value) + '(' + a.percent + ')%'
+          }
+        },
+        legend: {
+          orient: 'vertical',
+          x: 'right',
+          data: legend
+        },
+        series: [
+          {
+            name: '',
+            type: 'pie',
+            radius: ['50%', '70%'],
+            avoidLabelOverlap: false,
+            itemStyle: {
+              normal: { label: {
+                show: true,
+                formatter: '{b} : {c} ({d}%)'
+              },
+              labelLine: { show: true } },
+              emphasis: {
+                label: {
+                  show: true,
+                  formatter: '{b}\n{c} ({d}%)',
+                  position: 'center',
+                  textStyle: {
+                    fontSize: '20',
+                    fontWeight: 'bold'
+                  }
+                }
+              }
+            },
+            // label: {
+            //     normal: {
+            //         show: true,
+            //         formatter: "{a}{b}: {c} ({d}%)"
+            //     },
+            //     emphasis: {
+            //         show: true,
+            //         textStyle: {
+            //             fontSize: '30',
+            //             fontWeight: 'bold'
+            //         }
+            //     }
+            // },
+            // labelLine: {
+            //     normal: {
+            //         show: false
+            //     }
+            // },
+            data: data
+          }
+        ]
+      })
+    },
+    // 策略使用以及各业务使用次数统计
+    handleCommandStastic (scope) {
+      const type = scope[0]
+      this.currentPid = scope[1].policyId
+      this.showStatistics = true
+      if (type === 'detail') {
+        // 重置时间
+        this.time = [this.startDate, this.endDate]
+        this.time1 = [this.startDate, this.endDate]
+        this.drawPie(this.currentPid, this.startDate, this.endDate)
+        this.drawLines(this.currentPid, this.startDate, this.endDate)
+      }
+    },
+    drawPie (id, startTime, endTime) {
+      this.$service.policyWithBiTotalPie({ pid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        if (data.data.length === 0) { this.pieTitle = '累计使用次数按业务分部暂无数据' } else { this.pieTitle = '累计使用次数按业务分部' }
+        this.setCircleEcharts('hitBiTotal', '', data.name, data.data)
+      })
+    },
+    drawLines (id, startTime, endTime) {
+      this.$service.policyWithBiTotalLine({ pid: id, startTime: startTime, endTime: endTime }).then((data) => {
+        const legendData = data.series.map((key) => {
+          return key.name
         })
-      },
-      drawLines(id,startTime,endTime){
-          this.$service.policyWithBiTotalLine({pid:id,startTime:startTime,endTime:endTime}).then((data)=>{
-              const legendData = data.series.map((key) => {
-                  return key.name
-              })
-              const linesData = data.series.map((key) => {
-                  return {name:key.name, data:key.data, type: 'line'}
-              })
-              this.linesTitle = '策略使用以及各业务使用次数统计'
-              this.setLinesEchart('main','',data.date,linesData,legendData)
-          })
-      },
+        const linesData = data.series.map((key) => {
+          return { name: key.name, data: key.data, type: 'line' }
+        })
+        this.linesTitle = '策略使用以及各业务使用次数统计'
+        this.setLinesEchart('main', '', data.date, linesData, legendData)
+      })
+    },
     formatDate (d) {
-        const time = new Date(d)
-        let y = time.getFullYear(); // 年份
-        let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
-        let r = time.getDate().toString().padStart(2,'0'); // 日子
-        return `${y}-${m}-${r}`
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
     },
-    launchDetail(pid) {
-        this.showLaunch = true
-        this.$service.policyUseInBi({policyId : pid}).then((data)=> {
-            this.launchItems = data
-        })
+    launchDetail (pid) {
+      this.showLaunch = true
+      this.$service.policyUseInBi({ policyId: pid }).then((data) => {
+        this.launchItems = data
+      })
     },
-    setDataInMonth(startDate,endDate){
-        const startTime = new Date(startDate).getTime()
-        const endTime = new Date(endDate).getTime()
-        const oneMonth = 3600*1000*24*30
-        if(endTime - startTime > oneMonth) {return false}
-        else{return true}
+    setDataInMonth (startDate, endDate) {
+      const startTime = new Date(startDate).getTime()
+      const endTime = new Date(endDate).getTime()
+      const oneMonth = 3600 * 1000 * 24 * 30
+      if (endTime - startTime > oneMonth) { return false } else { return true }
     },
     handleLaunch (row) {
-        this.showLaunchToBusiness = true
-        this.recordId = row.policyId
-        this.tempPolicyAndCrowd = row
+      this.showLaunchToBusiness = true
+      this.recordId = row.policyId
+      this.tempPolicyAndCrowd = row
     },
     handleCloseDialog () {
-        this.showLaunchToBusiness = false
+      this.showLaunchToBusiness = false
     },
     handlePolicyCollect (row) {
-        const collectFlag = row.myCollect
-        const policyId = row.policyId
-        if (collectFlag) {
-            this.$service.removeCollectPolicy({policyId},'成功取消收藏此策略！').then(() => {
-                this.loadData()
-            })
-        } else {
-            this.$service.collectPolicy({policyId},'成功收藏此策略！').then(() => {
-                this.loadData()
-            })
-        }
+      const collectFlag = row.myCollect
+      const policyId = row.policyId
+      if (collectFlag) {
+        this.$service.removeCollectPolicy({ policyId }, '成功取消收藏此策略！').then(() => {
+          this.loadData()
+        })
+      } else {
+        this.$service.collectPolicy({ policyId }, '成功收藏此策略！').then(() => {
+          this.loadData()
+        })
+      }
     },
     handleCheckListChange (val) {
-        this.$service.saveListDimension({type: 1,behaviorShow: val.join(',')})
+      this.$service.saveListDimension({ type: 1, behaviorShow: val.join(',') })
     },
     handleShowAllChange () {
-        this.loadData()
+      this.loadData()
     }
   }
 }
@@ -1182,8 +1177,25 @@ ul > li
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
-  
+
 .header-left
   display flex
   align-items center
+
+/*flex布局*/
+    .parent{
+      display: flex;
+      display: -webkit-flex;
+      display: -o-flex;
+      display: -moz-flex;
+      display: -ms-flex;
+      align-items: stretch;
+    }
+    .left{
+      background: aqua;
+    }
+    .right{
+      margin-left: 110px;
+      background: antiquewhite;
+    }
 </style>

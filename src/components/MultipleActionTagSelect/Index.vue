@@ -123,6 +123,7 @@
                     <!-- 二期 -->
                     <template v-if="childItem.version === 1">
                       <el-select
+                        style="width: 130px"
                         class="time-dot-select-new"
                         :key="n + 'timeKey'"
                         v-model="childItem.dateAreaType"
@@ -210,8 +211,7 @@
                             class="time-dot-input"
                             style="width: 60px"
                             v-model="childItem.endDay"
-                            @blur="bigNum(childItem)
-                            "
+                            @blur="bigNum(childItem)"
                           ></el-input>天
                         </span>
                       </template>
@@ -1414,7 +1414,7 @@ export default {
 }
 
 .label-item .in {
-  width: 250px;
+  min-width: 250px;
 }
 
 .label-item span, .oc-item {
