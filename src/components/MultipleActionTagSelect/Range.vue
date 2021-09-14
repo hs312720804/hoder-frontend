@@ -69,7 +69,7 @@
                 <el-input-number
                   v-model="childItem.bav.rang.value"
                   :min="1"
-                  :max="(childItem.tagCode === 'BAV0003') ? 720 : 30"
+                  :max="getMaxDay(childItem.tagCode)"
                   label="请输入天数"
                 ></el-input-number>
                 天
@@ -160,7 +160,7 @@ export default {
         onPick (time) {
           // 如果选择了只选择了一个时间
           if (!time.maxDate) {
-            let timeRange = 30 * 24 * 60 * 60 * 1000 // 30天
+            let timeRange = 90 * 24 * 60 * 60 * 1000 // 3个月
             _minTime = time.minDate.getTime() - timeRange // 最小时间
             _maxTime = time.minDate.getTime() + timeRange // 最大时间
             // 如果选了两个时间，那就清空本次范围判断数据，以备重选
@@ -169,7 +169,7 @@ export default {
           }
         },
         disabledDate: (time) => {
-          const day1 = 720 * 24 * 3600 * 1000 // 2个月
+          const day1 = 720 * 24 * 3600 * 1000 // 2年
           let maxTime = Date.now() - 1 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
 
@@ -269,6 +269,16 @@ export default {
     }
   },
   methods: {
+    getMaxDay (tagCode) {
+      // (childItem.tagCode === 'BAV0003') ? 720 : 30
+      if (tagCode === 'BAV0003') { // 【购买行为】
+        return 720
+      } else if (tagCode === 'BAV0008') { // 【起播行为】
+        return 90
+      } else { // 其他
+        return 30
+      }
+    },
     getPickerOptions (tagCode) {
       if (tagCode === 'BAV0003') { // 【购买行为】
         return this.pickerOptions720
