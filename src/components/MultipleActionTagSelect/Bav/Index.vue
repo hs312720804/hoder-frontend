@@ -3028,18 +3028,18 @@ export default {
 
     // 获取下拉框选项
     getBehaviorAttrList (level = 1, extra = {}) {
+      debugger
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
         const dict = this.bavAttrList.dict
         console.log('dict===', dict)
         if (childItem.tagCode === 'BAV0001') {
-          debugger
           // eslint-disable-next-line no-debugger
           if (level === 1) {
             attrlist = dict.business_type
           } else if (level === 2) {
-            const obj = dict.business_type.find(item => item.dictValue === extra.type)
+            const obj = dict.business_type.find(item => item.dictValue === extra.type) || {}
             attrlist = dict[obj.mapName] || dict.vip_package_all
             // attrlist = dict.vip_package
           } else if (level === 3) {
