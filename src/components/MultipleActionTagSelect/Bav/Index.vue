@@ -3028,7 +3028,6 @@ export default {
 
     // 获取下拉框选项
     getBehaviorAttrList (level = 1, extra = {}) {
-      debugger
       const childItem = this.childItem // 组件参数：该个行为标签规则
       if (this.bavAttrList) {
         let attrlist = []
