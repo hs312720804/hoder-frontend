@@ -178,7 +178,7 @@ export default {
     handleDeleteTag (row) {
       this.$confirm('确定删除？')
         .then(() => {
-          this.$service.deleteTag(row, '删除成功').then(() => {
+          this.$service.deleteSpecialTagAttr(row.specialTagId, '删除成功').then(() => {
             this.fetchData()
           })
         })

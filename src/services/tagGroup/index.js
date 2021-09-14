@@ -175,10 +175,19 @@ export function addSpecialTag ({ rulesJson }) {
     isJSON: true
   })
 }
+
 export function specialTagDetail ({ specialTagId }) {
   return this.fetch({
     method: 'get',
     url: `api/specialTag/${specialTagId}`
+  })
+}
+
+// 删除组合标签下的属性
+export function deleteSpecialTagAttr (id) {
+  return this.fetch({
+    method: 'delete',
+    url: `api/specialTag/${id}`
   })
 }
 
