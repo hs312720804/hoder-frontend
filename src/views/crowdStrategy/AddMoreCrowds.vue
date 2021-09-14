@@ -145,8 +145,8 @@ export default {
         }
 
         // ------------------- 普通标签规则校验 --------------------------
-        const rulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].rulesJson))
-        const rules = JSON.parse(JSON.stringify(rulesJsonData.rules))
+        const rulesJsonData = rulesJson[index].rulesJson
+        const rules = rulesJsonData.rules
         const ruleLength = rules.length
         let i
         let j = 0
@@ -174,16 +174,29 @@ export default {
               )
               flag = false
               break
-            } else if (
-              rulesItem.tagType === 'time' &&
-              rulesItem.isDynamicTime === 3
-            ) {
-              if (
-                this.checkNum(rulesItem.startDay) &&
-                this.checkNum(rulesItem.endDay)
-              ) {
-                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+            } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
+              // 二期
+              if (rulesItem.version === 1) {
+                const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
+                const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
+                rulesItem.value = startDay + '~' + endDay
+              } else { // 一期
+                if (this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
+                  if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                    rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                  } else {
+                    this.$message.error(
+                      '第' +
+                        (index + 1) +
+                        '人群里面的第' +
+                        (i + 1) +
+                        '设置标签块里面的第' +
+                        (j + 1) +
+                        '行的天数值后面的值必须大于前面的'
+                    )
+                    flag = false
+                    break
+                  }
                 } else {
                   this.$message.error(
                     '第' +
@@ -192,23 +205,11 @@ export default {
                       (i + 1) +
                       '设置标签块里面的第' +
                       (j + 1) +
-                      '行的天数值后面的值必须大于前面的'
+                      '行的值是大于等于0的整数且不能超过4位数'
                   )
                   flag = false
                   break
                 }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (index + 1) +
-                    '人群里面的第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                flag = false
-                break
               }
             }
           }
@@ -216,8 +217,8 @@ export default {
         if (!flag) break
 
         // ------------------- 行为标签中的大数据标签规则校验 --------------------------
-        const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
-        const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
+        const behaviorRulesJsonData = rulesJson[index].behaviorRulesJson
+        const behaviorRules = behaviorRulesJsonData.rules
         const behaviorRulesLength = behaviorRules.length
         let x
         let y = 0
@@ -245,16 +246,29 @@ export default {
               )
               flag = false
               break
-            } else if (
-              rulesItem.tagType === 'time' &&
-              rulesItem.isDynamicTime === 3
-            ) {
-              if (
-                this.checkNum(rulesItem.startDay) &&
-                this.checkNum(rulesItem.endDay)
-              ) {
-                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+            } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
+              // 二期
+              if (rulesItem.version === 1) {
+                const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
+                const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
+                rulesItem.value = startDay + '~' + endDay
+              } else { // 一期
+                if (this.checkNum(rulesItem.startDay) && this.checkNum(rulesItem.endDay)) {
+                  if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                    rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                  } else {
+                    this.$message.error(
+                      '第' +
+                        (index + 1) +
+                        '人群里面的第' +
+                        (x + 1) +
+                        '行为标签块里面的第' +
+                        (y + 1) +
+                        '行的天数值后面的值必须大于前面的'
+                    )
+                    flag = false
+                    break
+                  }
                 } else {
                   this.$message.error(
                     '第' +
@@ -263,23 +277,11 @@ export default {
                       (x + 1) +
                       '行为标签块里面的第' +
                       (y + 1) +
-                      '行的天数值后面的值必须大于前面的'
+                      '行的值是大于等于0的整数且不能超过4位数'
                   )
                   flag = false
                   break
                 }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (index + 1) +
-                    '人群里面的第' +
-                    (x + 1) +
-                    '行为标签块里面的第' +
-                    (y + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                flag = false
-                break
               }
             }
           }

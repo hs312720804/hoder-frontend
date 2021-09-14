@@ -738,13 +738,15 @@ export default {
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
             }
-            if (item.tagType === 'time' && item.isDynamicTime === 3) {
-              const value = item.value.split('-')
-              this.$set(item, 'startDay', value[0])
-              this.$set(item, 'endDay', value[1])
-            } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
-              this.$set(item, 'dateAreaType', '')
-              this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+            if (item.version !== 1) {
+              if (item.tagType === 'time' && item.isDynamicTime === 3) {
+                const value = item.value.split('-')
+                this.$set(item, 'startDay', value[0])
+                this.$set(item, 'endDay', value[1])
+              } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                this.$set(item, 'dateAreaType', '')
+                this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+              }
             }
           })
           // return itemParent

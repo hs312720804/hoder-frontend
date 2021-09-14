@@ -37,18 +37,36 @@
             >
 
               <span class="txt">{{ childItem.categoryName }}</span>
-
               <span class="sel">
-                <!-- 不是时间（time）类型的下拉框 -->
-                <el-select v-if="childItem.tagType !== 'time'"
+                <el-select
                   style="width: 80px"
                   name="oxve"
                   v-model="childItem.operator"
                   class="input-inline"
                   @change="handleOperatorChange(childItem)"
+                  v-show="
+                    !(
+                      childItem.tagType === 'time' &&
+                      childItem.isDynamicTime === 3
+                    )
+                  "
                 >
                   <!-- number 类型 -->
                   <template v-if="childItem.tagType === 'number'">
+                    <el-option value="="></el-option>
+                    <el-option value=">="></el-option>
+                    <el-option value="<="></el-option>
+                    <el-option value=">"></el-option>
+                    <el-option value="<"></el-option>
+                  </template>
+
+                  <!-- time 类型 -->
+                  <template
+                    v-if="
+                      childItem.tagType === 'time' &&
+                      childItem.isDynamicTime !== 3
+                    "
+                  >
                     <el-option value="="></el-option>
                     <el-option value=">="></el-option>
                     <el-option value="<="></el-option>
@@ -81,55 +99,20 @@
                   </template>
                 </el-select>
 
-                <!-- 是时间（time）类型的下拉框 -->
-                <template v-if="childItem.tagType === 'time'">
-
-                  <!-- 二期 -->
-                  <template v-if="childItem.version === 1">
-                    <el-select
-                      class="time-dot-select-new"
-                      :key="n + 'timeKey'"
-                      v-model="childItem.dateAreaType"
-                      @change="handelTimeTagTypeSelectChange(childItem)"
-                    >
-                      <el-option :value="0" label="未发生该行为"></el-option>
-                      <el-option :value="1" label="动态时间"></el-option>
-                      <el-option :value="2" label="固定时间"></el-option>
-                    </el-select>
-                  </template>
-
-                  <!-- 一期 -->
-                  <template v-else>
-                    <!-- 新方案 -->
-                    <el-select v-show="childItem.isDynamicTime === 3"
-                      class="time-dot-select-new"
-                      :key="n + 'timeKey'"
-                      v-model="childItem.dateAreaType"
-                      @change="handelTimeTagTypeSelectChange(childItem)"
-                    >
-                      <el-option :value="0" label="空"></el-option>
-                      <el-option :value="1" label="已过期"></el-option>
-                      <el-option :value="2" label="未过期"></el-option>
-                    </el-select>
-
-                    <!-- 旧方案 -->
-                    <el-select v-show="childItem.isDynamicTime !== 3"
-                      style="width: 80px"
-                      name="oxve"
-                      v-model="childItem.operator"
-                      class="input-inline"
-                      @change="handleOperatorChange(childItem)"
-                    >
-                      <el-option value="="></el-option>
-                      <el-option value=">="></el-option>
-                      <el-option value="<="></el-option>
-                      <el-option value=">"></el-option>
-                      <el-option value="<"></el-option>
-                    </el-select>
-
-                  </template>
-
-                </template>
+                <el-select
+                  v-show="
+                    childItem.tagType === 'time' &&
+                    childItem.isDynamicTime === 3
+                  "
+                  class="time-dot-select-new"
+                  :key="n + 'timeKey'"
+                  v-model="childItem.dateAreaType"
+                  @change="handelTimeTagTypeSelectChange(childItem)"
+                >
+                  <el-option :value="0" label="空"></el-option>
+                  <el-option :value="1" label="已过期"></el-option>
+                  <el-option :value="2" label="未过期"></el-option>
+                </el-select>
               </span>
 
               <span class="in">
@@ -138,94 +121,53 @@
                 <!-- 11111111111111 -->
                 <span v-if="childItem.tagType === 'time'">
                   <template v-if="childItem.dateAreaType !== 0">
-                    <!-- 圈人群二期 -->
-                    <template v-if="childItem.version === 1">
-<!-- {{childItem}} -->
-                      <span v-if="childItem.dateAreaType === 1" style="display: flex">   <!-- 动态时间 -->
-                        <el-date-picker
-                          v-model="childItem.startDay"
-                          type="date"
-                          style="width: 135px"
-                          placeholder="选择日期"
-                          format="yyyy-MM-dd"
-                          value-format="yyyy-MM-dd"
-                          :key="index + 'startTimeKey'"
-                        ></el-date-picker>
-                        ~
-                        <el-date-picker
-                          v-model="childItem.endDay"
-                          type="date"
-                          style="width: 135px"
-                          placeholder="选择日期"
-                          format="yyyy-MM-dd"
-                          value-format="yyyy-MM-dd"
-                          :key="index + 'endTimeKey'"
-                        ></el-date-picker>
-                      </span>
-
-                      <span v-else>   <!-- 固定时间 -->
+                    <template v-if="childItem.isDynamicTime === 2">
+                      <el-select
+                        class="time-dot-select"
+                        :key="n + 'timeKey'"
+                        v-model="childItem.dynamicTimeType"
+                      >
+                        <el-option :value="1" label="在当日之前"></el-option>
+                        <el-option :value="2" label="在当日之后"></el-option>
+                      </el-select>
+                      <span>
                         <el-input
                           class="time-dot-input"
-                          style="width: 60px"
-                          v-model="childItem.startDay"
-                          @blur="checkNumMostFour(childItem.startDay)"
-                        ></el-input>天~
-                        <el-input
-                          class="time-dot-input"
-                          style="width: 60px"
-                          v-model="childItem.endDay"
-                          @blur="bigNum(childItem)
-                          "
-                        ></el-input>天
+                          v-model="childItem.value"
+                          @blur="checkNum(childItem.value)"
+                        ></el-input
+                        >天
                       </span>
                     </template>
-
-                    <!-- 圈人群一期 -->
-                    <template v-else>
-                      <!-- 模式1 -->
-                      <template v-if="childItem.isDynamicTime === 1">
-                        <el-date-picker
-                          v-model="childItem.value"
-                          type="date"
-                          placeholder="选择日期"
-                          format="yyyy-MM-dd"
-                          value-format="yyyy-MM-dd"
-                          :key="index + 'key'"
-                        ></el-date-picker>
-                      </template>
-                      <!-- 模式2 -->
-                      <template v-if="childItem.isDynamicTime === 2">
-                        <el-select
-                          class="time-dot-select"
-                          :key="n + 'timeKey'"
-                          v-model="childItem.dynamicTimeType"
-                        >
-                          <el-option :value="1" label="在当日之前"></el-option>
-                          <el-option :value="2" label="在当日之后"></el-option>
-                        </el-select>
-                        <span>
-                          <el-input
-                            class="time-dot-input"
-                            v-model="childItem.value"
-                            @blur="checkNum(childItem.value)"
-                          ></el-input>天
-                        </span>
-                      </template>
-                      <!-- 模式3 -->
-                      <template v-if="childItem.isDynamicTime === 3">
+                    <template v-if="childItem.isDynamicTime === 1">
+                      <el-date-picker
+                        v-model="childItem.value"
+                        type="date"
+                        placeholder="选择日期"
+                        format="yyyy-MM-dd"
+                        value-format="yyyy-MM-dd"
+                        :key="index + 'key'"
+                      ></el-date-picker>
+                    </template>
+                    <template v-if="childItem.isDynamicTime === 3">
+                      <span>
                         <el-input
                           class="time-dot-input"
                           style="width: 60px"
                           v-model="childItem.startDay"
                           @blur="checkNumMostFour(childItem.startDay)"
-                        ></el-input>天~
+                        ></el-input
+                        >天~
+                      </span>
+                      <span>
                         <el-input
                           class="time-dot-input"
-                          style="width: 60px"
+                          style="width: 106px"
                           v-model="childItem.endDay"
                           @blur="bigNum(childItem)"
-                        ></el-input>天
-                      </template>
+                        ></el-input
+                        >天
+                      </span>
                     </template>
                   </template>
                 </span>
@@ -373,7 +315,7 @@
               </span>
 
               <!-- 11111111111111 -->
-              <span v-if="childItem.tagType === 'time' && childItem.version !== 1">
+              <span v-if="childItem.tagType === 'time'">
                   <template v-if="childItem.dateAreaType !== 0">
                   <el-button
                     :key="childItem.tagId + n"
@@ -843,21 +785,22 @@ export default {
     }
   },
   methods: {
-    handelTimeTagTypeSelectChange (childItem) {
+    handelTimeTagTypeSelectChange(childItem) {
+
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType == 0) {
         childItem.value = '-'
+        childItem.startDay = ''
+        childItem.endDay = ''
       } else {
         childItem.value = ''
       }
-      childItem.startDay = ''
-      childItem.endDay = ''
     },
-    handleCheckboxOk () {
+    handleCheckboxOk() {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
-    handleCurrentChange (index) {
+    handleCurrentChange(index) {
       this.initCurrentPage = index
       this.$service
         .getTagAttr({
@@ -869,7 +812,7 @@ export default {
           this.tagList = data.pageInfo.list
         })
     },
-    citySelectChange (val, childRule, cityList) {
+    citySelectChange(val, childRule, cityList) {
       if (childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
           return val === item.attrName
@@ -882,7 +825,7 @@ export default {
       }
     },
     // 根据省id获取市列表
-    areaSelectChange (val, tagCode, childItem) {
+    areaSelectChange(val, tagCode, childItem) {
       if (childItem) childItem.value = ''
       if (tagCode === 'mix_area') {
         const params = {
@@ -901,7 +844,7 @@ export default {
         })
       }
     },
-    changeTimeWays (childItem) {
+    changeTimeWays(childItem) {
       childItem.value = ''
       if (childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
@@ -909,10 +852,10 @@ export default {
         this.$set(childItem, 'isDynamicTime', 2)
       }
     },
-    getDefaultOperator () {
+    getDefaultOperator() {
       return '='
     },
-    onSubmit () {
+    onSubmit() {
       this.$service
         .getTagAttr({
           tagId: this.currentChildItem.tagId,
@@ -925,7 +868,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    handleSelectMore (child) {
+    handleSelectMore(child) {
       // this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
@@ -1034,7 +977,6 @@ export default {
         condition: 'AND',
         rules: [
           {
-            version: 1,
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
             tagCode: tag.tagKey,
@@ -1094,7 +1036,6 @@ export default {
         this.crowd.tagIds.push(tag.tagId)
       }
       rule.rules.push({
-        version: 1,
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
         tagCode: tag.tagKey,
@@ -1175,7 +1116,7 @@ export default {
       })
     },
     // 数组去重
-    distinct (a, b) {
+    distinct(a, b) {
       let arr = a.concat(b)
       let result = []
       let obj = {}
@@ -1187,7 +1128,7 @@ export default {
       }
       return result
     },
-    checkNum (num) {
+    checkNum(num) {
       if (/(^\d+$)/.test(num)) {
         return true
       } else {
@@ -1195,26 +1136,23 @@ export default {
         return false
       }
     },
-    checkNumMostFour (num) {
-      // const numInt = parseInt(num)
-      // if (/(^\d+$)/.test(num) && numInt <= 9999) {
-      //   return true
-      // } else {
-      //   this.$message.error(
-      //     '该值为必填项，且必须是大于等于0整数且不能超过4位数'
-      //   )
-      //   return false
-      // }
-      return true
+    checkNumMostFour(num) {
+      const numInt = parseInt(num)
+      if (/(^\d+$)/.test(num) && numInt <= 9999) {
+        return true
+      } else {
+        this.$message.error(
+          '该值为必填项，且必须是大于等于0整数且不能超过4位数'
+        )
+        return false
+      }
     },
     bigNum (item) {
-      const startDay = item.startDay ? item.startDay : '@'
-      const endDay = item.endDay ? item.endDay : '@'
+      const startDay = item.startDay
+      const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
         if (parseInt(startDay) >= parseInt(endDay)) {
           this.$message.error('第二个值必须大于第一个值')
-        } else if (item.version === 1) {
-          item.value = startDay + '~' + endDay
         } else {
           item.value = startDay + '-' + endDay
         }
@@ -1254,15 +1192,13 @@ export default {
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
             }
-            if (item.version !== 1) {
-              if (item.tagType === 'time' && item.isDynamicTime === 3) {
-                const value = item.value.split('-')
-                this.$set(item, 'startDay', value[0])
-                this.$set(item, 'endDay', value[1])
-              } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
-                this.$set(item, 'dateAreaType', '')
-                this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
-              }
+            if (item.tagType === 'time' && item.isDynamicTime === 3) {
+              const value = item.value.split('-')
+              this.$set(item, 'startDay', value[0])
+              this.$set(item, 'endDay', value[1])
+            } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+              this.$set(item, 'dateAreaType', '')
+              this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
             }
           })
           // return itemParent
@@ -1353,7 +1289,7 @@ export default {
 }
 
 .label-item .in {
-  min-width: 250px;
+  width: 250px;
 }
 
 .label-item span, .oc-item {

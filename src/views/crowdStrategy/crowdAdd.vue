@@ -686,36 +686,42 @@ export default {
             rulesFlag = false
             break
           } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-            if (
-              this.checkNumMostFour(rulesItem.startDay) &&
-              this.checkNumMostFour(rulesItem.endDay)
-            ) {
+            // 二期
+            if (rulesItem.version === 1) {
+              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
+              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
+              rulesItem.value = startDay + '~' + endDay
+            } else { // 一期
               if (
-                parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
+                this.checkNumMostFour(rulesItem.startDay) &&
+                this.checkNumMostFour(rulesItem.endDay)
               ) {
-                rulesItem.value =
-                  rulesItem.startDay + '-' + rulesItem.endDay
+                if (
+                  parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
+                ) {
+                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                } else {
+                  this.$message.error(
+                    '第' +
+                      (i + 1) +
+                      '设置标签块里面的第' +
+                      (j + 1) +
+                      '行的天数值后面的值必须大于前面的'
+                  )
+                  rulesFlag = false
+                  break
+                }
               } else {
                 this.$message.error(
                   '第' +
                     (i + 1) +
                     '设置标签块里面的第' +
                     (j + 1) +
-                    '行的天数值后面的值必须大于前面的'
+                    '行的值是大于等于0的整数且不能超过4位数'
                 )
                 rulesFlag = false
                 break
               }
-            } else {
-              this.$message.error(
-                '第' +
-                  (i + 1) +
-                  '设置标签块里面的第' +
-                  (j + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
-              )
-              rulesFlag = false
-              break
             }
           } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
             rulesItem.operator = '='
@@ -758,33 +764,39 @@ export default {
             rulesItem.tagType === 'time' &&
             rulesItem.isDynamicTime === 3
           ) {
-            if (
-              this.checkNum(rulesItem.startDay) &&
-              this.checkNum(rulesItem.endDay)
-            ) {
-              if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+            if (rulesItem.version === 1) {
+              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
+              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
+              rulesItem.value = startDay + '~' + endDay
+            } else { // 一期
+              if (
+                this.checkNum(rulesItem.startDay) &&
+                this.checkNum(rulesItem.endDay)
+              ) {
+                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
+                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
+                } else {
+                  this.$message.error(
+                    '第' +
+                      (x + 1) +
+                      '行为标签块里面的第' +
+                      (y + 1) +
+                      '行的天数值后面的值必须大于前面的'
+                  )
+                  rulesFlag = false
+                  break
+                }
               } else {
                 this.$message.error(
                   '第' +
                     (x + 1) +
                     '行为标签块里面的第' +
                     (y + 1) +
-                    '行的天数值后面的值必须大于前面的'
+                    '行的值是大于等于0的整数且不能超过4位数'
                 )
                 rulesFlag = false
                 break
               }
-            } else {
-              this.$message.error(
-                '第' +
-                  (x + 1) +
-                  '行为标签块里面的第' +
-                  (y + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
-              )
-              rulesFlag = false
-              break
             }
           }
         }
@@ -988,8 +1000,8 @@ export default {
               if (tagIds.indexOf(childItem.tagId) === -1) {
                 tagIds.push(childItem.tagId)
               }
-              delete childItem.startDay
-              delete childItem.endDay
+              // delete childItem.startDay
+              // delete childItem.endDay
             })
           })
           dynamicPolicyRules.forEach(function (item) {
@@ -1301,13 +1313,15 @@ export default {
             if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
               item.value = item.value === '' ? [] : item.value.split(',')
             }
-            if (item.tagType === 'time' && item.isDynamicTime === 3) {
-              const value = item.value.split('-')
-              this.$set(item, 'startDay', value[0])
-              this.$set(item, 'endDay', value[1])
-            } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
-              this.$set(item, 'dateAreaType', '')
-              this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+            if (item.version !== 1) {
+              if (item.tagType === 'time' && item.isDynamicTime === 3) {
+                const value = item.value.split('-')
+                this.$set(item, 'startDay', value[0])
+                this.$set(item, 'endDay', value[1])
+              } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                this.$set(item, 'dateAreaType', '')
+                this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+              }
             }
           })
           return itemParent
