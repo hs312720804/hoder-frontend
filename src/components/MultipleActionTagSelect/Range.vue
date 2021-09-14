@@ -38,12 +38,12 @@
                       start-placeholder="开始日期"
                       end-placeholder="结束日期"
                       value-format="yyyy-MM-dd"
-                      :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
+                      :picker-options="getPickerOptions(childItem.tagCode)"
                     >
                     </el-date-picker>
                   </span>
 
-                  <span v-else v-for="(item, index) in childItem.bav.rang.newValue" :key="index" style="display: flex; flex-direction: row">
+                  <span v-else v-for="(item, index) in childItem.bav.rang.newValue" :key="index" style="display: flex; flex-direction: row">  <!-- 多选 -->
                     <el-date-picker
                       style="width: 220px;"
                       v-model="item.value"
@@ -52,7 +52,7 @@
                       start-placeholder="开始日期"
                       end-placeholder="结束日期"
                       value-format="yyyy-MM-dd"
-                      :picker-options="childItem.tagCode === 'BAV0003' ? pickerOptions720 : pickerOptions0"
+                      :picker-options="getPickerOptions(childItem.tagCode)"
                       @change="HandleChange"
                     >
                     </el-date-picker>
@@ -64,12 +64,12 @@
 
               <span v-else style="display: inline-block; width: 200px">
                 最近
-                <!-- 购买行为730天 其他30天 -->
+                <!-- 购买行为 720 天 其他 30 天 -->
                 <!-- <el-input v-model="childItem.bav.rang" placeholder="请输入天数"></el-input>   -->
                 <el-input-number
                   v-model="childItem.bav.rang.value"
                   :min="1"
-                  :max="childItem.tagCode === 'BAV0003' ? 720 : 30"
+                  :max="(childItem.tagCode === 'BAV0003') ? 720 : 30"
                   label="请输入天数"
                 ></el-input-number>
                 天
@@ -134,6 +134,8 @@
 // import types from '../types'
 export default {
   data () {
+    let _minTime = null
+    let _maxTime = null
     return {
       rangeTypeList: [],
       weekRange: [],
@@ -152,6 +154,32 @@ export default {
           let maxTime = Date.now() - 1 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
+        }
+      },
+      pickerOptions30in720: { // element日期范围选择 两年内 开始和结束不超3个月
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            let timeRange = 30 * 24 * 60 * 60 * 1000 // 30天
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          const day1 = 720 * 24 * 3600 * 1000 // 2个月
+          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let minTime = Date.now() - day1
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
         }
       },
       show3: true,
@@ -241,6 +269,15 @@ export default {
     }
   },
   methods: {
+    getPickerOptions (tagCode) {
+      if (tagCode === 'BAV0003') { // 【购买行为】
+        return this.pickerOptions720
+      } else if (tagCode === 'BAV0008') { // 【起播行为】
+        return this.pickerOptions30in720
+      } else { // 其他
+        return this.pickerOptions0
+      }
+    },
     HandleChange (val) {
       this.childItem.bav.rang.value = val // 给一个值，避免出现必选红框
     },

@@ -340,10 +340,10 @@
                           </el-select>
                         </div>
                         <!-- 官方-地域标签 end-->
-                        
-                        <!-- 
-                          多选下拉框 
-                          当 tagType 为 string 的时候可多选 222
+
+                        <!--
+                          多选下拉框
+                          当 tagType 为 string 的时候可多选
                         -->
                         <el-select
                           v-else
@@ -369,13 +369,13 @@
                             :value="item.attrValue"
                           ></el-option>
                         </el-select>
-                        
+
                         <div class="errorMsg">
                           {{ childItem.errorMsg ? childItem.errorMsg : '' }}
                         </div>
                       </template>
                     </template>
-                  
+
                   </template>
 
                   <!-- number 类型 -->

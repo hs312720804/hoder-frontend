@@ -28,7 +28,10 @@
                 </el-date-picker>
             </el-form-item>
             <el-form-item>
-                <el-button type="primary" @click="handleSearch">查询</el-button>
+              <el-button type="primary" @click="handleSearch">查询</el-button>
+            </el-form-item>
+            <el-form-item>
+              <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')" style="margin-left: 30px">数据部应用平台</el-button>
             </el-form-item>
         </el-form>
         <div>
@@ -80,96 +83,99 @@
 </template>
 
 <script>
-    export default {
-        name: "CrowdValidateAA",
-        data () {
-            return {
-                form: {
-                    mac: '',
-                    crowdId: '',
-                    date: ''
-                },
-                pagination: {
-                    pageSize: 10,
-                    pageNum: 1,
-                    total: 0
-                },
-                crowdForm: {
-                    crowd: '',
-                    condition: [],
-                    match: []
-                },
-                dateList: [],
-                rules: {
-                    // mac: {required: true, message: '请输入mac', trigger: 'blur'},
-                    crowdId: {required: true, message: '请输入人群id', trigger: 'blur'}
-                },
-                pickerOptions: {
-                    disabledDate:(time)=> {
-                        const day1 =  30 * 24 * 3600 * 1000
-                        // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-                        let maxTime = Date.now()
-                        let minTime = Date.now() - day1
-                        return time.getTime() > maxTime || time.getTime() < minTime
-                    }
-                },
-                list: [],
-                noneText: ''
-            }
-        },
-        methods: {
-            getFilter () {
-                const filter = {
-                    mac: this.form.mac,
-                    crowdId: this.form.crowdId,
-                    date: this.form.date,
-                    pageSize: this.pagination.pageSize,
-                    pageNum: this.pagination.pageNum
-                }
-                return filter
-            },
-            handleSearch () {
-                this.$refs.form.validate(valid => {
-                    if(valid) {
-                      const filter = this.getFilter()
-                      // this.$service.launchHelpCrowdIndex(filter).then(data => {
-                      this.$service.newLaunchHelpCrowdIndex(filter).then(data => {
-                        this.pagination.total = data.pageInfo.total
-                        // this.crowdForm.crowd = data.fx || '暂无数据'
-                        // this.crowdForm.condition = data.historyCondition || []
-                        // this.crowdForm.match = data.historyResMatch || []
-                        this.list = data.pageInfo.list || '暂无数据'
-                        if (this.list === undefined || this.list.length === 0) {
-                          this.noneText = '无命中记录'
-                        }
-                      })
-                    }
-                })
-            },
-            handleCurrentChange(val) {
-                this.pagination.pageNum = val
-                this.handleSearch()
-            },
-            formatDate (d) {
-                const time = new Date(d)
-                let y = time.getFullYear(); // 年份
-                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
-                let r = time.getDate().toString().padStart(2,'0'); // 日子
-                return `${y}-${m}-${r}`
-            },
-            setDateData () {
-                const a = []
-                for (let i=0;i<5;i++) {
-                    a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
-                }
-                this.dateList = a
-                this.form.date = a[1]
-            }
-        },
-        created () {
-            // this.setDateData()
+export default {
+  name: 'CrowdValidateAA',
+  data () {
+    return {
+      form: {
+        mac: '',
+        crowdId: '',
+        date: ''
+      },
+      pagination: {
+        pageSize: 10,
+        pageNum: 1,
+        total: 0
+      },
+      crowdForm: {
+        crowd: '',
+        condition: [],
+        match: []
+      },
+      dateList: [],
+      rules: {
+        // mac: {required: true, message: '请输入mac', trigger: 'blur'},
+        crowdId: { required: true, message: '请输入人群id', trigger: 'blur' }
+      },
+      pickerOptions: {
+        disabledDate: (time) => {
+          const day1 = 30 * 24 * 3600 * 1000
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let maxTime = Date.now()
+          let minTime = Date.now() - day1
+          return time.getTime() > maxTime || time.getTime() < minTime
         }
+      },
+      list: [],
+      noneText: ''
     }
+  },
+  methods: {
+    handelGo (url) {
+      window.open(url, '_blank')
+    },
+    getFilter () {
+      const filter = {
+        mac: this.form.mac,
+        crowdId: this.form.crowdId,
+        date: this.form.date,
+        pageSize: this.pagination.pageSize,
+        pageNum: this.pagination.pageNum
+      }
+      return filter
+    },
+    handleSearch () {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          const filter = this.getFilter()
+          // this.$service.launchHelpCrowdIndex(filter).then(data => {
+          this.$service.newLaunchHelpCrowdIndex(filter).then(data => {
+            this.pagination.total = data.pageInfo.total
+            // this.crowdForm.crowd = data.fx || '暂无数据'
+            // this.crowdForm.condition = data.historyCondition || []
+            // this.crowdForm.match = data.historyResMatch || []
+            this.list = data.pageInfo.list || '暂无数据'
+            if (this.list === undefined || this.list.length === 0) {
+              this.noneText = '无命中记录'
+            }
+          })
+        }
+      })
+    },
+    handleCurrentChange (val) {
+      this.pagination.pageNum = val
+      this.handleSearch()
+    },
+    formatDate (d) {
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
+    },
+    setDateData () {
+      const a = []
+      for (let i = 0; i < 5; i++) {
+        a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
+      }
+      this.dateList = a
+      this.form.date = a[1]
+    }
+  },
+  created () {
+    // this.setDateData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
