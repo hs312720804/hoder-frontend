@@ -2,7 +2,7 @@
   <div>
     <span
       v-for="item in aaa.child"
-      :key="item.value"
+      :key="item.value + 'bav0012'"
       class="flex-row child"
     >
       <!-- 第二级 -->

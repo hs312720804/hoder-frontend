@@ -10,6 +10,7 @@
       <span class="flex-column" v-if="childItem.tagCode === 'BAV0001'">
         <div class="flex-row">
             <!-- 新增一级 -->
+          <el-form-item prop="bav.value">
             <el-select
               v-model="childItem.bav.value"
               style="width: 120px"
@@ -25,7 +26,7 @@
                 ></el-option>
               </template>
             </el-select>
-
+          </el-form-item>
           <div
             v-for="item in childItem.bav.behaviorValue"
             :key="item.value"
@@ -285,21 +286,23 @@
       <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0003'">
         <div class="flex-row">
           <!-- 新增一级 -->
-          <el-select
-            v-model="childItem.bav.value"
-            style="width: 120px"
-            name="oxve"
-            class="input-inline"
-            @change="handelBehavirSelectChange()"
-          >
-            <template v-for="attrChildItem in getBehaviorAttrList(1)">
-              <el-option
-                :value="attrChildItem.value"
-                :label="attrChildItem.name"
-                :key="attrChildItem.value"
-              ></el-option>
-            </template>
-          </el-select>
+          <el-form-item prop="bav.value">
+            <el-select
+              v-model="childItem.bav.value"
+              style="width: 120px"
+              name="oxve"
+              class="input-inline"
+              @change="handelBehavirSelectChange()"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(1)">
+                <el-option
+                  :value="attrChildItem.value"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.value"
+                ></el-option>
+              </template>
+            </el-select>
+          </el-form-item>
           <div
             v-for="item in childItem.bav.behaviorValue"
             :key="item.value"
@@ -2046,7 +2049,7 @@
           </span>
 
           <!------ 查询影片-搜索集数  item.childCheckedVal[1]------->
-          <span v-else class="flex-row" >
+          <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
             <el-select
               v-model="item.childCheckedVal[1]"
@@ -2092,9 +2095,12 @@
               :key="item2.value"
               class="flex-row child"
             >
-            <!-- {{item2}} -->
+              <!-- {{ item2 }} -->
               <!-- 选择集数 -->
-              <!-- 反选时不展示 -->
+              <!--
+                  反选时不展示
+                  只有【影视】或者【电竞】业务可以选择集数
+                  -->
               <span v-if="!childItem.bav.reverseSelect && item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
                 <el-select
                   v-model="item2.childCheckedVal[0]"
@@ -2298,15 +2304,18 @@ export default {
   },
   created () {},
   methods: {
+    // 判断是否选了集数
     isCheckEpisodes (item) {
       let flag = false
       const videoId = item.childCheckedVal[1]
       const arr = item.child || []
       const videoObj = arr.find(obj => obj.value === videoId)
-      if (videoObj && videoObj.childCheckedVal.length > 0) {
+      if (videoObj && videoObj.childCheckedVal.length > 0) { // 选了集数
         flag = true
       }
+
       return flag
+
       // return item.childCheckedVal[1] && item.child[1] && item.child[1].childCheckedVal && item.child[1].childCheckedVal.length > 0
     },
     getMatchName (val, list) {
@@ -2333,7 +2342,7 @@ export default {
       behaviorValue.forEach((item) => {
         if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
           item.operator = '!='
-          this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
+          this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
             name: '',
             filed: 'mac',
             type: 'count',
@@ -2385,8 +2394,12 @@ export default {
     // 综合起播编辑，获取影片集数 回显
     getZongheVideoEpisodes (bavVal) {
       bavVal.forEach(obj => {
-        if (obj.childCheckedVal && obj.childCheckedVal[1] && obj.child && obj.child[1] && obj.child[1].child.length > 0) { // 有选择集数
-          this.getVideoEpisode({ tvId: obj.childCheckedVal[1], businessType: bavVal[0].value, source: obj.child[1].source })
+        // if (obj.childCheckedVal && obj.childCheckedVal[1] && obj.child && obj.child[1] && obj.child[1].child.length > 0) { // 有选择集数
+        if (obj.childCheckedVal && obj.childCheckedVal[1]) { // 有选择影片
+          const videoObj = obj.child.find(item => item.value === obj.childCheckedVal[1])
+          if (videoObj) {
+            this.getVideoEpisode({ tvId: obj.childCheckedVal[1], businessType: bavVal[0].value, source: videoObj.source })
+          }
         }
       })
     },
@@ -2753,17 +2766,25 @@ export default {
       // const behaviorAttrList = this.getChildBehaviorAttrList()
 
       if (this.childItem.tagCode === 'BAV0012' && level === 3) { // 【综合起播】 选择了影视后需要搜集数
-        // this.getVideoEpisode()
         console.log('childItem==', childItem)
         this.qiBoCollectionOptions = []
-        // this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
-        //   name: '',
-        //   filed: 'mac',
-        //   type: 'count',
-        //   operator: '=',
-        //   value: ''
-        // }
+        this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换影视时，默认选择次数
+          name: '',
+          filed: 'mac',
+          type: 'count',
+          operator: '=',
+          value: ''
+        }
         this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
+      }
+      if (this.childItem.tagCode === 'BAV0012' && level === 4) {
+        this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换集数时，默认选择空
+          name: '',
+          filed: '',
+          type: '',
+          operator: '=',
+          value: ''
+        }
       }
 
       if (extra.type === '视频源') { // 【起播活跃】 切换视频源时，清空影视列表
@@ -2961,9 +2982,11 @@ export default {
       })
     },
 
+    // 【综合起播】的集数
     getVideoEpisode ({ tvId, businessType, source }) {
       if (!tvId) return // 没有tvId，直接返回
-      const matchingVideo = this.videoOptions.find(item => item.value === tvId)
+
+      const matchingVideo = this.videoOptions.find(item => item.value === tvId) || {} // 切换影片时，根据影片列表获取内容源
 
       const params = {
         tvId,
@@ -2972,7 +2995,9 @@ export default {
         page: 1,
         pageSize: 200
       }
-
+      if (!params.source) {
+        return
+      }
       this.$service.getVideoEpisode(params).then(res => {
         this.qiBoCollectionOptions = res.rows || []
         this.qiBoCollectionOptions = this.qiBoCollectionOptions.map(obj => {
