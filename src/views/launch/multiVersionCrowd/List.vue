@@ -236,7 +236,7 @@
                                     @click="cancelLanuch(scope.row)"
                             >取消投放</el-button>
                         </span> -->
-                      
+
                         <el-button
                                 size="small"
                                 type="text"
@@ -347,13 +347,13 @@
                     </el-checkbox>
                 </el-form-item>
             </el-form>
-            <div v-if="launchType === 1">{{selectStrategy}}</div>
+            <div v-if="launchType === 1 || launchType === 3">{{selectStrategy}}</div>
         </el-dialog>
 
         <!-- 投放提示 -->
         <!-- <el-dialog :visible.sync="showLaunchTip" title="投放提醒">
             <div class="choose-tip">{{ launchTip }}</div>
-            
+
             <span slot="footer" class="dialog-footer">
                 <el-button @click="showLaunchTip = false">取 消</el-button>
                 <el-button type="primary" @click="confirmLaunch">投 放</el-button>
@@ -595,697 +595,694 @@
     </div>
 </template>
 <script>
-    import CommitHistoryDialog from '@/components/CommitHistory'
-    export default {
-        components: {
-            CommitHistoryDialog
-        },
-        data() {
-            return {
-                // 表格当前页数据
-                tableData: [],
-                launchStatusEnum: {},
-                //搜索条件
-                criteria: {},
-                // 列表页
-                searchForm: {
-                    launchName: ""
-                },
-                adjustExtend: {
-                  series: {
-                    smooth: false,
-                    type: 'line'
+import CommitHistoryDialog from '@/components/CommitHistory'
+export default {
+  components: {
+    CommitHistoryDialog
+  },
+  data () {
+    return {
+      // 表格当前页数据
+      tableData: [],
+      launchStatusEnum: {},
+      // 搜索条件
+      criteria: {},
+      // 列表页
+      searchForm: {
+        launchName: ''
+      },
+      adjustExtend: {
+        series: {
+          smooth: false,
+          type: 'line'
+        }
+      },
+      screenWidth: undefined,
+      crowdDefineForm: {
+        macInitialValue: undefined, // Mac基准值
+        macAbovePer: undefined, // Mac最大阈值
+        macBelowPer: undefined, // Mac最小阈值
+        wxInitialValue: undefined, // 微信基准值
+        wxAbovePer: undefined, // 微信最大阈值
+        wxBelowPer: undefined // 微信最小阈值
+      },
+      // 编辑页
+      // editFormVisible: false,// 编辑界面是否显示
+      // 默认每页数据量:pageSize
+      pageSize: 10,
+      // 当前页码:pageNum
+      currentPage: 1,
+      // 查询的页码
+      start: 1,
+      // 默认数据总数
+      totalCount: 1,
+      isShowCondition: false,
+      selectStrategy: null, // 人群条件的选择策略
+      adjustDialog: false,
+      adjustChartdata: undefined, // 调整波动阀值图表数据
+      monitorDialog: false,
+      monitorRangeTime: undefined,
+      monitorOutForm: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      monitorTotal: 0,
+      monitorTable: {
+        props: {},
+        header: [
+          {
+            label: '人群名称',
+            prop: 'launch_name'
+          },
+          {
+            label: '投放ID（dmp_crowd_id）',
+            prop: 'launch_crowd_id'
+          },
+          // {
+          //     label: '临时人群（SQL）指令',
+          //     prop: 'crowd_sql'
+          // },
+          {
+            label: '临时人群（SQL）指令',
+            prop: 'crowd_sql',
+            render: (h, params) => {
+              return h('el-tooltip', {
+                props: {
+                  effect: 'dark',
+                  content: params.row.crowd_sql,
+                  placement: 'top'
+                }
+              },
+              [
+                h('el-button', {
+                  props: {
+                    type: 'text'
                   }
-                },
-                screenWidth: undefined,
-                crowdDefineForm: {
-                    macInitialValue: undefined, //Mac基准值
-                    macAbovePer: undefined, //Mac最大阈值
-                    macBelowPer: undefined, //Mac最小阈值
-                    wxInitialValue: undefined, //微信基准值
-                    wxAbovePer: undefined, //微信最大阈值
-                    wxBelowPer: undefined, //微信最小阈值
-                },
-                // 编辑页
-                // editFormVisible: false,// 编辑界面是否显示
-                // 默认每页数据量:pageSize
-                pageSize: 10,
-                // 当前页码:pageNum
-                currentPage: 1,
-                // 查询的页码
-                start: 1,
-                // 默认数据总数
-                totalCount: 1,
-                isShowCondition: false,
-                selectStrategy: null,//人群条件的选择策略
-                adjustDialog: false,
-                adjustChartdata: undefined, // 调整波动阀值图表数据
-                monitorDialog: false,
-                monitorRangeTime: undefined,
-                monitorOutForm: {
-                    pageSize: 10,
-                    pageNum: 1
-                },
-                monitorTotal: 0,
-                monitorTable: {
-                    props: {},
-                    header: [
-                        {
-                            label: '人群名称',
-                            prop: 'launch_name'
-                        },
-                        {
-                            label: '投放ID（dmp_crowd_id）',
-                            prop: 'launch_crowd_id'
-                        },
-                        // {
-                        //     label: '临时人群（SQL）指令',
-                        //     prop: 'crowd_sql'
-                        // },
-                        {
-                            label: '临时人群（SQL）指令',
-                            prop: 'crowd_sql',
-                            render: (h, params) => {
-                                return h('el-tooltip',{
-                                    props: {
-                                        effect: 'dark',
-                                        content: params.row.crowd_sql,
-                                        placement:'top',
-                                    }
-                                }, 
-                                [
-                                    h('el-button', { 
-                                        props: {
-                                            type: 'text' 
-                                        }
-                                    }, params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : '')
-                                ]
-                                )
-                            }
-                        },
-                        {
-                            label: '临时人群版本号',
-                            prop: 'version'
-                        },
-                        {
-                            label: '当前版本',
-                            prop: 'cur_version'
-                        },
-                        {
-                            label: '临时人群es index',
-                            prop: 'es_index'
-                        },
-                        {
-                            label: '状态',
-                            prop: 'status_name'
-                        },
-                        {
-                            label: '临时人群同步日期',
-                            prop: 'update_time'
-                        }
-                    ],
-                    data: []
-                },
-                chartMonitorMacData: undefined, // 数据监控设备图表数据
-                chartMonitorWxData: undefined, // 数据监控设备图表数据
-                selectedRow: {},
-                monitorTab: 'mac',
-                showEstimate: false,
-                showLaunchTip: false,
-                launchTip: '',
-                currentLaunchRow: {},
-                estimateValue: ['0'],
-                estimateItems: [],
-                currentLaunchId: '',
-                showError: false,
-                launchType: undefined,
-                launchTitle: '',
-                showDivide: false,
-                parts: [2,3,4,5],
-                copies: 2,
-                step: 1,
-                divideForm: this.genDefaultDivideForm(),
-                copiesItem: [],
-                percent: [],
-                alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
-                divideEstimateItems: [],
-                showCountFailDialog: false,
-                percentTotal: 0,
-                showDivideDetailDialog: false,
-                DivideTableData: [],
-                // dialogType: false,
-                setShowCommitHistoryDialog: false,
-                currentCrowdId: undefined,
-                crowdType: {
-                    0: '普通人群',
-                    1: '自定义人群'
-                },
-                checkList: ['status','totalWxOpenid','totalUser'],
-                showLaunchDetail: false,
-                launchDetailFormData: {
-                    createTime: '',
-                    autoUpdate: null,
-                    autoTime: '',
-                    logs:[],
-                    tempTag: '',
-                    autoVision: null
-                },
-                updateEnum: {
-                    0: '否',
-                    1: '是'
-                },
-                chartExtend: {
-                    xAxis: {
-                        axisLabel: {
-                            margin: 15,
-                            interval: 0,
-                            rotate: 45
-                        },
-                        triggerEvent: true
-                    }
-                },
-                accountDefine: false
-            };
-        },
-        props: ["parentSource","showAllParent"],
-        created() {
-            this.screenWidth = window.screen.width
-            this.loadData();
-            this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
-        },
-        computed: {
-          isShowMonitorTab () {
-            return this.chartMonitorMacData && this.chartMonitorWxData
-          }
-        },
-        watch: {
-            percent(val) {
-                this.percentTotal = val.reduce((prev ,cur) => {
-                    return prev + cur
-                })
-            },
-            showAllParent () {
-                this.loadData()
+                }, params.row.crowd_sql ? params.row.crowd_sql.slice(0, 20) : '')
+              ]
+              )
             }
-        },
-        methods: {
-            genDefaultDivideForm (preset) {
-                return {
-                    launchCrowdId: undefined,
-                    pct: [],
-                    calType: [],
-                    ...preset
-                }
-            },
-            callback() {
-                this.loadData();
-            },
-            handleAdd() {
-                this.$emit("changeStatus", false, 0)
-            },
-            handleCrowdDefineAdd() {
-                this.$emit("changeStatus", false, 1)
-            },
-            handleEdit(launchCrowdItem) {
-                this.$emit("changeStatus", false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
-            },
-            condition(row) {
-                this.isShowCondition = true
-                this.$service
-                    .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
-                    .then(data => {
-                        this.launchType = data.type
-                        if ( data.type === 1) {
-                            this.launchTitle = '人群条件'
-                            this.selectStrategy = data.sqlRule
-                        }
-                        else {
-                            this.launchTitle = '选择的策略'
-                            this.selectStrategy = data.respcl
-                        }
-                    })
-            },
-            del(row) {
-                var id = row.launchCrowdId
-                this.$confirm("确定要删除吗?", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                    .then(() => {
-                        this.$service.delMultiVersionCrowd(id, "删除成功").then(() => {
-                            this.callback()
-                        })
-                    })
-                    .catch(() => {
-                    })
-            },
-            // 从服务器读取数据
-            loadData () {
-                this.$service.getListDimension({type: 3}).then(data => {
-                    if (data) {
-                        if (data.behaviorShow) {
-                            this.checkList = data.behaviorShow.split(',')
-                        }
-                    }
-                })
-                this.criteria["pageNum"] = this.currentPage
-                this.criteria["pageSize"] = this.pageSize
-                if(this.showAllParent) {
-                    this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
-                        this.launchStatusEnum = data.launchStatusEnum
-                        this.tableData = data.pageInfo.list
-                        this.totalCount = data.pageInfo.total
-                    })
-                }else {
-                    this.$service.getMultiVersionCrowd(this.criteria).then(data => {
-                        this.launchStatusEnum = data.launchStatusEnum
-                        this.tableData = data.pageInfo.list
-                        this.totalCount = data.pageInfo.total
-                    })
-                }
-            },
-            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-            handleSizeChange: function(val) {
-                this.pageSize = val
-                this.loadData()
-            },
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleCurrentChange: function(val) {
-                this.currentPage = val
-                this.loadData()
-            },
-            // 搜索,提交表单
-            handleSearch () {
-                this.criteria = this.searchForm
-                this.loadData()
-            },
-            // submitForm: function() {
-            //     // var _this = this
-            //     // this.$refs.searchForm.validate(function(result) {
-            //     //     if (result) {
-            //     //         _this.criteria = _this.searchForm;
-            //     //         _this.loadData()
-            //     //     } else {
-            //     //         return false
-            //     //     }
-            //     // });
-            //     this.$refs.searchForm.validate((result) => {
-            //         if (result) {
-            //            this.criteria = this.searchForm
-            //            this.loadData()
-            //         } else {
-            //             return false
-            //         }
-            //     })
-            // },
-            // 重置
-            handleReset () {
-                this.searchForm.launchName = ''
-                this.criteria = {}
-                this.loadData()
-            },
+          },
+          {
+            label: '临时人群版本号',
+            prop: 'version'
+          },
+          {
+            label: '当前版本',
+            prop: 'cur_version'
+          },
+          {
+            label: '临时人群es index',
+            prop: 'es_index'
+          },
+          {
+            label: '状态',
+            prop: 'status_name'
+          },
+          {
+            label: '临时人群同步日期',
+            prop: 'update_time'
+          }
+        ],
+        data: []
+      },
+      chartMonitorMacData: undefined, // 数据监控设备图表数据
+      chartMonitorWxData: undefined, // 数据监控设备图表数据
+      selectedRow: {},
+      monitorTab: 'mac',
+      showEstimate: false,
+      showLaunchTip: false,
+      launchTip: '',
+      currentLaunchRow: {},
+      estimateValue: ['0'],
+      estimateItems: [],
+      currentLaunchId: '',
+      showError: false,
+      launchType: undefined,
+      launchTitle: '',
+      showDivide: false,
+      parts: [2, 3, 4, 5],
+      copies: 2,
+      step: 1,
+      divideForm: this.genDefaultDivideForm(),
+      copiesItem: [],
+      percent: [],
+      alphaData: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+      divideEstimateItems: [],
+      showCountFailDialog: false,
+      percentTotal: 0,
+      showDivideDetailDialog: false,
+      DivideTableData: [],
+      // dialogType: false,
+      setShowCommitHistoryDialog: false,
+      currentCrowdId: undefined,
+      crowdType: {
+        0: '普通人群',
+        1: '自定义人群'
+      },
+      checkList: ['status', 'totalWxOpenid', 'totalUser'],
+      showLaunchDetail: false,
+      launchDetailFormData: {
+        createTime: '',
+        autoUpdate: null,
+        autoTime: '',
+        logs: [],
+        tempTag: '',
+        autoVision: null
+      },
+      updateEnum: {
+        0: '否',
+        1: '是'
+      },
+      chartExtend: {
+        xAxis: {
+          axisLabel: {
+            margin: 15,
+            interval: 0,
+            rotate: 45
+          },
+          triggerEvent: true
+        }
+      },
+      accountDefine: false
+    }
+  },
+  props: ['parentSource', 'showAllParent'],
+  created () {
+    this.screenWidth = window.screen.width
+    this.loadData()
+    this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
+  },
+  computed: {
+    isShowMonitorTab () {
+      return this.chartMonitorMacData && this.chartMonitorWxData
+    }
+  },
+  watch: {
+    percent (val) {
+      this.percentTotal = val.reduce((prev, cur) => {
+        return prev + cur
+      })
+    },
+    showAllParent () {
+      this.loadData()
+    }
+  },
+  methods: {
+    genDefaultDivideForm (preset) {
+      return {
+        launchCrowdId: undefined,
+        pct: [],
+        calType: [],
+        ...preset
+      }
+    },
+    callback () {
+      this.loadData()
+    },
+    handleAdd () {
+      this.$emit('changeStatus', false, 0)
+    },
+    handleCrowdDefineAdd () {
+      this.$emit('changeStatus', false, 1)
+    },
+    handleEdit (launchCrowdItem) {
+      this.$emit('changeStatus', false, launchCrowdItem.isFxFullSql, launchCrowdItem.launchCrowdId, this.launchStatusEnum[launchCrowdItem.history.status].code)
+    },
+    condition (row) {
+      this.isShowCondition = true
+      this.$service
+        .MultiVersionCrowdPeople({ launchCrowdId: row.launchCrowdId })
+        .then(data => {
+          this.launchType = data.type
+          if (data.type === 1 || data.type === 3) {
+            this.launchTitle = '人群条件'
+            this.selectStrategy = data.sqlRule
+          } else {
+            this.launchTitle = '选择的策略'
+            this.selectStrategy = data.respcl
+          }
+        })
+    },
+    del (row) {
+      var id = row.launchCrowdId
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.delMultiVersionCrowd(id, '删除成功').then(() => {
+            this.callback()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    // 从服务器读取数据
+    loadData () {
+      this.$service.getListDimension({ type: 3 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
+          }
+        }
+      })
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
+      if (this.showAllParent) {
+        this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
+          this.launchStatusEnum = data.launchStatusEnum
+          this.tableData = data.pageInfo.list
+          this.totalCount = data.pageInfo.total
+        })
+      } else {
+        this.$service.getMultiVersionCrowd(this.criteria).then(data => {
+          this.launchStatusEnum = data.launchStatusEnum
+          this.tableData = data.pageInfo.list
+          this.totalCount = data.pageInfo.total
+        })
+      }
+    },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
+    },
+    // 搜索,提交表单
+    handleSearch () {
+      this.criteria = this.searchForm
+      this.loadData()
+    },
+    // submitForm: function() {
+    //     // var _this = this
+    //     // this.$refs.searchForm.validate(function(result) {
+    //     //     if (result) {
+    //     //         _this.criteria = _this.searchForm;
+    //     //         _this.loadData()
+    //     //     } else {
+    //     //         return false
+    //     //     }
+    //     // });
+    //     this.$refs.searchForm.validate((result) => {
+    //         if (result) {
+    //            this.criteria = this.searchForm
+    //            this.loadData()
+    //         } else {
+    //             return false
+    //         }
+    //     })
+    // },
+    // 重置
+    handleReset () {
+      this.searchForm.launchName = ''
+      this.criteria = {}
+      this.loadData()
+    },
 
-            // 修改状态
-            // lanuch (index, row) {
-            //     this.currentLaunchRow = row
-            //     this.currentLaunchId = row.launchCrowdId
-            //     const parmas = {
-            //         crowdIds: this.currentLaunchId
-            //     }
-            //     this.$service.alertLaunch(parmas).then((data) => {
-            //         // eslint-disable-next-line no-debugger
-            //         this.showLaunchTip = true
-            //         this.launchTip = data
-            //     })
-            //     // this.currentLaunchId = row.launchCrowdId
-            //     // this.showEstimate = true
-            //     // // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-            //     // if (row.setCalculate) {
-            //     //     this.accountDefine = true
-            //     //     this.estimateValue = ['0','1','2','3']
-            //     // } else {
-            //     //     this.accountDefine = false
-            //     //     this.estimateValue = ['0']
-            //     // }
-            //     // this.$service.getEstimateType().then((data) => {
-            //     //     this.estimateItems = data
-            //     // })
-            // },
-            
-            // // 确认投放
-            // confirmLaunch () {
-            //     this.showLaunchTip = false
-            //     this.showEstimate = true
-            //     // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-            //     if (this.currentLaunchId.setCalculate) {
-            //         this.accountDefine = true
-            //         this.estimateValue = ['0','1','2','3']
-            //     } else {
-            //         this.accountDefine = false
-            //         this.estimateValue = ['0']
-            //     }
-            //     this.$service.getEstimateType().then((data) => {
-            //         this.estimateItems = data
-            //     })
-            // },
+    // 修改状态
+    // lanuch (index, row) {
+    //     this.currentLaunchRow = row
+    //     this.currentLaunchId = row.launchCrowdId
+    //     const parmas = {
+    //         crowdIds: this.currentLaunchId
+    //     }
+    //     this.$service.alertLaunch(parmas).then((data) => {
+    //         // eslint-disable-next-line no-debugger
+    //         this.showLaunchTip = true
+    //         this.launchTip = data
+    //     })
+    //     // this.currentLaunchId = row.launchCrowdId
+    //     // this.showEstimate = true
+    //     // // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+    //     // if (row.setCalculate) {
+    //     //     this.accountDefine = true
+    //     //     this.estimateValue = ['0','1','2','3']
+    //     // } else {
+    //     //     this.accountDefine = false
+    //     //     this.estimateValue = ['0']
+    //     // }
+    //     // this.$service.getEstimateType().then((data) => {
+    //     //     this.estimateItems = data
+    //     // })
+    // },
 
-            // handleEstimate (calTypes) {
-            //     if (calTypes.length === 0) {
-            //         this.$message.error('请至少选择一个要投放的人群')
-            //         return
-            //     }
-            //     let calIdType = calTypes.map((item) => item).join(',')
-            //     this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
-            //         this.showEstimate = false
-            //         this.callback()
-            //     })
-            // },
-            
-            // 修改状态
-            lanuch (index, row) {
-                this.currentLaunchRow = row
-                this.currentLaunchId = row.launchCrowdId
-                this.showEstimate = true
-                // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
-                if (row.setCalculate) {
-                    this.accountDefine = true
-                    this.estimateValue = ['0','1','2','3']
-                } else {
-                    this.accountDefine = false
-                    this.estimateValue = ['0']
-                }
-                this.$service.getEstimateType().then((data) => {
-                    this.estimateItems = data
-                })
-            },
+    // // 确认投放
+    // confirmLaunch () {
+    //     this.showLaunchTip = false
+    //     this.showEstimate = true
+    //     // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+    //     if (this.currentLaunchId.setCalculate) {
+    //         this.accountDefine = true
+    //         this.estimateValue = ['0','1','2','3']
+    //     } else {
+    //         this.accountDefine = false
+    //         this.estimateValue = ['0']
+    //     }
+    //     this.$service.getEstimateType().then((data) => {
+    //         this.estimateItems = data
+    //     })
+    // },
 
-            handleEstimate (calTypes) {
-                if (calTypes.length === 0) {
-                    this.$message.error('请至少选择一个要投放的人群')
-                    return
-                }
-                let calIdType = calTypes.map((item) => item).join(',')
-                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType },"投放成功").then(() => {
-                    // 行为人群需要 lua 一下
-                    // if (this.currentLaunchRow.isFxFullSql === 3) {
-                    //     this.$service.freshCache({policyId: this.currentLaunchRow.policyIds}).then(() => {
-                    //         this.showEstimate = false
-                    //         this.callback()
-                    //     })
-                    // } else {
-                        this.showEstimate = false
-                        this.callback()
-                    // }
-                })
-            },
+    // handleEstimate (calTypes) {
+    //     if (calTypes.length === 0) {
+    //         this.$message.error('请至少选择一个要投放的人群')
+    //         return
+    //     }
+    //     let calIdType = calTypes.map((item) => item).join(',')
+    //     this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
+    //         this.showEstimate = false
+    //         this.callback()
+    //     })
+    // },
 
-            cancelLanuch(row) {
-                var id = row.launchCrowdId;
-                this.$confirm("确定要取消投放吗?", "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                    .then(() => {
-                        this.$service.cancelLaunchMultiVersionCrowd({ launchCrowdId: id },"取消投放成功").then(() => {
-                            this.callback()
-                        })
-                    })
-                    .catch(() => {
-                    })
-            },
-            // 对象转成数组
-            objectToArray (obj) {
-                let arr = []
-                for (let i in obj) {
-                    arr.push({ value: i, label: obj[i] })
-                }
-                return arr
-            },
-            handleCommandOpreate(scope) {
-                const type = scope[0]
-                const params = scope[1]
-                switch (type) {
-                    case 'edit':
-                        this.handleEdit(params)
-                        break
-                    case 'del':
-                        this.del(params)
-                        break
-                    case 'divide':
-                        this.divideAB(params)
-                        break
-                    case 'commitHistory':
-                        this.handleCommitHistory(params)
-                        break
-                    case 'collect':
-                        this.handlePushCollect(params)
-                        break
-                    case 'adjust':
-                        this.handleAdjust(params)
-                        break
-                    case 'monitor':
-                        this.handleMonitor(params)
-                        break
-                }
-            },
-            handleFluctuationLaunch () {
-              const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
-              const macInitialValue = crowdDefineForm.macInitialValue
-              const wxInitialValue = crowdDefineForm.wxInitialValue
-              crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.toString().replace(/,/g, '') : undefined
-              crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.toString().replace(/,/g, '') : undefined
-              this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
-                this.adjustDialog = false
-              })
-            },
-            /**
+    // 修改状态
+    lanuch (index, row) {
+      this.currentLaunchRow = row
+      this.currentLaunchId = row.launchCrowdId
+      this.showEstimate = true
+      // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
+      if (row.setCalculate) {
+        this.accountDefine = true
+        this.estimateValue = ['0', '1', '2', '3']
+      } else {
+        this.accountDefine = false
+        this.estimateValue = ['0']
+      }
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
+    },
+
+    handleEstimate (calTypes) {
+      if (calTypes.length === 0) {
+        this.$message.error('请至少选择一个要投放的人群')
+        return
+      }
+      let calIdType = calTypes.map((item) => item).join(',')
+      this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+        // 行为人群需要 lua 一下
+        // if (this.currentLaunchRow.isFxFullSql === 3) {
+        //     this.$service.freshCache({policyId: this.currentLaunchRow.policyIds}).then(() => {
+        //         this.showEstimate = false
+        //         this.callback()
+        //     })
+        // } else {
+        this.showEstimate = false
+        this.callback()
+        // }
+      })
+    },
+
+    cancelLanuch (row) {
+      var id = row.launchCrowdId
+      this.$confirm('确定要取消投放吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.cancelLaunchMultiVersionCrowd({ launchCrowdId: id }, '取消投放成功').then(() => {
+            this.callback()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    // 对象转成数组
+    objectToArray (obj) {
+      let arr = []
+      for (let i in obj) {
+        arr.push({ value: i, label: obj[i] })
+      }
+      return arr
+    },
+    handleCommandOpreate (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      switch (type) {
+        case 'edit':
+          this.handleEdit(params)
+          break
+        case 'del':
+          this.del(params)
+          break
+        case 'divide':
+          this.divideAB(params)
+          break
+        case 'commitHistory':
+          this.handleCommitHistory(params)
+          break
+        case 'collect':
+          this.handlePushCollect(params)
+          break
+        case 'adjust':
+          this.handleAdjust(params)
+          break
+        case 'monitor':
+          this.handleMonitor(params)
+          break
+      }
+    },
+    handleFluctuationLaunch () {
+      const crowdDefineForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+      const macInitialValue = crowdDefineForm.macInitialValue
+      const wxInitialValue = crowdDefineForm.wxInitialValue
+      crowdDefineForm.macInitialValue = macInitialValue ? macInitialValue.toString().replace(/,/g, '') : undefined
+      crowdDefineForm.wxInitialValue = wxInitialValue ? wxInitialValue.toString().replace(/,/g, '') : undefined
+      this.$service.fluctuationLaunch({ launchCrowdId: this.selectedRow.launchCrowdId, ...crowdDefineForm }, '调整成功').then(() => {
+        this.adjustDialog = false
+      })
+    },
+    /**
              * 千分位格式化
             */
-            format_number(n) {
-              var b = parseInt(n).toString()
-              var len = b.length
-              if (len <= 3) { return b }
-              var r = len % 3
-              return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
-            },
-            handleAdjust (row) {
-               this.adjustDialog = true
-               this.selectedRow = row
-               this.$service.fluctuation({ launchCrowdId: row.launchCrowdId}).then((data) => {
-                 const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
-                 this.crowdDefineForm = {
-                   macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue),
-                   macAbovePer: macAbovePer === null ? undefined : macAbovePer,
-                   macBelowPer: macBelowPer === null ? undefined : macBelowPer,
-                   wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue),
-                   wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer,
-                   wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer,
-                 }
-                 this.adjustChartdata = {
-                   columns: ['日期', 'mac数量波动', '微信数量波动']
-                 }
-                 const rows = data.data.reduce((r, c) => {
-                   r.push({
-                     '日期': c.date,
-                     'mac数量波动': c.macTrendPer,
-                    '微信数量波动': c.wxTrendPer
-                   })
-                   return r
-                 }, [])
-                 this.adjustChartdata = {
-                   columns: ['日期', 'mac数量波动', '微信数量波动'],
-                   rows
-                 }
-               })
-            },
-            handleMonitor (row) {
-               this.monitorDialog = true
-               this.selectedRow = row
-               this.getDataMonitor()
-            },
-            setMonitorFormart (data) {
-              const columns = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
-              const rows = data.reduce((r, c) => {
-                  r.push({
-                    'DMP收到的人群数量': c.rec_num,
-                    'SQL圈定的人群数量': c.cul_num,
-                    '日期': c.date,
-                  })
-                  return r
-                }, [])
-              return {
-                columns,
-                rows
-              }
-            },
-            getDataMonitor () {
-               const monitorRangeTime = this.monitorRangeTime
-               const startDate = monitorRangeTime[0]
-               const endDate = monitorRangeTime[1]
-               this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate}).then((data) => {
-                 // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
-                 this.monitorTab = data.mac ? 'mac' : 'wx'
-                 this.chartMonitorMacData = data.mac ? this.setMonitorFormart(data.mac) : undefined
-                 this.chartMonitorWxData = data.wx ? this.setMonitorFormart(data.wx) : undefined
-                 // if (data.mac) {
-                 //   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
-                 // }
-                 // if (data.wx) {
-                 //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
-                 // }
-               })
-                this.handleGetMonitorTableList()
-            },
-
-            handleGetMonitorTableList () {
-                const monitorRangeTime = this.monitorRangeTime
-                const startDate = monitorRangeTime[0]
-                const endDate = monitorRangeTime[1]
-                const params = {
-                    launchCrowdId: this.selectedRow.launchCrowdId, 
-                    startDate, 
-                    endDate,
-                    ...this.monitorOutForm
-                }
-                this.$service.launchVersionList(params).then(data => {
-                    if (data) {
-                        this.monitorTotal = data.pageInfo.total
-                        this.monitorTable.data = data.pageInfo.list || []
-                    } else {
-                        this.resultContent = '暂无数据'
-                    }
-                })
-            },
-
-            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-            handleMonitorSizeChange (val) {
-                this.monitorOutForm.pageSize = val
-                //每次切换页码条，都把页面数重置为1
-                this.monitorOutForm.pageNum = 1
-                this.handleGetMonitorTableList()
-            },
-
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleMonitorCurrentChange (val) {
-                this.monitorOutForm.pageNum = val
-                this.handleGetMonitorTableList()
-            },
-
-            divideAB (row) {
-                this.showDivide = true
-                this.step = 1
-                // 重置AB TEST 数据
-                this.copies = 2
-                const divideForm = this.genDefaultDivideForm()
-                divideForm.launchCrowdId = row.launchCrowdId
-                this.divideForm = divideForm
-            },
-            firstStep () {
-                this.step = 2
-                const copies = this.copies
-                let arr = []
-                let percentArray = []
-                for (let i=0;i<copies;i++) {
-                    arr.push(i)
-                    percentArray.push(parseInt(100/copies))
-                }
-                let total = percentArray.reduce((prev ,cur) => {
-                    return prev + cur
-                })
-                // 默认百分比设置，总和必须为100%，不能被整除的，都加在最后一个上
-                if (100%copies !== 0) {
-                    const lastPercent = 100 - total
-                    percentArray[copies-1] = percentArray[copies-1] + lastPercent
-                }
-                this.copiesItem = arr
-                this.percent = percentArray
-            },
-            secondStep () {
-                if (this.percentTotal !== 100) {
-                    this.$message.error('所有比例总和必须等于100%')
-                    return
-                }else {
-                    this.step = 3
-                    this.divideForm.pct = this.percent
-                    this.$service.getEstimateType().then((data) => {
-                        this.divideEstimateItems = this.objectToArray(data)
-                    })
-                }
-            },
-            finish (saveType) {
-
-                const model = this.divideForm.launchCrowdId
-                // const divideForm = JSON.stringify(this.divideForm)
-                const divideForm = this.divideForm
-                if (divideForm.calType.length === 0) {
-                    this.$message.error('请至少勾选一个计算的类型进行投放')
-                    return
-                }
-                let formData = {
-                    pct: divideForm.pct,
-                    calType: divideForm.calType
-                }
-                this.$service.ABTestAdd({model: model,data: formData},"新增A/B test划分成功").then(() => {
-                    this.showDivide = false
-                    this.callback()
-                    if (saveType === 1) {
-                        this.currentLaunchId = this.divideForm.launchCrowdId
-                        this.handleEstimate(formData.calType)
-                    }
-                })
-            },
-            handleCountFail () {
-                this.showCountFailDialog = true
-            },
-            showABTestDetail (row) {
-                const launchCrowdId = row.launchCrowdId
-                this.$service.getABTestDetail(launchCrowdId).then((data) => {
-                    this.showDivideDetailDialog = true
-                    // this.dialogType = data.IsFxFullSql === 1
-                    this.DivideTableData = data.abTestRatio
-                })
-            },
-            handleCommitHistory (row) {
-                this.setShowCommitHistoryDialog = true
-                this.currentCrowdId = row.launchCrowdId
-            },
-            handleSubmitHistory (formData) {
-                let submitForm = {
-                    isSubmit: formData.isSubmit,
-                    launchCrowdId: formData.id,
-                    dateNum: formData.dateNum
-                }
-                this.$service.submitMultiHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(()=> {
-                    this.setShowCommitHistoryDialog = false
-                })
-            },
-            // 投放详情弹窗
-            handleGetLaunchDetail (row) {
-                this.showLaunchDetail = true
-                this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
-                    this.launchDetailFormData = data
-                })
-            },
-            handlePushCollect (row) {
-                const collectFlag = row.myCollect
-                const launchCrowdId = row.launchCrowdId
-                if (collectFlag) {
-                    this.$service.removeCollectPush({launchCrowdId},'成功取消收藏此圈定人群！').then(() => {
-                        this.loadData()
-                    })
-                } else {
-                    this.$service.collectPush({launchCrowdId},'成功收藏圈定人群！').then(() => {
-                        this.loadData()
-                    })
-                }
-            },
-            handleCheckListChange (val) {
-                this.$service.saveListDimension({type: 3,behaviorShow: val.join(',')})
-            }
+    format_number (n) {
+      var b = parseInt(n).toString()
+      var len = b.length
+      if (len <= 3) { return b }
+      var r = len % 3
+      return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
+    },
+    handleAdjust (row) {
+      this.adjustDialog = true
+      this.selectedRow = row
+      this.$service.fluctuation({ launchCrowdId: row.launchCrowdId }).then((data) => {
+        const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = data.multiVersionCrowd
+        this.crowdDefineForm = {
+          macInitialValue: macInitialValue === null ? undefined : this.format_number(macInitialValue),
+          macAbovePer: macAbovePer === null ? undefined : macAbovePer,
+          macBelowPer: macBelowPer === null ? undefined : macBelowPer,
+          wxInitialValue: wxInitialValue === null ? undefined : this.format_number(wxInitialValue),
+          wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer,
+          wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer
         }
+        this.adjustChartdata = {
+          columns: ['日期', 'mac数量波动', '微信数量波动']
+        }
+        const rows = data.data.reduce((r, c) => {
+          r.push({
+            '日期': c.date,
+            'mac数量波动': c.macTrendPer,
+            '微信数量波动': c.wxTrendPer
+          })
+          return r
+        }, [])
+        this.adjustChartdata = {
+          columns: ['日期', 'mac数量波动', '微信数量波动'],
+          rows
+        }
+      })
+    },
+    handleMonitor (row) {
+      this.monitorDialog = true
+      this.selectedRow = row
+      this.getDataMonitor()
+    },
+    setMonitorFormart (data) {
+      const columns = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+      const rows = data.reduce((r, c) => {
+        r.push({
+          'DMP收到的人群数量': c.rec_num,
+          'SQL圈定的人群数量': c.cul_num,
+          '日期': c.date
+        })
+        return r
+      }, [])
+      return {
+        columns,
+        rows
+      }
+    },
+    getDataMonitor () {
+      const monitorRangeTime = this.monitorRangeTime
+      const startDate = monitorRangeTime[0]
+      const endDate = monitorRangeTime[1]
+      this.$service.dataMonitor({ launchCrowdId: this.selectedRow.launchCrowdId, startDate, endDate }).then((data) => {
+        // const colunms = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
+        this.monitorTab = data.mac ? 'mac' : 'wx'
+        this.chartMonitorMacData = data.mac ? this.setMonitorFormart(data.mac) : undefined
+        this.chartMonitorWxData = data.wx ? this.setMonitorFormart(data.wx) : undefined
+        // if (data.mac) {
+        //   this.chartMonitorMacData = this.setMonitorFormart(data.mac)
+        // }
+        // if (data.wx) {
+        //   this.chartMonitorWxData = this.setMonitorFormart(data.wx)
+        // }
+      })
+      this.handleGetMonitorTableList()
+    },
+
+    handleGetMonitorTableList () {
+      const monitorRangeTime = this.monitorRangeTime
+      const startDate = monitorRangeTime[0]
+      const endDate = monitorRangeTime[1]
+      const params = {
+        launchCrowdId: this.selectedRow.launchCrowdId,
+        startDate,
+        endDate,
+        ...this.monitorOutForm
+      }
+      this.$service.launchVersionList(params).then(data => {
+        if (data) {
+          this.monitorTotal = data.pageInfo.total
+          this.monitorTable.data = data.pageInfo.list || []
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
+
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleMonitorSizeChange (val) {
+      this.monitorOutForm.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.monitorOutForm.pageNum = 1
+      this.handleGetMonitorTableList()
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleMonitorCurrentChange (val) {
+      this.monitorOutForm.pageNum = val
+      this.handleGetMonitorTableList()
+    },
+
+    divideAB (row) {
+      this.showDivide = true
+      this.step = 1
+      // 重置AB TEST 数据
+      this.copies = 2
+      const divideForm = this.genDefaultDivideForm()
+      divideForm.launchCrowdId = row.launchCrowdId
+      this.divideForm = divideForm
+    },
+    firstStep () {
+      this.step = 2
+      const copies = this.copies
+      let arr = []
+      let percentArray = []
+      for (let i = 0; i < copies; i++) {
+        arr.push(i)
+        percentArray.push(parseInt(100 / copies))
+      }
+      let total = percentArray.reduce((prev, cur) => {
+        return prev + cur
+      })
+      // 默认百分比设置，总和必须为100%，不能被整除的，都加在最后一个上
+      if (100 % copies !== 0) {
+        const lastPercent = 100 - total
+        percentArray[copies - 1] = percentArray[copies - 1] + lastPercent
+      }
+      this.copiesItem = arr
+      this.percent = percentArray
+    },
+    secondStep () {
+      if (this.percentTotal !== 100) {
+        this.$message.error('所有比例总和必须等于100%')
+      } else {
+        this.step = 3
+        this.divideForm.pct = this.percent
+        this.$service.getEstimateType().then((data) => {
+          this.divideEstimateItems = this.objectToArray(data)
+        })
+      }
+    },
+    finish (saveType) {
+      const model = this.divideForm.launchCrowdId
+      // const divideForm = JSON.stringify(this.divideForm)
+      const divideForm = this.divideForm
+      if (divideForm.calType.length === 0) {
+        this.$message.error('请至少勾选一个计算的类型进行投放')
+        return
+      }
+      let formData = {
+        pct: divideForm.pct,
+        calType: divideForm.calType
+      }
+      this.$service.ABTestAdd({ model: model, data: formData }, '新增A/B test划分成功').then(() => {
+        this.showDivide = false
+        this.callback()
+        if (saveType === 1) {
+          this.currentLaunchId = this.divideForm.launchCrowdId
+          this.handleEstimate(formData.calType)
+        }
+      })
+    },
+    handleCountFail () {
+      this.showCountFailDialog = true
+    },
+    showABTestDetail (row) {
+      const launchCrowdId = row.launchCrowdId
+      this.$service.getABTestDetail(launchCrowdId).then((data) => {
+        this.showDivideDetailDialog = true
+        // this.dialogType = data.IsFxFullSql === 1
+        this.DivideTableData = data.abTestRatio
+      })
+    },
+    handleCommitHistory (row) {
+      this.setShowCommitHistoryDialog = true
+      this.currentCrowdId = row.launchCrowdId
+    },
+    handleSubmitHistory (formData) {
+      let submitForm = {
+        isSubmit: formData.isSubmit,
+        launchCrowdId: formData.id,
+        dateNum: formData.dateNum
+      }
+      this.$service.submitMultiHistoryData(submitForm, formData.isSubmit === 1 ? '提交历史数据成功' : '关闭提交成功').then(() => {
+        this.setShowCommitHistoryDialog = false
+      })
+    },
+    // 投放详情弹窗
+    handleGetLaunchDetail (row) {
+      this.showLaunchDetail = true
+      this.$service.getPushLaunchDetail(row.launchCrowdId).then(data => {
+        this.launchDetailFormData = data
+      })
+    },
+    handlePushCollect (row) {
+      const collectFlag = row.myCollect
+      const launchCrowdId = row.launchCrowdId
+      if (collectFlag) {
+        this.$service.removeCollectPush({ launchCrowdId }, '成功取消收藏此圈定人群！').then(() => {
+          this.loadData()
+        })
+      } else {
+        this.$service.collectPush({ launchCrowdId }, '成功收藏圈定人群！').then(() => {
+          this.loadData()
+        })
+      }
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 3, behaviorShow: val.join(',') })
     }
+  }
+}
 </script>
 <style lang="stylus" scoped>
     .inline-block

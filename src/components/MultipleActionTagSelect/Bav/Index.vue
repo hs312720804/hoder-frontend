@@ -2199,7 +2199,7 @@
       </span>
 
       <!-- 1111111111111 -->
-      <div>{{childItem.bav}}</div>
+      <!-- <div>{{childItem.bav}}</div> -->
     </div>
   </el-form>
 </template>
