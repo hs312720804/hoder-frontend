@@ -77,7 +77,7 @@ export default {
     }
   },
   watch: {
-    isRequired: {
+    isRequired: { // 是否必填
       handler (val) {
         this.typeFormRules = {
           value: [
@@ -114,9 +114,7 @@ export default {
             field: item.tableField
           }
         })
-        console.log('2222===>', this.attrList)
       },
-      // deep: true,
       immediate: true
     }
   },

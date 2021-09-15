@@ -202,7 +202,6 @@
               @change="handelChildBehavirSelectChange({
                 childItem: item,
                 level: 2,
-                isValueClear: false
               })"
             >
               <template v-for="item in getBehaviorAttrList(2)">
@@ -1362,7 +1361,6 @@
               @change="handelChildBehavirSelectChange({
                 childItem: item,
                 level: 2,
-                isValueClear: false
               })"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(2)">
@@ -1600,7 +1598,6 @@
                   clearable
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
-                    isValueClear: false,
                     level: 3,
                     extra: {listMapName: item2.mapName },
                     selectPropKeyValue: 'name'
@@ -1630,7 +1627,6 @@
                       class="input-inline"
                       @change="handelChildBehavirSelectChange({
                         childItem: item3,
-                        isValueClear: false,
                         hasChild: true,
                         level: 4,
                         extra: {type: item2.childCheckedVal[0]},
@@ -1727,7 +1723,6 @@
                   clearable
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
-                    isValueClear: false,
                     level: 3,
                     extra: {listMapName: item2.mapName},
                     selectPropKeyValue: 'name'
@@ -1855,7 +1850,6 @@
                         class="input-inline"
                         @change="handelChildBehavirSelectChange({
                           childItem: item6,
-                          isValueClear: false,
                           hasChild: true,
                           level: 7,
                         })"
@@ -1917,7 +1911,7 @@
           :key="item.value"
           class="flex-row child"
         >
-          <!-- 第二级   item.childCheckedVal[0]-->
+          <!-- 第二级  item.childCheckedVal[0]-->
           <span class="flex-row">
             <el-select
               v-model="item.childCheckedVal[0]"
@@ -2161,6 +2155,7 @@
         </span>
       </span>
 
+      <!-- 1111111111111 -->
       <!-- <div>{{childItem.bav}}</div> -->
     </div>
   </el-form>
@@ -2193,7 +2188,7 @@ export default {
   watch: {
     'childItem.bav': {
       handler (val) {
-        console.log('1111111111====', val)
+        // console.log('1111111111====', val)
         const weekRang = val.weekRang.value
         const timeRange = val.timeRange.value
         // 当选择了星期范围或者时间区间时，禁用【天数】选项
@@ -2369,9 +2364,7 @@ export default {
 
     // 模块活跃编辑，获取版面/板块ID
     getModuleId (bavVal) {
-      console.log('bavVal====', bavVal)
       bavVal && bavVal.forEach(obj => {
-        console.log('obj===', obj)
         if (obj.value !== '' && (obj.field === 'album_id' || obj.field === 'forum_id')) {
           this.remoteMethod(obj.value, obj.field, this.childItem.bav.value)
         } else {
@@ -2612,92 +2605,6 @@ export default {
     },
 
     /**
-     * 组装数据格式
-     * @param {Array} vals 选中值的集合
-     * @param {Array} behaviorValue 完整的组装好的集合
-     * @param {Array} attrList 下拉框列表
-     * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
-     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
-     * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
-     * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
-     * @param {Number} level 第几级（为获取下拉框list）
-     */
-    getValListByVals (params) {
-      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
-      // console.log('params==>', params)
-      let list = []
-      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
-      vals.forEach(val => {
-        const lastNumberObj = [
-          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
-        ]
-        let obj = []
-        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
-        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
-        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
-        if (matchObj) {
-          obj = matchObj
-        } else if (matchObj2) {
-          obj = matchObj2
-          // 清空对象中的 value（模块活跃特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
-          if (isValueClear) obj.value = ''
-        }
-
-        if (reverseSelect) { // 反选
-          if (this.childItem.tagCode === 'BAV0012') {
-            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value)) { // 切换歌曲 或者 切换影片
-              obj.operator = '!='
-            } else {
-              obj.operator = '='
-            }
-          } else { // 其他属性切换正常操作
-            obj.operator = '!='
-          }
-        }
-
-        // 模块活跃，默认 child 值特殊处理
-        let defaultchild = JSON.parse(JSON.stringify(defaultChild))
-        if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 推荐位
-          defaultchild = [{
-            name: '',
-            value: '',
-            filed: '',
-            operator: '=',
-            type: 'string',
-            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
-          }]
-        }
-        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃, 切换数据时，下一级清空，下下级保持存在
-          defaultchild = [{
-            name: '',
-            value: '',
-            filed: '',
-            operator: '=',
-            type: 'string',
-            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
-          }]
-        }
-
-        obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
-
-        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
-
-        if (defaultchild.length > 0) {
-          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
-        }
-
-        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃
-          obj.childCheckedVal = []
-        }
-
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
-        list.push(obj2)
-      })
-      // console.log('list===>', list)
-      return list
-    },
-
-    /**
      * 行为标签下拉框切换绑定事件
      * @param {Object} childItem 当前选项的 obj
      * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
@@ -2803,6 +2710,112 @@ export default {
         level,
         reverseSelectAttr
       })
+    },
+
+    /**
+     * 组装数据格式
+     * @param {Array} vals 选中值的集合
+     * @param {Array} behaviorValue 完整的组装好的集合
+     * @param {Array} attrList 下拉框列表
+     * @param {Boolean} hasChild = false  是否有 child (如果下一级是下拉框，则应选为false)
+     * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
+     * @param {String} selectPropKeyValue = 'value' 下拉框的 value和key 字段的 key值
+     * @param {Boolean} isValueClear = false 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
+     * @param {Number} level 第几级（为获取下拉框list）
+     */
+    getValListByVals (params) {
+      debugger
+      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
+      // console.log('params==>', params)
+      let list = []
+
+      if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) { // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
+        list = [{
+          name: '',
+          value: '',
+          filed: '',
+          operator: '=',
+          type: 'string',
+          child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+        }]
+      }
+
+      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
+      vals.forEach(val => {
+        const lastNumberObj = [
+          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
+        ]
+        let obj = []
+        // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
+        const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
+        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
+        if (matchObj) {
+          obj = matchObj
+        } else if (matchObj2) {
+          obj = matchObj2
+          // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
+          if (isValueClear) obj.value = ''
+        }
+
+        if (reverseSelect) { // 反选
+          if (this.childItem.tagCode === 'BAV0012') {
+            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value)) { // 切换歌曲 或者 切换影片
+              obj.operator = '!='
+            } else {
+              obj.operator = '='
+            }
+          } else { // 其他属性切换正常操作
+            obj.operator = '!='
+          }
+        }
+        // 模块活跃，默认 child 值特殊处理
+        let defaultchild = JSON.parse(JSON.stringify(defaultChild))
+
+        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃, 切换数据时，下一级清空，下下级保持存在
+          defaultchild = [{
+            name: '',
+            value: '',
+            filed: '',
+            operator: '=',
+            type: 'string',
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+          }]
+        }
+        if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
+          defaultchild = [{
+            // name: '',
+            // value: '',
+            // filed: '',
+            // operator: '=',
+            // type: 'string',
+            name: '1',
+            value: '0',
+            field: 'block_pid',
+            operator: '=',
+            type: 'string',
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+          }]
+
+          obj.childCheckedVal = '0' // 序号默认值为 0
+        }
+
+        obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
+
+        obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
+
+        if (defaultchild.length > 0) {
+          obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
+        }
+
+        if (this.childItem.tagCode === 'BAV0002' && level === 2) { // 应用活跃
+          obj.childCheckedVal = []
+        }
+
+        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        list.push(obj2)
+      })
+      console.log('list===>', list)
+      return list
     },
 
     // 通过 vals 获取完整的 valList
@@ -3058,7 +3071,7 @@ export default {
       if (this.bavAttrList) {
         let attrlist = []
         const dict = this.bavAttrList.dict
-        console.log('dict===', dict)
+        // console.log('dict===', dict)
         if (childItem.tagCode === 'BAV0001') {
           // eslint-disable-next-line no-debugger
           if (level === 1) {
