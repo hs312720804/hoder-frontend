@@ -435,7 +435,14 @@
                   childItem.tagType === 'time' && childItem.isDynamicTime === 3
                 "
               >
-                <el-tooltip class="item" effect="dark" placement="top-start">
+                <!-- 选择动态时间提示 -->
+                <el-tooltip v-if="childItem.version === 1 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
+                  <div slot="content">提示：负数表示过去的日期，比如-1表示昨天，0表示今天，1表示明天</div>
+                  <el-button type="text">提示</el-button>
+                </el-tooltip>
+
+                <!-- 圈人群二期之前版本提示 -->
+                <el-tooltip v-else-if="childItem.version !== 1" class="item" effect="dark" placement="top-start" >
                   <div slot="content">
                     状态：到期时间请选择“已过期”或“未过期”，其他请选“空”
                     <br />时间设置：30天以内：输入0～30天；30天以外：请输入30天～9999天
