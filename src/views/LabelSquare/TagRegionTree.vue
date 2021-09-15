@@ -29,106 +29,106 @@
 </template>
 
 <script>
-    export default {
-        props: {
-            tagId: {
-                type: Number
-            }
-        },
-        data() {
-            return {
-                defaultProps: {
-                    children: 'children',
-                    label: 'label',
-                    isLeaf: (data, node) => {
-                        return data.isLeaf
-                    }
-                },
-                filter: {
-                    name: undefined,
-                },
-            }
-        },
-        methods: {
-            edit (node) {
-                let parentId = 0
-                if (node.level === 2) parentId = node.parent.data.id
-                // if (node.) {
-
-                // }
-                // this.$emit('edit', parentId, node.data.id, node.data.label)
-                this.$emit('edit', node.data.id)
-            }, 
-            fetchRegionData() {
-                const filter = {
-                    tagId: this.tagId
-                }
-                this.$service.specialTagDetailList(filter).then((data) => {
-                    // eslint-disable-next-line
-                    
-                    // this.dataSourceEnum = data.dataSourceEnum
-                    // this.typeEnum = data.typeEnum
-                    // this.tagCategory = data.tagCategory
-                })
-            },
-            loadNode (node, resolve) {
-                const nodeData = node.data
-                // console.log(node)
-                if (node.level === 0) {
-                    // return this.getDeptPersonList(params).then(data => {
-                    //     let treeData = data.slice().map(item => {
-                    //         return {
-                    //             id: item.oId,
-                    //             label: item.oName,
-                    //             parentId: item.parentId,
-                    //             parentName: item.depName,
-                    //             oType: item.oType,
-                    //             children: []
-                    //         }
-                    //     })
-                    //     return resolve(treeData)
-                    // })
-                    const filter = {
-                        tagId: this.tagId,
-                        pageSize: 100
-                    }
-                    return this.$service.specialTagDetailList(filter).then((data) => {
-                        // eslint-disable-next-line
-                        // debugger
-                        // this.dataSourceEnum = data.dataSourceEnum
-                        // this.typeEnum = data.typeEnum
-                        // this.tagCategory = data.tagCategory
-                        let treeData = data.list.slice().map(item => {
-                            return {
-                                id: item.specialTagId,
-                                label: item.specialTagName,
-                                children: []
-                            }
-                        })
-                        return resolve(treeData)
-                    })
-                } else {
-                    const params = {
-                        id: nodeData.id
-                    }
-                    return this.$service.specialTagChild(params).then(data => {
-                        let treeData = data.slice().map(item => {
-                            return {
-                                id: item.specialTagId,
-                                label: item.specialTagName,
-                                isLeaf: true
-                            }
-                        })
-                        node.data.children = treeData
-                        return resolve(node.data.children)
-                    })
-                }
-            },
-        },
-        created() {
-            // this.fetchRegionData()
-        }
+export default {
+  props: {
+    tagId: {
+      type: Number
     }
+  },
+  data () {
+    return {
+      defaultProps: {
+        children: 'children',
+        label: 'label',
+        isLeaf: (data, node) => {
+          return data.isLeaf
+        }
+      },
+      filter: {
+        name: undefined
+      }
+    }
+  },
+  methods: {
+    edit (node) {
+      let parentId = 0
+      if (node.level === 2) parentId = node.parent.data.id
+      // if (node.) {
+
+      // }
+      // this.$emit('edit', parentId, node.data.id, node.data.label)
+      this.$emit('edit', node.data.id)
+    },
+    fetchRegionData () {
+      const filter = {
+        tagId: this.tagId
+      }
+      this.$service.specialTagDetailList(filter).then((data) => {
+        // eslint-disable-next-line
+                    
+        // this.dataSourceEnum = data.dataSourceEnum
+        // this.typeEnum = data.typeEnum
+        // this.tagCategory = data.tagCategory
+      })
+    },
+    loadNode (node, resolve) {
+      const nodeData = node.data
+      // console.log(node)
+      if (node.level === 0) {
+        // return this.getDeptPersonList(params).then(data => {
+        //     let treeData = data.slice().map(item => {
+        //         return {
+        //             id: item.oId,
+        //             label: item.oName,
+        //             parentId: item.parentId,
+        //             parentName: item.depName,
+        //             oType: item.oType,
+        //             children: []
+        //         }
+        //     })
+        //     return resolve(treeData)
+        // })
+        const filter = {
+          tagId: this.tagId,
+          pageSize: 100
+        }
+        return this.$service.specialTagDetailList(filter).then((data) => {
+          // eslint-disable-next-line
+                        // debugger
+          // this.dataSourceEnum = data.dataSourceEnum
+          // this.typeEnum = data.typeEnum
+          // this.tagCategory = data.tagCategory
+          let treeData = data.list.slice().map(item => {
+            return {
+              id: item.specialTagId,
+              label: item.specialTagName,
+              children: []
+            }
+          })
+          return resolve(treeData)
+        })
+      } else {
+        const params = {
+          id: nodeData.id
+        }
+        return this.$service.specialTagChild(params).then(data => {
+          let treeData = data.slice().map(item => {
+            return {
+              id: item.specialTagId,
+              label: item.specialTagName,
+              isLeaf: true
+            }
+          })
+          node.data.children = treeData
+          return resolve(node.data.children)
+        })
+      }
+    }
+  },
+  created () {
+    // this.fetchRegionData()
+  }
+}
 
 </script>
 <style lang="stylus" scoped>

@@ -144,7 +144,7 @@ export default {
       // })
       this.$service.specialTagDetailList(filter).then((data) => {
         // eslint-disable-next-line
-                if (data) {
+        if (data) {
           this.itemList = data.list || []
           this.total = data.total || 0
         } else {

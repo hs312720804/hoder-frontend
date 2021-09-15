@@ -947,7 +947,8 @@ export default {
     fetchSpecialTagSuggestions (tagId, tagKey) {
       const filter = {
         tagId,
-        pageSize: 100
+        pageSize: 200,
+        isSelect: 1
       }
       this.$service.specialTagDetailList(filter).then(data => {
         const list = data.list.map(item => {
