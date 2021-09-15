@@ -271,6 +271,7 @@
                     >
                       <!-- 次数、天数 -->
                       <!-- 选择【激活】时，不展示次数天数 -->
+                      <!-- 应用活跃可以不填写次数天数 -->
                       <Type v-if="item.value !== '激活' && !childItem.bav.reverseSelect" ref="typeRef" :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem" :isRequired="false"></Type>
                     </span>
                   </span>

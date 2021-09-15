@@ -1,24 +1,26 @@
 <template>
   <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true">
-    <el-select
-      v-model="item3.type"
-      style="max-width: 100px; min-width: 100px;"
-      name="oxve"
-      class="input-inline"
-      @change="handleChange"
-    >
-      <!-- <el-option value="cishu" label="次数"></el-option>
-      <el-option value="tianshu" label="天数"></el-option> -->
-      <template v-for="attrChildItem in attrList">
-        <el-option
-          :value="attrChildItem.value"
-          :label="attrChildItem.name"
-          :key="attrChildItem.value"
-          :disabled="attrChildItem.value === 'day' && isDisableDaySelect"
-        >
-        </el-option>
-      </template>
-    </el-select>
+    <el-form-item prop="type">
+      <el-select
+        v-model="item3.type"
+        style="max-width: 100px; min-width: 100px;"
+        name="oxve"
+        class="input-inline"
+        @change="handleChange"
+      >
+        <!-- <el-option value="cishu" label="次数"></el-option>
+        <el-option value="tianshu" label="天数"></el-option> -->
+        <template v-for="attrChildItem in attrList">
+          <el-option
+            :value="attrChildItem.value"
+            :label="attrChildItem.name"
+            :key="attrChildItem.value"
+            :disabled="attrChildItem.value === 'day' && isDisableDaySelect"
+          >
+          </el-option>
+        </template>
+      </el-select>
+    </el-form-item>
     <!-- {{attrChildItem}}
     {{isDisableDaySelect}} -->
     <el-select
@@ -52,12 +54,7 @@ export default {
     return {
       attrList: [],
       isDisableDaySelect: false,
-      typeFormRules: {
-        value: [
-          { required: true, message: '请输入值', trigger: 'blur' },
-          { required: true, message: '请输入值', trigger: 'change' }
-        ]
-      }
+      typeFormRules: {}
     }
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
@@ -86,6 +83,9 @@ export default {
           value: [
             { required: val, message: '请输入值', trigger: 'blur' },
             { required: val, message: '请输入值', trigger: 'change' }
+          ],
+          type: [
+            { required: true, message: '请选择', trigger: 'change' }
           ]
         }
       },
