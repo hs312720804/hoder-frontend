@@ -738,7 +738,10 @@ export default {
       currentCrowdId: undefined,
       crowdType: {
         0: '普通人群',
-        1: '自定义人群'
+        1: '自定义人群',
+        2: '本地人群',
+        3: '行为人群',
+        4: '数据银行'
       },
       checkList: ['status', 'totalWxOpenid', 'totalUser'],
       showLaunchDetail: false,
