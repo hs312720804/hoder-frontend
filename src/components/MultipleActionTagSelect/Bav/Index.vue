@@ -2049,7 +2049,7 @@
 
           </span>
 
-          <!------ 查询影片-搜索集数  item.childCheckedVal[1]------->
+          <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
           <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
             <el-select

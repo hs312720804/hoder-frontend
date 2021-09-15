@@ -724,6 +724,7 @@ export default {
         const matchCity = cityList.find(item => {
           return val === item.attrName
         })
+        childRule.specialTagId = matchCity.attrId
         childRule.specialCondition = matchCity.rulesJson
         childRule.errorMsg = matchCity.rulesJson
           ? ''

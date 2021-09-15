@@ -303,18 +303,18 @@ export default {
       }
     },
 
-    citySelectChange (val, childRule, cityList) {
-      if (childRule.tagType === 'mix') {
-        const matchCity = cityList.find(item => {
-          return val === item.attrName
-        })
-        childRule.specialCondition = matchCity.rulesJson
-        childRule.errorMsg = matchCity.rulesJson
-          ? ''
-          : '标签未配置，请先配置再使用'
-        // console.log('inputValue=====', this.inputValue)
-      }
-    },
+    // citySelectChange (val, childRule, cityList) {
+    //   if (childRule.tagType === 'mix') {
+    //     const matchCity = cityList.find(item => {
+    //       return val === item.attrName
+    //     })
+    //     childRule.specialCondition = matchCity.rulesJson
+    //     childRule.errorMsg = matchCity.rulesJson
+    //       ? ''
+    //       : '标签未配置，请先配置再使用'
+    //     // console.log('inputValue=====', this.inputValue)
+    //   }
+    // },
     // 根据省id获取市列表
     areaSelectChange (val, tagCode, childItem) {
       // this.provinceValueList[index] = val

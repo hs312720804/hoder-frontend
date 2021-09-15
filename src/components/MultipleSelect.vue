@@ -858,6 +858,7 @@ export default {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
+
     handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service
@@ -875,10 +876,10 @@ export default {
         const matchCity = cityList.find(item => {
           return val === item.attrName
         })
+        childRule.specialTagId = matchCity.attrId
         childRule.specialCondition = matchCity.rulesJson
         childRule.errorMsg = matchCity.rulesJson
-          ? ''
-          : '标签未配置，请先配置再使用'
+          ? '' : '标签未配置，请先配置再使用'
         // console.log('inputValue=====', this.inputValue)
       }
     },
