@@ -71,11 +71,13 @@
       class="fix-bottom-form"
     >
       <el-form-item label="已选标签">
+        <!-- {{initTagList}} -->
+        <!-- 编辑状态不允许删除标签 -->
         <el-tag
           v-for="(item, index) in tagList"
           :key="item.tagId + '_' + index"
           :type="dataSourceColorEnum[item.dataSource]"
-          closable
+          :closable="mode !== 'edit'"
           @close="removeTag(item)"
         >
           {{ item.tagName }}
@@ -134,7 +136,7 @@ export default {
     tempLabelIndex,
     LocalLabelIndex
   },
-  props: ['recordId', 'initTagList', 'usedTagList'],
+  props: ['mode', 'initTagList', 'usedTagList'],
   data () {
     return {
       activeName: 'labelZone',
@@ -349,7 +351,7 @@ export default {
     },
     removeTag (tag) {
       // 标签已经在使用中，无法删不掉
-      if (this.usedTagList.includes(tag.tagId)) {
+      if (this.usedTagList.includes(Number(tag.tagId))) {
         this.$message.error('标签已经在使用中')
         return
       }
@@ -416,12 +418,7 @@ export default {
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
-
-    // if (this.$route.query.specialTagId) {
-    //     this.getPolicyDetail()
     this.tagList = this.initTagList
-    // this.tagList = this.sTagIndex.specialTagDetail.tagId
-    // }
   }
 }
 </script>

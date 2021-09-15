@@ -741,7 +741,7 @@ export default {
         1: '自定义人群',
         2: '本地人群',
         3: '行为人群',
-        4: '数据银行'
+        4: '数据银行人群'
       },
       checkList: ['status', 'totalWxOpenid', 'totalUser'],
       showLaunchDetail: false,
