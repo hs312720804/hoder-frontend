@@ -2046,45 +2046,88 @@
           <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
           <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
-            <el-select
-              v-model="item.childCheckedVal[1]"
-              style="width: 150px;"
-              filterable
-              remote
-              placeholder="请输入片名或ID"
-              no-data-text='没有找到该片'
-              clearable
-              :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
-              :loading="loading2"
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                level: 3,
-                selectPropKeyValue: 'name',
-                reverseSelectAttr: true
-              })"
-            >
-              <el-option
-                v-for="video in videoOptions"
-                :key="video.name"
-                :label="video.name"
-                :value="video.value">
-              </el-option>
-              <!-- 编辑回显 选项 -->
-              <el-option
-                v-if="videoOptions.length === 0 && item.childCheckedVal[1]"
-                :label="getMatchName(item.childCheckedVal[1], item.child)"
-                :value="item.childCheckedVal[1]">
-              </el-option>
-            </el-select>
+            <!-- 短视频的集数要放在博主后面 -->
+            <span v-if="childItem.bav.value === '短视频'">
+              <el-select
+                v-model="item.childCheckedVal[4]"
+                style="width: 150px;"
+                filterable
+                remote
+                placeholder="请输入片名或ID"
+                no-data-text='没有找到该片'
+                clearable
+                :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+                :loading="loading2"
+                @change="handelChildBehavirSelectChange({
+                  childItem: item,
+                  level: 3,
+                  selectPropKeyValue: 'name',
+                  reverseSelectAttr: true
+                })"
+              >
+                <el-option
+                  v-for="video in videoOptions"
+                  :key="video.name"
+                  :label="video.name"
+                  :value="video.value">
+                </el-option>
+                <!-- 编辑回显 选项 -->
+                <el-option
+                  v-if="videoOptions.length === 0 && item.childCheckedVal[4]"
+                  :label="getMatchName(item.childCheckedVal[4], item.child)"
+                  :value="item.childCheckedVal[4]">
+                </el-option>
+              </el-select>
 
-            <el-checkbox
-              class="reverse-check"
-              v-model="childItem.bav.reverseSelect"
-              @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
-            >
-              圈出未起播
-            </el-checkbox>
+              <el-checkbox
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect($event, item.child, item.childCheckedVal[4], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
+              >
+                圈出未起播
+              </el-checkbox>
+            </span>
 
+            <span v-else>
+              <el-select
+                v-model="item.childCheckedVal[1]"
+                style="width: 150px;"
+                filterable
+                remote
+                placeholder="请输入片名或ID"
+                no-data-text='没有找到该片'
+                clearable
+                :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+                :loading="loading2"
+                @change="handelChildBehavirSelectChange({
+                  childItem: item,
+                  level: 3,
+                  selectPropKeyValue: 'name',
+                  reverseSelectAttr: true
+                })"
+              >
+                <el-option
+                  v-for="video in videoOptions"
+                  :key="video.name"
+                  :label="video.name"
+                  :value="video.value">
+                </el-option>
+                <!-- 编辑回显 选项 -->
+                <el-option
+                  v-if="videoOptions.length === 0 && item.childCheckedVal[1]"
+                  :label="getMatchName(item.childCheckedVal[1], item.child)"
+                  :value="item.childCheckedVal[1]">
+                </el-option>
+              </el-select>
+
+              <el-checkbox
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
+              >
+                圈出未起播
+              </el-checkbox>
+            </span>
             <div
               v-for="(item2) in item.child"
               :key="item2.value"
@@ -2156,7 +2199,7 @@
       </span>
 
       <!-- 1111111111111 -->
-      <!-- <div>{{childItem.bav}}</div> -->
+      <div>{{childItem.bav}}</div>
     </div>
   </el-form>
 </template>
@@ -2416,7 +2459,7 @@ export default {
           list = list.map(obj => {
             if (businessType.indexOf('视频') > 0) {
               return {
-                name: `${obj.title}+(${obj.coocaaBVId})`,
+                name: `${obj.title}(${obj.coocaaBVId})`,
                 value: obj.coocaaBVId,
                 field: obj.tableField,
                 type: 'string',
@@ -2424,7 +2467,7 @@ export default {
               }
             } else {
               return {
-                name: `${obj.title}+(${obj.coocaaVId})`,
+                name: `${obj.title}(${obj.coocaaVId})`,
                 value: obj.coocaaVId,
                 field: obj.tableField,
                 type: 'string',
