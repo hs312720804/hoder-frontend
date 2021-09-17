@@ -1268,15 +1268,16 @@ export default {
       }
     },
     checkNumMostFour (num) {
-      const numInt = parseInt(num)
-      if (/(^\d+$)/.test(num) && numInt <= 9999) {
-        return true
-      } else {
-        this.$message.error(
-          '该值为必填项，且必须是大于等于0整数且不能超过4位数'
-        )
-        return false
-      }
+      // const numInt = parseInt(num)
+      // if (/(^\d+$)/.test(num) && numInt <= 9999) {
+      //   return true
+      // } else {
+      //   this.$message.error(
+      //     '该值为必填项，且必须是大于等于0整数且不能超过4位数'
+      //   )
+      //   return false
+      // }
+      return true
     },
     bigNum (item) {
       const startDay = item.startDay

@@ -536,38 +536,38 @@ export default {
       this.inputValue.splice(index, 1)
       this.setSeq()
     },
-    checkNum (num) {
-      if (/(^\d+$)/.test(num)) {
-        return true
-      } else {
-        this.$message.error('该值为必填项，且必须是大于等于0整数')
-        return false
-      }
-    },
-    checkNumMostFour (num) {
-      const numInt = parseInt(num)
-      if (/(^\d+$)/.test(num) && numInt <= 9999) {
-        return true
-      } else {
-        this.$message.error(
-          '该值为必填项，且必须是大于等于0整数且不能超过4位数'
-        )
-        return false
-      }
-    },
-    bigNum (item) {
-      const startDay = item.startDay
-      const endDay = item.endDay
-      if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
-        } else {
-          item.value = startDay + '-' + endDay
-        }
-      } else {
-        item.value = ''
-      }
-    },
+    // checkNum (num) {
+    //   if (/(^\d+$)/.test(num)) {
+    //     return true
+    //   } else {
+    //     this.$message.error('该值为必填项，且必须是大于等于0整数')
+    //     return false
+    //   }
+    // },
+    // checkNumMostFour (num) {
+    //   const numInt = parseInt(num)
+    //   if (/(^\d+$)/.test(num) && numInt <= 9999) {
+    //     return true
+    //   } else {
+    //     this.$message.error(
+    //       '该值为必填项，且必须是大于等于0整数且不能超过4位数'
+    //     )
+    //     return false
+    //   }
+    // },
+    // bigNum (item) {
+    //   const startDay = item.startDay
+    //   const endDay = item.endDay
+    //   if (this.checkNumMostFour(endDay)) {
+    //     if (parseInt(startDay) >= parseInt(endDay)) {
+    //       this.$message.error('第二个值必须大于第一个值')
+    //     } else {
+    //       item.value = startDay + '-' + endDay
+    //     }
+    //   } else {
+    //     item.value = ''
+    //   }
+    // },
     handleEstimate (formData) {
       this.$service.estimateTemp(formData.rulesJson).then(data => {
         if (data || data === 0) {

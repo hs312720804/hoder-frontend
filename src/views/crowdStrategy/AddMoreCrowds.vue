@@ -236,13 +236,7 @@ export default {
               }
             } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
               this.$message.error(
-                '请正确填写第' +
-                  (index + 1) +
-                  '人群里第' +
-                  (x + 1) +
-                  '行为标签块里面的第' +
-                  (y + 1) +
-                  '行的值！'
+                '请正确填写第' + (index + 1) + '人群里第' + (x + 1) + '行为标签块里面的第' + (y + 1) + '行的值！'
               )
               flag = false
               break
@@ -257,28 +251,12 @@ export default {
                   if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
                     rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
                   } else {
-                    this.$message.error(
-                      '第' +
-                        (index + 1) +
-                        '人群里面的第' +
-                        (x + 1) +
-                        '行为标签块里面的第' +
-                        (y + 1) +
-                        '行的天数值后面的值必须大于前面的'
-                    )
+                    this.$message.error('第' + (index + 1) + '人群里面的第' + (x + 1) + '行为标签块里面的第' + (y + 1) + '行的天数值后面的值必须大于前面的')
                     flag = false
                     break
                   }
                 } else {
-                  this.$message.error(
-                    '第' +
-                      (index + 1) +
-                      '人群里面的第' +
-                      (x + 1) +
-                      '行为标签块里面的第' +
-                      (y + 1) +
-                      '行的值是大于等于0的整数且不能超过4位数'
-                  )
+                  this.$message.error('第' + (index + 1) + '人群里面的第' + (x + 1) + '行为标签块里面的第' + (y + 1) + '行的值是大于等于0的整数且不能超过4位数')
                   flag = false
                   break
                 }

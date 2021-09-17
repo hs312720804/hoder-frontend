@@ -201,6 +201,7 @@ export default {
     getSencond () {
       this.Sencond = 5
       const that = this
+      window.clearInterval(this.interval)
       this.interval = window.setInterval(function () {
         --that.Sencond
         if (that.Sencond === 0) {
@@ -210,7 +211,6 @@ export default {
       }, 1000)
     },
     handelClose () {
-      window.clearInterval(this.interval)
       this.Successdialog = false
     },
     back () {
