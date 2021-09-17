@@ -141,16 +141,16 @@
 <script>
 // import _ from "lodash";
 export default {
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
-      launchStatusEnum: { "1": "待投放", "2": "计算中", "3": "投放中" },
-      //搜索条件
+      launchStatusEnum: { '1': '待投放', '2': '计算中', '3': '投放中' },
+      // 搜索条件
       criteria: {},
       // 列表页
       searchForm: {
-        launchName: ""
+        launchName: ''
       },
       // 编辑页
       // editFormVisible: false,// 编辑界面是否显示
@@ -163,73 +163,73 @@ export default {
       // 默认数据总数
       totalCount: 1,
       isShowCondition: false,
-      selectStrategy: null,//人群条件的选择策略
-        showEstimate: false,
-        estimateValue: ['0'],
-        estimateItems: [],
-        currentLaunchId: '',
-        showError: false
-    };
+      selectStrategy: null, // 人群条件的选择策略
+      showEstimate: false,
+      estimateValue: ['0'],
+      estimateItems: [],
+      currentLaunchId: '',
+      showError: false
+    }
   },
-  created() {
-    this.loadData();
+  created () {
+    this.loadData()
   },
   methods: {
-    callback() {
-        this.loadData();
+    callback () {
+      this.loadData()
     },
-    handleAdd() {
-      this.$emit("changeStatus", false);
+    handleAdd () {
+      this.$emit('changeStatus', false)
     },
-    handleEdit(launchCrowdId) {
-      this.$emit("changeStatus", false, launchCrowdId);
+    handleEdit (launchCrowdId) {
+      this.$emit('changeStatus', false, launchCrowdId)
     },
-    condition(row) {
-      this.isShowCondition = true;
+    condition (row) {
+      this.isShowCondition = true
       this.$service
         .ruleDetail({ launchCrowdId: row.launchCrowdId })
         .then(({ respcl }) => {
-         // if (respcl.length > 0) {
-            this.selectStrategy = respcl
-          //}
-        });
+          // if (respcl.length > 0) {
+          this.selectStrategy = respcl
+          // }
+        })
     },
-    del(row) {
-      var id = row.launchCrowdId;
-      this.$confirm("确定要删除吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    del (row) {
+      var id = row.launchCrowdId
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          this.$service.launchCrowdDel({ launchCrowdId: id },"删除成功").then(() => {
-            this.callback();
-          });
+          this.$service.launchCrowdDel({ launchCrowdId: id }, '删除成功').then(() => {
+            this.callback()
+          })
         })
         .catch(() => {
-        });
+        })
     },
     // 从服务器读取数据
-    loadData: function() {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
+    loadData: function () {
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.crowdList(this.criteria).then(data => {
-        this.tableData = data.list;
-        this.totalCount = data.total;
-      });
+        this.tableData = data.list
+        this.totalCount = data.total
+      })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
-      this.pageSize = val;
-      this.loadData();
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
     },
     // 搜索,提交表单
-    submitForm: function() {
+    submitForm: function () {
       // var _this = this;
       // this.$refs.searchForm.validate(function(result) {
       //   if (result) {
@@ -239,28 +239,28 @@ export default {
       //     return false;
       //   }
       // });
-        this.$refs.searchForm.validate((result) => {
-            if (result) {
-                this.criteria = this.searchForm
-                this.loadData()
-            } else {
-                return false
-            }
-        })
+      this.$refs.searchForm.validate((result) => {
+        if (result) {
+          this.criteria = this.searchForm
+          this.loadData()
+        } else {
+          return false
+        }
+      })
     },
     // 重置
-    handleReset: function() {
-        this.searchForm.launchName = ''
-        this.criteria = {}
-        this.loadData()
+    handleReset: function () {
+      this.searchForm.launchName = ''
+      this.criteria = {}
+      this.loadData()
     },
     // 修改状态
-    lanuch: function(index, row) {
-      this.currentLaunchId = row.launchCrowdId;
-        this.showEstimate = true
-        this.$service.getEstimateType().then((data) => {
-            this.estimateItems = data
-        })
+    lanuch: function (index, row) {
+      this.currentLaunchId = row.launchCrowdId
+      this.showEstimate = true
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
       // this.$confirm("确定要投放吗?", "提示", {
       //   confirmButtonText: "确定",
       //   cancelButtonText: "取消",
@@ -276,39 +276,39 @@ export default {
       //   });
     },
     handleEstimate () {
-        if (this.estimateValue.length === 0) {
-            this.showError = true
-            return
-        } else {this.showError = false}
-        let calIdType = this.estimateValue.map((item) => item).join(',')
-        this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId,calIdType: calIdType },"投放成功").then(() => {
-            this.showEstimate = false
-            this.callback();
-        });
+      if (this.estimateValue.length === 0) {
+        this.showError = true
+        return
+      } else { this.showError = false }
+      let calIdType = this.estimateValue.map((item) => item).join(',')
+      this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+        this.showEstimate = false
+        this.callback()
+      })
     },
-    cancelLanuch(row) {
-      var id = row.launchCrowdId;
-      this.$confirm("确定要取消投放吗?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    cancelLanuch (row) {
+      var id = row.launchCrowdId
+      this.$confirm('确定要取消投放吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
-          this.$service.cancelLaunchCrowd({ launchCrowdId: id },"取消投放成功").then(() => {
-            this.callback();
-          });
+          this.$service.cancelLaunchCrowd({ launchCrowdId: id }, '取消投放成功').then(() => {
+            this.callback()
+          })
         })
         .catch(() => {
 
-        });
-    },
+        })
+    }
     // 查看详情
     // handleDetail: function(index, row) {
     //   var id = row.id;
     //   // todo: 以后再做
     // }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
   .choose-tip

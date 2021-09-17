@@ -59,50 +59,50 @@
 </template>
 <script>
 export default {
-  data() {
+  data () {
     return {
       formInline: {
-        devId: "",
-        userId: "",
-        mac: "",
-        policyId: ""
+        devId: '',
+        userId: '',
+        mac: '',
+        policyId: ''
       },
       rules: {
-        devId: [{ required: true, message: "请输入设备ID", trigger: "blur" }],
-        userId: [{ required: true, message: "请输入用户ID", trigger: "blur" }],
-        mac: [{ required: true, message: "请输入MAC", trigger: "blur" }],
-        policyId: [{ required: true, message: "请选择策略", trigger: "blur" }]
+        devId: [{ required: true, message: '请输入设备ID', trigger: 'blur' }],
+        userId: [{ required: true, message: '请输入用户ID', trigger: 'blur' }],
+        mac: [{ required: true, message: '请输入MAC', trigger: 'blur' }],
+        policyId: [{ required: true, message: '请选择策略', trigger: 'blur' }]
       },
       policyList: [],
-      searchUsedCrowdResult: false, //是否有生效人群
-      tags: null, //生效人群返回的tags类型
+      searchUsedCrowdResult: false, // 是否有生效人群
+      tags: null, // 生效人群返回的tags类型
       searchUsedCrowdList: []
-    };
+    }
   },
   methods: {
-    onSubmit() {
-      this.$refs.searchForm.validate(result=> {
+    onSubmit () {
+      this.$refs.searchForm.validate(result => {
         if (result) {
           this.$service.searchUsedCrowd(this.formInline).then(data => {
             if (data.length > 0) {
-              this.searchUsedCrowdResult = true;
-              this.searchUsedCrowdList = data;
+              this.searchUsedCrowdResult = true
+              this.searchUsedCrowdList = data
             } else {
-              this.searchUsedCrowdResult = false;
+              this.searchUsedCrowdResult = false
             }
-          });
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     }
   },
-  created() {
-     this.$service.launchHelpIndex().then(data => {
-        this.policyList = data.policyList
-     })
+  created () {
+    this.$service.launchHelpIndex().then(data => {
+      this.policyList = data.policyList
+    })
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 #infoList
@@ -114,4 +114,3 @@ export default {
   margin 5px
 
 </style>
-

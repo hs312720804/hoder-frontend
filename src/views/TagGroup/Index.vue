@@ -24,56 +24,56 @@ import TagGroupRead from './Read.vue'
 import TagCategoryList from '../TagCategory/List.vue'
 import TagCategoryRead from '../TagCategory/Read.vue'
 const MODE = {
-   listTagGroup: 'list-tag-group',
-   readTagGroup: 'read-tag-group',
-   readTagCategory: 'read-tag-category'
+  listTagGroup: 'list-tag-group',
+  readTagGroup: 'read-tag-group',
+  readTagCategory: 'read-tag-category'
 }
 export default {
-    components: {
-        TagGroupRead,
-        TagGroupList,
-        TagCategoryList,
-        TagCategoryRead,
-    },
-    data() {
-        return {
-            MODE,
-            tag: null,
-            filterText: '',
-            tagGroupId: undefined,
-            readTagCategoryBack: null,
-            filterHistory: undefined,
-            useFilterHistory: false
-        }
-    },
-    props: ['mode'],
-    methods:{
-        handleReadTagGroup(tagGroup) {
-            this.$router.push({
-                name: 'tag-group-read',
-                params: {
-                    id: tagGroup.id
-                }
-            })
-        },
-        handleReadTagCategoryCancel() {
-            const route = this.readTagCategoryBack || {name: 'tag-group-read'}
-            this.$router.push(route)
-            this.useFilterHistory = true
-        },
-        handleReadTagCategory(tag,filter) {
-            this.readTagCategoryBack = this.$route.fullPath
-            this.filterHistory = filter
-            this.$router.push({
-                name: 'tag-category-read',
-                params: {
-                    id: tag.tagId
-                }
-            })
-        },
-        handleChangeHistoryFilterFlag(flag) {
-            this.useFilterHistory = flag
-        }
+  components: {
+    TagGroupRead,
+    TagGroupList,
+    TagCategoryList,
+    TagCategoryRead
+  },
+  data () {
+    return {
+      MODE,
+      tag: null,
+      filterText: '',
+      tagGroupId: undefined,
+      readTagCategoryBack: null,
+      filterHistory: undefined,
+      useFilterHistory: false
     }
-  };
+  },
+  props: ['mode'],
+  methods: {
+    handleReadTagGroup (tagGroup) {
+      this.$router.push({
+        name: 'tag-group-read',
+        params: {
+          id: tagGroup.id
+        }
+      })
+    },
+    handleReadTagCategoryCancel () {
+      const route = this.readTagCategoryBack || { name: 'tag-group-read' }
+      this.$router.push(route)
+      this.useFilterHistory = true
+    },
+    handleReadTagCategory (tag, filter) {
+      this.readTagCategoryBack = this.$route.fullPath
+      this.filterHistory = filter
+      this.$router.push({
+        name: 'tag-category-read',
+        params: {
+          id: tag.tagId
+        }
+      })
+    },
+    handleChangeHistoryFilterFlag (flag) {
+      this.useFilterHistory = flag
+    }
+  }
+}
 </script>

@@ -25,22 +25,22 @@
 </template>
 
 <script>
-    import pullList from './strategy/List'
-    import pushList from './multiVersionCrowd/Index'
-    export default {
-        name: "launchTabListAA",
-        components: {
-            pullList,
-            pushList
-        },
-        data () {
-            return {
-                tabsValue: 'pull',
-                showAll: false
-            }
-        },
-        props: ["source"]
+import pullList from './strategy/List'
+import pushList from './multiVersionCrowd/Index'
+export default {
+  name: 'launchTabListAA',
+  components: {
+    pullList,
+    pushList
+  },
+  data () {
+    return {
+      tabsValue: 'pull',
+      showAll: false
     }
+  },
+  props: ['source']
+}
 </script>
 
 <style lang="stylus" scoped>

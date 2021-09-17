@@ -43,97 +43,97 @@
 </template>
 
 <script>
-    export default {
-        name: "peopleDialog",
-        props: {
-            show: {
-                type: Object,
-                default () {
-                    return {
-                        is: false
-                    }
-                }
-            },
-            info: {
-                type: Object,
-                default () {
-                    return {}
-                }
-            }
-        },
-        data () {
-            return {
-                peopleForm: {
-                    name: '',
-                    time: '',
-                    type: 'day',
-                    frequency: ''
-                },
-                rules: {
-                    name: [{ required: true, message: '请输入人群名称', trigger: 'blur' }],
-                    time: [{ required: true, message: '请输入人群影响时间', trigger: 'blur' }],
-                    frequency: [{ required: true, message: '请输入人群曝光次数', trigger: 'blur' }]
-                },
-                id: null
-            }
-        },
-        methods: {
-            savePeople () {
-                this.$refs['peopleFormRef'].validate(valid => {
-                    if (valid) {
-                        let { name, time, type, frequency } = this.peopleForm;
-                        let data = {
-                            strategyNodeName: name,
-                            condition: {
-                                times: {
-                                    operation: '>=',
-                                    val: frequency
-                                },
-                                time: {
-                                    operation: '>=',
-                                    val: time,
-                                    type
-                                }
-                            }
-                        };
-                        this.$emit('savePeople', data)
-                    } else {
-                        return false;
-                    }
-                })
-            }
-        },
-        watch: {
-            show: {
-                handler (val) {
-                    if (val.is) {
-                        this.$nextTick(() => {
-                            // 编辑信息时
-                            if (this.info.strategyNodeId || this.info.strategyNodeName) {
-                                const { strategyNodeName, time: {val, type}, frequency, id } = this.info;
-                                this.peopleForm = {
-                                    name: strategyNodeName,
-                                    time: val,
-                                    type: type,
-                                    frequency
-                                }
-                                this.id = id
-                            } else {
-                                this.peopleForm = {
-                                    name: '',
-                                    time: '',
-                                    type: 'day',
-                                    frequency: ''
-                                };
-                            }
-                            this.$refs['peopleFormRef'].resetFields();
-                        })
-                    }
-                },
-                deep: true
-            }
+export default {
+  name: 'peopleDialog',
+  props: {
+    show: {
+      type: Object,
+      default () {
+        return {
+          is: false
         }
+      }
+    },
+    info: {
+      type: Object,
+      default () {
+        return {}
+      }
     }
+  },
+  data () {
+    return {
+      peopleForm: {
+        name: '',
+        time: '',
+        type: 'day',
+        frequency: ''
+      },
+      rules: {
+        name: [{ required: true, message: '请输入人群名称', trigger: 'blur' }],
+        time: [{ required: true, message: '请输入人群影响时间', trigger: 'blur' }],
+        frequency: [{ required: true, message: '请输入人群曝光次数', trigger: 'blur' }]
+      },
+      id: null
+    }
+  },
+  methods: {
+    savePeople () {
+      this.$refs['peopleFormRef'].validate(valid => {
+        if (valid) {
+          let { name, time, type, frequency } = this.peopleForm
+          let data = {
+            strategyNodeName: name,
+            condition: {
+              times: {
+                operation: '>=',
+                val: frequency
+              },
+              time: {
+                operation: '>=',
+                val: time,
+                type
+              }
+            }
+          }
+          this.$emit('savePeople', data)
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  watch: {
+    show: {
+      handler (val) {
+        if (val.is) {
+          this.$nextTick(() => {
+            // 编辑信息时
+            if (this.info.strategyNodeId || this.info.strategyNodeName) {
+              const { strategyNodeName, time: { val, type }, frequency, id } = this.info
+              this.peopleForm = {
+                name: strategyNodeName,
+                time: val,
+                type: type,
+                frequency
+              }
+              this.id = id
+            } else {
+              this.peopleForm = {
+                name: '',
+                time: '',
+                type: 'day',
+                frequency: ''
+              }
+            }
+            this.$refs['peopleFormRef'].resetFields()
+          })
+        }
+      },
+      deep: true
+    }
+  }
+}
 </script>
 
 <style scoped>

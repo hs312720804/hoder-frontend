@@ -5,34 +5,29 @@
   </div>
 </template>
 <script>
-import List from "./crowd/list";
-import Add from "./crowd/add";
+import List from './crowd/list'
+import Add from './crowd/add'
 export default {
   name: 'crowdAA',
-  data() {
+  data () {
     return {
       isShowList: true,
-      editLaunchCrowdId:null //编辑的ID
-    };
+      editLaunchCrowdId: null // 编辑的ID
+    }
   },
   components: {
     List,
     Add
   },
   methods: {
-    changeStatus(state,launchCrowdId){
-      this.isShowList=state;
-      if(state)
-        this.$refs.list.loadData();
-      if(launchCrowdId)
-      this.editLaunchCrowdId=launchCrowdId
-      else
-      this.editLaunchCrowdId=null
+    changeStatus (state, launchCrowdId) {
+      this.isShowList = state
+      if (state) { this.$refs.list.loadData() }
+      if (launchCrowdId) { this.editLaunchCrowdId = launchCrowdId } else { this.editLaunchCrowdId = null }
     },
-    goBack(){
-      this.isShowList=true;
+    goBack () {
+      this.isShowList = true
     }
   }
-};
+}
 </script>
-

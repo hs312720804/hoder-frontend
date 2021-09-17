@@ -44,26 +44,26 @@
   </div>
 </template>
 <script>
-import CrowdAdd from "./crowdAdd";
-import CrowdList from "./crowdList";
+import CrowdAdd from './crowdAdd'
+import CrowdList from './crowdList'
 import CrowdABAdd from './crowdAbTest'
 export default {
-  data() {
+  data () {
     return {
-      isShowCrowdList: true, //是否显示人群列表
-      crowdId: null, //编辑的ID
+      isShowCrowdList: true, // 是否显示人群列表
+      crowdId: null, // 编辑的ID
       isAbTest: false,
       tabSet: 'first',
-        mode: '',
-        crowd: undefined,
-        effectCrowd: false
-    };
+      mode: '',
+      crowd: undefined,
+      effectCrowd: false
+    }
   },
-  props: ["selectRow"],
+  props: ['selectRow'],
   methods: {
-    goBackFirstLayer() {
-      //回到第一层页面，即策略列表页
-      this.$emit("goBack")
+    goBackFirstLayer () {
+      // 回到第一层页面，即策略列表页
+      this.$emit('goBack')
     },
 
     addCrowd (row) {
@@ -71,33 +71,33 @@ export default {
       if (tableData.length > 49) {
         return this.$message.warning('策略下人群数量已达最大值')
       }
-      //编辑添加
+      // 编辑添加
       const crowdId = row ? row.crowdId : undefined
       this.mode = ''
       this.isAbTest = false
       this.isShowCrowdList = false
       if (crowdId) {
-        this.crowdId=crowdId
-          // 当策略在投放中且在有效期内，人群限制投放不可编辑
+        this.crowdId = crowdId
+        // 当策略在投放中且在有效期内，人群限制投放不可编辑
         this.effectCrowd = (this.selectRow.useStatus === '投放中' && row.crowdValidStatus == 2)
       } else {
-        this.crowdId=null
+        this.crowdId = null
         this.effectCrowd = false
       }
     },
-    goBackCrowdListPage(isLoadData) {
-      this.isShowCrowdList = true;
+    goBackCrowdListPage (isLoadData) {
+      this.isShowCrowdList = true
       if (isLoadData) this.$refs.list.loadData()
     },
     // 编辑abtest人群
-     editABCrowd(row,mode) {
-         this.crowd = row
-         this.isShowCrowdList = false
-         this.isAbTest = row.abMainCrowd === 1
-         this.crowdId= row.crowdId
-         this.mode = mode
-         // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
-         this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
+    editABCrowd (row, mode) {
+      this.crowd = row
+      this.isShowCrowdList = false
+      this.isAbTest = row.abMainCrowd === 1
+      this.crowdId = row.crowdId
+      this.mode = mode
+      // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
+      this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
     }
   },
   components: {
@@ -105,6 +105,5 @@ export default {
     CrowdList,
     CrowdABAdd
   }
-};
+}
 </script>
-

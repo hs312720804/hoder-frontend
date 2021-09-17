@@ -117,7 +117,6 @@
                 </el-col>
             </el-row>
 
-
             <el-row :gutter="20" class="unit-row">
                 <el-col :span="12">
                     <div class="unit-box">
@@ -304,843 +303,839 @@
 </template>
 
 <script>
-    import veWordcloud from 'v-charts/lib/wordcloud'
-    export default {
-        name: "statisticsHomePageAA",
-        components: {
-            veWordcloud
-        },
-        data () {
-            return {
-                crowdAllData: [],
-                // 默认时间
-                startDate: '',
-                endDate: '',
-                time0: [],
-                businessType: '1',
-                cityData: '',
-                dialogVisible: false,
-                dialogVisibleType: false,
-                businessTitle: '',
-                filter: {},
-                pagination: {},
-                table: {
-                    props: {},
-                    header: [
-                        {
-                            label: '排名',
-                            width: '50',
-                            prop: 'seq'
-                        },
-                        {
-                            label: '省份',
-                            prop: 'name'
-                        },
-                        {
-                            label: '活跃数量',
-                            prop: 'value'
-                        },
-                        {
-                            label: '占比',
-                            prop: 'percent'
-                        }
-                    ],
-                    data: []
-                },
-                tagAllData: [],
-                tagUseData: [],
-                launchData: [],
-                businessUseCrowdData: {},
-                memberListType: '',
-                memberListByPay: '',
-                memberList: [],
-                dateList: [],
-                dateData: '',
-                chartData: {
-                    columns: ['word', 'count'],
-                    rows: []
-                },
-                chartSettings: {
-                    shape: 'diamond',
-                    sizeMax: 30
-                },
-                pickerOptions: {
-                    disabledDate(time) {
-                        return time.getTime() > Date.now() - 8.64e6
-                    }
-                },
-                downloadUrl: undefined,
-                homePageRecommendation: []
-            }
-        },
-        watch: {
-            time0(val,oldVal) {
-                // 防止第一次加载页面重复调用接口
-                if(oldVal.length !== 0) {
-                    if(this.setDataInMonth(val[0],val[1])){
-                        this.getCrowdSextotal(this.time0[0],this.time0[1])
-                        this.getCrowdAgetotal(this.time0[0],this.time0[1])
-                        this.getCrowdDevicetotal(this.time0[0],this.time0[1])
-                        this.getCrowdProvincetotal(this.time0[0],this.time0[1])
-                        this.getAllCrowdTotal(this.time0[0],this.time0[1])
-                        this.setUseSceneCircle(this.time0[0],this.time0[1])
-                        this.getAllTagTotal(this.time0[0],this.time0[1])
-                        this.getTagUseTotal(this.time0[0],this.time0[1])
-                        this.getAllTagRadar(this.time0[0],this.time0[1])
-                        this.getLaunchTotal(this.time0[0],this.time0[1])
-                        this.getBusinessUseCrowdTotal(this.time0[0],this.time0[1])
-                        this.getBusinessToCrowdTotal(this.time0[0],this.time0[1])
-                        this.getBusinessUseTendency(this.time0[0],this.time0[1])
-                        this.getActiveTimeDistriction(this.time0[0],this.time0[1])
-                        this.getBroadcastRate(this.time0[0],this.time0[1])
-                        this.getUserWatchPreference(this.time0[0],this.time0[1])
-                        this.getUserDistribution(this.time0[0],this.time0[1])
-                        this.getLastPayProduct(this.time0[0],this.time0[1])
-                        this.getServiceActive(this.time0[0],this.time0[1])
-                        this.handleGetHomePageRecommend(this.time0[0],this.time0[1])
-                    }else{
-                        this.$message('日期间隔最多只能是30天！请重新选择日期')
-                        this.time0 = oldVal
-                    }
-                }
-            },
-            'memberListType': function () {
-                this.getUserDistribution(this.time0[0],this.time0[1])
-            },
-            'memberListByPay': function () {
-                this.getLastPayProduct(this.time0[0],this.time0[1])
-            },
-            'dateData': function () {
-                this.getBroadcastRate(this.time0[0],this.time0[1])
-            }
-        },
-        methods: {
-            setWordCloudExtend () {
-                const _this = this
-                return {
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return a.name + ':' + _this.cc_format_number(a.value)
-                        }
-                    }
-                }
-            },
-            // 通用单线性参数设置
-            setLineEchart (element,title,xData,yData) {
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    // tooltip: {
-                    //     trigger: 'axis'
-                    // },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return _this.cc_format_number(a.data)
-                        }
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: xData,
-                        axisLabel: {
-                            interval: 0,
-                            rotate: -45
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisTick: {
-                            inside: true
-                        },
-                        scale: true,
-                        axisLabel: {
-                            margin: 2,
-                            formatter: function (value) {
-                                if (value >= 10000 && value < 10000000) {
-                                    value = value / 10000 + "万";
-                                }
-                                else if (value >= 10000000) {
-                                    value = value / 10000000 + "千万";
-                                } return value;
-                            }
-                        },
-                    },
-                    series: [{
-                        data: yData,
-                        type: 'line'
-                    }]
-                })
-            },
-            // 通用圆饼图
-            setCircleEcharts(element,title,legend,data,circleType){
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
-                        }
-                    },
-                    legend: {
-                        orient: 'vertical',
-                        x: circleType === 'all' ? 'bottom':'right',
-                        data: legend,
-                        type: 'scroll'
-                    },
-                    series: [
-                        {
-                            name:'',
-                            type:'pie',
-                            radius: circleType === 'all' ? '70%' : ['50%', '70%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: circleType === 'all' ? true : false,
-                                    position: circleType === 'all' ? '': 'center'
-                                },
-                                emphasis: {
-                                    show: true,
-                                    textStyle: {
-                                        fontSize: '30',
-                                        fontWeight: 'bold'
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: true
-                                }
-                            },
-                            data: data
-                        }
-                    ]
-                });
-            },
-            // 通用嵌套环形图
-            setCircleDoubleEcharts(element,title,legend,dataTotal,dataChild){
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return a.data.name + ':' + _this.cc_format_number(a.data.value) +'('+ a.percent+ ')%'
-                        }
-                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
-                    },
-                    // tooltip: {
-                    //     trigger: 'item',
-                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                    //     formatter: "{b}: {c} ({d}%)"
-                    // },
-                    legend: {
-                        orient: 'vertical',
-                        x: 'right',
-                        data: legend,
-                        type: 'scroll'
-                    },
-                    series: [
-                        {
-                            // name:'',
-                            type:'pie',
-                            selectedMode: 'single',
-                            radius: [0, '30%'],
-                            avoidLabelOverlap: false,
-                            label: {
-                                normal: {
-                                    show: false,
-                                    // position: 'center'
-                                    position: 'inner'
-                                },
-                                emphasis: {
-                                    show: true,
-                                    textStyle: {
-                                        fontSize: '30',
-                                        fontWeight: 'bold'
-                                    }
-                                }
-                            },
-                            labelLine: {
-                                normal: {
-                                    show: false
-                                }
-                            },
-                            data: dataTotal
-                        },
-                        {
-                            // name: '',
-                            type: 'pie',
-                            radius: ['40%','55%'],
-                            label: {
-                                normal: {
-                                    show: false,
-                                    formatter: '  {b|{b}：}{c}  {per|{d}%}  ',
-                                    backgroundColor: '#eee',
-                                    borderColor: '#aaa',
-                                    borderWidth: 1,
-                                    borderRadius: 4,
-                                    // shadowBlur:3,
-                                    // shadowOffsetX: 2,
-                                    // shadowOffsetY: 2,
-                                    // shadowColor: '#999',
-                                    // padding: [0, 7],
-                                    rich: {
-                                        // a: {
-                                        //     color: '#999',
-                                        //     lineHeight: 22,
-                                        //     align: 'center'
-                                        // },
-                                        // abg: {
-                                        //     backgroundColor: '#333',
-                                        //     width: '100%',
-                                        //     align: 'right',
-                                        //     height: 22,
-                                        //     borderRadius: [4, 4, 0, 0]
-                                        // },
-                                        // hr: {
-                                        //     borderColor: '#aaa',
-                                        //     width: '100%',
-                                        //     borderWidth: 0.5,
-                                        //     height: 0
-                                        // },
-                                        b: {
-                                            fontSize: 16,
-                                            lineHeight: 33
-                                        },
-                                        per: {
-                                            color: '#eee',
-                                            backgroundColor: '#334455',
-                                            padding: [2, 4],
-                                            borderRadius: 2
-                                        }
-                                    }
-                                }
-                            },
-                            data: dataChild
-                        }
-                    ]
-                });
-            },
-            // 通用雷达图
-            setRadarEcharts(element,title,legend,data,insideChildData){
-                // const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    // 可能不需要tooltip
-                    tooltip: {
-                        trigger: 'item'
-                        // formatter:function (a,b) {
-                        //     debugger
-                        //     return a.name + ':' + _this.cc_format_number(a.data.value)
-                        // }
-                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
-                    },
-                    // tooltip: {
-                    //     // trigger: 'item',
-                    //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
-                    // },
-                    legend: {
-                        orient: 'vertical',
-                        x: 'left',
-                        data: legend,
-                        // padding:[0,0,150,0]
-                    },
-                    radar: {
-                        shape: 'circle',
-                        name: {
-                            textStyle: {
-                                color: '#fff',
-                                backgroundColor: '#999',
-                                borderRadius: 3,
-                                padding: [3, 5]
-                            }
-                        },
-                        // indicator: [
-                        //     { name: '销售（sales）', max: 6500},
-                        //     { name: '管理（Administration）', max: 16000},
-                        //     { name: '信息技术（Information Techology）', max: 30000},
-                        //     { name: '客服（Customer Support）', max: 38000},
-                        //     { name: '研发（Development）', max: 52000},
-                        //     { name: '市场（Marketing）', max: 25000}
-                        // ],
-                        indicator: insideChildData
-                    },
-                    series: [
-                        {
-                            name:'',
-                            type:'radar',
-                            data: data,
-                            // radius: '80%'
-                            // data : [
-                            //     {
-                            //         value : [4300, 10000, 28000, 35000, 50000, 19000],
-                            //         name : '预算分配（Allocated Budget）'
-                            //     },
-                            //     {
-                            //         value : [5000, 14000, 28000, 31000, 42000, 21000],
-                            //         name : '实际开销（Actual Spending）'
-                            //     }
-                            // ]
-                        }
-                    ]
-                });
-            },
-            // 通用多线性参数设置
-            setLinesEchart (element,title,xData,yData,legend) {
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    // tooltip: {
-                    //     trigger: 'axis'
-                    // },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return _this.cc_format_number(a.data)
-                        }
-                        // formatter: "{a} <br/> {b}: {c} ({d}%)"
-                    },
-                    legend: {
-                        data: legend
-                    },
-                    xAxis: {
-                        type: 'category',
-                        data: xData,
-                        axisLabel: {
-                            interval: 0,
-                            rotate: -45
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisTick: {
-                            inside: true
-                        },
-                        scale: true,
-                        axisLabel: {
-                            margin: 2,
-                            formatter: function (value) {
-                                if (value >= 10000 && value < 10000000) {
-                                    value = value / 10000 + "万";
-                                }
-                                else if (value >= 10000000) {
-                                    value = value / 10000000 + "千万";
-                                } return value;
-                            }
-                        },
-                    },
-                    series: yData
-                })
-            },
-            // 通用柱状图参数设置
-            setBarEchart (element,title,xData,yData) {
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                myChart.setOption({
-                    title: {
-                        text: title
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return _this.cc_format_number(a.data)
-                        }
-                    },
-                    // tooltip: {
-                    //     trigger: 'axis'
-                    // },
-                    xAxis: {
-                        type: 'category',
-                        data: xData,
-                        axisLabel: {
-                            interval: 0,
-                            rotate: -45
-                        }
-                    },
-                    yAxis: {
-                        type: 'value',
-                        axisTick: {
-                            inside: true
-                        },
-                        scale: true,
-                        axisLabel: {
-                            margin: 2,
-                            formatter: function (value) {
-                                if (value >= 10000 && value < 10000000) {
-                                    value = value / 10000 + "万";
-                                }
-                                else if (value >= 10000000) {
-                                    value = value / 10000000 + "千万";
-                                } return value;
-                            }
-                        },
-                    },
-                    series: [{
-                        // data: yData.length === 0 ? this.fillEmptyData.data : yData,
-                        data: yData,
-                        type: 'bar',
-                        barWidth : 30
-                    }]
-                })
-            },
-            // 人群画像性别
-            getCrowdSextotal (startTime, endTime) {
-                this.$service.get_crowd_sex_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('circleSex','性别分析',data.names,dataObject)
-                })
-            },
-            // 人群年龄分布
-            getCrowdAgetotal (startTime, endTime) {
-                this.$service.get_crowd_age_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('circleAge','年龄分布',data.names,dataObject)
-                })
-            },
-            // 产品等级分布
-            getCrowdDevicetotal (startTime, endTime) {
-                this.$service.get_device_level_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('circleDevice','产品等级分类',data.names,dataObject)
-                })
-            },
-            // 省份分布
-            getCrowdProvincetotal (startTime, endTime) {
-                this.$service.get_crowd_province_total({startDate:startTime,endDate:endTime}).then((data)=>{
-                    const newData = data.topCity.date.map((key,index) => {
-                        return {value: key.count, name: key.name,seq: index+1,percent:key.percent}
-                    })
-                    const newProvinceData = data.province.date.map((key) => {
-                        // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
-                        return {value: key.count, name: key.name}
-                    })
-                    this.setMapEcharts('main','',newProvinceData)
-                    this.cityData = data.cityPercent
-                    // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
-                    this.table.data = newData
-                    this.pagination.total = data.topCity.date.length
-                })
-            },
-            setMapEcharts (element,title,data) {
-                const _this = this
-                let echarts = require('echarts')
-                let myChart = echarts.init(this.$refs[element])
-                // 中国地图
-                myChart.setOption({
-                    title : {
-                        text: title,
-                        // subtext: '纯属虚构',
-                        left: 'center'
-                    },
-                    tooltip: {
-                        trigger: 'item',
-                        formatter:function (a) {
-                            return a.data.name + ':' + _this.cc_format_number(a.data.value)
-                        }
-                    },
-                    // tooltip : {
-                    //     trigger: 'item',
-                    //     formatter: '{b}<br/>{c}'
-                    // },
-                    // legend: {
-                    //     orient: 'vertical',
-                    //     left: 'left',
-                    //     data:['创维','酷开']
-                    // },
-                    visualMap: {
-                        min: 0,
-                        max: 1000000,
-                        left: 'left',
-                        top: 'bottom',
-                        text:['高','低'],           // 文本，默认为数值文本
-                        calculable : true
-                    },
-                    // toolbox: {
-                    //     show: true,
-                    //     orient : 'vertical',
-                    //     left: 'right',
-                    //     top: 'center',
-                    //     feature : {
-                    //         mark : {show: true},
-                    //         dataView : {show: true, readOnly: false},
-                    //         restore : {show: true},
-                    //         saveAsImage : {show: true}
-                    //     }
-                    // },
-                    series : [
-                        {
-                            name: '省份分布',
-                            type: 'map',
-                            mapType: 'china',
-                            roam: false,
-                            label: {
-                                normal: {
-                                    show: false
-                                },
-                                emphasis: {
-                                    show: true
-                                }
-                            },
-                            data:data
-                        },
-                    ]
-                });
-            },
-            formatDate (d) {
-                const time = new Date(d)
-                let y = time.getFullYear(); // 年份
-                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
-                let r = time.getDate().toString().padStart(2,'0'); // 日子
-                return `${y}-${m}-${r}`
-            },
-            setDataInMonth(startDate,endDate){
-                const startTime = new Date(startDate).getTime()
-                const endTime = new Date(endDate).getTime()
-                const oneMonth = 3600*1000*24*30
-                if(endTime - startTime > oneMonth) {return false}
-                else{return true}
-            },
-            // 人群使用情况
-            getAllCrowdTotal (startTime, endTime) {
-                this.$service.getCrowdUseEcharts({beginTime:startTime,endTime:endTime}).then((data)=>{
-                    this.crowdAllData = data
-                })
-            },
-            // 人群应用场景分布
-            setUseSceneCircle(beginTime,endTime) {
-                this.$service.getCrowdUseSceneEcharts({beginTime,endTime}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('useScene','',data.names,dataObject,'all')
-                    let chartRowsData = []
-                    data.data.forEach((item,index) => {
-                        chartRowsData.push({'word': data.names[index], 'count': item.count})
-                    })
-                    this.chartData.rows = chartRowsData
-                })
-            },
-            //  标签覆盖情况
-            getAllTagTotal (beginTime,endTime) {
-                this.$service.getTagAllEcharts({beginTime,endTime}).then((data)=>{
-                    this.tagAllData = data
-                })
-            },
-            //  标签覆盖情况雷达图
-            getAllTagRadar (beginTime,endTime) {
-                this.$service.getTagUseRadarEcharts({beginTime,endTime}).then((data)=>{
-                    let names = []
-                    data.data.forEach(item => {
-                        names.push(item.name)
-                    })
-                    this.setRadarEcharts('tagRadar','',names,data.data,data.indicator)
-                })
-            },
-            //  标签使用情况
-            getTagUseTotal (beginTime,endTime) {
-                this.$service.getTagUseEcharts({beginTime,endTime}).then((data)=>{
-                    this.tagUseData = data
-                })
-            },
-            //  业务投放情况
-            getLaunchTotal (beginTime,endTime) {
-                this.$service.getLaunchEcharts({beginTime,endTime}).then((data)=>{
-                    this.launchData = data
-                })
-            },
-            //  业务人群使用情况
-            getBusinessUseCrowdTotal (beginTime,endTime) {
-                this.$service.getCrowdBusinessUseEcharts({beginTime,endTime}).then((data)=>{
-                    this.businessUseCrowdData = data
-                })
-            },
-            //  人群对应业务分布情况
-            getBusinessToCrowdTotal (beginTime,endTime) {
-                this.$service.getCrowdBusinessEcharts({beginTime,endTime}).then((data)=>{
-                    const dataObject = data.data.map((key,index) => {
-                        return {value: key.count, name: data.names[index]}
-                    })
-                    this.setCircleEcharts('businessUseCrowd','',data.names,dataObject,'all')
-                })
-            },
-            //  业务使用全流程趋势图
-            getBusinessUseTendency (beginTime,endTime) {
-                this.$service.getBusinessUseTendencyEcharts({beginTime,endTime}).then((data)=>{
-                    const legendData = data.series.map((key) => {
-                        return key.name
-                    })
-                    const linesData = data.series.map((key) => {
-                        return {name:key.name, data:key.value, type: 'line'}
-                    })
-                    this.setLinesEchart('businessUseTendency','',data.xaxis,linesData,legendData)
-                })
-            },
-            // 用户活跃时间段
-            getActiveTimeDistriction(beginTime,endTime) {
-                this.$service.getActiveTimeEcharts({beginTime,endTime}).then(data => {
-                    this.setBarEchart('activeTimeDistrict','',data.xaxis,data.series)
-                })
-            },
-            // 用户分布情况
-            getUserDistribution(beginTime,endTime) {
-                this.$service.getUseDistributionEcharts({beginTime,endTime,category: this.memberListType}).then(data => {
-                    let dataTotal = [],childData = []
-                    data.series[0].forEach(item => {
-                        childData.push({value: item.count, name: item.name})
-                    })
-                    data.series[1].forEach(item => {
-                        dataTotal.push({value: item.count, name: item.name})
-                    })
-                    this.setCircleDoubleEcharts('userDistribution','',data.legend,dataTotal,childData)
-                })
-            },
-            // 末次付费的会员产品包
-            getLastPayProduct (beginTime,endTime) {
-                this.$service.getLastPaidProductEcharts({beginTime,endTime,category: this.memberListByPay}).then(data => {
-                    const dataObject = []
-                    data.data.forEach(item => {
-                        dataObject.push({name: item.name, value: item.count})
-                    })
-                    this.setCircleEcharts('lastPayProduct','',data.names,dataObject)
-                })
-            },
-            // 对象转成数组
-            objectToArray (obj) {
-                let arr = []
-                for (let i in obj) {
-                    arr.push({ value: i, label: obj[i] })
-                }
-                return arr
-            },
-            // 获取会员权益
-            getMemberBenefits() {
-                this.$service.getUserVipRightsList().then(data => {
-                    const memberListData = data
-                    this.memberList = memberListData
-                    // 设置两个默认的下拉框选值
-                    this.memberListType = memberListData[0].value
-                    this.memberListByPay = memberListData[0].value
-                })
-            },
-            // 设备活跃情况
-            getServiceActive(beginTime,endTime) {
-                this.$service.getActiveDeviceEcharts({beginTime,endTime}).then(data => {
-                    this.setBarEchart('deviceActive','',data.xaxis,data.series)
-                })
-            },
-            // 起播活跃率情况
-            getBroadcastRate(beginTime,endTime) {
-                this.$service.getBroadcastRateEcharts({beginTime,endTime,category: this.dateData}).then(data => {
-                    const dataObject = []
-                    data.data.forEach(item => {
-                        dataObject.push({name: item.name, value: item.count})
-                    })
-                    this.setCircleEcharts('activeRate','',data.names,dataObject)
-                })
-            },
-            // 用户观影偏好分布
-            getUserWatchPreference(beginTime,endTime) {
-                this.$service.getUserWatchPreferenceDistributionEcharts({beginTime,endTime}).then(data => {
-                    const dataObject = []
-                    data.data.forEach(item => {
-                        dataObject.push({name: item.name, value: item.count})
-                    })
-                    this.setCircleEcharts('userWatchPreference','',data.names,dataObject)
-                })
-            },
-            getInitDate() {
-                this.$service.getinitDateEcharts().then((data) => {
-                    this.dateList = data
-                    this.dateData = data[0].value
-                })
-            },
-            handleOneTouchDrop () {
-                this.$router.push({
-                    path: 'oneTouchDrop'
-                })
-            },
-            handleOpenLaunchList () {
-                this.$router.push({
-                    path: 'launch/launchTabList'
-                })
-            },
-            handleDownload () {
-                this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
-                this.$nextTick(() => {
-                    this.$refs.download_Url.click()
-                })
-            },
-            // 主页推荐位分人群情况
-            handleGetHomePageRecommend (beginTime,endTime) {
-                this.$service.getHomePageRecommend({beginTime,endTime}).then(data => {
-                    this.homePageRecommendation = data
-                })
-                this.$service.getHomePageRecommendLine({beginTime,endTime}).then(data=> {
-                    this.setLineEchart('homepageRecommendTrade','',data.xaxis,data.series[0].value)
-                })
-            }
-        },
-        mounted () {
-            this.getCrowdSextotal(this.startDate,this.endDate)
-            this.getCrowdAgetotal(this.startDate,this.endDate)
-            this.getCrowdDevicetotal(this.startDate,this.endDate)
-            this.getCrowdProvincetotal(this.startDate,this.endDate)
-            this.getAllCrowdTotal(this.startDate,this.endDate)
-            this.setUseSceneCircle(this.startDate,this.endDate)
-            this.getAllTagTotal(this.startDate,this.endDate)
-            this.getTagUseTotal(this.startDate,this.endDate)
-            this.getAllTagRadar(this.startDate,this.endDate)
-            this.getLaunchTotal(this.startDate,this.endDate)
-            this.getBusinessUseCrowdTotal(this.startDate,this.endDate)
-            this.getBusinessToCrowdTotal(this.startDate,this.endDate)
-            this.getBusinessUseTendency(this.startDate,this.endDate)
-            this.getActiveTimeDistriction(this.startDate,this.endDate)
-            this.getBroadcastRate(this.startDate,this.endDate)
-            this.getUserWatchPreference(this.startDate,this.endDate)
-            this.getServiceActive(this.time0[0],this.time0[1])
-            this.handleGetHomePageRecommend(this.startDate,this.endDate)
-        },
-        created() {
-            // 设置默认时间为今天的前一周
-            const start = new Date()
-            const end = new Date()
-            this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 6))
-            // this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
-            this.endDate = this.formatDate(end.setTime(end.getTime()))
-            this.time0 = [this.startDate,this.endDate]
-            this.getMemberBenefits()
-            this.getInitDate()
+import veWordcloud from 'v-charts/lib/wordcloud'
+export default {
+  name: 'statisticsHomePageAA',
+  components: {
+    veWordcloud
+  },
+  data () {
+    return {
+      crowdAllData: [],
+      // 默认时间
+      startDate: '',
+      endDate: '',
+      time0: [],
+      businessType: '1',
+      cityData: '',
+      dialogVisible: false,
+      dialogVisibleType: false,
+      businessTitle: '',
+      filter: {},
+      pagination: {},
+      table: {
+        props: {},
+        header: [
+          {
+            label: '排名',
+            width: '50',
+            prop: 'seq'
+          },
+          {
+            label: '省份',
+            prop: 'name'
+          },
+          {
+            label: '活跃数量',
+            prop: 'value'
+          },
+          {
+            label: '占比',
+            prop: 'percent'
+          }
+        ],
+        data: []
+      },
+      tagAllData: [],
+      tagUseData: [],
+      launchData: [],
+      businessUseCrowdData: {},
+      memberListType: '',
+      memberListByPay: '',
+      memberList: [],
+      dateList: [],
+      dateData: '',
+      chartData: {
+        columns: ['word', 'count'],
+        rows: []
+      },
+      chartSettings: {
+        shape: 'diamond',
+        sizeMax: 30
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now() - 8.64e6
         }
+      },
+      downloadUrl: undefined,
+      homePageRecommendation: []
     }
+  },
+  watch: {
+    time0 (val, oldVal) {
+      // 防止第一次加载页面重复调用接口
+      if (oldVal.length !== 0) {
+        if (this.setDataInMonth(val[0], val[1])) {
+          this.getCrowdSextotal(this.time0[0], this.time0[1])
+          this.getCrowdAgetotal(this.time0[0], this.time0[1])
+          this.getCrowdDevicetotal(this.time0[0], this.time0[1])
+          this.getCrowdProvincetotal(this.time0[0], this.time0[1])
+          this.getAllCrowdTotal(this.time0[0], this.time0[1])
+          this.setUseSceneCircle(this.time0[0], this.time0[1])
+          this.getAllTagTotal(this.time0[0], this.time0[1])
+          this.getTagUseTotal(this.time0[0], this.time0[1])
+          this.getAllTagRadar(this.time0[0], this.time0[1])
+          this.getLaunchTotal(this.time0[0], this.time0[1])
+          this.getBusinessUseCrowdTotal(this.time0[0], this.time0[1])
+          this.getBusinessToCrowdTotal(this.time0[0], this.time0[1])
+          this.getBusinessUseTendency(this.time0[0], this.time0[1])
+          this.getActiveTimeDistriction(this.time0[0], this.time0[1])
+          this.getBroadcastRate(this.time0[0], this.time0[1])
+          this.getUserWatchPreference(this.time0[0], this.time0[1])
+          this.getUserDistribution(this.time0[0], this.time0[1])
+          this.getLastPayProduct(this.time0[0], this.time0[1])
+          this.getServiceActive(this.time0[0], this.time0[1])
+          this.handleGetHomePageRecommend(this.time0[0], this.time0[1])
+        } else {
+          this.$message('日期间隔最多只能是30天！请重新选择日期')
+          this.time0 = oldVal
+        }
+      }
+    },
+    'memberListType': function () {
+      this.getUserDistribution(this.time0[0], this.time0[1])
+    },
+    'memberListByPay': function () {
+      this.getLastPayProduct(this.time0[0], this.time0[1])
+    },
+    'dateData': function () {
+      this.getBroadcastRate(this.time0[0], this.time0[1])
+    }
+  },
+  methods: {
+    setWordCloudExtend () {
+      const _this = this
+      return {
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.name + ':' + _this.cc_format_number(a.value)
+          }
+        }
+      }
+    },
+    // 通用单线性参数设置
+    setLineEchart (element, title, xData, yData) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: [{
+          data: yData,
+          type: 'line'
+        }]
+      })
+    },
+    // 通用圆饼图
+    setCircleEcharts (element, title, legend, data, circleType) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value) + '(' + a.percent + ')%'
+          }
+        },
+        legend: {
+          orient: 'vertical',
+          x: circleType === 'all' ? 'bottom' : 'right',
+          data: legend,
+          type: 'scroll'
+        },
+        series: [
+          {
+            name: '',
+            type: 'pie',
+            radius: circleType === 'all' ? '70%' : ['50%', '70%'],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: circleType === 'all',
+                position: circleType === 'all' ? '' : 'center'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '30',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: true
+              }
+            },
+            data: data
+          }
+        ]
+      })
+    },
+    // 通用嵌套环形图
+    setCircleDoubleEcharts (element, title, legend, dataTotal, dataChild) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value) + '(' + a.percent + ')%'
+          }
+          // formatter: "{a} <br/> {b}: {c} ({d}%)"
+        },
+        // tooltip: {
+        //     trigger: 'item',
+        //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+        //     formatter: "{b}: {c} ({d}%)"
+        // },
+        legend: {
+          orient: 'vertical',
+          x: 'right',
+          data: legend,
+          type: 'scroll'
+        },
+        series: [
+          {
+            // name:'',
+            type: 'pie',
+            selectedMode: 'single',
+            radius: [0, '30%'],
+            avoidLabelOverlap: false,
+            label: {
+              normal: {
+                show: false,
+                // position: 'center'
+                position: 'inner'
+              },
+              emphasis: {
+                show: true,
+                textStyle: {
+                  fontSize: '30',
+                  fontWeight: 'bold'
+                }
+              }
+            },
+            labelLine: {
+              normal: {
+                show: false
+              }
+            },
+            data: dataTotal
+          },
+          {
+            // name: '',
+            type: 'pie',
+            radius: ['40%', '55%'],
+            label: {
+              normal: {
+                show: false,
+                formatter: '  {b|{b}：}{c}  {per|{d}%}  ',
+                backgroundColor: '#eee',
+                borderColor: '#aaa',
+                borderWidth: 1,
+                borderRadius: 4,
+                // shadowBlur:3,
+                // shadowOffsetX: 2,
+                // shadowOffsetY: 2,
+                // shadowColor: '#999',
+                // padding: [0, 7],
+                rich: {
+                  // a: {
+                  //     color: '#999',
+                  //     lineHeight: 22,
+                  //     align: 'center'
+                  // },
+                  // abg: {
+                  //     backgroundColor: '#333',
+                  //     width: '100%',
+                  //     align: 'right',
+                  //     height: 22,
+                  //     borderRadius: [4, 4, 0, 0]
+                  // },
+                  // hr: {
+                  //     borderColor: '#aaa',
+                  //     width: '100%',
+                  //     borderWidth: 0.5,
+                  //     height: 0
+                  // },
+                  b: {
+                    fontSize: 16,
+                    lineHeight: 33
+                  },
+                  per: {
+                    color: '#eee',
+                    backgroundColor: '#334455',
+                    padding: [2, 4],
+                    borderRadius: 2
+                  }
+                }
+              }
+            },
+            data: dataChild
+          }
+        ]
+      })
+    },
+    // 通用雷达图
+    setRadarEcharts (element, title, legend, data, insideChildData) {
+      // const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // 可能不需要tooltip
+        tooltip: {
+          trigger: 'item'
+          // formatter:function (a,b) {
+          //     debugger
+          //     return a.name + ':' + _this.cc_format_number(a.data.value)
+          // }
+          // formatter: "{a} <br/> {b}: {c} ({d}%)"
+        },
+        // tooltip: {
+        //     // trigger: 'item',
+        //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
+        // },
+        legend: {
+          orient: 'vertical',
+          x: 'left',
+          data: legend
+          // padding:[0,0,150,0]
+        },
+        radar: {
+          shape: 'circle',
+          name: {
+            textStyle: {
+              color: '#fff',
+              backgroundColor: '#999',
+              borderRadius: 3,
+              padding: [3, 5]
+            }
+          },
+          // indicator: [
+          //     { name: '销售（sales）', max: 6500},
+          //     { name: '管理（Administration）', max: 16000},
+          //     { name: '信息技术（Information Techology）', max: 30000},
+          //     { name: '客服（Customer Support）', max: 38000},
+          //     { name: '研发（Development）', max: 52000},
+          //     { name: '市场（Marketing）', max: 25000}
+          // ],
+          indicator: insideChildData
+        },
+        series: [
+          {
+            name: '',
+            type: 'radar',
+            data: data
+            // radius: '80%'
+            // data : [
+            //     {
+            //         value : [4300, 10000, 28000, 35000, 50000, 19000],
+            //         name : '预算分配（Allocated Budget）'
+            //     },
+            //     {
+            //         value : [5000, 14000, 28000, 31000, 42000, 21000],
+            //         name : '实际开销（Actual Spending）'
+            //     }
+            // ]
+          }
+        ]
+      })
+    },
+    // 通用多线性参数设置
+    setLinesEchart (element, title, xData, yData, legend) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
+          }
+          // formatter: "{a} <br/> {b}: {c} ({d}%)"
+        },
+        legend: {
+          data: legend
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: yData
+      })
+    },
+    // 通用柱状图参数设置
+    setBarEchart (element, title, xData, yData) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return _this.cc_format_number(a.data)
+          }
+        },
+        // tooltip: {
+        //     trigger: 'axis'
+        // },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 0,
+            rotate: -45
+          }
+        },
+        yAxis: {
+          type: 'value',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 2,
+            formatter: function (value) {
+              if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万'
+              } return value
+            }
+          }
+        },
+        series: [{
+          // data: yData.length === 0 ? this.fillEmptyData.data : yData,
+          data: yData,
+          type: 'bar',
+          barWidth: 30
+        }]
+      })
+    },
+    // 人群画像性别
+    getCrowdSextotal (startTime, endTime) {
+      this.$service.get_crowd_sex_total({ startDate: startTime, endDate: endTime }).then((data) => {
+        const dataObject = data.data.map((key, index) => {
+          return { value: key.count, name: data.names[index] }
+        })
+        this.setCircleEcharts('circleSex', '性别分析', data.names, dataObject)
+      })
+    },
+    // 人群年龄分布
+    getCrowdAgetotal (startTime, endTime) {
+      this.$service.get_crowd_age_total({ startDate: startTime, endDate: endTime }).then((data) => {
+        const dataObject = data.data.map((key, index) => {
+          return { value: key.count, name: data.names[index] }
+        })
+        this.setCircleEcharts('circleAge', '年龄分布', data.names, dataObject)
+      })
+    },
+    // 产品等级分布
+    getCrowdDevicetotal (startTime, endTime) {
+      this.$service.get_device_level_total({ startDate: startTime, endDate: endTime }).then((data) => {
+        const dataObject = data.data.map((key, index) => {
+          return { value: key.count, name: data.names[index] }
+        })
+        this.setCircleEcharts('circleDevice', '产品等级分类', data.names, dataObject)
+      })
+    },
+    // 省份分布
+    getCrowdProvincetotal (startTime, endTime) {
+      this.$service.get_crowd_province_total({ startDate: startTime, endDate: endTime }).then((data) => {
+        const newData = data.topCity.date.map((key, index) => {
+          return { value: key.count, name: key.name, seq: index + 1, percent: key.percent }
+        })
+        const newProvinceData = data.province.date.map((key) => {
+          // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
+          return { value: key.count, name: key.name }
+        })
+        this.setMapEcharts('main', '', newProvinceData)
+        this.cityData = data.cityPercent
+        // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
+        this.table.data = newData
+        this.pagination.total = data.topCity.date.length
+      })
+    },
+    setMapEcharts (element, title, data) {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      // 中国地图
+      myChart.setOption({
+        title: {
+          text: title,
+          // subtext: '纯属虚构',
+          left: 'center'
+        },
+        tooltip: {
+          trigger: 'item',
+          formatter: function (a) {
+            return a.data.name + ':' + _this.cc_format_number(a.data.value)
+          }
+        },
+        // tooltip : {
+        //     trigger: 'item',
+        //     formatter: '{b}<br/>{c}'
+        // },
+        // legend: {
+        //     orient: 'vertical',
+        //     left: 'left',
+        //     data:['创维','酷开']
+        // },
+        visualMap: {
+          min: 0,
+          max: 1000000,
+          left: 'left',
+          top: 'bottom',
+          text: ['高', '低'], // 文本，默认为数值文本
+          calculable: true
+        },
+        // toolbox: {
+        //     show: true,
+        //     orient : 'vertical',
+        //     left: 'right',
+        //     top: 'center',
+        //     feature : {
+        //         mark : {show: true},
+        //         dataView : {show: true, readOnly: false},
+        //         restore : {show: true},
+        //         saveAsImage : {show: true}
+        //     }
+        // },
+        series: [
+          {
+            name: '省份分布',
+            type: 'map',
+            mapType: 'china',
+            roam: false,
+            label: {
+              normal: {
+                show: false
+              },
+              emphasis: {
+                show: true
+              }
+            },
+            data: data
+          }
+        ]
+      })
+    },
+    formatDate (d) {
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
+    },
+    setDataInMonth (startDate, endDate) {
+      const startTime = new Date(startDate).getTime()
+      const endTime = new Date(endDate).getTime()
+      const oneMonth = 3600 * 1000 * 24 * 30
+      if (endTime - startTime > oneMonth) { return false } else { return true }
+    },
+    // 人群使用情况
+    getAllCrowdTotal (startTime, endTime) {
+      this.$service.getCrowdUseEcharts({ beginTime: startTime, endTime: endTime }).then((data) => {
+        this.crowdAllData = data
+      })
+    },
+    // 人群应用场景分布
+    setUseSceneCircle (beginTime, endTime) {
+      this.$service.getCrowdUseSceneEcharts({ beginTime, endTime }).then((data) => {
+        const dataObject = data.data.map((key, index) => {
+          return { value: key.count, name: data.names[index] }
+        })
+        this.setCircleEcharts('useScene', '', data.names, dataObject, 'all')
+        let chartRowsData = []
+        data.data.forEach((item, index) => {
+          chartRowsData.push({ 'word': data.names[index], 'count': item.count })
+        })
+        this.chartData.rows = chartRowsData
+      })
+    },
+    //  标签覆盖情况
+    getAllTagTotal (beginTime, endTime) {
+      this.$service.getTagAllEcharts({ beginTime, endTime }).then((data) => {
+        this.tagAllData = data
+      })
+    },
+    //  标签覆盖情况雷达图
+    getAllTagRadar (beginTime, endTime) {
+      this.$service.getTagUseRadarEcharts({ beginTime, endTime }).then((data) => {
+        let names = []
+        data.data.forEach(item => {
+          names.push(item.name)
+        })
+        this.setRadarEcharts('tagRadar', '', names, data.data, data.indicator)
+      })
+    },
+    //  标签使用情况
+    getTagUseTotal (beginTime, endTime) {
+      this.$service.getTagUseEcharts({ beginTime, endTime }).then((data) => {
+        this.tagUseData = data
+      })
+    },
+    //  业务投放情况
+    getLaunchTotal (beginTime, endTime) {
+      this.$service.getLaunchEcharts({ beginTime, endTime }).then((data) => {
+        this.launchData = data
+      })
+    },
+    //  业务人群使用情况
+    getBusinessUseCrowdTotal (beginTime, endTime) {
+      this.$service.getCrowdBusinessUseEcharts({ beginTime, endTime }).then((data) => {
+        this.businessUseCrowdData = data
+      })
+    },
+    //  人群对应业务分布情况
+    getBusinessToCrowdTotal (beginTime, endTime) {
+      this.$service.getCrowdBusinessEcharts({ beginTime, endTime }).then((data) => {
+        const dataObject = data.data.map((key, index) => {
+          return { value: key.count, name: data.names[index] }
+        })
+        this.setCircleEcharts('businessUseCrowd', '', data.names, dataObject, 'all')
+      })
+    },
+    //  业务使用全流程趋势图
+    getBusinessUseTendency (beginTime, endTime) {
+      this.$service.getBusinessUseTendencyEcharts({ beginTime, endTime }).then((data) => {
+        const legendData = data.series.map((key) => {
+          return key.name
+        })
+        const linesData = data.series.map((key) => {
+          return { name: key.name, data: key.value, type: 'line' }
+        })
+        this.setLinesEchart('businessUseTendency', '', data.xaxis, linesData, legendData)
+      })
+    },
+    // 用户活跃时间段
+    getActiveTimeDistriction (beginTime, endTime) {
+      this.$service.getActiveTimeEcharts({ beginTime, endTime }).then(data => {
+        this.setBarEchart('activeTimeDistrict', '', data.xaxis, data.series)
+      })
+    },
+    // 用户分布情况
+    getUserDistribution (beginTime, endTime) {
+      this.$service.getUseDistributionEcharts({ beginTime, endTime, category: this.memberListType }).then(data => {
+        let dataTotal = [], childData = []
+        data.series[0].forEach(item => {
+          childData.push({ value: item.count, name: item.name })
+        })
+        data.series[1].forEach(item => {
+          dataTotal.push({ value: item.count, name: item.name })
+        })
+        this.setCircleDoubleEcharts('userDistribution', '', data.legend, dataTotal, childData)
+      })
+    },
+    // 末次付费的会员产品包
+    getLastPayProduct (beginTime, endTime) {
+      this.$service.getLastPaidProductEcharts({ beginTime, endTime, category: this.memberListByPay }).then(data => {
+        const dataObject = []
+        data.data.forEach(item => {
+          dataObject.push({ name: item.name, value: item.count })
+        })
+        this.setCircleEcharts('lastPayProduct', '', data.names, dataObject)
+      })
+    },
+    // 对象转成数组
+    objectToArray (obj) {
+      let arr = []
+      for (let i in obj) {
+        arr.push({ value: i, label: obj[i] })
+      }
+      return arr
+    },
+    // 获取会员权益
+    getMemberBenefits () {
+      this.$service.getUserVipRightsList().then(data => {
+        const memberListData = data
+        this.memberList = memberListData
+        // 设置两个默认的下拉框选值
+        this.memberListType = memberListData[0].value
+        this.memberListByPay = memberListData[0].value
+      })
+    },
+    // 设备活跃情况
+    getServiceActive (beginTime, endTime) {
+      this.$service.getActiveDeviceEcharts({ beginTime, endTime }).then(data => {
+        this.setBarEchart('deviceActive', '', data.xaxis, data.series)
+      })
+    },
+    // 起播活跃率情况
+    getBroadcastRate (beginTime, endTime) {
+      this.$service.getBroadcastRateEcharts({ beginTime, endTime, category: this.dateData }).then(data => {
+        const dataObject = []
+        data.data.forEach(item => {
+          dataObject.push({ name: item.name, value: item.count })
+        })
+        this.setCircleEcharts('activeRate', '', data.names, dataObject)
+      })
+    },
+    // 用户观影偏好分布
+    getUserWatchPreference (beginTime, endTime) {
+      this.$service.getUserWatchPreferenceDistributionEcharts({ beginTime, endTime }).then(data => {
+        const dataObject = []
+        data.data.forEach(item => {
+          dataObject.push({ name: item.name, value: item.count })
+        })
+        this.setCircleEcharts('userWatchPreference', '', data.names, dataObject)
+      })
+    },
+    getInitDate () {
+      this.$service.getinitDateEcharts().then((data) => {
+        this.dateList = data
+        this.dateData = data[0].value
+      })
+    },
+    handleOneTouchDrop () {
+      this.$router.push({
+        path: 'oneTouchDrop'
+      })
+    },
+    handleOpenLaunchList () {
+      this.$router.push({
+        path: 'launch/launchTabList'
+      })
+    },
+    handleDownload () {
+      this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+    // 主页推荐位分人群情况
+    handleGetHomePageRecommend (beginTime, endTime) {
+      this.$service.getHomePageRecommend({ beginTime, endTime }).then(data => {
+        this.homePageRecommendation = data
+      })
+      this.$service.getHomePageRecommendLine({ beginTime, endTime }).then(data => {
+        this.setLineEchart('homepageRecommendTrade', '', data.xaxis, data.series[0].value)
+      })
+    }
+  },
+  mounted () {
+    this.getCrowdSextotal(this.startDate, this.endDate)
+    this.getCrowdAgetotal(this.startDate, this.endDate)
+    this.getCrowdDevicetotal(this.startDate, this.endDate)
+    this.getCrowdProvincetotal(this.startDate, this.endDate)
+    this.getAllCrowdTotal(this.startDate, this.endDate)
+    this.setUseSceneCircle(this.startDate, this.endDate)
+    this.getAllTagTotal(this.startDate, this.endDate)
+    this.getTagUseTotal(this.startDate, this.endDate)
+    this.getAllTagRadar(this.startDate, this.endDate)
+    this.getLaunchTotal(this.startDate, this.endDate)
+    this.getBusinessUseCrowdTotal(this.startDate, this.endDate)
+    this.getBusinessToCrowdTotal(this.startDate, this.endDate)
+    this.getBusinessUseTendency(this.startDate, this.endDate)
+    this.getActiveTimeDistriction(this.startDate, this.endDate)
+    this.getBroadcastRate(this.startDate, this.endDate)
+    this.getUserWatchPreference(this.startDate, this.endDate)
+    this.getServiceActive(this.time0[0], this.time0[1])
+    this.handleGetHomePageRecommend(this.startDate, this.endDate)
+  },
+  created () {
+    // 设置默认时间为今天的前一周
+    const start = new Date()
+    const end = new Date()
+    this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 6))
+    // this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
+    this.endDate = this.formatDate(end.setTime(end.getTime()))
+    this.time0 = [this.startDate, this.endDate]
+    this.getMemberBenefits()
+    this.getInitDate()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

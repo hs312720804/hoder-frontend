@@ -9,31 +9,31 @@
 import PeoplePositionList from './peoplePositionList'
 import PeoplePositionAdd from './peoplePositionAdd'
 export default {
-    name: "dataManageAA",
-    components: {
-        PeoplePositionAdd,
-        PeoplePositionList
-    },
-    data () {
-        return {
-            showList: true,
-            editId: '',
-            mode: ''
-        }
-    },
-    methods: {
-        openAddPage (rowId,mode) {
-            this.showList = false
-            this.editId = rowId
-            this.mode = mode
-        },
-        openListPage () {
-            this.showList = true
-        }
-    },
-    created () {
-
+  name: 'dataManageAA',
+  components: {
+    PeoplePositionAdd,
+    PeoplePositionList
+  },
+  data () {
+    return {
+      showList: true,
+      editId: '',
+      mode: ''
     }
+  },
+  methods: {
+    openAddPage (rowId, mode) {
+      this.showList = false
+      this.editId = rowId
+      this.mode = mode
+    },
+    openListPage () {
+      this.showList = true
+    }
+  },
+  created () {
+
+  }
 }
 </script>
 

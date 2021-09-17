@@ -192,206 +192,206 @@
 </template>
 
 <script>
-    export default {
-        name: "TempLabel",
-        props: {
-            refreshFlag: {
-                type: Boolean
-            },
-            showSelection: {
-                type: Boolean
-            },
-            currentSelectTag: {
-                type: Array
-            },
-            checkListParent: {
-                type: Array
-            }
-        },
-        data () {
-            return {
-                tableData: [],
-                filter: {},
-                launchName: undefined,
-                launchStatusEnum: {},
-                pageSize: 10,
-                currentPage: 1,
-                totalCount: 1,
-                isShowCondition: false,
-                // launchType: undefined,
-                launchTitle: '',
-                selectStrategy: null,//人群条件的选择策略
-                checkList: []
-            }
-        },
-        created () {
-            this.$root.$on('local-label-list-refresh', this.fetchData)
-            this.fetchData()
-        },
-        watch: {
-            'refreshFlag': function (val) {
-                if (val) {
-                    this.fetchData()
-                }
-            },
-            'currentSelectTag': 'updateTableSelected',
-            checkListParent: function (val) {
-                this.checkList = val
-            }
-        },
-        methods: {
-            fetchData () {
-                const filter = {
-                    pageNum: this.currentPage,
-                    pageSize: this.pageSize,
-                    search: this.launchName
-                }
-                this.$service.getLocalCrowdList(filter).then(data => {
-                    // this.launchStatusEnum = data.launchStatusEnum
-                    this.tableData = data.pageInfo.list
-                    this.totalCount = data.pageInfo.total
-                    if (this.showSelection) {
-                        this.updateTableSelected()
-                    }
-                    this.tableData.forEach(item => {
-                        item.dataSource = 1
-                    })
-                })
-            },
-            // handleCommandOpreate(scope) {
-            //     const type = scope[0]
-            //     const params = scope[1]
-            //     switch (type) {
-            //         case 'edit':
-            //             this.handleEdit(params)
-            //             break
-            //         case 'del':
-            //             this.del(params)
-            //             break
-            //         // case 'monitor':
-            //         //     this.handleMonitor(params)
-            //         //     break
-            //     }
-            // },
-            // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-            handleSizeChange (val) {
-                this.pageSize = val
-                //每次切换页码条，都把页面数重置为1
-                this.currentPage = 1
-                this.fetchData()
-            },
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleCurrentChange (val) {
-                this.currentPage = val
-                this.fetchData()
-            },
-            condition(row) {
-                this.isShowCondition = true
-                this.$service
-                .getTempCrowd({ launchCrowdId: row.launchCrowdId })
-                .then(data => {
-                    this.launchTitle = '人群条件'
-                    this.selectStrategy = data.crowdSql
-                })
-            },
-            // 删除
-            del(row) {
-                // const crowdName = row.launchName
-                const launchCrowdId = row.launchCrowdId
-                // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
-                this.$confirm(`确定要删除吗?`, "提示", {
-                    confirmButtonText: "确定",
-                    cancelButtonText: "取消",
-                    type: "warning"
-                })
-                .then(() => {
-                    this.$service.delTempCrowd({launchCrowdId}, "删除成功").then(() => {
-                        this.fetchData()
-                    })
-                })
-                .catch(() => {
-                })
-            },
-            // 下架
-            onOrOffLocalCrowd(row) {
-                const localCrowdId = row.launchCrowdId
-                const params = {
-                    onOffCrowd: !row.onOffCrowd,
-                    localCrowdId
-                }
-                const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
-                this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
-                    this.fetchData()
-                })
-            },
-            // 编辑
-            handleEdit(row) {
-                const crowdName = row.launchName
-                const localCrowdId = row.launchCrowdId
-                this.$emit("show-add", localCrowdId, crowdName)
-            },
-            // minitor (row) {},
-            // 计算
-            calculate (row) {
-                this.$service.calculateTempCrowd({launchCrowdId: row.launchCrowdId,calType: row.calType},'成功计算中').then(()=> {
-                    this.fetchData()
-                })
-            },
-            // 新增
-            handleAdd () {
-                this.$emit('show-add')
-            },
-            handleSelectOrCancel (select, row) {
-                const selectedFlag = select.length && select.indexOf(row) !== -1
-                // true就是选中，0或者false是取消选中
-                if (selectedFlag) {
-                    this.$refs.tempChangeTable.toggleRowSelection(row,true)
-                    this.$emit('table-selected',row, 'add')
-                } else {
-                    this.$refs.tempChangeTable.toggleRowSelection(row,false)
-                    this.$emit('table-selected',row, 'del')
-                }
-            },
-            handleSelectAllOrCancel (select) {
-                // 当select长度为0，则是取消全选，否则是全选
-                const data = this.tableData
-                if (select.length === 0) {
-                    for (var i=0;i<data.length;i++) {
-                        this.$emit('table-selected',data[i], 'del')
-                    }
-                } else {
-                    for (var j=0;j<data.length;j++) {
-                        this.$emit('table-selected',data[j], 'add')
-                    }
-                }
-            },
-            updateTableSelected () {
-                const arr = []
-                const currentSelectRows = this.currentSelectTag
-                this.tableData.forEach((item, index) => {
-                    currentSelectRows.forEach((i) => {
-                        if (item.tagId === i.tagId) {
-                            arr.push(this.tableData[index])
-                        }
-                    })
-                })
-                if (arr.length > 0) {
-                    // 如果存在，则先清空选中，再赋值
-                    this.$nextTick(() => {
-                        this.$refs.tempChangeTable.clearSelection()
-                        arr.forEach(row => {
-                            this.$refs.tempChangeTable.toggleRowSelection(row,true)
-                        })
-                    })
-                } else {
-                    this.$refs.tempChangeTable.clearSelection()
-                }
-            },
-            handleCheckListChange (val) {
-                this.$emit('change-checkList',val)
-            }
-        }
+export default {
+  name: 'TempLabel',
+  props: {
+    refreshFlag: {
+      type: Boolean
+    },
+    showSelection: {
+      type: Boolean
+    },
+    currentSelectTag: {
+      type: Array
+    },
+    checkListParent: {
+      type: Array
     }
+  },
+  data () {
+    return {
+      tableData: [],
+      filter: {},
+      launchName: undefined,
+      launchStatusEnum: {},
+      pageSize: 10,
+      currentPage: 1,
+      totalCount: 1,
+      isShowCondition: false,
+      // launchType: undefined,
+      launchTitle: '',
+      selectStrategy: null, // 人群条件的选择策略
+      checkList: []
+    }
+  },
+  created () {
+    this.$root.$on('local-label-list-refresh', this.fetchData)
+    this.fetchData()
+  },
+  watch: {
+    'refreshFlag': function (val) {
+      if (val) {
+        this.fetchData()
+      }
+    },
+    'currentSelectTag': 'updateTableSelected',
+    checkListParent: function (val) {
+      this.checkList = val
+    }
+  },
+  methods: {
+    fetchData () {
+      const filter = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+        search: this.launchName
+      }
+      this.$service.getLocalCrowdList(filter).then(data => {
+        // this.launchStatusEnum = data.launchStatusEnum
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        if (this.showSelection) {
+          this.updateTableSelected()
+        }
+        this.tableData.forEach(item => {
+          item.dataSource = 1
+        })
+      })
+    },
+    // handleCommandOpreate(scope) {
+    //     const type = scope[0]
+    //     const params = scope[1]
+    //     switch (type) {
+    //         case 'edit':
+    //             this.handleEdit(params)
+    //             break
+    //         case 'del':
+    //             this.del(params)
+    //             break
+    //         // case 'monitor':
+    //         //     this.handleMonitor(params)
+    //         //     break
+    //     }
+    // },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleSizeChange (val) {
+      this.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.currentPage = 1
+      this.fetchData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.fetchData()
+    },
+    condition (row) {
+      this.isShowCondition = true
+      this.$service
+        .getTempCrowd({ launchCrowdId: row.launchCrowdId })
+        .then(data => {
+          this.launchTitle = '人群条件'
+          this.selectStrategy = data.crowdSql
+        })
+    },
+    // 删除
+    del (row) {
+      // const crowdName = row.launchName
+      const launchCrowdId = row.launchCrowdId
+      // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
+      this.$confirm(`确定要删除吗?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.delTempCrowd({ launchCrowdId }, '删除成功').then(() => {
+            this.fetchData()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    // 下架
+    onOrOffLocalCrowd (row) {
+      const localCrowdId = row.launchCrowdId
+      const params = {
+        onOffCrowd: !row.onOffCrowd,
+        localCrowdId
+      }
+      const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
+      this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
+        this.fetchData()
+      })
+    },
+    // 编辑
+    handleEdit (row) {
+      const crowdName = row.launchName
+      const localCrowdId = row.launchCrowdId
+      this.$emit('show-add', localCrowdId, crowdName)
+    },
+    // minitor (row) {},
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.fetchData()
+      })
+    },
+    // 新增
+    handleAdd () {
+      this.$emit('show-add')
+    },
+    handleSelectOrCancel (select, row) {
+      const selectedFlag = select.length && select.indexOf(row) !== -1
+      // true就是选中，0或者false是取消选中
+      if (selectedFlag) {
+        this.$refs.tempChangeTable.toggleRowSelection(row, true)
+        this.$emit('table-selected', row, 'add')
+      } else {
+        this.$refs.tempChangeTable.toggleRowSelection(row, false)
+        this.$emit('table-selected', row, 'del')
+      }
+    },
+    handleSelectAllOrCancel (select) {
+      // 当select长度为0，则是取消全选，否则是全选
+      const data = this.tableData
+      if (select.length === 0) {
+        for (var i = 0; i < data.length; i++) {
+          this.$emit('table-selected', data[i], 'del')
+        }
+      } else {
+        for (var j = 0; j < data.length; j++) {
+          this.$emit('table-selected', data[j], 'add')
+        }
+      }
+    },
+    updateTableSelected () {
+      const arr = []
+      const currentSelectRows = this.currentSelectTag
+      this.tableData.forEach((item, index) => {
+        currentSelectRows.forEach((i) => {
+          if (item.tagId === i.tagId) {
+            arr.push(this.tableData[index])
+          }
+        })
+      })
+      if (arr.length > 0) {
+        // 如果存在，则先清空选中，再赋值
+        this.$nextTick(() => {
+          this.$refs.tempChangeTable.clearSelection()
+          arr.forEach(row => {
+            this.$refs.tempChangeTable.toggleRowSelection(row, true)
+          })
+        })
+      } else {
+        this.$refs.tempChangeTable.clearSelection()
+      }
+    },
+    handleCheckListChange (val) {
+      this.$emit('change-checkList', val)
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

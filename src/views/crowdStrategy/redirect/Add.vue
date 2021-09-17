@@ -140,144 +140,143 @@
 </template>
 
 <script>
-    export default {
-        name: "Add",
-        data () {
-            return {
-                form: {
-                    crowdName: '',
-                    pCrowdName: '',
-                    conditions: undefined,
-                    validPeriod: undefined
-                },
-                business: [],
-                behavior: [],
-                parentCrowd: [],
-                tagsList: [{tagName: '父人群中活跃用户在业务',tagId: 1,tagType: 1},{tagName: '父人群用户行为满足',tagId: 2,tagType: 2}],
-                rulesJson: { condition: "OR", rules: []},
-                pickerOptions: {
-                    disabledDate(time) {
-                        // 设置可选时间为今天之后的60天内
-                        const curDate = (new Date()).getTime()
-                        // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
-                        const day = 60 * 24 * 3600 * 1000
-                        const dateRange = curDate + day
-                        return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
-                    }
-                }
-            }
-        },
-        watch : {
-            '$route.query.policyId': function (val) {
-                if(val != undefined) {
-                    this.fetchData()
-                }
-            }
-        },
-        methods : {
-            fetchData () {
-                const routeData = this.$route.query
-                this.$service.getRedirectCrowdAdd(
-                    {policyId: routeData.policyId, params: {crowdId: routeData.crowdId ? routeData.crowdId : undefined}})
-                        .then(data => {
-                            const [businessList,behaviorList,parentCrowdList] = [[],[],[]]
-                            data.tags.forEach(item => {
-                                if (item.tagName === "父人群中活跃用户在业务") {businessList.push({value: item.attrValue, label: item.attrName})}
-                                else if(item.tagName === "父人群用户行为满足"){behaviorList.push({value: item.attrValue, label: item.attrName})}
-                            })
-                            this.business = businessList
-                            this.behavior = behaviorList
-                            if(data.crowds.length > 0) {
-                                data.crowds.forEach(item => {
-                                    parentCrowdList.push({value: item.crowdId, label: item.crowdName})
-                                })
-                            }
-                            this.parentCrowd = parentCrowdList
-                            this.form.pCrowdName = parentCrowdList[0].value
-                        })
-            },
-            handleAddRule(tag) {
-                if (this.rulesJson.rules.length > 50) {
-                    this.$message.warning("已达最大数量")
-                    return
-                }
-                this.rulesJson.rules.push({
-                    rules: {
-                        business: [{
-                            operator: '=',
-                            tagCode: tag.tagKey,
-                            tagName: tag.tagName,
-                            value: "movie",
-                            tagId: tag.tagId,
-                            tagType: tag.tagType,
-                            categoryName: '活跃用户所在业务'
-                        }],
-                        behavior: [{
-                            operator: '=',
-                            tagCode: tag.tagKey,
-                            tagName: tag.tagName,
-                            value: "activityOrExpose",
-                            tagId: tag.tagId,
-                            tagType: tag.tagType,
-                            categoryName: '在父人群上线的有效期内'
-                        }]
-                    }
-                })
-            },
-            handleRemoveBusinessRule (rule, childRule) {
-                const rulesJson = this.rulesJson
-                rule.rules.business.splice(rule.rules.business.indexOf(childRule), 1)
-                if (rule.rules.business.length === 0 && rule.rules.behavior.length === 0) {
-                    rulesJson.rules = rulesJson.rules.filter(function(item) {
-                        return item !== rule
-                    })
-                }
-            },
-            handleRemoveBehaviorRule (rule, childRule) {
-                const rulesJson = this.rulesJson
-                rule.rules.behavior.splice(rule.rules.behavior.indexOf(childRule), 1)
-                if (rule.rules.behavior.length === 0 && rule.rules.business.length === 0) {
-                    rulesJson.rules = rulesJson.rules.filter(function(item) {
-                        return item !== rule
-                    })
-                }
-            },
-            handleAddRuleToBusiness (tag,index) {
-                if (this.rulesJson.rules[index].rules.business.length > 50) {
-                    this.$message.warning("已达最大数量")
-                    return
-                }
-                this.rulesJson.rules[index].rules.business.push({
-                    operator: '=',
-                    tagCode: tag.tagKey,
-                    tagName: tag.tagName,
-                    value: 'movie',
-                    tagId: tag.tagId,
-                    tagType: tag.tagType,
-                    categoryName: '活跃用户所在业务'
-                })
-            },
-            handleAddRuleToBehavior (tag,index) {
-                if (this.rulesJson.rules[index].rules.behavior.length > 50) {
-                    this.$message.warning("已达最大数量")
-                    return
-                }
-                this.rulesJson.rules[index].rules.behavior.push({
-                            operator: '=',
-                            tagCode: tag.tagKey,
-                            tagName: tag.tagName,
-                            dataSource: tag.dataSource,
-                            value: 'activityOrExpose',
-                            tagId: tag.tagId,
-                            tagType: tag.tagType,
-                            categoryName: '在父人群上线的有效期内'
-                })
-            }
-        },
-        created () {
-            this.fetchData()
+export default {
+  name: 'Add',
+  data () {
+    return {
+      form: {
+        crowdName: '',
+        pCrowdName: '',
+        conditions: undefined,
+        validPeriod: undefined
+      },
+      business: [],
+      behavior: [],
+      parentCrowd: [],
+      tagsList: [{ tagName: '父人群中活跃用户在业务', tagId: 1, tagType: 1 }, { tagName: '父人群用户行为满足', tagId: 2, tagType: 2 }],
+      rulesJson: { condition: 'OR', rules: [] },
+      pickerOptions: {
+        disabledDate (time) {
+          // 设置可选时间为今天之后的60天内
+          const curDate = (new Date()).getTime()
+          // 算出一个月的毫秒数，这里使用30的平均值，实际应根据具体的每个月有多少天计算
+          const day = 60 * 24 * 3600 * 1000
+          const dateRange = curDate + day
+          return time.getTime() < Date.now() - 24 * 60 * 60 * 1000 || time.getTime() > dateRange
         }
+      }
     }
+  },
+  watch: {
+    '$route.query.policyId': function (val) {
+      if (val != undefined) {
+        this.fetchData()
+      }
+    }
+  },
+  methods: {
+    fetchData () {
+      const routeData = this.$route.query
+      this.$service.getRedirectCrowdAdd(
+        { policyId: routeData.policyId, params: { crowdId: routeData.crowdId ? routeData.crowdId : undefined } })
+        .then(data => {
+          const [businessList, behaviorList, parentCrowdList] = [[], [], []]
+          data.tags.forEach(item => {
+            if (item.tagName === '父人群中活跃用户在业务') { businessList.push({ value: item.attrValue, label: item.attrName }) } else if (item.tagName === '父人群用户行为满足') { behaviorList.push({ value: item.attrValue, label: item.attrName }) }
+          })
+          this.business = businessList
+          this.behavior = behaviorList
+          if (data.crowds.length > 0) {
+            data.crowds.forEach(item => {
+              parentCrowdList.push({ value: item.crowdId, label: item.crowdName })
+            })
+          }
+          this.parentCrowd = parentCrowdList
+          this.form.pCrowdName = parentCrowdList[0].value
+        })
+    },
+    handleAddRule (tag) {
+      if (this.rulesJson.rules.length > 50) {
+        this.$message.warning('已达最大数量')
+        return
+      }
+      this.rulesJson.rules.push({
+        rules: {
+          business: [{
+            operator: '=',
+            tagCode: tag.tagKey,
+            tagName: tag.tagName,
+            value: 'movie',
+            tagId: tag.tagId,
+            tagType: tag.tagType,
+            categoryName: '活跃用户所在业务'
+          }],
+          behavior: [{
+            operator: '=',
+            tagCode: tag.tagKey,
+            tagName: tag.tagName,
+            value: 'activityOrExpose',
+            tagId: tag.tagId,
+            tagType: tag.tagType,
+            categoryName: '在父人群上线的有效期内'
+          }]
+        }
+      })
+    },
+    handleRemoveBusinessRule (rule, childRule) {
+      const rulesJson = this.rulesJson
+      rule.rules.business.splice(rule.rules.business.indexOf(childRule), 1)
+      if (rule.rules.business.length === 0 && rule.rules.behavior.length === 0) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
+          return item !== rule
+        })
+      }
+    },
+    handleRemoveBehaviorRule (rule, childRule) {
+      const rulesJson = this.rulesJson
+      rule.rules.behavior.splice(rule.rules.behavior.indexOf(childRule), 1)
+      if (rule.rules.behavior.length === 0 && rule.rules.business.length === 0) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
+          return item !== rule
+        })
+      }
+    },
+    handleAddRuleToBusiness (tag, index) {
+      if (this.rulesJson.rules[index].rules.business.length > 50) {
+        this.$message.warning('已达最大数量')
+        return
+      }
+      this.rulesJson.rules[index].rules.business.push({
+        operator: '=',
+        tagCode: tag.tagKey,
+        tagName: tag.tagName,
+        value: 'movie',
+        tagId: tag.tagId,
+        tagType: tag.tagType,
+        categoryName: '活跃用户所在业务'
+      })
+    },
+    handleAddRuleToBehavior (tag, index) {
+      if (this.rulesJson.rules[index].rules.behavior.length > 50) {
+        this.$message.warning('已达最大数量')
+        return
+      }
+      this.rulesJson.rules[index].rules.behavior.push({
+        operator: '=',
+        tagCode: tag.tagKey,
+        tagName: tag.tagName,
+        dataSource: tag.dataSource,
+        value: 'activityOrExpose',
+        tagId: tag.tagId,
+        tagType: tag.tagType,
+        categoryName: '在父人群上线的有效期内'
+      })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

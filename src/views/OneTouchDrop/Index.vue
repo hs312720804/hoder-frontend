@@ -63,105 +63,105 @@
 </template>
 
 <script>
-    import createPolicy from './CreatePolicy'
-    import createCrowd from './CreateCrowd'
-    import LaunchToBusiness from './LaunchToBusinessPlatform'
-    import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
-    import createConfigScheme from './createConfigScheme'
-    export default {
-        name: "index",
-        components: {
-            createPolicy,
-            createCrowd,
-            LaunchToBusiness,
-            newCreatePolicy,
-            createConfigScheme
-        },
-        data () {
-            return {
-                activeStep: 0,
-                recordId: undefined,
-                tempPolicyAndCrowd: {},
-                initTagList: [],
-                routeSource: undefined,
-                peoplePageCheck: false,
-                programmeId: undefined,
-                reloadFlag: true
-            }
-        },
-        watch: {
-            $route: {
-                handler() {
-                   console.log('this.$route.params.refresh==>', this.$route.params.refresh)
-                    if (this.$route.params.refresh) {
-                        // 刷新页面
-                        this.initTagList = []
-                        this.reloadFlag = false
-                        this.resetFormData() // 重置数据
-                        this.$nextTick(() => {
-                            this.reloadFlag = true
-                        })
-                    }
-                },
-                deep: true,
-            },
-            '$route.params.source' : function (val, oldVal) {
-                if(val != oldVal) {
-                    this.routeSource = val ? val : undefined
-                }
-            }
-        },
-        beforeRouteEnter (to, from, next) {
-            next(vm => {
-                if (from.name === 'strategyList') {
-                    vm.activeStep = 0;
-                    next();
-                }
-                next();
-            })
-        },
-        methods: {
-            handleNextStep(step,recordId) {
-                this.activeStep = step + 1
-                this.recordId = recordId
-            },
-            handleCrowdNextStep (step,recordId, tempPolicyAndCrowd) {
-                this.activeStep = step + 1
-                this.recordId = recordId
-                this.tempPolicyAndCrowd = tempPolicyAndCrowd
-            },
-            handleCrowdPrevStep(step,recordId) {
-                this.activeStep = step - 1
-                this.recordId = recordId
-            },
-            handleLaunchPrevStep (step) {
-                this.activeStep = step - 1
-            },
-            handlePolicyNextStep (recordId,tagList) {
-                this.activeStep = 1
-                this.recordId = recordId
-                this.initTagList = tagList
-            },
-            resetFormData () {
-                this.activeStep = 0
-                this.recordId = undefined
-                this.$store.commit('setPolicyId', undefined)
-                this.peoplePageCheck = false
-            },
-            handleDirectStrategyList () {
-                this.$root.$emit('stratege-list-refresh')
-                if (this.routeSource) {
-                    this.$router.push({ path: 'launch/myPolicy' })
-                } else{
-                    this.$router.push({ path: 'launch/strategyList' })
-                }
-            }
-        },
-        created () {
-            if (this.$route.params.source) {this.routeSource = this.$route.params.source}
-            this.$store.commit('setEditSchemeConfig', false)
-        }
+import createPolicy from './CreatePolicy'
+import createCrowd from './CreateCrowd'
+import LaunchToBusiness from './LaunchToBusinessPlatform'
+import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
+import createConfigScheme from './createConfigScheme'
+export default {
+  name: 'index',
+  components: {
+    createPolicy,
+    createCrowd,
+    LaunchToBusiness,
+    newCreatePolicy,
+    createConfigScheme
+  },
+  data () {
+    return {
+      activeStep: 0,
+      recordId: undefined,
+      tempPolicyAndCrowd: {},
+      initTagList: [],
+      routeSource: undefined,
+      peoplePageCheck: false,
+      programmeId: undefined,
+      reloadFlag: true
     }
+  },
+  watch: {
+    $route: {
+      handler () {
+        console.log('this.$route.params.refresh==>', this.$route.params.refresh)
+        if (this.$route.params.refresh) {
+          // 刷新页面
+          this.initTagList = []
+          this.reloadFlag = false
+          this.resetFormData() // 重置数据
+          this.$nextTick(() => {
+            this.reloadFlag = true
+          })
+        }
+      },
+      deep: true
+    },
+    '$route.params.source': function (val, oldVal) {
+      if (val != oldVal) {
+        this.routeSource = val || undefined
+      }
+    }
+  },
+  beforeRouteEnter (to, from, next) {
+    next(vm => {
+      if (from.name === 'strategyList') {
+        vm.activeStep = 0
+        next()
+      }
+      next()
+    })
+  },
+  methods: {
+    handleNextStep (step, recordId) {
+      this.activeStep = step + 1
+      this.recordId = recordId
+    },
+    handleCrowdNextStep (step, recordId, tempPolicyAndCrowd) {
+      this.activeStep = step + 1
+      this.recordId = recordId
+      this.tempPolicyAndCrowd = tempPolicyAndCrowd
+    },
+    handleCrowdPrevStep (step, recordId) {
+      this.activeStep = step - 1
+      this.recordId = recordId
+    },
+    handleLaunchPrevStep (step) {
+      this.activeStep = step - 1
+    },
+    handlePolicyNextStep (recordId, tagList) {
+      this.activeStep = 1
+      this.recordId = recordId
+      this.initTagList = tagList
+    },
+    resetFormData () {
+      this.activeStep = 0
+      this.recordId = undefined
+      this.$store.commit('setPolicyId', undefined)
+      this.peoplePageCheck = false
+    },
+    handleDirectStrategyList () {
+      this.$root.$emit('stratege-list-refresh')
+      if (this.routeSource) {
+        this.$router.push({ path: 'launch/myPolicy' })
+      } else {
+        this.$router.push({ path: 'launch/strategyList' })
+      }
+    }
+  },
+  created () {
+    if (this.$route.params.source) { this.routeSource = this.$route.params.source }
+    this.$store.commit('setEditSchemeConfig', false)
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

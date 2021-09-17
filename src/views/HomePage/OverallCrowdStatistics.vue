@@ -6,14 +6,14 @@
 </template>
 
 <script>
-    export default {
-        name: 'OverallCrowdStatisticsAA',
-        data () {
-            return {
-                pageSrc: 'http://datav.aliyuncs.com/share/a8611c7d492ad70e37afe8b72a92de62'
-            }
-        }
+export default {
+  name: 'OverallCrowdStatisticsAA',
+  data () {
+    return {
+      pageSrc: 'http://datav.aliyuncs.com/share/a8611c7d492ad70e37afe8b72a92de62'
     }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

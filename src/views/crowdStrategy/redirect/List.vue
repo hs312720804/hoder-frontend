@@ -48,64 +48,64 @@
 </template>
 
 <script>
-    export default {
-        name: "List",
-        data () {
-            return {
-                tableData: [],
-                crowdValidEnum: {1: "未开始", 2: "有效期中", 3: "已过期"},
-                pageSize: 10,
-                currentPage: 1,
-                totalCount: 1,
-                filter: {},
-                searchCont: undefined
-            }
-        },
-        watch : {
-            '$route.params.redirectListId': function (val,oldVal) {
-                if(val!= oldVal && val) {
-                    this.fetchData()
-                }
-            }
-        },
-        methods: {
-            fetchData () {
-                this.parseFilter()
-                this.$service.getRedirectCrowdList(this.filter).then(data => {
-                    this.tableData = data.list
-                    this.totalCount = data.total
-                })
-            },
-            parseFilter () {
-                const crowdId = this.$route.params.redirectListId
-                this.filter = {
-                    pageSize: this.pageSize,
-                    pageNum: this.currentPage,
-                    searchCont: this.searchCont,
-                    crowdId
-                }
-            },
-            unActiveTips (activeType) {
-                if (activeType == 1 || activeType == 3) {
-                    return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
-                } else {
-                    return '人群未生效，因为未点击该策略的"同步按钮"'
-                }
-            },
-            handleSizeChange (val) {
-                this.pageSize = val
-                this.fetchData()
-            },
-            // 页码变更, 如第1页变成第2页时,val=2
-            handleCurrentChange (val) {
-                this.currentPage = val
-                this.fetchData()
-            },
-        },
-        created () {
-            this.fetchData()
-        }
+export default {
+  name: 'List',
+  data () {
+    return {
+      tableData: [],
+      crowdValidEnum: { 1: '未开始', 2: '有效期中', 3: '已过期' },
+      pageSize: 10,
+      currentPage: 1,
+      totalCount: 1,
+      filter: {},
+      searchCont: undefined
     }
+  },
+  watch: {
+    '$route.params.redirectListId': function (val, oldVal) {
+      if (val != oldVal && val) {
+        this.fetchData()
+      }
+    }
+  },
+  methods: {
+    fetchData () {
+      this.parseFilter()
+      this.$service.getRedirectCrowdList(this.filter).then(data => {
+        this.tableData = data.list
+        this.totalCount = data.total
+      })
+    },
+    parseFilter () {
+      const crowdId = this.$route.params.redirectListId
+      this.filter = {
+        pageSize: this.pageSize,
+        pageNum: this.currentPage,
+        searchCont: this.searchCont,
+        crowdId
+      }
+    },
+    unActiveTips (activeType) {
+      if (activeType == 1 || activeType == 3) {
+        return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
+      } else {
+        return '人群未生效，因为未点击该策略的"同步按钮"'
+      }
+    },
+    handleSizeChange (val) {
+      this.pageSize = val
+      this.fetchData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.fetchData()
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

@@ -21,42 +21,42 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-                content: [],
-                hitMap: []
-            }
-        },
-        props: ['crowdId'],
-        methods: {
-            handleGetContent() {
-                const crowdId = this.crowdId
-                    this.$service.getCrowdStatus({crowdId: crowdId}).then((data) => {
-                        this.content = data.map(item => {
-                            return {
-                                isCreate: '',
-                                createTime: '',
-                                isSync: '',
-                                syncTime: '',
-                                isLaunch: '',
-                                launchTime: '',
-                                isHit: '',
-                                ...item
-                            }
-                        })
-                        if (data.length > 5) {
-                            for (let i=0;i < data.length - 4;i++){
-                                this.hitMap.push(i+3)
-                            }
-                        }
-                    })
-            }
-        },
-        created () {
-            this.handleGetContent()
-        }
+export default {
+  data () {
+    return {
+      content: [],
+      hitMap: []
     }
+  },
+  props: ['crowdId'],
+  methods: {
+    handleGetContent () {
+      const crowdId = this.crowdId
+      this.$service.getCrowdStatus({ crowdId: crowdId }).then((data) => {
+        this.content = data.map(item => {
+          return {
+            isCreate: '',
+            createTime: '',
+            isSync: '',
+            syncTime: '',
+            isLaunch: '',
+            launchTime: '',
+            isHit: '',
+            ...item
+          }
+        })
+        if (data.length > 5) {
+          for (let i = 0; i < data.length - 4; i++) {
+            this.hitMap.push(i + 3)
+          }
+        }
+      })
+    }
+  },
+  created () {
+    this.handleGetContent()
+  }
+}
 </script>
 <style lang="stylus" scoped>
     .crowd-status >>> .el-step__title

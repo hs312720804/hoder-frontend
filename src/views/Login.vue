@@ -14,48 +14,48 @@
 </template>
 
 <script>
-import _ from "gateschema";
+import _ from 'gateschema'
 const schema = _.map({
-  username: _.required.$msg("请输入登录名").string.other("form", {
-    placeholder: "登录名"
+  username: _.required.$msg('请输入登录名').string.other('form', {
+    placeholder: '登录名'
   }),
-  password: _.required.$msg("请输入密码").string.other("form", {
-    placeholder: "密码",
-    type: "password"
+  password: _.required.$msg('请输入密码').string.other('form', {
+    placeholder: '密码',
+    type: 'password'
   })
-}).other("form", {
+}).other('form', {
   cols: {
     label: 0,
     wrapper: 24
   }
-});
+})
 export default {
-  data() {
+  data () {
     return {
       user: {
-        username: "",
-        password: ""
+        username: '',
+        password: ''
       }
-    };
+    }
   },
   computed: {
-    formSchema() {
-      return this.schema || schema;
+    formSchema () {
+      return this.schema || schema
     }
   },
-  props: ["schema"],
+  props: ['schema'],
   methods: {
-    handleLogin(err) {
-        if (err.length === 0) {
-            this.$login(this.user).then(() => {
-                this.$router.push({
-                    path: this.$route.query.redirect || '/statisticsHomePage'
-                })
-            })
-        }
+    handleLogin (err) {
+      if (err.length === 0) {
+        this.$login(this.user).then(() => {
+          this.$router.push({
+            path: this.$route.query.redirect || '/statisticsHomePage'
+          })
+        })
+      }
     }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 .login-content
@@ -84,6 +84,5 @@ export default {
   background url(../assets/img/coocaa_logo.png) no-repeat center
   background-size 60%
   height 30px
-
 
 </style>

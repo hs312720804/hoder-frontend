@@ -16,42 +16,42 @@ import VueI18n from 'vue-i18n'
 Vue.use(VueI18n)
 Vue.use(VCharts)
 Vue.use(AdminToolkit)
-Vue.use(ElementUI,{ size: 'small', zIndex: 3000 })
+Vue.use(ElementUI, { size: 'small', zIndex: 3000 })
 Vue.use(AppState)
 // Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('pagination', pagination)
 Vue.prototype.$moment = moment
-Vue.directive('permission', function (el, binding,vNode) {
-    if(vNode.context.$appState.permissions[binding.value]===undefined) {
-        el.style.display = 'none'
-    }
-})
- 
-Vue.directive('loadmore', {
-    bind (el, binding) {
-      // 获取element-ui定义好的scroll盒子
-      const SELECTWRAP_DOM = el.querySelector('.el-select-dropdown .el-select-dropdown__wrap')
-      SELECTWRAP_DOM.addEventListener('scroll', function () {
-        const CONDITION = this.scrollHeight - this.scrollTop <= this.clientHeight
-        if (CONDITION) {
-          binding.value.methord(binding.value.params)
-        }
-      })
-    }
+Vue.directive('permission', function (el, binding, vNode) {
+  if (vNode.context.$appState.permissions[binding.value] === undefined) {
+    el.style.display = 'none'
+  }
 })
 
-Vue.prototype.cc_format_number = function(n) {
-    // 如果不是字符或者数字，则直接返回
-    if (typeof n !== 'string' && typeof n !== 'number') {
-        return n
-    }
-    if(typeof n !== 'string') {
-        n = n.toString()
-    }
-    var len = n.length
-    if (len <= 3) { return n }
-    var r = len % 3
-    const start = n.slice(0, r)
-    const end = n.slice(r).match(/\d{3}/g).join(',')
-    return r > 0 ? start + ',' + end : end
+Vue.directive('loadmore', {
+  bind (el, binding) {
+    // 获取element-ui定义好的scroll盒子
+    const SELECTWRAP_DOM = el.querySelector('.el-select-dropdown .el-select-dropdown__wrap')
+    SELECTWRAP_DOM.addEventListener('scroll', function () {
+      const CONDITION = this.scrollHeight - this.scrollTop <= this.clientHeight
+      if (CONDITION) {
+        binding.value.methord(binding.value.params)
+      }
+    })
+  }
+})
+
+Vue.prototype.cc_format_number = function (n) {
+  // 如果不是字符或者数字，则直接返回
+  if (typeof n !== 'string' && typeof n !== 'number') {
+    return n
+  }
+  if (typeof n !== 'string') {
+    n = n.toString()
+  }
+  var len = n.length
+  if (len <= 3) { return n }
+  var r = len % 3
+  const start = n.slice(0, r)
+  const end = n.slice(r).match(/\d{3}/g).join(',')
+  return r > 0 ? start + ',' + end : end
 }

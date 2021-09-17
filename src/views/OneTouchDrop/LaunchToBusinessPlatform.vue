@@ -84,7 +84,7 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
-                
+
                 <el-form-item label="选择人群" prop="policyCrowdIds">
                         <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" @change="handelCheckoutGroup($event, index, crowdData)">
@@ -146,338 +146,335 @@
 </template>
 
 <script>
-    import { mapGetters } from 'vuex'
-    export default {
-        name: "LaunchToBusinessPlatform",
-        props: ['recordId','tempPolicyAndCrowd','routeSource'],
-        data () {
-            return {
-                crowdForm: {
-                    biIdsPull: [],
-                    policyIdsPull: '',
-                    abTest: false,
-                    launchCrowdId: "", //投放ID
-                    launchName: "", //投放名称
-                    biIds: "", //投放平台ID
-                    remark: "",
-                    //      dataSource: 2,
-                    policyIds: '',
-                    policyCrowdIds: [],
-                    // expiryDay: 7,
-                    autoVersion: 0,
-                    autoLaunchTime: undefined,
-                    launchMode: {
-                        pull: true,
-                        push: false
-                    },
-                    calType: ['0']
-                },
-                rulesData: {
-                    launchMode: [{
-                        required: true, message: "请至少勾选一个投放模式"
-                    }],
-                    biIdsPull: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
-                    // policyIdsPull: [
-                    //     { required: true, message: "请选择策略平台", trigger: "blur" }
-                    // ],
-                    launchName: [
-                        { required: true, message: "请输入投放名称", trigger: "blur" }
-                    ],
-                    biIds: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
-                    policyIds: [
-                        { required: true, message: "请选择策略平台", trigger: "blur" }
-                    ],
-                    policyCrowdIds: [
-                        { required: true, message: "请选择人群", trigger: "blur" }
-                    ],
-                    autoLaunchTime: [
-                        { required: true, message: "请选择每天更新时间点", trigger: "blur" }
-                    ],
-                },
-                Platforms: [],
-                strategyData: {
-                    policyId: undefined,
-                    policyName: ''
-                },
-                launchPlatform: [],
-                strategyPlatform: [],
-                effectTimeList: [],
-                crowdData: [],
-                estimateItems: []
-            }
+import { mapGetters } from 'vuex'
+export default {
+  name: 'LaunchToBusinessPlatform',
+  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
+  data () {
+    return {
+      crowdForm: {
+        biIdsPull: [],
+        policyIdsPull: '',
+        abTest: false,
+        launchCrowdId: '', // 投放ID
+        launchName: '', // 投放名称
+        biIds: '', // 投放平台ID
+        remark: '',
+        //      dataSource: 2,
+        policyIds: '',
+        policyCrowdIds: [],
+        // expiryDay: 7,
+        autoVersion: 0,
+        autoLaunchTime: undefined,
+        launchMode: {
+          pull: true,
+          push: false
         },
-        computed: {
-            ...mapGetters(['policyId'])
-        },
-        methods: {
-            /*
+        calType: ['0']
+      },
+      rulesData: {
+        launchMode: [{
+          required: true, message: '请至少勾选一个投放模式'
+        }],
+        biIdsPull: [{ required: true, message: '请选择投放平台', trigger: 'blur' }],
+        // policyIdsPull: [
+        //     { required: true, message: "请选择策略平台", trigger: "blur" }
+        // ],
+        launchName: [
+          { required: true, message: '请输入投放名称', trigger: 'blur' }
+        ],
+        biIds: [{ required: true, message: '请选择投放平台', trigger: 'blur' }],
+        policyIds: [
+          { required: true, message: '请选择策略平台', trigger: 'blur' }
+        ],
+        policyCrowdIds: [
+          { required: true, message: '请选择人群', trigger: 'blur' }
+        ],
+        autoLaunchTime: [
+          { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
+        ]
+      },
+      Platforms: [],
+      strategyData: {
+        policyId: undefined,
+        policyName: ''
+      },
+      launchPlatform: [],
+      strategyPlatform: [],
+      effectTimeList: [],
+      crowdData: [],
+      estimateItems: []
+    }
+  },
+  computed: {
+    ...mapGetters(['policyId'])
+  },
+  methods: {
+    /*
                 行为人群和普通人群不能混用；
                 行为人群只能选择一个；
                 普通人群可以多选；
             */
-            handelCheckoutGroup (val, index, crowdData) {
-                // console.log(val)
-                // console.log(index)
-                // console.log(crowdData)
-                const crowdList = crowdData[index].childs
-                const policyId = crowdData[index].policyId
-                // 选中的对象list
-                let checkedList = crowdList.filter(item => {
-                    const flag = val.includes(policyId+'_'+item.tempCrowdId)
-                    return flag
-                }) || []
+    handelCheckoutGroup (val, index, crowdData) {
+      // console.log(val)
+      // console.log(index)
+      // console.log(crowdData)
+      const crowdList = crowdData[index].childs
+      const policyId = crowdData[index].policyId
+      // 选中的对象list
+      let checkedList = crowdList.filter(item => {
+        const flag = val.includes(policyId + '_' + item.tempCrowdId)
+        return flag
+      }) || []
 
-                // 若无选中，则全部恢复可选状态
-                if (checkedList.length === 0) {
-                    this.crowdData[index].childs.forEach(item => {
-                        item.isDisabledCrowd = false
-                    })
-                    this.$set(this.crowdData, index, this.crowdData[index])
-                }
+      // 若无选中，则全部恢复可选状态
+      if (checkedList.length === 0) {
+        this.crowdData[index].childs.forEach(item => {
+          item.isDisabledCrowd = false
+        })
+        this.$set(this.crowdData, index, this.crowdData[index])
+      }
 
-                for (let i = 0; i < checkedList.length; i++ ) {
-                    // eslint-disable-next-line no-debugger
-                    debugger
-                    let obj = checkedList[i]
-                    if (obj.isBehaviorCrowd) {  // 选了行为人群
-                        this.crowdData[index].childs.forEach(item => {
-                            // eslint-disable-next-line no-debugger
-                            debugger
-                            if (obj.tempCrowdId === item.tempCrowdId) {
-                                item.isDisabledCrowd = false
-                            } else {
-                                item.isDisabledCrowd = true
-                            }
-                        })
-                        this.$set(this.crowdData, index, this.crowdData[index])
-                        break;
-                    } else { // 选了普通人群
-                        this.crowdData[index].childs.forEach(item => {
-                            if (item.isBehaviorCrowd) {
-                                item.isDisabledCrowd = true
-                            } else {
-                                item.isDisabledCrowd = false
-                            }
-                        })
-                        this.$set(this.crowdData, index, this.crowdData[index])
-                        break;
-                    }
-
-                }
-                
-                console.log('this.crowdData==', this.crowdData)
-
-                // v.policyId+'_'+item.tempCrowdId
-            },
-            handleGetCurrentPolicy() {
-                this.$service.getAddCrowdData().then((data) => {
-                    this.Platforms = data.biLists
-                })
-                const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
-                const currentPolicy = {
-                    policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
-                    policyName: tempPolicyAndCrowdData.tempPolicy.policyName
-                }
-                this.strategyData = currentPolicy
-                let crowdTempArr = []
-                let crowdArr = crowdTempArr.concat(currentPolicy)
-                this.strategyPlatform = crowdArr
-                this.crowdForm.policyIdsPull = currentPolicy.policyId
-                this.crowdForm.policyIds = currentPolicy.policyId
-                tempPolicyAndCrowdData.tempCrowds = tempPolicyAndCrowdData.tempCrowds.map(item => {
-                    let isBehaviorCrowd = false
-                    let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
-                    if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
-                        isBehaviorCrowd = true
-                    }
-                    return {
-                        ...item,
-                        isBehaviorCrowd, // 是否为行为人群
-                        isDisabledCrowd: false // 是否禁用
-                    }
-                })
-                let arr = []
-                let currentCrowd = {
-                    policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
-                    policyName: tempPolicyAndCrowdData.tempPolicy.policyName,
-                    childs: tempPolicyAndCrowdData.tempCrowds
-                }
-                this.crowdData = arr.concat(currentCrowd)
-            },
-            submitForm(formName,launch) {
-                if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
-                    this.$message.error('请勾选至少一种投放模式')
-                    return
-                }
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        let crowdForm = JSON.stringify(this.crowdForm)
-                        crowdForm = JSON.parse(crowdForm)
-                        if (this.crowdForm.launchMode.push) {
-                            crowdForm.biIds = crowdForm.biIds.join(",")
-                            crowdForm.calType = crowdForm.calType.join(",")
-                            crowdForm.policyIds = crowdForm.policyIds
-                            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-                                return v.split("_")[1]
-                            }).join(",")
-                        }
-                        let formData = {
-                            launch: launch,
-                            pullBiIds: crowdForm.biIdsPull,
-                            pull: crowdForm.launchMode.pull,
-                            push: crowdForm.launchMode.push,
-                            multiVersionCrowd: this.crowdForm.launchMode.push ? {
-                                autoLaunchTime:crowdForm.autoLaunchTime,
-                                autoVersion: crowdForm.autoVersion,
-                                biIds: crowdForm.biIds,
-                                // expiryDay:  crowdForm.expiryDay,
-                                launchName: crowdForm.launchName,
-                                policyCrowdIds: crowdForm.policyCrowdIds,
-                                calType: crowdForm.calType,
-                                remark: crowdForm.remark
-                            }: undefined
-                        }
-                        // debugger
-                        // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
-                        if (this.policyId) {
-                            let data = {
-                                biIds: crowdForm.biIdsPull,
-                                policyIds: [this.policyId]
-                            }
-                            if (launch) {
-                                // 方案创建需要先同步后投放
-                                this.$service.freshCache({policyId: this.policyId}, '同步成功').then(() => {
-                                    setTimeout(() => {
-                                        this.$service.saveAddCrowdData(data, 'pull投放成功').then(res => {
-                                            if (this.routeSource) {
-                                                this.$router.push({
-                                                    name: 'myPolicy',
-                                                    params: { changeTab: 'ToMyLaunch' }
-                                                })
-                                            } else {
-                                                this.$router.push({ path: 'launch/launchTabList' })
-                                            }
-                                            this.$root.$emit('stratege-list-refresh')
-                                            this.$emit('resetFormData')
-                                        })
-                                    }, 300)
-                                })
-                            }
-                        } else {
-                            this.$service.oneDropCrowdSaveAndLaunch({recordId: this.recordId,data: formData},"投放成功").then((data) => {
-                                if (data.policyId) {
-                                    // 一键投放成功之后，调'未同步'的接口，手动进行同步
-                                    this.jumpToRouter(launch, data.policyId)
-                                } else {
-                                    if (this.routeSource) {
-                                        this.$router.push({
-                                            name: 'myPolicy',
-                                            params: { changeTab: 'ToMyLaunch' }
-                                        })
-                                    } else {
-                                        this.$router.push({ path: 'launch/launchTabList' })
-                                    }
-                                    // this.$router.push({ path: 'launch/launchTabList' })
-                                    this.$root.$emit('stratege-list-refresh')
-                                    this.$emit('resetFormData')
-                                }
-                            }).catch((err) => {
-                                if (err.message.indexOf('已存在') === -1) {
-                                    if (this.routeSource) {
-                                        this.$router.push({
-                                            name: 'myPolicy',
-                                            params: { changeTab: 'ToMyLaunch' }
-                                        })
-                                    } else {
-                                        this.$router.push({ path: 'launch/launchTabList' })
-                                    }
-                                    // this.$router.push({ path: 'launch/launchTabList' })
-                                    this.$root.$emit('stratege-list-refresh')
-                                    this.$emit('resetFormData')
-                                }
-                            })
-
-                        }
-                    } else {
-                        return false
-                    }
-                })
-            },
-            jumpToRouter (launch, policyId) {
-                if (launch) {
-                    this.$service.freshCache({policyId: policyId}).then(() => {
-                        if (this.routeSource) {
-                            this.$router.push({
-                                name: 'myPolicy',
-                                params: { changeTab: 'ToMyLaunch' }
-                            })
-                        } else {
-                            this.$router.push({ path: 'launch/launchTabList' })
-                        }
-                        // this.$router.push({ path: 'launch/launchTabList' })
-                        this.$root.$emit('stratege-list-refresh')
-                        this.$emit('resetFormData')
-                    })
-                } else {
-                    this.$emit('handleDirectStrategyList')
-                    // this.$root.$emit('stratege-list-refresh')
-                    // this.$router.push({ path: 'launch/strategyList' })
-                    this.$emit('resetFormData')
-                }
-            },
-            getCrowdInitList () {
-                    this.$service.addMultiVersionCrowd(0).then(data => {
-                        this.launchPlatform = data.biLists
-                        // this.strategyPlatform = data.policies
-                        this.effectTimeList = data.efTime.map(item => {
-                            return { label: item + '天',value: item }
-                        })
-                    })
-            },
-            getCrowd () {
-                let policyId = this.crowdForm.policyIds
-                // if (this.crowdForm.abTest) {
-                //     policyId = this.crowdForm.policyIds
-                // } else {
-                //     policyId = this.crowdForm.policyIds.join(",")
-                // }
-                this.$service
-                .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-                .then(data => {
-                    if(this.crowdForm.abTest) {
-                        let newDataForm = []
-                        const pid = Object.keys(data[0].childs)
-                        pid.forEach((item) => {
-                            newDataForm.push({Pid: item, childs: data[0].childs[item]})
-                        })
-                        this.crowdData = newDataForm
-                    }else {
-                        this.crowdData = data
-                    }
-                })
-                .catch(err => {this.$message.error(err)})
-            },
-            removeTag (policyId) {
-                this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
-                    if(v.split("_")[0]!=policyId)
-                        return v
-                })
-            },
-            handleBackPrevStep () {
-                this.$emit('launchPrevStep', 2)
-            },
-            getCountDataEnum () {
-                this.$service.getEstimateType().then((data) => {
-                    this.estimateItems = data
-                })
+      for (let i = 0; i < checkedList.length; i++) {
+        // eslint-disable-next-line no-debugger
+        debugger
+        let obj = checkedList[i]
+        if (obj.isBehaviorCrowd) { // 选了行为人群
+          this.crowdData[index].childs.forEach(item => {
+            // eslint-disable-next-line no-debugger
+            debugger
+            if (obj.tempCrowdId === item.tempCrowdId) {
+              item.isDisabledCrowd = false
+            } else {
+              item.isDisabledCrowd = true
             }
-        },
-        created () {
-            this.getCountDataEnum ()
-            this.handleGetCurrentPolicy()
-            this.getCrowdInitList()
+          })
+          this.$set(this.crowdData, index, this.crowdData[index])
+          break
+        } else { // 选了普通人群
+          this.crowdData[index].childs.forEach(item => {
+            if (item.isBehaviorCrowd) {
+              item.isDisabledCrowd = true
+            } else {
+              item.isDisabledCrowd = false
+            }
+          })
+          this.$set(this.crowdData, index, this.crowdData[index])
+          break
         }
+      }
+
+      console.log('this.crowdData==', this.crowdData)
+
+      // v.policyId+'_'+item.tempCrowdId
+    },
+    handleGetCurrentPolicy () {
+      this.$service.getAddCrowdData().then((data) => {
+        this.Platforms = data.biLists
+      })
+      const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
+      const currentPolicy = {
+        policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
+        policyName: tempPolicyAndCrowdData.tempPolicy.policyName
+      }
+      this.strategyData = currentPolicy
+      let crowdTempArr = []
+      let crowdArr = crowdTempArr.concat(currentPolicy)
+      this.strategyPlatform = crowdArr
+      this.crowdForm.policyIdsPull = currentPolicy.policyId
+      this.crowdForm.policyIds = currentPolicy.policyId
+      tempPolicyAndCrowdData.tempCrowds = tempPolicyAndCrowdData.tempCrowds.map(item => {
+        let isBehaviorCrowd = false
+        let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+        if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
+          isBehaviorCrowd = true
+        }
+        return {
+          ...item,
+          isBehaviorCrowd, // 是否为行为人群
+          isDisabledCrowd: false // 是否禁用
+        }
+      })
+      let arr = []
+      let currentCrowd = {
+        policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
+        policyName: tempPolicyAndCrowdData.tempPolicy.policyName,
+        childs: tempPolicyAndCrowdData.tempCrowds
+      }
+      this.crowdData = arr.concat(currentCrowd)
+    },
+    submitForm (formName, launch) {
+      if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
+        this.$message.error('请勾选至少一种投放模式')
+        return
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          let crowdForm = JSON.stringify(this.crowdForm)
+          crowdForm = JSON.parse(crowdForm)
+          if (this.crowdForm.launchMode.push) {
+            crowdForm.biIds = crowdForm.biIds.join(',')
+            crowdForm.calType = crowdForm.calType.join(',')
+            crowdForm.policyIds = crowdForm.policyIds
+            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
+              return v.split('_')[1]
+            }).join(',')
+          }
+          let formData = {
+            launch: launch,
+            pullBiIds: crowdForm.biIdsPull,
+            pull: crowdForm.launchMode.pull,
+            push: crowdForm.launchMode.push,
+            multiVersionCrowd: this.crowdForm.launchMode.push ? {
+              autoLaunchTime: crowdForm.autoLaunchTime,
+              autoVersion: crowdForm.autoVersion,
+              biIds: crowdForm.biIds,
+              // expiryDay:  crowdForm.expiryDay,
+              launchName: crowdForm.launchName,
+              policyCrowdIds: crowdForm.policyCrowdIds,
+              calType: crowdForm.calType,
+              remark: crowdForm.remark
+            } : undefined
+          }
+          // debugger
+          // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
+          if (this.policyId) {
+            let data = {
+              biIds: crowdForm.biIdsPull,
+              policyIds: [this.policyId]
+            }
+            if (launch) {
+              // 方案创建需要先同步后投放
+              this.$service.freshCache({ policyId: this.policyId }, '同步成功').then(() => {
+                setTimeout(() => {
+                  this.$service.saveAddCrowdData(data, 'pull投放成功').then(res => {
+                    if (this.routeSource) {
+                      this.$router.push({
+                        name: 'myPolicy',
+                        params: { changeTab: 'ToMyLaunch' }
+                      })
+                    } else {
+                      this.$router.push({ path: 'launch/launchTabList' })
+                    }
+                    this.$root.$emit('stratege-list-refresh')
+                    this.$emit('resetFormData')
+                  })
+                }, 300)
+              })
+            }
+          } else {
+            this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }, '投放成功').then((data) => {
+              if (data.policyId) {
+                // 一键投放成功之后，调'未同步'的接口，手动进行同步
+                this.jumpToRouter(launch, data.policyId)
+              } else {
+                if (this.routeSource) {
+                  this.$router.push({
+                    name: 'myPolicy',
+                    params: { changeTab: 'ToMyLaunch' }
+                  })
+                } else {
+                  this.$router.push({ path: 'launch/launchTabList' })
+                }
+                // this.$router.push({ path: 'launch/launchTabList' })
+                this.$root.$emit('stratege-list-refresh')
+                this.$emit('resetFormData')
+              }
+            }).catch((err) => {
+              if (err.message.indexOf('已存在') === -1) {
+                if (this.routeSource) {
+                  this.$router.push({
+                    name: 'myPolicy',
+                    params: { changeTab: 'ToMyLaunch' }
+                  })
+                } else {
+                  this.$router.push({ path: 'launch/launchTabList' })
+                }
+                // this.$router.push({ path: 'launch/launchTabList' })
+                this.$root.$emit('stratege-list-refresh')
+                this.$emit('resetFormData')
+              }
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    jumpToRouter (launch, policyId) {
+      if (launch) {
+        this.$service.freshCache({ policyId: policyId }).then(() => {
+          if (this.routeSource) {
+            this.$router.push({
+              name: 'myPolicy',
+              params: { changeTab: 'ToMyLaunch' }
+            })
+          } else {
+            this.$router.push({ path: 'launch/launchTabList' })
+          }
+          // this.$router.push({ path: 'launch/launchTabList' })
+          this.$root.$emit('stratege-list-refresh')
+          this.$emit('resetFormData')
+        })
+      } else {
+        this.$emit('handleDirectStrategyList')
+        // this.$root.$emit('stratege-list-refresh')
+        // this.$router.push({ path: 'launch/strategyList' })
+        this.$emit('resetFormData')
+      }
+    },
+    getCrowdInitList () {
+      this.$service.addMultiVersionCrowd(0).then(data => {
+        this.launchPlatform = data.biLists
+        // this.strategyPlatform = data.policies
+        this.effectTimeList = data.efTime.map(item => {
+          return { label: item + '天', value: item }
+        })
+      })
+    },
+    getCrowd () {
+      let policyId = this.crowdForm.policyIds
+      // if (this.crowdForm.abTest) {
+      //     policyId = this.crowdForm.policyIds
+      // } else {
+      //     policyId = this.crowdForm.policyIds.join(",")
+      // }
+      this.$service
+        .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+        .then(data => {
+          if (this.crowdForm.abTest) {
+            let newDataForm = []
+            const pid = Object.keys(data[0].childs)
+            pid.forEach((item) => {
+              newDataForm.push({ Pid: item, childs: data[0].childs[item] })
+            })
+            this.crowdData = newDataForm
+          } else {
+            this.crowdData = data
+          }
+        })
+        .catch(err => { this.$message.error(err) })
+    },
+    removeTag (policyId) {
+      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
+        if (v.split('_')[0] != policyId) { return v }
+      })
+    },
+    handleBackPrevStep () {
+      this.$emit('launchPrevStep', 2)
+    },
+    getCountDataEnum () {
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
     }
+  },
+  created () {
+    this.getCountDataEnum()
+    this.handleGetCurrentPolicy()
+    this.getCrowdInitList()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

@@ -68,174 +68,172 @@
 </template>
 
 <script>
-    export default {
-        name: "crowdAbTest",
-        props: ['crowd','mode'],
-        data () {
-            return {
-                divideForm: this.genDefaultDivideForm(),
-                divideFormRules: {
-                    validityTime: [
-                        {type: 'array', required: true, message: '请选择实验有效期', trigger: 'blur'}
-                    ]
-                },
-                parts: [2,3,4,5],
-                copies: 3,
-                step: 1,
-                copiesItem: [],
-                percent: [],
-                alphaData: ['A','B','C','D','E','F','G','H','I','J','K','L','M','N'],
-                showDivideEdit: false,
-                crowdEditDivideForm: {
-                    currentCrowdId: undefined,
-                    id: [],
-                    name: [],
-                    pct: [],
-                    crowdId: []
-                },
-                percentTotal: 0,
-                crowdChildItem: []
-            }
-        },
-        watch: {
-            percent(val) {
-                this.percentTotal = val.reduce((prev ,cur) => {
-                    return prev + cur
-                })
-            }
-        },
-        methods : {
-            genDefaultDivideForm (preset) {
-                return {
-                    crowdId: undefined,
-                    crowdName: undefined,
-                    pct: [],
-                    validityTime: '',
-                    ...preset
-                }
-            },
-            cancelAdd () {
-                this.$emit("goBackCrowdListPage")
-            },
-            // AB test划分
-            handleSetData (row) {
-                this.step = 1
-                this.showDivideEdit = false
-                const divideForm = this.genDefaultDivideForm()
-                divideForm.crowdId = row.crowdId
-                divideForm.crowdName = row.crowdName
-                if (row.abMainCrowd === 1) {
-                    this.showDivideEdit = true
-                    this.$service.crowdABTestEdit(row.crowdId).then(data => {
-                        const crowd = data.crowds
-                        this.copies = crowd.length
-                        const percent = data.ratio
-                        this.crowdChildItem = crowd
-                        let [pctArr, names, ids, pcts, crowdIds] = [[],[],[],[],[],[]]
-                        for (let i=0;i<percent.length;i++) {
-                            pctArr.push(percent[i].ratio)
-                            pcts.push(percent[i].ratio)
-                            ids.push(percent[i].id)
-                            for (let j=0;j<crowd.length;j++) {
-                                if(percent[i].crowdId === crowd[j].crowdId) {
-                                    names.push(crowd[j].crowdName)
-                                    crowdIds.push(crowd[j].crowdId)
-                                    divideForm.validityTime = [crowd[j].abStartTime,crowd[j].abEndTime]
-                                }
-                            }
-
-                        }
-                        this.percent = pctArr
-                        this.crowdEditDivideForm = {
-                            currentCrowdId: row.crowdId,
-                            id: ids,
-                            name: names,
-                            pct: pcts,
-                            crowdId: crowdIds
-                        }
-                    })
-                    divideForm.crowdName = row.crowdName
-                }
-                this.divideForm = divideForm
-            },
-            firstStep () {
-                this.step = 2
-                const copies = this.copies
-                let arr = []
-                let percentArray = []
-                for (let i = 0; i < copies; i++) {
-                    arr.push(i)
-                    percentArray.push(parseInt(100 / copies))
-                }
-                this.copiesItem = arr
-                if (!this.showDivideEdit) {
-                    this.percent = percentArray
-                }
-            },
-            secondStep () {
-                let total = this.percentTotal
-                if (total > 100) {
-                    this.$message.error('所有比例总和不能超过100%')
-                    return
-                }else {
-                    this.step = 3
-                    this.divideForm.pct = this.percent
-                }
-            },
-            finish (formName) {
-                const form = this.divideForm
-                const crowdLength = form.pct.length
-                let crowdData = []
-                let item = {}
-                // AB TEST 新增保存时
-                this.$refs[formName].validate((valid) => {
-                    if(valid) {
-                        if (!this.showDivideEdit) {
-                            for (let i = 0; i < crowdLength; i++) {
-                                item = {
-                                    name: this.alphaData[i] + '人群'+'_' + form.crowdName,
-                                    pct: form.pct[i],
-                                }
-                                crowdData.push(item)
-                            }
-                            let formData = {
-                                crowd: crowdData,
-                                startTime: form.validityTime[0],
-                                endTime: form.validityTime[1]
-                            }
-                            this.$service.crowdABTestAdd({model: form.crowdId, data: formData}, "新增A/B test划分成功").then(() => {
-                                this.$emit("goBackCrowdListPage", true)
-                            })
-                        } else {
-                            const getFormData = this.crowdEditDivideForm
-                            for (let i = 0; i < crowdLength; i++) {
-                                item = {
-                                    id: getFormData.id[i],
-                                    // name: getFormData.crowdId[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
-                                    name: getFormData.name[i],
-                                    pct: form.pct[i]
-                                }
-                                crowdData.push(item)
-                            }
-                            let formData = {
-                                crowd: crowdData,
-                                startTime: form.validityTime[0],
-                                endTime: form.validityTime[1]
-                            }
-                            this.$service.crowdABTestEditSave({model: getFormData.currentCrowdId, data: formData}, "编辑保存A/B test划分成功").then(() => {
-                                this.$emit("goBackCrowdListPage", true)
-                            })
-                        }
-                    }else {
-                        return false
-                    }
-                })
-            },
-        },
-        created () {
-            this.handleSetData(this.crowd)
-        }
+export default {
+  name: 'crowdAbTest',
+  props: ['crowd', 'mode'],
+  data () {
+    return {
+      divideForm: this.genDefaultDivideForm(),
+      divideFormRules: {
+        validityTime: [
+          { type: 'array', required: true, message: '请选择实验有效期', trigger: 'blur' }
+        ]
+      },
+      parts: [2, 3, 4, 5],
+      copies: 3,
+      step: 1,
+      copiesItem: [],
+      percent: [],
+      alphaData: ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N'],
+      showDivideEdit: false,
+      crowdEditDivideForm: {
+        currentCrowdId: undefined,
+        id: [],
+        name: [],
+        pct: [],
+        crowdId: []
+      },
+      percentTotal: 0,
+      crowdChildItem: []
     }
+  },
+  watch: {
+    percent (val) {
+      this.percentTotal = val.reduce((prev, cur) => {
+        return prev + cur
+      })
+    }
+  },
+  methods: {
+    genDefaultDivideForm (preset) {
+      return {
+        crowdId: undefined,
+        crowdName: undefined,
+        pct: [],
+        validityTime: '',
+        ...preset
+      }
+    },
+    cancelAdd () {
+      this.$emit('goBackCrowdListPage')
+    },
+    // AB test划分
+    handleSetData (row) {
+      this.step = 1
+      this.showDivideEdit = false
+      const divideForm = this.genDefaultDivideForm()
+      divideForm.crowdId = row.crowdId
+      divideForm.crowdName = row.crowdName
+      if (row.abMainCrowd === 1) {
+        this.showDivideEdit = true
+        this.$service.crowdABTestEdit(row.crowdId).then(data => {
+          const crowd = data.crowds
+          this.copies = crowd.length
+          const percent = data.ratio
+          this.crowdChildItem = crowd
+          let [pctArr, names, ids, pcts, crowdIds] = [[], [], [], [], [], []]
+          for (let i = 0; i < percent.length; i++) {
+            pctArr.push(percent[i].ratio)
+            pcts.push(percent[i].ratio)
+            ids.push(percent[i].id)
+            for (let j = 0; j < crowd.length; j++) {
+              if (percent[i].crowdId === crowd[j].crowdId) {
+                names.push(crowd[j].crowdName)
+                crowdIds.push(crowd[j].crowdId)
+                divideForm.validityTime = [crowd[j].abStartTime, crowd[j].abEndTime]
+              }
+            }
+          }
+          this.percent = pctArr
+          this.crowdEditDivideForm = {
+            currentCrowdId: row.crowdId,
+            id: ids,
+            name: names,
+            pct: pcts,
+            crowdId: crowdIds
+          }
+        })
+        divideForm.crowdName = row.crowdName
+      }
+      this.divideForm = divideForm
+    },
+    firstStep () {
+      this.step = 2
+      const copies = this.copies
+      let arr = []
+      let percentArray = []
+      for (let i = 0; i < copies; i++) {
+        arr.push(i)
+        percentArray.push(parseInt(100 / copies))
+      }
+      this.copiesItem = arr
+      if (!this.showDivideEdit) {
+        this.percent = percentArray
+      }
+    },
+    secondStep () {
+      let total = this.percentTotal
+      if (total > 100) {
+        this.$message.error('所有比例总和不能超过100%')
+      } else {
+        this.step = 3
+        this.divideForm.pct = this.percent
+      }
+    },
+    finish (formName) {
+      const form = this.divideForm
+      const crowdLength = form.pct.length
+      let crowdData = []
+      let item = {}
+      // AB TEST 新增保存时
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!this.showDivideEdit) {
+            for (let i = 0; i < crowdLength; i++) {
+              item = {
+                name: this.alphaData[i] + '人群' + '_' + form.crowdName,
+                pct: form.pct[i]
+              }
+              crowdData.push(item)
+            }
+            let formData = {
+              crowd: crowdData,
+              startTime: form.validityTime[0],
+              endTime: form.validityTime[1]
+            }
+            this.$service.crowdABTestAdd({ model: form.crowdId, data: formData }, '新增A/B test划分成功').then(() => {
+              this.$emit('goBackCrowdListPage', true)
+            })
+          } else {
+            const getFormData = this.crowdEditDivideForm
+            for (let i = 0; i < crowdLength; i++) {
+              item = {
+                id: getFormData.id[i],
+                // name: getFormData.crowdId[i] === getFormData.currentCrowdId ? form.crowdName : getFormData.name[i],
+                name: getFormData.name[i],
+                pct: form.pct[i]
+              }
+              crowdData.push(item)
+            }
+            let formData = {
+              crowd: crowdData,
+              startTime: form.validityTime[0],
+              endTime: form.validityTime[1]
+            }
+            this.$service.crowdABTestEditSave({ model: getFormData.currentCrowdId, data: formData }, '编辑保存A/B test划分成功').then(() => {
+              this.$emit('goBackCrowdListPage', true)
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  created () {
+    this.handleSetData(this.crowd)
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

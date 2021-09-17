@@ -165,343 +165,339 @@
 </template>
 
 <script>
-    export default {
-        name: "StrategyPutIn",
-        props: ['recordId','tempPolicyAndCrowd'],
-        data () {
-            return {
-                crowdForm: {
-                    biIdsPull: [],
-                    policyIdsPull: [],
-                    abTest: false,
-                    launchCrowdId: "", //投放ID
-                    launchName: "", //投放名称
-                    biIds: "", //投放平台ID
-                    remark: "",
-                    //      dataSource: 2,
-                    policyIds: undefined,
-                    policyCrowdIds: [],
-                    // expiryDay: 7,
-                    autoVersion: 0,
-                    autoLaunchTime: undefined,
-                    launchMode: {
-                        pull: true,
-                        push: false
-                    },
-                    calType: ['0']
-                },
-                rulesData: {
-                    launchMode: [{
-                        required: true, message: "请至少勾选一个投放模式"
-                    }],
-                    biIdsPull: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
-                    // policyIdsPull: [
-                    //     { required: true, message: "请选择策略平台", trigger: "blur" }
-                    // ],
-                    launchName: [
-                        { required: true, message: "请输入投放名称", trigger: "blur" }
-                    ],
-                    biIds: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
-                    policyIds: [
-                        { required: true, message: "请选择策略平台", trigger: "blur" }
-                    ],
-                    policyCrowdIds: [
-                        { required: true, message: "请选择人群", trigger: "blur" }
-                    ],
-                    autoLaunchTime: [
-                        { required: true, message: "请选择每天更新时间点", trigger: "blur" }
-                    ],
-                },
-                Platforms: [],
-                strategyData: [],
-                launchPlatform: [],
-                strategyPlatform: [],
-                effectTimeList: [],
-                crowdData: [],
-                estimateItems: [],
-                firstTimeLoad: false,
-                savePullDataSuccess: false,
-                savePushDataSuccess: false,
-                pullFail: false,
-                pushFail: false,
-                pullSuccessPushFail: false
-            }
+export default {
+  name: 'StrategyPutIn',
+  props: ['recordId', 'tempPolicyAndCrowd'],
+  data () {
+    return {
+      crowdForm: {
+        biIdsPull: [],
+        policyIdsPull: [],
+        abTest: false,
+        launchCrowdId: '', // 投放ID
+        launchName: '', // 投放名称
+        biIds: '', // 投放平台ID
+        remark: '',
+        //      dataSource: 2,
+        policyIds: undefined,
+        policyCrowdIds: [],
+        // expiryDay: 7,
+        autoVersion: 0,
+        autoLaunchTime: undefined,
+        launchMode: {
+          pull: true,
+          push: false
         },
-        methods: {
-            /*
+        calType: ['0']
+      },
+      rulesData: {
+        launchMode: [{
+          required: true, message: '请至少勾选一个投放模式'
+        }],
+        biIdsPull: [{ required: true, message: '请选择投放平台', trigger: 'blur' }],
+        // policyIdsPull: [
+        //     { required: true, message: "请选择策略平台", trigger: "blur" }
+        // ],
+        launchName: [
+          { required: true, message: '请输入投放名称', trigger: 'blur' }
+        ],
+        biIds: [{ required: true, message: '请选择投放平台', trigger: 'blur' }],
+        policyIds: [
+          { required: true, message: '请选择策略平台', trigger: 'blur' }
+        ],
+        policyCrowdIds: [
+          { required: true, message: '请选择人群', trigger: 'blur' }
+        ],
+        autoLaunchTime: [
+          { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
+        ]
+      },
+      Platforms: [],
+      strategyData: [],
+      launchPlatform: [],
+      strategyPlatform: [],
+      effectTimeList: [],
+      crowdData: [],
+      estimateItems: [],
+      firstTimeLoad: false,
+      savePullDataSuccess: false,
+      savePushDataSuccess: false,
+      pullFail: false,
+      pushFail: false,
+      pullSuccessPushFail: false
+    }
+  },
+  methods: {
+    /*
                 行为人群和普通人群不能混用；
                 行为人群只能选择一个；
                 普通人群可以多选；
             */
-            handelCheckoutGroup (val, index, crowdData) {
-                // console.log(val)
-                // console.log(index)
-                // console.log(crowdData)
+    handelCheckoutGroup (val, index, crowdData) {
+      // console.log(val)
+      // console.log(index)
+      // console.log(crowdData)
 
-                const crowdList = crowdData[index].childs
-                const policyId = crowdData[index].policyId
+      const crowdList = crowdData[index].childs
+      const policyId = crowdData[index].policyId
 
-                // 选中的对象list
-                let checkedList = crowdList.filter(item => {
-                    const flag = val.includes(policyId+'_'+item.crowdId)
-                    return flag
-                }) || []
+      // 选中的对象list
+      let checkedList = crowdList.filter(item => {
+        const flag = val.includes(policyId + '_' + item.crowdId)
+        return flag
+      }) || []
 
-                // 若无选中，则全部恢复可选状态
-                if (checkedList.length === 0) {
-                    this.crowdData[index].childs.forEach(item => {
-                        item.isDisabledCrowd = false
-                    })
-                    this.$set(this.crowdData, index, this.crowdData[index])
-                }
+      // 若无选中，则全部恢复可选状态
+      if (checkedList.length === 0) {
+        this.crowdData[index].childs.forEach(item => {
+          item.isDisabledCrowd = false
+        })
+        this.$set(this.crowdData, index, this.crowdData[index])
+      }
 
-                for (let i = 0; i < checkedList.length; i++ ) {
-                    let obj = checkedList[i]
-                    if (obj.isBehaviorCrowd) { // 选了行为人群
-                        this.crowdData[index].childs.forEach(item => {
-                            if (obj.crowdId === item.crowdId) {
-                                item.isDisabledCrowd = false
-                            } else {
-                                item.isDisabledCrowd = true
-                            }
-                        })
-                        this.$set(this.crowdData, index, this.crowdData[index])
-                        break;
-                    } else { // 选了普通人群
-                        this.crowdData[index].childs.forEach(item => {
-                            if (item.isBehaviorCrowd) {
-                                item.isDisabledCrowd = true
-                            } else {
-                                item.isDisabledCrowd = false
-                            }
-                        })
-                        this.$set(this.crowdData, index, this.crowdData[index])
-                        break;
-                    }
-
-                }
-                
-                console.log('this.crowdData==', this.crowdData)
-
-            },
-            handleGetCurrentPolicy() {
-                this.$service.getAddCrowdData().then((data) => {
-                    this.Platforms = data.biLists
-                })
-                const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
-                const a = []
-                this.strategyData = a.concat(tempPolicyAndCrowdData)
-                this.strategyPlatform = a.concat(tempPolicyAndCrowdData)
-                // let crowdTempArr = []
-                // let crowdArr = crowdTempArr.concat(currentPolicy)
-                // this.strategyPlatform = crowdArr
-                const initArr = []
-                const setPolicyArr = initArr.concat(tempPolicyAndCrowdData.policyId)
-                this.crowdForm.policyIdsPull = setPolicyArr
-                this.crowdForm.policyIds = tempPolicyAndCrowdData.policyId
-                this.getCrowd()
-                this.firstTimeLoad = true
-            },
-            getCrowd () {
-                const policyId = this.crowdForm.policyIds
-                // if (this.crowdForm.abTest) {
-                //     policyId = this.crowdForm.policyIds
-                // } else {
-                //     policyId = this.crowdForm.policyIds.join(",")
-                // }
-                this.$service
-                .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-                .then(data => {
-                    if(this.crowdForm.abTest) {
-                        let newDataForm = []
-                        const pid = Object.keys(data[0].childs)
-                        pid.forEach((item) => {
-                            newDataForm.push({Pid: item, childs: data[0].childs[item]})
-                        })
-                        this.crowdData = newDataForm
-                    } else {
-                        this.crowdData = data
-                    }
-                    this.crowdData = this.crowdData.map(policy => {
-                        policy.childs = policy.childs.map(item => {
-                            let isBehaviorCrowd = false
-                            let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
-                            if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
-                                isBehaviorCrowd = true
-                            }
-
-                            return {
-                                ...item,
-                                isBehaviorCrowd: isBehaviorCrowd, // 是否为行为人群
-                                isDisabledCrowd: false // 是否禁用
-                            }
-                        })
-                        return policy
-                    })
-                })
-            },
-            // pull模式保存
-            savePullData() {
-                const formData = {
-                    biIds: this.crowdForm.biIdsPull,
-                    policyIds: this.crowdForm.policyIdsPull
-                }
-                this.$service.saveAddCrowdData(formData,'pull投放成功').then(() => {
-                    if(this.crowdForm.launchMode.push) {
-                        this.savePullDataSuccess = true
-                        this.savePushData()
-                    } else {
-                        this.handleEnd()
-                    }
-                }).catch(e=> {
-                    this.pullFail = true
-                    this.$message.error(e)
-                })
-            },
-            // push模式保存
-            savePushData () {
-                // crowdForm.policyCrowdIds
-                // v.policyId+'_'+item.crowdId
-                const checkedCrowd = this.crowdData[0].childs.find(item => {
-                    return this.crowdForm.policyCrowdIds[0] === this.crowdData[0].policyId+'_'+item.crowdId
-                })
-                let crowdForm = JSON.stringify(this.crowdForm)
-                crowdForm = JSON.parse(crowdForm)
-                const formData = {
-                    biIds: crowdForm.biIds.join(","),
-                    policyIds: crowdForm.policyIds,
-                    policyCrowdIds: crowdForm.policyCrowdIds.map((v)=>{
-                        return v.split("_")[1]
-                    }).join(","),
-                    abTest: crowdForm.abTest,
-                    launchName: crowdForm.launchName, //投放名称
-                    remark: crowdForm.remark,
-                    // expiryDay: crowdForm.expiryDay,
-                    autoVersion: crowdForm.autoVersion,
-                    autoLaunchTime: crowdForm.autoLaunchTime,
-                    launchCrowdId: crowdForm.launchCrowdId
-                }
-
-                if (checkedCrowd.isBehaviorCrowd) formData.tempCrowdId = checkedCrowd.behaviorTempCrowdId // push 行为人群需要传 tempCrowdId
-
-                const calTypes = crowdForm.calType
-                // crowdForm.biIds = crowdForm.biIds.join(",")
-                // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
-                // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-                //     return v.split("_")[1]
-                // }).join(",")
-                this.$service.saveAddMultiVersionCrowd({model: checkedCrowd.isBehaviorCrowd ? 3:0,data: formData}).then((data) => {
-                    this.handleEstimate(calTypes,data.launchCrowdId)
-                }).catch(e=> {
-                    this.handlePushError(e)
-                })
-            },
-            handlePushError (e) {
-                this.pushFail = true
-                this.$message.error(e)
-                if(this.crowdForm.launchMode.pull && !this.pullFail) {
-                    // pull成功 push异常,把pull去掉勾选且禁选
-                    this.crowdForm.launchMode.pull = false
-                    this.pullSuccessPushFail = true
-                }
-            },
-            handleEstimate (calTypes, id) {
-                if (calTypes.length === 0) {
-                    this.$message.error('请至少选择一个要投放的人群')
-                    return
-                }
-                let calIdType = calTypes.map((item) => item).join(',')
-                this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id, calIdType: calIdType },"push投放成功").then(() => {
-                    if(this.crowdForm.launchMode.pull) {
-                        this.savePushDataSuccess = true
-                    } else {
-                        this.handleEnd()
-                    }
-                }).catch(e=> {
-                    this.handlePushError(e)
-                })
-            },
-            submitForm(formName) {
-                // 重置保存成功的参数
-                this.savePushDataSuccess = false
-                this.savePullDataSuccess = false
-                if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
-                    this.$message.error('请勾选至少一种投放模式')
-                    return
-                }
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        if(this.crowdForm.launchMode.pull){
-                            this.savePullData()
-                        } else {
-                            this.savePushData()
-                        }
-                    } else {
-                        return false
-                    }
-                })
-            },
-            // 手动同步策略和刷新策略列表页，关闭弹窗
-            handleEnd () {
-                this.$service.freshCache({policyId: this.recordId}).then(() => {
-                    this.$emit('closeDialog')
-                    this.$root.$emit('stratege-list-refresh')
-                })
-            },
-            getCrowdInitList () {
-                this.$service.addMultiVersionCrowd(0).then(data => {
-                    this.launchPlatform = data.biLists
-                    // this.strategyPlatform = data.policies
-                    this.effectTimeList = data.efTime.map(item => {
-                        return { label: item + '天',value: item }
-                    })
-                })
-            },
-            removeTag (policyId) {
-                this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
-                    if(v.split("_")[0]!=policyId)
-                        return v
-                })
-            },
-            handleCancel () {
-                this.$emit('closeDialog')
-            },
-            getCountDataEnum () {
-                this.$service.getEstimateType().then((data) => {
-                    this.estimateItems = data
-                })
+      for (let i = 0; i < checkedList.length; i++) {
+        let obj = checkedList[i]
+        if (obj.isBehaviorCrowd) { // 选了行为人群
+          this.crowdData[index].childs.forEach(item => {
+            if (obj.crowdId === item.crowdId) {
+              item.isDisabledCrowd = false
+            } else {
+              item.isDisabledCrowd = true
             }
-        },
-        watch: {
-            'recordId' : function (val,oldVal) {
-                if (val === oldVal) {return}
-                else {
-                    this.handleGetCurrentPolicy()
-                }
-            },
-            'crowdForm.abTest': function (val, oldVal) {
-                // 根第一次加载的时候不判断，当值变的时候再触发
-                if (val !== oldVal && oldVal !== undefined){
-                    this.getCrowd()
-                }
-            },
-            'savePullDataSuccess': function (val) {
-                if(this.savePushDataSuccess && val) {
-                    this.handleEnd()
-                }
-            },
-            'savePushDataSuccess': function (val) {
-                if(this.savePullDataSuccess && val) {
-                    this.handleEnd()
-                }
+          })
+          this.$set(this.crowdData, index, this.crowdData[index])
+          break
+        } else { // 选了普通人群
+          this.crowdData[index].childs.forEach(item => {
+            if (item.isBehaviorCrowd) {
+              item.isDisabledCrowd = true
+            } else {
+              item.isDisabledCrowd = false
             }
-        },
-        created () {
-            this.getCountDataEnum ()
-            this.handleGetCurrentPolicy()
-            this.getCrowdInitList()
+          })
+          this.$set(this.crowdData, index, this.crowdData[index])
+          break
         }
+      }
+
+      console.log('this.crowdData==', this.crowdData)
+    },
+    handleGetCurrentPolicy () {
+      this.$service.getAddCrowdData().then((data) => {
+        this.Platforms = data.biLists
+      })
+      const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
+      const a = []
+      this.strategyData = a.concat(tempPolicyAndCrowdData)
+      this.strategyPlatform = a.concat(tempPolicyAndCrowdData)
+      // let crowdTempArr = []
+      // let crowdArr = crowdTempArr.concat(currentPolicy)
+      // this.strategyPlatform = crowdArr
+      const initArr = []
+      const setPolicyArr = initArr.concat(tempPolicyAndCrowdData.policyId)
+      this.crowdForm.policyIdsPull = setPolicyArr
+      this.crowdForm.policyIds = tempPolicyAndCrowdData.policyId
+      this.getCrowd()
+      this.firstTimeLoad = true
+    },
+    getCrowd () {
+      const policyId = this.crowdForm.policyIds
+      // if (this.crowdForm.abTest) {
+      //     policyId = this.crowdForm.policyIds
+      // } else {
+      //     policyId = this.crowdForm.policyIds.join(",")
+      // }
+      this.$service
+        .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+        .then(data => {
+          if (this.crowdForm.abTest) {
+            let newDataForm = []
+            const pid = Object.keys(data[0].childs)
+            pid.forEach((item) => {
+              newDataForm.push({ Pid: item, childs: data[0].childs[item] })
+            })
+            this.crowdData = newDataForm
+          } else {
+            this.crowdData = data
+          }
+          this.crowdData = this.crowdData.map(policy => {
+            policy.childs = policy.childs.map(item => {
+              let isBehaviorCrowd = false
+              let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+              if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
+                isBehaviorCrowd = true
+              }
+
+              return {
+                ...item,
+                isBehaviorCrowd: isBehaviorCrowd, // 是否为行为人群
+                isDisabledCrowd: false // 是否禁用
+              }
+            })
+            return policy
+          })
+        })
+    },
+    // pull模式保存
+    savePullData () {
+      const formData = {
+        biIds: this.crowdForm.biIdsPull,
+        policyIds: this.crowdForm.policyIdsPull
+      }
+      this.$service.saveAddCrowdData(formData, 'pull投放成功').then(() => {
+        if (this.crowdForm.launchMode.push) {
+          this.savePullDataSuccess = true
+          this.savePushData()
+        } else {
+          this.handleEnd()
+        }
+      }).catch(e => {
+        this.pullFail = true
+        this.$message.error(e)
+      })
+    },
+    // push模式保存
+    savePushData () {
+      // crowdForm.policyCrowdIds
+      // v.policyId+'_'+item.crowdId
+      const checkedCrowd = this.crowdData[0].childs.find(item => {
+        return this.crowdForm.policyCrowdIds[0] === this.crowdData[0].policyId + '_' + item.crowdId
+      })
+      let crowdForm = JSON.stringify(this.crowdForm)
+      crowdForm = JSON.parse(crowdForm)
+      const formData = {
+        biIds: crowdForm.biIds.join(','),
+        policyIds: crowdForm.policyIds,
+        policyCrowdIds: crowdForm.policyCrowdIds.map((v) => {
+          return v.split('_')[1]
+        }).join(','),
+        abTest: crowdForm.abTest,
+        launchName: crowdForm.launchName, // 投放名称
+        remark: crowdForm.remark,
+        // expiryDay: crowdForm.expiryDay,
+        autoVersion: crowdForm.autoVersion,
+        autoLaunchTime: crowdForm.autoLaunchTime,
+        launchCrowdId: crowdForm.launchCrowdId
+      }
+
+      if (checkedCrowd.isBehaviorCrowd) formData.tempCrowdId = checkedCrowd.behaviorTempCrowdId // push 行为人群需要传 tempCrowdId
+
+      const calTypes = crowdForm.calType
+      // crowdForm.biIds = crowdForm.biIds.join(",")
+      // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+      // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+      //     return v.split("_")[1]
+      // }).join(",")
+      this.$service.saveAddMultiVersionCrowd({ model: checkedCrowd.isBehaviorCrowd ? 3 : 0, data: formData }).then((data) => {
+        this.handleEstimate(calTypes, data.launchCrowdId)
+      }).catch(e => {
+        this.handlePushError(e)
+      })
+    },
+    handlePushError (e) {
+      this.pushFail = true
+      this.$message.error(e)
+      if (this.crowdForm.launchMode.pull && !this.pullFail) {
+        // pull成功 push异常,把pull去掉勾选且禁选
+        this.crowdForm.launchMode.pull = false
+        this.pullSuccessPushFail = true
+      }
+    },
+    handleEstimate (calTypes, id) {
+      if (calTypes.length === 0) {
+        this.$message.error('请至少选择一个要投放的人群')
+        return
+      }
+      let calIdType = calTypes.map((item) => item).join(',')
+      this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id, calIdType: calIdType }, 'push投放成功').then(() => {
+        if (this.crowdForm.launchMode.pull) {
+          this.savePushDataSuccess = true
+        } else {
+          this.handleEnd()
+        }
+      }).catch(e => {
+        this.handlePushError(e)
+      })
+    },
+    submitForm (formName) {
+      // 重置保存成功的参数
+      this.savePushDataSuccess = false
+      this.savePullDataSuccess = false
+      if (!this.crowdForm.launchMode.pull && !this.crowdForm.launchMode.push) {
+        this.$message.error('请勾选至少一种投放模式')
+        return
+      }
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (this.crowdForm.launchMode.pull) {
+            this.savePullData()
+          } else {
+            this.savePushData()
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    // 手动同步策略和刷新策略列表页，关闭弹窗
+    handleEnd () {
+      this.$service.freshCache({ policyId: this.recordId }).then(() => {
+        this.$emit('closeDialog')
+        this.$root.$emit('stratege-list-refresh')
+      })
+    },
+    getCrowdInitList () {
+      this.$service.addMultiVersionCrowd(0).then(data => {
+        this.launchPlatform = data.biLists
+        // this.strategyPlatform = data.policies
+        this.effectTimeList = data.efTime.map(item => {
+          return { label: item + '天', value: item }
+        })
+      })
+    },
+    removeTag (policyId) {
+      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
+        if (v.split('_')[0] != policyId) { return v }
+      })
+    },
+    handleCancel () {
+      this.$emit('closeDialog')
+    },
+    getCountDataEnum () {
+      this.$service.getEstimateType().then((data) => {
+        this.estimateItems = data
+      })
     }
+  },
+  watch: {
+    'recordId': function (val, oldVal) {
+      if (val === oldVal) {} else {
+        this.handleGetCurrentPolicy()
+      }
+    },
+    'crowdForm.abTest': function (val, oldVal) {
+      // 根第一次加载的时候不判断，当值变的时候再触发
+      if (val !== oldVal && oldVal !== undefined) {
+        this.getCrowd()
+      }
+    },
+    'savePullDataSuccess': function (val) {
+      if (this.savePushDataSuccess && val) {
+        this.handleEnd()
+      }
+    },
+    'savePushDataSuccess': function (val) {
+      if (this.savePullDataSuccess && val) {
+        this.handleEnd()
+      }
+    }
+  },
+  created () {
+    this.getCountDataEnum()
+    this.handleGetCurrentPolicy()
+    this.getCrowdInitList()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

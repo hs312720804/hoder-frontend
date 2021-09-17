@@ -12,23 +12,23 @@
 </template>
 
 <script>
-    export default {
-        name: "SearchInput",
-        props: ['placeHolderText'],
-        data () {
-            return {
-                searchValue: undefined
-            }
-        },
-        methods: {
-            handleSearch () {
-                this.$emit('handle-search',this.searchValue)
-            },
-            resetForm () {
-                this.searchValue = undefined
-            }
-        }
+export default {
+  name: 'SearchInput',
+  props: ['placeHolderText'],
+  data () {
+    return {
+      searchValue: undefined
     }
+  },
+  methods: {
+    handleSearch () {
+      this.$emit('handle-search', this.searchValue)
+    },
+    resetForm () {
+      this.searchValue = undefined
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

@@ -15,5 +15,5 @@ new Vue({
   render: h => h(App),
   i18n,
   store,
-  appState: {prefix: 'HODER/'}
+  appState: { prefix: 'HODER/' }
 }).$mount('#app')

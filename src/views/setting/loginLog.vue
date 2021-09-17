@@ -53,84 +53,84 @@
 </template>
 <script>
 export default {
-    name: 'loginLogAA',
-    data(){
-        return{
-            // 表格当前页数据
-            tableData: [],
-            queryForm: {
-                loginName: ""
-            },
-            pageSize: 10,
-            // 当前页码:pageNum
-            currentPage: 1,
-            // 查询的页码
-            start: 1,
-            // 默认数据总数
-            totalCount: 6,
+  name: 'loginLogAA',
+  data () {
+    return {
+      // 表格当前页数据
+      tableData: [],
+      queryForm: {
+        loginName: ''
+      },
+      pageSize: 10,
+      // 当前页码:pageNum
+      currentPage: 1,
+      // 查询的页码
+      start: 1,
+      // 默认数据总数
+      totalCount: 6,
 
-            //查询条件
-            criteria: {},
+      // 查询条件
+      criteria: {},
 
-            isDisabl:true,
-            pageVisible:false
-        }
-    },
-    methods:{
-        loadData:function() {
-            this.criteria["pageNum"] = this.currentPage;
-            this.criteria["pageSize"] = this.pageSize;
-            this.$service.get_loginLogs_json(this.criteria).then(data => {
-                this.tableData = data.pageInfo.list;
-                this.totalCount = data.pageInfo.total;
-            });
-        },
-        // 查询,提交表单
-        submitForm: function() {
-            var _this = this;
-            this.$refs.queryForm.validate(function(result) {
-                if (result) {
-                    _this.criteria = _this.queryForm;
-                    _this.loadData();
-                } else {
-                    return false;
-                }
-            });
-        },
-        // 显示新增界面
-        pageRefresh: function() {
-            var _this = this;
-            if(this.tableData[0].loginName){
-                this.$refs.queryForm.validate(function(result) {
-                    if (result) {
-                        _this.criteria = _this.queryForm;
-                        _this.loadData();
-                    } else {
-                        return false;
-                    }
-                });
-            }else{
-                this.$message('未查询！');
-            }
-        },
-
-        // 重置
-        handleReset: function () {
-            this.$refs.queryForm.resetFields();
-        },
-        // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-        handleSizeChange: function(val) {
-            this.pageSize = val;
-            this.loadData();
-        },
-        // 页码变更, 如第1页变成第2页时,val=2
-        handleCurrentChange: function(val) {
-            this.currentPage = val;
-            this.loadData();
-        },
-    },
-    created () {
-        this.loadData();
+      isDisabl: true,
+      pageVisible: false
     }
+  },
+  methods: {
+    loadData: function () {
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
+      this.$service.get_loginLogs_json(this.criteria).then(data => {
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+      })
+    },
+    // 查询,提交表单
+    submitForm: function () {
+      var _this = this
+      this.$refs.queryForm.validate(function (result) {
+        if (result) {
+          _this.criteria = _this.queryForm
+          _this.loadData()
+        } else {
+          return false
+        }
+      })
+    },
+    // 显示新增界面
+    pageRefresh: function () {
+      var _this = this
+      if (this.tableData[0].loginName) {
+        this.$refs.queryForm.validate(function (result) {
+          if (result) {
+            _this.criteria = _this.queryForm
+            _this.loadData()
+          } else {
+            return false
+          }
+        })
+      } else {
+        this.$message('未查询！')
+      }
+    },
+
+    // 重置
+    handleReset: function () {
+      this.$refs.queryForm.resetFields()
+    },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
+    }
+  },
+  created () {
+    this.loadData()
+  }
 }
 </script>

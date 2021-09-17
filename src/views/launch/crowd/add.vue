@@ -78,126 +78,124 @@
 <script>
 // import _ from "lodash";
 export default {
-  data() {
+  data () {
     return {
       // 表格当前页数据
       strategyPlatform: [],
       launchPlatform: [],
       getStrategyCrowds: [],
-      title: "",
+      title: '',
       // 新增界面数据
       crowdForm: {
-        launchCrowdId: "", //投放ID
-        launchName: "", //投放名称
-        biIds: "", //投放平台ID
-        remark: "",
+        launchCrowdId: '', // 投放ID
+        launchName: '', // 投放名称
+        biIds: '', // 投放平台ID
+        remark: '',
         //      dataSource: 2,
-        policyIds: "",
+        policyIds: '',
         policyCrowdIds: []
       },
       status: undefined,
       crowdFormRules: {
         launchName: [
-          { required: true, message: "请输入投放名称", trigger: "blur" }
+          { required: true, message: '请输入投放名称', trigger: 'blur' }
         ],
-        biIds: [{ required: true, message: "请选择投放平台", trigger: "blur" }],
+        biIds: [{ required: true, message: '请选择投放平台', trigger: 'blur' }],
         policyIds: [
-          { required: true, message: "请选择策略平台", trigger: "blur" }
+          { required: true, message: '请选择策略平台', trigger: 'blur' }
         ],
         policyCrowdIds: [
-          { required: true, message: "请选择人群", trigger: "blur" }
+          { required: true, message: '请选择人群', trigger: 'blur' }
         ]
       },
-      filterText: "",
+      filterText: '',
       crowdData: null
-    };
+    }
   },
-  props: ["editLaunchCrowdId"],
-  created() {
-    if (this.editLaunchCrowdId!=null&& this.editLaunchCrowdId != undefined) {
-      this.title = "编辑";
+  props: ['editLaunchCrowdId'],
+  created () {
+    if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+      this.title = '编辑'
       this.$service.modifyCrowdLanuch({ launchCrowdId: this.editLaunchCrowdId }).then(data => {
-        this.launchPlatform = data.biLists;
-        this.strategyPlatform = data.policies;
+        this.launchPlatform = data.biLists
+        this.strategyPlatform = data.policies
         if (data.launchCrowd) {
-          let row = data.launchCrowd;
-          this.crowdForm.launchCrowdId = row.launchCrowdId;
-          this.crowdForm.dmpCrowdId = row.dmpCrowdId;
-          this.crowdForm.launchName = row.launchName;
-          this.crowdForm.biIds = data.launchCrowdBiIds;
-          this.crowdForm.remark = row.remark;
-          this.crowdForm.dataSource = row.dataSource;
+          let row = data.launchCrowd
+          this.crowdForm.launchCrowdId = row.launchCrowdId
+          this.crowdForm.dmpCrowdId = row.dmpCrowdId
+          this.crowdForm.launchName = row.launchName
+          this.crowdForm.biIds = data.launchCrowdBiIds
+          this.crowdForm.remark = row.remark
+          this.crowdForm.dataSource = row.dataSource
           this.status = row.status
-          this.crowdForm.policyIds = row.policyIds.split(",");
-          this.getCrowd();
+          this.crowdForm.policyIds = row.policyIds.split(',')
+          this.getCrowd()
           data.respcl.forEach(element => {
-             element.childs.forEach(v=>{
-               if(v.choosed)
-               this.crowdForm.policyCrowdIds.push(element.policyId+"_"+v.crowdId)
-             })
-          });
+            element.childs.forEach(v => {
+              if (v.choosed) { this.crowdForm.policyCrowdIds.push(element.policyId + '_' + v.crowdId) }
+            })
+          })
         }
-      });
+      })
     } else {
-      this.title = "新增";
+      this.title = '新增'
       this.$service.addCrowdLanuch().then(data => {
-        this.launchPlatform = data.biLists;
-        this.strategyPlatform = data.policies;
-      });
+        this.launchPlatform = data.biLists
+        this.strategyPlatform = data.policies
+      })
     }
   },
   methods: {
-    callback() {
-      this.$emit("changeStatus", true);
+    callback () {
+      this.$emit('changeStatus', true)
     },
-    removeTag(policyId){
-      this.crowdForm.policyCrowdIds=this.crowdForm.policyCrowdIds.filter((v)=>{
-        if(v.split("_")[0]!=policyId)
-          return v
+    removeTag (policyId) {
+      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
+        if (v.split('_')[0] != policyId) { return v }
       })
     },
-    getCrowd() {
+    getCrowd () {
       this.$service
-        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(",") })
+        .getStrategyCrowds({ policyIds: this.crowdForm.policyIds.join(',') })
         .then(data => {
-          this.crowdData = data;
+          this.crowdData = data
         })
-        .catch(() => {});
+        .catch(() => {})
     },
     // 新增
-    addSubmit: function() {
+    addSubmit: function () {
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
-          let crowdForm = JSON.stringify(this.crowdForm);
-          crowdForm = JSON.parse(crowdForm);
-          crowdForm.biIds = crowdForm.biIds.join(",");
-          crowdForm.policyIds = crowdForm.policyIds.join(",");
-          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-            return v.split("_")[1]
-          }).join(",")
+          let crowdForm = JSON.stringify(this.crowdForm)
+          crowdForm = JSON.parse(crowdForm)
+          crowdForm.biIds = crowdForm.biIds.join(',')
+          crowdForm.policyIds = crowdForm.policyIds.join(',')
+          crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
+            return v.split('_')[1]
+          }).join(',')
           if (
             this.editLaunchCrowdId != null &&
             this.editLaunchCrowdId != undefined
           ) {
-            this.$service.CrowdLanuchEditBtn(crowdForm,"编辑成功").then(() => {
-              this.callback();
-            });
+            this.$service.CrowdLanuchEditBtn(crowdForm, '编辑成功').then(() => {
+              this.callback()
+            })
           } else {
-            this.$service.CrowdLanuchAddBtn(crowdForm,"新增成功").then(() => {
-              this.callback();
-            });
+            this.$service.CrowdLanuchAddBtn(crowdForm, '新增成功').then(() => {
+              this.callback()
+            })
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 取消
-    cancelAdd: function() {
-      this.$emit("goBack");
+    cancelAdd: function () {
+      this.$emit('goBack')
     }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 .multipleSelect
@@ -214,7 +212,3 @@ export default {
   display: flex
   justify-content: flex-end
 </style>
-
-
-
-

@@ -7,30 +7,29 @@
   </div>
 </template>
 <script>
-import MenuList from "./menuSetting"
-import Icon from "./icon"
+import MenuList from './menuSetting'
+import Icon from './icon'
 export default {
   name: 'menuSettingAA',
-  data() {
+  data () {
     return {
       isShowMenuList: true,
       iconName: null
-    };
+    }
   },
   components: {
     MenuList,
     Icon
   },
   methods: {
-      getIcon(className){
-         this.iconName=className;
-         this.isShowMenuList=true;
-         document.querySelector(".v-modal").style.display="block"
-      },
-      showPage(isShowMenuList){
-        this.isShowMenuList=isShowMenuList;
-      }
+    getIcon (className) {
+      this.iconName = className
+      this.isShowMenuList = true
+      document.querySelector('.v-modal').style.display = 'block'
+    },
+    showPage (isShowMenuList) {
+      this.isShowMenuList = isShowMenuList
+    }
   }
-};
+}
 </script>
-

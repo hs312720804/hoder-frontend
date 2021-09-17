@@ -106,103 +106,103 @@
 </template>
 
 <script>
-    export default {
-        name: "userTagsSearchAA",
-        data () {
-            return {
-                formData: {
-                    type: 1,
-                    mac: undefined,
-                    cOpenid: undefined,
-                    thirdUserId: undefined,
-                    tagId: undefined,
-                    tagAttrId: undefined,
-                    tempMac: undefined,
-                    date: undefined
-                },
-                typeEnum: {
-                    1 : '临时标签',
-                    2 : '大数据标签',
-                    3: '第三方标签'
-                },
-                typeEnumArr: [],
-                tagList: [],
-                tagAttrList: [],
-                content: undefined,
-                dateRange: {
-                    disabledDate (time) {
-                        return time.getTime() > Date.now() || time.getTime() < new Date().getTime() - 15*24*60*60*1000
-                    }
-                }
-            }
-        },
-        methods: {
-            objToArray (obj) {
-                const arr = []
-                Object.keys(obj).forEach(item => {
-                    arr.push({ label: obj[item], value: parseInt(item) })
-                })
-                return arr
-            },
-            handleGetTagsList () {
-                // const apiData = { tagName : '临时' }
-                this.$service.getTempTagList().then(data => {
-                    this.tagList = this.objToArray(data)
-                })
-            },
-            handleGetTagsAttr (tagId) {
-                this.$service.getTempTagAttrList({tagId}).then(data => {
-                    const arr = []
-                    if (data.length > 0) {
-                        data.forEach(item => {
-                            arr.push({ label: item.attrName, value: item.attrId})
-                        })
-                    }
-                    this.tagAttrList = arr
-                })
-            },
-            handleTagChange (tagId) {
-                this.handleGetTagsAttr(tagId)
-            },
-            handleSearch () {
-                const formData = JSON.parse(JSON.stringify(this.formData))
-                const types = formData.type
-                const apiData = {
-                    type: types,
-                    mac: types === 1 ? formData.tempMac : (types === 2 ? formData.mac : undefined),
-                    cOpenid: types === 3 ? formData.cOpenid : undefined,
-                    thirdUserId: types === 3 ? formData.thirdUserId : undefined,
-                    tagId:types === 1 ? formData.tagId : undefined,
-                    tagAttrId: types === 1 ? formData.tagAttrId : undefined,
-                    date: types === 2 ? formData.date : undefined
-                }
-                if (types !== 2) {
-                    this.$service.getUserTagList(apiData).then(data => {
-                        if (data) {
-                            this.content = data
-                        } else {
-                            this.content = '暂无数据'
-                        }
-                    })
-                } else {
-                    const bigDataApi = {
-                        id: formData.mac,
-                        date: formData.date
-                    }
-                    this.$service.getBigDataUserTagList(bigDataApi).then(data => {
-                        if (data) {
-                            this.content = data
-                        } else {
-                            this.content = '暂无数据'
-                        }
-                    })
-                }
-            }
-        },
-        created() {
-            this.handleGetTagsList()
+export default {
+  name: 'userTagsSearchAA',
+  data () {
+    return {
+      formData: {
+        type: 1,
+        mac: undefined,
+        cOpenid: undefined,
+        thirdUserId: undefined,
+        tagId: undefined,
+        tagAttrId: undefined,
+        tempMac: undefined,
+        date: undefined
+      },
+      typeEnum: {
+        1: '临时标签',
+        2: '大数据标签',
+        3: '第三方标签'
+      },
+      typeEnumArr: [],
+      tagList: [],
+      tagAttrList: [],
+      content: undefined,
+      dateRange: {
+        disabledDate (time) {
+          return time.getTime() > Date.now() || time.getTime() < new Date().getTime() - 15 * 24 * 60 * 60 * 1000
         }
+      }
     }
+  },
+  methods: {
+    objToArray (obj) {
+      const arr = []
+      Object.keys(obj).forEach(item => {
+        arr.push({ label: obj[item], value: parseInt(item) })
+      })
+      return arr
+    },
+    handleGetTagsList () {
+      // const apiData = { tagName : '临时' }
+      this.$service.getTempTagList().then(data => {
+        this.tagList = this.objToArray(data)
+      })
+    },
+    handleGetTagsAttr (tagId) {
+      this.$service.getTempTagAttrList({ tagId }).then(data => {
+        const arr = []
+        if (data.length > 0) {
+          data.forEach(item => {
+            arr.push({ label: item.attrName, value: item.attrId })
+          })
+        }
+        this.tagAttrList = arr
+      })
+    },
+    handleTagChange (tagId) {
+      this.handleGetTagsAttr(tagId)
+    },
+    handleSearch () {
+      const formData = JSON.parse(JSON.stringify(this.formData))
+      const types = formData.type
+      const apiData = {
+        type: types,
+        mac: types === 1 ? formData.tempMac : (types === 2 ? formData.mac : undefined),
+        cOpenid: types === 3 ? formData.cOpenid : undefined,
+        thirdUserId: types === 3 ? formData.thirdUserId : undefined,
+        tagId: types === 1 ? formData.tagId : undefined,
+        tagAttrId: types === 1 ? formData.tagAttrId : undefined,
+        date: types === 2 ? formData.date : undefined
+      }
+      if (types !== 2) {
+        this.$service.getUserTagList(apiData).then(data => {
+          if (data) {
+            this.content = data
+          } else {
+            this.content = '暂无数据'
+          }
+        })
+      } else {
+        const bigDataApi = {
+          id: formData.mac,
+          date: formData.date
+        }
+        this.$service.getBigDataUserTagList(bigDataApi).then(data => {
+          if (data) {
+            this.content = data
+          } else {
+            this.content = '暂无数据'
+          }
+        })
+      }
+    }
+  },
+  created () {
+    this.handleGetTagsList()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

@@ -6,13 +6,13 @@
 </template>
 
 <script>
-    export default {
-        name: 'DeliveryAfterPeopleDrawAA',
-        data () {
-            return {
-            }
-        }
+export default {
+  name: 'DeliveryAfterPeopleDrawAA',
+  data () {
+    return {
     }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

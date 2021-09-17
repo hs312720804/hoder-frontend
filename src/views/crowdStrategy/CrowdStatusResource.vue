@@ -150,137 +150,137 @@
 </template>
 
 <script>
-    import HitSearchItem from './HitSearchItem'
-    import searchInput from '@/components/SearchInput'
-    export default {
-        components: {
-            HitSearchItem,
-            searchInput
-        },
-        data() {
-            return {
-                formData: undefined,
-                showDetailDialog: false,
-                detailDialogTitle: '',
-                tableData: [],
-                apiTableData: [],
-                requestApiTime: undefined,
-                saveApiTableData: undefined,
-                setTimeOutVal: undefined,
-                lastRequestId: 0
-            }
-        },
-        props: ['crowdId', 'status'],
-        methods: {
-            formatDate (d) {
-                const time = new Date(d)
-                let y = time.getFullYear(); // 年份
-                let m = (time.getMonth() + 1).toString().padStart(2,'0'); // 月份
-                let r = time.getDate().toString().padStart(2,'0'); // 日子
-                let h = time.getHours().toString().padStart(2,'0')
-                let mins = time.getMinutes().toString().padStart(2,'0')
-                let s = time.getSeconds().toString().padStart(2,'0')
-                return `${y}-${m}-${r} ${h}:${mins}:${s}`
-            },
-            handleGetContent() {
-                const crowdId = this.crowdId
-                const id = this.lastRequestId + 1
-                this.lastRequestId = id
-                this.$service.getCrowdStatus({crowdId: crowdId}).then((data) => {
-                    if (this.lastRequestId !== id) {
-                        return
-                    }
-                    const date = new Date()
-                    this.requestApiTime = this.formatDate(date)
-                    this.formData = data
-                    this.saveApiTableData = data
-                    console.log('saveApiTableData', this.saveApiTableData)
-                    console.log('我执行了crowdId='+this.crowdId+'的刷新======时间为：'+this.requestApiTime)
-                })
-            },
-            handleSetTimeOut () {
-                console.log('我执行了定时器-----')
-                this.setTimeOutVal = setInterval(() => {this.handleGetContent()},30000)
-            },
-            handleClearTimeOut () {
-                console.log('=========我清除了定时器-----')
-                clearInterval(this.setTimeOutVal)
-            },
-            handleSearchStatusData (searchVal) {
-                this.handleClearTimeOut()
-                const saveApiTableData = JSON.parse(JSON.stringify(this.saveApiTableData))
-                if (searchVal) {
-                //  支持ID或名称搜索
-                const WrapperArr = []
-                saveApiTableData.biTrack.forEach((item) => {
-                    const a = []
-                    item.list.forEach(childItem => {
-                        if (childItem.resourceName.indexOf(searchVal) >= 0 || childItem.schemeId.indexOf(searchVal) >= 0) {
-                            a.push(childItem)
-                        }
-                    })
-                    if (a.length > 0) {
-                        WrapperArr.push({biId: item.biId, biName: item.biName, list: a})
-                    }
-                })
-                this.formData.biTrack = WrapperArr
-                this.saveApiTableData =  saveApiTableData
-                } else {
-                    this.formData = saveApiTableData
-                }
-            },
-            handleSeeDetail (schemalId,flag,bId) {
-                this.detailDialogTitle = flag ? '命中详情' : '请求详情'
-                // flag为true则是命中详情查询,flag为false则是访问详情查询
-                var panelId = undefined
-                var index = undefined
-                if(schemalId.toString().indexOf('-') > 0) {
-                    panelId = schemalId.split('-')[0]
-                    index = schemalId.split('-')[1]
-                } else {
-                    panelId = schemalId
-                    index = 0
-                }
-                const apiData = {
-                    crowdId: this.crowdId,
-                    bId,
-                    panelId,
-                    hit: flag,
-                    index
-                }
-                this.$service.crowdRequestDetail(apiData).then(data => {
-                    this.showDetailDialog = true
-                    this.$nextTick(() => {
-                        this.$refs.searchInputRef.resetForm()
-                    })
-                    this.tableData = data
-                    this.apiTableData = data
-                })
-            },
-            handleDetailSearch (id) {
-                if (id) {
-                    const arr = []
-                    const apiData = this.apiTableData
-                    const length = apiData.length
-                    for (var i=0; i<length; i++) {
-                        if (apiData[i].mac === id) {
-                            arr.push(apiData[i])
-                        }
-                    }
-                    this.tableData = arr
-                } else {
-                    this.tableData = this.apiTableData
-                }
-            }
-        },
-        beforeDestroy () {
-            this.handleClearTimeOut()
-        },
-        created () {
-            this.handleGetContent()
-            this.handleSetTimeOut()
-        }
+import HitSearchItem from './HitSearchItem'
+import searchInput from '@/components/SearchInput'
+export default {
+  components: {
+    HitSearchItem,
+    searchInput
+  },
+  data () {
+    return {
+      formData: undefined,
+      showDetailDialog: false,
+      detailDialogTitle: '',
+      tableData: [],
+      apiTableData: [],
+      requestApiTime: undefined,
+      saveApiTableData: undefined,
+      setTimeOutVal: undefined,
+      lastRequestId: 0
     }
+  },
+  props: ['crowdId', 'status'],
+  methods: {
+    formatDate (d) {
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      let h = time.getHours().toString().padStart(2, '0')
+      let mins = time.getMinutes().toString().padStart(2, '0')
+      let s = time.getSeconds().toString().padStart(2, '0')
+      return `${y}-${m}-${r} ${h}:${mins}:${s}`
+    },
+    handleGetContent () {
+      const crowdId = this.crowdId
+      const id = this.lastRequestId + 1
+      this.lastRequestId = id
+      this.$service.getCrowdStatus({ crowdId: crowdId }).then((data) => {
+        if (this.lastRequestId !== id) {
+          return
+        }
+        const date = new Date()
+        this.requestApiTime = this.formatDate(date)
+        this.formData = data
+        this.saveApiTableData = data
+        console.log('saveApiTableData', this.saveApiTableData)
+        console.log('我执行了crowdId=' + this.crowdId + '的刷新======时间为：' + this.requestApiTime)
+      })
+    },
+    handleSetTimeOut () {
+      console.log('我执行了定时器-----')
+      this.setTimeOutVal = setInterval(() => { this.handleGetContent() }, 30000)
+    },
+    handleClearTimeOut () {
+      console.log('=========我清除了定时器-----')
+      clearInterval(this.setTimeOutVal)
+    },
+    handleSearchStatusData (searchVal) {
+      this.handleClearTimeOut()
+      const saveApiTableData = JSON.parse(JSON.stringify(this.saveApiTableData))
+      if (searchVal) {
+        //  支持ID或名称搜索
+        const WrapperArr = []
+        saveApiTableData.biTrack.forEach((item) => {
+          const a = []
+          item.list.forEach(childItem => {
+            if (childItem.resourceName.indexOf(searchVal) >= 0 || childItem.schemeId.indexOf(searchVal) >= 0) {
+              a.push(childItem)
+            }
+          })
+          if (a.length > 0) {
+            WrapperArr.push({ biId: item.biId, biName: item.biName, list: a })
+          }
+        })
+        this.formData.biTrack = WrapperArr
+        this.saveApiTableData = saveApiTableData
+      } else {
+        this.formData = saveApiTableData
+      }
+    },
+    handleSeeDetail (schemalId, flag, bId) {
+      this.detailDialogTitle = flag ? '命中详情' : '请求详情'
+      // flag为true则是命中详情查询,flag为false则是访问详情查询
+      var panelId = undefined
+      var index = undefined
+      if (schemalId.toString().indexOf('-') > 0) {
+        panelId = schemalId.split('-')[0]
+        index = schemalId.split('-')[1]
+      } else {
+        panelId = schemalId
+        index = 0
+      }
+      const apiData = {
+        crowdId: this.crowdId,
+        bId,
+        panelId,
+        hit: flag,
+        index
+      }
+      this.$service.crowdRequestDetail(apiData).then(data => {
+        this.showDetailDialog = true
+        this.$nextTick(() => {
+          this.$refs.searchInputRef.resetForm()
+        })
+        this.tableData = data
+        this.apiTableData = data
+      })
+    },
+    handleDetailSearch (id) {
+      if (id) {
+        const arr = []
+        const apiData = this.apiTableData
+        const length = apiData.length
+        for (var i = 0; i < length; i++) {
+          if (apiData[i].mac === id) {
+            arr.push(apiData[i])
+          }
+        }
+        this.tableData = arr
+      } else {
+        this.tableData = this.apiTableData
+      }
+    }
+  },
+  beforeDestroy () {
+    this.handleClearTimeOut()
+  },
+  created () {
+    this.handleGetContent()
+    this.handleSetTimeOut()
+  }
+}
 </script>
 <style lang="stylus" scoped>
 .flex-content

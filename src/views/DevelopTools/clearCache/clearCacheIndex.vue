@@ -17,24 +17,24 @@
 </template>
 
 <script>
-    export default {
-        name: "clearCacheAA",
-        data () {
-            return {
-                deviceMsg: ''
-            }
-        },
-        methods: {
-            clearCache() {
-                this.$service.setClearCache({keyword:this.deviceMsg},'清除缓存成功').then(() => {
-                }).catch(() => {})
-            },
-            handleAllCacheClean () {
-                this.$service.setClearAllCache({} ,'操作成功').then(() => {
-                }).catch(() => {})
-            }
+export default {
+  name: 'clearCacheAA',
+  data () {
+    return {
+      deviceMsg: ''
     }
+  },
+  methods: {
+    clearCache () {
+      this.$service.setClearCache({ keyword: this.deviceMsg }, '清除缓存成功').then(() => {
+      }).catch(() => {})
+    },
+    handleAllCacheClean () {
+      this.$service.setClearAllCache({}, '操作成功').then(() => {
+      }).catch(() => {})
     }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

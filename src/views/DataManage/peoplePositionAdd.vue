@@ -65,133 +65,132 @@
 </template>
 
 <script>
-    export default {
-        name: "peoplePositionAdd",
-        props: {
-            editId: '',
-            mode: ''
-        },
-        data () {
-            return {
-                form: {
-                    launchCrowdId: '',
-                    name: '',
-                    protocol: '',
-                    url: '',
-                    saveAddr: '',
-                    param: '',
-                    remark: '',
-                    id: ''
-                },
-                crowdIds: [],
-                protocols: [],
-                title: '',
-                disableValue: false,
-                rules: {
-                    launchCrowdId: [
-                        {required: true, message: '请输入人群投放ID', trigger: 'blur'}
-                    ],
-                    name: [
-                        {required:true, message:'请输入人群名称', trigger: 'blur'}
-                    ],
-                    protocol: [
-                        {required:true, message:'请选择存放协议', trigger: 'blur'}
-                    ],
-                    url: [
-                        {required:true, message:'请输入位置存放地址', trigger: 'blur'}
-                    ],
-                    saveAddr: [
-                        {required:true,message:'请输入存放地址',trigger: 'blur'}
-                    ]
-                }
-            }
-        },
-        methods: {
-            getCrowdIdList () {
-                this.$service.crowdIdList().then(
-                    (data) => {
-                        this.crowdIds = this._arrayingOption(data,'launchName','launchCrowdId')
-                    }
-                )
-            },
-            getProtocolList () {
-                this.$service.protocolList().then(
-                    (data) => {
-                        this.protocols = data
-                    }
-                )
-            },
-            getDetail () {
-                this.$service.getPositonDetail({id: this.editId}).then(
-                    (data) => {
-                        this.form = data
-                        // if(this.mode === 'edit') {this.form.id = this.editId}
-                    }
-                )
-            },
-            // 数组化[{label, value}]
-            _arrayingOption(arr, label, value) {
-                return arr.reduce((result, item) => {
-                    return result.concat({ label: item[label], value: item[value] })
-                }, [])
-            },
-            goBack () {
-                this.$emit('open-list-page')
-            },
-            save () {
-                this.$refs.form.validate(valid => {
-                    if(valid) {
-                        // const submitData = {
-                        //     id: this.editId,
-                        //     launchCrowdId: this.form.launchCrowdId,
-                        //     name: this.form.name,
-                        //     protocol: this.form.protocol,
-                        //     url: JSON.stringify(this.form.url),
-                        //     param: JSON.stringify(this.form.param),
-                        //     remark: this.form.remark
-                        // }
-                        if (this.editId === undefined) {
-                            this.$service.peoplePositonAdd(this.form, '保存成功').then( () => {
-                                this.$emit('open-list-page')
-                            })
-                        }else {
-                            const submitData = {
-                                id: this.editId,
-                                launchCrowdId: this.form.launchCrowdId,
-                                name: this.form.name,
-                                protocol: this.form.protocol,
-                                url: this.form.url,
-                                param: this.form.param,
-                                remark: this.form.remark,
-                                saveAddr: this.form.saveAddr
-                            }
-                            this.$service.peoplePositonEdit(submitData, '修改成功').then( () => {
-                                this.$emit('open-list-page')
-                            })
-                        }
-                    }
-                })
-            },
-        },
-        created () {
-            this.getCrowdIdList()
-            this.getProtocolList()
-            if(this.editId === undefined){
-                this.title = '新增'
-                this.form.protocol = 'http'
-            }else {
-                if(this.mode === 'edit') {
-                    this.title = '编辑'
-                    this.getDetail()
-
-                }else {
-                    this.title = '查看详情'
-                    this.getDetail()
-                    this.disableValue = true
-                }
-            }
-        }
+export default {
+  name: 'peoplePositionAdd',
+  props: {
+    editId: '',
+    mode: ''
+  },
+  data () {
+    return {
+      form: {
+        launchCrowdId: '',
+        name: '',
+        protocol: '',
+        url: '',
+        saveAddr: '',
+        param: '',
+        remark: '',
+        id: ''
+      },
+      crowdIds: [],
+      protocols: [],
+      title: '',
+      disableValue: false,
+      rules: {
+        launchCrowdId: [
+          { required: true, message: '请输入人群投放ID', trigger: 'blur' }
+        ],
+        name: [
+          { required: true, message: '请输入人群名称', trigger: 'blur' }
+        ],
+        protocol: [
+          { required: true, message: '请选择存放协议', trigger: 'blur' }
+        ],
+        url: [
+          { required: true, message: '请输入位置存放地址', trigger: 'blur' }
+        ],
+        saveAddr: [
+          { required: true, message: '请输入存放地址', trigger: 'blur' }
+        ]
+      }
     }
+  },
+  methods: {
+    getCrowdIdList () {
+      this.$service.crowdIdList().then(
+        (data) => {
+          this.crowdIds = this._arrayingOption(data, 'launchName', 'launchCrowdId')
+        }
+      )
+    },
+    getProtocolList () {
+      this.$service.protocolList().then(
+        (data) => {
+          this.protocols = data
+        }
+      )
+    },
+    getDetail () {
+      this.$service.getPositonDetail({ id: this.editId }).then(
+        (data) => {
+          this.form = data
+          // if(this.mode === 'edit') {this.form.id = this.editId}
+        }
+      )
+    },
+    // 数组化[{label, value}]
+    _arrayingOption (arr, label, value) {
+      return arr.reduce((result, item) => {
+        return result.concat({ label: item[label], value: item[value] })
+      }, [])
+    },
+    goBack () {
+      this.$emit('open-list-page')
+    },
+    save () {
+      this.$refs.form.validate(valid => {
+        if (valid) {
+          // const submitData = {
+          //     id: this.editId,
+          //     launchCrowdId: this.form.launchCrowdId,
+          //     name: this.form.name,
+          //     protocol: this.form.protocol,
+          //     url: JSON.stringify(this.form.url),
+          //     param: JSON.stringify(this.form.param),
+          //     remark: this.form.remark
+          // }
+          if (this.editId === undefined) {
+            this.$service.peoplePositonAdd(this.form, '保存成功').then(() => {
+              this.$emit('open-list-page')
+            })
+          } else {
+            const submitData = {
+              id: this.editId,
+              launchCrowdId: this.form.launchCrowdId,
+              name: this.form.name,
+              protocol: this.form.protocol,
+              url: this.form.url,
+              param: this.form.param,
+              remark: this.form.remark,
+              saveAddr: this.form.saveAddr
+            }
+            this.$service.peoplePositonEdit(submitData, '修改成功').then(() => {
+              this.$emit('open-list-page')
+            })
+          }
+        }
+      })
+    }
+  },
+  created () {
+    this.getCrowdIdList()
+    this.getProtocolList()
+    if (this.editId === undefined) {
+      this.title = '新增'
+      this.form.protocol = 'http'
+    } else {
+      if (this.mode === 'edit') {
+        this.title = '编辑'
+        this.getDetail()
+      } else {
+        this.title = '查看详情'
+        this.getDetail()
+        this.disableValue = true
+      }
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

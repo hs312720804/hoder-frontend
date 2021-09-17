@@ -172,33 +172,33 @@
 <script>
 export default {
   name: 'organManageAA',
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
       organs: [],
       organProps: {
-        chilidren: "children",
-        label: "name"
+        chilidren: 'children',
+        label: 'name'
       },
       organVisible: false,
       // 新增页
       addFormVisible: false, // 新增界面是否显示
       // 新增界面数据
       officeForm: {
-        id: "",
+        id: '',
         parentId: 0,
-        parentName: "",
-        name: "",
-        master: "",
-        email: "",
-        sort: "",
+        parentName: '',
+        name: '',
+        master: '',
+        email: '',
+        sort: '',
         useable: 0
       },
       officeFormRules: {
-        name: [{ required: true, message: "请填写机构名称", trigger: "blur" }],
-        master: [{ required: true, message: "请填写负责人", trigger: "blur" }],
-        email: [{ required: true, message: "请填写邮箱", trigger: "blur" }]
+        name: [{ required: true, message: '请填写机构名称', trigger: 'blur' }],
+        master: [{ required: true, message: '请填写负责人', trigger: 'blur' }],
+        email: [{ required: true, message: '请填写邮箱', trigger: 'blur' }]
         // sort: [
         //     {required: true, message: '请填写排序数', trigger: 'blur'}
         // ] todo: 为啥不生效
@@ -206,17 +206,17 @@ export default {
 
       // 编辑页
       editFormVisible: false // 编辑界面是否显示
-    };
+    }
   },
   methods: {
-    callback() {
-      this.loadData();
+    callback () {
+      this.loadData()
     },
     // 从服务器读取数据
-    loadData: function() {
+    loadData: function () {
       this.$service.get_offices_json().then(data => {
-        this.tableData = data.officeTreeTable;
-      });
+        this.tableData = data.officeTreeTable
+      })
     },
     // // 刷新
     // handleRefresh: function () {
@@ -224,144 +224,144 @@ export default {
     // },
 
     // 修改状态
-    handleChangetStatus: function(index, row) {
-      var id = row.id;
-      var useable = row.useable == 1 ? 0 : 1;
-      this.$confirm("确定修改该条记录的状态?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    handleChangetStatus: function (index, row) {
+      var id = row.id
+      var useable = row.useable == 1 ? 0 : 1
+      this.$confirm('确定修改该条记录的状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.$service
-            .changeOrganStatus({ id: id, useable: useable },"状态修改成功")
+            .changeOrganStatus({ id: id, useable: useable }, '状态修改成功')
             .then(() => {
-              this.callback();
-            });
+              this.callback()
+            })
         })
         .catch(() => {
-        });
+        })
     },
 
     // 查看详情
     // handleDetail: function(index, row) {
     // },
-    selectOffice() {
-      this.organVisible = true;
+    selectOffice () {
+      this.organVisible = true
       this.$service.get_office_tree_json().then(data => {
-        this.organs = data.officeTree;
-      });
+        this.organs = data.officeTree
+      })
     },
-    handleNodeClick(data) {
-      this.$appState.$set("company_data", JSON.stringify(data));
+    handleNodeClick (data) {
+      this.$appState.$set('company_data', JSON.stringify(data))
     },
-    companySelectCancel() {
-      this.$appState.$set("company_data", "");
-      this.organVisible = false;
+    companySelectCancel () {
+      this.$appState.$set('company_data', '')
+      this.organVisible = false
     },
-    companySelectOk() {
-      this.organVisible = false;
-      const data = JSON.parse(this.$appState.$get("company_data"));
-      this.officeForm.parentId = data.id;
-      this.officeForm.parentName = data.name;
+    companySelectOk () {
+      this.organVisible = false
+      const data = JSON.parse(this.$appState.$get('company_data'))
+      this.officeForm.parentId = data.id
+      this.officeForm.parentName = data.name
     },
     // 显示新增界面
-    handleAdd: function() {
-      this.addFormVisible = true;
-      this.officeForm.id = "";
-      this.officeForm.parentId = "";
-      this.officeForm.parentName = "";
-      this.officeForm.name = "";
-      this.officeForm.master = "";
-      this.officeForm.email = "";
-      this.officeForm.sort = "";
-      this.officeForm.useable = 0;
+    handleAdd: function () {
+      this.addFormVisible = true
+      this.officeForm.id = ''
+      this.officeForm.parentId = ''
+      this.officeForm.parentName = ''
+      this.officeForm.name = ''
+      this.officeForm.master = ''
+      this.officeForm.email = ''
+      this.officeForm.sort = ''
+      this.officeForm.useable = 0
     },
     // 新增
-    addSubmit: function() {
-      var _this = this;
+    addSubmit: function () {
+      var _this = this
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.addOrgan(_this.officeForm,"添加成功").then(() => {
-            this.callback();
-            this.addFormVisible = false;
-          });
+          this.$service.addOrgan(_this.officeForm, '添加成功').then(() => {
+            this.callback()
+            this.addFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 显示编辑页面
-    handleEdit: function(index, row) {
-      this.editFormVisible = true;
-      this.officeForm.id = row.id;
-      this.officeForm.parentId = row.parentId;
+    handleEdit: function (index, row) {
+      this.editFormVisible = true
+      this.officeForm.id = row.id
+      this.officeForm.parentId = row.parentId
       if (row.parentName == null) {
-        this.officeForm.parentName = "顶级机构";
+        this.officeForm.parentName = '顶级机构'
       } else {
-        this.officeForm.parentName = row.parentName;
+        this.officeForm.parentName = row.parentName
       }
-      this.officeForm.name = row.name;
-      this.officeForm.master = row.master;
-      this.officeForm.email = row.email;
-      this.officeForm.sort = row.sort;
-      this.officeForm.useable = row.useable;
+      this.officeForm.name = row.name
+      this.officeForm.master = row.master
+      this.officeForm.email = row.email
+      this.officeForm.sort = row.sort
+      this.officeForm.useable = row.useable
     },
     // editSubmit
-    editSubmit: function() {
-      var _this = this;
+    editSubmit: function () {
+      var _this = this
       this.$refs.officeForm.validate(valid => {
         if (valid) {
-          this.$service.updateOrgan(_this.officeForm,"编辑成功").then(() => {
-            this.callback();
-            this.editFormVisible = false;
-          });
+          this.$service.updateOrgan(_this.officeForm, '编辑成功').then(() => {
+            this.callback()
+            this.editFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 取消
-    cancelAdd: function() {
-      this.addFormVisible = false;
+    cancelAdd: function () {
+      this.addFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消新增"
-      });
+        message: '已取消新增'
+      })
     },
-    cancelEdit: function() {
-      this.editFormVisible = false;
+    cancelEdit: function () {
+      this.editFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消编辑"
-      });
+        message: '已取消编辑'
+      })
     },
     // 单行删除
-    handleDelete: function(index, row) {
-      var id = row.id;
-      this.$confirm("确定要删除该条记录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "error"
+    handleDelete: function (index, row) {
+      var id = row.id
+      this.$confirm('确定要删除该条记录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
       })
         .then(() => {
-          this.$service.delOrgan({ id: id },"删除成功").then(() => {
-            this.callback();
-          });
+          this.$service.delOrgan({ id: id }, '删除成功').then(() => {
+            this.callback()
+          })
         })
         .catch(() => {
           this.$message({
             showClose: true,
-            message: "已取消删除操作"
-          });
-        });
+            message: '已取消删除操作'
+          })
+        })
     }
   },
-  created() {
-    this.loadData();
+  created () {
+    this.loadData()
   }
   // });
-};
+}
 </script>
 <style scoped lang="stylus">
 .el-checkbox-group label

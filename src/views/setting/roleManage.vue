@@ -234,41 +234,41 @@
   </div>
 </template>
 <script>
-import _ from "lodash";
+import _ from 'lodash'
 export default {
   name: 'roleManageAA',
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
       // 多选数组
       multipleSelection: [],
-      //搜索条件
+      // 搜索条件
       criteria: {},
       initTree: {},
       // 列表页
       searchForm: {
-        name: ""
+        name: ''
       },
       // 新增页
       addFormVisible: false, // 新增界面是否显示
       // 新增界面数据
       roleForm: {
-        id: "",
-        name: "",
-        remarks: "",
+        id: '',
+        name: '',
+        remarks: '',
         useable: 0,
         menuIds: [],
         menuAllIds: []
       },
       roleFormRules: {
-        name: [{ required: true, message: "请输入角色名称", trigger: "blur" }]
+        name: [{ required: true, message: '请输入角色名称', trigger: 'blur' }]
       },
-      filterText: "",
+      filterText: '',
       data2: null,
       defaultProps: {
-        children: "children",
-        label: "label"
+        children: 'children',
+        label: 'label'
       },
       // 编辑页
       editFormVisible: false, // 编辑界面是否显示
@@ -280,113 +280,113 @@ export default {
       start: 1,
       // 默认数据总数
       totalCount: 1
-    };
-  },
-  watch: {
-    filterText(val) {
-      this.$refs.tree.filter(val);
     }
   },
-  created() {
-    this.loadData();
+  watch: {
+    filterText (val) {
+      this.$refs.tree.filter(val)
+    }
+  },
+  created () {
+    this.loadData()
   },
   methods: {
     // callback(data, successMsg) {
     //   this.loadData();
     // },
-    callback() {
-        this.loadData();
+    callback () {
+      this.loadData()
     },
     // 从服务器读取数据
     loadData () {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.get_roles_json(this.criteria).then(data => {
-        this.tableData = data.pageInfo.list;
-        this.totalCount = data.pageInfo.total;
-        this.initTree = this.searchInit(data.menuTree);
-        this.data2 = data.menuTree;
-      });
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        this.initTree = this.searchInit(data.menuTree)
+        this.data2 = data.menuTree
+      })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
-      this.pageSize = val;
-      this.loadData();
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
     },
-    //获取最终所有权限列表id
-    //json :最初的权限列表
-    //keys :用户点击获取Vue获取到的最底层权限id数组
-    getKeys(json, keys) {
-      var final = [];
+    // 获取最终所有权限列表id
+    // json :最初的权限列表
+    // keys :用户点击获取Vue获取到的最底层权限id数组
+    getKeys (json, keys) {
+      var final = []
       for (var i = 0; i < keys.length; i++) {
-        final = this.searchTree(json, keys[i]).concat(final);
+        final = this.searchTree(json, keys[i]).concat(final)
       }
       if (json.length == 0 || keys.length == 0) {
-        return [];
+        return []
       } else {
-        var c = _.uniq(final.concat(keys).sort());
-        return c;
+        var c = _.uniq(final.concat(keys).sort())
+        return c
       }
     },
-    //搜索当前权限，获得所有父级权限id
-    searchTree(json, id) {
-      var newJson = json.concat([]);
-      var len = newJson.length; //长度
-      var parentNode = [];
-      //查找id
+    // 搜索当前权限，获得所有父级权限id
+    searchTree (json, id) {
+      var newJson = json.concat([])
+      var len = newJson.length // 长度
+      var parentNode = []
+      // 查找id
       for (var s = 0; s < len; s++) {
         if (newJson[s].id == id) {
           if (
             newJson[s].parentNode == null ||
             newJson[s].parentNode.length == 0
           ) {
-            parentNode = [];
+            parentNode = []
           } else {
-            parentNode = newJson[s].parentNode;
+            parentNode = newJson[s].parentNode
           }
         } else {
-          continue;
+          continue
         }
       }
-      return parentNode;
+      return parentNode
     },
-    searchInit(json) {
-      var newJson = json.concat([]);
-      var len = newJson.length; //长度
+    searchInit (json) {
+      var newJson = json.concat([])
+      var len = newJson.length // 长度
       // var parentNode = [];
       for (var i = 0; i < len; i++) {
-        var item = newJson[i];
+        var item = newJson[i]
         if (item.children && item.children.length != 0) {
-          var child = item.children;
+          var child = item.children
           for (var j = 0; j < child.length; j++) {
             if (item.parentNode) {
-              child[j].parentNode = item.parentNode.concat([item.id]);
+              child[j].parentNode = item.parentNode.concat([item.id])
             } else {
-              child[j].parentNode = [item.id];
+              child[j].parentNode = [item.id]
             }
-            newJson[len + j] = child[j];
+            newJson[len + j] = child[j]
           }
-          len = newJson.length;
+          len = newJson.length
         }
       }
-      return newJson;
+      return newJson
     },
     // 搜索,提交表单
     submitForm () {
-      var _this = this;
-      this.$refs.searchForm.validate(function(result) {
+      var _this = this
+      this.$refs.searchForm.validate(function (result) {
         if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
+          _this.criteria = _this.searchForm
+          _this.loadData()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // // 刷新
     // handleRefresh: function () {
@@ -394,27 +394,27 @@ export default {
     // },
     // 重置
     handleReset () {
-      this.$refs.searchForm.resetFields();
+      this.$refs.searchForm.resetFields()
     },
     // 修改状态
     handleChangetStatus (index, row) {
-      var id = row.id;
-      var useable = row.useable == 1 ? 0 : 1;
-      this.$confirm("确定修改该条记录的状态?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      var id = row.id
+      var useable = row.useable == 1 ? 0 : 1
+      this.$confirm('确定修改该条记录的状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.$service
-            .changeRoleStatus({ id: id, useable: useable },"状态修改成功")
+            .changeRoleStatus({ id: id, useable: useable }, '状态修改成功')
             .then(() => {
-              this.callback();
-            });
+              this.callback()
+            })
         })
         .catch(() => {
 
-        });
+        })
     },
 
     // 查看详情
@@ -422,149 +422,149 @@ export default {
     // },
 
     // 过滤权限值
-    filterNode(value, data) {
-      if (!value) return true;
-      return data.label.indexOf(value) !== -1;
+    filterNode (value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     // 显示新增界面
     handleAdd () {
-      this.addFormVisible = true;
-      this.roleForm.id = "";
-      this.roleForm.name = "";
-      this.roleForm.remarks = "";
-      this.roleForm.useable = 0;
-      this.roleForm.menuIds = [];
-      this.roleForm.menuAllIds = [];
+      this.addFormVisible = true
+      this.roleForm.id = ''
+      this.roleForm.name = ''
+      this.roleForm.remarks = ''
+      this.roleForm.useable = 0
+      this.roleForm.menuIds = []
+      this.roleForm.menuAllIds = []
     },
     // 新增
     addSubmit () {
-      this.roleForm.menuIds = this.$refs.tree.getCheckedKeys();
+      this.roleForm.menuIds = this.$refs.tree.getCheckedKeys()
       this.$refs.roleForm.validate(valid => {
         if (valid) {
-          let roleForm = JSON.stringify(this.roleForm);
-          roleForm = JSON.parse(roleForm);
-          roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
-          roleForm.menuIds = roleForm.menuIds.join(",");
-          roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.addRole(roleForm,"添加成功").then(() => {
-            this.callback();
-            this.addFormVisible = false;
-          });
+          let roleForm = JSON.stringify(this.roleForm)
+          roleForm = JSON.parse(roleForm)
+          roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds)
+          roleForm.menuIds = roleForm.menuIds.join(',')
+          roleForm.menuAllIds = roleForm.menuAllIds.join(',')
+          this.$service.addRole(roleForm, '添加成功').then(() => {
+            this.callback()
+            this.addFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     resetAdd () {
-      this.$refs["roleForm"].resetFields();
-      this.$refs.tree.setCheckedKeys([]);
+      this.$refs['roleForm'].resetFields()
+      this.$refs.tree.setCheckedKeys([])
     },
 
     // 显示编辑页面
     handleEdit (index, row) {
-      this.editFormVisible = true;
-      this.roleForm.id = row.id;
-      this.roleForm.name = row.name;
-      this.roleForm.remarks = row.remarks;
-      this.roleForm.useable = row.useable;
-      this.roleForm.menuIds = row.menuIds;
-      var _this = this;
-      this.$nextTick(function() {
-        _this.$refs.editTree.setCheckedKeys(_this.roleForm.menuIds);
-      });
+      this.editFormVisible = true
+      this.roleForm.id = row.id
+      this.roleForm.name = row.name
+      this.roleForm.remarks = row.remarks
+      this.roleForm.useable = row.useable
+      this.roleForm.menuIds = row.menuIds
+      var _this = this
+      this.$nextTick(function () {
+        _this.$refs.editTree.setCheckedKeys(_this.roleForm.menuIds)
+      })
     },
     // editSubmit
     editSubmit () {
-      this.roleForm.menuIds = this.$refs.editTree.getCheckedKeys();
+      this.roleForm.menuIds = this.$refs.editTree.getCheckedKeys()
       this.$refs.roleForm.validate(valid => {
         if (valid) {
-          let roleForm = JSON.stringify(this.roleForm);
-          roleForm = JSON.parse(roleForm);
-          roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds);
-          roleForm.menuIds = roleForm.menuIds.join(",");
-          roleForm.menuAllIds = roleForm.menuAllIds.join(",");
-          this.$service.updateRole(roleForm,"编辑成功").then(() => {
-            this.callback();
-            this.editFormVisible = false;
-          });
+          let roleForm = JSON.stringify(this.roleForm)
+          roleForm = JSON.parse(roleForm)
+          roleForm.menuAllIds = this.getKeys(this.initTree, roleForm.menuIds)
+          roleForm.menuIds = roleForm.menuIds.join(',')
+          roleForm.menuAllIds = roleForm.menuAllIds.join(',')
+          this.$service.updateRole(roleForm, '编辑成功').then(() => {
+            this.callback()
+            this.editFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 取消
     cancelAdd () {
-      this.addFormVisible = false;
+      this.addFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消新增"
-      });
-      this.$refs.tree.setCheckedKeys([]);
-      this.$refs["roleForm"].resetFields();
+        message: '已取消新增'
+      })
+      this.$refs.tree.setCheckedKeys([])
+      this.$refs['roleForm'].resetFields()
     },
     cancelEdit () {
-      this.editFormVisible = false;
+      this.editFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消编辑"
-      });
+        message: '已取消编辑'
+      })
     },
 
     // 单行删除
     handleDelete (index, row) {
-      var id = row.id;
-      this.$confirm("确定要删除该条记录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "error"
+      var id = row.id
+      this.$confirm('确定要删除该条记录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
       })
         .then(() => {
-          this.$service.delRole({ id: id },"删除成功").then(() => {
-            this.callback();
-          });
+          this.$service.delRole({ id: id }, '删除成功').then(() => {
+            this.callback()
+          })
         })
         .catch(() => {
 
-        });
+        })
     },
     // 多选响应
     handleSelectionChange (val) {
       // 循环该数组,取出id放到(push)multipleSelection
-      var ids = [];
+      var ids = []
       for (var i = 0; i < val.length; i++) {
-        ids.push(val[i].id);
+        ids.push(val[i].id)
       }
-      this.multipleSelection = ids;
+      this.multipleSelection = ids
     },
     // 批量删除
     handleBatchDel () {
-      var ids = this.multipleSelection;
+      var ids = this.multipleSelection
       if (ids.length > 0) {
-        this.$confirm("确定要删除这批记录?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "error"
+        this.$confirm('确定要删除这批记录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
         })
           .then(() => {
-            this.$service.batchRoles({ ids: ids.join(",") },"删除成功").then(() => {
-              this.callback();
-            });
+            this.$service.batchRoles({ ids: ids.join(',') }, '删除成功').then(() => {
+              this.callback()
+            })
           })
           .catch(() => {
             this.$message({
               showClose: true,
-              message: "已取消删除操作"
-            });
-          });
+              message: '已取消删除操作'
+            })
+          })
       } else {
-        this.$alert("请至少勾选一条记录", "提示", {
-          confirmButtonText: "确定",
-          type: "warning"
-        });
+        this.$alert('请至少勾选一条记录', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        })
       }
     }
   }
-};
+}
 </script>

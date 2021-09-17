@@ -38,79 +38,79 @@
     </div>
 </template>
 <script>
-    export default {
-        data() {
-            return {
-                showCreateDialog: false,
-                showSelectDialog: false,
-                parentTree: [],
-                parentProps:{
-                    children:"children",
-                    label:"groupName"
-                },
-                parentGroupName: '',
-                currentSelectDada: '',
-                tagGroup: {},
-                items: [],
-                form: {
-                    pid: '',
-                },
-                rules: {
-                    pid: [
-                        { required: true, message: '请选择父类', trigger: 'change' },
-                    ]
-                },
-                selectTop: false
-            }
-        },
-        methods: {
-            handleSubmit(form) {
-                this.$refs[form].validate((valid) => {
-                    if (valid) {
-                        this.$emit('saveCopyTag', this.form.pid)
-                    } else {
-                        return false
-                    }
-                })
-            },
-            handleCancel () {
-                this.showCreateDialog = false
-            },
-            getPidList () {
-                this.$service.getParentIdList().then((data) => {
-                    this.parentTree = data
-                })
-            },
-            showPidList () {
-                this.showSelectDialog = true
-            },
-            handleSelectNodeClick (node) {
-                this.selectTop = false
-                this.currentSelectDada = node
-            },
-            handleTopMenu(){
-                this.selectTop = true
-            },
-            parentSelectCancel () {
-                this.showSelectDialog = false
-            },
-            parentSelectOk () {
-                if(this.selectTop){
-                    this.form.pid = 0
-                    this.parentGroupName = '顶级目录'
-                }else{
-                    this.form.pid = this.currentSelectDada.groupId
-                    this.parentGroupName = this.currentSelectDada.groupName
-                }
-                this.showSelectDialog = false
-            }
-        },
-        created() {
-            this.getPidList()
-            this.form.pid = null
-            this.parentGroupName = null
-        }
+export default {
+  data () {
+    return {
+      showCreateDialog: false,
+      showSelectDialog: false,
+      parentTree: [],
+      parentProps: {
+        children: 'children',
+        label: 'groupName'
+      },
+      parentGroupName: '',
+      currentSelectDada: '',
+      tagGroup: {},
+      items: [],
+      form: {
+        pid: ''
+      },
+      rules: {
+        pid: [
+          { required: true, message: '请选择父类', trigger: 'change' }
+        ]
+      },
+      selectTop: false
     }
+  },
+  methods: {
+    handleSubmit (form) {
+      this.$refs[form].validate((valid) => {
+        if (valid) {
+          this.$emit('saveCopyTag', this.form.pid)
+        } else {
+          return false
+        }
+      })
+    },
+    handleCancel () {
+      this.showCreateDialog = false
+    },
+    getPidList () {
+      this.$service.getParentIdList().then((data) => {
+        this.parentTree = data
+      })
+    },
+    showPidList () {
+      this.showSelectDialog = true
+    },
+    handleSelectNodeClick (node) {
+      this.selectTop = false
+      this.currentSelectDada = node
+    },
+    handleTopMenu () {
+      this.selectTop = true
+    },
+    parentSelectCancel () {
+      this.showSelectDialog = false
+    },
+    parentSelectOk () {
+      if (this.selectTop) {
+        this.form.pid = 0
+        this.parentGroupName = '顶级目录'
+      } else {
+        this.form.pid = this.currentSelectDada.groupId
+        this.parentGroupName = this.currentSelectDada.groupName
+      }
+      this.showSelectDialog = false
+    }
+  },
+  created () {
+    this.getPidList()
+    this.form.pid = null
+    this.parentGroupName = null
+  }
+}
 </script>
 <style scoped lang="stylus">
     .organSelect >>> .is-current

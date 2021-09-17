@@ -7,14 +7,14 @@
 </template>
 
 <script>
-    export default {
-        name: 'OverallDeliveryStatisticsAA',
-        data () {
-            return {
-                // pageSrc: 'http://bi.skysrt.com'
-            }
-        }
+export default {
+  name: 'OverallDeliveryStatisticsAA',
+  data () {
+    return {
+      // pageSrc: 'http://bi.skysrt.com'
     }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

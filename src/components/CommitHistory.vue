@@ -29,44 +29,44 @@
 </template>
 
 <script>
-    export default {
-        name: "CommitHistory",
-        data () {
-            return {
-                form: {
-                    isSubmit: 1,
-                    expiryDate: 7,
-                    expiryDateArray: [],
-                    showCommitHistoryDialog: undefined
-                }
-            }
-        },
-        props: ['setShowCommitHistoryDialog','crowdId'],
-        methods : {
-            handleSetExpiryDateArray (maxDay) {
-                let array = []
-                for (let i=0; i<maxDay; i++) {
-                    array.push({label: (i+1)+'天',value: i+1})
-                }
-                return array
-            },
-            handleDialogClose () {
-                this.$emit('closeDialog')
-            },
-            handleSubmit () {
-                const form = this.form
-                let submitForm = {
-                    isSubmit: form.isSubmit,
-                    id: this.crowdId,
-                    dateNum: form.isSubmit === 1 ? form.expiryDate : undefined
-                }
-                this.$emit('submit',submitForm)
-            }
-        },
-        created () {
-            this.expiryDateArray = this.handleSetExpiryDateArray(30)
-        }
+export default {
+  name: 'CommitHistory',
+  data () {
+    return {
+      form: {
+        isSubmit: 1,
+        expiryDate: 7,
+        expiryDateArray: [],
+        showCommitHistoryDialog: undefined
+      }
     }
+  },
+  props: ['setShowCommitHistoryDialog', 'crowdId'],
+  methods: {
+    handleSetExpiryDateArray (maxDay) {
+      let array = []
+      for (let i = 0; i < maxDay; i++) {
+        array.push({ label: (i + 1) + '天', value: i + 1 })
+      }
+      return array
+    },
+    handleDialogClose () {
+      this.$emit('closeDialog')
+    },
+    handleSubmit () {
+      const form = this.form
+      let submitForm = {
+        isSubmit: form.isSubmit,
+        id: this.crowdId,
+        dateNum: form.isSubmit === 1 ? form.expiryDate : undefined
+      }
+      this.$emit('submit', submitForm)
+    }
+  },
+  created () {
+    this.expiryDateArray = this.handleSetExpiryDateArray(30)
+  }
+}
 </script>
 
 <style scoped>

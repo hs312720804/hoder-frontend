@@ -17,7 +17,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
     }
   },
@@ -27,11 +27,11 @@ export default {
       type: Boolean,
       default: false
     }
-    
+
   },
   methods: {},
-  created() {
-    
+  created () {
+
   }
 }
 </script>

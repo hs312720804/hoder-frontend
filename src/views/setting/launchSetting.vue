@@ -82,116 +82,115 @@
 </template>
 
 <script>
-    export default {
-        name: "launchSettingsAA",
-        data () {
-            return {
-                tableData: [],
-                checked: true,
-                pagination: {
-                    pageSize: 10,
-                    pageNum: 1
-                },
-                total: undefined,
-                showAddDialog: false,
-                title: '',
-                currentId: undefined,
-                ruleForm: {
-                    biId: undefined,
-                    biName: '',
-                    positions: []
-                },
-                rules: {
-                    biId: [
-                        { required: true, message: '请输入业务ID', trigger: blur}
-                    ],
-                    biName: [
-                        { required: true, message: '请输入业务名称', trigger: blur}
-                    ],
-                    positions: [
-                        { type: 'array', required: true, message: '请至少勾选一个投放方式', trigger: blur}
-                    ]
-                }
-            }
-        },
-        methods: {
-            getFilter() {
-                return {
-                    // tagCategoryId: this.tagCategory.tagId,
-                    // ...this.filter,
-                    ...this.pagination
-                }
-            },
-            fetchData() {
-                const filter = this.getFilter()
-                this.$service.getLaunchList(filter).then(data => {
-                    this.tableData = data.list
-                    this.total = data.total
-                })
-            },
-            handleAdd () {
-                this.resetForm()
-                this.showAddDialog = true
-                this.title = '新增业务'
-                this.currentId = ''
-            },
-            submitForm(formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        const biId = this.currentId
-                        let formData = JSON.parse(JSON.stringify(this.ruleForm))
-                        formData.positions = formData.positions.map(item => item).join(',')
-                        // 为去除之前的某组问题数据
-                        // formData.positions = formData.positions.filter(item => item !== '').join(',')
-                        // if(formData.positions === ',' || formData.positions === '') {alert('数据为空');formData.positions = '';return}
-                        if (biId) {
-                            // 编辑保存
-                            formData.biId = biId
-                            this.$service.updateLaunchMenu(formData,'保存成功').then(() => {
-                                this.saveSuccessReload()
-                            })
-                        } else {
-                            // 新增保存
-                            this.$service.addLaunchMenu(formData,'保存成功').then(() => {
-                                this.saveSuccessReload()
-                            })
-                        }
-
-                    } else {
-                        return false
-                    }
-                })
-            },
-            resetForm() {
-                this.ruleForm = {
-                    biId: undefined,
-                    biName: '',
-                    positions: []
-                }
-            },
-            goBack () {
-               this.resetForm()
-               this.showAddDialog = false
-            },
-            handleEdit (row) {
-                this.showAddDialog = true
-                this.title = '编辑业务'
-                this.currentId = row.biId
-                this.ruleForm = {
-                    biId: row.biId,
-                    biName: row.biName,
-                    positions: row.position.split(',')
-                }
-            },
-            saveSuccessReload() {
-                this.showAddDialog = false
-                this.fetchData()
-            }
-        },
-        created () {
-            this.fetchData()
-        }
+export default {
+  name: 'launchSettingsAA',
+  data () {
+    return {
+      tableData: [],
+      checked: true,
+      pagination: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      total: undefined,
+      showAddDialog: false,
+      title: '',
+      currentId: undefined,
+      ruleForm: {
+        biId: undefined,
+        biName: '',
+        positions: []
+      },
+      rules: {
+        biId: [
+          { required: true, message: '请输入业务ID', trigger: blur }
+        ],
+        biName: [
+          { required: true, message: '请输入业务名称', trigger: blur }
+        ],
+        positions: [
+          { type: 'array', required: true, message: '请至少勾选一个投放方式', trigger: blur }
+        ]
+      }
     }
+  },
+  methods: {
+    getFilter () {
+      return {
+        // tagCategoryId: this.tagCategory.tagId,
+        // ...this.filter,
+        ...this.pagination
+      }
+    },
+    fetchData () {
+      const filter = this.getFilter()
+      this.$service.getLaunchList(filter).then(data => {
+        this.tableData = data.list
+        this.total = data.total
+      })
+    },
+    handleAdd () {
+      this.resetForm()
+      this.showAddDialog = true
+      this.title = '新增业务'
+      this.currentId = ''
+    },
+    submitForm (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          const biId = this.currentId
+          let formData = JSON.parse(JSON.stringify(this.ruleForm))
+          formData.positions = formData.positions.map(item => item).join(',')
+          // 为去除之前的某组问题数据
+          // formData.positions = formData.positions.filter(item => item !== '').join(',')
+          // if(formData.positions === ',' || formData.positions === '') {alert('数据为空');formData.positions = '';return}
+          if (biId) {
+            // 编辑保存
+            formData.biId = biId
+            this.$service.updateLaunchMenu(formData, '保存成功').then(() => {
+              this.saveSuccessReload()
+            })
+          } else {
+            // 新增保存
+            this.$service.addLaunchMenu(formData, '保存成功').then(() => {
+              this.saveSuccessReload()
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    resetForm () {
+      this.ruleForm = {
+        biId: undefined,
+        biName: '',
+        positions: []
+      }
+    },
+    goBack () {
+      this.resetForm()
+      this.showAddDialog = false
+    },
+    handleEdit (row) {
+      this.showAddDialog = true
+      this.title = '编辑业务'
+      this.currentId = row.biId
+      this.ruleForm = {
+        biId: row.biId,
+        biName: row.biName,
+        positions: row.position.split(',')
+      }
+    },
+    saveSuccessReload () {
+      this.showAddDialog = false
+      this.fetchData()
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

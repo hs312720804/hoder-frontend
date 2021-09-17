@@ -168,28 +168,28 @@
 <script>
 export default {
   name: 'emailNoticeAA',
-  data() {
+  data () {
     var validatePass = (rule, value, callback) => {
-      var c = value.indexOf("@coocaa.com");
-      var s = value.indexOf("@skyworth.com");
+      var c = value.indexOf('@coocaa.com')
+      var s = value.indexOf('@skyworth.com')
       if (c <= 0 && s <= 0) {
-        callback(new Error("邮箱后缀必须是coocaa.com或者skyworth.com"));
+        callback(new Error('邮箱后缀必须是coocaa.com或者skyworth.com'))
       } else {
-        callback();
+        callback()
       }
-    };
+    }
     return {
       // 表格当前页数据
       tableData: [],
-      dialogTitle: "新增",
+      dialogTitle: '新增',
       // 多选数组
       multipleSelection: [],
-      //搜索条件
+      // 搜索条件
       criteria: {},
       // 列表页
       searchForm: {
-        emailName: "",
-        type: ""
+        emailName: '',
+        type: ''
       },
       emailTypeList: null,
       //  typeList: null,
@@ -197,29 +197,29 @@ export default {
       addFormVisible: false, // 新增界面是否显示
       // 新增界面数据
       emailForm: {
-        id: "",
-        emailName: "",
+        id: '',
+        emailName: '',
         // type: '',
-        remarks: "",
+        remarks: '',
         status: 0,
         typeFlags: []
         // 以上为表单提交的参数
       },
       emailFormRules: {
         emailName: [
-          { required: true, message: "请填写邮箱", trigger: "blur" },
-          { type: "email", message: "请输入正确的邮箱" },
-          { validator: validatePass, trigger: "change" }
+          { required: true, message: '请填写邮箱', trigger: 'blur' },
+          { type: 'email', message: '请输入正确的邮箱' },
+          { validator: validatePass, trigger: 'change' }
         ],
         // type: [
         //     {type: 'number', required: true, message: '请选择邮件类型', trigger: 'change'}
         // ],
         typeFlags: [
           {
-            type: "array",
+            type: 'array',
             required: true,
-            message: "请至少选择一个邮件类型",
-            trigger: "change"
+            message: '请至少选择一个邮件类型',
+            trigger: 'change'
           }
         ]
       },
@@ -233,67 +233,67 @@ export default {
       start: 1,
       // 默认数据总数
       totalCount: 1
-    };
+    }
   },
   methods: {
     // 从服务器读取数据
-    loadData: function() {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
+    loadData: function () {
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.get_emails_json(this.criteria).then(data => {
-        this.tableData = data.pageInfo.list;
-        this.totalCount = data.pageInfo.total;
-        this.emailTypeList = data.emailTypeList;
-      });
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        this.emailTypeList = data.emailTypeList
+      })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
-      this.pageSize = val;
-      this.loadData();
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
     },
     // 搜索,提交表单
-    submitForm: function() {
-      var _this = this;
-      this.$refs.searchForm.validate(function(result) {
+    submitForm: function () {
+      var _this = this
+      this.$refs.searchForm.validate(function (result) {
         if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
+          _this.criteria = _this.searchForm
+          _this.loadData()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
     // 重置
-    handleReset: function() {
-      this.$refs.searchForm.resetFields();
+    handleReset: function () {
+      this.$refs.searchForm.resetFields()
     },
     // 修改状态
-    handleChangetStatus: function(index, row) {
-      var id = row.id;
-      var status = row.status == 1 ? 0 : 1;
-      this.$confirm("确定修改该条记录的状态?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    handleChangetStatus: function (index, row) {
+      var id = row.id
+      var status = row.status == 1 ? 0 : 1
+      this.$confirm('确定修改该条记录的状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.$service
-            .changeEmailStatus({ id: id, status: status },"修改成功")
+            .changeEmailStatus({ id: id, status: status }, '修改成功')
             .then(() => {
-              this.loadData();
-            });
+              this.loadData()
+            })
         })
         .catch(() => {
           this.$message({
             showClose: true,
-            message: "已取消修改该条记录的状态"
-          });
-        });
+            message: '已取消修改该条记录的状态'
+          })
+        })
     },
 
     // 查看详情
@@ -302,124 +302,124 @@ export default {
     //   // todo: 以后再做
     // },
     // 显示新增界面
-    handleAdd: function() {
-      this.dialogTitle = "新增";
-      this.addFormVisible = true;
-      this.emailForm.id = "";
-      this.emailForm.emailName = "";
+    handleAdd: function () {
+      this.dialogTitle = '新增'
+      this.addFormVisible = true
+      this.emailForm.id = ''
+      this.emailForm.emailName = ''
       // this.emailForm.type = '';
-      this.emailForm.typeFlags = [];
-      this.emailForm.remarks = "";
-      this.emailForm.status = 0;
+      this.emailForm.typeFlags = []
+      this.emailForm.remarks = ''
+      this.emailForm.status = 0
     },
 
     // 新增
-    addSubmit: function() {
-      var _this = this;
+    addSubmit: function () {
+      var _this = this
       this.$refs.emailForm.validate(valid => {
         if (valid) {
-          let emailForm = JSON.stringify(_this.emailForm);
-          emailForm = JSON.parse(emailForm);
-          emailForm.typeFlags = emailForm.typeFlags.join(",");
-          if(this.emailForm.id!=""){
-          this.$service.updateEmail(emailForm,"更新成功").then(() => {
-            this.loadData();
-            this.addFormVisible = false;
-          });
-          }else{
-          this.$service.addEmail(emailForm,"添加成功").then(() => {
-            this.loadData();
-            this.addFormVisible = false;
-          });
+          let emailForm = JSON.stringify(_this.emailForm)
+          emailForm = JSON.parse(emailForm)
+          emailForm.typeFlags = emailForm.typeFlags.join(',')
+          if (this.emailForm.id != '') {
+            this.$service.updateEmail(emailForm, '更新成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
+          } else {
+            this.$service.addEmail(emailForm, '添加成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 显示编辑页面
-    handleEdit: function(index, row) {
-      this.dialogTitle = "编辑";
-      this.addFormVisible = true;
-      this.emailForm.id = row.id;
-      this.emailForm.emailName = row.emailName;
+    handleEdit: function (index, row) {
+      this.dialogTitle = '编辑'
+      this.addFormVisible = true
+      this.emailForm.id = row.id
+      this.emailForm.emailName = row.emailName
       // this.emailForm.type = row.type;
-      this.emailForm.typeFlags = row.typeIds;
-      this.emailForm.remarks = row.remarks;
-      this.emailForm.status = row.status;
+      this.emailForm.typeFlags = row.typeIds
+      this.emailForm.remarks = row.remarks
+      this.emailForm.status = row.status
     },
     // 取消
-    cancelAdd: function() {
-      this.addFormVisible = false;
+    cancelAdd: function () {
+      this.addFormVisible = false
       // this.$message({
       //     showClose: true,
       //     message: '已取消新增'
       // });
     },
-    cancelEdit: function() {
-      this.editFormVisible = false;
+    cancelEdit: function () {
+      this.editFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消编辑"
-      });
+        message: '已取消编辑'
+      })
     },
 
     // 单行删除
-    handleDelete: function(index, row) {
-      var id = row.id;
-      this.$confirm("确定要删除该条记录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "error"
+    handleDelete: function (index, row) {
+      var id = row.id
+      this.$confirm('确定要删除该条记录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
       })
         .then(() => {
-          this.$service.delEmail({ id: id },"删除成功").then(() => {
-            this.loadData();
-          });
+          this.$service.delEmail({ id: id }, '删除成功').then(() => {
+            this.loadData()
+          })
         })
         .catch(() => {
-        });
+        })
     },
 
     // 多选响应
-    handleSelectionChange: function(val) {
+    handleSelectionChange: function (val) {
       // 循环该数组,取出id放到(push)multipleSelection
-      var ids = [];
+      var ids = []
       for (var i = 0; i < val.length; i++) {
-        ids.push(val[i].id);
+        ids.push(val[i].id)
       }
-      this.multipleSelection = ids;
+      this.multipleSelection = ids
     },
 
     // 批量删除
-    handleBatchDel: function() {
-      var ids = this.multipleSelection;
+    handleBatchDel: function () {
+      var ids = this.multipleSelection
       if (ids.length > 0) {
-        this.$confirm("确定要删除这批记录?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "error"
+        this.$confirm('确定要删除这批记录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
         })
           .then(() => {
-            this.$service.batchDelEmail({ ids: ids.join(",") },"删除成功").then(() => {
-              this.loadData();
-            });
+            this.$service.batchDelEmail({ ids: ids.join(',') }, '删除成功').then(() => {
+              this.loadData()
+            })
           })
           .catch(() => {
-          });
+          })
       } else {
-        this.$alert("请至少勾选一条记录", "提示", {
-          confirmButtonText: "确定",
-          type: "warning"
-        });
+        this.$alert('请至少勾选一条记录', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        })
       }
     }
   },
-  created() {
-    this.loadData();
+  created () {
+    this.loadData()
   }
-};
+}
 </script>
 <style scoped>
 .el-checkbox-group label {
@@ -429,4 +429,3 @@ export default {
   margin-left: 0px;
 }
 </style>
-

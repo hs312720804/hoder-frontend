@@ -221,7 +221,7 @@ export default {
   components: {
     CcInputThousandsInt
   },
-  data() {
+  data () {
     return {
       // 表格当前页数据
       strategyPlatform: [],
@@ -232,7 +232,7 @@ export default {
       // 新增自定义人群
       crowdDefineForm: {
         launchCrowdId: undefined,
-        launchName: '', //投放名称
+        launchName: '', // 投放名称
         crowdSql: '',
         // expiryDay: 7,
         autoVersion: 0,
@@ -240,12 +240,12 @@ export default {
         // proTempTag: false,
         autoLaunchTime: undefined,
         basicLine: undefined, // 数量基准验证用
-        macInitialValue: undefined, //Mac基准值
-        macAbovePer: undefined, //Mac最大阈值
-        macBelowPer: 5.0, //Mac最小阈值
-        wxInitialValue: undefined, //微信基准值
-        wxAbovePer: undefined, //微信最大阈值
-        wxBelowPer: undefined, //微信最小阈值
+        macInitialValue: undefined, // Mac基准值
+        macAbovePer: undefined, // Mac最大阈值
+        macBelowPer: 5.0, // Mac最小阈值
+        wxInitialValue: undefined, // 微信基准值
+        wxAbovePer: undefined, // 微信最大阈值
+        wxBelowPer: undefined, // 微信最小阈值
         // minMacEstimateCount: undefined,
         // maxMacEstimateCount: undefined,
         // minWxEstimateCount: undefined,
@@ -324,13 +324,13 @@ export default {
     //         return prev + cur
     //     })
     // },
-    'crowdDefineForm.videoSource': function(val) {
+    'crowdDefineForm.videoSource': function (val) {
       if (val === '0') {
         this.crowdDefineForm.videoSourceIds = []
       }
     }
   },
-  created() {
+  created () {
     this.getAddList()
     this.handleGetVideoList()
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
@@ -361,13 +361,13 @@ export default {
             // abTest: row.abTest,
             // ratios: abTestRatio,
             macInitialValue:
-              macInitialValue === null ? undefined : macInitialValue, //Mac基准值
-            macAbovePer: macAbovePer === null ? undefined : macAbovePer, //Mac最大阈值
-            macBelowPer: macBelowPer === null ? undefined : macBelowPer, //Mac最小阈值
+              macInitialValue === null ? undefined : macInitialValue, // Mac基准值
+            macAbovePer: macAbovePer === null ? undefined : macAbovePer, // Mac最大阈值
+            macBelowPer: macBelowPer === null ? undefined : macBelowPer, // Mac最小阈值
             wxInitialValue:
-              wxInitialValue === null ? undefined : wxInitialValue, //微信基准值
-            wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, //微信最大阈值
-            wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, //微信最小阈值
+              wxInitialValue === null ? undefined : wxInitialValue, // 微信基准值
+            wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, // 微信最大阈值
+            wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, // 微信最小阈值
             videoSource: row.videoSource === '0' ? '0' : '1',
             videoSourceIds:
               row.videoSource === '0' ? [] : row.videoSource.split(',')
@@ -379,10 +379,10 @@ export default {
     }
   },
   methods: {
-    callback() {
+    callback () {
       this.$emit('changeStatus', true)
     },
-    removeTag(policyId) {
+    removeTag (policyId) {
       this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter(
         v => {
           if (v.split('_')[0] != policyId) return v
@@ -390,7 +390,7 @@ export default {
       )
     },
     // 新增
-    handleRule() {
+    handleRule () {
       let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
       let macInitialValue = crowdForm.macInitialValue
       const macBelowPer = crowdForm.macBelowPer
@@ -405,7 +405,7 @@ export default {
         wxBelowPer
       )
     },
-    validateBasicLine(
+    validateBasicLine (
       macInitialValue,
       macBelowPer,
       wxInitialValue,
@@ -453,7 +453,7 @@ export default {
         return true
       }
     },
-    addSubmit() {
+    addSubmit () {
       this.$refs.crowdDefineForm.validate(valid => {
         if (valid) {
           let crowdForm = JSON.stringify(this.crowdDefineForm)
@@ -528,10 +528,10 @@ export default {
       })
     },
     // 取消
-    cancelAdd() {
+    cancelAdd () {
       this.$emit('cancel-add')
     },
-    getAddList() {
+    getAddList () {
       this.$service.addMultiVersionCrowd(1).then(data => {
         this.launchPlatform = data.biLists
         this.effectTimeList = data.efTime.map(item => {
@@ -546,7 +546,7 @@ export default {
       })
     },
     // 数组去重
-    distinct(a, b) {
+    distinct (a, b) {
       let arr = a.concat(b)
       let result = []
       let obj = {}
@@ -558,7 +558,7 @@ export default {
       }
       return result
     },
-    handleGetVideoList() {
+    handleGetVideoList () {
       this.$service.getVideoSourceList().then(data => {
         this.videoSourceList = data
       })

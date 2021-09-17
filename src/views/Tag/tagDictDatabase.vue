@@ -24,152 +24,152 @@
 </template>
 
 <script>
-    import _ from 'gateschema'
-    export default {
-        name: "tagDictDatabaseAA",
-        data () {
-            return {
-                filter: {},
-                filterSchema: _.map({
-                    tagName: _.o
-                        .string.other('form', {
-                            label: '请输入标签名称',
-                            placeholder: '请输入标签名称',
-                            cols: {
-                                item: 8,
-                                // label: 0,
-                                wrapper: 10
-                            }
-                        }),
-                    tagCode: _.o
-                        .string.other('form',{
-                            label:'请输入标签code',
-                            placeholder: '请输入标签code',
-                            cols: {
-                                item: 8,
-                                // label: 0,
-                                wrapper: 10
-                            }
-                        })
-                }).other('form', {
-                    layout: 'inline',
-                    footer: {
-                        cols: {
-                            label: 0,
-                            wrapper: 24
-                        },
-                        showSubmit: true,
-                        submitText: '查询',
-                        showReset: true,
-                        resetText: '重置'
-                    }
-                }),
-                pagination: {
-                },
-                selected: [],
-                table: {
-                    props: {},
-                    header: [
-                        {
-                            label: '标签名称',
-                            prop: 'tagName'
-                        },
-                        {
-                            label: '标签code',
-                            prop: 'tagCode'
-                        },
-                        {
-                            label: '标签值列值',
-                            prop: 'tagValues'
-                        },
-                        {
-                            label: '标签定义',
-                            prop: 'description'
-                        }
-
-                    ],
-                    data: [],
-                    selected: [],
-                    selectionType: 'multiple'
-                }
+import _ from 'gateschema'
+export default {
+  name: 'tagDictDatabaseAA',
+  data () {
+    return {
+      filter: {},
+      filterSchema: _.map({
+        tagName: _.o
+          .string.other('form', {
+            label: '请输入标签名称',
+            placeholder: '请输入标签名称',
+            cols: {
+              item: 8,
+              // label: 0,
+              wrapper: 10
             }
-        },
-        methods: {
-            exportData () {
-                this.$message('此功能待开发')
-            },
-            handleFilterChange (type, filter) {
-                if (filter) {
-                    this.filter = filter
-                }
-                if (type === 'query') {
-                    if(this.pagination) {
-                        this.pagination.currentPage = 1
-                    }
-                }
-                this.fetchData()
-            },
-            handleFilterReset () {
-                this.filter = {
-                    tagName: undefined,
-                    tagCode: undefined
-
-                }
-                this.fetchData()
-            },
-            handleRowSelectionAdd (targetItem) {
-                this.selected.push(targetItem.id)
-                this.updateTableSelected()
-            },
-            handleRowSelectionRemove (targetItem) {
-                this.selected = this.selected.filter(item => {
-                    return item !== targetItem.id
-                })
-                this.updateTableSelected()
-            },
-            handleAllRowSelectionChange (value) {
-                if (value) {
-                    this.table.data.forEach(this.handleRowSelectionAdd)
-                } else {
-                    this.selected = []
-                    this.table.selected = []
-                }
-            },
-            handleAllRowSelectionRemove () {
-                this.selected = []
-                this.table.selected = []
-            },
-            updateTableSelected() {
-                const table = this.table
-                const newSelectedIndex = this.selected.map(item => item)
-                table.selected = table.data.reduce((result, item, index)=> {
-                    if (newSelectedIndex.indexOf(item.id) > -1) {
-                        result.push(index)
-                    }
-                    return result
-                }, [])
-            },
-            parseFilter () {
-                const {filter, pagination} = this
-                if(pagination) {
-                    filter.pageNum = pagination.currentPage
-                    filter.pageSize = pagination.pageSize
-                }
-                return filter
-            },
-            fetchData () {
-                const filter = this.parseFilter()
-                this.$service.getTagDictDatabaseList(filter).then((data) => {
-                    this.table.data = data.pageInfo.list
-                    this.pagination.total = data.pageInfo.total
-                    this.pagination.pageSize = data.pageInfo.pageSize
-                })
+          }),
+        tagCode: _.o
+          .string.other('form', {
+            label: '请输入标签code',
+            placeholder: '请输入标签code',
+            cols: {
+              item: 8,
+              // label: 0,
+              wrapper: 10
             }
-        },
-        created() {
-            this.fetchData()
+          })
+      }).other('form', {
+        layout: 'inline',
+        footer: {
+          cols: {
+            label: 0,
+            wrapper: 24
+          },
+          showSubmit: true,
+          submitText: '查询',
+          showReset: true,
+          resetText: '重置'
         }
+      }),
+      pagination: {
+      },
+      selected: [],
+      table: {
+        props: {},
+        header: [
+          {
+            label: '标签名称',
+            prop: 'tagName'
+          },
+          {
+            label: '标签code',
+            prop: 'tagCode'
+          },
+          {
+            label: '标签值列值',
+            prop: 'tagValues'
+          },
+          {
+            label: '标签定义',
+            prop: 'description'
+          }
+
+        ],
+        data: [],
+        selected: [],
+        selectionType: 'multiple'
+      }
     }
+  },
+  methods: {
+    exportData () {
+      this.$message('此功能待开发')
+    },
+    handleFilterChange (type, filter) {
+      if (filter) {
+        this.filter = filter
+      }
+      if (type === 'query') {
+        if (this.pagination) {
+          this.pagination.currentPage = 1
+        }
+      }
+      this.fetchData()
+    },
+    handleFilterReset () {
+      this.filter = {
+        tagName: undefined,
+        tagCode: undefined
+
+      }
+      this.fetchData()
+    },
+    handleRowSelectionAdd (targetItem) {
+      this.selected.push(targetItem.id)
+      this.updateTableSelected()
+    },
+    handleRowSelectionRemove (targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.id
+      })
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange (value) {
+      if (value) {
+        this.table.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.table.selected = []
+      }
+    },
+    handleAllRowSelectionRemove () {
+      this.selected = []
+      this.table.selected = []
+    },
+    updateTableSelected () {
+      const table = this.table
+      const newSelectedIndex = this.selected.map(item => item)
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.id) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
+    },
+    parseFilter () {
+      const { filter, pagination } = this
+      if (pagination) {
+        filter.pageNum = pagination.currentPage
+        filter.pageSize = pagination.pageSize
+      }
+      return filter
+    },
+    fetchData () {
+      const filter = this.parseFilter()
+      this.$service.getTagDictDatabaseList(filter).then((data) => {
+        this.table.data = data.pageInfo.list
+        this.pagination.total = data.pageInfo.total
+        this.pagination.pageSize = data.pageInfo.pageSize
+      })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style scoped>

@@ -246,9 +246,9 @@
                         </el-select>
                       </div>
                       <!-- 官方-地域标签 end-->
-                      
-                      <!-- 
-                        多选下拉框 
+
+                      <!--
+                        多选下拉框
                         当 tagType 为 string 的时候可多选 222
                        -->
                       <el-select
@@ -275,13 +275,13 @@
                           :value="item.attrValue"
                         ></el-option>
                       </el-select>
-                      
+
                       <div class="errorMsg">
                         {{ childItem.errorMsg ? childItem.errorMsg : '' }}
                       </div>
                     </template>
                   </template>
-                
+
                 </template>
 
                 <!-- number 类型 -->
@@ -665,7 +665,7 @@
             >{{ tag.attrName }}
           </el-checkbox>
         </el-checkbox-group>
-        
+
         <el-radio-group v-else v-model="checkboxValue">
           <el-radio
             v-for="(tag, index) in tagList"
@@ -697,7 +697,7 @@
 
 <script>
 export default {
-  data() {
+  data () {
     return {
       cache: {},
       tagSelectMoreShow: false,
@@ -737,7 +737,7 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan',
+        8: 'warningCyan'
       },
       cityData: [],
       provinceValueList: []
@@ -772,21 +772,20 @@ export default {
   },
   watch: {
     rulesJson: {
-      handler() {
+      handler () {
         this.fetchAllTagSuggestions()
       },
-      immediate: true,
+      immediate: true
     },
     dynamicPolicyJson: {
-      handler() {
+      handler () {
         this.fetchAllTagSuggestions()
       },
       immediate: true
     }
   },
   methods: {
-    handelTimeTagTypeSelectChange(childItem) {
-
+    handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType == 0) {
         childItem.value = '-'
@@ -796,11 +795,11 @@ export default {
         childItem.value = ''
       }
     },
-    handleCheckboxOk() {
+    handleCheckboxOk () {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false
     },
-    handleCurrentChange(index) {
+    handleCurrentChange (index) {
       this.initCurrentPage = index
       this.$service
         .getTagAttr({
@@ -812,7 +811,7 @@ export default {
           this.tagList = data.pageInfo.list
         })
     },
-    citySelectChange(val, childRule, cityList) {
+    citySelectChange (val, childRule, cityList) {
       if (childRule.tagType === 'mix') {
         const matchCity = cityList.find(item => {
           return val === item.attrName
@@ -825,7 +824,7 @@ export default {
       }
     },
     // 根据省id获取市列表
-    areaSelectChange(val, tagCode, childItem) {
+    areaSelectChange (val, tagCode, childItem) {
       if (childItem) childItem.value = ''
       if (tagCode === 'mix_area') {
         const params = {
@@ -844,7 +843,7 @@ export default {
         })
       }
     },
-    changeTimeWays(childItem) {
+    changeTimeWays (childItem) {
       childItem.value = ''
       if (childItem.isDynamicTime) {
         childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
@@ -852,10 +851,10 @@ export default {
         this.$set(childItem, 'isDynamicTime', 2)
       }
     },
-    getDefaultOperator() {
+    getDefaultOperator () {
       return '='
     },
-    onSubmit() {
+    onSubmit () {
       this.$service
         .getTagAttr({
           tagId: this.currentChildItem.tagId,
@@ -868,7 +867,7 @@ export default {
           this.tagsListTotal = data.pageInfo.total
         })
     },
-    handleSelectMore(child) {
+    handleSelectMore (child) {
       // this.checkboxValue = ''
       this.formInline.attrName = ''
       this.currentChildItem = child
@@ -886,7 +885,7 @@ export default {
         })
     },
     // 获取组合标签列表
-    fetchSpecialTagSuggestions(tagId, tagKey) {
+    fetchSpecialTagSuggestions (tagId, tagKey) {
       const filter = {
         tagId,
         pageSize: 100
@@ -909,7 +908,7 @@ export default {
         })
       })
     },
-    fetchTagSuggestions(tagId) {
+    fetchTagSuggestions (tagId) {
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .getTagAttr({ tagId: tagId, pageNum: 1 })
@@ -920,7 +919,7 @@ export default {
           })
         })
     },
-    handleRemoveRule(rule, childRule) {
+    handleRemoveRule (rule, childRule) {
       const rulesJson = this.rulesJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       const tagIds = []
@@ -934,25 +933,25 @@ export default {
       if (this.crowd && this.crowd.rulesJson) this.crowd.tagIds = tagIds
 
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    handleRemoveSpecialRule(rule, childRule) {
+    handleRemoveSpecialRule (rule, childRule) {
       const rulesJson = this.dynamicPolicyJson
       rule.rules.splice(rule.rules.indexOf(childRule), 1)
       if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function(item) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
           return item !== rule
         })
       }
     },
-    /*添加一级标签 */
+    /* 添加一级标签 */
     /**
      * tag 为标签
      */
-    handleAddRule(tag) {
+    handleAddRule (tag) {
       if (this.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1015,7 +1014,7 @@ export default {
         ]
       })
     },
-    handleAddChildRule(rule, tag) {
+    handleAddChildRule (rule, tag) {
       if (rule.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1063,7 +1062,7 @@ export default {
         specialCondition: ''
       })
     },
-    handleAddSpecialRule(tag) {
+    handleAddSpecialRule (tag) {
       if (this.dynamicPolicyJson.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -1090,7 +1089,7 @@ export default {
         ]
       })
     },
-    handleAddSpecialChildRule(rule, tag) {
+    handleAddSpecialChildRule (rule, tag) {
       if (rule.rules.length > 50) {
         this.$message.warning('已达最大数量')
         return
@@ -1116,7 +1115,7 @@ export default {
       })
     },
     // 数组去重
-    distinct(a, b) {
+    distinct (a, b) {
       let arr = a.concat(b)
       let result = []
       let obj = {}
@@ -1128,7 +1127,7 @@ export default {
       }
       return result
     },
-    checkNum(num) {
+    checkNum (num) {
       if (/(^\d+$)/.test(num)) {
         return true
       } else {
@@ -1136,7 +1135,7 @@ export default {
         return false
       }
     },
-    checkNumMostFour(num) {
+    checkNumMostFour (num) {
       const numInt = parseInt(num)
       if (/(^\d+$)/.test(num) && numInt <= 9999) {
         return true
@@ -1408,7 +1407,7 @@ i {
   justify-content: center;
 }
 .behavior-label {
-  white-space: nowrap; 
+  white-space: nowrap;
   overflow-x: auto;
   display: flex
 }

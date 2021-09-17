@@ -6,23 +6,22 @@
 </template>
 
 <script>
- export default {
-   components: {},
-   data () {
-     return {
+export default {
+  components: {},
+  data () {
+    return {
 
-     }
-   },
-   created() {
-       console.log('prop===>', this.$props)
-   },
-   methods: {
+    }
+  },
+  created () {
+    console.log('prop===>', this.$props)
+  },
+  methods: {
 
-   }
- }
+  }
+}
 </script>
 
 <style lang='stylus' scoped>
 
- 
 </style>

@@ -57,7 +57,7 @@ export default {
       type: Array
     }
   },
-  data() {
+  data () {
     return {
       showList: true,
       editLaunchCrowdId: undefined,
@@ -71,9 +71,9 @@ export default {
       addOrEditStatus: ''
     }
   },
-  created() {},
+  created () {},
   methods: {
-    handleSave(selectedFile, launchName) {
+    handleSave (selectedFile, launchName) {
       // const params = {
       //   file: selectedFile,
       //   launchName: launchName
@@ -82,41 +82,41 @@ export default {
       formData.append('file', selectedFile)
       formData.append('launchName', launchName)
       // debugger
-      if ( this.addOrEditStatus === 'add' ) {
+      if (this.addOrEditStatus === 'add') {
         this.$service.addLocalCrowd(formData, '保存成功').then(() => {
           this.$root.$emit('local-label-list-refresh')
           this.handleCloseAddForm()
         })
       } else {
-        this.$service.updateLocalCrowd({formData, id: this.localCrowdId}, '编辑成功').then(() => {
+        this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
           this.$root.$emit('local-label-list-refresh')
           this.handleCloseAddForm()
         })
       }
     },
-    handleShowAdd(localCrowdId, crowdName) {
+    handleShowAdd (localCrowdId, crowdName) {
       this.showAdd2 = true
       this.refreshFlag = false
       this.localCrowdId = localCrowdId
       this.crowdName = crowdName
       this.addOrEditStatus = this.localCrowdId != null && this.crowdName != undefined ? 'edit' : 'add'
-      if ( this.addOrEditStatus === 'edit' ) {
+      if (this.addOrEditStatus === 'edit') {
         this.title = '编辑本地人群'
       } else {
         this.title = '新增本地人群'
       }
     },
-    handleRefreshList() {
+    handleRefreshList () {
       this.showList = true
       this.refreshFlag = true
     },
     handleCloseAddForm () {
       this.showAdd2 = false
     },
-    handleTableSelected(val, mode) {
+    handleTableSelected (val, mode) {
       this.$emit('get-table-selected', val, mode)
     },
-    handleCheckListChange(val) {
+    handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     }
   }

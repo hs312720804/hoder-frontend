@@ -13,7 +13,7 @@
 <script>
 import addMoreCrowd from './AddMoreCrowds2'
 export default {
-  name: "CreateCrowd",
+  name: 'CreateCrowd',
   components: {
     addMoreCrowd
   },
@@ -30,12 +30,12 @@ export default {
       this.$emit('crowdPrevStep', 1)
     },
     handleToNextStep (tempPolicyAndCrowd) {
-     this.$emit('crowdNextStep', 1, tempPolicyAndCrowd)
+      this.$emit('crowdNextStep', 1, tempPolicyAndCrowd)
     },
     resetFormData () {
       this.$emit('resetFormData')
     },
-    handleDirectStrategyListBrother() {
+    handleDirectStrategyListBrother () {
       this.$emit('handleDirectStrategyList')
     }
   },

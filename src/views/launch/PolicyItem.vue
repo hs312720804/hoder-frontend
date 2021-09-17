@@ -7,26 +7,26 @@
 </template>
 
 <script>
-    export default {
-        data() {
-            return {
-              content: ''
-            }
-        },
-        props: ['policyId', 'label'],
-        methods: {
-            handleGetContent() {
-                const policyId = this.policyId
-                if(!this.content){
-                    this.$service.getCrowdsByPolicyId({policyId}).then((data)=> {
-                        const crowdIds = []
-                        data.forEach((item)=> {
-                            crowdIds.push(item.crowdId)
-                        })
-                        this.content = '策略id:'+ policyId + ';包含人群id:'+crowdIds
-                    })
-                }
-            }
-        }
+export default {
+  data () {
+    return {
+      content: ''
     }
+  },
+  props: ['policyId', 'label'],
+  methods: {
+    handleGetContent () {
+      const policyId = this.policyId
+      if (!this.content) {
+        this.$service.getCrowdsByPolicyId({ policyId }).then((data) => {
+          const crowdIds = []
+          data.forEach((item) => {
+            crowdIds.push(item.crowdId)
+          })
+          this.content = '策略id:' + policyId + ';包含人群id:' + crowdIds
+        })
+      }
+    }
+  }
+}
 </script>

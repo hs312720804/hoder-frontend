@@ -25,7 +25,7 @@
 <script>
 export default {
   name: 'Add',
-  data() {
+  data () {
     return {
       slotData: {
         name: ''
@@ -38,7 +38,7 @@ export default {
       message: '',
       showAddForm: true,
       addFormRule: {
-        type: [{ required: true, message: '请选择文件类型' }],
+        type: [{ required: true, message: '请选择文件类型' }]
       },
       selectedFile: ''
     }
@@ -62,14 +62,14 @@ export default {
     }
   },
   watch: {
-    'form.type': function() {
+    'form.type': function () {
       this.message = ''
       this.resetFormFile()
       this.$refs.upload.value = ''
     }
   },
   methods: {
-    handleSelectFile(event) {
+    handleSelectFile (event) {
       this.message = ''
       if (event.currentTarget.files[0] !== '') {
         const fileName = event.currentTarget.files[0].name
@@ -111,23 +111,23 @@ export default {
           })
       }
     },
-    resetFormFile() {
+    resetFormFile () {
       this.form.fileName = undefined
       this.form.originFileName = undefined
     },
-    handleUploadFile() {
+    handleUploadFile () {
       if (this.form.type === undefined) {
         this.message = '请先选择文件类型！'
         return
       }
       this.$refs.upload.click()
     },
-    submitForm(formName) {
+    submitForm (formName) {
       this.$refs[formName].validate(valid => {
         if (valid) {
           const form = this.form
           const formData = JSON.parse(JSON.stringify(form))
-          if ( this.isUpload && form.fileName != undefined && form.originFileName != undefined) {
+          if (this.isUpload && form.fileName != undefined && form.originFileName != undefined) {
             this.$emit('save-form', formData, this.slotData.name)
             // this.$emit('upsert-end')
             // this.$emit('close-add')
@@ -142,7 +142,7 @@ export default {
       })
     }
   },
-  created() {
+  created () {
     if (this.localCrowdId != null && this.crowdName != undefined) {
       // 编辑状态
       this.slotData.name = this.crowdName

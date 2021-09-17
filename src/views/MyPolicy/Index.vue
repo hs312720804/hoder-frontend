@@ -14,31 +14,31 @@
 <script>
 import policyList from '../crowdStrategy/index'
 import launchList from '../launch/LaunchTabList'
-    export default {
-        name: "myPolicyAA",
-        components: {
-            policyList,
-            launchList
-        },
-        data () {
-            return {
-                tabsValue: 'crowd',
-                source: 'myCrowd'
-            }
-        },
-        watch : {
-            '$route.params.changeTab': function (val ,oldVal) {
-                if(val != oldVal && val) {
-                    this.tabsValue = 'launch'
-                }
-            }
-        },
-        created () {
-            if(this.$route.params.changeTab) {
-                this.tabsValue = 'launch'
-            }
-        }
+export default {
+  name: 'myPolicyAA',
+  components: {
+    policyList,
+    launchList
+  },
+  data () {
+    return {
+      tabsValue: 'crowd',
+      source: 'myCrowd'
     }
+  },
+  watch: {
+    '$route.params.changeTab': function (val, oldVal) {
+      if (val != oldVal && val) {
+        this.tabsValue = 'launch'
+      }
+    }
+  },
+  created () {
+    if (this.$route.params.changeTab) {
+      this.tabsValue = 'launch'
+    }
+  }
+}
 </script>
 
 <style scoped>

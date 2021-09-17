@@ -33,41 +33,41 @@
 </template>
 
 <script>
-    import schemeConfig from '@/views/OneTouchDrop/createConfigScheme'
-    export default {
-        name: "schemeIndex",
-        props: ['selectRow'],
-        data () {
-            return {
-                // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-                dataSourceColorEnum: {
-                    1: 'success',
-                    2: 'danger',
-                    3: '',
-                    5: 'warning',
-                    6: 'warningOrange',
-                    7: 'warningOrange2',
-                    8: 'warningCyan'
-                }
-            }
-        },
-        components: {
-            schemeConfig
-        },
-        mounted () {
-            this.$store.commit('setEditSchemeConfig', true)
-        },
-        methods: {
-            goBack () {
-                this.$emit("goBack")
-            },
-            handleEditSave () {
-                this.$refs['schemeConfigEdit'].handleEditSave().then(() => {
-                    this.$emit("goBack")
-                })
-            }
-        }
+import schemeConfig from '@/views/OneTouchDrop/createConfigScheme'
+export default {
+  name: 'schemeIndex',
+  props: ['selectRow'],
+  data () {
+    return {
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorEnum: {
+        1: 'success',
+        2: 'danger',
+        3: '',
+        5: 'warning',
+        6: 'warningOrange',
+        7: 'warningOrange2',
+        8: 'warningCyan'
+      }
     }
+  },
+  components: {
+    schemeConfig
+  },
+  mounted () {
+    this.$store.commit('setEditSchemeConfig', true)
+  },
+  methods: {
+    goBack () {
+      this.$emit('goBack')
+    },
+    handleEditSave () {
+      this.$refs['schemeConfigEdit'].handleEditSave().then(() => {
+        this.$emit('goBack')
+      })
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>
@@ -112,7 +112,7 @@
                 color: #00bcd4;
                 background-color: rgba(0, 189, 214, .1);
                 border-color: #00bcd42b
-            
+
         .button-margin
             margin-top 10px
 </style>

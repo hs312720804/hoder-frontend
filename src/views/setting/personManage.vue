@@ -262,58 +262,58 @@
 <script>
 export default {
   name: 'personManageAA',
-  data() {
+  data () {
     return {
       // 表格当前页数据
       tableData: [],
       // 多选数组
       multipleSelection: [],
-      //搜索条件
+      // 搜索条件
       criteria: {},
       // 列表页
       searchForm: {
-        userMsg: ""
+        userMsg: ''
       },
       // 新增页
       addFormVisible: false, // 新增界面是否显示
       // 新增界面数据
       userForm: {
-        id: "",
-        name: "",
-        loginName: "",
-        email: "",
-        password: "",
-        officeId: "",
-        remarks: "",
+        id: '',
+        name: '',
+        loginName: '',
+        email: '',
+        password: '',
+        officeId: '',
+        remarks: '',
         loginFlag: 0,
         mailNotice: false,
         roleIds: [], // 该用户所拥有的角色id
         // 以上为表单提交的参数
-        officeName: "", // 机构名称
+        officeName: '', // 机构名称
         roleList: null // 角色列表
       },
       userFormRules: {
-        name: [{ required: true, message: "请输入真实姓名", trigger: "blur" }],
+        name: [{ required: true, message: '请输入真实姓名', trigger: 'blur' }],
         loginName: [
-          { required: true, message: "请输入登录账号", trigger: "blur" }
+          { required: true, message: '请输入登录账号', trigger: 'blur' }
         ],
-        email: [{ required: true, message: "请输入邮箱", trigger: "blur" }],
+        email: [{ required: true, message: '请输入邮箱', trigger: 'blur' }],
         // password: [
         //     {required: true, message: '请输入密码', trigger: 'blur'}
         // ],
         roleIds: [
           {
-            type: "array",
+            type: 'array',
             required: true,
-            message: "请至少选择一个角色",
-            trigger: "change"
+            message: '请至少选择一个角色',
+            trigger: 'change'
           }
         ],
         officeName: [
-          { required: true, message: "请选择所属部门", trigger: "blur" }
+          { required: true, message: '请选择所属部门', trigger: 'blur' }
         ],
         remarks: [
-          { required: true, message: "请输入备注信息", trigger: "blur" }
+          { required: true, message: '请输入备注信息', trigger: 'blur' }
         ]
       },
       // 编辑页
@@ -326,52 +326,52 @@ export default {
       start: 1,
       // 默认数据总数
       totalCount: 1,
-      companys:[],
-      companyProps:{
-       chilidren:"children",
-       label:"name"
+      companys: [],
+      companyProps: {
+        chilidren: 'children',
+        label: 'name'
       },
-      companyVisible:false,//机构页面是否显示
-    };
+      companyVisible: false// 机构页面是否显示
+    }
   },
   methods: {
-    callback() {
-        this.loadData();
+    callback () {
+      this.loadData()
     },
     // 从服务器读取数据
-    loadData: function() {
-      this.criteria["pageNum"] = this.currentPage;
-      this.criteria["pageSize"] = this.pageSize;
+    loadData: function () {
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.get_users_json(this.criteria).then(data => {
-        this.tableData = data.pageInfo.list;
-        this.totalCount = data.pageInfo.total;
-        this.userForm.roleList=data.roleList
-      });
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        this.userForm.roleList = data.roleList
+      })
     },
 
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
-    handleSizeChange: function(val) {
-      this.pageSize = val;
-      this.loadData();
+    handleSizeChange: function (val) {
+      this.pageSize = val
+      this.loadData()
     },
 
     // 页码变更, 如第1页变成第2页时,val=2
-    handleCurrentChange: function(val) {
-      this.currentPage = val;
-      this.loadData();
+    handleCurrentChange: function (val) {
+      this.currentPage = val
+      this.loadData()
     },
 
     // 搜索,提交表单
-    submitForm: function() {
-      var _this = this;
-      this.$refs.searchForm.validate(function(result) {
+    submitForm: function () {
+      var _this = this
+      this.$refs.searchForm.validate(function (result) {
         if (result) {
-          _this.criteria = _this.searchForm;
-          _this.loadData();
+          _this.criteria = _this.searchForm
+          _this.loadData()
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // // 刷新
@@ -380,29 +380,29 @@ export default {
     // },
 
     // 重置
-    handleReset: function() {
-      this.$refs.searchForm.resetFields();
+    handleReset: function () {
+      this.$refs.searchForm.resetFields()
     },
 
     // 修改状态
-    handleChangetStatus: function(index, row) {
-      var id = row.id;
-      var loginFlag = row.loginFlag == 1 ? 0 : 1;
-      this.$confirm("确定修改该条记录的状态?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+    handleChangetStatus: function (index, row) {
+      var id = row.id
+      var loginFlag = row.loginFlag == 1 ? 0 : 1
+      this.$confirm('确定修改该条记录的状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.$service
-            .changeloginFlag({ id: id, loginFlag: loginFlag },"状态修改成功")
+            .changeloginFlag({ id: id, loginFlag: loginFlag }, '状态修改成功')
             .then(() => {
-              this.callback();
-            });
+              this.callback()
+            })
         })
         .catch(() => {
 
-        });
+        })
     },
 
     // 查看详情
@@ -410,171 +410,171 @@ export default {
     //   var id = row.id;
     //   // todo: 以后再做
     // },
-   selectOffice(){
-     this.companyVisible=true;
-     this.$service.get_office_tree_json().then((data)=>{
-         this.companys=data.officeTree
-     })
-   },
-   handleNodeClick(data){
+    selectOffice () {
+      this.companyVisible = true
+      this.$service.get_office_tree_json().then((data) => {
+        this.companys = data.officeTree
+      })
+    },
+    handleNodeClick (data) {
     // this.userForm.company=data
-     this.$appState.$set("company_data",JSON.stringify(data));
-   },
-   companySelectCancel(){
-     this.$appState.$set("company_data",'');
-     this.companyVisible=false;
-   },
-   companySelectOk(){
-     this.companyVisible=false;
-     const data=JSON.parse(this.$appState.$get("company_data"));
-     this.userForm.officeId=data.id;
-     this.userForm.officeName=data.name;
-   },
+      this.$appState.$set('company_data', JSON.stringify(data))
+    },
+    companySelectCancel () {
+      this.$appState.$set('company_data', '')
+      this.companyVisible = false
+    },
+    companySelectOk () {
+      this.companyVisible = false
+      const data = JSON.parse(this.$appState.$get('company_data'))
+      this.userForm.officeId = data.id
+      this.userForm.officeName = data.name
+    },
     // 显示新增界面
-    handleAdd: function() {
-      this.addFormVisible = true;
-      this.userForm.id = "";
-      this.userForm.name = "";
-      this.userForm.loginName = "";
-      this.userForm.email = "";
-      this.userForm.password = "";
-      this.userForm.officeId = "";
-      this.userForm.remarks = "";
-      this.userForm.loginFlag = 0;
-      this.userForm.officeName = "";
-      this.userForm.roleIds = [];
-      this.userForm.mailNotice=false;
+    handleAdd: function () {
+      this.addFormVisible = true
+      this.userForm.id = ''
+      this.userForm.name = ''
+      this.userForm.loginName = ''
+      this.userForm.email = ''
+      this.userForm.password = ''
+      this.userForm.officeId = ''
+      this.userForm.remarks = ''
+      this.userForm.loginFlag = 0
+      this.userForm.officeName = ''
+      this.userForm.roleIds = []
+      this.userForm.mailNotice = false
     },
 
     // 新增
-    addSubmit: function() {
-      var _this = this;
+    addSubmit: function () {
+      var _this = this
       this.$refs.userForm.validate(valid => {
         if (valid) {
-          let userForm = JSON.stringify(_this.userForm);
-          userForm = JSON.parse(userForm);
-          userForm.roleIds = userForm.roleIds.join(",");
+          let userForm = JSON.stringify(_this.userForm)
+          userForm = JSON.parse(userForm)
+          userForm.roleIds = userForm.roleIds.join(',')
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.addUser(userForm,"添加成功").then(() => {
-            this.callback();
-            this.addFormVisible=false;
-          });
+          this.$service.addUser(userForm, '添加成功').then(() => {
+            this.callback()
+            this.addFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 显示编辑页面
-    handleEdit: function(index, row) {
-      this.editFormVisible = true;
-      this.userForm.id = row.id;
-      this.userForm.name = row.name;
-      this.userForm.loginName = row.loginName;
-      this.userForm.email = row.email;
-      this.userForm.password = "";
-      this.userForm.officeId = row.officeId;
-      this.userForm.remarks = row.remarks;
-      this.userForm.loginFlag = row.loginFlag;
-      this.userForm.officeName = row.officeName;
-      this.userForm.roleIds = row.roleIds;
-      this.userForm.mailNotice=false;
+    handleEdit: function (index, row) {
+      this.editFormVisible = true
+      this.userForm.id = row.id
+      this.userForm.name = row.name
+      this.userForm.loginName = row.loginName
+      this.userForm.email = row.email
+      this.userForm.password = ''
+      this.userForm.officeId = row.officeId
+      this.userForm.remarks = row.remarks
+      this.userForm.loginFlag = row.loginFlag
+      this.userForm.officeName = row.officeName
+      this.userForm.roleIds = row.roleIds
+      this.userForm.mailNotice = false
     },
 
     // editSubmit
-    editSubmit: function() {
-      var _this = this;
+    editSubmit: function () {
+      var _this = this
       this.$refs.userForm.validate(valid => {
         if (valid) {
-          let userForm = JSON.stringify(_this.userForm);
-          userForm = JSON.parse(userForm);
-          userForm.roleIds = userForm.roleIds.join(",");
+          let userForm = JSON.stringify(_this.userForm)
+          userForm = JSON.parse(userForm)
+          userForm.roleIds = userForm.roleIds.join(',')
           delete userForm.officeName
           delete userForm.roleList
-          this.$service.updateUser(userForm,"更新成功").then(() => {
-            this.callback();
-            this.editFormVisible=false;
-          });
+          this.$service.updateUser(userForm, '更新成功').then(() => {
+            this.callback()
+            this.editFormVisible = false
+          })
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 取消
-    cancelAdd: function() {
-      this.addFormVisible = false;
+    cancelAdd: function () {
+      this.addFormVisible = false
       // this.$message({
       //     showClose: true,
       //     message: '已取消新增'
       // });
     },
-    cancelEdit: function() {
-      this.editFormVisible = false;
+    cancelEdit: function () {
+      this.editFormVisible = false
       this.$message({
         showClose: true,
-        message: "已取消编辑"
-      });
+        message: '已取消编辑'
+      })
     },
 
     // 单行删除
-    handleDelete: function(index, row) {
-      var id = row.id;
-      this.$confirm("确定要删除该条记录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "error"
+    handleDelete: function (index, row) {
+      var id = row.id
+      this.$confirm('确定要删除该条记录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
       })
         .then(() => {
-          this.$service.delUser({ id: id },"删除成功").then(() => {
-            this.callback();
-          });
+          this.$service.delUser({ id: id }, '删除成功').then(() => {
+            this.callback()
+          })
         })
         .catch(() => {
-        });
+        })
     },
 
     // 多选响应
-    handleSelectionChange: function(val) {
+    handleSelectionChange: function (val) {
       // 循环该数组,取出id放到(push)multipleSelection
-      var ids = [];
+      var ids = []
       for (var i = 0; i < val.length; i++) {
-        ids.push(val[i].id);
+        ids.push(val[i].id)
       }
-      this.multipleSelection = ids;
+      this.multipleSelection = ids
     },
 
     // 批量删除
-    handleBatchDel: function() {
-      var ids = this.multipleSelection;
+    handleBatchDel: function () {
+      var ids = this.multipleSelection
       if (ids.length > 0) {
-        this.$confirm("确定要删除这批记录?", "提示", {
-          confirmButtonText: "确定",
-          cancelButtonText: "取消",
-          type: "error"
+        this.$confirm('确定要删除这批记录?', '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'error'
         })
           .then(() => {
-            this.$service.batchDelUsers({ids:ids.join(",")},"删除成功").then(() => {
-              this.callback();
-            });
+            this.$service.batchDelUsers({ ids: ids.join(',') }, '删除成功').then(() => {
+              this.callback()
+            })
           })
           .catch(() => {
 
-          });
+          })
       } else {
-        this.$alert("请至少勾选一条记录", "提示", {
-          confirmButtonText: "确定",
-          type: "warning"
-        });
+        this.$alert('请至少勾选一条记录', '提示', {
+          confirmButtonText: '确定',
+          type: 'warning'
+        })
       }
     }
   },
-  created() {
-    this.loadData();
+  created () {
+    this.loadData()
   }
   //  })
-};
+}
 </script>
 <style scoped lang="stylus">
     .el-checkbox-group label

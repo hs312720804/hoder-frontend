@@ -56,110 +56,109 @@
 </template>
 
 <script>
-    export default {
-        name: "hitSearchAA",
-        data () {
-            return {
-                form: this.genForm(),
-                outForm: this.genOutForm(),
-                pageNum: 0,
-                pageSize: 1,
-                showNext: false,
-                resultContent: undefined,
-                rules: {
-                    MAC: { required: true, message: '请输入有效的Mac地址', trigger: 'blur'},
-                    policyId: { required: true, message: '请输入人群ID', trigger: 'blur' },
-                    mac: { required: true, message: '请输入有效的Mac地址', trigger: 'blur'},
-                    policyIds: { required: true, message: '请输入人群ID', trigger: 'blur' }
-                }
-            }
-        },
-        watch: {
-            'outForm.auto': function(val) {
-                if (val) {
-                    this.handleGetAutoData()
-                } else {
-                    this.form = this.genForm()
-                }
-            }
-        },
-        methods: {
-            genForm (preset) {
-                return {
-                    // devId: undefined,
-                    // devInfo: undefined,
-                    policyIds: undefined,
-                    // reqSource: undefined,
-                    mac: undefined,
-                    // uniqueFlag: undefined,
-                    // ...preset
-                }
-            },
-            genOutForm (present) {
-                return {
-                    MAC: undefined,
-                    policyId: undefined,
-                    auto: false,
-                    ...present
-                }
-            },
-            handleReset () {
-                this.form = this.genForm()
-                this.outForm = this.genOutForm()
-                this.resultContent = undefined
-                this.showNext = false
-            },
-            handleSearch () {
-                const form = this.form
-                // const form = this.outForm
-                
-                this.$service.getHitSearchData(form).then(data => {
-                    if (data) {
-                       this.resultContent = data
-                    } else {
-                        this.resultContent = '暂无数据'
-                    }
-
-                })
-            },
-            checkOutForm () {
-                const form = this.outForm
-                if (form.MAC || form.policyId){
-                    return true
-                } else {
-                    this.$message.error('MAC或策略ID至少得填一项！')
-                    return false
-                }
-            },
-            parseAutoFilter () {
-                const form = this.outForm
-                return {
-                    MAC: form.MAC,
-                    policyId: form.policyId,
-                    pageSize: this.pageSize,
-                    pageNum: this.pageNum
-                }
-            },
-            handleGetAutoData () {
-                const checkOutFormFlag = this.checkOutForm()
-                if (checkOutFormFlag) {
-                    const filter = this.parseAutoFilter()
-                    this.$service.getAutoFilledParams(filter).then(data => {
-                        if (data.length > 0) {
-                            this.form = data[0]
-                            this.showNext = true
-                        } else {
-                            this.showNext = false
-                        }
-                    })
-                }
-            },
-            handleNext () {
-                this.pageNum = this.pageNum + 1
-                this.handleGetAutoData()
-            }
-        }
+export default {
+  name: 'hitSearchAA',
+  data () {
+    return {
+      form: this.genForm(),
+      outForm: this.genOutForm(),
+      pageNum: 0,
+      pageSize: 1,
+      showNext: false,
+      resultContent: undefined,
+      rules: {
+        MAC: { required: true, message: '请输入有效的Mac地址', trigger: 'blur' },
+        policyId: { required: true, message: '请输入人群ID', trigger: 'blur' },
+        mac: { required: true, message: '请输入有效的Mac地址', trigger: 'blur' },
+        policyIds: { required: true, message: '请输入人群ID', trigger: 'blur' }
+      }
     }
+  },
+  watch: {
+    'outForm.auto': function (val) {
+      if (val) {
+        this.handleGetAutoData()
+      } else {
+        this.form = this.genForm()
+      }
+    }
+  },
+  methods: {
+    genForm (preset) {
+      return {
+        // devId: undefined,
+        // devInfo: undefined,
+        policyIds: undefined,
+        // reqSource: undefined,
+        mac: undefined
+        // uniqueFlag: undefined,
+        // ...preset
+      }
+    },
+    genOutForm (present) {
+      return {
+        MAC: undefined,
+        policyId: undefined,
+        auto: false,
+        ...present
+      }
+    },
+    handleReset () {
+      this.form = this.genForm()
+      this.outForm = this.genOutForm()
+      this.resultContent = undefined
+      this.showNext = false
+    },
+    handleSearch () {
+      const form = this.form
+      // const form = this.outForm
+
+      this.$service.getHitSearchData(form).then(data => {
+        if (data) {
+          this.resultContent = data
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
+    checkOutForm () {
+      const form = this.outForm
+      if (form.MAC || form.policyId) {
+        return true
+      } else {
+        this.$message.error('MAC或策略ID至少得填一项！')
+        return false
+      }
+    },
+    parseAutoFilter () {
+      const form = this.outForm
+      return {
+        MAC: form.MAC,
+        policyId: form.policyId,
+        pageSize: this.pageSize,
+        pageNum: this.pageNum
+      }
+    },
+    handleGetAutoData () {
+      const checkOutFormFlag = this.checkOutForm()
+      if (checkOutFormFlag) {
+        const filter = this.parseAutoFilter()
+        this.$service.getAutoFilledParams(filter).then(data => {
+          if (data.length > 0) {
+            this.form = data[0]
+            this.showNext = true
+          } else {
+            this.showNext = false
+          }
+        })
+      }
+    },
+    handleNext () {
+      this.pageNum = this.pageNum + 1
+      this.handleGetAutoData()
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

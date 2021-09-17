@@ -140,203 +140,202 @@
 </template>
 <script>
 export default {
-  data() {
+  data () {
     const checkSort = (rule, value, callback) => {
-        if(!value) {
-            return callback(new Error('排序不能为空'))
-        }
-        if(!Number.isInteger(value)){
-            callback(new Error('请输入正整数'))
-        } else {
-            callback()
-        }
+      if (!value) {
+        return callback(new Error('排序不能为空'))
+      }
+      if (!Number.isInteger(value)) {
+        callback(new Error('请输入正整数'))
+      } else {
+        callback()
+      }
     }
     return {
       // 表格当前页数据
       tableData: [],
-      dialogTitle: "",
+      dialogTitle: '',
       organs: [],
       organProps: {
-        chilidren: "children",
-        label: "name"
+        chilidren: 'children',
+        label: 'name'
       },
       // 新增页
       addFormVisible: false, // 新增界面是否显示
       organVisible: false,
       // 新增界面数据
       menuForm: {
-        id: "",
+        id: '',
         parentId: 0,
-        parentName: "顶级菜单",
-        name: "",
-        href: "",
-        permission: "",
-        icon: "",
-        sort: "",
+        parentName: '顶级菜单',
+        name: '',
+        href: '',
+        permission: '',
+        icon: '',
+        sort: '',
         isShow: 0
       },
       menuFormRules: {
-        name: [{ required: true, message: "请填写菜单名称", trigger: "blur" }],
+        name: [{ required: true, message: '请填写菜单名称', trigger: 'blur' }],
         permission: [
-          { required: true, message: "请填写权限", trigger: "blur" }
+          { required: true, message: '请填写权限', trigger: 'blur' }
         ],
-        icon: [{ required: true, message: "请填写菜单图标", trigger: "blur" }],
+        icon: [{ required: true, message: '请填写菜单图标', trigger: 'blur' }],
         sort: [
-            {required: true, validator: checkSort, trigger: 'blur'}
+          { required: true, validator: checkSort, trigger: 'blur' }
         ]
       },
 
       // 编辑页
       editFormVisible: false // 编辑界面是否显示
-    };
+    }
   },
-  props: ["iconName"],
-  created() {
-    this.loadData();
-    this.menuForm.icon = this.iconName;
+  props: ['iconName'],
+  created () {
+    this.loadData()
+    this.menuForm.icon = this.iconName
   },
   watch: {
     iconName (val) {
-      this.menuForm.icon = val;
+      this.menuForm.icon = val
     }
   },
   methods: {
     // 从服务器读取数据
     loadData () {
       this.$service.get_menus_json().then(data => {
-        this.tableData = data.menuTreeTable;
-      });
+        this.tableData = data.menuTreeTable
+      })
     },
-    selectIcon() {
-      this.$emit("show", false);
-      document.querySelector(".v-modal").style.display = "none";
+    selectIcon () {
+      this.$emit('show', false)
+      document.querySelector('.v-modal').style.display = 'none'
     },
     // 修改状态
     handleChangetStatus (index, row) {
-      var id = row.id;
-      var isShow = row.isShow == 1 ? 0 : 1;
-      this.$confirm("确定修改该条记录的状态?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "warning"
+      var id = row.id
+      var isShow = row.isShow == 1 ? 0 : 1
+      this.$confirm('确定修改该条记录的状态?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
       })
         .then(() => {
           this.$service
-            .changeMenuStatus({ id: id, isShow: isShow },"修改成功")
+            .changeMenuStatus({ id: id, isShow: isShow }, '修改成功')
             .then(() => {
-              this.loadData();
-            });
+              this.loadData()
+            })
         })
         .catch(() => {
 
-        });
+        })
     },
 
     // 查看详情
     // handleDetail (index, row) {
     // },
-    selectMenu() {
+    selectMenu () {
       this.$service.get_menu_tree_json().then(data => {
-        this.organs = data;
-        this.organVisible = true;
-      });
+        this.organs = data
+        this.organVisible = true
+      })
     },
-    handleNodeClick(data) {
-      this.$appState.$set("company_data", JSON.stringify(data));
+    handleNodeClick (data) {
+      this.$appState.$set('company_data', JSON.stringify(data))
     },
-    companySelectCancel() {
-      this.$appState.$set("company_data", "");
-      this.organVisible = false;
+    companySelectCancel () {
+      this.$appState.$set('company_data', '')
+      this.organVisible = false
     },
-    companySelectOk() {
-      this.organVisible = false;
-      const data = JSON.parse(this.$appState.$get("company_data"));
-      this.menuForm.parentId = data.id;
-      this.menuForm.parentName = data.name;
+    companySelectOk () {
+      this.organVisible = false
+      const data = JSON.parse(this.$appState.$get('company_data'))
+      this.menuForm.parentId = data.id
+      this.menuForm.parentName = data.name
     },
 
     // 显示新增界面
     handleAdd () {
-      this.dialogTitle = "新增";
-      this.addFormVisible = true;
-      this.menuForm.id = "";
-      this.menuForm.parentId = "";
-      this.menuForm.parentName = "";
-      this.menuForm.name = "";
-      this.menuForm.href = "";
-      this.menuForm.permission = "";
-      this.menuForm.icon = "";
-      this.menuForm.sort = "";
-      this.menuForm.isShow = 0;
+      this.dialogTitle = '新增'
+      this.addFormVisible = true
+      this.menuForm.id = ''
+      this.menuForm.parentId = ''
+      this.menuForm.parentName = ''
+      this.menuForm.name = ''
+      this.menuForm.href = ''
+      this.menuForm.permission = ''
+      this.menuForm.icon = ''
+      this.menuForm.sort = ''
+      this.menuForm.isShow = 0
     },
 
     // 新增
     addSubmit () {
       const formData = JSON.parse(JSON.stringify(this.menuForm))
-      if(formData.parentId === '') {formData.parentId = 0}
+      if (formData.parentId === '') { formData.parentId = 0 }
       this.$refs.menuForm.validate(valid => {
         if (valid) {
-          if (formData.id != "") {
-            this.$service.MenuUpdate(formData,"更新成功").then(() => {
-              this.loadData();
-              this.addFormVisible = false;
-            });
+          if (formData.id != '') {
+            this.$service.MenuUpdate(formData, '更新成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
           } else {
-            this.$service.MenuAdd(formData,"添加成功").then(() => {
-              this.loadData();
-              this.addFormVisible = false;
-            });
+            this.$service.MenuAdd(formData, '添加成功').then(() => {
+              this.loadData()
+              this.addFormVisible = false
+            })
           }
         } else {
-          return false;
+          return false
         }
-      });
+      })
     },
 
     // 显示编辑页面
     handleEdit (index, row) {
-      this.dialogTitle = "编辑";
-      this.addFormVisible = true;
-      this.menuForm.id = row.id;
-      this.menuForm.parentId = row.parentId;
+      this.dialogTitle = '编辑'
+      this.addFormVisible = true
+      this.menuForm.id = row.id
+      this.menuForm.parentId = row.parentId
       if (row.parentName == null) {
-        this.menuForm.parentName = "";
+        this.menuForm.parentName = ''
       } else {
-        this.menuForm.parentName = row.parentName;
+        this.menuForm.parentName = row.parentName
       }
-      this.menuForm.name = row.name;
-      this.menuForm.href = row.href;
-      this.menuForm.permission = row.permission;
-      this.menuForm.icon = row.icon;
-      this.menuForm.sort = row.sort;
-      this.menuForm.isShow = row.isShow;
+      this.menuForm.name = row.name
+      this.menuForm.href = row.href
+      this.menuForm.permission = row.permission
+      this.menuForm.icon = row.icon
+      this.menuForm.sort = row.sort
+      this.menuForm.isShow = row.isShow
     },
     // 取消
     cancelAdd () {
-      this.addFormVisible = false;
+      this.addFormVisible = false
     },
     // 单行删除
     handleDelete (index, row) {
-      var id = row.id;
-      this.$confirm("确定要删除该条记录?", "提示", {
-        confirmButtonText: "确定",
-        cancelButtonText: "取消",
-        type: "error"
+      var id = row.id
+      this.$confirm('确定要删除该条记录?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'error'
       })
         .then(() => {
-          this.$service.delMenu({ id: id },"删除成功").then(() => {
-            this.loadData();
-          });
+          this.$service.delMenu({ id: id }, '删除成功').then(() => {
+            this.loadData()
+          })
         })
         .catch(() => {
 
-        });
+        })
     }
   }
-};
+}
 </script>
 <style lang="stylus" scoped>
 .organSelect >>> .is-current .el-tree-node__label
   color: #3c88d0
 </style>
-

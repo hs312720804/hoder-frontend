@@ -1,5 +1,5 @@
 <template>
-<!-- 
+<!--
   crowdType
   2：临时人群
   3：行为人群
@@ -33,7 +33,7 @@
       v-if="showAdd2"
       @close-add="handleCloseAddForm"
       @upsert-end="handleRefreshList"
-      
+
     ></group-image-add> -->
 
     <!--请选择创建类型弹窗-->
@@ -82,26 +82,26 @@ export default {
       type: Number
     }
   },
-  data() {
+  data () {
     return {
       showList: true,
       editLaunchCrowdId: undefined,
       editStatus: undefined,
       refreshFlag: false,
       showSelectTypeDialog: false,
-      showAdd2: false 
+      showAdd2: false
     }
   },
-  created() {},
+  created () {},
   methods: {
-    handleShowAdd(id, code) {
+    handleShowAdd (id, code) {
       this.showList = false
       this.refreshFlag = false
       this.editLaunchCrowdId = id
       this.editStatus = code
     },
     // 通过SQL创建
-    addOrEditBySql(id, code) {
+    addOrEditBySql (id, code) {
       this.showSelectTypeDialog = false
       this.showList = false
       // this.showAdd1 = true
@@ -110,22 +110,22 @@ export default {
       this.editStatus = code
     },
     // 通过导入本地文件创建
-    addByLocalFile() {
+    addByLocalFile () {
       this.showSelectTypeDialog = false
       // this.showList = false
       this.showAdd2 = true
     },
-    handleRefreshList() {
+    handleRefreshList () {
       this.showList = true
       this.refreshFlag = true
     },
     handleCloseAddForm () {
       this.showAdd2 = false
     },
-    handleTableSelected(val, mode) {
+    handleTableSelected (val, mode) {
       this.$emit('get-table-selected', val, mode)
     },
-    handleCheckListChange(val) {
+    handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     }
   }

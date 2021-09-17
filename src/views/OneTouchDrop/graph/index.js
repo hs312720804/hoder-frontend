@@ -2,10 +2,10 @@ import { Addon, FunctionExt, Shape } from '@antv/x6'
 import './shapeInfo'
 export default class FlowGraph {
   static init (graph) {
-    this.graph = graph;
-    this.initStencil();
-    this.initShape();
-    this.initEvent();
+    this.graph = graph
+    this.initStencil()
+    this.initShape()
+    this.initEvent()
   }
   // 左边导航
   static initStencil () {
@@ -59,7 +59,7 @@ export default class FlowGraph {
           ry: 35
         },
         text: {
-          fill: '#FFFFFF',
+          fill: '#FFFFFF'
           // textWrap: {
           //   // text: '人群'
           // }
@@ -74,10 +74,10 @@ export default class FlowGraph {
       attrs: {
         body: {
           fill: 'orange',
-          stroke: 'orange',
+          stroke: 'orange'
         },
         text: {
-          fill: '#FFFFFF',
+          fill: '#FFFFFF'
           // text: '策略'
         }
       },
@@ -98,22 +98,22 @@ export default class FlowGraph {
   }
   // 初始化事件
   static initEvent () {
-    const {graph} = this;
-    const container = document.getElementById('flowContainer');
+    const { graph } = this
+    const container = document.getElementById('flowContainer')
     graph.on('node:mouseenter', FunctionExt.debounce(() => {
-        const ports = container.querySelectorAll('.x6-port-body')
-        this.showPorts(ports, true)
-      }),
-      500
-    );
+      const ports = container.querySelectorAll('.x6-port-body')
+      this.showPorts(ports, true)
+    }),
+    500
+    )
     graph.on('node:mouseleave', () => {
       const ports = container.querySelectorAll(
         '.x6-port-body'
-      );
+      )
       this.showPorts(ports, false)
-    });
+    })
     // 扩展父节点
-    graph.on('node:change:size', ({node, options}) => {
+    graph.on('node:change:size', ({ node, options }) => {
       if (options.skipParentHandler) {
         return
       }
@@ -123,7 +123,7 @@ export default class FlowGraph {
         node.prop('originSize', node.getSize())
       }
     })
-    graph.on('node:change:position', ({node, options}) => {
+    graph.on('node:change:position', ({ node, options }) => {
       if (options.skipParentHandler) {
         return
       }
@@ -183,12 +183,12 @@ export default class FlowGraph {
         if (hasChange) {
           parent.prop(
             {
-              position: {x, y},
-              size: {width: cornerX - x, height: cornerY - y},
+              position: { x, y },
+              size: { width: cornerX - x, height: cornerY - y }
             },
             // Note that we also pass a flag so that we know we shouldn't
             // adjust the `originPosition` and `originSize` in our handlers.
-            {skipParentHandler: true},
+            { skipParentHandler: true }
           )
         }
       }

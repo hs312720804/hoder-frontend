@@ -6,32 +6,32 @@
 </template>
 
 <script>
-    import ipManageList from './list'
-    import ipManageAdd from './add'
-    export default {
-        name: "ipManageAA",
-        components: {
-            ipManageList,
-            ipManageAdd
-        },
-        data () {
-            return {
-                showList: true,
-                editId: undefined,
-                mode: ''
-            }
-        },
-        methods: {
-            openAddPage (rowId, mode) {
-                this.showList = false
-                this.editId = rowId
-                this.mode = mode
-            },
-            openListPage () {
-                this.showList = true
-            }
-        }
+import ipManageList from './list'
+import ipManageAdd from './add'
+export default {
+  name: 'ipManageAA',
+  components: {
+    ipManageList,
+    ipManageAdd
+  },
+  data () {
+    return {
+      showList: true,
+      editId: undefined,
+      mode: ''
     }
+  },
+  methods: {
+    openAddPage (rowId, mode) {
+      this.showList = false
+      this.editId = rowId
+      this.mode = mode
+    },
+    openListPage () {
+      this.showList = true
+    }
+  }
+}
 </script>
 
 <style scoped>

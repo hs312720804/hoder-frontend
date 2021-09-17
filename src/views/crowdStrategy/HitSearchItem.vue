@@ -85,99 +85,98 @@
 </template>
 
 <script>
-    export default {
-        name: "HitSearchItem",
-        props: ['childItem','crowdId'],
-        data () {
-            return {
-                searchForm: {
-                    mac: undefined,
-                    openId: undefined
-                },
-                showResult: false,
-                hitResult: undefined,
-                showDetailDialog: false,
-                detailDialogTitle: '',
-                tableData: [],
-                lastReqTime: '暂无数据',
-                lastHitTime: '暂无数据',
-                showStep: true,
-                // hitSearchResult: {}
-            }
-        },
-        methods: {
-            handleSearch () {
-                const searchApi = JSON.parse(JSON.stringify(this.searchForm))
-                this.$service.searchHitCrowd({crowdId: this.crowdId, params: searchApi}).then(data => {
-                    this.showResult = true
-                    this.hitResult = JSON.stringify(data)
-                })
-                // 获取时间和总数
-                const schemeId = this.childItem.schemeId.toString()
-                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
-                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
-                const macApiData = {
-                    crowdId: this.crowdId,
-                    panelId,
-                    index,
-                    bId: 2,
-                    hit: false
-                }
-                if (this.searchForm.mac) {
-                    this.$service.macLogSearch({mac: this.searchForm.mac, params: macApiData}).then(data => {
-                        if (Object.keys(data).length > 0) {
-                            this.showStep = true
-                            this.lastReqTime = data.VisitedTime
-                            this.lastHitTime = data.HitTime
-                        } else {
-                            this.showStep = false
-                        }
-
-                    })
-                }
-            },
-            handleRequestDetail () {
-                const schemeId = this.childItem.schemeId.toString()
-                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
-                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
-                const reqLogApi = {
-                    mac: this.searchForm.mac,
-                    crowdId: this.crowdId,
-                    panelId,
-                    index
-                }
-                this.$service.macRequestDetail(reqLogApi).then(data => {
-                    this.showDetailDialog = true
-                    this.detailDialogTitle = '请求详情'
-                    this.tableData = data
-                })
-            },
-            handleHitDetail () {
-                const schemeId = this.childItem.schemeId.toString()
-                const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
-                const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
-                const hitLogApi = {
-                    mac: this.searchForm.mac,
-                    crowdId: this.crowdId,
-                    panelId,
-                    index
-                }
-                this.$service.macHitDetail(hitLogApi).then(data => {
-                    this.showDetailDialog = true
-                    this.detailDialogTitle = '命中详情'
-                    this.tableData = data
-                })
-            },
-            formatYesterdayDate () {
-                const yesterday = new Date().getTime() - 1*24*60*60*1000
-                const time = new Date(yesterday)
-                let y = time.getFullYear() // 年份
-                let m = (time.getMonth() + 1).toString().padStart(2,'0') // 月份
-                let r = time.getDate().toString().padStart(2,'0') // 日子
-                return `${y}-${m}-${r}`
-            }
-        }
+export default {
+  name: 'HitSearchItem',
+  props: ['childItem', 'crowdId'],
+  data () {
+    return {
+      searchForm: {
+        mac: undefined,
+        openId: undefined
+      },
+      showResult: false,
+      hitResult: undefined,
+      showDetailDialog: false,
+      detailDialogTitle: '',
+      tableData: [],
+      lastReqTime: '暂无数据',
+      lastHitTime: '暂无数据',
+      showStep: true
+      // hitSearchResult: {}
     }
+  },
+  methods: {
+    handleSearch () {
+      const searchApi = JSON.parse(JSON.stringify(this.searchForm))
+      this.$service.searchHitCrowd({ crowdId: this.crowdId, params: searchApi }).then(data => {
+        this.showResult = true
+        this.hitResult = JSON.stringify(data)
+      })
+      // 获取时间和总数
+      const schemeId = this.childItem.schemeId.toString()
+      const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+      const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+      const macApiData = {
+        crowdId: this.crowdId,
+        panelId,
+        index,
+        bId: 2,
+        hit: false
+      }
+      if (this.searchForm.mac) {
+        this.$service.macLogSearch({ mac: this.searchForm.mac, params: macApiData }).then(data => {
+          if (Object.keys(data).length > 0) {
+            this.showStep = true
+            this.lastReqTime = data.VisitedTime
+            this.lastHitTime = data.HitTime
+          } else {
+            this.showStep = false
+          }
+        })
+      }
+    },
+    handleRequestDetail () {
+      const schemeId = this.childItem.schemeId.toString()
+      const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+      const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+      const reqLogApi = {
+        mac: this.searchForm.mac,
+        crowdId: this.crowdId,
+        panelId,
+        index
+      }
+      this.$service.macRequestDetail(reqLogApi).then(data => {
+        this.showDetailDialog = true
+        this.detailDialogTitle = '请求详情'
+        this.tableData = data
+      })
+    },
+    handleHitDetail () {
+      const schemeId = this.childItem.schemeId.toString()
+      const panelId = schemeId.indexOf('-') > 0 ? schemeId.split('-')[0] : schemeId
+      const index = schemeId.indexOf('-') > 0 ? schemeId.split('-')[1] : 0
+      const hitLogApi = {
+        mac: this.searchForm.mac,
+        crowdId: this.crowdId,
+        panelId,
+        index
+      }
+      this.$service.macHitDetail(hitLogApi).then(data => {
+        this.showDetailDialog = true
+        this.detailDialogTitle = '命中详情'
+        this.tableData = data
+      })
+    },
+    formatYesterdayDate () {
+      const yesterday = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
+      const time = new Date(yesterday)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
+    }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

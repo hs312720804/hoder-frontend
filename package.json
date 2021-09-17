@@ -52,7 +52,7 @@
     },
     "extends": [
       "plugin:vue/essential",
-      "eslint:recommended"
+      "@vue/standard"
     ],
     "rules": {
       "vue/no-parsing-error": [

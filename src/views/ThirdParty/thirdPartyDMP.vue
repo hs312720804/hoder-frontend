@@ -7,14 +7,14 @@
 </template>
 
 <script>
-    export default {
-        name: 'thirdPartyDMPAA',
-        data () {
-            return {
-                // pageSrc: 'https://www.getui.com/cn/'
-            }
-        }
+export default {
+  name: 'thirdPartyDMPAA',
+  data () {
+    return {
+      // pageSrc: 'https://www.getui.com/cn/'
     }
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

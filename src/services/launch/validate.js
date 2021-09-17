@@ -1,19 +1,19 @@
 
-export function searchUsedCrowd(data){
+export function searchUsedCrowd (data) {
   return this.fetch({
     method: 'POST',
     url: '/api/launchHelp/searchUsedCrowd/',
     data
   })
 }
-export function launchHelpIndex(params){
+export function launchHelpIndex (params) {
   return this.fetch({
     method: 'GET',
     url: '/api/launchHelp/index',
     params
   })
 }
-export function launchHelpCrowdIndex(data) {
+export function launchHelpCrowdIndex (data) {
   return this.fetch({
     method: 'POST',
     url: '/api/launchValidate/searchHitRes',
@@ -22,7 +22,7 @@ export function launchHelpCrowdIndex(data) {
   })
 }
 
-export function newLaunchHelpCrowdIndex(params){
+export function newLaunchHelpCrowdIndex (params) {
   return this.fetch({
     method: 'get',
     url: '/api/listMacHitInCrowd',

@@ -8,19 +8,19 @@
 </template>
 <script>
 export default {
-    data(){
-        return{
-        }
-    },
-    props: ['currentpage', 'pagesize', 'totalcount'],
-    methods: {
-        handlesizechange(val){
-          this.$emit("handle-size-change",val)
-        },
-        handlecurrentchange(val){
-          this.$emit("handle-current-change",val)
-        }
+  data () {
+    return {
     }
+  },
+  props: ['currentpage', 'pagesize', 'totalcount'],
+  methods: {
+    handlesizechange (val) {
+      this.$emit('handle-size-change', val)
+    },
+    handlecurrentchange (val) {
+      this.$emit('handle-current-change', val)
+    }
+  }
 }
 </script>
 <style lang="stylus" scoped>

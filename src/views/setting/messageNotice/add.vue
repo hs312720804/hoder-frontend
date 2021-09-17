@@ -48,98 +48,98 @@
 </template>
 
 <script>
-    export default {
-        props: {
-            editId: '',
-            mode: ''
-        },
-        data () {
-            return {
-                title: '',
-                readForm: {
-                    noticeTitle: '',
-                    pushTime: '',
-                    content: ''
-                },
-                markEnum: {
-                    'edit': 1,
-                    'read': 2
-                },
-                addFormTitle: '',
-                addForm: {
-                    noticeTitle: '',
-                    noticeType: 1,
-                    content: '',
-                    noticeId: undefined,
-                    sendEmail: false
-                },
-                rules: {
-                    noticeTitle: [
-                        { required: true, message: '请输入标题',trigger: 'blur' }
-                    ],
-                    noticeType: [
-                        { required: true, message: '请选择消息类型',trigger: 'blur' }
-                    ],
-                    content: [
-                        { required: true, message: '请输入消息内容',trigger: 'blur' }
-                    ]
-                },
-                receive: 'all'
-            }
-        },
-        watch: {
-            'editId'() {
-                this.fetchData()
-            }
-        },
-        methods: {
-            fetchData () {
-                const noticeId = this.editId
-                const mark = this.markEnum[this.mode]
-                const mode = this.mode
-                if (noticeId) {
-                    this.addFormTitle = '编辑'
-                    this.$service.noticeDetail({noticeId,mark}).then((data)=> {
-                        if (mode === 'read') {
-                            this.readForm = data
-                            this.$root.$emit('refresh-notifications')
-                        }
-                        if (mode === 'edit') {this.addForm = data}
-                    })
-                }else {
-                    this.addFormTitle = '新增'
-                }
-            },
-            goBack () {
-                this.$emit('open-list-page')
-            },
-            handleSubmit (formName) {
-                this.$refs[formName].validate((valid) => {
-                    if (valid) {
-                        if (!this.editId) {
-                            // 新增保存
-                            this.$service.noticeAdd(this.addForm,'保存成功').then(() => {
-                                this.$emit('open-list-page')
-                                this.$root.$emit('refresh-notifications')
-                            })
-                        } else {
-                            // 编辑保存
-                            this.addForm.noticeId = this.editId
-                            this.$service.noticeEdit(this.addForm,'修改成功').then(() => {
-                                this.$emit('open-list-page')
-                                this.$root.$emit('refresh-notifications')
-                            })
-                        }
-                    } else {
-                        return false
-                    }
-                })
-            }
-        },
-        created () {
-            this.fetchData()
-        }
+export default {
+  props: {
+    editId: '',
+    mode: ''
+  },
+  data () {
+    return {
+      title: '',
+      readForm: {
+        noticeTitle: '',
+        pushTime: '',
+        content: ''
+      },
+      markEnum: {
+        'edit': 1,
+        'read': 2
+      },
+      addFormTitle: '',
+      addForm: {
+        noticeTitle: '',
+        noticeType: 1,
+        content: '',
+        noticeId: undefined,
+        sendEmail: false
+      },
+      rules: {
+        noticeTitle: [
+          { required: true, message: '请输入标题', trigger: 'blur' }
+        ],
+        noticeType: [
+          { required: true, message: '请选择消息类型', trigger: 'blur' }
+        ],
+        content: [
+          { required: true, message: '请输入消息内容', trigger: 'blur' }
+        ]
+      },
+      receive: 'all'
     }
+  },
+  watch: {
+    'editId' () {
+      this.fetchData()
+    }
+  },
+  methods: {
+    fetchData () {
+      const noticeId = this.editId
+      const mark = this.markEnum[this.mode]
+      const mode = this.mode
+      if (noticeId) {
+        this.addFormTitle = '编辑'
+        this.$service.noticeDetail({ noticeId, mark }).then((data) => {
+          if (mode === 'read') {
+            this.readForm = data
+            this.$root.$emit('refresh-notifications')
+          }
+          if (mode === 'edit') { this.addForm = data }
+        })
+      } else {
+        this.addFormTitle = '新增'
+      }
+    },
+    goBack () {
+      this.$emit('open-list-page')
+    },
+    handleSubmit (formName) {
+      this.$refs[formName].validate((valid) => {
+        if (valid) {
+          if (!this.editId) {
+            // 新增保存
+            this.$service.noticeAdd(this.addForm, '保存成功').then(() => {
+              this.$emit('open-list-page')
+              this.$root.$emit('refresh-notifications')
+            })
+          } else {
+            // 编辑保存
+            this.addForm.noticeId = this.editId
+            this.$service.noticeEdit(this.addForm, '修改成功').then(() => {
+              this.$emit('open-list-page')
+              this.$root.$emit('refresh-notifications')
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

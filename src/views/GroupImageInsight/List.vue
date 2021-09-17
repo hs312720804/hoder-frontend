@@ -53,80 +53,80 @@
 </template>
 
 <script>
-    export default {
-        name: "List",
-        components: {},
-        props: ['refreshList'],
-        data () {
-            return {
-                tableData: [],
-                statusEnum: {
-                    0: '已提交',
-                    1: '已解析',
-                    2: '估算中',
-                    3: '已估算',
-                    4: '估算失败'
-                },
-                pagination: {
-                    pageSize: 10,
-                    currentPage: 1,
-                    totalCount: 0
-                },
-                searchVal: undefined
-            }
-        },
-        watch: {
-            'refreshList': function (val) {
-                if(val) {
-                    this.fetchData()
-                }
-            }
-        },
-        methods: {
-            getFilter () {
-                const filter = {
-                    pageNum: this.pagination.currentPage,
-                    pageSize: this.pagination.pageSize,
-                    fileName: this.searchVal
-                }
-                return filter
-            },
-            fetchData () {
-                const filter = this.getFilter()
-                this.$service.getDevicePortraitList(filter).then(data => {
-                    this.tableData = data.list
-                    this.pagination.totalCount = data.total
-                })
-            },
-            handleSizeChange (val) {
-                this.pagination.pageSize = val
-                this.fetchData()
-            },
-            handleCurrentChange (val) {
-                this.pagination.currentPage = val
-                this.fetchData()
-            },
-            handleSeeEcharts (id) {
-                this.$emit('open-echarts',id)
-            },
-            handleDelete (id) {
-                this.$confirm('确定删除吗？')
-                .then(() => {
-                    this.$service.devicePortraintDel({id},'删除成功').then(()=> {
-                        this.fetchData()
-                    })
-                })
-                .catch(() => {
-                })
-            },
-            handleAddDevice() {
-                this.$emit('open-add')
-            },
-        },
-        created() {
-            this.fetchData()
-        }
+export default {
+  name: 'List',
+  components: {},
+  props: ['refreshList'],
+  data () {
+    return {
+      tableData: [],
+      statusEnum: {
+        0: '已提交',
+        1: '已解析',
+        2: '估算中',
+        3: '已估算',
+        4: '估算失败'
+      },
+      pagination: {
+        pageSize: 10,
+        currentPage: 1,
+        totalCount: 0
+      },
+      searchVal: undefined
     }
+  },
+  watch: {
+    'refreshList': function (val) {
+      if (val) {
+        this.fetchData()
+      }
+    }
+  },
+  methods: {
+    getFilter () {
+      const filter = {
+        pageNum: this.pagination.currentPage,
+        pageSize: this.pagination.pageSize,
+        fileName: this.searchVal
+      }
+      return filter
+    },
+    fetchData () {
+      const filter = this.getFilter()
+      this.$service.getDevicePortraitList(filter).then(data => {
+        this.tableData = data.list
+        this.pagination.totalCount = data.total
+      })
+    },
+    handleSizeChange (val) {
+      this.pagination.pageSize = val
+      this.fetchData()
+    },
+    handleCurrentChange (val) {
+      this.pagination.currentPage = val
+      this.fetchData()
+    },
+    handleSeeEcharts (id) {
+      this.$emit('open-echarts', id)
+    },
+    handleDelete (id) {
+      this.$confirm('确定删除吗？')
+        .then(() => {
+          this.$service.devicePortraintDel({ id }, '删除成功').then(() => {
+            this.fetchData()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    handleAddDevice () {
+      this.$emit('open-add')
+    }
+  },
+  created () {
+    this.fetchData()
+  }
+}
 </script>
 
 <style lang="stylus" scoped>

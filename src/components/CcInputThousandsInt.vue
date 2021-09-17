@@ -27,13 +27,13 @@
 <script>
 import _ from 'lodash'
 export default {
-  data() {
+  data () {
     return {
       inputValue: undefined
     }
   },
   watch: {
-    'inputValue': function(newV, oldV) {
+    'inputValue': function (newV, oldV) {
       newV = _.trim(newV).replace(/,/g, '')
       if (newV !== null && newV !== undefined) {
         if (parseInt(newV) > this.max && newV.length <= this.maxlength) {
@@ -49,7 +49,7 @@ export default {
 
   props: ['value', 'disabled', 'append', 'prepend', 'placeholder', 'name', 'autocomplete', 'maxlength', 'max', 'isIncludeZero'],
   methods: {
-    handleInputValue(val) {
+    handleInputValue (val) {
       val = _.trim(val).replace(/,/g, '')
       if (val === '' || /^[1-9]\d*$/.test(val) || (val === '0' && this.isIncludeZero)) {
         if (val !== '') {
@@ -63,9 +63,9 @@ export default {
     getPositiveInt (data) {
       return data.replace(/,/g, '')
     },
-    format_number(n) {
-      if(typeof n !== String) {
-          n = n.toString()
+    format_number (n) {
+      if (typeof n !== String) {
+        n = n.toString()
       }
       var len = n.length
       if (len <= 3) { return n }
@@ -75,7 +75,7 @@ export default {
       return r > 0 ? start + ',' + end : end
     }
   },
-  created() {
+  created () {
     this.$watch('value', (val) => {
       if (this.inputValue !== val) {
         this.inputValue = this.format_number(val)
