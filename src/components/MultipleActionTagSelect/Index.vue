@@ -705,7 +705,7 @@ export default {
   methods: {
     handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
-      if (childItem.dateAreaType == 0) {
+      if (childItem.dateAreaType === 0) {
         childItem.value = '-'
       } else {
         childItem.value = ''

@@ -487,8 +487,8 @@ export default {
     // alert(111)
     // this.handleEdit()
     // debugger
-    this.detail = this.sTagIndex.specialTagDetail.specialTag || {}
-    this.form.rulesJson[0].specialTagName = this.detail.specialTagName || ''
+    this.detail = this.sTagIndex.specialTagDetail.specialTag || ''
+    if (this.detail) this.form.rulesJson[0].specialTagName = this.detail.specialTagName || ''
   }
 }
 </script>

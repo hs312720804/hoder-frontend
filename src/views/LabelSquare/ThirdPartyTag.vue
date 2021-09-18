@@ -178,7 +178,7 @@ export default {
     },
     async fetchData () {
       // 搜索时名称为空时，默认赋值为类型第一个
-      if (!this.filter.tagName) {
+      if (!this.filter.tagName && this.typeTabsList.length > 0) {
         this.filter.tagName = this.typeTabsList[0].groupName
         this.activeName = this.typeTabsList[0].groupName
       }
