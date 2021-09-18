@@ -40,7 +40,7 @@ export default {
   launchToBusiness: '投放到业务平台',
   tempCrowd: '临时人群',
   tempTag: '临时标签',
-  tagZone: '标签专区',
+  tagZone: '设备标签',
   selectedTag: '已选标签',
   note: '注',
   nextStep: '下一步',

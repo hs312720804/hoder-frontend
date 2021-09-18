@@ -2,18 +2,7 @@
   <div class="label-content">
     <div class="table-list" :style="{ marginBottom: bottomHeight }">
       <el-tabs v-model="activeName" @tab-click="handleTabChange">
-        <el-tab-pane label="临时人群/标签" name="tempLabel">
-          <temp-label-index
-            :currentSelectTag="tagList"
-            :show-selection="showSelection"
-            :checkList="tempCheckList"
-            @get-table-selected="handleGetTableSelectedData"
-            @change-checkList="handleTempCheckListChange"
-            @fetch-checkList="fetchTempCheckListData"
-          >
-          </temp-label-index>
-        </el-tab-pane>
-        <el-tab-pane label="标签专区" name="labelZone">
+        <el-tab-pane label="设备标签" name="labelZone">
           <label-zone
             :currentSelectTag="tagList"
             :tagName="labelZoneTagName"
@@ -26,6 +15,31 @@
           >
           </label-zone>
         </el-tab-pane>
+
+        <el-tab-pane label="临时标签" name="tempLabel">
+          <temp-label-index
+            :currentSelectTag="tagList"
+            :show-selection="showSelection"
+            :checkList="tempCheckList"
+            @get-table-selected="handleGetTableSelectedData"
+            @change-checkList="handleTempCheckListChange"
+            @fetch-checkList="fetchTempCheckListData"
+          >
+          </temp-label-index>
+        </el-tab-pane>
+
+        <el-tab-pane label="本地标签" name="localLabel">
+          <local-label-index
+            :currentSelectTag="tagList"
+            :show-selection="showSelection"
+            :checkList="tempCheckList"
+            @get-table-selected="handleGetTableSelectedData"
+            @change-checkList="handleTempCheckListChange"
+            @fetch-checkList="fetchTempCheckListData"
+          >
+          </local-label-index>
+        </el-tab-pane>
+
         <el-tab-pane label="我的收藏" name="myCollect">
           <my-collect
             :currentSelectTag="tagList"
@@ -38,17 +52,7 @@
           >
           </my-collect>
         </el-tab-pane>
-        <el-tab-pane label="本地人群/标签" name="localLabel">
-          <local-label-index
-            :currentSelectTag="tagList"
-            :show-selection="showSelection"
-            :checkList="tempCheckList"
-            @get-table-selected="handleGetTableSelectedData"
-            @change-checkList="handleTempCheckListChange"
-            @fetch-checkList="fetchTempCheckListData"
-          >
-          </local-label-index>
-        </el-tab-pane>
+
       </el-tabs>
     </div>
     <div

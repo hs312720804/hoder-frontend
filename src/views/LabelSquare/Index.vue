@@ -4,18 +4,7 @@
                 v-model="activeName"
                 @tab-click="handleTabChange"
         >
-            <el-tab-pane label="临时人群/标签" name="tempLabel">
-                <temp-label-index
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
-                        :checkList="tempCheckList"
-                        :crowdType=2
-                        @get-table-selected="handleGetTableSelectedData"
-                        @change-checkList="handleTempCheckListChange"
-                >
-                </temp-label-index>
-            </el-tab-pane>
-            <el-tab-pane label="标签专区" name="labelZone">
+            <el-tab-pane label="设备标签" name="labelZone">
                 <label-zone
                         :tagName="labelZoneTagName"
                         @clear-search="handleClearSearch"
@@ -28,18 +17,19 @@
                 >
                 </label-zone>
             </el-tab-pane>
-            <el-tab-pane label="我的收藏" name="myCollect">
-                <my-collect
-                        :tagName="myCollectTagName"
-                        :checkList="checkList"
-                        @clear-search="handleClearSearch"
-                        @change-checkList="handleCheckListChange"
-                        @get-table-selected="handleGetTableSelectedData"
+
+            <el-tab-pane label="行为标签" name="behaviorLabel">
+                <temp-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        :crowdType=3
                 >
-                </my-collect>
+                </temp-label-index>
             </el-tab-pane>
+
             <el-tab-pane label="组合标签" name="specialTag">
                 <special-tag
                         :tagName="myCollectTagName"
@@ -52,7 +42,32 @@
                 >
                 </special-tag>
             </el-tab-pane>
-             <el-tab-pane label="本地人群/标签" name="localLabel">
+
+            <el-tab-pane label="第三方标签" name="ThirdPartyTag">
+                <third-party-tag
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                >
+                </third-party-tag>
+            </el-tab-pane>
+
+            <el-tab-pane label="临时标签" name="tempLabel">
+                <temp-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        :crowdType=2
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                >
+                </temp-label-index>
+            </el-tab-pane>
+
+            <el-tab-pane label="本地标签" name="localLabel">
                 <local-label-index
                         :show-selection="showSelection"
                         :currentSelectTag="tagList"
@@ -61,28 +76,6 @@
                         @change-checkList="handleTempCheckListChange"
                 >
                 </local-label-index>
-            </el-tab-pane>
-            <el-tab-pane label="行为人群/标签" name="behaviorLabel">
-                <temp-label-index
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
-                        :checkList="tempCheckList"
-                        @get-table-selected="handleGetTableSelectedData"
-                        @change-checkList="handleTempCheckListChange"
-                        :crowdType=3
-                >
-                </temp-label-index>
-            </el-tab-pane>
-            <el-tab-pane label="广告数据银行/标签" name="bankLabel">
-                <temp-label-index
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
-                        :checkList="tempCheckList"
-                        @get-table-selected="handleGetTableSelectedData"
-                        @change-checkList="handleTempCheckListChange"
-                        :crowdType=4
-                >
-                </temp-label-index>
             </el-tab-pane>
 
             <el-tab-pane label="自定义标签" name="customTag">
@@ -97,16 +90,29 @@
                 </custom-tag>
             </el-tab-pane>
 
-            <el-tab-pane label="第三方标签" name="ThirdPartyTag">
-                <third-party-tag
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
+            <el-tab-pane label="数据银行标签" name="bankLabel">
+                <temp-label-index
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                        :checkList="tempCheckList"
+                        @get-table-selected="handleGetTableSelectedData"
+                        @change-checkList="handleTempCheckListChange"
+                        :crowdType=4
                 >
-                </third-party-tag>
+                </temp-label-index>
+            </el-tab-pane>
+
+            <el-tab-pane label="我的收藏" name="myCollect">
+                <my-collect
+                        :tagName="myCollectTagName"
+                        :checkList="checkList"
+                        @clear-search="handleClearSearch"
+                        @change-checkList="handleCheckListChange"
+                        @get-table-selected="handleGetTableSelectedData"
+                        :show-selection="showSelection"
+                        :currentSelectTag="tagList"
+                >
+                </my-collect>
             </el-tab-pane>
 
         </el-tabs>
@@ -212,7 +218,7 @@ export default {
           this.$root.$emit('my-collect-list-refresh')
           break
         case 'tempLabel':
-          // 临时人群/标签
+          // 临时标签
           this.fetchTempCheckListData()
           this.$root.$emit('temp-label-list-refresh-2')
           break
@@ -222,17 +228,17 @@ export default {
           this.$root.$emit('special-tag-list-refresh')
           break
         case 'localLabel':
-          // 本地人群/标签
+          // 本地标签
           this.fetchTempCheckListData()
           this.$root.$emit('local-label-list-refresh')
           break
         case 'behaviorLabel':
-          // 行为人群/标签
+          // 行为标签
           this.fetchTempCheckListData()
           this.$root.$emit('temp-label-list-refresh-3')
           break
         case 'bankLabel':
-          // 广告数据银行/标签
+          // 数据银行标签
           this.fetchTempCheckListData()
           this.$root.$emit('temp-label-list-refresh-4')
           break
