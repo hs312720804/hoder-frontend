@@ -627,7 +627,7 @@ export default {
       deep: true
     })
 
-    // const detail = this.sTagIndex.specialTagDetail.specialTag
+    const detail = this.sTagIndex.specialTagDetail.specialTag || {}
 
     // 编辑
     // this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
@@ -638,11 +638,9 @@ export default {
     // this.form.limitLaunch = policyData.limitLaunch
     // this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
     // this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
-    let ruleJsonData = JSON.parse(
-      this.sTagIndex.specialTagDetail.specialTag.rulesJson
-    )
     var cacheIds = []
-    if (ruleJsonData) {
+    if (detail.rulesJson) {
+      let ruleJsonData = JSON.parse(detail.rulesJson)
       ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
         itemParent.rules.forEach(item => {
           if (item.tagType === 'string' || item.tagType === 'collect') {
@@ -679,7 +677,6 @@ export default {
           }
         })
       })
-      // console.log('ruleJsonData.rules===', ruleJsonData.rules)
     }
 
     // this.rulesJson = ruleJsonData

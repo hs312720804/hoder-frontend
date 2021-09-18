@@ -23,6 +23,7 @@ export default {
   },
   data: function () {
     return {
+      detail: {},
       activeName: 0,
       form: {
         // purpose: undefined,
@@ -113,8 +114,8 @@ export default {
         }
 
         // ------------------- 普通标签规则校验 --------------------------
-        const rulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].rulesJson))
-        const rules = JSON.parse(JSON.stringify(rulesJsonData.rules))
+        const rulesJsonData = rulesJson[index].rulesJson
+        const rules = rulesJsonData.rules
         const ruleLength = rules.length
         let i
         let j = 0
@@ -122,8 +123,11 @@ export default {
         for (i = 0; i < ruleLength; i++) {
           for (j = 0; j < rules[i].rules.length; j++) {
             let rulesItem = rules[i].rules[j]
-            debugger
-            if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
+            // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
+            const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
+            if (isTimeTagKong) {
+              rulesItem.value = '-'
+            } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
               this.$message.error('请正确填写第' + (index + 1) + '人群里第' + (i + 1) + '设置标签块里面的第' + (j + 1) + '行的值！')
               flag = false
               break
@@ -167,13 +171,9 @@ export default {
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
             if (isTimeTagKong) {
-              if (!this.timeTagKongList.includes(rulesItem.tagName)) {
-                this.timeTagKongList.push(rulesItem.tagName)
-              }
+              rulesItem.value = '-'
             } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-              this.$message.error(
-                '请正确填写第' + (index + 1) + '人群里第' + (x + 1) + '行为标签块里面的第' + (y + 1) + '行的值！'
-              )
+              this.$message.error('请正确填写第' + (index + 1) + '人群里第' + (x + 1) + '行为标签块里面的第' + (y + 1) + '行的值！')
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
@@ -279,7 +279,6 @@ export default {
 
       // debugger
       this.$refs['form'].validate((valid) => {
-        // debugger
         if (valid) {
           if (!this.validateForm(form.rulesJson)) {
             return
@@ -401,7 +400,7 @@ export default {
         return e
       })[0]
       // debugger
-      const detail = this.sTagIndex.specialTagDetail.specialTag
+      const detail = this.detail
       if (detail) {
         form.rulesJson.belongTagId = detail.belongTagId
         form.rulesJson.parentId = detail.parentId
@@ -488,7 +487,8 @@ export default {
     // alert(111)
     // this.handleEdit()
     // debugger
-    this.form.rulesJson[0].specialTagName = this.sTagIndex.specialTagDetail.specialTag.specialTagName
+    this.detail = this.sTagIndex.specialTagDetail.specialTag || {}
+    this.form.rulesJson[0].specialTagName = this.detail.specialTagName || ''
   }
 }
 </script>
