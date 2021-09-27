@@ -19,18 +19,15 @@
           selectPropKeyValue: 'name'
         })"
       >
-        <template v-for="item in getBehaviorAttrList(2, {listMapName: item.mapName})">
+        <template v-for="item2 in bav12GetBehaviorAttrList(2, {listMapName: item.mapName})">
           <el-option
-            :value="item.name"
-            :label="item.name"
-            :key="item.name"
+            :value="item2.name"
+            :label="item2.name"
+            :key="item2.name"
           ></el-option>
         </template>
       </el-select>
 
-      <!-- {{ item.mapName }}
-      {{item.mapName !== ''}} -->
-      <!-- item.mapName: {{ item }} -->
       <Bav0012 v-if="!!item.mapName" :aaa="item"></Bav0012>
     </span>
 
@@ -40,6 +37,9 @@
 <script>
 export default {
   name: 'Bav0012',
+  inject: {
+    parentThis: '_this'
+  },
   data () {
     return {
       mapNameArr: []
@@ -73,15 +73,16 @@ export default {
     // }
   },
   methods: {
-    handelBehavirSelectChange () {
-      return this.$parent.$parent.handelBehavirSelectChange(...arguments)
-    },
-    handelChildBehavirSelectChange () {
-      return this.$parent.$parent.handelChildBehavirSelectChange(...arguments)
-    },
-    getBehaviorAttrList () {
+    // handelBehavirSelectChange (param) {
+    //   return this.$parent.$parent.handelBehavirSelectChange(param)
+    // },
+    handelChildBehavirSelectChange (param) {
       // 调用父级的方法
-      return this.$parent.$parent.getBehaviorAttrList(...arguments)
+      return this.parentThis.handelChildBehavirSelectChange(param)
+    },
+    bav12GetBehaviorAttrList () {
+      // 调用父级的方法
+      return this.parentThis.getBehaviorAttrList(...arguments)
     }
   },
   created () {

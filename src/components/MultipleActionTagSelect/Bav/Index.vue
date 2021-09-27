@@ -2212,6 +2212,11 @@ import Bav0012 from './Bav0012.vue'
 
 export default {
   name: 'bavList',
+  provide () {
+    return {
+      _this: this
+    }
+  },
   components: {
     Type,
     ConditionLine,
