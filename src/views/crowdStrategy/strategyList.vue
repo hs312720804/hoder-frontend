@@ -136,6 +136,12 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
+      <el-table-column prop="past7Active" label="7日是否有请求" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
+          <span v-else> 否 </span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">

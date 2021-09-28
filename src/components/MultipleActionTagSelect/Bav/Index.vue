@@ -1970,7 +1970,29 @@
             </el-select>
           </span>
 
-          <!-- 搜歌曲  item.childCheckedVal[4] -->
+          <!-- 教育VIP 选项  item.childCheckedVal[3] -->
+          <span v-if="childItem.bav.value === '教育'" class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              placeholder="请选择 VIP"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 9,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(9)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+          </span>
+
+          <!-- 搜歌手  item.childCheckedVal[4]   搜歌曲  item.childCheckedVal[5] -->
           <span v-if="childItem.bav.value === 'K歌'" class="flex-row">
             <el-select
               v-model="item.childCheckedVal[4]"
@@ -2046,8 +2068,9 @@
           <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
           <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
-            <!-- 短视频的集数要放在博主后面 -->
-            <span v-if="childItem.bav.value === '短视频'">
+            <!-- 【短视频】的查询影片要放在【选择博主】 后面 -->
+            <!-- 【教育】的查询影片要放在 【选择 VIP】 后面 -->
+            <span v-if="childItem.bav.value === '短视频' || childItem.bav.value === '教育'">
               <el-select
                 v-model="item.childCheckedVal[4]"
                 style="width: 150px;"
@@ -3265,6 +3288,8 @@ export default {
             return this.musicList
           } else if (level === 8) { // 歌手
             return this.singerList
+          } else if (level === 9) { // 教育 VIP
+            attrlist = dict.education_vip
           } else {
           }
         } else {
