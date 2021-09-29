@@ -2407,18 +2407,27 @@ export default {
         this.childItem.bav.reverseSelect = false
       }
       behaviorValue.forEach((item) => {
-        if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
-          item.operator = '!='
-          this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
-            name: '',
-            filed: 'mac',
-            type: 'count',
-            operator: '=',
-            value: ''
+        if (this.childItem.tagCode === 'BAV0012') { // 【综合起播】特殊处理
+          if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
+            item.operator = '!='
+            this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
+              name: '',
+              filed: 'mac',
+              type: 'count',
+              operator: '=',
+              value: ''
+            }
+          } else {
+            item.operator = '='
           }
-        } else {
-          item.operator = '='
+        } else { // 除了【综合起播】其他标签
+          if (val) {
+            item.operator = '!='
+          } else {
+            item.operator = '='
+          }
         }
+
         if (clearVal && clearVal === item.value) { // 需要清空的 value 值
           item.value = ''
           const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
