@@ -70,6 +70,13 @@
                     selectableRange: '9:00:00 - 23:59:59'
                   }"
                 ></el-time-picker>
+                <el-checkbox
+                 style="margin-left: 20px"
+                  v-model="crowdDefineForm.checkRecvPercentage"
+                  :disabled="
+                    status !== undefined && (status === 2 || status === 3)
+                  "
+                >开启人群波动阈值控制</el-checkbox>
               </el-form-item>
 
               <!-- <el-form-item label="更新持续时间" prop="expiryDay" v-if="crowdDefineForm.autoVersion === 1">
@@ -88,7 +95,7 @@
               </el-form-item> -->
             </div>
 
-            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1 && crowdType === 2">
+            <div class="basic-line" v-if="crowdDefineForm.checkRecvPercentage && crowdType === 2">
               <el-form-item label="Mac数量基准" class="one-line">
                 <el-form-item
                   label=""
@@ -254,6 +261,7 @@ export default {
         wxInitialValue: undefined, // 微信基准值
         wxAbovePer: undefined, // 微信最大阈值
         wxBelowPer: undefined, // 微信最小阈值
+        checkRecvPercentage: false,
         // minMacEstimateCount: undefined,
         // maxMacEstimateCount: undefined,
         // minWxEstimateCount: undefined,
@@ -379,7 +387,8 @@ export default {
             wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, // 微信最小阈值
             videoSource: row.videoSource === '0' ? '0' : '1',
             videoSourceIds:
-              row.videoSource === '0' ? [] : row.videoSource.split(',')
+              row.videoSource === '0' ? [] : row.videoSource.split(','),
+            checkRecvPercentage: Boolean(row.checkRecvPercentage)  
           }
 
           this.status = this.editStatus
@@ -471,6 +480,7 @@ export default {
           let crowdForm = JSON.stringify(this.crowdDefineForm)
           crowdForm = JSON.parse(crowdForm)
           // crowdForm.biIds = crowdForm.biIds.join(",")
+          crowdForm.checkRecvPercentage = Number(this.crowdDefineForm.checkRecvPercentage)
           crowdForm.calType = crowdForm.calType.join(',')
           crowdForm.crowdSql = crowdForm.crowdSql.trim()
           // 校验当区分视频源时，是否勾选内容源
@@ -506,7 +516,7 @@ export default {
           crowdForm.macInitialValue = macInitialValue
           crowdForm.wxInitialValue = wxInitialValue
           if (
-            crowdForm.autoVersion === 1 &&
+            crowdForm.checkRecvPercentage === 1 &&
             !this.validateBasicLine(
               macInitialValue,
               macBelowPer,

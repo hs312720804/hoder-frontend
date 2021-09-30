@@ -273,6 +273,8 @@ export default {
             this.showAddDialog = false
             this.fetchData(this.biId)
             this.$refs[formName].resetFields()
+          }).catch(err => {
+            console.log(err)
           })
         } else {
           return false

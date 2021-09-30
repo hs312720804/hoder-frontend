@@ -76,6 +76,10 @@
                             <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                                 计算完成
                             </div>
+                            <!-- 新增计算中时是否是人群派对中 -->
+                            <div v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                                {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
+                            </div>
                             <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7"
                             >
                                 <span v-if="crowdType === 4">计算</span>
