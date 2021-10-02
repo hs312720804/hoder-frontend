@@ -2021,7 +2021,29 @@
             </el-select>
           </span>
 
-          <!-- 搜歌曲  item.childCheckedVal[4] -->
+          <!-- 教育VIP 选项  item.childCheckedVal[3] -->
+          <span v-if="childItem.bav.value === '教育'" class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              placeholder="请选择 VIP"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 9,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(9)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+          </span>
+
+          <!-- 搜歌手  item.childCheckedVal[4]   搜歌曲  item.childCheckedVal[5] -->
           <span v-if="childItem.bav.value === 'K歌'" class="flex-row">
             <el-select
               v-model="item.childCheckedVal[4]"
@@ -2097,8 +2119,9 @@
           <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
           <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
-            <!-- 短视频的集数要放在博主后面 -->
-            <span v-if="childItem.bav.value === '短视频'">
+            <!-- 【短视频】的查询影片要放在【选择博主】 后面 -->
+            <!-- 【教育】的查询影片要放在 【选择 VIP】 后面 -->
+            <span v-if="childItem.bav.value === '短视频' || childItem.bav.value === '教育'">
               <el-select
                 v-model="item.childCheckedVal[4]"
                 style="width: 150px;"
@@ -2265,6 +2288,11 @@ import { v4 as uuidv4 } from 'uuid'
 
 export default {
   name: 'bavList',
+  provide () {
+    return {
+      _this: this
+    }
+  },
   components: {
     Type,
     ConditionLine,
@@ -2426,42 +2454,81 @@ export default {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
-      this.childItem.bav.reverseSelect = val
+      this.childItem.bav.reverseSelect = val                
 
-      // this.childItem.bav.behaviorValue
-
-      // 应用活跃
-      if (this.childItem.tagCode === 'BAV0002') {
+      // 应用活跃 起波活跃
+      if (
+        this.childItem.tagCode === 'BAV0002' ||
+        this.childItem.tagCode === 'BAV0008' ||
+        this.childItem.tagCode === 'BAV0011' ||
+        this.childItem.tagCode === 'BAV0012'
+        ) {
+        // 遍历整个标签的结构， 拿到每一层最后一项
+        const originalData = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
+        const list = this.getNodesLastItem(originalData)
+        console.log('11111', list)
         // 递归获取父级有值的对象
         this.iteratorNodes({
-          nodes: this.childItem.bav.behaviorValue,
-          currentNodes: behaviorValue,
+          nodes: originalData,
+          currentNodes: list,
           val,
           seclectVal,
           clearVal
         })
+      } else {
+        behaviorValue.forEach((item) => {
+          if (this.childItem.tagCode === 'BAV0012') { // 【综合起播】特殊处理
+            if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
+              item.operator = '!='
+              this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
+                name: '',
+                filed: 'mac',
+                type: 'count',
+                operator: '=',
+                value: ''
+              }
+            } else {
+              item.operator = '='
+            }
+          } else { // 除了【综合起播】其他标签
+            if (val) {
+              item.operator = '!='
+            } else {
+              item.operator = '='
+            }
+          }
+
+          if (clearVal && clearVal === item.value) { // 需要清空的 value 值
+            item.value = ''
+            const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
+            bavChildItem.childCheckedVal[index] = null
+          }
+        })
       }
       console.log('反选后的结果 =>', this.childItem.bav.behaviorValue)
+      console.log('反选后的结果 =>', this.childItem.bav.showBehaviorValue)
+    },
+
+    // 遍历整个标签的结构， 拿到每一层最后一项
+    getNodesLastItem (nodes, list = []) {
+      nodes.forEach(item => {
+        if (item.child && item.child.length > 0) {
+          this.getNodesLastItem(item.child, list)
+        } else {
+          list.push(item)
+        }
+      })
+      return list
     },
 
     // 循环递归查找最近有数据的项
     iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal} = params) {
       currentNodes.forEach(nodeItem => {
-        if (val && seclectVal !== '' && nodeItem.value !== '' && (seclectVal === 'default' || seclectVal === nodeItem.value)) {
-          nodeItem.operator = '!='
-          this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
-            name: '',
-            filed: 'mac',
-            type: 'count',
-            operator: '=',
-            value: ''
-          }
-        } else {
-          // 递归去查找父级是否存在值
-          let operator = val ? '!=' : '='
-          console.log(operator);
-          this.getParentVal(nodes, nodeItem.parentId, operator)
-        }
+        // 递归去查找父级是否存在值
+        let operator = val ? '!=' : '='
+        let currentId = nodeItem.child && nodeItem.child.length > 0 ? nodeItem.parentId : nodeItem.id
+        this.getParentVal(nodes, currentId, operator)
+
         if (clearVal && clearVal === nodeItem.value) { // 需要清空的 value 值
           nodeItem.value = ''
           const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
@@ -2472,6 +2539,7 @@ export default {
 
     // 获取指定id值
     getParentVal (nodes, id, operator) {
+      const nodeTree = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
       if (!nodes || !id) {
         return
       }
@@ -2479,9 +2547,9 @@ export default {
         let item = nodes[i]
         if (item.id === id) {
           if (item.value) {
-            nodes[i].operator = operator
+            item.operator = operator
           } else {
-            this.getParentVal(nodes, item.parentId, operator)
+            this.getParentVal(nodeTree, item.parentId, operator)
           }
         } else {
           if (item.child && item.child.length > 0) {
@@ -2803,9 +2871,9 @@ export default {
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      */
     handelChildBehavirSelectChange (params = {}) {
+      // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
       this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
-      console.log('点击反选时的check', this.childItem.bav);
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
@@ -2884,7 +2952,8 @@ export default {
       console.log('params==>', params)
       let list = []
 
-      if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) { // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
+      // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
+      if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) {
         list = [{
           name: '',
           value: '',
@@ -2896,30 +2965,25 @@ export default {
       }
 
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
-      vals.forEach(val => {
-        const lastNumberObj = [
-          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
-        ]
+
+      vals.forEach(val => {  
         let obj = {}
+        const lastNumberObj = [
+          {
+            name: '',
+            value: '',
+            filed: 'mac',
+            operator: '=',
+            type: 'count'
+          }
+        ]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
-        const { name, value, field, type, selectKey, mapName } = matchObj || matchObj2
-        obj.name = name
-        obj.value = value
-        obj.field = field
-        obj.type = type
-        obj.field = selectKey
-        obj.type = mapName
-        obj.parentId = parentId
+        obj = matchObj ? matchObj : matchObj2
 
-       if (matchObj2) {
-          // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
-          if (isValueClear) obj.value = ''
-        }
-
-        // 生成唯一id
-        obj.id = uuidv4()
+        // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
+        if (isValueClear) obj.value = ''
 
         if (reverseSelect) { // 反选
           if (this.childItem.tagCode === 'BAV0012') {
@@ -2928,9 +2992,10 @@ export default {
             } else {
               obj.operator = '='
             }
-          } else { // 其他属性切换正常操作
-            obj.operator = '!='
           }
+          //  else { // 其他属性切换正常操作
+          //   obj.operator = '!='
+          // }
         }
 
         // 模块活跃，默认 child 值特殊处理
@@ -2943,12 +3008,8 @@ export default {
             filed: '',
             operator: '=',
             type: 'string',
-            id: uuidv4(),
-            parentId: obj.id, 
             child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count'  }]
           }]
-          defaultchild[0].child[0].id = uuidv4()
-          defaultchild[0].child[0].parentId = defaultchild[0].id
         }
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
           defaultchild = [{
@@ -2968,6 +3029,7 @@ export default {
           obj.childCheckedVal = '0' // 序号默认值为 0
         }
 
+
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 
         obj.childCheckedVal = obj.childCheckedVal || (typeof (obj.childCheckedVal) === 'string' ? '' : [])
@@ -2984,7 +3046,25 @@ export default {
         list.push(obj2)
       })
 
+      // 动态设置子集的id与parentId
+      list = this.setChildId(list, parentId)
+
       console.log('list===>', list)
+      console.log('nodes===>', this.childItem.bav.behaviorValue)
+      return list
+    },
+
+    /**
+     * 动态设置子集的id与parentId
+     */
+    setChildId (list, parentId) {
+      list.forEach(item => {
+        item.id = uuidv4()
+        item.parentId = parentId
+        if (item.child && item.child.length > 0) {
+          this.setChildId(item.child, item.id)
+        }
+      })
       return list
     },
 
@@ -3002,7 +3082,7 @@ export default {
      * @param {Number} level 第几级（为获取下拉框list）
      */
     getQiBoValListByVals (params = {}) {
-      let { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr } = params
+      let { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr, parentId } = params
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
@@ -3126,7 +3206,10 @@ export default {
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
-      // console.log('list===>', list)
+
+      // 动态设置子集的id与parentId
+      list = this.setChildId(list, parentId)
+      console.log('起播list===>', list)
       return list
     },
 
@@ -3143,6 +3226,10 @@ export default {
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
+
+      // 改变数据时将所有的checkbox归位false
+      this.$set(this.childItem.bav, 'reverseSelect', false)
+      this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
 
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
@@ -3162,7 +3249,8 @@ export default {
         selectPropKeyValue,
         isValueClear,
         level,
-        reverseSelectAttr
+        reverseSelectAttr,
+        parentId: childItem.id
       })
     },
 
@@ -3387,6 +3475,8 @@ export default {
             return this.musicList
           } else if (level === 8) { // 歌手
             return this.singerList
+          } else if (level === 9) { // 教育 VIP
+            attrlist = dict.education_vip
           } else {
           }
         } else {
