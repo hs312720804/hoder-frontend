@@ -2465,7 +2465,7 @@ export default {
         const list = this.getNodesLastItem(this.childItem.bav.behaviorValue)
         // 递归获取父级有值的对象
         this.iteratorNodes({
-          nodes: originalData,
+          nodes: this.childItem.bav.behaviorValue,
           currentNodes: list,
           val,
           seclectVal,
