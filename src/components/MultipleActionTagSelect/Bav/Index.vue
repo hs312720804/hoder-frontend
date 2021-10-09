@@ -2105,7 +2105,7 @@
               <el-checkbox
                 class="reverse-check"
                 v-model="childItem.bav.reverseSelect"
-                @change="ReverseSelect($event, item.child, item.childCheckedVal[4], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
+                @change="ReverseSelect($event, item.child, item.childCheckedVal[4] ? item.childCheckedVal[4] : '', {clearVal: item.childCheckedVal[2], bavChildItem: item})"
               >
                 圈出未起播
               </el-checkbox>
@@ -2146,7 +2146,7 @@
               <el-checkbox
                 class="reverse-check"
                 v-model="childItem.bav.reverseSelect"
-                @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
+                @change="ReverseSelect($event, item.child, item.childCheckedVal[1] ? item.childCheckedVal[1] : '', {clearVal: item.childCheckedVal[2], bavChildItem: item})"
               >
                 圈出未起播
               </el-checkbox>
@@ -2839,7 +2839,7 @@ export default {
 
         if (reverseSelect) { // 反选
           if (this.childItem.tagCode === 'BAV0012') {
-            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value)) { // 切换歌曲 或者 切换影片
+            if ((level === 7 && vals[5] === obj.value) || (level === 3 && vals[1] === obj.value) || (level === 3 && vals[4] === obj.value)) { // 切换歌曲 或者 切换影片
               obj.operator = '!='
             } else {
               obj.operator = '='
