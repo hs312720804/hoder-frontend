@@ -74,7 +74,7 @@ export default {
       crowdName: '',
       addOrEditStatus: '',
       publicPath: process.env.BASE_URL,
-      templTagName: 'static/localtag.xls'
+      templTagName: 'static/localtag.xlsx'
     }
   },
   created () {},
@@ -129,7 +129,7 @@ export default {
      * 切换不同文件类型，下载不同模板
      */
     handleChangeType (type) {
-      this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xls'
+      this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xlsx'
     }
   }
 }

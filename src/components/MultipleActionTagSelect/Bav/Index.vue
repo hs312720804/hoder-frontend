@@ -2547,7 +2547,12 @@ export default {
         let item = nodes[i]
         if (item.id === id) {
           if (item.value) {
-            item.operator = operator
+            // 起播行为第三级特殊处理
+            if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
+              item.operator = operator === '=' ? 'like' : 'not like' 
+            } else {
+              item.operator = operator
+            }
           } else {
             this.getParentVal(nodeTree, item.parentId, operator)
           }
@@ -2873,7 +2878,11 @@ export default {
     handelChildBehavirSelectChange (params = {}) {
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
-      this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
+      if (this.childItem.tagCode === 'BAV0012') {
+        this.childItem.bav.showBehaviorValue = this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
+      } else {
+        this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
+      }
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
