@@ -2152,14 +2152,6 @@
                   :value="item.childCheckedVal[4]">
                 </el-option>
               </el-select>
-
-              <el-checkbox
-                class="reverse-check"
-                v-model="childItem.bav.reverseSelect"
-                @change="ReverseSelect($event, item.child, item.childCheckedVal[4], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
-              >
-                圈出未起播
-              </el-checkbox>
             </span>
 
             <span v-else>
@@ -2194,13 +2186,13 @@
                 </el-option>
               </el-select>
 
-              <el-checkbox
+              <!-- <el-checkbox
                 class="reverse-check"
                 v-model="childItem.bav.reverseSelect"
                 @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
               >
                 圈出未起播
-              </el-checkbox>
+              </el-checkbox> -->
             </span>
             <div
               v-for="(item2) in item.child"
@@ -2237,10 +2229,10 @@
 
           <!-- 选择【免费、会员..】   item.childCheckedVal[2]-->
           <!-- 反选时不展示 -->
-          <span class="flex-row" v-if="!childItem.bav.reverseSelect && childItem.bav.value !== '短视频'">
+          <span class="flex-row" v-if="childItem.bav.value !== '短视频'">
             <!-- 第 5 级 -->
             <el-select
-              v-model="item.childCheckedVal[2]"
+              v-model="item.childCheckedVal[7]"
               style="width: 100px"
               name="oxve"
               class="input-inline"
@@ -2260,6 +2252,13 @@
               </template>
             </el-select>
           </span>
+          <el-checkbox
+            class="reverse-check"
+            v-model="childItem.bav.reverseSelect"
+            @change="ReverseSelect"
+          >
+            圈出未起播
+          </el-checkbox>
           <!-- {{ item.childCheckedVal[1] }} ---  -->
           <!-- {{ item.child }} ---  -->
           <!-- {{ item.child[1] }} --- -->
@@ -2460,13 +2459,10 @@ export default {
       if (
         this.childItem.tagCode === 'BAV0002' ||
         this.childItem.tagCode === 'BAV0008' ||
-        this.childItem.tagCode === 'BAV0011' ||
-        this.childItem.tagCode === 'BAV0012'
+        this.childItem.tagCode === 'BAV0011'
         ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
-        const originalData = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
-        const list = this.getNodesLastItem(originalData)
-        console.log('11111', list)
+        const list = this.getNodesLastItem(this.childItem.bav.behaviorValue)
         // 递归获取父级有值的对象
         this.iteratorNodes({
           nodes: originalData,
@@ -2476,34 +2472,36 @@ export default {
           clearVal
         })
       } else {
-        behaviorValue.forEach((item) => {
-          if (this.childItem.tagCode === 'BAV0012') { // 【综合起播】特殊处理
-            if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
-              item.operator = '!='
-              this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 默认选择次数
-                name: '',
-                filed: 'mac',
-                type: 'count',
-                operator: '=',
-                value: ''
-              }
+        if (this.childItem.tagCode === 'BAV0012') {
+          if (val) {
+            let showBehaviorValue = this.childItem.bav.showBehaviorValue
+            if (showBehaviorValue[0].child && showBehaviorValue[0].child.length > 0) {
+              let childArr = this.childItem.bav.showBehaviorValue[0].child
+              childArr[childArr.length - 1].operator = '!='
             } else {
-              item.operator = '='
+              this.childItem.bav.showBehaviorValue[0].operator = '!='
             }
-          } else { // 除了【综合起播】其他标签
-            if (val) {
-              item.operator = '!='
-            } else {
-              item.operator = '='
+            // 针对【综合起播】 进行处理, 默认选择次数
+            this.childItem.bav.countValue = {
+              name: '',
+              filed: 'mac',
+              type: 'count',
+              operator: '=',
+              value: ''
             }
+          } else {
+            this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
           }
-
-          if (clearVal && clearVal === item.value) { // 需要清空的 value 值
-            item.value = ''
-            const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
-            bavChildItem.childCheckedVal[index] = null
-          }
-        })
+        } else {
+          behaviorValue.forEach((item) => {
+            item.operator = val ? '!=' : '='
+            if (clearVal && clearVal === item.value) { // 需要清空的 value 值
+              item.value = ''
+              const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
+              bavChildItem.childCheckedVal[index] = null
+            }
+          })
+        }
       }
       console.log('反选后的结果 =>', this.childItem.bav.behaviorValue)
       console.log('反选后的结果 =>', this.childItem.bav.showBehaviorValue)
@@ -2539,7 +2537,7 @@ export default {
 
     // 获取指定id值
     getParentVal (nodes, id, operator) {
-      const nodeTree = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
+      const nodeTree = this.childItem.bav.behaviorValue
       if (!nodes || !id) {
         return
       }
@@ -2975,7 +2973,8 @@ export default {
 
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
 
-      vals.forEach(val => {  
+      vals.forEach(val => {
+        if (!val) return 
         let obj = {}
         const lastNumberObj = [
           {
