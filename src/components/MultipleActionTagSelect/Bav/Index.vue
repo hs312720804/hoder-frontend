@@ -2932,7 +2932,12 @@ export default {
      */
     setRecoveryItem (nodes) {
       nodes.forEach(item => {
-        item.operator = '='
+        // 起播行为第三层级特殊处理
+        if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
+          item.operator = 'like'
+        } else {
+          item.operator = '='
+        }
         if (item.child && item.child.length > 0 ) {
           this.setRecoveryItem(item.child)
         } else {
@@ -3218,6 +3223,7 @@ export default {
       // 动态设置子集的id与parentId
       list = this.setChildId(list, parentId)
       console.log('起播list===>', list)
+      console.log('nodes===>', this.childItem.bav.behaviorValue)
       return list
     },
 
