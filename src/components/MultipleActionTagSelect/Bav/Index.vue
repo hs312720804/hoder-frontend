@@ -395,14 +395,14 @@
                     </el-form-item>
 
                     <!-- 历史购买才有反选 -->
-                    <el-checkbox
+                    <!-- <el-checkbox
                       v-if="item2.field === 'purchase_recent_two_years'"
                       class="reverse-check"
                       v-model="childItem.bav.reverseSelect"
                       @change="ReverseSelect($event, item2.child)"
                     >
                       圈出未购买
-                    </el-checkbox>
+                    </el-checkbox> -->
                   </div>
 
                   <!-- {{ item.childCheckedVal }} -->
@@ -416,30 +416,41 @@
                     <!-- {{item2}} -->
                       <span class="flex-row">
                         <span class="w100">{{ item3.name }}</span>
-                        <span v-if="!childItem.bav.reverseSelect && item2.field === 'purchase_recent_two_years'" class="flex-column">
+                        <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column">
                           <!-- 历史购买 -->
                           <!-- 第三级 -->
-                          <el-select
-                            multiple
-                            v-model="item3.childCheckedVal"
-                            style="width: 110px"
-                            name="asdq"
-                            class="input-inline"
-                            @change="handelChildBehavirSelectChange({
-                              childItem: item3,
-                              hasChild: true,
-                              level: 4
-                            })"
-                          >
-                            <template v-for="attrChildItem in getBehaviorAttrList(4)">
-                              <el-option
-                                :value="attrChildItem.value"
-                                :label="attrChildItem.name"
-                                :key="attrChildItem.value"
-                              >
-                              </el-option>
-                            </template>
-                          </el-select>
+                          <el-form-item>
+                            <!-- 历史购买才有反选 -->
+                            <el-select
+                              multiple
+                              v-model="item3.childCheckedVal"
+                              style="width: 110px"
+                              name="asdq"
+                              class="input-inline"
+                              @change="handelChildBehavirSelectChange({
+                                childItem: item3,
+                                hasChild: true,
+                                level: 4
+                              })"
+                            >
+                              <template v-for="attrChildItem in getBehaviorAttrList(4)">
+                                <el-option
+                                  :value="attrChildItem.value"
+                                  :label="attrChildItem.name"
+                                  :key="attrChildItem.value"
+                                >
+                                </el-option>
+                              </template>
+                            </el-select>
+                            <el-checkbox
+                              v-if="item2.field === 'purchase_recent_two_years'"
+                              class="reverse-check"
+                              v-model="childItem.bav.reverseSelect"
+                              @change="ReverseSelect"
+                            >
+                            圈出未购买
+                          </el-checkbox>
+                          </el-form-item>
                           <div class="flex-column">
                             <ConditionLine :isShow="item3.child.length > 1"></ConditionLine>
                             <span
@@ -1877,13 +1888,13 @@
                         :value="item5.childCheckedVal[0]">
                       </el-option>
                     </el-select>
-                    <el-checkbox
+                    <!-- <el-checkbox
                       class="reverse-check"
                       v-model="childItem.bav.reverseSelect"
                       @change="ReverseSelect($event, item5.child)"
                     >
                       圈出未活跃
-                    </el-checkbox>
+                    </el-checkbox> -->
 
                     <!-- 反选时不展示 -->
                     <span
@@ -1892,7 +1903,6 @@
                       class="flex-row"
                     >
                       <el-select
-                        v-if="!childItem.bav.reverseSelect"
                         v-model="item6.childCheckedVal[0]"
                         placeholder="请选择"
                         style="width: 110px"
@@ -1913,6 +1923,13 @@
                           </el-option>
                         </template>
                       </el-select>
+                      <el-checkbox
+                        class="reverse-check"
+                        v-model="childItem.bav.reverseSelect"
+                        @change="ReverseSelect"
+                      >
+                        圈出未活跃
+                      </el-checkbox>
                       <span
                         v-for="(item7, index) in item6.child"
                         :key="index"
@@ -2458,6 +2475,7 @@ export default {
       // 应用活跃 起波活跃
       if (
         this.childItem.tagCode === 'BAV0002' ||
+        this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
         this.childItem.tagCode === 'BAV0011'
         ) {

@@ -95,7 +95,7 @@
               </el-form-item> -->
             </div>
 
-            <div class="basic-line" v-if="crowdDefineForm.checkRecvPercentage && crowdType === 2">
+            <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1 && crowdDefineForm.checkRecvPercentage && crowdType === 2">
               <el-form-item label="Mac数量基准" class="one-line">
                 <el-form-item
                   label=""
@@ -516,6 +516,7 @@ export default {
           crowdForm.macInitialValue = macInitialValue
           crowdForm.wxInitialValue = wxInitialValue
           if (
+            crowdForm.autoVersion === 1 &&
             crowdForm.checkRecvPercentage === 1 &&
             !this.validateBasicLine(
               macInitialValue,
