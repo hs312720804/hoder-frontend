@@ -986,13 +986,13 @@
                         :value="item4.childCheckedVal[0]">
                       </el-option>
                     </el-select>
-                    <el-checkbox
+                    <!-- <el-checkbox
                       class="reverse-check"
                       v-model="childItem.bav.reverseSelect"
                       @change="ReverseSelect($event, item4.child)"
                     >
                       圈出未起播
-                    </el-checkbox>
+                    </el-checkbox> -->
                   </div>
 
                   <span class="appoint-text" v-if="!!item4.childCheckedVal[0] && appointmentInfo.length > 0">
@@ -1001,14 +1001,13 @@
                     <span> ，请选择合理的周期范围</span>
                   </span>
                 </span>
-                <span v-if="!childItem.bav.reverseSelect">
                 <span
                   v-for="(item5, index) in item4.child"
                   :key="index"
                   class="flex-row child"
                 >
                   <!-- 选择了视频源下的视频 需要选择集数-->
-                  <span v-if="!!item5.value" class="flex-column">
+                  <span class="flex-column" v-if="!!item5.value">
                     <!-- // 是电影的 -->
                     <span v-if="item5.videoType === '电影'" class="flex-row">
                       <el-select
@@ -1086,6 +1085,7 @@
                           </span>
                         </span>
                     </span>
+                    
                     <!-- // 不是电影的 -->
                       <!-- @change="handelQiBoChildBehavi666rSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
                     <span v-else>
@@ -1107,7 +1107,7 @@
                           :value="tv.value">
                         </el-option>
                       </el-select>
-                      <div class="flex-column">
+                      <div class="flex-column" v-if="!childItem.bav.reverseSelect">
                         <ConditionLine :isShow="item5.child.length > 1"></ConditionLine>
                         <!-- {{ item5.child }} -->
                         <span
@@ -1218,11 +1218,17 @@
                         </span>
                       </div>
                     </span>
-
                   </span>
+                  <el-checkbox
+                    class="reverse-check"
+                    v-model="childItem.bav.reverseSelect"
+                    @change="!!item5.value ? ReverseSelect($event, item5.child) : ReverseSelect($event, item4.child)"
+                  >
+                    圈出未起播
+                  </el-checkbox>
 
                   <!-- 没有选择视频 -->
-                  <span v-else>
+                  <span v-if="!item5.value" >
                     <!-- {{ item5 }} -->
                     <span class="flex-row"
                     >
@@ -1276,7 +1282,6 @@
                       </span>
                     </span>
                   </span>
-                </span>
                 </span>
               </span>
             </span>
@@ -2480,7 +2485,7 @@ export default {
         this.childItem.tagCode === 'BAV0011'
         ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
-        const list = this.getNodesLastItem(this.childItem.bav.behaviorValue)
+        const list = this.childItem.tagCode === 'BAV0008' ? behaviorValue : this.getNodesLastItem(this.childItem.bav.behaviorValue)
         // 递归获取父级有值的对象
         this.iteratorNodes({
           nodes: this.childItem.bav.behaviorValue,
@@ -2539,6 +2544,7 @@ export default {
 
     // 循环递归查找最近有数据的项
     iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal} = params) {
+      console.log(currentNodes)
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
         let operator = val ? '!=' : '='
@@ -2562,7 +2568,7 @@ export default {
       for (let i = 0; i < nodes.length; i++) {
         let item = nodes[i]
         if (item.id === id) {
-          if (item.value) {
+          if (item.value && item.filed !== 'mac') {
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
               item.operator = operator === '=' ? 'like' : 'not like' 
