@@ -340,7 +340,18 @@
     </el-dialog>
     <!-- 查看配置弹窗-->
     <el-dialog title="查看配置" :visible.sync="showConfiguration">
-      <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
+      <c-content-wrapper
+        :pagination="detailPagination.pagination"
+        @filter-change="handleFilterChange"
+      >
+        <c-table
+          :data="seeDetailData.data"
+          :props="seeDetailData.props"
+          :header="seeDetailData.header"
+        >
+        </c-table>
+      </c-content-wrapper>
+      <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
     </el-dialog>
     <!-- 查看统计弹窗-->
     <el-dialog
@@ -498,7 +509,67 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      showAll: false
+      showAll: false,
+      seeDetailData: {
+        props: {
+          border: true
+        },
+        data: [],
+        header: [
+          {
+            label: 'ID',
+            prop: 'id'
+          },
+          {
+            label: '版本号',
+            prop: 'versionId'
+          },
+          {
+            label: '文件名称',
+            prop: 'fileName'
+          },
+          {
+            label: '创建时间',
+            prop: 'createTime'
+          },
+          {
+            label: '操作',
+            width: '100px',
+            render: (h, { row }) => {
+              return h('el-popover', {
+                attrs: {
+                  placement: 'left',
+                  width: '400',
+                  trigger: 'click'
+                }
+              }, [
+                h('el-input', {
+                  props: {
+                    type: 'textarea',
+                    rows: 8,
+                    readonly: true,
+                    value: row.content
+                  }
+                }),
+                h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  slot: "reference"
+              }, '查看配置')])
+            }
+          }
+        ]
+      },
+      detailPagination: {
+        filter: {},
+        pagination: {
+          pageSize: 10,
+          currentPage: 1,
+          total: 0
+        },
+        currentId: null
+      }
     }
   },
   props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
@@ -815,14 +886,24 @@ export default {
       this.addFormVisible = false
     },
     seeDevDetail (row) {
-      this.$service.seeDevFile({ policyId: row.policyId }).then((data) => {
-        this.showConfiguration = true
-        this.configTextarea = data.content
+      this.showConfiguration = true
+      this.detailPagination.currentId = row.policyId
+      this.loadDetailList()
+    },
+    loadDetailList () {
+      let params = {
+        policyId: this.detailPagination.currentId,
+        pageNum: this.detailPagination.pagination.currentPage,
+        pageSize: this.detailPagination.pagination.pageSize
+      }
+      this.$service.seeDevFileList(params).then((data) => {
+        this.seeDetailData.data = data.rows
+        this.detailPagination.pagination.total = data.total
       })
-        .catch(() => {
-          // this.showConfiguration = true
-          // this.configTextarea = '该策略没有配置文件'
-        })
+    },
+    // 查看配置分页
+    handleFilterChange () {
+      this.loadDetailList(this.detailPagination.currentId)
     },
     handleCommand (scope) {
       const type = scope[0]
@@ -1204,4 +1285,8 @@ ul > li
       margin-left: 110px;
       background: antiquewhite;
     }
+</style>
+<style lang="stylus">
+.el-textarea__inner
+  min-height 300px !important
 </style>
