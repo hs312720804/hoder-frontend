@@ -517,10 +517,6 @@ export default {
         data: [],
         header: [
           {
-            label: 'ID',
-            prop: 'id'
-          },
-          {
             label: '版本号',
             prop: 'versionId'
           },
@@ -539,7 +535,7 @@ export default {
               return h('el-popover', {
                 attrs: {
                   placement: 'left',
-                  width: '400',
+                  width: '600',
                   trigger: 'click'
                 }
               }, [
@@ -1288,5 +1284,5 @@ ul > li
 </style>
 <style lang="stylus">
 .el-textarea__inner
-  min-height 300px !important
+  min-height 400px !important
 </style>
