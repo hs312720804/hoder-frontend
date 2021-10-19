@@ -409,8 +409,8 @@
                   <div class="flex-column">
                     <ConditionLine :isShow="item2.child.length > 1"></ConditionLine>
                     <span
-                      v-for="(item3, index) in item2.child"
-                      :key="index"
+                      v-for="(item3, index3) in item2.child"
+                      :key="index3"
                       class="flex-row"
                     >
                     <!-- {{item2}} -->
@@ -419,7 +419,10 @@
                         <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column">
                           <!-- 历史购买 -->
                           <!-- 第三级 -->
-                          <el-form-item>
+                          <el-form-item
+                            :prop="`bav.behaviorValue[${index}].child[${index2}].child[${index3}].childCheckedVal`"
+                            :rules="{ required: true, message: '请选择', trigger: 'change' }"
+                          >
                             <!-- 历史购买才有反选 -->
                             <el-select
                               multiple
@@ -578,8 +581,8 @@
             <div class="flex-column">
               <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
               <div
-                v-for="(item2, index) in item.child"
-                :key="'mo' + index"
+                v-for="(item2, index2) in item.child"
+                :key="'mo' + index2"
                 class="flex-row child-attr-wrap"
               >
                 <!-- {{ item2 }} -->
@@ -587,6 +590,10 @@
                 <!-- {{item}} -->
                 <span class="flex-row">
                     <!-- 推荐位、板块位 -->
+                    <el-form-item
+                      :prop="`bav.behaviorValue[${index}].child[${index2}].value`"
+                      :rules="{ required: true, message: '必填', trigger: 'change' }"
+                    >
                     <el-select
                       v-if="item2.field === 'album_id'"
                       v-model="item2.value"
@@ -626,6 +633,7 @@
                       </el-option>
 
                     </el-select>
+                    </el-form-item>
 
                     <!-- 推荐位 -->
                     <span v-if="item2.selectKey === 'album_id1'">
@@ -1222,7 +1230,7 @@
                   <el-checkbox
                     class="reverse-check"
                     v-model="childItem.bav.reverseSelect"
-                    @change="!!item5.value ? ReverseSelect($event, item5.child) : ReverseSelect($event, item4.child)"
+                    @change="item5.videoType === '电影' ? ReverseSelect($event, item4.child) : ReverseSelect($event, item5.child)"
                   >
                     圈出未起播
                   </el-checkbox>
@@ -1466,7 +1474,7 @@
         >
           <!-- 第二级 -->
           <el-form-item
-            :prop="`bav.behaviorValue[${index}].childCheckedVal`"
+            :prop="`bav.behaviorValue[${index}].childCheckedVal[0]`"
             :rules="{ required: true, message: '请选择', trigger: 'change' }"
           >
             <el-select
@@ -2128,13 +2136,13 @@
               </el-option>
             </el-select>
 
-            <el-checkbox
+            <!-- <el-checkbox
               class="reverse-check"
               v-model="childItem.bav.reverseSelect"
               @change="ReverseSelect($event, item.child, item.childCheckedVal[5], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
             >
               圈出未起播
-            </el-checkbox>
+            </el-checkbox> -->
 
           </span>
 
@@ -2485,24 +2493,43 @@ export default {
         this.childItem.tagCode === 'BAV0011'
         ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
-        const list = this.childItem.tagCode === 'BAV0008' ? behaviorValue : this.getNodesLastItem(this.childItem.bav.behaviorValue)
+        let isCurrentNodeId = false
+        let list
+        if (this.childItem.tagCode === 'BAV0008') {
+          list = behaviorValue
+          isCurrentNodeId = true
+        } else {
+          list = this.getNodesLastItem(this.childItem.bav.behaviorValue)
+        }
         // 递归获取父级有值的对象
         this.iteratorNodes({
           nodes: this.childItem.bav.behaviorValue,
           currentNodes: list,
           val,
           seclectVal,
-          clearVal
+          clearVal,
+          isCurrentNodeId
         })
       } else {
         if (this.childItem.tagCode === 'BAV0012') {
           if (val) {
-            let showBehaviorValue = this.childItem.bav.showBehaviorValue
-            if (showBehaviorValue[0].child && showBehaviorValue[0].child.length > 0) {
-              let childArr = this.childItem.bav.showBehaviorValue[0].child
-              childArr[childArr.length - 1].operator = '!='
+            let showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
+            if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
+              // 一维数组循环找到存在值得项
+              let firstChild = showBehaviorValue.child
+              for (let i = firstChild.length; i--; i > 0) {
+                let curChild = firstChild[i]
+                // 没有子集且存在值
+                if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
+                  curChild.operator = '!='
+                  break
+                } else if (curChild.value &&  (curChild.child && curChild.child.length > 0)) { // 存在子集
+                  curChild.child[0].operator = '!='
+                  break
+                }
+              }
             } else {
-              this.childItem.bav.showBehaviorValue[0].operator = '!='
+              showBehaviorValue.operator = '!='
             }
             // 针对【综合起播】 进行处理, 默认选择次数
             this.childItem.bav.countValue = {
@@ -2543,12 +2570,12 @@ export default {
     },
 
     // 循环递归查找最近有数据的项
-    iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal} = params) {
+    iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId} = params) {
       console.log(currentNodes)
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
         let operator = val ? '!=' : '='
-        let currentId = nodeItem.child && nodeItem.child.length > 0 ? nodeItem.parentId : nodeItem.id
+        let currentId = !isCurrentNodeId && nodeItem.child && nodeItem.child.length > 0 ? nodeItem.parentId : nodeItem.id
         this.getParentVal(nodes, currentId, operator)
 
         if (clearVal && clearVal === nodeItem.value) { // 需要清空的 value 值
@@ -3029,10 +3056,9 @@ export default {
             } else {
               obj.operator = '='
             }
+          } else { // 其他属性切换正常操作
+            obj.operator = '!='
           }
-          //  else { // 其他属性切换正常操作
-          //   obj.operator = '!='
-          // }
         }
 
         // 模块活跃，默认 child 值特殊处理
@@ -3087,7 +3113,7 @@ export default {
       list = this.setChildId(list, parentId)
 
       console.log('list===>', list)
-      console.log('nodes===>', this.childItem.bav.behaviorValue)
+      console.log('nodes===>', this.childItem.bav)
       return list
     },
 

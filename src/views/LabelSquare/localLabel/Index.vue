@@ -107,9 +107,9 @@ export default {
       this.crowdName = crowdName
       this.addOrEditStatus = this.localCrowdId != null && this.crowdName != undefined ? 'edit' : 'add'
       if (this.addOrEditStatus === 'edit') {
-        this.title = '编辑本地人群'
+        this.title = '编辑本地标签'
       } else {
-        this.title = '新增本地人群'
+        this.title = '新建本地标签'
       }
     },
     handleRefreshList () {
