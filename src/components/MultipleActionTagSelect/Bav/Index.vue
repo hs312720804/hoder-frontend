@@ -1901,13 +1901,6 @@
                         :value="item5.childCheckedVal[0]">
                       </el-option>
                     </el-select>
-                    <!-- <el-checkbox
-                      class="reverse-check"
-                      v-model="childItem.bav.reverseSelect"
-                      @change="ReverseSelect($event, item5.child)"
-                    >
-                      圈出未活跃
-                    </el-checkbox> -->
 
                     <!-- 反选时不展示 -->
                     <span
@@ -1936,13 +1929,6 @@
                           </el-option>
                         </template>
                       </el-select>
-                      <el-checkbox
-                        class="reverse-check"
-                        v-model="childItem.bav.reverseSelect"
-                        @change="ReverseSelect"
-                      >
-                        圈出未活跃
-                      </el-checkbox>
                       <span
                         v-for="(item7, index) in item6.child"
                         :key="index"
@@ -1954,6 +1940,13 @@
                   </span>
                 </span>
               </span>
+              <el-checkbox
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect"
+              >
+                圈出未活跃
+              </el-checkbox>
             </div>
 
           </span>
@@ -2235,7 +2228,7 @@
                   反选时不展示
                   只有【影视】或者【电竞】业务可以选择集数
                   -->
-              <span v-if="!childItem.bav.reverseSelect && item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
+              <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
                 <el-select
                   v-model="item2.childCheckedVal[0]"
                   style="width: 100px;"
@@ -2285,7 +2278,7 @@
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
-            @change="ReverseSelect"
+            @change="ReverseSelect($event, item.child, item.childCheckedVal[4] ? item.childCheckedVal[4] : '', {clearVal: item.childCheckedVal[2], bavChildItem: item})"
           >
             圈出未起播
           </el-checkbox>
@@ -2532,12 +2525,14 @@ export default {
               showBehaviorValue.operator = '!='
             }
             // 针对【综合起播】 进行处理, 默认选择次数
-            this.childItem.bav.countValue = {
-              name: '',
-              filed: 'mac',
-              type: 'count',
-              operator: '=',
-              value: ''
+            if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
+              this.childItem.bav.countValue = {
+                name: '',
+                filed: 'mac',
+                type: 'count',
+                operator: '=',
+                value: ''
+              }
             }
           } else {
             this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
@@ -2553,8 +2548,9 @@ export default {
           })
         }
       }
-      console.log('反选后的结果 =>', this.childItem.bav.behaviorValue)
-      console.log('反选后的结果 =>', this.childItem.bav.showBehaviorValue)
+      console.log('整个数据',  this.childItem.bav);
+      console.log('反选后的结果behaviorValue =>', this.childItem.bav.behaviorValue)
+      console.log('反选后的结果showBehaviorValue =>', this.childItem.bav.showBehaviorValue)
     },
 
     // 遍历整个标签的结构， 拿到每一层最后一项
@@ -2871,6 +2867,8 @@ export default {
      * @param {Boolean} isValueClear = 'false' 是否清空下一级（一二级联动时，一级下拉切换，将二级下拉框清空）
      */
     handelBehavirSelectChange (params = {}) {
+      // 改变数据时将所有的checkbox归位false
+      this.$set(this.childItem.bav, 'reverseSelect', false)
       let { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
       const childItem = this.childItem
 
@@ -2886,7 +2884,7 @@ export default {
           operator: '=',
           value: ''
         }
-        const behaviorValue = childItem.bav.showBehaviorValue
+        const behaviorValue = this.setRecoveryItem(childItem.bav.showBehaviorValue)
 
         childItem.bav.showBehaviorValue = this.getValListByVals({ // 组装数据
           vals,
@@ -2899,7 +2897,7 @@ export default {
           reverseSelectAttr
         })
       } else {
-        const behaviorValue = childItem.bav.behaviorValue
+        const behaviorValue = this.setRecoveryItem(childItem.bav.behaviorValue)
 
         childItem.bav.behaviorValue = this.getValListByVals({ // 组装数据
           vals,

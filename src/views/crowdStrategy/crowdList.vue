@@ -571,6 +571,7 @@
                   v-model="policyCopyForm.policyIds"
                   multiple
                   filterable
+                  @change="policyCopySelChange"
           >
             <el-option
               v-for="(item,index) in allPolices"
@@ -2495,6 +2496,10 @@ export default {
           // this.showConfiguration = true
           // this.configTextarea = '该策略没有配置文件'
         })
+    },
+    // 改变策略复制错误文案清空
+    policyCopySelChange (val) {
+      this.copyErrorMsg = ''
     }
   }
 }
