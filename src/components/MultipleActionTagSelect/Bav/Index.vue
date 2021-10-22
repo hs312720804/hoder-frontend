@@ -2517,7 +2517,16 @@ export default {
                   curChild.operator = '!='
                   break
                 } else if (curChild.value &&  (curChild.child && curChild.child.length > 0)) { // 存在子集
-                  curChild.child[0].operator = '!='
+                  let list = this.getNodesLastItem([curChild])
+                  // 递归去设置
+                  this.iteratorNodes({
+                    nodes: this.childItem.bav.showBehaviorValue,
+                    currentNodes: list,
+                    val,
+                    seclectVal,
+                    clearVal,
+                    isCurrentNodeId: false
+                  })
                   break
                 }
               }
@@ -2567,7 +2576,6 @@ export default {
 
     // 循环递归查找最近有数据的项
     iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId} = params) {
-      console.log(currentNodes)
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
         let operator = val ? '!=' : '='
@@ -2584,12 +2592,13 @@ export default {
 
     // 获取指定id值
     getParentVal (nodes, id, operator) {
-      const nodeTree = this.childItem.bav.behaviorValue
+      const nodeTree = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
       if (!nodes || !id) {
         return
       }
       for (let i = 0; i < nodes.length; i++) {
         let item = nodes[i]
+        console.log(item.id === id)
         if (item.id === id) {
           if (item.value && item.filed !== 'mac') {
             // 起播行为第三级特殊处理
@@ -3220,6 +3229,22 @@ export default {
               obj.child[0].child[0].name = ''
               obj.child[0].child[0].field = ''
               obj.child[0].child[0].childCheckedVal = []
+              // 根据第五级判断第六级的值
+              let levelChild5 = obj.child[0].child[0]
+              if (levelChild5.child && levelChild5.child.length > 0) {
+                levelChild5.childCheckedVal = []
+                levelChild5.child[0].value = ''
+                levelChild5.child[0].name = ''
+                levelChild5.child[0].field = ''
+                // 根据第六级判断第七级的值
+                let levelChild6 = obj.child[0].child[0].child[0]
+                if (levelChild6.child && levelChild6.child.length > 0) {
+                  levelChild6.childCheckedVal = []
+                  levelChild6.child[0].value = ''
+                  levelChild6.child[0].name = ''
+                  levelChild6.child[0].field = ''
+                }
+              }
             }
           }
         }
