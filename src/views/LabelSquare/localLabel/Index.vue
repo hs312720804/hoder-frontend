@@ -118,6 +118,7 @@ export default {
     },
     handleCloseAddForm () {
       this.showAdd2 = false
+      this.templTagName = 'static/localtag.xlsx'
     },
     handleTableSelected (val, mode) {
       this.$emit('get-table-selected', val, mode)
