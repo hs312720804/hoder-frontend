@@ -2936,9 +2936,13 @@ export default {
       this.$set(this.childItem.bav, 'reverseSelect', false)
       if (this.childItem.tagCode === 'BAV0012') {
         this.childItem.bav.showBehaviorValue = this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
-      } else {
-        this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
-      }
+      } else if (
+        this.childItem.tagCode === 'BAV0002' ||
+        this.childItem.tagCode === 'BAV0003' ||
+        this.childItem.tagCode === 'BAV0008' ||
+        this.childItem.tagCode === 'BAV0011') {
+          this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
+        }
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
@@ -3229,22 +3233,32 @@ export default {
               obj.child[0].child[0].name = ''
               obj.child[0].child[0].field = ''
               obj.child[0].child[0].childCheckedVal = []
+              // 递归清空子级的值
+              this.clearChildVal(obj.child[0].child[0])
               // 根据第五级判断第六级的值
-              let levelChild5 = obj.child[0].child[0]
-              if (levelChild5.child && levelChild5.child.length > 0) {
-                levelChild5.childCheckedVal = []
-                levelChild5.child[0].value = ''
-                levelChild5.child[0].name = ''
-                levelChild5.child[0].field = ''
-                // 根据第六级判断第七级的值
-                let levelChild6 = obj.child[0].child[0].child[0]
-                if (levelChild6.child && levelChild6.child.length > 0) {
-                  levelChild6.childCheckedVal = []
-                  levelChild6.child[0].value = ''
-                  levelChild6.child[0].name = ''
-                  levelChild6.child[0].field = ''
-                }
-              }
+              // let levelChild5 = obj.child[0].child[0]
+              // if (levelChild5.child && levelChild5.child.length > 0) {
+              //   levelChild5.childCheckedVal = []
+              //   levelChild5.child[0].value = ''
+              //   levelChild5.child[0].name = ''
+              //   levelChild5.child[0].field = ''
+              //   // 根据第六级判断第七级的值
+              //   let levelChild6 = levelChild5.child[0]
+              //   if (levelChild6.child && levelChild6.child.length > 0) {
+              //     levelChild6.childCheckedVal = []
+              //     levelChild6.child[0].value = ''
+              //     levelChild6.child[0].name = ''
+              //     levelChild6.child[0].field = ''
+              //     // 第9级
+              //     let levelChild8 = levelChild6.child[0].child[0]
+              //     if (levelChild8.child && levelChild8.child.length > 0) {
+              //       levelChild8.childCheckedVal = []
+              //       levelChild8.child[0].value = ''
+              //       levelChild8.child[0].name = ''
+              //       levelChild8.child[0].field = ''
+              //     }
+              //   }
+              // }
             }
           }
         }
@@ -3298,6 +3312,23 @@ export default {
       console.log('起播list===>', list)
       console.log('nodes===>', this.childItem.bav.behaviorValue)
       return list
+    },
+
+    // 起播行为递归清空子集的值
+    clearChildVal (obj) {
+      if (!obj.child || !obj.child.length) {
+        return
+      }
+      obj.childCheckedVal = []
+      obj.child && obj.child.forEach(item => {
+        item.value = ''
+        item.name = ''
+        item.field = ''
+        item.childCheckedVal = []
+        if (item.child && item.child.length > 0) {
+          this.clearChildVal(item)
+        }
+      })
     },
 
     /**
