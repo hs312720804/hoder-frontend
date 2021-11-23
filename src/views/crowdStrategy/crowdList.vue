@@ -564,13 +564,14 @@
     </span>
     </el-dialog>
     <!--复制选择策略-->
-    <el-dialog title="将人群复制到以下策略" :visible.sync="showCopyDialog">
+    <el-dialog title="将人群复制到以下策略" :visible.sync="showCopyDialog" @close="handleCancelCopy('policyCopyForm')">
       <el-form :model="policyCopyForm" :rules="copyRules" ref="policyCopyForm" class="copy-form">
         <el-form-item label="选择策略" prop="policyIds">
           <el-select
                   v-model="policyCopyForm.policyIds"
                   multiple
                   filterable
+                  @change="policyCopySelChange"
           >
             <el-option
               v-for="(item,index) in allPolices"
@@ -582,8 +583,9 @@
           </el-select>
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handleCopy('policyCopyForm')">确定</el-button>
+          <el-button :disabled="!!copyErrorMsg" type="primary" @click="handleCopy('policyCopyForm')">确定</el-button>
           <el-button @click="handleCancelCopy('policyCopyForm')">取 消</el-button>
+          <span style="margin-left: 20px; color: red">{{ copyErrorMsg }}</span>
         </el-form-item>
       </el-form>
     </el-dialog>
@@ -1046,7 +1048,8 @@ export default {
       initTableMerge: [],
       showConfiguration: false,
       configTextarea: '',
-      initExpandCrowd: []
+      initExpandCrowd: [], 
+      copyErrorMsg: '' // 人群复制捕获错误信息
     }
   },
   props: ['selectRow'],
@@ -1859,6 +1862,8 @@ export default {
             .then(() => {
               this.handleCancelCopy('policyCopyForm')
               this.loadData()
+            }).catch(err => {
+              this.copyErrorMsg = err.message
             })
         } else {
           return false
@@ -1868,6 +1873,7 @@ export default {
     handleCancelCopy (formName) {
       this.showCopyDialog = false
       this.$refs[formName].resetFields()
+      this.copyErrorMsg = ''
     },
     handleCommandOpreate (scope) {
       const type = scope[0]
@@ -2490,6 +2496,10 @@ export default {
           // this.showConfiguration = true
           // this.configTextarea = '该策略没有配置文件'
         })
+    },
+    // 改变策略复制错误文案清空
+    policyCopySelChange (val) {
+      this.copyErrorMsg = ''
     }
   }
 }

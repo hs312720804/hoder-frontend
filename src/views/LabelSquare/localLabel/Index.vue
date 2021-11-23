@@ -18,6 +18,7 @@
       @close-add="handleCloseAddForm"
       @upsert-end="handleRefreshList"
       @save-form="handleSave"
+      @currentFileType="handleChangeType"
       :isUpload="false"
       :localCrowdId="localCrowdId"
       :crowdName="crowdName"
@@ -28,6 +29,9 @@
         <el-form-item label="人群名称">
           <el-input v-model="slotData.slotData.name" :maxlength="50"></el-input>
         </el-form-item>
+      </template>
+      <template v-slot:temlDownload>
+        <a class="temlDownload" :download="templTagName" :href="`${publicPath}${templTagName}`">模板下载</a>
       </template>
     </group-image-add>
   </div>
@@ -65,10 +69,12 @@ export default {
       refreshFlag: false,
       showSelectTypeDialog: false,
       showAdd2: false, // 弹窗
-      title: '新增本地人群',
+      title: '新建本地标签',
       localCrowdId: '',
       crowdName: '',
-      addOrEditStatus: ''
+      addOrEditStatus: '',
+      publicPath: process.env.BASE_URL,
+      templTagName: 'static/localtag.xlsx'
     }
   },
   created () {},
@@ -101,9 +107,9 @@ export default {
       this.crowdName = crowdName
       this.addOrEditStatus = this.localCrowdId != null && this.crowdName != undefined ? 'edit' : 'add'
       if (this.addOrEditStatus === 'edit') {
-        this.title = '编辑本地人群'
+        this.title = '编辑本地标签'
       } else {
-        this.title = '新增本地人群'
+        this.title = '新建本地标签'
       }
     },
     handleRefreshList () {
@@ -112,12 +118,19 @@ export default {
     },
     handleCloseAddForm () {
       this.showAdd2 = false
+      this.templTagName = 'static/localtag.xlsx'
     },
     handleTableSelected (val, mode) {
       this.$emit('get-table-selected', val, mode)
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
+    },
+    /**
+     * 切换不同文件类型，下载不同模板
+     */
+    handleChangeType (type) {
+      this.templTagName = type === 1 ? 'static/localtag.txt' : 'static/localtag.xlsx'
     }
   }
 }
@@ -140,4 +153,10 @@ export default {
   height: 150px;
   font-size: 16px;
 }
+
+.temlDownload
+  float right
+  color #409EFF
+  cursor pointer
+  text-decoration none
 </style>

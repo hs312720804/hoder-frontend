@@ -191,6 +191,19 @@ export function seeDevFile (params) {
     params
   })
 }
+/**
+ * 查看配置文件新增
+ * @param {*} params 
+ * @returns 
+ */
+export function seeDevFileList (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/policy/luaMultiVersion',
+    params
+  })
+}
+
 // 策略业务调用统计接口圆饼图
 export function policyWithBiTotalPie (params) {
   return this.fetch({
