@@ -165,6 +165,7 @@ export default {
         '/crowdDataPos/index': 'dataManage',
         '/tagDict/index': 'tagDictDatabase',
         '/total/index': 'statisticsHomePage',
+        '/total/key': 'keyIndicatorTrends',
         '/indexTotal/index': 'OverallDeliveryStatistics',
         '/crowTotal/index': 'OverallCrowdStatistics',
         '/tagStructure/index': 'tabStructure',

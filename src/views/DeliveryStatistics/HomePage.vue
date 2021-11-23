@@ -369,7 +369,8 @@ export default {
         }
       },
       downloadUrl: undefined,
-      homePageRecommendation: []
+      homePageRecommendation: [],
+      allCharts: {}
     }
   },
   watch: {
@@ -473,6 +474,7 @@ export default {
           type: 'line'
         }]
       })
+      this.allCharts[element] = myChart
     },
     // 通用圆饼图
     setCircleEcharts (element, title, legend, data, circleType) {
@@ -523,6 +525,7 @@ export default {
           }
         ]
       })
+      this.allCharts[element] = myChart
     },
     // 通用嵌套环形图
     setCircleDoubleEcharts (element, title, legend, dataTotal, dataChild) {
@@ -632,6 +635,7 @@ export default {
           }
         ]
       })
+      this.allCharts[element] = myChart
     },
     // 通用雷达图
     setRadarEcharts (element, title, legend, data, insideChildData) {
@@ -700,6 +704,7 @@ export default {
           }
         ]
       })
+      this.allCharts[element] = myChart
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
@@ -750,6 +755,7 @@ export default {
         },
         series: yData
       })
+      this.allCharts[element] = myChart
     },
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData) {
@@ -801,6 +807,7 @@ export default {
           barWidth: 30
         }]
       })
+      this.allCharts[element] = myChart
     },
     // 人群画像性别
     getCrowdSextotal (startTime, endTime) {
@@ -1123,6 +1130,14 @@ export default {
     this.getUserWatchPreference(this.startDate, this.endDate)
     this.getServiceActive(this.time0[0], this.time0[1])
     this.handleGetHomePageRecommend(this.startDate, this.endDate)
+
+    // 图表自适应
+    window.addEventListener('resize', () => {
+      for (var key of Object.keys(this.allCharts)) {
+        const chart = this.allCharts[key]
+        chart.resize()
+      }
+    })
   },
   created () {
     // 设置默认时间为今天的前一周

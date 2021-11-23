@@ -5044,7 +5044,8 @@ export default {
   },
   methods: {
     getIconClassName (event) {
-      let className = event.toElement.getAttribute('class').split(' ')[2]
+      // let className = event.toElement.getAttribute('class').split(' ')[2]
+      let className = event.target.getAttribute('class').split(' ')[2]
       this.$emit('getIcon', className)
     },
     goBack () {

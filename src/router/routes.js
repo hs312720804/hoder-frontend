@@ -20,6 +20,7 @@ import roleManage from '@/views/setting/roleManage'
 import dataMange from '@/views/DataManage/peoplePositionIndex'
 import tagDictDatabase from '@/views/Tag/tagDictDatabase'
 import statisticsHomePage from '@/views/DeliveryStatistics/HomePage'
+import KeyIndicatorTrends from '@/views/DeliveryStatistics/KeyIndicatorTrends'
 // import statisticsHomePage from '@/views/DeliveryStatistics/StatisticsHomePage'
 import DeliveryDataAnalyse from '@/views/DeliveryStatistics/DeliveryDataAnalyse'
 import DeliveryMonitor from '@/views/DeliveryStatistics/DeliveryMonitor'
@@ -462,7 +463,8 @@ const children = [
       title: '第三方DMP',
       icon: 'el-icon-cc-file'
     }
-  },
+  },
+
   {
     name: 'operateLog',
     path: 'thirdParty/operateLog',
@@ -544,7 +546,8 @@ const children = [
       title: '人员管理',
       icon: 'el-icon-cc-file'
     }
-  },
+  },
+
   {
     name: 'organManage',
     path: 'administration/organManage',
@@ -554,7 +557,8 @@ const children = [
       title: '机构管理',
       icon: 'el-icon-cc-file'
     }
-  },
+  },
+
   {
     name: 'roleManage',
     path: 'administration/roleManage',
@@ -585,7 +589,7 @@ const children = [
       title: '个人信息',
       icon: 'el-icon-cc-file'
     }
-  },
+  },
   {
     name: 'password',
     path: 'Account/password',
@@ -616,7 +620,8 @@ const children = [
       title: '登录日志',
       icon: 'el-icon-cc-file'
     }
-  },
+  },
+
   {
     name: 'operateLog',
     path: 'Log/operateLog',
@@ -640,6 +645,18 @@ const children = [
       isCloseable: false
     }
   },
+  {
+    name: 'keyIndicatorTrends',
+    path: 'keyIndicatorTrends',
+    component: KeyIndicatorTrends,
+    meta: {
+      title: '关键指标趋势',
+      tagId: 'keyIndicatorTrends',
+      icon: 'el-icon-cc-file',
+      isCloseable: false
+    }
+  },
+
   {
     name: 'oneTouchDrop',
     path: 'oneTouchDrop',
