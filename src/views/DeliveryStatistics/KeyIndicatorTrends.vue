@@ -234,7 +234,7 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
@@ -248,7 +248,7 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart2', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart2', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
@@ -262,7 +262,7 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart3', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart3', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
     //  4
@@ -275,35 +275,35 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart4', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart4', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
     //  5
     getStatisticCrowdLife (rangeType) {
       this.$service.getStatisticCrowdLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart5', '', data.xaxis, data.series)
+        this.setBarEchart('chart5', '', data.xaxis, data.series, data.xunit, data.yunit)
       })
     },
 
     //  6
     getStatisticBehaviorCrowdLife (rangeType) {
       this.$service.getStatisticBehaviorCrowdLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart6', '', data.xaxis, data.series)
+        this.setBarEchart('chart6', '', data.xaxis, data.series, data.xunit, data.yunit)
       })
     },
 
     //  7
     getStatisticStrategyLife (rangeType) {
       this.$service.getStatisticStrategyLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart7', '', data.xaxis, data.series)
+        this.setBarEchart('chart7', '', data.xaxis, data.series, data.xunit, data.yunit)
       })
     },
 
     //  8 9 10
     getCountGetTag (type, chartId) {
       this.$service.getCountGetTag({ type }).then((data) => {
-        this.setBarEchart(chartId, '', data.xaxis, data.series)
+        this.setBarEchart(chartId, '', data.xaxis, data.series, data.xunit, data.yunit)
       })
     },
 
@@ -315,9 +315,10 @@ export default {
           return key.name
         })
         const linesData = series.map((key) => {
-          return { name: key.name, data: key.value, type: 'line' }
+          const valueMap = key.value.map((item) => Math.round(item * 100))
+          return { name: key.name, data: valueMap, type: 'line' }
         })
-        this.setLinesEchart('chart11', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart11', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
@@ -331,14 +332,13 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart12', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart12', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
     //  13
     getStatisticCrowdCalcDuration (rangeType) {
       this.$service.getStatisticCrowdCalcDuration({ rangeType }).then((data) => {
-        debugger
         const series = data.series || []
         const legendData = series.map((key) => {
           return key.name
@@ -346,13 +346,13 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         }) || []
-        this.setLinesEchart('chart13', '', data.xaxis, linesData, legendData)
+        this.setLinesEchart('chart13', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
     // 通用柱状图参数设置
-    setBarEchart (element, title, xData, yData) {
-      const _this = this
+    setBarEchart (element, title, xData, yData, xunit = '', yunit = '') {
+      // const _this = this
       let echarts = require('echarts')
       let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
@@ -362,19 +362,25 @@ export default {
         tooltip: {
           // trigger: 'item',
           trigger: 'axis'
-          // formatter: function (a) {
-          //   return _this.cc_format_number(a.data)
+          // formatter: function (parmas) {
+          //   let str = parmas[0].name + '<br/>'
+          //   for (let item of parmas) {
+          //     str = str + item.marker + item.name + ': ' + item.value + yunit + '<br/>'
+          //   }
+          //   // return _this.cc_format_number(a.data)
+          //   return str
           // }
         },
-        // tooltip: {
-        //   trigger: 'axis'
-        // },
+
         xAxis: {
           type: 'category',
           data: xData,
           axisLabel: {
             interval: 'auto',
-            rotate: -45
+            rotate: -45,
+            formatter: function (value) {
+              return value + xunit
+            }
           }
         },
         yAxis: {
@@ -386,11 +392,16 @@ export default {
           axisLabel: {
             margin: 2,
             formatter: function (value) {
-              if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万'
+              if (value >= 100000000) {
+                value = value / 100000000 + '亿' + yunit
               } else if (value >= 10000000) {
-                value = value / 10000000 + '千万'
-              } return value
+                value = value / 10000000 + '千万' + yunit
+              } else if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万' + yunit
+              } else {
+                value = value + yunit
+              }
+              return value
             }
           }
         },
@@ -405,7 +416,7 @@ export default {
     },
 
     // 通用多线性参数设置
-    setLinesEchart (element, title, xData, yData, legend) {
+    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
       const _this = this
       let echarts = require('echarts')
       let myChart = echarts.init(this.$refs[element])
@@ -415,6 +426,14 @@ export default {
         },
         tooltip: {
           trigger: 'axis'
+          // formatter: function (parmas) {
+          //   let str = parmas[0].name + '<br/>'
+          //   for (let item of parmas) {
+          //     str = str + item.marker + item.seriesName + ' :  ' + item.value + yunit + '<br/>'
+          //   }
+          //   // return _this.cc_format_number(a.data)
+          //   return str
+          // }
           // axisPointer: {
           //   type: 'cross',
           //   label: {
@@ -437,7 +456,6 @@ export default {
           //   )
           // }
           // formatter: function (a) {
-          //   debugger
           //   return _this.cc_format_number(a.data)
           // }
           // formatter: '{b0}: {c0}<br />{b1}: {c1}'
@@ -457,11 +475,15 @@ export default {
           data: xData,
           axisLabel: {
             interval: 'auto',
-            rotate: -45
+            rotate: -45,
+            formatter: function (value) {
+              return value + xunit
+            }
           }
         },
         yAxis: {
           type: 'value',
+          // name: '温度',
           axisTick: {
             inside: true
           },
@@ -469,11 +491,25 @@ export default {
           axisLabel: {
             margin: 30,
             formatter: function (value) {
-              if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万'
+              // if (value >= 10000 && value < 10000000) {
+              //   value = value / 10000 + '万' + yunit
+              // } else if (value >= 10000000) {
+              //   value = value / 10000000 + '千万' + yunit
+              // } else if (value >= 100000000) {
+              //   value = value / 100000000 + '亿' + yunit
+              // } else {
+              //   value = value + yunit
+              // }
+              if (value >= 100000000) {
+                value = value / 100000000 + '亿' + yunit
               } else if (value >= 10000000) {
-                value = value / 10000000 + '千万'
-              } return value
+                value = value / 10000000 + '千万' + yunit
+              } else if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万' + yunit
+              } else {
+                value = value + yunit
+              }
+              return value
             }
           }
         },
