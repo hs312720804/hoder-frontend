@@ -200,7 +200,7 @@ export function getStatisticStrategyLife (params) {
 export function getCountGetTag (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/count/getTag',
+    url: '/api/chart/getTag',
     params
   })
 }
@@ -209,7 +209,7 @@ export function getCountGetTag (params) {
 export function getCountGetCrowdRatio (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/count/getCrowdRatio',
+    url: '/api/chart/getCrowdRatio',
     params
   })
 }
@@ -218,7 +218,7 @@ export function getCountGetCrowdRatio (params) {
 export function getCountGetStore (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/count/getStore',
+    url: '/api/chart/getStore',
     params
   })
 }
