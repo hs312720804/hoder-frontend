@@ -6,7 +6,7 @@
 
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
           <i class="el-icon-cc-celve2"></i>
-          <span v-show="!isCollapseMenu">人群平台</span>
+          <span v-show="!isCollapseMenu">极光引擎</span>
         </div>
         <div class="version">{{$appState.user.version}}</div>
       </div>
