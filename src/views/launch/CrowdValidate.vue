@@ -68,9 +68,9 @@ export default {
       resultContent: undefined,
       rules: {
         MAC: { required: true, message: '请输入有效的Mac地址', trigger: 'blur' },
-        policyId: { required: true, message: '请输入人群ID', trigger: 'blur' },
+        policyId: { required: true, message: '请输入策略ID', trigger: 'blur' },
         mac: { required: true, message: '请输入有效的Mac地址', trigger: 'blur' },
-        policyIds: { required: true, message: '请输入人群ID', trigger: 'blur' }
+        policyIds: { required: true, message: '请输入策略ID', trigger: 'blur' }
       }
     }
   },

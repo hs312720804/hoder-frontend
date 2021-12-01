@@ -714,7 +714,7 @@
           <el-input
             v-model="formInline.attrName"
             placeholder="标签名称"
-            @keyup.enter.native="onSubmit"
+            @keydown.enter.native="onSubmit"
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -790,7 +790,7 @@ export default {
         limitLaunchCount: [
           {
             required: true,
-            message: '请输入大于0小于100万的限制数量',
+            message: '请输入大于0小于1,000,000的限制数量',
             trigger: 'blur'
           }
         ]

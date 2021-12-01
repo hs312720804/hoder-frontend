@@ -642,7 +642,7 @@ export default {
         limitLaunchCount: [
           {
             required: true,
-            message: '请输入大于0小于100万的限制数量',
+            message: '请输入大于0小于1,000,000的限制数量',
             trigger: 'blur'
           }
         ]

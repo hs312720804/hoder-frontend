@@ -1048,7 +1048,7 @@ export default {
       initTableMerge: [],
       showConfiguration: false,
       configTextarea: '',
-      initExpandCrowd: [], 
+      initExpandCrowd: [],
       copyErrorMsg: '' // 人群复制捕获错误信息
     }
   },

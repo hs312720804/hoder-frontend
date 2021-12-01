@@ -1,30 +1,31 @@
 <template>
   <div class="my-collect">
-      <div class="header">
+      <!-- <div class="header">
           <div v-if="!showSelection">
-            <!-- <el-button
+            <el-button
                 @click="handleAdd"
                 type="primary"
             >
                 新建
-            </el-button> -->
+            </el-button>
           </div>
-          <div class="search-input">
-              <el-input
-                  placeholder="支持按人群名、ID搜索"
-                  class="header-input"
-                  v-model="filter.tagName"
-                  @keyup.enter.native="fetchData"
-              ></el-input>
-              <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-          </div>
+
+      </div> -->
+
+      <div class="search-input">
+          <el-input
+              placeholder="支持按人群名、ID搜索"
+              class="header-input"
+              v-model="filter.tagName"
+              @keyup.enter.native="fetchData"
+          ></el-input>
+          <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div>
 
       <el-tabs
         v-if="showTypeTab"
         v-model="activeName"
         @tab-click="handleTabChange"
-        style="margin-top: -9px"
       >
         <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
         </el-tab-pane>
@@ -254,14 +255,18 @@ export default {
       padding-top: 0 !important
     .my-collect
         margin-top 50px
+        position relative
     .header
         display flex
         justify-content space-between
-        margin 10px 0
+        // margin 10px 0
     .search-input
-        position relative
         display flex
         width 30%
+        position: absolute;
+        z-index: 9999;
+        right: 0;
+        top: 0;
     .icon-fixed
         position absolute
         top 8px

@@ -26,7 +26,7 @@
       <!-- 解构插槽 Prop -->
       <template #default="slotData">
         <!-- {{ slotData }} -->
-        <el-form-item label="人群名称">
+        <el-form-item label="标签名称">
           <el-input v-model="slotData.slotData.name" :maxlength="50"></el-input>
         </el-form-item>
       </template>
@@ -155,8 +155,8 @@ export default {
 }
 
 .temlDownload
-  float right
   color #409EFF
   cursor pointer
   text-decoration none
+  margin-left 20px
 </style>

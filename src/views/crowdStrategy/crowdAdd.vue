@@ -94,7 +94,7 @@
           >
             <el-input-number
               size="medium"
-              placeholder="不能大于100万"
+              placeholder="不能大于1,000,000"
               :max="1000000"
               :min="1"
               v-model="form.limitLaunchCount"
@@ -174,7 +174,7 @@ export default {
         return callback(new Error('限制投放数量不能为空'))
       }
       if (!Number.isInteger(value)) {
-        callback(new Error('请输入大于0小于100万的整数'))
+        callback(new Error('请输入大于0小于1,000,000的整数'))
       } else {
         callback()
       }
