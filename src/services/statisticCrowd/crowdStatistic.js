@@ -131,3 +131,103 @@ export function getUserVipRightsList (params) {
     params
   })
 }
+
+// -----------------  关键指标趋势  --------------------
+// 统计人群和策略请求命中数据(1)
+export function getStatisticStrategyReqAndHit (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticStrategyReqAndHit',
+    params
+  })
+}
+
+// 折线图-人群增长趋势(2)
+export function getStatisticCrowdGrowth (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticCrowdGrowth',
+    params
+  })
+}
+
+// 统计策略请求使用数据(3)
+export function getStatisticStrategyUse (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticStrategyUse',
+    params
+  })
+}
+
+// 折线图-标签使用(4)
+export function getStatisticTagsGrowth (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticTagsGrowth',
+    params
+  })
+}
+
+// 柱状图-统计人群寿命(5)
+export function getStatisticCrowdLife (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticCrowdLife',
+    params
+  })
+}
+
+// 柱状图-统计行为人群寿命(6)
+export function getStatisticBehaviorCrowdLife (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticBehaviorCrowdLife',
+    params
+  })
+}
+
+// 柱状图-统计策略寿命(7)
+export function getStatisticStrategyLife (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticStrategyLife',
+    params
+  })
+}
+
+// 柱状图-标签使用热度   type = 0 大数据标签，1 账号标签  2 临时标签 (8 9 10)
+export function getCountGetTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getTag',
+    params
+  })
+}
+
+// 柱状图-人群使用占比(11)
+export function getCountGetCrowdRatio (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getCrowdRatio',
+    params
+  })
+}
+
+// 柱状图-存储监控(12)
+export function getCountGetStore (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getStore',
+    params
+  })
+}
+
+// 柱状图-存储监控(13)
+export function getStatisticCrowdCalcDuration (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticCrowdCalcDuration',
+    params
+  })
+}

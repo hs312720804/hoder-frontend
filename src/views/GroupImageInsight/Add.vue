@@ -8,9 +8,10 @@
                 <el-radio :label="1" v-model="form.type">上传txt文件</el-radio>
             </el-form-item>
             <el-form-item label="">
-                <input style="display: none" @change="handleSelectFile" type="file" ref="upload"></input>
+                <input style="display: none" @change="handleSelectFile" type="file" ref="upload" />
                 <el-button @click="handleUploadFile">上传</el-button>
                 <span>【请上传只包含mac地址的单列文件】</span>
+                <slot name="temlDownload"></slot>
                 <div v-if="form.originFileName">{{ form.originFileName }} 上传成功</div>
                 <div v-if="selectedFile !== ''">{{ selectedFile.name }} 上传成功</div>
                 <div class="error-tips">{{ message }}</div>
@@ -31,7 +32,7 @@ export default {
         name: ''
       },
       form: {
-        type: undefined,
+        type: 0,
         fileName: undefined,
         originFileName: undefined
       },
@@ -62,10 +63,11 @@ export default {
     }
   },
   watch: {
-    'form.type': function () {
+    'form.type': function (val) {
       this.message = ''
       this.resetFormFile()
       this.$refs.upload.value = ''
+      this.$emit('currentFileType', val)
     }
   },
   methods: {

@@ -141,7 +141,7 @@
                   <template v-if="childItem.dateAreaType !== 0">
                     <!-- 圈人群二期 -->
                     <template v-if="childItem.version === 1">
-<!-- {{childItem}} -->
+                      <!-- {{childItem}} -->
                       <span v-if="childItem.dateAreaType === 2" style="display: flex">   <!-- 固定时间 -->
                         <el-date-picker
                           v-model="childItem.startDay"
@@ -427,6 +427,10 @@
                 </span>
               </template>
 
+              <span>
+                <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
+              </span>
+
               <span class="i" @click="handleRemoveRule(item, childItem)">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
@@ -665,6 +669,11 @@
                   <el-option value="false" label="否"></el-option>
                 </el-select>
               </span>
+
+              <span>
+                <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
+              </span>
+
               <span class="i" @click="handleRemoveSpecialRule(item, childItem)">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
@@ -714,7 +723,7 @@
           <el-input
             v-model="formInline.attrName"
             placeholder="标签名称"
-            @keyup.enter.native="onSubmit"
+            @keydown.enter.native="onSubmit"
           ></el-input>
         </el-form-item>
         <el-form-item>
@@ -790,7 +799,7 @@ export default {
         limitLaunchCount: [
           {
             required: true,
-            message: '请输入大于0小于100万的限制数量',
+            message: '请输入大于0小于1,000,000的限制数量',
             trigger: 'blur'
           }
         ]
@@ -851,6 +860,11 @@ export default {
     }
   },
   methods: {
+    // 复制标签规则
+    handelCopyRule (rule, childRule, index) {
+      const childRuleCopy = JSON.parse(JSON.stringify(childRule))
+      rule.rules.splice(index + 1, 0, childRuleCopy) // 复制到当前选中位置后面
+    },
     handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType === 0) {

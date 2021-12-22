@@ -85,7 +85,7 @@
             </el-form-item>
 
             <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-              <el-input-number size="medium" placeholder="不能大于100万" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+              <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
             </el-form-item>
 
             <el-form-item label="备注" :prop="formProp('remark')">
@@ -158,7 +158,7 @@ export default {
           { required: true, message: '请输入人群名称', trigger: 'blur' }
         ],
         limitLaunchCount: [
-          { required: true, message: '请输入大于0小于100万的限制数量', trigger: 'blur' }
+          { required: true, message: '请输入大于0小于1,000,000的限制数量', trigger: 'blur' }
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}

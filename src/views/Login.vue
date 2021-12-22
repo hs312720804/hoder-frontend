@@ -3,7 +3,7 @@
   <el-row class="login-content">
     <el-col :span="6" :offset="9" class="login-form">
       <div class="login-logo"></div>
-      <p class="title">人群策略平台</p>
+      <p class="title">极光引擎</p>
       <c-gate-schema-form ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
 
       </c-gate-schema-form>

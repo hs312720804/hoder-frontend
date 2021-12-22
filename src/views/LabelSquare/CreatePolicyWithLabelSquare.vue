@@ -1,47 +1,83 @@
 <template>
   <div class="label-content">
     <div class="table-list" :style="{marginBottom: bottomHeight}">
+
         <el-tabs
-            v-model="activeName"
-            @tab-click="handleTabChange"
+          v-model="activeName"
+          @tab-click="handleTabChange"
         >
-          <el-tab-pane label="设备标签" name="labelZone">
-            <label-zone
-                :tagName="labelZoneTagName"
-                @clear-search="handleClearSearch"
-                :checkList="checkList"
-                @change-checkList="handleCheckListChange"
-                @fetch-checkList="fetchCheckListData"
-                @get-table-selected="handleGetTableSelectedData"
-                :show-selection="showSelection"
-                :currentSelectTag="tagList"
+
+          <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
+            <el-input
+              v-model="searchVal"
+              placeholder="支持按标签名、Code、描述搜索"
+              @keyup.enter.native="handleSearch"
             >
-            </label-zone>
+            </el-input>
+            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          </div>
+
+          <el-tab-pane label="设备标签" name="labelZone">
+              <label-zone
+                  :tagName="labelZoneTagName"
+                  @clear-search="handleClearSearch"
+                  :checkList="checkList"
+                  @change-checkList="handleCheckListChange"
+                  @fetch-checkList="fetchCheckListData"
+                  @get-table-selected="handleGetTableSelectedData"
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+              >
+              </label-zone>
+          </el-tab-pane>
+
+          <el-tab-pane label="行为标签" name="behaviorLabel">
+              <temp-label-index
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+                  :checkList="tempCheckList"
+                  @get-table-selected="handleGetTableSelectedData"
+                  @change-checkList="handleTempCheckListChange"
+                  :crowdType=3
+              >
+              </temp-label-index>
           </el-tab-pane>
 
           <el-tab-pane label="组合标签" name="specialTag">
-                <special-tag
-                        :tagName="myCollectTagName"
-                        :checkList="checkList"
-                        :show-selection="showSelection"
-                        :currentSelectTag="tagList"
-                        @clear-search="handleClearSearch"
-                        @change-checkList="handleCheckListChange"
-                        @get-table-selected="handleGetTableSelectedData"
+              <special-tag
+                  :tagName="myCollectTagName"
+                  :checkList="checkList"
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+                  @clear-search="handleClearSearch"
+                  @change-checkList="handleCheckListChange"
+                  @get-table-selected="handleGetTableSelectedData"
+              >
+              </special-tag>
+          </el-tab-pane>
+
+          <el-tab-pane label="第三方标签" name="ThirdPartyTag">
+                <third-party-tag
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
                 >
-                </special-tag>
+                </third-party-tag>
           </el-tab-pane>
 
           <el-tab-pane label="临时标签" name="tempLabel">
-            <temp-label-index
-                :show-selection="showSelection"
-                :currentSelectTag="tagList"
-                :checkList="tempCheckList"
-                @get-table-selected="handleGetTableSelectedData"
-                @change-checkList="handleTempCheckListChange"
-                @fetch-checkList="fetchTempCheckListData"
-            >
-            </temp-label-index>
+              <temp-label-index
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+                  :checkList="tempCheckList"
+                  @get-table-selected="handleGetTableSelectedData"
+                  @change-checkList="handleTempCheckListChange"
+                  @fetch-checkList="fetchTempCheckListData"
+              >
+              </temp-label-index>
           </el-tab-pane>
 
           <el-tab-pane label="本地标签" name="localLabel">
@@ -56,30 +92,46 @@
               </local-label-index>
           </el-tab-pane>
 
-          <el-tab-pane label="我的收藏" name="myCollect">
-            <my-collect
-                    :tagName="myCollectTagName"
+          <el-tab-pane label="自定义标签" name="customTag">
+                <custom-tag
                     :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
                     @clear-search="handleClearSearch"
                     @change-checkList="handleCheckListChange"
                     @get-table-selected="handleGetTableSelectedData"
+                >
+                </custom-tag>
+          </el-tab-pane>
+
+          <el-tab-pane label="数据银行标签" name="bankLabel">
+                <temp-label-index
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
-            >
-            </my-collect>
+                    :checkList="tempCheckList"
+                    @get-table-selected="handleGetTableSelectedData"
+                    @change-checkList="handleTempCheckListChange"
+                    :crowdType=4
+                >
+                </temp-label-index>
+          </el-tab-pane>
+
+          <el-tab-pane label="我的收藏" name="myCollect">
+              <my-collect
+                  :tagName="myCollectTagName"
+                  :checkList="checkList"
+                  @clear-search="handleClearSearch"
+                  @change-checkList="handleCheckListChange"
+                  @get-table-selected="handleGetTableSelectedData"
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+              >
+              </my-collect>
           </el-tab-pane>
 
         </el-tabs>
     </div>
-    <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
-      <el-input
-              v-model="searchVal"
-              placeholder="支持按标签名、Code、描述搜索"
-              @keyup.enter.native="handleSearch"
-      >
-      </el-input>
-      <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-    </div>
+
     <el-form
             :model="addForm"
             :rules="addFormRules"
@@ -125,14 +177,19 @@ import myCollect from './MyCollect'
 import tempLabelIndex from './tempLabel/TempLabelIndex'
 import LocalLabelIndex from './localLabel/Index'
 import specialTag from './SpecialTag'
+import CustomTag from './CustomTag'
+import ThirdPartyTag from './ThirdPartyTag'
+
 export default {
   name: 'labelSquareAA',
   components: {
     labelZone,
     myCollect,
     tempLabelIndex,
+    specialTag,
     LocalLabelIndex,
-    specialTag
+    CustomTag,
+    ThirdPartyTag
   },
   props: ['recordId', 'initTagList'],
   data () {
@@ -223,22 +280,49 @@ export default {
     handleTabChange () {
       switch (this.activeName) {
         case 'labelZone':
-          //    刷新标签广场页
+          // 刷新标签广场页
           this.fetchCheckListData()
           this.$root.$emit('label-zone-list-refresh')
           break
         case 'myCollect':
-          //    刷新我的收藏
+          // 刷新我的收藏
           this.fetchCheckListData()
           this.$root.$emit('my-collect-list-refresh')
           break
         case 'tempLabel':
+          // 临时标签
           this.fetchTempCheckListData()
           this.$root.$emit('temp-label-list-refresh-2')
           break
+        case 'specialTag':
+          // 刷新组合标签
+          this.fetchCheckListData()
+          this.$root.$emit('special-tag-list-refresh')
+          break
         case 'localLabel':
+          // 本地标签
           this.fetchTempCheckListData()
           this.$root.$emit('local-label-list-refresh')
+          break
+        case 'behaviorLabel':
+          // 行为标签
+          this.fetchTempCheckListData()
+          this.$root.$emit('temp-label-list-refresh-3')
+          break
+        case 'bankLabel':
+          // 数据银行标签
+          this.fetchTempCheckListData()
+          this.$root.$emit('temp-label-list-refresh-4')
+          break
+        case 'customTag':
+          // 自定义标签
+          this.fetchTempCheckListData()
+          this.$root.$emit('custom-tag-list-refresh')
+          break
+        case 'ThirdPartyTag':
+          // 自定义标签
+          this.fetchTempCheckListData()
+          this.$root.$emit('third-tag-list-refresh')
           break
       }
     },
@@ -434,16 +518,18 @@ export default {
         background-color: rgba(0, 189, 214, .1);
         border-color: #00bcd42b
   .search-input
-    position absolute
-    top 0
-    right 30px
-    width 20%
+    position relative
+    // top 0
+    // right 30px
+    width 30%
     z-index 999
+    margin 10px 0
     .icon-fixed
       position absolute
       top 8px
       right 10px
       transform rotate(-90deg)
+
   /*.label-content >>> .el-tabs__header*/
     /*position fixed*/
     /*width 100%*/
