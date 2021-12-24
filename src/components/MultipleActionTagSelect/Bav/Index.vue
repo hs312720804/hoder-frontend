@@ -217,6 +217,7 @@
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
                   level: 2,
+                  extra: {levelOneValue: item.value}
                 })"
               >
                 <template v-for="item in getBehaviorAttrList(2)">
@@ -233,7 +234,7 @@
               :key="'typeInputValue' + index2"
               class="flex-row"
             >
-              <!-- {{item.childCheckedVal}} -->
+
               <span class="flex-column">
                 <div class="flex-row">
                   <!-- 第三级 -->
@@ -246,7 +247,7 @@
                     @change="handelChildBehavirSelectChange({
                       childItem: item2,
                       level: 3,
-                      extra: {type: item.childCheckedVal},
+                      extra: {type: item.childCheckedVal, levelOneValue: item.value },
                       reverseSelectAttr: true
                     })"
                   >
@@ -281,30 +282,38 @@
                     <span
                       v-for="(item4, index2) in item3.child"
                       :key="'appid' + index2"
-                      class="flex-row"
                     >
-                      
-                      <el-input
-                        placeholder="应用版本号（可选）"
-                        v-model="item4.value"
-                        clearable
-                        style="max-width: 120px; min-width: 120px;"
-                      >
-                      </el-input>
-                      <!-- 第四级 -->
-                      <!-- {{item4}} -->
-                      <span
-                        v-for="(item5, index3) in item4.child"
-                        :key="'typeInputValue' + index3"
-                        class="flex-row"
-                      >
+                      <!-- 仅当选择【安装应用】后可输入应用版本号，为可选项 -->
+                      <span v-if="item.value === '安装'" class="flex-row"> 
+                        <el-input
+                          placeholder="应用版本号（可选）"
+                          v-model="item4.value"
+                          clearable
+                          style="max-width: 155px; min-width: 155px;"
+                        >
+                        </el-input>
+                        <!-- 第四级 -->
                         <!-- {{item4}} -->
+                        <span
+                          v-for="(item5, index3) in item4.child"
+                          :key="'typeInputValue' + index3"
+                          class="flex-row"
+                        >
+                          <!-- {{item4}} -->
+                          <!-- 次数、天数 -->
+                          <!-- 选择【激活】时，不展示次数天数 -->
+                          <!-- 应用活跃可以不填写次数天数 -->
+                          <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem" :isRequired="false"></Type>
+                        </span>
+                      </span>
+
+                      <span v-else class="flex-row">
                         <!-- 次数、天数 -->
                         <!-- 选择【激活】时，不展示次数天数 -->
                         <!-- 应用活跃可以不填写次数天数 -->
-                        <Type v-if="item.value !== '激活' && !childItem.bav.reverseSelect" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem" :isRequired="false"></Type>
+                        <Type v-if="item.value !== '激活' && !childItem.bav.reverseSelect" ref="typeRef" :item3="item4" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem" :isRequired="false"></Type>
                       </span>
-                    
+
                     </span>
                   </span>
                 </div>
@@ -984,7 +993,7 @@
                       style="width: 150px;"
                       filterable
                       remote
-                      placeholder="请输入片5555555555555名或ID"
+                      placeholder="请输入片名或ID"
                       no-data-text='没有找到该片'
                       clearable
                       :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
@@ -2334,7 +2343,7 @@
       </span>
 
       <!-- 1111111111111 -->
-      <!-- <div>{{childItem.bav}}</div> -->
+      <!-- <div>{{ childItem.bav }}</div> -->
     </div>
   </el-form>
 </template>
@@ -3032,7 +3041,8 @@ export default {
         isValueClear,
         level,
         reverseSelectAttr,
-        parentId: childItem.id
+        parentId: childItem.id,
+        extra
       })
     },
 
@@ -3069,9 +3079,40 @@ export default {
      * @param {Number} level 第几级（为获取下拉框list）
      */
     getValListByVals (params) {
-      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr, parentId } = params
+      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr, parentId, extra = {} } = params
       console.log('params==>', params)
       let list = []
+
+      if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) {
+        // if (level === 3) {  // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
+        if (extra.levelOneValue === '安装') { // 第一级的选项值
+          list = [{
+            name: '',
+            value: '',
+            filed: '',
+            operator: '=',
+            type: 'string',
+            child: [{
+              name: '',
+              value: '',
+              filed: '',
+              operator: '=',
+              type: 'string',
+              child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+            }]
+          }]
+        } else {
+          list = [{
+            name: '',
+            value: '',
+            filed: '',
+            operator: '=',
+            type: 'string',
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+          }]
+        }
+      }
+      
 
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false  // 反选
 
@@ -3112,14 +3153,26 @@ export default {
 
         if (this.childItem.tagCode === 'BAV0002') {
           // 【应用活跃】, 切换数据时，下一级清空，下下级保持存在
-          if (level === 2 ) {     
-            defaultchild = [{
-              name: '',
-              value: '',
-              filed: '',
-              operator: '=',
-              type: 'string',
-              child: [{
+          if (extra.levelOneValue === '安装') { // 仅当选择【安装应用】后可输入应用版本号，为可选项
+            if (level === 2 ) {   
+              defaultchild = [{
+                name: '',
+                value: '',
+                filed: '',
+                operator: '=',
+                type: 'string',
+                child: [{
+                  name: '',
+                  value: '',
+                  filed: '',
+                  operator: '=',
+                  type: 'string',
+                  child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+                }]
+              }]
+            }
+            if (level === 3 ) {     
+              defaultchild = [{
                 name: '',
                 value: '',
                 filed: '',
@@ -3127,20 +3180,23 @@ export default {
                 type: 'string',
                 child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
               }]
-            }]
+            }
+          } else {
+            if (level === 2 ) {     
+              defaultchild =  [{
+                name: '',
+                value: '',
+                filed: '',
+                operator: '=',
+                type: 'string',
+                child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+              }]
+            }
+            if (level === 3 ) {     
+              defaultchild = [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+            }
           }
-
-          // if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) {
-          if (level === 3) {  // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
-            defaultchild = [{
-              name: '',
-              value: '',
-              filed: '',
-              operator: '=',
-              type: 'string',
-              child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
-            }]
-          }
+          
         }
 
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
