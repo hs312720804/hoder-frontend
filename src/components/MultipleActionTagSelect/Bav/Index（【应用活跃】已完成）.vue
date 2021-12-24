@@ -2,7 +2,7 @@
 <template>
   <el-form :model="childItem" ref="bav" :rules="bavFormRules" :inline="true">
     <div class="bav-attr-warp">
-    
+
       <el-tag class="oc-item" :type="dataSourceColorEnum[childItem.dataSource]">
         {{ childItem.tagName }} - {{ childItem.tagCode }}
       </el-tag>
@@ -283,7 +283,7 @@
                       :key="'appid' + index2"
                       class="flex-row"
                     >
-                      
+
                       <el-input
                         placeholder="应用版本号（可选）"
                         v-model="item4.value"
@@ -304,7 +304,7 @@
                         <!-- 应用活跃可以不填写次数天数 -->
                         <Type v-if="item.value !== '激活' && !childItem.bav.reverseSelect" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem" :isRequired="false"></Type>
                       </span>
-                    
+
                     </span>
                   </span>
                 </div>
@@ -984,7 +984,7 @@
                       style="width: 150px;"
                       filterable
                       remote
-                      placeholder="请输入片5555555555555名或ID"
+                      placeholder="请输入片名或ID"
                       no-data-text='没有找到该片'
                       clearable
                       :remote-method="(query) => { qiBoRemoteMethod(query, item3.childCheckedVal[0]) }"
@@ -1110,7 +1110,7 @@
                           </span>
                         </span>
                     </span>
-                    
+
                     <!-- // 不是电影的 -->
                       <!-- @change="handelQiBoChildBehavi666rSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
                     <span v-else>
@@ -1815,7 +1815,7 @@
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
                     level: 3,
-                    extra: { listMapName: item2.mapName },
+                    extra: {listMapName: item2.mapName},
                     selectPropKeyValue: 'name'
                   })"
                 >
@@ -1843,7 +1843,7 @@
                   @change="handelChildBehavirSelectChange({
                     childItem: item3,
                     level: 4,
-                    extra: { listMapName: item3.mapName },
+                    extra: {listMapName: item3.mapName},
                     selectPropKeyValue: 'name',
                   })"
                 >
@@ -1975,6 +1975,7 @@
       </span> -->
       <!-- 综合起播行为 -->
       <span class="flex-row" v-if="childItem.tagCode === 'BAV0012'">
+        <!-- {{ childItem }} -->
         <!-- 第一级 -->
         <el-form-item prop="bav.value">
           <el-select
@@ -2155,34 +2156,11 @@
 
           </span>
 
-          <!-- 【影视】- 视频源 选项  item.childCheckedVal[3] -->
-          <span v-if="childItem.bav.value === '影视'" class="flex-row">
-            <el-select
-              v-model="item.childCheckedVal[3]"
-              placeholder="视频源"
-              style="width: 100px"
-              clearable
-              @change="handelChildBehavirSelectChange({
-                childItem: item,
-                level: 10,
-                selectPropKeyValue: 'name'
-              })"
-            >
-              <el-option
-                v-for="follow in getBehaviorAttrList(10)"
-                :key="follow.value"
-                :label="follow.name"
-                :value="follow.value">
-              </el-option>
-            </el-select>
-          </span>
-
           <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
-          <span v-if="childItem.bav.value !== 'K歌'" class="flex-row">
+          <span v-else class="flex-row">
             <!-- 第 3 级  搜索片子 -->
-            <!-- 【短视频】业务的查询影片要放在【选择博主】 后面 -->
-            <!-- 【教育】业务的查询影片要放在 【选择 VIP】 后面 -->
-            <!-- 【影视】业务的查询影片要放在 【视频源】 后面 -->
+            <!-- 【短视频】的查询影片要放在【选择博主】 后面 -->
+            <!-- 【教育】的查询影片要放在 【选择 VIP】 后面 -->
             <span v-if="childItem.bav.value === '短视频' || childItem.bav.value === '教育'">
               <el-select
                 v-model="item.childCheckedVal[4]"
@@ -2192,7 +2170,7 @@
                 placeholder="请输入片名或ID"
                 no-data-text='没有找到该片'
                 clearable
-                :remote-method="(query) => { GetVideo(query, childItem.bav.value, item.childCheckedVal[3]) }"
+                :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
                 :loading="loading2"
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
@@ -2225,7 +2203,7 @@
                 placeholder="请输入片名或ID"
                 no-data-text='没有找到该片'
                 clearable
-                :remote-method="(query) => { GetVideo(query, childItem.bav.value, item.childCheckedVal[3]) }"
+                :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
                 :loading="loading2"
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
@@ -2291,7 +2269,7 @@
 
           <!-- 选择【免费、会员..】   item.childCheckedVal[2]-->
           <!-- 反选时不展示 -->
-          <span v-if="childItem.bav.value !== '短视频'" class="flex-row" >
+          <span class="flex-row" v-if="childItem.bav.value !== '短视频'">
             <!-- 第 5 级 -->
             <el-select
               v-model="item.childCheckedVal[7]"
@@ -2334,7 +2312,7 @@
       </span>
 
       <!-- 1111111111111 -->
-      <!-- <div>{{childItem.bav}}</div> -->
+      <div>{{childItem.bav}}</div>
     </div>
   </el-form>
 </template>
@@ -2515,7 +2493,7 @@ export default {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
-      this.childItem.bav.reverseSelect = val                
+      this.childItem.bav.reverseSelect = val
 
       // 应用活跃 起波活跃
       if (
@@ -2523,7 +2501,7 @@ export default {
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
         this.childItem.tagCode === 'BAV0011'
-        ) {
+      ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
         let list
@@ -2555,7 +2533,7 @@ export default {
                 if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
                   curChild.operator = '!='
                   break
-                } else if (curChild.value &&  (curChild.child && curChild.child.length > 0)) { // 存在子集
+                } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
                   let list = this.getNodesLastItem([curChild])
                   // 递归去设置
                   this.iteratorNodes({
@@ -2596,7 +2574,7 @@ export default {
           })
         }
       }
-      console.log('整个数据',  this.childItem.bav);
+      console.log('整个数据', this.childItem.bav)
       console.log('反选后的结果behaviorValue =>', this.childItem.bav.behaviorValue)
       console.log('反选后的结果showBehaviorValue =>', this.childItem.bav.showBehaviorValue)
     },
@@ -2614,7 +2592,7 @@ export default {
     },
 
     // 循环递归查找最近有数据的项
-    iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId} = params) {
+    iteratorNodes ({ nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId } = params) {
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
         let operator = val ? '!=' : '='
@@ -2642,7 +2620,7 @@ export default {
           if (item.value && item.filed !== 'mac') {
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
-              item.operator = operator === '=' ? 'like' : 'not like' 
+              item.operator = operator === '=' ? 'like' : 'not like'
             } else {
               item.operator = operator
             }
@@ -2699,31 +2677,23 @@ export default {
       })
     },
 
-    GetVideo (keywords, businessType = '', source = '') {
-      let params = {
-        keywords,
-        businessType,
-        page: 1,
-        pageSize: 20,
-        source
-      }
- 
-      if (businessType.indexOf('影视') > -1) {
-        if (!!source) {
-          params.source = source
-        } else {
-          return this.$message.error('请先选择内容源')
-        }
-      } 
+    GetVideo (keywords, businessType = '') {
       if (keywords !== '') {
         this.loading2 = true
+
+        const params = {
+          keywords,
+          businessType,
+          page: 1,
+          pageSize: 20
+        }
 
         this.$service.getVideo(params).then(res => {
           this.loading2 = false
           let list = res.rows || []
 
           list = list.map(obj => {
-            if (businessType.indexOf('视频') > -1) {
+            if (businessType.indexOf('视频') > 0) {
               return {
                 name: `${obj.title}(${obj.coocaaBVId})`,
                 value: obj.coocaaBVId,
@@ -2988,8 +2958,8 @@ export default {
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
         this.childItem.tagCode === 'BAV0011') {
-          this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
-        }
+        this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
+      }
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
@@ -3047,11 +3017,10 @@ export default {
         } else {
           item.operator = '='
         }
-        if (item.child && item.child.length > 0 ) {
+        if (item.child && item.child.length > 0) {
           this.setRecoveryItem(item.child)
         } else {
           item.operator = '='
-          return
         }
       })
       return nodes
@@ -3073,10 +3042,10 @@ export default {
       console.log('params==>', params)
       let list = []
 
-      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false  // 反选
+      const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false // 反选
 
       vals.forEach(val => {
-        if (!val) return 
+        if (!val) return
         let obj = {}
         const lastNumberObj = [
           {
@@ -3090,7 +3059,7 @@ export default {
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
-        obj = matchObj ? matchObj : matchObj2
+        obj = matchObj || matchObj2
 
         // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
         if (isValueClear) obj.value = ''
@@ -3112,7 +3081,7 @@ export default {
 
         if (this.childItem.tagCode === 'BAV0002') {
           // 【应用活跃】, 切换数据时，下一级清空，下下级保持存在
-          if (level === 2 ) {     
+          if (level === 2) {
             defaultchild = [{
               name: '',
               value: '',
@@ -3131,7 +3100,7 @@ export default {
           }
 
           // if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) {
-          if (level === 3) {  // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
+          if (level === 3) { // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
             defaultchild = [{
               name: '',
               value: '',
@@ -3155,7 +3124,6 @@ export default {
 
           obj.childCheckedVal = '0' // 序号默认值为 0
         }
-
 
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 
@@ -3639,11 +3607,7 @@ export default {
           } else if (level === 4) {
             return this.qiBoCollectionOptions // 集数
           } else if (level === 5) {
-            if (childItem.bav.value === '影视') {
-              attrlist = dict.mv_is_vip
-            } else {
-              attrlist = dict.is_vip
-            }
+            attrlist = dict.is_vip
           } else if (level === 6) { // 博主
             return this.followOptions
           } else if (level === 7) { // 歌曲
@@ -3652,8 +3616,7 @@ export default {
             return this.singerList
           } else if (level === 9) { // 教育 VIP
             attrlist = dict.education_vip
-          }  if (level === 10) { // 视频源
-            attrlist = dict.source
+          } else {
           }
         } else {
           attrlist = [
