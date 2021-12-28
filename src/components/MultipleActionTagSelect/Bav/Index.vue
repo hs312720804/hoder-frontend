@@ -354,7 +354,7 @@
               <!-- @change="handelBehavirSelectChange(false, 2, [], 'field')" -->
             <el-form-item
               :prop="`bav.behaviorValue[${index}].childCheckedVal`"
-              :rules="{ required: true, message: '请选择', trigger: 'change' }"
+              :rules="{ required: true, message: '请选择', trigger: 'change' }"
             >
               <el-select
                 multiple
@@ -387,7 +387,7 @@
               >
                 <span class="w100">{{ item2.name }}</span>
                 <span class="flex-column">
-                  <!-- 第二级 -->
+                  <!-- 第3级 -->
                   <!-- {{ item }} -->
                   <!-- @change="handelChildBehavirSelectChange(item, true, childItem, 2)" -->
                   <div>
@@ -403,7 +403,7 @@
                       class="input-inline"
                       @change="handelChildBehavirSelectChange({
                         childItem: item2,
-                        hasChild: true,
+                        hasChild: false,
                         level: 3,
                         extra: {type: childItem.bav.value},
                         reverseSelectAttr: item2.field === 'purchase_recent_two_years' ? true : false
@@ -442,14 +442,13 @@
                     <!-- {{item2}} -->
                       <span class="flex-row">
                         <span class="w100">{{ item3.name }}</span>
-                        <span v-if="item2.field === 'purchase_recent_two_years'" class="flex-column">
-                          <!-- 历史购买 -->
-                          <!-- 第三级 -->
+                        <!-- v-if="item2.field === 'purchase_recent_two_years'" -->
+                        <span  class="flex-column">
+                          <!-- 第4级 -->
                           <el-form-item
                             :prop="`bav.behaviorValue[${index}].child[${index2}].child[${index3}].childCheckedVal`"
-                            :rules="{ required: true, message: '请选择', trigger: 'change' }"
+                            :rules="{ required: true, message: '请选择', trigger: 'change' }"
                           >
-                            <!-- 历史购买才有反选 -->
                             <el-select
                               multiple
                               v-model="item3.childCheckedVal"
@@ -458,7 +457,7 @@
                               class="input-inline"
                               @change="handelChildBehavirSelectChange({
                                 childItem: item3,
-                                hasChild: true,
+                                hasChild: false,
                                 level: 4
                               })"
                             >
@@ -471,15 +470,18 @@
                                 </el-option>
                               </template>
                             </el-select>
+
+                            <!-- 历史购买才有反选 -->
                             <el-checkbox
                               v-if="item2.field === 'purchase_recent_two_years'"
                               class="reverse-check"
                               v-model="childItem.bav.reverseSelect"
                               @change="ReverseSelect"
                             >
-                            圈出未购买
-                          </el-checkbox>
+                              圈出未购买
+                            </el-checkbox>
                           </el-form-item>
+
                           <div class="flex-column">
                             <ConditionLine :isShow="item3.child.length > 1"></ConditionLine>
                             <span
@@ -487,26 +489,102 @@
                               :key="'typeInputValue' + index2"
                               class="flex-column"
                             >
-                              <!-- 第四级 -->
+                              <!-- 第5级 -->
                               <span class="flex-row">
                                 <span class="w100">{{ item4.name }}</span>
+                                <el-select
+                                  v-model="item4.childCheckedVal"
+                                  style="width: 150px"
+                                  name="asdq"
+                                  class="input-inline"
+                                  @change="handelChildBehavirSelectChange({
+                                    childItem: item4,
+                                    hasChild: false,
+                                    level: 5
+                                  })"
+                                >
+                                  <template v-for="attrChildItem in getBehaviorAttrList(5)">
+                                    <el-option
+                                      :value="attrChildItem.value"
+                                      :label="attrChildItem.name"
+                                      :key="attrChildItem.value"
+                                    >
+                                    </el-option>
+                                  </template>
+                                </el-select>
+
                                 <span
                                   v-for="(item5, index) in item4.child"
                                   :key="index"
                                   class="flex-row"
                                 >
-                                  <!-- 次数、天数 -->
-                                  <!-- <Type ref="typeRef" :item3="item4"></Type> -->
-                                  <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                                  <!-- 第六级 -->
+                                  <!-- <el-select
+                                    v-model="item5.childCheckedVal"
+                                    style="width: 110px"
+                                    name="asdq"
+                                    class="input-inline"
+                                    @change="handelChildBehavirSelectChange({
+                                      childItem: item5,
+                                      hasChild: true,
+                                      level: 5
+                                    })"
+                                  >
+                                    <template v-for="attrChildItem in getBehaviorAttrList(5)">
+                                      <el-option
+                                        :value="attrChildItem.value"
+                                        :label="attrChildItem.name"
+                                        :key="attrChildItem.value"
+                                      >
+                                      </el-option>
+                                    </template>
+                                  </el-select> -->
+                                  <!-- {{item4.childCheckedVal}} -->
+
+                                  <!-- 价格区间 -->
+                                  <div v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px">
+                                    <el-input :value="item5.value1" :min="1" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input>
+                                    -<el-input :value="item5.value2" :min="1" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input>
+                                  </div>
+
+                                  <!-- 产品包ID -->
+                                  <div v-if="item4.childCheckedVal == 2" class="flex-row" style="min-width: 150px">
+                                    <el-select
+                                      v-model="item5.value"
+                                      style="width: 150px"
+                                      filterable
+                                      remote
+                                      placeholder="请输入产品包ID"
+                                      clearable
+                                      :remote-method="(query) => {  GouMaiRemoteMethod(query, childItem.bav.value) }"
+                                      :loading="loading">
+                                      <el-option
+                                        v-for="(op, index) in gouMaiPackageIdOptions"
+                                        :key="'package' + op.vipId + index"
+                                        :label="op.vipId"
+                                        :value="op.vipId">
+                                      </el-option>
+                                    </el-select>
+                                  </div>
+
+                                  <span v-if="item2.field === 'purchase_recent_two_years'"> <!-- 历史购买才有选择次数 -->
+                                    <!-- <span
+                                      v-for="(item6, index) in item5.child"
+                                      :key="index"
+                                      class="flex-row"
+                                    > -->
+                                      <!-- 次数、天数 -->
+                                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                                    <!-- </span> -->
+                                  </span>
+
                                 </span>
+
                               </span>
                             </span>
                           </div>
                         </span>
-                        <span v-else-if="item2.field !== 'purchase_recent_two_years'" class="flex-column">
-                          <!-- 首次购买  -->
-                          <!-- 第三级 -->
-                          <!-- {{ item3 }} -->
+                        <!-- <span v-else-if="item2.field !== 'purchase_recent_two_years'" class="flex-column">
                           <el-select
                             v-model="item3.childCheckedVal"
                             style="width: 110px"
@@ -527,7 +605,7 @@
                               </el-option>
                             </template>
                           </el-select>
-                        </span>
+                        </span> -->
                       </span>
                     </span>
                   </div>
@@ -2549,6 +2627,7 @@ export default {
       //   }]
       // }],
       moOptions: {},
+      gouMaiPackageIdOptions: [],
       loading: false,
       qiBoOptions: [],
       loading2: false,
@@ -2981,6 +3060,22 @@ export default {
       }
     },
 
+    GouMaiRemoteMethod (query, businessType) {
+      if (query !== '') {
+        let params = {
+          keywords: query,
+          page: 1,
+          pageSize: 50,
+          businessType
+        }
+        this.$service.getMenberIds(params).then(res => {
+          this.gouMaiPackageIdOptions = res.data || []
+        })
+      } else {
+        this.gouMaiPackageIdOptions = []
+      }
+    },
+
     remoteMethod (query, field, businessType) {
       if (query !== '') {
         this.loading = true
@@ -3167,7 +3262,7 @@ export default {
 
       if (this.childItem.tagCode === 'BAV0002' && level === 3 && vals.length === 0) {
         // if (level === 3) {  // 【应用活跃】, 第三级清空时，【次数/天数】选项依然存在
-        if (extra.levelOneValue === '安装') { // 第一级的选项值
+        if (extra.levelOneValue === '安装') { // 第一级的选项值, 添加【应用版本号】输入框
           list = [{
             name: '',
             value: '',
@@ -3177,7 +3272,7 @@ export default {
             child: [{
               name: '',
               value: '',
-              filed: '',
+              filed: 'app_version',
               operator: '=',
               type: 'string',
               child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
@@ -3245,7 +3340,7 @@ export default {
                 child: [{
                   name: '',
                   value: '',
-                  filed: '',
+                  filed: 'app_version',
                   operator: '=',
                   type: 'string',
                   child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
@@ -3308,6 +3403,12 @@ export default {
                 child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
               }]
               break
+          }
+        }
+
+        if (this.childItem.tagCode === 'BAV0003') { // 购买行为
+          if (level === 5) {
+            defaultchild = [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
           }
         }
 
@@ -3702,6 +3803,8 @@ export default {
             // attrlist = dict.vip_package
           } else if (level === 4) {
             attrlist = dict.buy_type
+          } else if (level === 5) {
+            attrlist = dict.price_product_id
           }
         } else if (childItem.tagCode === 'BAV0004') {
           if (level === 1) {

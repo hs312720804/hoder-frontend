@@ -132,8 +132,8 @@ export default {
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-              // 二期
-              if (rulesItem.version === 1) {
+              // 二期之后的
+              if (rulesItem.version > 0) {
                 const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
                 const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
                 rulesItem.value = startDay + '~' + endDay
@@ -177,8 +177,8 @@ export default {
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-              // 二期
-              if (rulesItem.version === 1) {
+              // 二期之后的
+              if (rulesItem.version > 0) {
                 const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
                 const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
                 rulesItem.value = startDay + '~' + endDay

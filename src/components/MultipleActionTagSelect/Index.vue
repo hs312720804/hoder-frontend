@@ -120,8 +120,8 @@
                   <!-- 是时间（time）类型的下拉框 -->
                   <template v-if="childItem.tagType === 'time'">
 
-                    <!-- 二期 -->
-                    <template v-if="childItem.version === 1">
+                    <!-- 二期之后的版本 -->
+                    <template v-if="childItem.version > 0">
                       <el-select
                         style="width: 130px"
                         class="time-dot-select-new"
@@ -175,8 +175,8 @@
                   <!-- 11111111111111 -->
                   <span v-if="childItem.tagType === 'time'">
                     <template v-if="childItem.dateAreaType !== 0">
-                      <!-- 圈人群二期 -->
-                      <template v-if="childItem.version === 1">
+                      <!-- 二期之后的版本 -->
+                      <template v-if="childItem.version > 0">
 
                         <span v-if="childItem.dateAreaType === 2" style="display: flex">   <!-- 固定时间 -->
                           <el-date-picker
@@ -408,8 +408,8 @@
                   </el-select>
                 </span>
 
-                <!-- 11111111111111 -->
-                <span v-if="childItem.tagType === 'time' && childItem.version !== 1">
+                <!-- 一期 -->
+                <span v-if="childItem.tagType === 'time' && childItem.version === 0">
                     <template v-if="childItem.dateAreaType !== 0">
                     <el-button
                       :key="childItem.tagId + n"
@@ -475,13 +475,13 @@
                   </el-tooltip> -->
 
                   <!-- 选择动态时间提示 -->
-                  <el-tooltip v-if="childItem.version === 1 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
+                  <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
                     <div slot="content">提示：负数表示过去的日期，比如-1表示昨天，0表示今天，1表示明天</div>
                     <el-button type="text">提示</el-button>
                   </el-tooltip>
 
                   <!-- 圈人群二期之前版本提示 -->
-                  <el-tooltip v-else-if="childItem.version !== 1" class="item" effect="dark" placement="top-start" >
+                  <el-tooltip v-else-if="childItem.version === 0" class="item" effect="dark" placement="top-start" >
                     <div slot="content">
                       状态：到期时间请选择“已过期”或“未过期”，其他请选“空”
                       <br />时间设置：30天以内：输入0～30天；30天以外：请输入30天～9999天
@@ -1154,7 +1154,7 @@ export default {
         condition: 'AND',
         rules: [
           {
-            version: 1,
+            version: 2,
             table: 'dmp_db.base_user_tags_v3' + '$',
             operator:
               tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
@@ -1217,7 +1217,7 @@ export default {
         this.crowd.tagIds.push(tag.tagId)
       }
       rule.rules.push({
-        version: 1,
+        version: 2,
         table: 'dmp_db.base_user_tags_v3' + '$',
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
@@ -1329,7 +1329,7 @@ export default {
             if (item.tagType === 'string' && item.value === 'nil') {
               item.operator = 'null'
             }
-            if (item.version !== 1) {
+            if (item.version === 0) {
               if (item.tagType === 'time' && item.isDynamicTime === 3) {
                 const value = item.value.split('-')
                 this.$set(item, 'startDay', value[0])

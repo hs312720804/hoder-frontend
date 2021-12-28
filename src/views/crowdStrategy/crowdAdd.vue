@@ -687,8 +687,8 @@ export default {
             rulesFlag = false
             break
           } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-            // 二期
-            if (rulesItem.version === 1) {
+            // 二期之后的
+            if (rulesItem.version > 0) {
               const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
               const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
               rulesItem.value = startDay + '~' + endDay
@@ -765,7 +765,8 @@ export default {
             rulesItem.tagType === 'time' &&
             rulesItem.isDynamicTime === 3
           ) {
-            if (rulesItem.version === 1) {
+            // 二期之后的
+            if (rulesItem.version > 0) {
               const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
               const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
               rulesItem.value = startDay + '~' + endDay
@@ -1067,7 +1068,7 @@ export default {
             limitLaunchCount: form.limitLaunch
               ? form.limitLaunchCount
               : undefined,
-            versionNum: 1
+            versionNum: 2
           }
 
           // 获取到组件中的form  校验必填项
@@ -1314,7 +1315,7 @@ export default {
             if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
               item.value = item.value === '' ? [] : item.value.split(',')
             }
-            if (item.version !== 1) {
+            if (item.version === 0) {
               if (item.tagType === 'time' && item.isDynamicTime === 3) {
                 const value = item.value.split('-')
                 this.$set(item, 'startDay', value[0])
@@ -1342,8 +1343,8 @@ export default {
             if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
-            // 手动构建数据 二期数据格式兼容一期
-            if (versionNum !== 1) {
+            // 手动构建数据 一期数据格式兼容二期
+            if (versionNum === 0) {
               if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
