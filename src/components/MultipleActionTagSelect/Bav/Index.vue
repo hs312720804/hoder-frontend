@@ -1653,13 +1653,14 @@
               @change="handelChildBehavirSelectChange({
                 childItem: item,
                 extra: {type: childItem.bav.value},
+                selectPropKeyValue: 'name'
               })"
             >
-              <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})">
+              <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})" >
                 <el-option
-                  :value="attrChildItem.value"
+                  :value="attrChildItem.name"
                   :label="attrChildItem.name"
-                  :key="attrChildItem.value"
+                  :key="attrChildItem.name"
                 >
                 </el-option>
               </template>
@@ -1930,7 +1931,6 @@
                   :key="index"
                   class="flex-row child"
                 >
-                  <!-- 1111111111111{{ item3 }}---------------- -->
                   <!-- 第四级 分类 -->
                   <div v-if="item2.childCheckedVal[0] === '分类'" class="flex-row">
                     <el-select
