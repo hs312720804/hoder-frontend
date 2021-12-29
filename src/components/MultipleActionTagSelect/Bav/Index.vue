@@ -1653,7 +1653,8 @@
               @change="handelChildBehavirSelectChange({
                 childItem: item,
                 extra: {type: childItem.bav.value},
-                selectPropKeyValue: 'name'
+                selectPropKeyValue: 'name',
+                reverseSelectAttr: true
               })"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})" >
@@ -1775,7 +1776,7 @@
             </div>
 
             <div v-else-if="childItem.bav.value === '短视频' && index === 0" >
-              <!-- 第三级 搜索关注博主-->
+              <!-- 第三级 关注-->
               <div v-if="item.childCheckedVal[0] === '关注'" class="flex-row">
                 <el-select
                   v-model="item2.childCheckedVal[0]"
@@ -1790,7 +1791,7 @@
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
                     level: 3,
-                    extra: {type: '关注'},
+                    extra: { type: '关注' },
                     hasChild: true,
                     reverseSelectAttr: true
                   })"
@@ -1808,6 +1809,36 @@
                     :value="item2.childCheckedVal[0]">
                   </el-option>
                 </el-select>
+                <!-- <el-select
+                  v-model="item2.childCheckedVal[0]"
+                  style="width: 150px;"
+                  filterable
+                  remote
+                  placeholder="搜博主"
+                  no-data-text='暂无数据'
+                  clearable
+                  :remote-method="(query) => { GetShortVideoAuthor(query) }"
+                  :loading="loading2"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    level: 3,
+                    extra: { type: '关注' },
+                    hasChild: true,
+                    reverseSelectAttr: true
+                  })"
+                >
+                  <el-option
+                    v-for="follow in followOptions"
+                    :key="follow.value"
+                    :label="follow.name"
+                    :value="follow.value">
+                  </el-option>
+                  <el-option
+                    v-if="followOptions.length === 0 && item2.childCheckedVal[0]"
+                    :label="item2.child[0].name"
+                    :value="item2.childCheckedVal[0]">
+                  </el-option>
+                </el-select> -->
                 <el-checkbox
                   class="reverse-check"
                   v-model="childItem.bav.reverseSelect"
@@ -1825,6 +1856,49 @@
 
                   <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
                 </span> -->
+              </div>
+
+              <!-- 第三级 订阅-->
+              <div v-else-if="item.childCheckedVal[0] === '订阅专题'" class="flex-row">
+                <el-select
+                  v-model="item2.childCheckedVal[0]"
+                  style="width: 150px;"
+                  filterable
+                  remote
+                  placeholder="搜专题"
+                  no-data-text='暂无数据'
+                  clearable
+                  :remote-method="(query) => { GetTopic(query) }"
+                  :loading="loading2"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    level: 3,
+                    extra: { type: '订阅' },
+                    hasChild: true,
+                    reverseSelectAttr: true
+                  })"
+                >
+                  <el-option
+                    v-for="follow in topicOptions"
+                    :key="follow.value"
+                    :label="follow.name"
+                    :value="follow.value">
+                  </el-option>
+                  <!-- 编辑回显 选项-->
+                  <el-option
+                    v-if="topicOptions.length === 0 && item2.childCheckedVal[0]"
+                    :label="item2.child[0].name"
+                    :value="item2.childCheckedVal[0]">
+                  </el-option>
+                </el-select>
+
+                <el-checkbox
+                  class="reverse-check"
+                  v-model="childItem.bav.reverseSelect"
+                  @change="ReverseSelect($event, item2.child)"
+                >
+                  圈出未活跃
+                </el-checkbox>
               </div>
 
               <!-- 第三级 搜索影片-->
@@ -2669,6 +2743,7 @@ export default {
         pageSize: 10
       },
       followOptions: [],
+      topicOptions: [],
       videoOptions: [],
       appointmentInfo: [],
       musicList: [],
@@ -2742,7 +2817,7 @@ export default {
           isCurrentNodeId
         })
       } else {
-        if (this.childItem.tagCode === 'BAV0012') {
+        if (this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
           if (val) {
             let showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
             if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
@@ -2830,7 +2905,7 @@ export default {
 
     // 获取指定id值
     getParentVal (nodes, id, operator) {
-      const nodeTree = this.childItem.tagCode === 'BAV0012' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
+      const nodeTree = this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
       if (!nodes || !id) {
         return
       }
@@ -3012,6 +3087,34 @@ export default {
         })
       } else {
         this.musicList = []
+      }
+    },
+
+    // 【起播活跃】 短视频 - 订阅 - 搜专题
+    GetTopic (query) {
+      if (query !== '') {
+        const params = {
+          keywords: query,
+          page: 1,
+          pageSize: 200
+        }
+
+        this.$service.getTopic(params).then(res => {
+          let list = res.rows || []
+
+          list = list.map(obj => {
+            return {
+              name: obj.title,
+              value: obj.coocaaVId,
+              field: obj.tableField,
+              type: 'string'
+            }
+          })
+
+          this.topicOptions = list
+        })
+      } else {
+        this.topicOptions = []
       }
     },
 
@@ -3961,6 +4064,8 @@ export default {
           } else if (level === 3) {
             if (extra.type === '关注') {
               return this.followOptions
+            } else if (extra.type === '订阅') {
+              return this.topicOptions
             }
             attrlist = dict[extra.listMapName] || []
           } else if (level === 4) {
