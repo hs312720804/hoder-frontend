@@ -1036,7 +1036,7 @@ export default {
                 }).flat()
               }
 
-              if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+              if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
                 let rData = []
                 const showBehaviorValue = rulesItem.bav.showBehaviorValue
                 showBehaviorValue.forEach(item => {
