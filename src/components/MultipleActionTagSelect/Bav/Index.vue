@@ -1653,8 +1653,7 @@
               @change="handelChildBehavirSelectChange({
                 childItem: item,
                 extra: {type: childItem.bav.value},
-                selectPropKeyValue: 'name',
-                reverseSelectAttr: true
+                selectPropKeyValue: 'name'
               })"
             >
               <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})" >
@@ -2795,8 +2794,7 @@ export default {
       if (
         this.childItem.tagCode === 'BAV0002' ||
         this.childItem.tagCode === 'BAV0003' ||
-        this.childItem.tagCode === 'BAV0008' ||
-        this.childItem.tagCode === 'BAV0011'
+        this.childItem.tagCode === 'BAV0008'
       ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
@@ -2816,59 +2814,60 @@ export default {
           clearVal,
           isCurrentNodeId
         })
-      } else {
-        if (this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
-          if (val) {
-            let showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
-            if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
-              // 一维数组循环找到存在值得项
-              let firstChild = showBehaviorValue.child
-              for (let i = firstChild.length; i--; i > 0) {
-                let curChild = firstChild[i]
-                // 没有子集且存在值
-                if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
-                  curChild.operator = '!='
-                  break
-                } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
-                  let list = this.getNodesLastItem([curChild])
-                  // 递归去设置
-                  this.iteratorNodes({
-                    nodes: this.childItem.bav.showBehaviorValue,
-                    currentNodes: list,
-                    val,
-                    seclectVal,
-                    clearVal,
-                    isCurrentNodeId: false
-                  })
-                  break
-                }
-              }
-            } else {
-              showBehaviorValue.operator = '!='
-            }
-            // 针对【综合起播】 进行处理, 默认选择次数
-            if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
-              this.childItem.bav.countValue = {
-                name: '',
-                filed: 'mac',
-                type: 'count',
-                operator: '=',
-                value: ''
+      } else if (
+        this.childItem.tagCode === 'BAV0012' ||
+        this.childItem.tagCode === 'BAV0011'
+      ) {
+        if (val) {
+          let showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
+          if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
+            // 一维数组循环找到存在值得项
+            let firstChild = showBehaviorValue.child
+            for (let i = firstChild.length; i--; i > 0) {
+              let curChild = firstChild[i]
+              // 没有子集且存在值
+              if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
+                curChild.operator = '!='
+                break
+              } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
+                let list = this.getNodesLastItem([curChild])
+                // 递归去设置
+                this.iteratorNodes({
+                  nodes: this.childItem.bav.showBehaviorValue,
+                  currentNodes: list,
+                  val,
+                  seclectVal,
+                  clearVal,
+                  isCurrentNodeId: false
+                })
+                break
               }
             }
           } else {
-            this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
+            showBehaviorValue.operator = '!='
           }
+          // 针对【综合起播】 进行处理, 默认选择次数
+          // if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
+          //   this.childItem.bav.countValue = {
+          //     name: '',
+          //     filed: 'mac',
+          //     type: 'count',
+          //     operator: '=',
+          //     value: ''
+          //   }
+          // }
         } else {
-          behaviorValue.forEach((item) => {
-            item.operator = val ? '!=' : '='
-            if (clearVal && clearVal === item.value) { // 需要清空的 value 值
-              item.value = ''
-              const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
-              bavChildItem.childCheckedVal[index] = null
-            }
-          })
+          this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
         }
+      } else {
+        behaviorValue.forEach((item) => {
+          item.operator = val ? '!=' : '='
+          if (clearVal && clearVal === item.value) { // 需要清空的 value 值
+            item.value = ''
+            const index = bavChildItem.childCheckedVal.findIndex(val => clearVal === val)
+            bavChildItem.childCheckedVal[index] = null
+          }
+        })
       }
       console.log('整个数据', this.childItem.bav)
       console.log('反选后的结果behaviorValue =>', this.childItem.bav.behaviorValue)
