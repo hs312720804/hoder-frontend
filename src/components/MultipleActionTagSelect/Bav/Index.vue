@@ -2862,7 +2862,7 @@ export default {
                 curChild.operator = '!='
                 break
               } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
-                let list = this.getNodesLastItem([curChild])
+                let list = [this.getNodesLastItem([curChild]).pop()] // 【起播活跃】【综合起播】比较特殊，只取最后一个对象反选
                 // 递归去设置
                 this.iteratorNodes({
                   nodes: this.childItem.bav.showBehaviorValue,
