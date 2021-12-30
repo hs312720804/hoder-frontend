@@ -262,13 +262,32 @@ export default {
       this.checkIfChildrenExist(data1.child[0], data2)
     },
 
+    // ReorganizationData (data) { // 将数组变成层级关系
+    //   let rData = []
+    //   let len = data.length
+    //   for (var i = len - 1; i > -1; i--) {
+    //     rData = data[i]
+    //     if (data[i - 1]) {
+    //       rData = this.checkIfChildrenExist(data[i - 1], rData)
+    //     }
+    //   }
+    //   return rData
+    // },
     ReorganizationData (data) { // 将数组变成层级关系
       let rData = []
       let len = data.length
-      for (var i = len - 1; i > -1; i--) {
-        rData = data[i]
-        if (data[i - 1]) {
-          rData = this.checkIfChildrenExist(data[i - 1], rData)
+
+      if (len > 1) {
+        for (var i = len - 1; i > -1; i--) {
+          rData = data[i]
+          if (data[i - 1]) {
+            rData = this.checkIfChildrenExist(data[i - 1], rData)
+          }
+        }
+      } else {
+        rData = data
+        if (data[0].child.length > 1) {
+          rData[0].child = this.ReorganizationData(data[0].child)
         }
       }
       return rData
