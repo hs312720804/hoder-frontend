@@ -519,66 +519,48 @@
                                   :key="index"
                                   class="flex-row"
                                 >
-                                  <!-- 第六级 -->
-                                  <!-- <el-select
-                                    v-model="item5.childCheckedVal"
-                                    style="width: 110px"
-                                    name="asdq"
-                                    class="input-inline"
-                                    @change="handelChildBehavirSelectChange({
-                                      childItem: item5,
-                                      hasChild: true,
-                                      level: 5
-                                    })"
-                                  >
-                                    <template v-for="attrChildItem in getBehaviorAttrList(5)">
-                                      <el-option
-                                        :value="attrChildItem.value"
-                                        :label="attrChildItem.name"
-                                        :key="attrChildItem.value"
-                                      >
-                                      </el-option>
-                                    </template>
-                                  </el-select> -->
-                                  <!-- {{item4.childCheckedVal}} -->
 
-                                  <!-- 价格区间 -->
-                                  <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px">
-                                    <el-input-number :value="item5.value1" :min="1" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
-                                    -<el-input-number :value="item5.value2" :min="1" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
-                                  </span>
+                                  <!-- 兼容二期之前的数据格式 -->
+                                  <Type v-if="!childItem.bav.reverseSelect && item5.type === 'count'" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
 
-                                  <!-- 产品包ID -->
-                                  <span v-if="item4.childCheckedVal == 2" class="flex-row" style="min-width: 150px">
-                                    <el-select
-                                      v-model="item5.value"
-                                      style="width: 150px"
-                                      filterable
-                                      remote
-                                      placeholder="请输入产品包ID"
-                                      clearable
-                                      :remote-method="(query) => {  GouMaiRemoteMethod(query, childItem.bav.value) }"
-                                      :loading="loading">
-                                      <el-option
-                                        v-for="(op, index) in gouMaiPackageIdOptions"
-                                        :key="'package' + op.vipId + index"
-                                        :label="op.vipId"
-                                        :value="op.vipId">
-                                      </el-option>
-                                    </el-select>
-                                  </span>
+                                  <!-- 三期最新的格式 -->
+                                  <span class="flex-row" v-else>
+                                    <!-- {{item5}} -->
 
-                                  <span v-if="item2.field === 'purchase_recent_two_years'"> <!-- 历史购买才有选择次数 -->
-                                    <!-- <span
-                                      v-for="(item6, index) in item5.child"
-                                      :key="index"
-                                      class="flex-row"
-                                    > -->
+                                    <!-- {{item2.field === 'purchase_recent_two_years'}} -->
+                                    <!-- 价格区间 -->
+                                    <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px">
+                                      <el-input-number :value="item5.value1" :min="1" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
+                                      -<el-input-number :value="item5.value2" :min="1" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
+                                    </span>
+
+                                    <!-- 产品包ID -->
+                                    <span v-if="item4.childCheckedVal == 2" class="flex-row" style="min-width: 150px">
+                                      <el-select
+                                        v-model="item5.value"
+                                        style="width: 150px"
+                                        filterable
+                                        remote
+                                        placeholder="请输入产品包ID"
+                                        clearable
+                                        :remote-method="(query) => {  GouMaiRemoteMethod(query, childItem.bav.value) }"
+                                        :loading="loading">
+                                        <el-option
+                                          v-for="(op, index) in gouMaiPackageIdOptions"
+                                          :key="'package' + op.vipId + index"
+                                          :label="op.vipId"
+                                          :value="op.vipId">
+                                        </el-option>
+                                      </el-select>
+                                    </span>
+
+                                    <span v-if="item2.field === 'purchase_recent_two_years'"> <!-- 历史购买才有选择次数 -->
                                       <!-- 次数、天数 -->
-                                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
-                                    <!-- </span> -->
-                                  </span>
+                                      <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                                      <!-- <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type> -->
+                                    </span>
 
+                                  </span>
                                 </span>
 
                               </span>
