@@ -274,8 +274,12 @@ export default {
     hasMoveBehaviorTagRule () {
       let crowd = this.form
       const behaviorRules = this.behaviorRulesJson.rules
-      let hasBehaviorRule = false
-      let hasMoveRule = false
+
+      let hasBehaviorRule = false // 是否有行为标签
+      let hasMoveRule = false // 是否有动态周期
+      let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
+      const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
+
       if (behaviorRules.length > 0) {
         hasBehaviorRule = true
         for (let x = 0; x < behaviorRules.length; x++) {
@@ -286,17 +290,20 @@ export default {
               hasMoveRule = true
               break
             }
+            if (fullTagList.includes(item.tagCode)) {
+              hasFullTag = true
+              break
+            }
           }
         }
       }
 
-      if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
+      if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
         // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
         if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
           crowd.autoVersion = true
         }
         crowd.isShowAutoVersion = true
-        // crowd.autoVersion = true
       } else {
         crowd.isShowAutoVersion = false
         crowd.autoVersion = false
