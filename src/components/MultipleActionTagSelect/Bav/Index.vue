@@ -1,5 +1,6 @@
 /* eslint-disable no-mixed-operators */
 <template>
+
   <el-form :model="childItem" ref="bav" :rules="bavFormRules" :inline="true">
     <div class="bav-attr-warp">
 
@@ -1595,7 +1596,533 @@
         </div>
       </span>
 
-      <!-- 起播活跃 -->
+      <!-- 起播活跃  一期二期交互-->
+      <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0011' && childItem.isOldversion">
+
+        <!-- 第一级 -->
+        <el-form-item prop="bav.value" >
+          <el-select
+            disabled
+            v-model="childItem.bav.value"
+            placeholder="请选择业务分类"
+            style="width: 120px"
+            name="oxve"
+            class="input-inline"
+            @change="handelBehavirSelectChange()"
+          >
+            <template v-for="item in getBehaviorAttrList(1)">
+              <el-option
+                :value="item.value"
+                :label="item.name"
+                :key="item.value"
+              ></el-option>
+            </template>
+          </el-select>
+        </el-form-item>
+
+        <div
+          v-for="(item, index) in childItem.bav.behaviorValue"
+          :key="item.value"
+          class="flex-row"
+        >
+          <!-- 第二级 -->
+          <el-form-item
+            :prop="`bav.behaviorValue[${index}].childCheckedVal[0]`"
+            :rules="{ required: true, message: '请选择', trigger: 'change' }"
+          >
+            <el-select
+              disabled
+              v-model="item.childCheckedVal[0]"
+              placeholder="请选择"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                extra: {type: childItem.bav.value},
+              })"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})">
+                <el-option
+                  :value="attrChildItem.value"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.value"
+                >
+                </el-option>
+              </template>
+            </el-select>
+          </el-form-item>
+          <span
+            v-for="(item2, index) in item.child"
+            :key="index"
+            class="flex-row child"
+          >
+            <div v-if="childItem.bav.value === '影视'" class="flex-row">
+
+              <el-select
+                disabled
+                v-model="item2.childCheckedVal[0]"
+                style="width: 110px"
+                name="asdq"
+                class="input-inline"
+                placeholder="请选择内容源"
+                clearable
+                @change="handelChildBehavirSelectChange({
+                  childItem: item2,
+                  level: 4,
+                  extra: {type: '视频源'}
+                })"
+              >
+                <template v-for="attrChildItem in getBehaviorAttrList(4, {type: '视频源'})">
+
+                  <el-option
+                    :value="attrChildItem.value"
+                    :label="attrChildItem.name"
+                    :key="attrChildItem.value"
+                  >
+                  </el-option>
+                </template>
+              </el-select>
+              <span
+                v-for="(item4, index) in item2.child"
+                :key="index"
+                class="flex-row child"
+              >
+                <!-- qiBoRemoteMethod 参数(keyWords, 视频源) -->
+                <div class="flex-row">
+                  <el-select
+                    disabled
+                    v-model="item4.childCheckedVal[0]"
+                    style="width: 150px;"
+                    filterable
+                    remote
+                    placeholder="请输入片名或ID"
+                    no-data-text='没有找到该片'
+                    clearable
+                    :remote-method="(query) => { qiBoRemoteMethod(query, item2.childCheckedVal[0]) }"
+                    :loading="loading2"
+                    v-loadmore="{'methord': handelQiboLoadmore}"
+                    @change="handelChildBehavirSelectChange({
+                      childItem: item4,
+                      level: 4,
+                      extra: {type: '影片', source: childItem.bav.value},
+                      hasChild: true,
+                      reverseSelectAttr: true
+                    })"
+                  >
+                    <el-option
+                      v-for="tv in qiBoOptions"
+                      :key="tv.value"
+                      :label="tv.name +'('+ tv.value+')'"
+                      :value="tv.value">
+                    </el-option>
+                    <!-- 编辑回显 选项-->
+                    <el-option
+                      v-if="qiBoOptions.length === 0 && item4.child[0] && item4.childCheckedVal[0]"
+                      :label="item4.child[0].name"
+                      :value="item4.childCheckedVal[0]">
+                    </el-option>
+                  </el-select>
+                  <el-checkbox
+                    disabled
+                    class="reverse-check"
+                    v-model="childItem.bav.reverseSelect"
+                    @change="ReverseSelect($event, item4.child)"
+                  >
+                    圈出未活跃
+                  </el-checkbox>
+                </div>
+
+                <span
+                  v-for="(item5, index) in item4.child"
+                  :key="index"
+                  class="flex-row child"
+                >
+
+                  <!-- <el-select
+                    multiple
+                    v-model="item5.childCheckedVal[0]"
+                    style="width: 100px;"
+                    placeholder="请选择集数"
+                    @change="handelQiBoChildBehavirSelectChange({
+                      childItem: item5,
+                      hasChild: false,
+                      level: 6
+                    })"
+                  >
+                    <el-option
+                      v-for="(tv, index) in getVideoEpisode({tvId:item4.childCheckedVal[0], businessType: childItem.bav.value, source: item4.childCheckedVal[0]})"
+                      :key="tv.value + index"
+                      :label="tv.name"
+                      :value="tv.value">
+                    </el-option>
+                  </el-select> -->
+                  <!-- 次数、天数 -->
+                  <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                </span>
+                <!-- {{item4.child}} -->
+              </span>
+            </div>
+
+            <div v-else-if="childItem.bav.value === '短视频'" >
+              <!-- 第三级 搜索关注博主-->
+              <div v-if="item.childCheckedVal[0] === '关注'" class="flex-row">
+                <el-select
+                  disabled
+                  v-model="item2.childCheckedVal[0]"
+                  style="width: 150px;"
+                  filterable
+                  remote
+                  placeholder="搜博主"
+                  no-data-text='暂无数据'
+                  clearable
+                  :remote-method="(query) => { GetShortVideoAuthor(query) }"
+                  :loading="loading2"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    level: 3,
+                    extra: {type: '关注'},
+                    hasChild: true,
+                    reverseSelectAttr: true
+                  })"
+                >
+                  <el-option
+                    v-for="follow in followOptions"
+                    :key="follow.value"
+                    :label="follow.name"
+                    :value="follow.value">
+                  </el-option>
+                  <!-- 编辑回显 选项-->
+                  <el-option
+                    v-if="followOptions.length === 0 && item2.childCheckedVal[0]"
+                    :label="item2.child[0].name"
+                    :value="item2.childCheckedVal[0]">
+                  </el-option>
+                </el-select>
+                <el-checkbox
+                  class="reverse-check"
+                  v-model="childItem.bav.reverseSelect"
+                  @change="ReverseSelect($event, item2.child)"
+                >
+                  圈出未活跃
+                </el-checkbox>
+                <!-- {{item2.child}} -->
+
+                <span
+                  v-for="(item3, index2) in item2.child"
+                  :key="'typeInputValue' + index2"
+                  class="flex-row"
+                >
+                  <!-- 次数、天数 -->
+                  <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                </span>
+              </div>
+              <!-- 第三级 搜索影片-->
+              <div v-else class="flex-row">
+                <!-- {{item2}} -->
+                <el-select
+                  disabled
+                  v-model="item2.childCheckedVal[0]"
+                  placeholder="请选择"
+                  style="width: 110px"
+                  name="asdq"
+                  class="input-inline"
+                  clearable
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    level: 3,
+                    extra: {listMapName: item2.mapName },
+                    selectPropKeyValue: 'name'
+                  })"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(3, {listMapName: item2.mapName })">
+                    <el-option
+                      :value="attrChildItem.name"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.name"
+                    >
+                    </el-option>
+                  </template>
+                </el-select>
+                <span
+                  v-for="(item3, index) in item2.child"
+                  :key="index"
+                  class="flex-row child"
+                >
+                  <!-- 第四级 分类 -->
+                  <div v-if="item2.childCheckedVal[0] === '分类'" class="flex-row">
+                    <el-select
+                      disabled
+                      v-model="item3.childCheckedVal[0]"
+                      placeholder="请选择"
+                      style="width: 110px"
+                      name="asdq"
+                      class="input-inline"
+                      @change="handelChildBehavirSelectChange({
+                        childItem: item3,
+                        hasChild: true,
+                        level: 4,
+                        extra: {type: item2.childCheckedVal[0]},
+                        selectPropKeyValue: 'name'
+                      })"
+                    >
+                      <template v-for="attrChildItem in getBehaviorAttrList(4, {type: item2.childCheckedVal[0]})">
+                        <el-option
+                          :value="attrChildItem.name"
+                          :label="attrChildItem.name"
+                          :key="attrChildItem.name"
+                        >
+                        </el-option>
+                      </template>
+                    </el-select>
+                    <span
+                      v-for="(item4, index2) in item3.child"
+                      :key="'typeInputValue' + index2"
+                      class="flex-row"
+                    >
+                      <!-- 次数、天数 -->
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      <!-- {{item2}} -->
+                    </span>
+                  </div>
+
+                  <!-- 第四级 影片  -->
+                  <div v-else class="flex-row">
+                  <!-- {{item3.childCheckedVal[0]}} -->
+                  <!-- {{item3.child}} -->
+                    <div class="flex-row">   <!-- 短视频、电竞 -->  <!-- GetVideo 参数 ：(keyWords, 业务类型) -->
+                      <el-select
+                        disabled
+                        v-model="item3.childCheckedVal[0]"
+                        style="width: 150px;"
+                        filterable
+                        remote
+                        placeholder="请输入片名或ID"
+                        no-data-text='没有找到该片'
+                        clearable
+                        :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+                        :loading="loading2"
+                        @change="handelChildBehavirSelectChange({
+                          childItem: item3,
+                          level: 4,
+                          extra: {type: '影片'},
+                          hasChild: true,
+                          reverseSelectAttr: true
+                        })"
+                      >
+                        <el-option
+                          v-for="video in videoOptions"
+                          :key="video.name"
+                          :label="video.name"
+                          :value="video.value">
+                        </el-option>
+                        <!-- 编辑回显 选项-->
+                        <el-option
+                          v-if="videoOptions.length === 0 && item3.child[0]"
+                          :label="item3.child[0].name"
+                          :value="item3.childCheckedVal[0]">
+                        </el-option>
+                      </el-select>
+                      <el-checkbox
+                        disabled
+                        class="reverse-check"
+                        v-model="childItem.bav.reverseSelect"
+                        @change="ReverseSelect($event, item3.child)"
+                      >
+                        圈出未活跃
+                      </el-checkbox>
+
+                      <span
+                        v-for="(item4, index) in item3.child"
+                        :key="index"
+                        class="flex-row child"
+                      >
+                        <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item4.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      </span>
+                    </div>
+
+                </div>
+
+                </span>
+              </div>
+            </div>
+
+            <div v-else-if="childItem.bav.value === '电竞'" class="flex-row">
+              <!-- 第三级 -->
+              <el-select
+                  disabled
+                  v-model="item2.childCheckedVal[0]"
+                  placeholder="请选择"
+                  style="width: 110px"
+                  name="asdq"
+                  class="input-inline"
+                  clearable
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item2,
+                    level: 3,
+                    extra: {listMapName: item2.mapName},
+                    selectPropKeyValue: 'name'
+                  })"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(3, {listMapName: item2.mapName })">
+                    <el-option
+                      :value="attrChildItem.name"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.name"
+                    >
+                    </el-option>
+                  </template>
+              </el-select>
+              <span
+                v-for="(item3, index) in item2.child"
+                :key="index"
+                class="flex-row"
+              >
+                <!-- 第四级 -->
+                <el-select
+                  disabled
+                  v-model="item3.childCheckedVal[0]"
+                  placeholder="请选择"
+                  style="width: 110px"
+                  name="asdq"
+                  class="input-inline"
+                  @change="handelChildBehavirSelectChange({
+                    childItem: item3,
+                    level: 4,
+                    extra: {listMapName: item3.mapName},
+                    selectPropKeyValue: 'name',
+                  })"
+                >
+                  <template v-for="attrChildItem in getBehaviorAttrList(4, { listMapName: item3.mapName })">
+                    <el-option
+                      :value="attrChildItem.name"
+                      :label="attrChildItem.name"
+                      :key="attrChildItem.name"
+                    >
+                    </el-option>
+                  </template>
+                </el-select>
+                <span
+                  v-for="(item4, index) in item3.child"
+                  :key="index"
+                  class="flex-row"
+                >
+                  <!-- 第五级 -->
+                  <el-select
+                    disabled
+                    v-model="item4.childCheckedVal[0]"
+                    placeholder="请选择"
+                    style="width: 110px"
+                    name="asdq"
+                    class="input-inline"
+                    @change="handelChildBehavirSelectChange({
+                      childItem: item4,
+                      level: 5,
+                    })"
+                  >
+                    <template v-for="attrChildItem in getBehaviorAttrList(5)">
+                      <el-option
+                        :value="attrChildItem.value"
+                        :label="attrChildItem.name"
+                        :key="attrChildItem.value"
+                      >
+                      </el-option>
+                    </template>
+                  </el-select>
+                  <!-- {{item}} -->
+                  <span
+                    v-for="(item5, index) in item4.child"
+                    :key="index"
+                    class="flex-row"
+                  >
+                    <el-select
+                      disabled
+                      v-model="item5.childCheckedVal[0]"
+                      style="width: 150px;"
+                      filterable
+                      remote
+                      placeholder="请输入片名或ID"
+                      no-data-text='没有找到该片'
+                      clearable
+                      :remote-method="(query) => { GetVideo(query, childItem.bav.value) }"
+                      :loading="loading2"
+                      @change="handelChildBehavirSelectChange({
+                        childItem: item5,
+                        level: 6,
+                        extra: {type: '电竞'},
+                        reverseSelectAttr: true
+                      })"
+                    >
+                      <el-option
+                        v-for="video in videoOptions"
+                        :key="video.value"
+                        :label="video.name"
+                        :value="video.value">
+                      </el-option>
+                      <!-- 编辑回显 选项 -->
+                      <el-option
+                        v-if="videoOptions.length === 0 && item5.child[0]"
+                        :label="item5.child[0].name"
+                        :value="item5.childCheckedVal[0]">
+                      </el-option>
+                    </el-select>
+
+                    <!-- 反选时不展示 -->
+                    <span
+                      v-for="(item6, index) in item5.child"
+                      :key="index"
+                      class="flex-row"
+                    >
+                      <el-select
+                        disabled
+                        v-model="item6.childCheckedVal[0]"
+                        placeholder="请选择"
+                        style="width: 110px"
+                        name="asdq"
+                        class="input-inline"
+                        @change="handelChildBehavirSelectChange({
+                          childItem: item6,
+                          hasChild: true,
+                          level: 7,
+                        })"
+                      >
+                        <template v-for="attrChildItem in getBehaviorAttrList(7)">
+                          <el-option
+                            :value="attrChildItem.value"
+                            :label="attrChildItem.name"
+                            :key="attrChildItem.value"
+                          >
+                          </el-option>
+                        </template>
+                      </el-select>
+                      <span
+                        v-for="(item7, index) in item6.child"
+                        :key="index"
+                        class="flex-row child"
+                      >
+                        <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item7.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      </span>
+                    </span>
+                  </span>
+                </span>
+              </span>
+              <el-checkbox
+                disabled
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect"
+              >
+                圈出未活跃
+              </el-checkbox>
+            </div>
+
+          </span>
+        </div>
+
+      </span>
+
+      <!-- 起播活跃 三期-->
       <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0011'">
         <!-- 第一级 -->
         <el-form-item prop="bav.value">
@@ -2598,7 +3125,7 @@
       </span>
 
       <!-- 1111111111111 -->
-      <!-- <div>{{ childItem.bav }}</div> -->
+      <!-- <div>{{ childItem }}</div> -->
     </div>
   </el-form>
 </template>
@@ -2652,7 +3179,7 @@ export default {
     },
     childItem: {
       handler (val) {
-        console.log('childItem=====>>>', val.bav)
+        console.log('childItem=====>>>', val)
         // 编辑回显
         if (val && val.tagCode === 'BAV0004') { // 【模块活跃】需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)
@@ -4155,81 +4682,6 @@ export default {
   }
 }
 </script>
-
 <style lang='stylus' scoped>
-.label-item span, .oc-item {
-  margin-right: 10px;
-}
-
-.oc-item {
-  margin-top: 5px;
-}
-
-.w100 {
-  min-width: 100px;
-  margin-bottom: 5px
-}
-
-.flex-column {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-}
-
-.flex-row {
-  display: flex;
-  flex-direction: row;
-  // margin: 3px 2px;
-}
-
-.child-attr-wrap {
-  border: 1px dashed #fff;
-  padding: 0 5px;
-  margin: 10px 0;
-
-  // &:hover {
-  //   // text-decoration: underline;
-  //   border-color: rgb(0, 188, 212);
-  //   border-radius: 7px;
-  // }
-}
-
-.bav-attr-warp {
-  // align-items: baseline;
-  display: flex;
-  border: 1px dashed #fff;
-  margin-bottom: 10px;
-
-  // &:hover {
-  //   // text-decoration: underline;
-  //   border-color: rgb(0, 188, 212);
-  //   border-radius: 7px;
-  // }
-}
-@media(device-width: 768px) and (device-height: 1024px) {
-  ::-webkit-scrollbar {
-      -webkit-appearance: none;
-      width: 7px;
-  }
-  ::-webkit-scrollbar-thumb {
-      border-radius: 4px;
-      background-color: rgba(0, 0, 0, .5);
-      -webkit-box-shadow: 0 0 1px rgba(255, 255, 255, .5);
-  }
-}
-.reverse-check
-  margin 0 20px
-
-.appoint-text
-  width: 263px;
-  font-size: 12px;
-  white-space: break-spaces;
-  position: absolute;
-  margin-top: 36px;
-  height: 107px;
-  line-height: 17px;
-  color gray
-.flex-column
-  >>> .el-form-item
-    margin-bottom 0!important
+@import './index'
 </style>

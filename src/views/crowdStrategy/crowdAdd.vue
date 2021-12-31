@@ -181,6 +181,7 @@ export default {
     }
     return {
       // attrs: [[${attrs}]] || {},
+      versionNum: 2,
       cache: {},
       tags: [],
       actionTags: [],
@@ -1298,7 +1299,7 @@ export default {
         this.form.name = policyData.crowdName
         this.form.remark = policyData.remark
         this.priority = policyData.priority
-        const versionNum = policyData.versionNum || 0
+        this.versionNum = policyData.versionNum || 0
 
         this.form.autoVersion = policyData.autoVersion
         this.form.isShowAutoVersion = true
@@ -1365,7 +1366,7 @@ export default {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
             // 手动构建数据 一期数据格式兼容二期
-            if (versionNum === 0) {
+            if (this.versionNum === 0) {
               if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
@@ -1389,6 +1390,12 @@ export default {
                     }
                   })
                 }
+              }
+            }
+
+            if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
+              if (rulesEachItem.tagCode === 'BAV0011') {
+                rulesEachItem.isOldversion = true // 是否是旧版本
               }
             }
           })

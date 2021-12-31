@@ -69,6 +69,7 @@
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
                 >
                 </Bav>
+                <div v-if="childItem.isOldversion">业务组件升级，若要编辑请删除后重新创建</div>
               </div>
               <!-- 大数据标签 -->
               <div v-else class="behavior-label">
@@ -437,8 +438,8 @@
                         childItem.operator = '='
                         childItem.value = ''
                       "
-                      >切换至旧方案</el-button
-                    >
+                      >切换至旧方案
+                    </el-button>
                   </template>
                 </span>
                 <!-- 11111111111111111 end -->
