@@ -52,13 +52,14 @@
                   extra: {type: childItem.bav.value}
                 })"
               >
-                <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})">
+
                   <el-option
+                   v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})"
                     :value="attrChildItem.value"
                     :label="attrChildItem.name"
                     :key="attrChildItem.value"
                   ></el-option>
-                </template>
+
               </el-select>
             </el-form-item>
 
@@ -673,6 +674,7 @@
                   ></el-option>
                 </template>
               </el-select>
+
               </el-form-item>
               <el-checkbox
                 class="reverse-check"
@@ -2727,7 +2729,7 @@ export default {
           {
             name: '',
             value: '',
-            filed: '',
+            field: '',
             operator: '=',
             type: 'string'
           }
@@ -2742,17 +2744,17 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      moDefaultChild: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }],
+      moDefaultChild: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }],
       // BAV0006DefaultChild: [{
       //   name: '',
       //   value: '',
-      //   filed: '',
+      //   field: '',
       //   operator: '=',
       //   type: 'string',
       //   child: [{
       //     name: '',
       //     value: '',
-      //     filed: 'mac',
+      //     field: 'mac',
       //     operator: '=',
       //     type: 'count'
       //   }]
@@ -2880,7 +2882,7 @@ export default {
           // if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
           //   this.childItem.bav.countValue = {
           //     name: '',
-          //     filed: 'mac',
+          //     field: 'mac',
           //     type: 'count',
           //     operator: '=',
           //     value: ''
@@ -2942,7 +2944,7 @@ export default {
         let item = nodes[i]
         console.log(item.id === id)
         if (item.id === id) {
-          if (item.value && item.filed !== 'mac') {
+          if (item.value && item.field !== 'mac') {
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
               item.operator = operator === '=' ? 'like' : 'not like'
@@ -3282,7 +3284,7 @@ export default {
         this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
           name: '',
-          filed: 'mac',
+          field: 'mac',
           type: 'count',
           operator: '=',
           value: ''
@@ -3348,7 +3350,7 @@ export default {
         this.qiBoCollectionOptions = []
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换影视时，默认选择次数
           name: '',
-          filed: 'mac',
+          field: 'mac',
           type: 'count',
           operator: '=',
           value: ''
@@ -3358,7 +3360,7 @@ export default {
       if (this.childItem.tagCode === 'BAV0012' && level === 4) {
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换集数时，默认选择空
           name: '',
-          filed: '',
+          field: '',
           type: '',
           operator: '=',
           value: ''
@@ -3426,26 +3428,26 @@ export default {
           list = [{
             name: '',
             value: '',
-            filed: '',
+            field: '',
             operator: '=',
             type: 'string',
             child: [{
               name: '',
               value: '',
-              filed: 'app_version',
+              field: 'app_version',
               operator: '=',
               type: 'string',
-              child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+              child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
             }]
           }]
         } else {
           list = [{
             name: '',
             value: '',
-            filed: '',
+            field: '',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
           }]
         }
       }
@@ -3453,14 +3455,13 @@ export default {
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false // 反选
 
       vals.forEach(val => {
-        debugger
         if (!val) return
         let obj = {}
         const lastNumberObj = [
           {
             name: '',
             value: '',
-            filed: 'mac',
+            field: 'mac',
             operator: '=',
             type: 'count'
           }
@@ -3491,46 +3492,50 @@ export default {
         /* ------------------------------------------------------------ */
         if (this.childItem.tagCode === 'BAV0002') { // 【应用活跃】, 切换数据时，下一级清空，下下级保持存在
           if (extra.levelOneValue === '安装') { // 仅当选择【安装应用】后可输入应用版本号，为可选项
-            if (level === 2) {
-              defaultchild = [{
-                name: '',
-                value: '',
-                filed: '',
-                operator: '=',
-                type: 'string',
-                child: [{
+            switch (level) {
+              case 2:
+                defaultchild = [{
                   name: '',
                   value: '',
-                  filed: 'app_version',
+                  field: '',
                   operator: '=',
                   type: 'string',
-                  child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+                  child: [{
+                    name: '',
+                    value: '',
+                    field: 'app_version',
+                    operator: '=',
+                    type: 'string',
+                    child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                  }]
                 }]
-              }]
-            }
-            if (level === 3) {
-              defaultchild = [{
-                name: '',
-                value: '',
-                filed: 'app_version',
-                operator: '=',
-                type: 'string',
-                child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
-              }]
+                break
+              case 3:
+                defaultchild = [{
+                  name: '',
+                  value: '',
+                  field: 'app_version',
+                  operator: '=',
+                  type: 'string',
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                }]
+                break
             }
           } else {
-            if (level === 2) {
-              defaultchild = [{
-                name: '',
-                value: '',
-                filed: '',
-                operator: '=',
-                type: 'string',
-                child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
-              }]
-            }
-            if (level === 3) {
-              defaultchild = [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+            switch (level) {
+              case 2:
+                defaultchild = [{
+                  name: '',
+                  value: '',
+                  field: '',
+                  operator: '=',
+                  type: 'string',
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                }]
+                break
+              case 3:
+                defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                break
             }
           }
         }
@@ -3541,16 +3546,16 @@ export default {
               defaultchild = [{
                 name: '',
                 value: '',
-                filed: '',
+                field: '',
                 operator: '=',
                 type: 'string',
                 child: [{
                   name: '',
                   value: '',
-                  filed: '',
+                  field: '',
                   operator: '=',
                   type: 'string',
-                  child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
                 }]
               }]
               break
@@ -3558,17 +3563,17 @@ export default {
               defaultchild = [{
                 name: '',
                 value: '',
-                filed: '',
+                field: '',
                 operator: '=',
                 type: 'string',
-                child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+                child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
               }]
               break
           }
         }
 
         if (this.childItem.tagCode === 'BAV0003' && level === 5) { // 【购买行为】
-          defaultchild = [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+          defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
         }
 
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
@@ -3578,7 +3583,7 @@ export default {
             field: 'block_pid',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
           }]
 
           obj.childCheckedVal = '0' // 序号默认值为 0
@@ -3672,7 +3677,7 @@ export default {
       }
       vals.forEach(val => {
         const lastNumberObj = [
-          { name: '', value: '', filed: 'mac', operator: '=', type: 'count' }
+          { name: '', value: '', field: 'mac', operator: '=', type: 'count' }
         ]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
@@ -3766,7 +3771,7 @@ export default {
               {
                 name: '',
                 value: '',
-                filed: '',
+                field: '',
                 operator: '=',
                 type: 'string',
                 childCheckedVal: [''],
@@ -3774,7 +3779,7 @@ export default {
                   {
                     name: '',
                     value: '',
-                    filed: '',
+                    field: '',
                     operator: '=',
                     type: 'string'
                   }
