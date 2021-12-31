@@ -1693,9 +1693,7 @@
                     ></el-option>
                   </template>
                 </el-select>
-                <!-- 11111111111 -->
                 <Bav0012 v-if="!!item2.mapName" :aaa="item2"></Bav0012>
-                <!-- {{ item2 }} -->
               </span>
 
               <!-- 视频源 + 搜视频 -->
@@ -3514,7 +3512,7 @@ export default {
               defaultchild = [{
                 name: '',
                 value: '',
-                filed: '',
+                filed: 'app_version',
                 operator: '=',
                 type: 'string',
                 child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
