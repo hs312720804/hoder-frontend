@@ -134,8 +134,6 @@
 // import types from '../types'
 export default {
   data () {
-    let _minTime = null
-    let _maxTime = null
     return {
       rangeTypeList: [],
       weekRange: [],
@@ -156,32 +154,7 @@ export default {
           return time.getTime() > maxTime || time.getTime() < minTime
         }
       },
-      pickerOptions30in720: { // element日期范围选择 两年内 开始和结束不超3个月
-        onPick (time) {
-          // 如果选择了只选择了一个时间
-          if (!time.maxDate) {
-            let timeRange = 90 * 24 * 60 * 60 * 1000 // 3个月
-            _minTime = time.minDate.getTime() - timeRange // 最小时间
-            _maxTime = time.minDate.getTime() + timeRange // 最大时间
-            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
-          } else {
-            _minTime = _maxTime = null
-          }
-        },
-        disabledDate: (time) => {
-          const day1 = 720 * 24 * 3600 * 1000 // 2年
-          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          let minTime = Date.now() - day1
 
-          // onPick后触发
-          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
-          if (_minTime && _maxTime) {
-            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
-          } else {
-            return time.getTime() > maxTime || time.getTime() < minTime
-          }
-        }
-      },
       show3: true,
       isSelectedDay: false,
       rangeFormRules: {
@@ -269,8 +242,38 @@ export default {
     }
   },
   methods: {
-    getMaxDay (tagCode) {
-      // (childItem.tagCode === 'BAV0003') ? 720 : 30
+    pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          const day1 = range * 24 * 3600 * 1000 // 2年
+          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let minTime = Date.now() - day1
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
+        }
+      }
+    },
+    getMaxDay (tagCode) { // 动态周期
       if (tagCode === 'BAV0003') { // 【购买行为】
         return 720
       } else if (tagCode === 'BAV0008') { // 【起播行为】
@@ -283,9 +286,9 @@ export default {
       if (tagCode === 'BAV0003') { // 【购买行为】
         return this.pickerOptions720
       } else if (tagCode === 'BAV0008') { // 【起播行为】
-        return this.pickerOptions30in720
+        return this.pickerOptionsDayinRange(90, 180)
       } else { // 其他
-        return this.pickerOptions0
+        return this.pickerOptionsDayinRange(30, 180)
       }
     },
     HandleChange (val) {
