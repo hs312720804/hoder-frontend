@@ -742,6 +742,7 @@ export default {
       }
 
       // ------------------- 行为标签中的大数据标签规则校验 --------------------------
+      // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
       // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
       // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
       const behaviorRulesLength = behaviorRules.length
@@ -753,6 +754,11 @@ export default {
         for (y = 0; y < behaviorRules[x].rules.length; y++) {
           let rulesItem = behaviorRules[x].rules[y]
 
+          if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
+            this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
+            rulesFlag = false
+            break
+          }
           // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
           const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
           if (isTimeTagKong) {

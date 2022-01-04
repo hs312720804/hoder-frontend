@@ -4634,7 +4634,7 @@ export default {
             selectKey: item.tableField + item.dictValue,
             mapName: item.mapName || ''
           }
-          if (childItem.tagCode === 'BAV0001') {
+          if (childItem.tagCode === 'BAV0001') { // 会员状态
             let operator = '='
             if (level === 3 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
@@ -4646,6 +4646,7 @@ export default {
             item.filedType === '7vip_expire_use' ||
             item.filedType === '7vip_expire30' ||
             item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+
             list = {
               name: item.dictLabel,
               value: item.dictValue,

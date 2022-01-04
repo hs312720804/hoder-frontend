@@ -69,7 +69,6 @@
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
                 >
                 </Bav>
-                <div v-if="childItem.isOldversion">业务组件升级，若要编辑请删除后重新创建</div>
               </div>
               <!-- 大数据标签 -->
               <div v-else class="behavior-label">
@@ -501,6 +500,9 @@
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
               <!-- 行为标签专属日期选项 end-->
+
+              <div v-if="childItem.isOldversion" style="color: red; font-size: 10px">业务组件升级，若要编辑请删除后重新创建</div>
+
             </div>
 
             <div class="label-add">
