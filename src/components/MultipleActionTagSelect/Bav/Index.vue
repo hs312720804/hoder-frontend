@@ -3504,10 +3504,15 @@ export default {
     getZongheVideoEpisodes (bavVal) {
       bavVal.forEach(obj => {
         // if (obj.childCheckedVal && obj.childCheckedVal[1] && obj.child && obj.child[1] && obj.child[1].child.length > 0) { // 有选择集数
-        if (obj.childCheckedVal && obj.childCheckedVal[1]) { // 有选择影片
-          const videoObj = obj.child.find(item => item.value === obj.childCheckedVal[1])
+        const businessType = bavVal[0].value
+
+        if (obj.childCheckedVal) { // 有选择影片
+          const tvId = businessType === '影视' ? obj.childCheckedVal[4] : obj.childCheckedVal[1]
+
+          const videoObj = obj.child.find(item => item.value === tvId)
           if (videoObj) {
-            this.getVideoEpisode({ tvId: obj.childCheckedVal[1], businessType: bavVal[0].value, source: videoObj.source })
+            this.getVideoEpisode({ tvId, businessType, source: videoObj.source })
+            // this.getVideoEpisode({ tvId: obj.childCheckedVal[1], businessType: bavVal[0].value, source: videoObj.source })
           }
         }
       })
@@ -3865,8 +3870,10 @@ export default {
           operator: '=',
           value: ''
         }
-        const tvId = this.childItem.bav.value === '影视' ? childItem.childCheckedVal[4] : childItem.childCheckedVal[1]
-        this.getVideoEpisode({ tvId: tvId, businessType: this.childItem.bav.value })
+
+        const businessType = this.childItem.bav.value
+        const tvId = businessType === '影视' ? childItem.childCheckedVal[4] : childItem.childCheckedVal[1]
+        this.getVideoEpisode({ tvId, businessType })
       }
       if (this.childItem.tagCode === 'BAV0012' && level === 4) {
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换集数时，默认选择空
