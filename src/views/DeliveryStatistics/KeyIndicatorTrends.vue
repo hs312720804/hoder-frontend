@@ -59,6 +59,17 @@
           <el-row :gutter="20" class="unit-row">
             <el-col :span="24">
               <div class="unit-box">
+                <div class="unit-header clearfix">投放统计</div>
+                <div class="unit-content">
+                    <div ref="chart14" class="chart-div"></div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20" class="unit-row">
+            <el-col :span="24">
+              <div class="unit-box">
                 <div class="unit-header clearfix">标签使用</div>
                 <div class="unit-content">
                     <div ref="chart4" class="chart-div"></div>
@@ -212,6 +223,9 @@ export default {
       // chart3
       this.getStatisticStrategyUse(this.rangeType)
 
+      // chart14
+      this.getStatisticCrowdLaunch(this.rangeType)
+
       // chart4
       this.getStatisticTagsGrowth(this.rangeType)
 
@@ -347,6 +361,20 @@ export default {
           return { name: key.name, data: key.value, type: 'line' }
         }) || []
         this.setLinesEchart('chart13', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+      })
+    },
+
+    //  14
+    getStatisticCrowdLaunch (rangeType) {
+      this.$service.getStatisticCrowdLaunch({ rangeType }).then((data) => {
+        const series = data.series || []
+        const legendData = series.map((key) => {
+          return key.name
+        })
+        const linesData = series.map((key) => {
+          return { name: key.name, data: key.value, type: 'line' }
+        })
+        this.setLinesEchart('chart14', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       })
     },
 
