@@ -1150,7 +1150,7 @@
                       v-model="childItem.bav.reverseSelect"
                       @change="ReverseSelect($event, item4.child)"
                     >
-                      圈出未起播
+                      圈出未起1播
                     </el-checkbox> -->
                   </div>
 
@@ -1387,7 +1387,7 @@
                   </el-checkbox>
 
                   <!-- 没有选择视频 -->
-                  <span v-if="!item5.value" >
+                  <span v-if="!item5.value && !childItem.bav.reverseSelect" >
                     <!-- {{ item5 }} -->
                     <span class="flex-row"
                     >
@@ -2941,7 +2941,7 @@
               v-model="childItem.bav.reverseSelect"
               @change="ReverseSelect($event, item.child, item.childCheckedVal[5], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
             >
-              圈出未起播
+              圈出未起1播
             </el-checkbox> -->
 
           </span>
@@ -3044,7 +3044,7 @@
                 v-model="childItem.bav.reverseSelect"
                 @change="ReverseSelect($event, item.child, item.childCheckedVal[1], {clearVal: item.childCheckedVal[2], bavChildItem: item})"
               >
-                圈出未起播
+                圈出未起1播
               </el-checkbox> -->
             </span>
             <div
@@ -3449,11 +3449,12 @@ export default {
       if (!nodes || !id) {
         return
       }
+      const countArray = ['mac', 'day_play_time', 'dt']
       for (let i = 0; i < nodes.length; i++) {
         let item = nodes[i]
         console.log(item.id === id)
         if (item.id === id) {
-          if (item.value && item.field !== 'mac') {
+          if (item.value && !countArray.includes(item.field)) { // 不是指标的属性
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
               item.operator = operator === '=' ? 'like' : 'not like'
