@@ -2974,7 +2974,7 @@
             <!-- 【短视频】业务的查询影片要放在【选择博主】 后面 -->
             <!-- 【教育】业务的查询影片要放在 【选择 VIP】 后面 -->
             <!-- 【影视】业务的查询影片要放在 【视频源】 后面 -->
-            <span v-if="childItem.bav.value === '短视频' || childItem.bav.value === '教育'">
+            <span v-if="childItem.bav.value === '短视频' || childItem.bav.value === '教育' || childItem.bav.value === '影视'">
               <el-select
                 v-model="item.childCheckedVal[4]"
                 style="width: 150px;"
@@ -3058,7 +3058,7 @@
                   反选时不展示
                   只有【影视】或者【电竞】业务可以选择集数
                   -->
-              <span v-if="item2.value === item.childCheckedVal[1] && qiBoCollectionOptions.length > 0 && (childItem.bav.value === '影视' || childItem.bav.value === '电竞')">
+              <span v-if="qiBoCollectionOptions.length > 0 && ( (item2.value === item.childCheckedVal[1] && childItem.bav.value === '电竞' ) || (item2.value === item.childCheckedVal[4] && childItem.bav.value === '影视') )">
                 <el-select
                   v-model="item2.childCheckedVal[0]"
                   style="width: 100px;"
@@ -3837,6 +3837,7 @@ export default {
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      */
     handelChildBehavirSelectChange (params = {}) {
+      debugger
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
       if (this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
@@ -3864,7 +3865,8 @@ export default {
           operator: '=',
           value: ''
         }
-        this.getVideoEpisode({ tvId: childItem.childCheckedVal[1], businessType: this.childItem.bav.value })
+        const tvId = this.childItem.bav.value === '影视' ? childItem.childCheckedVal[4] : childItem.childCheckedVal[1]
+        this.getVideoEpisode({ tvId: tvId, businessType: this.childItem.bav.value })
       }
       if (this.childItem.tagCode === 'BAV0012' && level === 4) {
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理, 切换集数时，默认选择空
