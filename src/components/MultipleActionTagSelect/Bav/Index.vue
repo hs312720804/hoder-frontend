@@ -904,7 +904,7 @@
                 class="flex-row child-attr-wrap"
               >
                 <span class="w100">{{ item2.name }}</span>
-                <span class="flex-row" v-if="childItem.bav.value === '电竞'">
+                <span class="flex-row" v-if="childItem.bav.value === '电竞' && !childItem.bav.reverseSelect">
                     <!-- 第三级 -->
                     <el-select
                       v-model="item2.childCheckedVal"
