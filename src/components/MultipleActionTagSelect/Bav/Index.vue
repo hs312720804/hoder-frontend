@@ -530,9 +530,9 @@
 
                                     <!-- {{item2.field === 'purchase_recent_two_years'}} -->
                                     <!-- 价格区间 -->
-                                    <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px">
-                                      <el-input-number :value="item5.value1" :min="1" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
-                                      -<el-input-number :value="item5.value2" :min="1" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
+                                    <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
+                                      <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
+                                    —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
                                     </span>
 
                                     <!-- 产品包ID -->
@@ -1084,7 +1084,7 @@
                 style="width: 110px"
                 name="asdq"
                 class="input-inline"
-                placeholder="请选择内容源"
+                placeholder="内容源"
                 clearable
                 @change="handelQiBoChildBehavirSelectChange({
                   childItem: item3,
@@ -1666,7 +1666,7 @@
                 style="width: 110px"
                 name="asdq"
                 class="input-inline"
-                placeholder="请选择内容源"
+                placeholder="内容源"
                 clearable
                 @change="handelChildBehavirSelectChange({
                   childItem: item2,
@@ -2214,7 +2214,7 @@
                   style="width: 110px"
                   name="asdq"
                   class="input-inline"
-                  placeholder="请选择内容源"
+                  placeholder="内容源"
                   clearable
                   @change="handelChildBehavirSelectChange({
                     childItem: item2,
