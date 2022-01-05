@@ -2440,7 +2440,7 @@
                 </el-checkbox>
               </div>
 
-              <!-- 第三级 搜索影片-->
+              <!-- 第三级 收藏 搜索影片-->
               <div v-else class="flex-row">
                 <!-- {{item2}} -->
                 <el-select
@@ -2495,9 +2495,9 @@
                   </el-option>
                   <!-- 编辑回显 选项-->
                   <el-option
-                    v-if="videoOptions.length === 0 && item.child[1]"
-                    :label="item.child[1].name"
-                    :value="item.childCheckedVal[1]">
+                    v-if="videoOptions.length === 0 && item2.child[1]"
+                    :label="getMatchName(item2.childCheckedVal[1], item2.child)"
+                    :value="item2.childCheckedVal[1]">
                   </el-option>
                 </el-select>
 
@@ -2527,10 +2527,10 @@
                     :value="follow.value">
                   </el-option>
                   <!-- 编辑回显 选项-->
-                  <!-- <el-option
-                    v-if="followOptions.length === 0 && item4.childCheckedVal"
-                    :label="item4.child[0].name"
-                    :value="item4.childCheckedVal"> -->
+                  <el-option
+                    v-if="followOptions.length === 0 && item2.childCheckedVal[2]"
+                    :label="getMatchName(item2.childCheckedVal[2], item2.child)"
+                    :value="item2.childCheckedVal[2]">
                   </el-option>
                 </el-select>
 
@@ -2538,7 +2538,7 @@
                   v-if="index2 === 0"
                   class="reverse-check"
                   v-model="childItem.bav.reverseSelect"
-                  @change="ReverseSelect($event, item3.child)"
+                  @change="ReverseSelect($event)"
                 >
                   圈出未活跃
                 </el-checkbox>
