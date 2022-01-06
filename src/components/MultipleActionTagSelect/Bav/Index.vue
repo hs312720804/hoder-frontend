@@ -1568,9 +1568,9 @@
             <!-- {{ item }} -->
             <!-- 第二级 -->
             <el-form-item
-              :prop="`bav.behaviorValue[${index}].childCheckedVal`"
-              :rules="{ required: true, message: '请选择', trigger: 'change' }"
-            >
+              :prop="`bav.behaviorValue[${index}].childCheckedVal`"
+              :rules="{ required: true, message: '请选择', trigger: 'change' }"
+            >
               <el-select
                 multiple
                 v-model="item.childCheckedVal"
@@ -2950,7 +2950,7 @@
           <span v-if="childItem.bav.value === '影视'" class="flex-row">
             <el-select
               v-model="item.childCheckedVal[3]"
-              placeholder="视频源"
+              placeholder="内容源"
               style="width: 100px"
               clearable
               @change="handelChildBehavirSelectChange({
@@ -3280,7 +3280,7 @@ export default {
         source: '',
         keywords: '',
         page: 1,
-        pageSize: 10
+        pageSize: 200
       },
       followOptions: [],
       topicOptions: [],
@@ -3524,7 +3524,7 @@ export default {
         keywords,
         businessType,
         page: 1,
-        pageSize: 20,
+        pageSize: 200,
         source
       }
 
@@ -3742,7 +3742,7 @@ export default {
         let params = {
           keywords: query,
           page: 1,
-          pageSize: 50,
+          pageSize: 200,
           businessType
         }
         this.$service.getMenberIds(params).then(res => {
@@ -3760,7 +3760,7 @@ export default {
           type: field === 'forum_id' ? 'forum' : 'album', // 'album_id', 'forum_id'
           keywords: query,
           page: 1,
-          pageSize: 10,
+          pageSize: 200,
           businessType
         }
         this.$service.moduleMatch(params).then(res => {
@@ -4649,13 +4649,13 @@ export default {
             if (level === 3 && item.filedType === 'effective') { operator = '>=' } // 有效
             if (
               (level === 3 && item.filedType === 'no_effective') ||
-            item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
+              item.filedType === 'vip_expire30') { operator = '<' } // 无效 || 过期时间>30
             if (item.filedType === 'vip_expire_use30') { operator = '>' } // 会员过期时间>30天
             if (
               item.filedType === '7vip_expire_use30' ||
-            item.filedType === '7vip_expire_use' ||
-            item.filedType === '7vip_expire30' ||
-            item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
+              item.filedType === '7vip_expire_use' ||
+              item.filedType === '7vip_expire30' ||
+              item.filedType === '7vip_expire') { operator = 'between' } // 7<会员到期时间<=30 || 会员到期时间<=7 || 7<过期时间<=30 || 过期时间<=7
 
             list = {
               name: item.dictLabel,
