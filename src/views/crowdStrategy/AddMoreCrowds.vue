@@ -465,7 +465,7 @@ export default {
         }
       } else {
         rData = data
-        if (data[0].child.length > 1) {
+        if (data[0] && data[0].child && data[0].child.length > 1) {
           rData[0].child = this.ReorganizationData(data[0].child)
         }
       }
