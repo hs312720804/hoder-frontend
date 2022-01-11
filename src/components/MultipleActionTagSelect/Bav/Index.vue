@@ -262,13 +262,7 @@
                       </el-option>
                     </template>
                   </el-select>
-                  <el-checkbox
-                    class="reverse-check"
-                    v-model="childItem.bav.reverseSelect"
-                    @change="ReverseSelect($event, item2.child)"
-                  >
-                    圈出未活跃
-                  </el-checkbox>
+
                 </div>
                 <div class="flex-column">
                   <!-- {{ item2.child }}
@@ -320,6 +314,13 @@
                   </span>
                 </div>
               </span>
+              <el-checkbox
+                class="reverse-check"
+                v-model="childItem.bav.reverseSelect"
+                @change="ReverseSelect($event, item2.child)"
+              >
+                圈出未活跃
+              </el-checkbox>
             </span>
 
           </div>
@@ -473,15 +474,6 @@
                               </template>
                             </el-select>
 
-                            <!-- 历史购买才有反选 -->
-                            <el-checkbox
-                              v-if="item2.field === 'purchase_recent_two_years'"
-                              class="reverse-check"
-                              v-model="childItem.bav.reverseSelect"
-                              @change="ReverseSelect"
-                            >
-                              圈出未购买
-                            </el-checkbox>
                           </el-form-item>
 
                           <div class="flex-column">
@@ -560,14 +552,22 @@
                                       <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
                                       <!-- <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type> -->
                                     </span>
-
                                   </span>
                                 </span>
-
                               </span>
                             </span>
                           </div>
                         </span>
+
+                        <!-- 历史购买才有反选 -->
+                        <el-checkbox
+                          v-if="item2.field === 'purchase_recent_two_years'"
+                          class="reverse-check"
+                          v-model="childItem.bav.reverseSelect"
+                          @change="ReverseSelect"
+                        >
+                          圈出未购买
+                        </el-checkbox>
                         <!-- <span v-else-if="item2.field !== 'purchase_recent_two_years'" class="flex-column">
                           <el-select
                             v-model="item3.childCheckedVal"
@@ -681,7 +681,7 @@
                     <!-- 推荐位、板块位 -->
                     <el-form-item
                       :prop="`bav.behaviorValue[${index}].child[${index2}].value`"
-                      :rules="{ required: true, message: '必填', trigger: 'change' }"
+                      :rules="{ required: true, message: '必填', trigger: 'change' }"
                     >
                     <el-select
                       v-if="item2.field === 'album_id'"
@@ -888,13 +888,7 @@
                   </template>
                 </el-select>
               </el-form-item>
-              <el-checkbox
-                class="reverse-check"
-                v-model="childItem.bav.reverseSelect"
-                @change="ReverseSelect($event, item.child)"
-              >
-                圈出未使用
-              </el-checkbox>
+
             </div>
             <div class="flex-column">
               <ConditionLine :isShow="item.child.length > 1"></ConditionLine>
@@ -904,7 +898,7 @@
                 class="flex-row child-attr-wrap"
               >
                 <span class="w100">{{ item2.name }}</span>
-                <span class="flex-row" v-if="childItem.bav.value === '电竞' && !childItem.bav.reverseSelect">
+                <span class="flex-row" v-if="childItem.bav.value === '电竞'">
                     <!-- 第三级 -->
                     <el-select
                       v-model="item2.childCheckedVal"
@@ -978,7 +972,15 @@
 
               </div>
             </div>
+
           </div>
+          <el-checkbox
+            class="reverse-check"
+            v-model="childItem.bav.reverseSelect"
+            @change="ReverseSelect($event)"
+          >
+            圈出未使用
+          </el-checkbox>
         </div>
       </span>
 
@@ -3335,7 +3337,8 @@ export default {
       if (
         this.childItem.tagCode === 'BAV0002' ||
         this.childItem.tagCode === 'BAV0003' ||
-        this.childItem.tagCode === 'BAV0008'
+        this.childItem.tagCode === 'BAV0008' ||
+        this.childItem.tagCode === 'BAV0006'
       ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
