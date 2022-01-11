@@ -474,9 +474,19 @@
                               </template>
                             </el-select>
 
+                            <!-- 历史购买才有反选 -->
+                            <el-checkbox
+                              v-if="item2.field === 'purchase_recent_two_years'"
+                              class="reverse-check"
+                              v-model="childItem.bav.reverseSelect"
+                              @change="ReverseSelect"
+                            >
+                              圈出未购买
+                            </el-checkbox>
+
                           </el-form-item>
 
-                          <div class="flex-column">
+                          <div class="flex-column" v-if="!childItem.bav.reverseSelect">
                             <ConditionLine :isShow="item3.child.length > 1"></ConditionLine>
                             <span
                               v-for="(item4, index2) in item3.child"
@@ -506,51 +516,51 @@
                                     </el-option>
                                   </template>
                                 </el-select>
+                                <span >
+                                  <span
+                                    v-for="(item5, index) in item4.child"
+                                    :key="index"
+                                    class="flex-row"
+                                  >
+                                    <!-- 兼容二期之前的数据格式 -->
+                                    <Type v-if="!childItem.bav.reverseSelect && item5.type === 'count'" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
 
-                                <span
-                                  v-for="(item5, index) in item4.child"
-                                  :key="index"
-                                  class="flex-row"
-                                >
+                                    <!-- 三期最新的格式 -->
+                                    <span class="flex-row" v-else>
+                                      <!-- {{item5}} -->
 
-                                  <!-- 兼容二期之前的数据格式 -->
-                                  <Type v-if="!childItem.bav.reverseSelect && item5.type === 'count'" ref="typeRef" :item3="item5" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                                      <!-- {{item2.field === 'purchase_recent_two_years'}} -->
+                                      <!-- 价格区间 -->
+                                      <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
+                                        <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
+                                      —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
+                                      </span>
 
-                                  <!-- 三期最新的格式 -->
-                                  <span class="flex-row" v-else>
-                                    <!-- {{item5}} -->
+                                      <!-- 产品包ID -->
+                                      <span v-if="item4.childCheckedVal == 2" class="flex-row" style="min-width: 150px">
+                                        <el-select
+                                          v-model="item5.value"
+                                          style="width: 150px"
+                                          filterable
+                                          remote
+                                          placeholder="请输入产品包ID"
+                                          clearable
+                                          :remote-method="(query) => {  GouMaiRemoteMethod(query, childItem.bav.value) }"
+                                          :loading="loading">
+                                          <el-option
+                                            v-for="(op, index) in gouMaiPackageIdOptions"
+                                            :key="'package' + op.vipId + index"
+                                            :label="op.vipId"
+                                            :value="op.vipId">
+                                          </el-option>
+                                        </el-select>
+                                      </span>
 
-                                    <!-- {{item2.field === 'purchase_recent_two_years'}} -->
-                                    <!-- 价格区间 -->
-                                    <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
-                                      <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
-                                    —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
-                                    </span>
-
-                                    <!-- 产品包ID -->
-                                    <span v-if="item4.childCheckedVal == 2" class="flex-row" style="min-width: 150px">
-                                      <el-select
-                                        v-model="item5.value"
-                                        style="width: 150px"
-                                        filterable
-                                        remote
-                                        placeholder="请输入产品包ID"
-                                        clearable
-                                        :remote-method="(query) => {  GouMaiRemoteMethod(query, childItem.bav.value) }"
-                                        :loading="loading">
-                                        <el-option
-                                          v-for="(op, index) in gouMaiPackageIdOptions"
-                                          :key="'package' + op.vipId + index"
-                                          :label="op.vipId"
-                                          :value="op.vipId">
-                                        </el-option>
-                                      </el-select>
-                                    </span>
-
-                                    <span v-if="item2.field === 'purchase_recent_two_years'"> <!-- 历史购买才有选择次数 -->
-                                      <!-- 次数、天数 -->
-                                      <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
-                                      <!-- <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type> -->
+                                      <span v-if="item2.field === 'purchase_recent_two_years'"> <!-- 历史购买才有选择次数 -->
+                                        <!-- 次数、天数 -->
+                                        <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                                        <!-- <Type v-if="!childItem.bav.reverseSelect && item5.child" ref="typeRef" :item3="item5.child" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type> -->
+                                      </span>
                                     </span>
                                   </span>
                                 </span>
@@ -559,15 +569,6 @@
                           </div>
                         </span>
 
-                        <!-- 历史购买才有反选 -->
-                        <el-checkbox
-                          v-if="item2.field === 'purchase_recent_two_years'"
-                          class="reverse-check"
-                          v-model="childItem.bav.reverseSelect"
-                          @change="ReverseSelect"
-                        >
-                          圈出未购买
-                        </el-checkbox>
                         <!-- <span v-else-if="item2.field !== 'purchase_recent_two_years'" class="flex-column">
                           <el-select
                             v-model="item3.childCheckedVal"
@@ -3452,12 +3453,15 @@ export default {
       if (!nodes || !id) {
         return
       }
-      const countArray = ['mac', 'day_play_time', 'dt']
+
+      // 指标属性不作为反选，【购买行为】的价格区间，产品包id不作为反选
+      const countArray = ['mac', 'day_play_time', 'dt', 'product_price', 'product_id']
       for (let i = 0; i < nodes.length; i++) {
         let item = nodes[i]
         console.log(item.id === id)
+        console.log('item===', item)
         if (item.id === id) {
-          if (item.value && !countArray.includes(item.field)) { // 不是指标的属性
+          if (item.value && item.field && !countArray.includes(item.field)) { // 不是指标的属性
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
               item.operator = operator === '=' ? 'like' : 'not like'
