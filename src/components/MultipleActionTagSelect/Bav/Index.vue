@@ -453,7 +453,7 @@
                             :rules="{ required: true, message: '请选择', trigger: 'change' }"
                           >
                             <el-select
-                              multiple
+                              :multiple="typeof(item3.childCheckedVal) === 'object'"
                               v-model="item3.childCheckedVal"
                               style="width: 110px"
                               name="asdq"
@@ -485,7 +485,6 @@
                             </el-checkbox>
 
                           </el-form-item>
-
                           <div class="flex-column" v-if="!childItem.bav.reverseSelect">
                             <ConditionLine :isShow="item3.child.length > 1"></ConditionLine>
                             <span
