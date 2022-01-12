@@ -3453,8 +3453,8 @@ export default {
         return
       }
 
-      // 指标属性不作为反选，【购买行为】的价格区间，产品包id不作为反选
-      const countArray = ['mac', 'day_play_time', 'dt', 'product_price', 'product_id']
+      // 指标属性（次数、天数、起播时长、个数）不作为反选，【购买行为】的价格区间，产品包id不作为反选
+      const countArray = ['mac', 'dt', 'day_play_time', 'play_nums', 'day_movie_play_time', 'product_price', 'product_id']
       for (let i = 0; i < nodes.length; i++) {
         let item = nodes[i]
         console.log(item.id === id)
