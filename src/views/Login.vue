@@ -1,5 +1,9 @@
 <template>
 <div id="login">
+  <span class="web-logo" >
+    <img src="../assets/img/logo.png" width="60px" height="60px">
+    <img src="../assets/img/logo_text.png" width="95px" height="23px">
+  </span>
   <el-row class="login-content">
     <el-col :span="6" :offset="9" class="login-form">
       <!-- <div class="login-logo"></div> -->
@@ -183,4 +187,10 @@ export default {
   }
 >>>.sf-item__label
   margin-bottom 0
+.web-logo
+  position absolute
+  top 18px
+  left 36px
+  img
+    vertical-align middle
 </style>
