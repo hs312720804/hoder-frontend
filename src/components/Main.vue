@@ -5,8 +5,12 @@
         <div class="logo__img" @click="handleLogoClick">
 
           <!-- {{ isCollapseMenu ? 'SP' : '策略平台'}} -->
-          <i class="el-icon-cc-celve2"></i>
-          <span v-show="!isCollapseMenu">极光引擎</span>
+          <!-- <i class="el-icon-cc-celve2"></i>
+          <span v-show="!isCollapseMenu">极光引擎</span> -->
+
+          <!-- <image src="../assets/img/bg1.jpg"/> -->
+          <span v-show="!isCollapseMenu" class="logo-img"></span>
+          <span class="logo-text-img"></span>
         </div>
         <div class="version">{{$appState.user.version}}</div>
       </div>
@@ -559,4 +563,19 @@ export default {
       color #fff
   .no-child-menu.is-active
       color: #409EFF
+.logo-img
+  background url('../assets/img/logo.png');
+  background-size cover
+  width 50px
+  height 50px
+  display inline-block
+  vertical-align middle
+  margin-left: -7px;
+.logo-text-img
+  background url('../assets/img/logo_text.png');
+  background-size cover
+  width 95px
+  height 23px
+  display inline-block
+  vertical-align middle
 </style>
