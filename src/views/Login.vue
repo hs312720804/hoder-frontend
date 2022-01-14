@@ -138,6 +138,7 @@ export default {
   box-shadow: 0px 2px 20px 0px rgba(0, 0, 0, 0.1);
   border-radius: 12px;
   width 400px
+  margin: 0 auto;
 .login-form__btn
   width: 100%
   background-color: #2778FF;
