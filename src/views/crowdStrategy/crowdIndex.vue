@@ -20,10 +20,10 @@
       <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
           <crowd-add
-                  :crowdId="crowdId"
-                  :policyId="selectRow.policyId"
-                  :limitLaunchDisabled="effectCrowd"
-                  @goBackCrowdListPage="goBackCrowdListPage"
+            :crowdId="crowdId"
+            :policyId="selectRow.policyId"
+            :limitLaunchDisabled="effectCrowd"
+            @goBackCrowdListPage="goBackCrowdListPage"
           >
           </crowd-add>
         </el-tab-pane>

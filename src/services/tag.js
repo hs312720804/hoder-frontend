@@ -165,3 +165,21 @@ export function getMusicByAuthor (params) {
     params
   })
 }
+
+// 行为标签 - 购买行为 搜索产品包ID
+export function getMenberIds (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/auto/members/getIds',
+    params
+  })
+}
+
+// 行为标签 - 起播活跃 选择订阅 搜专题
+export function getTopic (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/auto/getTopic',
+    params
+  })
+}

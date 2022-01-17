@@ -23,18 +23,20 @@
     </el-form-item>
     <!-- {{attrChildItem}}
     {{isDisableDaySelect}} -->
-    <el-select
-      v-model="item3.operator"
-      style="max-width: 100px; min-width: 100px;"
-      name="oxve"
-      class="input-inline"
-    >
-      <el-option value="="></el-option>
-      <el-option value=">="></el-option>
-      <el-option value="<="></el-option>
-      <el-option value=">"></el-option>
-      <el-option value="<"></el-option>
-    </el-select>
+    <el-form-item>
+      <el-select
+        v-model="item3.operator"
+        style="max-width: 100px; min-width: 100px;"
+        name="oxve"
+        class="input-inline"
+      >
+        <el-option value="="></el-option>
+        <el-option value=">="></el-option>
+        <el-option value="<="></el-option>
+        <el-option value=">"></el-option>
+        <el-option value="<"></el-option>
+      </el-select>
+    </el-form-item>
 
     <el-form-item prop="value">
       <el-input

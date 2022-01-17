@@ -231,3 +231,12 @@ export function getStatisticCrowdCalcDuration (params) {
     params
   })
 }
+
+// 折线图-存储监控(14)
+export function getStatisticCrowdLaunch (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticCrowdLaunch',
+    params
+  })
+}

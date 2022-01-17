@@ -175,8 +175,8 @@ export default {
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-              // 二期
-              if (rulesItem.version === 1) {
+              // 二期之后的
+              if (rulesItem.version > 0) {
                 const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
                 const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
                 rulesItem.value = startDay + '~' + endDay
@@ -241,8 +241,8 @@ export default {
               flag = false
               break
             } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-              // 二期
-              if (rulesItem.version === 1) {
+              // 二期之后的
+              if (rulesItem.version > 0) {
                 const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
                 const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
                 rulesItem.value = startDay + '~' + endDay
@@ -441,13 +441,32 @@ export default {
       this.checkIfChildrenExist(data1.child[0], data2)
     },
 
+    // ReorganizationData (data) { // 将数组变成层级关系
+    //   let rData = []
+    //   let len = data.length
+    //   for (var i = len - 1; i > -1; i--) {
+    //     rData = data[i]
+    //     if (data[i - 1]) {
+    //       rData = this.checkIfChildrenExist(data[i - 1], rData)
+    //     }
+    //   }
+    //   return rData
+    // },
     ReorganizationData (data) { // 将数组变成层级关系
       let rData = []
       let len = data.length
-      for (var i = len - 1; i > -1; i--) {
-        rData = data[i]
-        if (data[i - 1]) {
-          rData = this.checkIfChildrenExist(data[i - 1], rData)
+
+      if (len > 1) {
+        for (var i = len - 1; i > -1; i--) {
+          rData = data[i]
+          if (data[i - 1]) {
+            rData = this.checkIfChildrenExist(data[i - 1], rData)
+          }
+        }
+      } else {
+        rData = data
+        if (data[0] && data[0].child && data[0].child.length > 1) {
+          rData[0].child = this.ReorganizationData(data[0].child)
         }
       }
       return rData
@@ -456,7 +475,7 @@ export default {
     // 请求创建人群接口
     fetchSave (form, mode) {
       form.rulesJson = form.rulesJson.map(e => {
-        e.versionNum = 1
+        e.versionNum = 2
         // e.purpose = form.purpose
         e.tagIds = e.tagIds.join(',')
         e.rulesJson.rules = e.rulesJson.rules.map(item => {
@@ -494,13 +513,14 @@ export default {
               }).flat()
             }
 
-            if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+            if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
               let rData = []
               const showBehaviorValue = rulesItem.bav.showBehaviorValue
+              const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+
               showBehaviorValue.forEach(item => {
                 const itemCopy = JSON.parse(JSON.stringify(item))
                 const childArray = this.ReorganizationData(itemCopy.child)
-                const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
                 countValue.child = childArray
                 itemCopy.child = [countValue]
                 rData.push(itemCopy)

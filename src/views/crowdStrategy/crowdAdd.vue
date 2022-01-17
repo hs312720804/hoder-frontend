@@ -181,6 +181,7 @@ export default {
     }
     return {
       // attrs: [[${attrs}]] || {},
+      versionNum: 2,
       cache: {},
       tags: [],
       actionTags: [],
@@ -274,8 +275,12 @@ export default {
     hasMoveBehaviorTagRule () {
       let crowd = this.form
       const behaviorRules = this.behaviorRulesJson.rules
-      let hasBehaviorRule = false
-      let hasMoveRule = false
+
+      let hasBehaviorRule = false // 是否有行为标签
+      let hasMoveRule = false // 是否有动态周期
+      let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
+      const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
+
       if (behaviorRules.length > 0) {
         hasBehaviorRule = true
         for (let x = 0; x < behaviorRules.length; x++) {
@@ -286,17 +291,20 @@ export default {
               hasMoveRule = true
               break
             }
+            if (fullTagList.includes(item.tagCode)) {
+              hasFullTag = true
+              break
+            }
           }
         }
       }
 
-      if (hasBehaviorRule && hasMoveRule) { // 展示勾选“是否每日更新”
+      if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
         // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
         if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
           crowd.autoVersion = true
         }
         crowd.isShowAutoVersion = true
-        // crowd.autoVersion = true
       } else {
         crowd.isShowAutoVersion = false
         crowd.autoVersion = false
@@ -687,8 +695,8 @@ export default {
             rulesFlag = false
             break
           } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-            // 二期
-            if (rulesItem.version === 1) {
+            // 二期之后的
+            if (rulesItem.version > 0) {
               const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
               const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
               rulesItem.value = startDay + '~' + endDay
@@ -734,6 +742,7 @@ export default {
       }
 
       // ------------------- 行为标签中的大数据标签规则校验 --------------------------
+      // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
       // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
       // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
       const behaviorRulesLength = behaviorRules.length
@@ -745,6 +754,11 @@ export default {
         for (y = 0; y < behaviorRules[x].rules.length; y++) {
           let rulesItem = behaviorRules[x].rules[y]
 
+          if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
+            this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
+            rulesFlag = false
+            break
+          }
           // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
           const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
           if (isTimeTagKong) {
@@ -765,7 +779,8 @@ export default {
             rulesItem.tagType === 'time' &&
             rulesItem.isDynamicTime === 3
           ) {
-            if (rulesItem.version === 1) {
+            // 二期之后的
+            if (rulesItem.version > 0) {
               const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
               const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
               rulesItem.value = startDay + '~' + endDay
@@ -839,10 +854,24 @@ export default {
     ReorganizationData (data) { // 将数组变成层级关系
       let rData = []
       let len = data.length
-      for (var i = len - 1; i > -1; i--) {
-        rData = data[i]
-        if (data[i - 1]) {
-          rData = this.checkIfChildrenExist(data[i - 1], rData)
+      // for (var i = len - 1; i > -1; i--) {
+      //   debugger
+      //   rData = data[i]
+      //   if (data[i - 1]) {
+      //     rData = this.checkIfChildrenExist(data[i - 1], rData)
+      //   }
+      // }
+      if (len > 1) {
+        for (var i = len - 1; i > -1; i--) {
+          rData = data[i]
+          if (data[i - 1]) {
+            rData = this.checkIfChildrenExist(data[i - 1], rData)
+          }
+        }
+      } else {
+        rData = data
+        if (data[0] && data[0].child && data[0].child.length > 1) {
+          rData[0].child = this.ReorganizationData(data[0].child)
         }
       }
       return rData
@@ -1035,7 +1064,7 @@ export default {
                 }).flat()
               }
 
-              if (rulesItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+              if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
                 let rData = []
                 const showBehaviorValue = rulesItem.bav.showBehaviorValue
                 showBehaviorValue.forEach(item => {
@@ -1067,7 +1096,7 @@ export default {
             limitLaunchCount: form.limitLaunch
               ? form.limitLaunchCount
               : undefined,
-            versionNum: 1
+            versionNum: 2
           }
 
           // 获取到组件中的form  校验必填项
@@ -1276,7 +1305,7 @@ export default {
         this.form.name = policyData.crowdName
         this.form.remark = policyData.remark
         this.priority = policyData.priority
-        const versionNum = policyData.versionNum || 0
+        this.versionNum = policyData.versionNum || 0
 
         this.form.autoVersion = policyData.autoVersion
         this.form.isShowAutoVersion = true
@@ -1314,7 +1343,7 @@ export default {
             if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
               item.value = item.value === '' ? [] : item.value.split(',')
             }
-            if (item.version !== 1) {
+            if (item.version === 0) {
               if (item.tagType === 'time' && item.isDynamicTime === 3) {
                 const value = item.value.split('-')
                 this.$set(item, 'startDay', value[0])
@@ -1342,8 +1371,8 @@ export default {
             if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
               rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
             }
-            // 手动构建数据 二期数据格式兼容一期
-            if (versionNum !== 1) {
+            // 手动构建数据 一期数据格式兼容二期
+            if (this.versionNum === 0) {
               if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
                 const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
                 rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
@@ -1367,6 +1396,12 @@ export default {
                     }
                   })
                 }
+              }
+            }
+
+            if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
+              if (rulesEachItem.tagCode === 'BAV0011') {
+                rulesEachItem.isOldversion = true // 是否是旧版本
               }
             }
           })

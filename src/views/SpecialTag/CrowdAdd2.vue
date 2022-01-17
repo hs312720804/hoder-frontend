@@ -649,7 +649,7 @@ export default {
           if (item.tagType === 'string' && item.value === 'nil') {
             item.operator = 'null'
           }
-          if (item.version !== 1) {
+          if (item.version === 0) { // 一期
             if (item.tagType === 'time' && item.isDynamicTime === 3) {
               const value = item.value.split('-')
               this.$set(item, 'startDay', value[0])
