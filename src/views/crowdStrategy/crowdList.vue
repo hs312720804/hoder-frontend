@@ -307,6 +307,9 @@
                 <el-dropdown-item
                         :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['appointment',scope.row]"
+                >预约投后分析</el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -867,6 +870,25 @@
           <el-button @click="testDialogVisible = false">关闭</el-button>
         </span>
       </el-dialog>
+      <!-- 查看配置弹窗-->
+      <el-dialog title="预约投后分析" :visible.sync="showAppointment" width="500px">
+        <el-form ref="appointmentForm" :model="appointmentForm" label-width="80px" size="mini">
+          <el-form-item label="起止时间" prop="value" required>
+            <el-date-picker
+              v-model="appointmentForm.value"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期">
+            </el-date-picker>
+          </el-form-item>
+
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button type="primary" @click="HandleAppointment">确定</el-button>
+          <el-button @click="showAppointment = false">取消</el-button>
+        </span>
+      </el-dialog>
   </div>
 </template>
 <script>
@@ -1047,6 +1069,10 @@ export default {
       tableMerge: [],
       initTableMerge: [],
       showConfiguration: false,
+      showAppointment: false,
+      appointmentForm: {
+        value: []
+      },
       configTextarea: '',
       initExpandCrowd: [],
       copyErrorMsg: '' // 人群复制捕获错误信息
@@ -1734,7 +1760,25 @@ export default {
           break
         case 'redirectCrowd':
           this.handleClickRedirectList(this.currentCid)
+          break
+        case 'appointment':
+          this.ShowAppointmentDialog(this.currentCid)
+          break
       }
+    },
+    // 显示投后效果弹窗
+    ShowAppointmentDialog () {
+      this.showAppointment = true
+    },
+    HandleAppointment () {
+      this.$refs['appointmentForm'].validate((valid) => {
+        if (valid) {
+          alert('submit!')
+        } else {
+          console.log('error submit!!')
+          return false
+        }
+      })
     },
     // 显示投后效果弹窗
     showCrowdDetailDialog () {
