@@ -196,6 +196,7 @@ export default {
         '/hitSearch/index': 'hitSearch',
         '/oneTouchDrop/index': 'oneTouchDrop',
         '/specialTag/index': 'specialTag',
+        '/launchHelper/status': 'launchStatus',
         '/launchHelper/resendCommand': 'resendCommand'
       },
       activeName: 'first',

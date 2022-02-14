@@ -110,3 +110,12 @@ export function getCrowdHitCountDeclineToZeroEcharts (params) {
     params
   })
 }
+
+// 效果闭环预约列表
+export function queryEffectAppointment (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/effect/queryEffectAppointment',
+    data
+  })
+}

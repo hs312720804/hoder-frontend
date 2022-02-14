@@ -53,6 +53,7 @@ import hitSearch from '@/views/launch/hitSearch'
 import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
+import launchStatus from '@/views/launch/LaunchStatus'
 
 const children = [
   // {
@@ -372,6 +373,17 @@ const children = [
       icon: 'el-icon-cc-file'
     }
   },
+  {
+    name: 'launchStatus',
+    path: 'launchHelper/LaunchStatus',
+    component: launchStatus,
+    meta: {
+      title: '效果数据状态',
+      tagId: 'launchStatus ',
+      icon: 'el-icon-cc-file'
+    }
+  },
+
   //     ]
   // },
   // {
