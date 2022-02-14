@@ -31,9 +31,9 @@
                 </div>
             </div>
             <c-table
-                    :props="table.props"
-                    :header="table.header"
-                    :data="table.data"
+              :props="table.props"
+              :header="table.header"
+              :data="table.data"
             >
             </c-table>
         </c-content-wrapper>

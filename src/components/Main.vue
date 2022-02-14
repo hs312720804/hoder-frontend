@@ -188,6 +188,7 @@ export default {
         '/manager/biList': 'launchSettings',
         '/manager/notice/index': 'notice',
         '/launchAdmin': 'launchTabList',
+        '/launchAnalysis': 'launchAnalysis',
         '/anomaly/index': 'anomalyEcharts',
         '/myPolicy/index': 'myPolicy',
         '/groupImageInsight/index': 'groupImageInsight',

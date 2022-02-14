@@ -5,6 +5,7 @@ import TagGroup from '@/views/TagGroup/Index.vue'
 import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
 import launchTabList from '@/views/launch/LaunchTabList'
+import launchAnalysis from '@/views/launch/launchAnalysis/Index'
 import strategy from '@/views/launch/strategy/List'
 import validate from '@/views/launch/CrowdValidate'
 // import dictionaryManage from '@/views/setting/dictionaryManage'
@@ -235,6 +236,16 @@ const children = [
     meta: {
       tagId: 'launchTabList',
       title: '投放管理',
+      icon: 'el-icon-cc-file'
+    }
+  },
+  {
+    name: 'launchAnalysis',
+    path: 'launch/launchAnalysis',
+    component: launchAnalysis,
+    meta: {
+      tagId: 'launchTabList',
+      title: '投后分析',
       icon: 'el-icon-cc-file'
     }
   },
