@@ -1,16 +1,6 @@
 <template>
   <div class="my-collect">
 
-      <!-- <div class="search-input">
-          <el-input
-              placeholder="支持按人群名、ID搜索"
-              class="header-input"
-              v-model="filter.tagName"
-              @keyup.enter.native="fetchData"
-          ></el-input>
-          <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-      </div> -->
-
       <el-tabs
         v-model="activeName"
         @tab-click="handleTabChange"
@@ -18,6 +8,92 @@
         <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
         </el-tab-pane>
       </el-tabs>
+
+      <div class="filterFields">
+        <el-form :model="formData" ref="formData" :inline="true">
+          <el-form-item prop="crowdIds">
+            <!-- <el-select
+              filterable
+              v-model="formData.crowdIds"
+              multiple
+              placeholder="请选择123策略"
+              @change="getCrowd"
+              @remove-tag="removeTag"
+            > -->
+            <el-select
+              filterable
+              remote
+              multiple
+              clearable
+              v-model="formData.crowdIds"
+              :remote-method="getBehaviorCrowdList"
+              @change="handelBehaviorCrowdSelectChange($event)"
+              @clear="getBehaviorCrowdList"
+              placeholder="请选择人群ID、人群名、分类名称"
+            >
+              <el-option
+                  v-for="item in behaviorCrowdList"
+                  :label="item.launchName"
+                  :value="item.policyIds+'_'+item.policyCrowdIds"
+                  :key="item.launchCrowdId+''"
+
+              >
+                  {{ item.launchName }} -- {{ item.launchCrowdId }}
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item prop="type">
+            <el-radio-group v-model="formData.type">
+              <el-radio-button label="近14天"></el-radio-button>
+              <el-radio-button label="近30天"></el-radio-button>
+              <el-radio-button label="全年"></el-radio-button>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item prop="date">
+            <!-- <el-date-picker
+              v-model="formData.date"
+              type="dateRange"
+              placeholder="选择日期"
+              value-format="yyyy-MM-dd"
+              value="yyyy-MM-dd"
+            >
+            </el-date-picker> -->
+            <el-date-picker
+              style="width: 220px;"
+              v-model="formData.date"
+              type="daterange"
+              range-separator="至"
+              start-placeholder="开始日期"
+              end-placeholder="结束日期"
+              value-format="yyyy-MM-dd"
+              :picker-options="getPickerOptions()"
+            >
+            </el-date-picker>
+          </el-form-item>
+
+          <el-form-item>
+              <el-button type="primary" @click="handleSearch">查询</el-button>
+              <el-button @click="resetForm('formData')">重置</el-button>
+          </el-form-item>
+        </el-form>
+
+      </div>
+
+      <div class="secondScreening">
+        数据展示：
+        <el-radio-group v-model="radio">
+          <el-radio :label="0">全部数据</el-radio>
+          <el-radio :label="1">投前数据</el-radio>
+          <el-radio :label="2">投后数据</el-radio>
+        </el-radio-group>
+
+        <span style="float: right;">
+          <el-checkbox v-model="checked1">按天展示</el-checkbox>
+          <el-checkbox v-model="checked2">区分top20影片</el-checkbox>
+        </span>
+
+      </div>
 
       <tag-list
         :tableData="tableData"
@@ -180,7 +256,28 @@ export default {
         data: [],
         selected: [],
         selectionType: 'multiple'
-      }
+      },
+      formData: {
+        type: '近14天',
+        mac: undefined,
+        cOpenid: undefined,
+        thirdUserId: undefined,
+        tagId: undefined,
+        tagAttrId: undefined,
+        tempMac: undefined,
+        crowdIds: '',
+        date: []
+      },
+      behaviorCrowdList: [],
+      behaviorCrowdListFilter: {
+        crowdType: 3,
+        pageNum: 1,
+        pageSize: 30
+      },
+      radio: 0,
+      checked1: false,
+      checked2: false
+
     }
   },
   watch: {
@@ -626,6 +723,81 @@ export default {
     }
   },
   methods: {
+    handleSearch () {
+
+    },
+    resetForm (formName) {
+      this.$refs[formName].resetFields()
+      console.log('formData===', this.formData)
+    },
+    handelBehaviorCrowdSelectChange (e) {
+      console.log(e)
+    },
+    getBehaviorCrowdList (query = '') {
+      this.behaviorCrowdListFilter.launchName = query
+      if (query !== '') { // 重置
+        this.behaviorCrowdListFilter.pageNum = 1
+        this.behaviorCrowdList = []
+      }
+      this.loading = true
+      this.$service.getTempLaunchList(this.behaviorCrowdListFilter).then(data => {
+        this.behaviorCrowdListpages = data.pageInfo.pages // 总页数
+        this.behaviorCrowdList = query !== '' ? data.pageInfo.list : this.behaviorCrowdList.concat(data.pageInfo.list)
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+    // getAddList () {
+    //   this.$service.addMultiVersionCrowd(2).then(data => {
+    //     this.launchPlatform = data.biLists
+    //     this.strategyPlatform = data.policies
+    //     this.effectTimeList = data.efTime.map(item => {
+    //       return { label: item + '天', value: item }
+    //     })
+    //     if (data.tempCrowds) {
+    //       // 行为人群列表
+    //       // this.behaviorCrowdList = data.tempCrowds.filter(item => {
+    //       //     return item.isFxFullSql === 3
+    //       // })
+
+    //     }
+    //   })
+    // },
+    getPickerOptions () {
+      return this.pickerOptionsDayinRange(30, 720)
+    },
+    pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          const day1 = range * 24 * 3600 * 1000 // 2年
+          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let minTime = Date.now() - day1
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
+        }
+      }
+    },
     handleTabChange () {
       this.filter.tagName = this.activeName
       this.fetchData()
@@ -741,6 +913,8 @@ export default {
     this.$root.$on('third-tag-list-refresh', this.fetchData)
     this.fetchTypeData()
     this.fetchData()
+
+    this.getBehaviorCrowdList() // 行为人群列表
   }
 }
 </script>
@@ -782,5 +956,6 @@ export default {
         top 8px
         right 10px
         transform rotate(-90deg)
-
+.secondScreening
+  margin 10px 0 20px
 </style>
