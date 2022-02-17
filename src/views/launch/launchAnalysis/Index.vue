@@ -4,7 +4,7 @@
           v-model="activeName"
           @tab-click="handleTabChange"
         >
-            <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
+            <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
                 <el-input
                     v-model="searchVal"
                     placeholder="支持按标签名、Code、描述搜索"
@@ -12,35 +12,41 @@
                 >
                 </el-input>
                 <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-            </div>
+            </div> -->
 
-            <el-tab-pane label="影视" name="video">
+            <el-tab-pane label="影视" name="1">
                 <tab-page
                     :checkList="checkList"
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
+                    :typeTabsList="typeTabsList"
+                    :businessType="activeName"
                     @clear-search="handleClearSearch"
                     @change-checkList="handleCheckListChange"
                     @get-table-selected="handleGetTableSelectedData"
                 >
                 </tab-page>
             </el-tab-pane>
-            <el-tab-pane label="教育" name="education">
+            <el-tab-pane label="教育" name="2">
                 <tab-page
                     :checkList="checkList"
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
+                    :typeTabsList="typeTabsList"
+                    :businessType="activeName"
                     @clear-search="handleClearSearch"
                     @change-checkList="handleCheckListChange"
                     @get-table-selected="handleGetTableSelectedData"
                 >
                 </tab-page>
             </el-tab-pane>
-            <el-tab-pane label="少儿" name="children">
+            <el-tab-pane label="少儿" name="3">
                 <tab-page
                     :checkList="checkList"
                     :show-selection="showSelection"
                     :currentSelectTag="tagList"
+                    :typeTabsList="typeTabsList"
+                    :businessType="activeName"
                     @clear-search="handleClearSearch"
                     @change-checkList="handleCheckListChange"
                     @get-table-selected="handleGetTableSelectedData"
@@ -74,7 +80,7 @@ export default {
   },
   data () {
     return {
-      activeName: 'video',
+      activeName: '1',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,
@@ -87,17 +93,43 @@ export default {
         5: 'warning'
       },
       showSelection: false,
-      tempCheckList: []
+      tempCheckList: [],
+      typeTabsList: [
+        {
+          groupName: '流量CTR',
+          value: 'ctr'
+        },
+        {
+          groupName: '产品包成交',
+          value: 'package'
+        },
+        {
+          groupName: '活跃成交',
+          value: 'active'
+        },
+        {
+          groupName: '观影行为',
+          value: 'tv'
+        },
+        {
+          groupName: '观影TOP20影片',
+          value: 'top20'
+        },
+        {
+          groupName: '观影分类',
+          value: 'category'
+        }
+      ]
     }
   },
   methods: {
     handleSearch () {
       // 全局搜索
-      if (this.activeName === 'labelZone') {
-        this.labelZoneTagName = this.searchVal
-      } else {
-        this.myCollectTagName = this.searchVal
-      }
+      // if (this.activeName === 'labelZone') {
+      //   this.labelZoneTagName = this.searchVal
+      // } else {
+      //   this.myCollectTagName = this.searchVal
+      // }
     },
     handleClearSearch () {
       this.searchVal = undefined
@@ -124,46 +156,6 @@ export default {
           // 刷新标签广场页
           this.fetchCheckListData()
           this.$root.$emit('label-zone-list-refresh')
-          break
-        case 'myCollect':
-          // 刷新我的收藏
-          this.fetchCheckListData()
-          this.$root.$emit('my-collect-list-refresh')
-          break
-        case 'tempLabel':
-          // 临时标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-2')
-          break
-        case 'specialTag':
-          // 刷新组合标签
-          this.fetchCheckListData()
-          this.$root.$emit('special-tag-list-refresh')
-          break
-        case 'localLabel':
-          // 本地标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('local-label-list-refresh')
-          break
-        case 'behaviorLabel':
-          // 行为标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-3')
-          break
-        case 'bankLabel':
-          // 数据银行标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-4')
-          break
-        case 'customTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('custom-tag-list-refresh')
-          break
-        case 'TabPage':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('third-tag-list-refresh')
           break
       }
     },
@@ -200,19 +192,19 @@ export default {
       // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       this.tagList.splice(this.tagList.indexOf(tag), 1)
     },
-    fetchTempCheckListData () {
-      this.$service.getListDimension({ type: 5 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.tempCheckList = data.behaviorShow.split(',')
-          } else {
-            this.tempCheckList = ['defineRemark']
-          }
-        } else {
-          this.tempCheckList = ['defineRemark']
-        }
-      })
-    },
+    // fetchTempCheckListData () {
+    //   this.$service.getListDimension({ type: 5 }).then(data => {
+    //     if (data) {
+    //       if (data.behaviorShow) {
+    //         this.tempCheckList = data.behaviorShow.split(',')
+    //       } else {
+    //         this.tempCheckList = ['defineRemark']
+    //       }
+    //     } else {
+    //       this.tempCheckList = ['defineRemark']
+    //     }
+    //   })
+    // },
     handleCheckListChange (val) {
       this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
     },
@@ -221,8 +213,8 @@ export default {
     }
   },
   created () {
-    this.fetchCheckListData()
-    this.fetchTempCheckListData()
+    // this.fetchCheckListData()
+    // this.fetchTempCheckListData()
   }
 }
 </script>

@@ -33,3 +33,12 @@ export function getLaunchMenuList (params) {
     params
   })
 }
+
+// 闭环效果—— 投放分析 ——列表查询接口
+export function getEffectData (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/effect/getEffectData',
+    params
+  })
+}

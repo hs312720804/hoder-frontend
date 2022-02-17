@@ -4,15 +4,15 @@
             <el-form-item label="" prop="condition">
                 <el-input
                   v-model="outForm.condition"
-                  @keyup.enter.native="handleGetManualLaunchList"
+                  @keyup.enter="handleGetManualLaunchList"
                   clearable
                   placeholder="人群ID、人群名、投放ID">
                 </el-input>
             </el-form-item>
             <el-form-item>
                 <!-- <el-button type="primary" @click="handleResendCommand">触发计算</el-button> -->
-              <el-button type="primary" @click="handleResendCommand">查询</el-button>
-              <el-button @click="resetForm('outForm')">重置</el-button>
+              <el-button type="primary" @click="handleGetManualLaunchList">查询</el-button>
+              <el-button @click="resetForm()">重置</el-button>
             </el-form-item>
         </el-form>
         <c-table
@@ -45,7 +45,7 @@
 
 <script>
 export default {
-  name: 'resendCommandAA',
+  name: 'LaunchStatusAA',
   data () {
     return {
       outForm: {
@@ -146,6 +146,9 @@ export default {
     handleCurrentChange (val) {
       this.outForm.pageNum = val
       this.handleGetManualLaunchList()
+    },
+    resetForm () {
+      this.$refs['outForm'].resetFields()
     }
 
   },

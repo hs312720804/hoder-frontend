@@ -1767,13 +1767,21 @@ export default {
       }
     },
     // 显示投后效果弹窗
-    ShowAppointmentDialog () {
+    ShowAppointmentDialog (crowdId) {
+      this.estimateId = crowdId
       this.showAppointment = true
     },
     HandleAppointment () {
       this.$refs['appointmentForm'].validate((valid) => {
         if (valid) {
-          alert('submit!')
+          const params = {
+            startPeriod: this.appointmentForm.value[0],
+            endPeriod: this.appointmentForm.value[1],
+            crowdId: this.estimateId
+          }
+          this.$service.sendEffectCommand(params).then(() => {
+
+          })
         } else {
           console.log('error submit!!')
           return false

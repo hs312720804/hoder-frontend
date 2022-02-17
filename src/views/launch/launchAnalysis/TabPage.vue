@@ -1,11 +1,10 @@
 <template>
   <div class="my-collect">
-
+      {{activeName}}
       <el-tabs
         v-model="activeName"
-        @tab-click="handleTabChange"
       >
-        <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
+        <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.value" :key="item.value" >
         </el-tab-pane>
       </el-tabs>
 
@@ -25,7 +24,7 @@
               remote
               multiple
               clearable
-              v-model="formData.crowdIds"
+              v-model="formData.versionCode"
               :remote-method="getBehaviorCrowdList"
               @change="handelBehaviorCrowdSelectChange($event)"
               @clear="getBehaviorCrowdList"
@@ -33,21 +32,45 @@
             >
               <el-option
                   v-for="item in behaviorCrowdList"
-                  :label="item.launchName"
-                  :value="item.policyIds+'_'+item.policyCrowdIds"
-                  :key="item.launchCrowdId+''"
+                  :label="item.crowdName"
+                  :value="item.versionCode"
+                  :key="'versionCode' + item.crowdId + businessType + activeName"
 
               >
-                  {{ item.launchName }} -- {{ item.launchCrowdId }}
+                  {{ item.crowdName }} -- {{ item.crowdId }}
+              </el-option>
+            </el-select>
+          </el-form-item>
+
+          <el-form-item prop="resourceIds">
+            <!-- {{ resourceList}} -->
+            <el-select
+              filterable
+              remote
+              multiple
+              clearable
+              v-model="formData.resourceIds"
+              :remote-method="getResourceList"
+              @clear="getResourceList"
+              placeholder="资源位ID、资源位名称"
+            >
+              <el-option
+                  v-for="(item, index) in resourceList"
+                  :label="item.slotIdName"
+                  :value="item.slotIdName"
+                  :key="'resource' + index + businessType + activeName"
+
+              >
+                  {{ item.slotIdName }}
               </el-option>
             </el-select>
           </el-form-item>
 
           <el-form-item prop="type">
-            <el-radio-group v-model="formData.type">
-              <el-radio-button label="近14天"></el-radio-button>
-              <el-radio-button label="近30天"></el-radio-button>
-              <el-radio-button label="全年"></el-radio-button>
+            <el-radio-group v-model="formData.type" @change="HandleDateTypeChange">
+              <el-radio-button label="14" name="">近14天</el-radio-button>
+              <el-radio-button label="30" name="">近30天</el-radio-button>
+              <el-radio-button label="365" name="">全年</el-radio-button>
             </el-radio-group>
           </el-form-item>
           <el-form-item prop="date">
@@ -73,7 +96,7 @@
           </el-form-item>
 
           <el-form-item>
-              <el-button type="primary" @click="handleSearch">查询</el-button>
+              <el-button type="primary" @click="fetchData">查询</el-button>
               <el-button @click="resetForm('formData')">重置</el-button>
           </el-form-item>
         </el-form>
@@ -82,15 +105,15 @@
 
       <div class="secondScreening">
         数据展示：
-        <el-radio-group v-model="radio">
+        <el-radio-group v-model="showDataType" @change="HandleDataTypeChange">
           <el-radio :label="0">全部数据</el-radio>
           <el-radio :label="1">投前数据</el-radio>
           <el-radio :label="2">投后数据</el-radio>
         </el-radio-group>
 
         <span style="float: right;">
-          <el-checkbox v-model="checked1">按天展示</el-checkbox>
-          <el-checkbox v-model="checked2">区分top20影片</el-checkbox>
+          <el-checkbox v-model="checked1" @change="HandleShowDayChange">按天展示</el-checkbox>
+          <el-checkbox v-if="activeName === 'tv' || activeName === 'top20'" v-model="checked2">区分top20影片</el-checkbox>
         </span>
 
       </div>
@@ -135,6 +158,7 @@
 
 <script>
 import tagList from './List'
+import qs from 'qs'
 export default {
   name: 'MyCollect',
   components: {
@@ -149,6 +173,13 @@ export default {
     },
     showSelection: {
       type: Boolean
+    },
+    typeTabsList: {
+      type: Array,
+      default: () => []
+    },
+    businessType: {
+      type: String
     }
   },
 
@@ -156,11 +187,21 @@ export default {
     return {
       dataList: [],
       filter: {
-        searchType: 1,
-        tagType: 2,
-        pageNum: 1,
-        pageSize: 10,
-        tagName: undefined
+        // searchType: 1,
+        // tagType: 2,
+        // pageNum: 1,
+        // pageSize: 10,
+        // tagName: undefined
+        businessType: this.businessType,
+        effectType: '',
+        versionCode: '',
+        resourceIds: '',
+        startPeriod: '',
+        endPeriod: '',
+        dataType: '',
+        showDay: 0,
+        page: 1,
+        pageSize: 10
       },
       dataSourceEnum: {},
       typeEnum: {},
@@ -173,8 +214,7 @@ export default {
       },
       dialogTitle: '',
       totalCount: 0,
-      typeTabsList: [],
-      activeName: '',
+      activeName: 'ctr',
       showTypeTab: true,
       tableData: {
         props: {},
@@ -258,107 +298,115 @@ export default {
         selectionType: 'multiple'
       },
       formData: {
-        type: '近14天',
-        mac: undefined,
-        cOpenid: undefined,
-        thirdUserId: undefined,
-        tagId: undefined,
-        tagAttrId: undefined,
-        tempMac: undefined,
-        crowdIds: '',
+        versionCode: '',
+        type: '14',
         date: []
       },
       behaviorCrowdList: [],
       behaviorCrowdListFilter: {
-        crowdType: 3,
-        pageNum: 1,
+        businessType: this.businessType,
+        effectType: this.activeName,
+        keywords: '',
+        page: 1,
         pageSize: 30
       },
-      radio: 0,
+      resourceList: [],
+      showDataType: 0,
       checked1: false,
       checked2: false
 
     }
   },
   watch: {
+    businessType: {
+      handler () {
+        this.getBehaviorCrowdList() // 行为人群列表
+        this.getResourceList() // 资源位列表
+      }
+    },
     activeName: {
       handler (val) {
         switch (val) {
-          case '流量CTR':
+          case 'ctr':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '日期',
-                  prop: 'id',
-                  width: '70'
+                  width: '100',
+                  render: (h, { row }) => {
+                    return row.statsDate
+                  }
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'group'
+                  prop: 'group',
+                  render: (h, { row }) => {
+                    return row.id + row.crowdName
+                  }
                 },
                 {
                   label: '圈定量',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
-                  }
+                  prop: 'crowdAmount'
+                  // render: (h, params) => {
+                  //   return h('el-button', {
+                  //     props: {
+                  //       type: 'text'
+                  //     },
+                  //     on: {
+                  //       click: () => {
+                  //         this.handleRead(params)
+                  //       }
+                  //     }
+                  //   }, params.row.sshUsername)
+                  // }
                 },
                 {
                   label: '命中量',
-                  prop: 'sshPassword'
+                  prop: 'hitAmount'
                 },
                 {
                   label: '版面ID&名称',
-                  prop: 'projectDir'
+                  prop: 'pageIdName'
                 },
                 {
                   label: '板块（专辑）id&名称',
-                  prop: 'reloadApi'
+                  prop: 'blockIdName'
                 },
                 {
                   label: '推荐位id&名称',
-                  prop: 'luaPath'
+                  prop: 'slotIdName'
                 },
                 {
                   label: '曝光次数',
-                  prop: 'sshPort'
+                  prop: 'exposureTimes'
                 },
                 {
                   label: '曝光人数',
-                  prop: 'host'
+                  prop: 'exposureNum'
                 },
                 {
                   label: '点击次数',
-                  prop: 'remark'
+                  prop: 'clickTimes'
                 },
                 {
                   label: '点击人数',
-                  prop: 'status',
-                  render: (h, { row }) => {
-                    if (row.status === 1) {
-                      return '启用'
-                    } else {
-                      return '禁用'
-                    }
-                  }
+                  prop: 'clickNum'
+                  // render: (h, { row }) => {
+                  //   if (row.status === 1) {
+                  //     return '启用'
+                  //   } else {
+                  //     return '禁用'
+                  //   }
+                  // }
                 },
                 {
                   label: 'PV CTR',
-                  prop: 'createTime'
+                  prop: 'clickPv'
                 },
                 {
                   label: 'UV CTR',
-                  prop: 'updateTime'
+                  prop: 'clickUv'
                 }
 
               ],
@@ -367,81 +415,81 @@ export default {
               selectionType: 'multiple'
             }
             break
-          case '产品包成交':
+          case 'package':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '人群ID',
-                  prop: 'id',
+                  prop: 'crowdId',
                   width: '70'
                 },
                 {
                   label: '人群名称',
-                  prop: 'group'
+                  prop: 'crowdName'
                 },
                 {
                   label: '日期',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
-                  }
+                  prop: 'statsDate'
+                  // render: (h, params) => {
+                  //   return h('el-button', {
+                  //     props: {
+                  //       type: 'text'
+                  //     },
+                  //     on: {
+                  //       click: () => {
+                  //         this.handleRead(params)
+                  //       }
+                  //     }
+                  //   }, params.row.sshUsername)
+                  // }
                 },
                 {
                   label: '产品包页面曝光次数',
-                  prop: 'sshPassword'
+                  prop: 'exposeTimes'
                 },
                 {
                   label: '产品包页面曝光人数',
-                  prop: 'projectDir'
+                  prop: 'exposeNum'
                 },
                 {
                   label: '权益名',
-                  prop: 'reloadApi'
+                  prop: 'equityPackageName'
                 },
                 {
                   label: '产品包类型',
-                  prop: 'luaPath'
+                  prop: 'packageType'
                 },
                 {
                   label: '成单路径',
-                  prop: 'sshPort'
+                  prop: 'dealSource'
                 },
                 {
                   label: '产品包ID',
-                  prop: 'host'
+                  prop: 'packageId'
                 },
                 {
                   label: '单价(元)',
-                  prop: 'remark'
+                  prop: 'unitPrice'
                 },
                 {
                   label: '成交单量',
-                  prop: 'status',
-                  render: (h, { row }) => {
-                    if (row.status === 1) {
-                      return '启用'
-                    } else {
-                      return '禁用'
-                    }
-                  }
+                  prop: 'dealVolume'
+                  // render: (h, { row }) => {
+                  //   if (row.status === 1) {
+                  //     return '启用'
+                  //   } else {
+                  //     return '禁用'
+                  //   }
+                  // }
                 },
                 {
                   label: '成单人数',
-                  prop: 'createTime'
+                  prop: 'dealNum'
                 },
                 {
                   label: '成交金额(元)',
-                  prop: 'updateTime'
+                  prop: 'dealAmount'
                 }
 
               ],
@@ -450,81 +498,81 @@ export default {
               selectionType: 'multiple'
             }
             break
-          case '活跃成交':
+          case 'active':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '人群ID',
-                  prop: 'id',
+                  prop: 'crowdId',
                   width: '70'
                 },
                 {
                   label: '人群名称',
-                  prop: 'group'
+                  prop: 'crowdName'
                 },
                 {
                   label: '日期',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
-                  }
+                  prop: 'statsDate'
+                  // render: (h, params) => {
+                  //   return h('el-button', {
+                  //     props: {
+                  //       type: 'text'
+                  //     },
+                  //     on: {
+                  //       click: () => {
+                  //         this.handleRead(params)
+                  //       }
+                  //     }
+                  //   }, params.row.sshUsername)
+                  // }
                 },
                 {
                   label: '圈定量',
-                  prop: 'sshPassword'
+                  prop: 'crowdNum'
                 },
                 {
                   label: '主页活跃量',
-                  prop: 'projectDir'
+                  prop: 'activeUsersNum'
                 },
                 {
                   label: '起播活跃量',
-                  prop: 'reloadApi'
+                  prop: 'playVideoUsersNum'
                 },
                 {
                   label: '产品包页面曝光人数',
-                  prop: 'luaPath'
+                  prop: 'exposeNum'
                 },
                 {
                   label: '成交路径',
-                  prop: 'sshPort'
+                  prop: 'dealSource'
                 },
                 {
                   label: '成单总设备量',
-                  prop: 'host'
+                  prop: 'dealContractsNum'
                 },
                 {
                   label: '成单人数',
-                  prop: 'remark'
+                  prop: 'dealUsers'
                 },
                 {
                   label: '成交单量',
-                  prop: 'status',
-                  render: (h, { row }) => {
-                    if (row.status === 1) {
-                      return '启用'
-                    } else {
-                      return '禁用'
-                    }
-                  }
+                  prop: 'dealContractsNum'
+                  // render: (h, { row }) => {
+                  //   if (row.status === 1) {
+                  //     return '启用'
+                  //   } else {
+                  //     return '禁用'
+                  //   }
+                  // }
                 },
                 {
                   label: '成单人数',
-                  prop: 'createTime'
+                  prop: 'dealUsers'
                 },
                 {
                   label: '成交金额(元)',
-                  prop: 'updateTime'
+                  prop: 'dealAmount'
                 }
 
               ],
@@ -533,50 +581,52 @@ export default {
               selectionType: 'multiple'
             }
             break
-          case '观影行为':
+          case 'tv':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '日期',
-                  prop: 'id',
+                  prop: 'statsDate',
                   width: '70'
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'group'
-                },
-                {
-                  label: '播放次数',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
+                  render: (h, { row }) => {
+                    return row.crowdId + row.crowdName
                   }
                 },
                 {
+                  label: '播放次数',
+                  prop: 'watchTimes'
+                  // render: (h, params) => {
+                  //   return h('el-button', {
+                  //     props: {
+                  //       type: 'text'
+                  //     },
+                  //     on: {
+                  //       click: () => {
+                  //         this.handleRead(params)
+                  //       }
+                  //     }
+                  //   }, params.row.sshUsername)
+                  // }
+                },
+                {
                   label: '播放人数',
-                  prop: 'sshPassword'
+                  prop: 'viewersNum'
                 },
                 {
                   label: '播放总时长',
-                  prop: 'projectDir'
+                  prop: 'watchLastingTime'
                 },
                 {
                   label: '平均每次时长',
-                  prop: 'reloadApi'
+                  prop: 'averageWatchPeriodByTime'
                 },
                 {
                   label: '平均每人时长',
-                  prop: 'luaPath'
+                  prop: 'averageWatchPeriodByNum'
                 }
 
               ],
@@ -585,74 +635,66 @@ export default {
               selectionType: 'none'
             }
             break
-          case '观影TOP20影片':
+          case 'top20':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '日期',
-                  prop: 'id',
+                  prop: 'statsDate',
                   width: '70'
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'group'
+                  render: (h, { row }) => {
+                    return row.crowdId + row.crowdName
+                  }
                 },
                 {
                   label: '业务一级分类',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
-                  }
+                  prop: 'reqSource'
                 },
                 {
                   label: '影片ID&影片名',
-                  prop: 'sshPassword'
+                  render: (h, { row }) => {
+                    return row.videoId + row.videoName
+                  }
                 },
                 {
                   label: '影片排名',
-                  prop: 'projectDir'
+                  prop: 'videoRanking'
                 },
                 {
                   label: '成单人数',
-                  prop: 'sshPassword'
+                  prop: 'dealUsers'
                 },
                 {
                   label: '成交单量',
-                  prop: 'projectDir'
+                  prop: 'dealVolume'
                 },
                 {
                   label: '成交金额',
-                  prop: 'projectDir'
+                  prop: 'dealAmount'
                 },
                 {
                   label: '播放次数',
-                  prop: 'sshPassword'
+                  prop: 'watchTimes'
                 },
                 {
                   label: '播放人数',
-                  prop: 'sshPassword'
+                  prop: 'viewersNum'
                 },
                 {
                   label: '播放总时长',
-                  prop: 'projectDir'
+                  prop: 'watchLastingTimes'
                 },
                 {
                   label: '平均每次时长',
-                  prop: 'reloadApi'
+                  prop: 'averageWatchPeriodByTime'
                 },
                 {
                   label: '平均每人时长',
-                  prop: 'luaPath'
+                  prop: 'averageWatchPeriodByNum'
                 }
 
               ],
@@ -661,54 +703,44 @@ export default {
               selectionType: 'none'
             }
             break
-          case '观影分类':
+          case 'category':
             this.tableData = {
               props: {},
               header: [
                 {
                   label: '日期',
-                  prop: 'id',
+                  prop: 'statsDate',
                   width: '70'
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'group'
-                },
-                {
-                  label: '分类（频道）',
-                  prop: 'sshUsername',
-                  render: (h, params) => {
-                    return h('el-button', {
-                      props: {
-                        type: 'text'
-                      },
-                      on: {
-                        click: () => {
-                          this.handleRead(params)
-                        }
-                      }
-                    }, params.row.sshUsername)
+                  render: (h, { row }) => {
+                    return row.crowdId + row.crowdName
                   }
                 },
                 {
+                  label: '分类（频道）',
+                  prop: 'classificationChannel'
+                },
+                {
                   label: '播放次数',
-                  prop: 'sshPassword'
+                  prop: 'watchTimes'
                 },
                 {
                   label: '播放人数',
-                  prop: 'sshPassword'
+                  prop: 'viewersNum'
                 },
                 {
                   label: '播放总时长',
-                  prop: 'projectDir'
+                  prop: 'watchLastingTimes'
                 },
                 {
                   label: '平均每次时长',
-                  prop: 'reloadApi'
+                  prop: 'averageWatchPeriodByTime'
                 },
                 {
                   label: '平均每人时长',
-                  prop: 'luaPath'
+                  prop: 'averageWatchPeriodByNum'
                 }
 
               ],
@@ -718,13 +750,41 @@ export default {
             }
             break
         }
+
+        this.getBehaviorCrowdList() // 行为人群列表
+        this.getResourceList() // 资源位列表
+        this.fetchData()
       },
       immediate: true
     }
   },
   methods: {
-    handleSearch () {
+    HandleShowDayChange () {
+      this.fetchData()
+    },
+    HandleDataTypeChange () {
+      // 切换数据展示
+      this.filter.pageNum = 1
+      this.fetchData()
+    },
+    HandleDateTypeChange (val) {
+      let currentDate = new Date()
+      let old7Date = ''
+      if (val === '14') {
+        old7Date = currentDate.setDate(currentDate.getDate() - 15)
+      } else if (val === '30') {
+        old7Date = currentDate.setDate(currentDate.getDate() - 31)
+      } else if (val === '365') {
+        old7Date = currentDate.setDate(currentDate.getDate() - 365)
+      }
 
+      let date1 = this.$moment(old7Date).format('YYYY-MM-DD')
+      // let date2 = this.$moment(currentDate.setDate(currentDate.getDate() - 1)).format('YYYY-MM-DD')
+      let date2 = this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
+
+      this.formData.date = [date1, date2]
+
+      console.log('111111111===', this.formData.date)
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
@@ -733,16 +793,41 @@ export default {
     handelBehaviorCrowdSelectChange (e) {
       console.log(e)
     },
+
+    // 人群列表
     getBehaviorCrowdList (query = '') {
-      this.behaviorCrowdListFilter.launchName = query
+      this.behaviorCrowdListFilter.effectType = this.activeName
+      this.behaviorCrowdListFilter.keywords = query
       if (query !== '') { // 重置
-        this.behaviorCrowdListFilter.pageNum = 1
+        this.behaviorCrowdListFilter.page = 1
         this.behaviorCrowdList = []
       }
       this.loading = true
-      this.$service.getTempLaunchList(this.behaviorCrowdListFilter).then(data => {
-        this.behaviorCrowdListpages = data.pageInfo.pages // 总页数
-        this.behaviorCrowdList = query !== '' ? data.pageInfo.list : this.behaviorCrowdList.concat(data.pageInfo.list)
+      this.$service.getEffectCrowd(this.behaviorCrowdListFilter).then(data => {
+        this.behaviorCrowdList = query !== '' ? data.rows : this.behaviorCrowdList.concat(data.rows)
+        this.loading = false
+      }).catch(() => {
+        this.loading = false
+      })
+    },
+
+    // 资源位列表
+    getResourceList (query = '') {
+      const params = {
+        businessType: this.businessType,
+        effectType: this.activeName,
+        keywords: query,
+        page: 1,
+        pageSize: 100
+      }
+
+      if (query !== '') { // 重置
+        // this.behaviorCrowdListFilter.page = 1
+        this.resourceList = []
+      }
+      this.loading = true
+      this.$service.getResource(params).then(data => {
+        this.resourceList = query !== '' ? data.rows : this.resourceList.concat(data.rows)
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -798,10 +883,7 @@ export default {
         }
       }
     },
-    handleTabChange () {
-      this.filter.tagName = this.activeName
-      this.fetchData()
-    },
+
     // 删除
     handleDelete (id) {
       this.$service.deleteSpecialTagType(id).then(() => {
@@ -840,23 +922,46 @@ export default {
       this.dialogTitle = '新增种类'
       this.dialogVisible = true
     },
-    async fetchData () {
-      // 搜索时名称为空时，默认赋值为类型第一个
-      if (!this.filter.tagName && this.typeTabsList.length > 0) {
-        this.filter.tagName = this.typeTabsList[0].groupName
-        this.activeName = this.typeTabsList[0].groupName
+    fetchData () {
+      console.log('formData======', this.formData)
+      let params = {
+        businessType: this.businessType,
+        effectType: this.activeName,
+        versionCode: this.formData.versionCode,
+        // versionCode: '1,2',
+        resourceIds: '',
+        startPeriod: this.formData.date[0],
+        endPeriod: this.formData.date[1],
+        dataType: this.showDataType,
+        showDay: this.checked1 ? 1 : 0,
+        page: this.filter.page,
+        pageSize: this.filter.pageSize
       }
-      this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
 
-      const filter = this.filter
-      this.$service.searchByGroup(filter).then(data => {
-        const result = data
-        this.dataList = result.pageInfo.list
-        this.totalCount = result.pageInfo.total
-        this.dataSourceEnum = result.DataSourceMap
-        this.typeEnum = result.tagKey
+      // params = qs.stringify(params.versionCode)
+
+      this.$service.getEffectData(params).then(result => {
+        this.tableData.data = result.rows
+        this.totalCount = result.total
       })
     },
+    // fetchData () {
+    // // 搜索时名称为空时，默认赋值为类型第一个
+    // if (!this.filter.tagName && this.typeTabsList.length > 0) {
+    //   this.filter.tagName = this.typeTabsList[0].groupName
+    //   this.activeName = this.typeTabsList[0].value
+    // }
+    // this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
+
+    // const filter = this.filter
+    // this.$service.searchByGroup(filter).then(data => {
+    //   const result = data
+    //   this.dataList = result.pageInfo.list
+    //   this.totalCount = result.pageInfo.total
+    //   this.dataSourceEnum = result.DataSourceMap
+    //   this.typeEnum = result.tagKey
+    // })
+    // },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     },
@@ -875,46 +980,15 @@ export default {
     handleCurrentChange (val) {
       this.filter.pageNum = val
       this.fetchData()
-    },
-    fetchTypeData () {
-      // const typeFilter = {
-      //   searchType: 2,
-      //   tagType: 2,
-      //   pageNum: 1,
-      //   pageSize: 10
-      // }
-
-      this.typeTabsList = [
-        {
-          'groupName': '流量CTR'
-        },
-        {
-          'groupName': '产品包成交'
-        },
-        {
-          'groupName': '活跃成交'
-        },
-        {
-          'groupName': '观影行为'
-        },
-        {
-          'groupName': '观影TOP20影片'
-        },
-        {
-          'groupName': '观影分类'
-        }
-      ]
-      console.log('this.typeTabsList===', this.typeTabsList)
-      this.filter.tagName = this.typeTabsList[0].groupName
-      this.activeName = this.typeTabsList[0].groupName
     }
+    // fetchTypeData () {
+
+    // }
   },
   created () {
-    this.$root.$on('third-tag-list-refresh', this.fetchData)
-    this.fetchTypeData()
-    this.fetchData()
-
-    this.getBehaviorCrowdList() // 行为人群列表
+    // this.fetchTypeData()
+    // this.fetchData()
+    this.HandleDateTypeChange(this.formData.type) // 切换日期类型
   }
 }
 </script>

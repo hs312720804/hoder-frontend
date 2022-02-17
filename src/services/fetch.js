@@ -19,7 +19,9 @@ export default function fetch ({
       ? data
       : isJSON
         ? data
-        : qs.stringify(data),
+        : qs.stringify(data, {
+          arrayFormat: 'brackets'
+        }),
     params,
     contentType
   }

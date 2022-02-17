@@ -193,8 +193,8 @@ export function seeDevFile (params) {
 }
 /**
  * 查看配置文件新增
- * @param {*} params 
- * @returns 
+ * @param {*} params
+ * @returns
  */
 export function seeDevFileList (params) {
   return this.fetch({
@@ -738,5 +738,29 @@ export function smartProframPolicyUpdate ({ data, params }) {
     url: '/api/smartProgramme/' + params.programmeId,
     data,
     isJSON: true
+  })
+}
+
+export function sendEffectCommand (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/effect/sendCommand',
+    data
+  })
+}
+
+export function getEffectCrowd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/effect/getCrowd',
+    params
+  })
+}
+
+export function getResource (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/effect/getResource',
+    params
   })
 }
