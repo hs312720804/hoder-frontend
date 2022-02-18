@@ -66,7 +66,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item prop="type">
+          <!-- <el-form-item prop="type">
             <el-radio-group v-model="formData.type" @change="HandleDateTypeChange">
               <el-radio-button label="14" name="">近14天</el-radio-button>
               <el-radio-button label="30" name="">近30天</el-radio-button>
@@ -74,14 +74,6 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item prop="date">
-            <!-- <el-date-picker
-              v-model="formData.date"
-              type="dateRange"
-              placeholder="选择日期"
-              value-format="yyyy-MM-dd"
-              value="yyyy-MM-dd"
-            >
-            </el-date-picker> -->
             <el-date-picker
               style="width: 220px;"
               v-model="formData.date"
@@ -93,7 +85,7 @@
               :picker-options="getPickerOptions()"
             >
             </el-date-picker>
-          </el-form-item>
+          </el-form-item> -->
 
           <el-form-item>
               <el-button type="primary" @click="fetchData">查询</el-button>
@@ -298,9 +290,9 @@ export default {
         selectionType: 'multiple'
       },
       formData: {
-        versionCode: '',
-        type: '14',
-        date: []
+        versionCode: ''
+        // type: '14',
+        // date: []
       },
       behaviorCrowdList: [],
       behaviorCrowdListFilter: {
@@ -767,25 +759,25 @@ export default {
       this.filter.pageNum = 1
       this.fetchData()
     },
-    HandleDateTypeChange (val) {
-      let currentDate = new Date()
-      let old7Date = ''
-      if (val === '14') {
-        old7Date = currentDate.setDate(currentDate.getDate() - 15)
-      } else if (val === '30') {
-        old7Date = currentDate.setDate(currentDate.getDate() - 31)
-      } else if (val === '365') {
-        old7Date = currentDate.setDate(currentDate.getDate() - 365)
-      }
+    // HandleDateTypeChange (val) {
+    //   let currentDate = new Date()
+    //   let old7Date = ''
+    //   if (val === '14') {
+    //     old7Date = currentDate.setDate(currentDate.getDate() - 15)
+    //   } else if (val === '30') {
+    //     old7Date = currentDate.setDate(currentDate.getDate() - 31)
+    //   } else if (val === '365') {
+    //     old7Date = currentDate.setDate(currentDate.getDate() - 365)
+    //   }
 
-      let date1 = this.$moment(old7Date).format('YYYY-MM-DD')
-      // let date2 = this.$moment(currentDate.setDate(currentDate.getDate() - 1)).format('YYYY-MM-DD')
-      let date2 = this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
+    //   let date1 = this.$moment(old7Date).format('YYYY-MM-DD')
+    //   // let date2 = this.$moment(currentDate.setDate(currentDate.getDate() - 1)).format('YYYY-MM-DD')
+    //   let date2 = this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
 
-      this.formData.date = [date1, date2]
+    //   this.formData.date = [date1, date2]
 
-      console.log('111111111===', this.formData.date)
-    },
+    //   console.log('111111111===', this.formData.date)
+    // },
     resetForm (formName) {
       this.$refs[formName].resetFields()
       console.log('formData===', this.formData)
@@ -930,8 +922,8 @@ export default {
         versionCode: this.formData.versionCode,
         // versionCode: '1,2',
         resourceIds: '',
-        startPeriod: this.formData.date[0],
-        endPeriod: this.formData.date[1],
+        // startPeriod: this.formData.date[0],
+        // endPeriod: this.formData.date[1],
         dataType: this.showDataType,
         showDay: this.checked1 ? 1 : 0,
         page: this.filter.page,
@@ -988,7 +980,7 @@ export default {
   created () {
     // this.fetchTypeData()
     // this.fetchData()
-    this.HandleDateTypeChange(this.formData.type) // 切换日期类型
+    // this.HandleDateTypeChange(this.formData.type) // 切换日期类型
   }
 }
 </script>

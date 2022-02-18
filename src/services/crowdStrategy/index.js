@@ -745,7 +745,8 @@ export function sendEffectCommand (data) {
   return this.fetch({
     method: 'post',
     url: '/api/effect/sendCommand',
-    data
+    data,
+    isJSON: true
   })
 }
 

@@ -115,7 +115,8 @@ export function getCrowdHitCountDeclineToZeroEcharts (params) {
 export function queryEffectAppointment (data) {
   return this.fetch({
     method: 'POST',
-    url: '/effect/queryEffectAppointment',
-    data
+    url: '/api/effect/queryEffectAppointment',
+    data,
+    isJSON: true
   })
 }

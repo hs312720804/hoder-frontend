@@ -61,54 +61,57 @@ export default {
         header: [
           {
             label: '投放ID',
-            prop: 'launchCrowdId'
-          },
-          {
-            label: '人群ID',
-            width: '100',
             prop: 'id'
           },
           {
+            label: '人群ID',
+            width: '70',
+            prop: 'crowdId'
+          },
+          {
             label: '人群名称',
-            prop: 'crowdSql'
+            prop: 'crowdName',
+            width: '100'
           },
           {
             label: '时间范围',
-            prop: 'version'
+            // prop: 'version',
+            width: '200',
+            render: (h, { row }) => {
+              return row.startPeriod + '-' + row.endPeriod
+            }
           },
           {
             label: '状态',
-            prop: 'status',
-            render: (h, { row }) => {
-              if (row.status === 1) { return '成功' } else { return '失败' }
-            }
+            prop: 'statusName'
           },
           {
             label: '创建人',
             // prop: 'creator'
-            prop: 'creatorName'
+            prop: 'name'
 
           },
           {
             label: '创建时间',
+            width: '100',
             prop: 'createTime'
           },
-          {
-            label: '业务部门',
-            prop: 'topic'
-          },
+          // {
+          //   label: '业务部门',
+          //   prop: 'topic'
+          // },
           {
             label: '总体耗时',
-            prop: 'remark'
-          },
-          {
-            label: '操作',
-            fixed: 'right',
-            width: '100',
-            render: this.$c_utils.component.createOperationRender(this, {
-              cancelLaunch: '取消投放'
-            })
+            prop: 'calculateTimes'
           }
+          // {
+          //   label: '操作',
+          //   fixed: 'right',
+          //   width: '100',
+          //   render: this.$c_utils.component.createOperationRender(this, {
+          //     handleViewInstructions: '查看指令'
+          //   })
+          // }
 
         ],
         data: []
@@ -116,6 +119,9 @@ export default {
     }
   },
   methods: {
+    // handleViewInstructions () {
+
+    // },
     handleResendCommand () {
       this.$service.manualLaunch(this.outForm).then(data => {
         this.outForm.pageNum = 1

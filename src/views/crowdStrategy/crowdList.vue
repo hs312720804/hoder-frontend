@@ -1780,7 +1780,8 @@ export default {
             crowdId: this.estimateId
           }
           this.$service.sendEffectCommand(params).then(() => {
-
+            this.$message.success('预约成功')
+            this.showAppointment = false
           })
         } else {
           console.log('error submit!!')

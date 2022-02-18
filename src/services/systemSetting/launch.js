@@ -39,6 +39,7 @@ export function getEffectData (params) {
   return this.fetch({
     method: 'GET',
     url: '/api/effect/getEffectData',
-    params
+    params,
+    isJSON: true
   })
 }

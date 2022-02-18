@@ -19,11 +19,12 @@ export default function fetch ({
       ? data
       : isJSON
         ? data
-        : qs.stringify(data, {
-          arrayFormat: 'brackets'
-        }),
+        : qs.stringify(data),
     params,
-    contentType
+    contentType,
+    paramsSerializer: params => { // get请求参数序列化
+      return qs.stringify(params, { indices: false })
+    }
   }
   // debugger
   if (url !== '/api/login') option.headers = { Authorization: this.state.token }
