@@ -9,14 +9,14 @@
         >
             <div><el-button @click="handleAdd" type="primary">新增</el-button></div>
             <c-table
-                    :props="table.props"
-                    :header="table.header"
-                    :data="table.data"
-                    :selected="table.selected"
-                    :selection-type="table.selectionType"
-                    @row-selection-add="handleRowSelectionAdd"
-                    @row-selection-remove="handleRowSelectionRemove"
-                    @all-row-selection-change="handleAllRowSelectionChange"
+              :props="table.props"
+              :header="table.header"
+              :data="table.data"
+              :selected="table.selected"
+              :selection-type="table.selectionType"
+              @row-selection-add="handleRowSelectionAdd"
+              @row-selection-remove="handleRowSelectionRemove"
+              @all-row-selection-change="handleAllRowSelectionChange"
             >
             </c-table>
         </c-content-wrapper>

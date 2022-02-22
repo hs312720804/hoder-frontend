@@ -70,51 +70,41 @@ export default {
     'currentSelectedTags': 'updateTableSelected'
   },
   methods: {
-    handleRowSelectionAdd () {
-
+    handleRowSelectionAdd (targetItem) {
+      console.log('targetItem===', targetItem)
+      this.selected.push(targetItem.versionCode)
+      this.updateTableSelected()
     },
-    handleRowSelectionRemove () {
-
+    handleRowSelectionRemove (targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.versionCode
+      })
+      this.updateTableSelected()
     },
-    handleAllRowSelectionChange () {
-
+    handleAllRowSelectionChange (value) {
+      alert(value)
+      if (value) {
+        alert(this.tableData.data)
+        this.tableData.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.tableData.selected = []
+      }
+    },
+    handleAllRowSelectionRemove () {
+      this.selected = []
+      this.tableData.selected = []
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     },
-    handleSeeTagCategoryDetail (row) {
-      this.tagId = row.tagId
-    },
-    handleDelete (row) {
-      this.$emit('delete', row.tagId)
-    },
-    handleEdit (row) {
-      this.$emit('edit', row)
-    },
-    handleReadTagCancel () {
-      this.tagId = undefined
-    },
-    handleCollect (currentTag) {
-      const flag = currentTag.myCollect
-      const tagId = currentTag.tagId
-      if (flag) {
-        //    取消收藏
-        this.$service.cancelCollectTags({ tagId }, '已取消收藏！').then(() => {
-          this.$emit('fetch-data')
-        })
-      } else {
-        //    收藏
-        this.$service.collectTags({ tagId }, '已成功收藏！').then(() => {
-          this.$emit('fetch-data')
-        })
-      }
-    },
+
     updateTableSelected () {
       const arr = []
       const currentSelectRows = this.currentSelectedTags
       this.dataList.forEach((item, index) => {
         currentSelectRows.forEach((i) => {
-          if (item.tagId === i.tagId) {
+          if (item.versionCode === i.versionCode) {
             arr.push(this.dataList[index])
           }
         })

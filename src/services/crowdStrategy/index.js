@@ -765,3 +765,21 @@ export function getResource (params) {
     params
   })
 }
+
+export function effectGetFunnel (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/effect/getFunnel',
+    data,
+    isJSON: true
+  })
+}
+
+export function effectGetLine (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/effect/getLine',
+    data,
+    isJSON: true
+  })
+}

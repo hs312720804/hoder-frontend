@@ -1,6 +1,5 @@
 <template>
   <div class="my-collect">
-      {{activeName}}
       <el-tabs
         v-model="activeName"
       >
@@ -10,7 +9,7 @@
 
       <div class="filterFields">
         <el-form :model="formData" ref="formData" :inline="true">
-          <el-form-item prop="crowdIds">
+          <el-form-item prop="versionCode">
             <!-- <el-select
               filterable
               v-model="formData.crowdIds"
@@ -28,7 +27,7 @@
               :remote-method="getBehaviorCrowdList"
               @change="handelBehaviorCrowdSelectChange($event)"
               @clear="getBehaviorCrowdList"
-              placeholder="请选择人群ID、人群名、分类名称"
+              placeholder="请选择人群ID、人群名"
             >
               <el-option
                   v-for="item in behaviorCrowdList"
@@ -42,7 +41,7 @@
             </el-select>
           </el-form-item>
 
-          <el-form-item prop="resourceIds">
+          <el-form-item prop="resourceIds" v-if="activeName !== 'tv'">
             <!-- {{ resourceList}} -->
             <el-select
               filterable
@@ -52,16 +51,17 @@
               v-model="formData.resourceIds"
               :remote-method="getResourceList"
               @clear="getResourceList"
-              placeholder="资源位ID、资源位名称"
+              :placeholder="resourceIdsPlaceholder"
             >
               <el-option
                   v-for="(item, index) in resourceList"
-                  :label="item.slotIdName"
-                  :value="item.slotIdName"
+                  :label="getLabelByActiveName(item, activeName)"
+                  :value="getLabelByActiveName(item, activeName)"
                   :key="'resource' + index + businessType + activeName"
 
               >
-                  {{ item.slotIdName }}
+                  <!-- {{ item.blockIdName + ' / ' + item.pageIdName + ' / ' + item.slotIdName }} -->
+                  {{ getLabelByActiveName(item, activeName) }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -95,6 +95,16 @@
 
       </div>
 
+      <!-- {{ tableData.selected }}
+      {{ tableData.selectionType }}
+      {{ this.selected }} -->
+
+      <span v-if="tableData.selected.length > 0" class="watchChartDiv">
+        已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
+        <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
+        <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
+      </span>
+
       <div class="secondScreening">
         数据展示：
         <el-radio-group v-model="showDataType" @change="HandleDataTypeChange">
@@ -110,21 +120,55 @@
 
       </div>
 
-      <tag-list
+      <!-- <tag-list
         :tableData="tableData"
-      >
-        <div align="right">
-          <pagination
-              :currentpage="filter.pageNum"
-              :pagesize="filter.pageSize"
-              :totalcount="totalCount"
-              @handle-size-change="handleSizeChange"
-              @handle-current-change="handleCurrentChange"
-          ></pagination>
-        </div>
-      </tag-list>
+        :dataList="tableData.dataList"
+        :check-list-parent="checkList"
+        @change-checkList="handleCheckListChange"
+        @table-selected="handleTableSelected"
+      > -->
 
-      <el-dialog
+      <c-table
+        :props="tableData.props"
+        :header="tableData.header"
+        :data="tableData.data"
+        :selected="tableData.selected"
+        :selection-type="tableData.selectionType"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"
+      >
+      </c-table>
+      <div align="right">
+        <pagination
+          :currentpage="filter.page"
+          :pagesize="filter.pageSize"
+          :totalcount="totalCount"
+          @handle-size-change="handleSizeChange"
+          @handle-current-change="handleCurrentChange"
+        ></pagination>
+      </div>
+
+      <!-- 漏斗图 -->
+      <div style="clear: both">
+        <div
+          v-for="(item, index) in chartData"
+          :key="'chart' + index"
+          :id="'aaa'+index"
+          style="float: left; width: 500px; height: 360px; ">
+        </div>
+      </div>
+
+      <!-- 折线图 -->
+      <div v-if="Object.keys(lineChartData).length > 0" style="display: flex; justify-content: center; padding: 40px 0">
+        <div ref="chart1" style="width: 48%; height: 360px; display: inline-block;">chart1</div>
+        <div ref="chart2" style="width: 48%; height: 360px; display: inline-block;">chart2</div>
+      </div>
+      <!-- this.chartData -->
+
+      <!-- </tag-list> -->
+
+      <!-- <el-dialog
         :title="dialogTitle"
         :visible.sync="dialogVisible"
         width="500px">
@@ -144,17 +188,16 @@
             <el-button @click="dialogVisible = false">取 消</el-button>
             <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
           </div>
-      </el-dialog>
+      </el-dialog> -->
   </div>
 </template>
 
 <script>
-import tagList from './List'
-import qs from 'qs'
+// import tagList from './List'
 export default {
   name: 'MyCollect',
   components: {
-    tagList
+    // tagList
   },
   props: {
     checkList: {
@@ -177,6 +220,7 @@ export default {
 
   data () {
     return {
+      allCharts: {},
       dataList: [],
       filter: {
         // searchType: 1,
@@ -186,8 +230,8 @@ export default {
         // tagName: undefined
         businessType: this.businessType,
         effectType: '',
-        versionCode: '',
-        resourceIds: '',
+        versionCode: [],
+        resourceIds: [],
         startPeriod: '',
         endPeriod: '',
         dataType: '',
@@ -198,7 +242,7 @@ export default {
       dataSourceEnum: {},
       typeEnum: {},
       multipleSelection: [],
-      dialogVisible: false,
+      // dialogVisible: false,
       form: {
         tagName: '',
         tagKey: '',
@@ -305,15 +349,60 @@ export default {
       resourceList: [],
       showDataType: 0,
       checked1: false,
-      checked2: false
-
+      checked2: false,
+      selected: [],
+      popoverVisible: true,
+      chartData: [],
+      lineChartData: {}
+    }
+  },
+  computed: {
+    resourceIdsPlaceholder () {
+      let text = ''
+      switch (this.activeName) {
+        case 'ctr':
+          text = '资源位ID、资源位名称'
+          break
+        case 'package':
+          text = '产品包ID、产品包类型'
+          break
+        case 'active':
+          text = '成交路径'
+          break
+        case 'tv':
+          text = ''
+          break
+        case 'top20':
+          text = '影片ID、影片名'
+          break
+        case 'category':
+          text = '分类'
+          break
+      }
+      return text
     }
   },
   watch: {
+    // 表格多选
+    selected (val) {
+      console.log('val===', val)
+      console.log('val===', this.tableData.selected)
+      // crowdId
+      // crowdName
+      val.forEach(item => {
+        const selectedArr = this.tableData.data.filter(obj => {
+          return obj.id === item
+        })
+        console.log(selectedArr)
+        console.log('this.tableData.data==', this.tableData.data)
+      })
+    },
     businessType: {
       handler () {
         this.getBehaviorCrowdList() // 行为人群列表
         this.getResourceList() // 资源位列表
+        this.resetForm('formData') // 切换tab的时候重置筛选并查询
+        // this.fetchData()
       }
     },
     activeName: {
@@ -745,18 +834,372 @@ export default {
 
         this.getBehaviorCrowdList() // 行为人群列表
         this.getResourceList() // 资源位列表
-        this.fetchData()
+        this.resetForm('formData') // 切换tab的时候重置筛选并查询
+        // this.fetchData()
       },
       immediate: true
     }
   },
   methods: {
+    clearChart () {
+      this.chartData = []
+      this.lineChartData = {}
+    },
+    watchLine () {
+      // // 漏斗图的参数
+      // const params = {
+      //   businessType: this.businessType,
+      //   effectType: this.activeName,
+      //   versionCode: this.formData.versionCode,
+      //   // versionCode: '1,2',
+      //   // startPeriod: this.formData.date[0],
+      //   // endPeriod: this.formData.date[1],
+      //   dataType: this.showDataType,
+      //   showDay: this.checked1 ? 1 : 0,
+      //   page: this.filter.page,
+      //   pageSize: this.filter.pageSize
+      // }
+      let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+
+      newParamsArr = newParamsArr.map(obj => {
+        return {
+          crowdId: obj.crowdId,
+          crowdName: obj.crowdName,
+          effectType: this.activeName,
+          versionCode: obj.versionCode,
+          dataType: this.showDataType,
+          showDay: this.checked1 ? 1 : 0,
+          statsDate: obj.statsDate,
+          startPeriod: obj.startPeriod,
+          endPeriod: obj.endPeriod
+        }
+      })
+
+      console.log('newParamsArr===', newParamsArr)
+      this.$service.effectGetLine(newParamsArr).then(data => {
+        console.log('data===>', data)
+        // this.showFunnel(data)
+        this.lineChartData = data
+        const amount = this.lineChartData.amount
+        // this.$nextTick(() => {
+        const series = amount.data || []
+        const legendData = series.map((key) => {
+          return key.crowdName
+        })
+        const linesData = series.map((key) => {
+          return { name: key.crowdName, data: key.data, type: 'line' }
+        })
+
+        const dealVolume = this.lineChartData.dealVolume
+        // this.$nextTick(() => {
+        const series2 = dealVolume.data || []
+        const legendData2 = series2.map((key) => {
+          return key.crowdName
+        })
+        const linesData2 = series2.map((key) => {
+          return { name: key.crowdName, data: key.data, type: 'line' }
+        })
+        this.$nextTick(() => {
+          this.setLinesEchart('chart1', '', amount.date, linesData, legendData)
+          this.setLinesEchart('chart2', '', dealVolume.date, linesData2, legendData2)
+        })
+        // })
+      })
+    },
+    getBusinessUseTendency (rangeType) {
+      this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
+        const series = data.series || []
+        const legendData = series.map((key) => {
+          return key.name
+        })
+        const linesData = series.map((key) => {
+          return { name: key.name, data: key.value, type: 'line' }
+        })
+        this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+      })
+    },
+    // 查看漏斗图
+    watchFunnel () {
+      // this.selected
+      // const table = this.tableData
+      let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+
+      newParamsArr = newParamsArr.map(obj => {
+        return {
+          crowdId: obj.crowdId,
+          crowdName: obj.crowdName,
+          effectType: this.activeName,
+          versionCode: obj.versionCode,
+          dataType: this.showDataType,
+          showDay: this.checked1 ? 1 : 0,
+          statsDate: obj.statsDate
+        }
+      })
+
+      console.log('newParamsArr===', newParamsArr)
+      this.$service.effectGetFunnel(newParamsArr).then(data => {
+        console.log('data===>', data)
+        // this.showFunnel(data)
+        this.chartData = data.concat(data).concat(data)
+        this.chartData.forEach((item, index) =>
+          this.$nextTick(() => {
+            this.showFunnel(item, `aaa${index}`)
+          })
+        )
+      })
+    },
+    showFunnel (item, id) {
+      const echarts = require('echarts')
+      console.log('item.first===', item)
+      console.log('item.id===', id)
+      const total = `${item.total * 100}%`
+      const subtext = `${item.crowdName}`
+      const subtext2 = `统计周期：${item.startPeriod}-${item.endPeriod}，${item.dataType}`
+      const data1 = item.data
+
+      const data2 = [
+        { value: 120, percent: item.first },
+        { value: 120, percent: item.second }
+      ]
+
+      echarts.init(
+        document.getElementById(id)).setOption({
+        title: [
+          {
+            text: `总转化率${total}`,
+            top: 56,
+            left: 150,
+            // align: 'center',
+            textStyle: {
+              fontFamily: 'MicrosoftYaHei',
+              color: '#252525',
+              fontSize: 16,
+              fontWeight: 400
+            }
+          },
+          {
+            subtext: subtext,
+            left: '41%',
+            // top: '75%',
+            bottom: 20,
+            textAlign: 'center',
+            subtextStyle: {
+              fontFamily: 'MicrosoftYaHei',
+              color: '#252525',
+              fontSize: 14,
+              fontWeight: 400
+            }
+          },
+          {
+            subtext: subtext2,
+            left: '41%',
+            // top: '75%',
+            bottom: 0,
+            textAlign: 'center',
+            subtextStyle: {
+              fontFamily: 'MicrosoftYaHei',
+              color: 'gray',
+              fontSize: 14,
+              fontWeight: 400
+            }
+          }
+
+        ],
+        color: ['#1481E2', '#1F88E5', '#3594E8', '#4CA0EA', '#62ABED', '#79B8EF', '#8FC3F2'],
+        xAxis: { show: false },
+        yAxis: { show: false,
+          type: 'category',
+          inverse: true,
+          min: 0,
+          max: 2
+        },
+        series: [{
+          type: 'funnel',
+          minSize: 90,
+          maxSize: '70%',
+          left: 0,
+          top: 100,
+          bottom: 50,
+          gap: 2,
+          label: {
+            position: 'inside',
+            fontFamily: 'Microsoft YaHei',
+            fontSize: 16,
+            color: '#fff',
+            formatter: '{b}{xx|}\n{c}',
+            rich: {
+              xx: { padding: [6, 0] }
+            }
+          },
+          data: data1
+        },
+        {
+          type: 'pictorialBar',
+          symbol: 'image://http://homework.mizholdings.com/kacha/kcsj/8351c72ed86c1a0c/.png',
+          symbolSize: ['40%', 60],
+          z: 1,
+          symbolOffset: ['115%', 65],
+          label: {
+            show: true,
+            position: 'right',
+            offset: [-25, 65],
+            align: 'center',
+            backgroundColor: 'rgba(249,249,249,1)',
+            width: 76,
+            height: 60,
+            fontStyle: 'Microsoft YaHei',
+            formatter: function (d) {
+              console.log('d====', d)
+              var ins = '{s|转换率}\n' + `${d.data.percent * 100}%`
+              return ins
+            },
+            rich: {
+              s: {
+                fontSize: 14,
+                color: '#545454',
+                padding: [5, 0, 12, 0]
+              },
+              x: { fontSize: 16, color: '#121212' }
+            }
+          },
+          data: data2
+        }]
+      })
+    },
+    // 通用多线性参数设置
+    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
+      const _this = this
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
+      myChart.setOption({
+        title: {
+          text: title
+        },
+        tooltip: {
+          trigger: 'axis'
+          // formatter: function (parmas) {
+          //   let str = parmas[0].name + '<br/>'
+          //   for (let item of parmas) {
+          //     str = str + item.marker + item.seriesName + ' :  ' + item.value + yunit + '<br/>'
+          //   }
+          //   // return _this.cc_format_number(a.data)
+          //   return str
+          // }
+          // axisPointer: {
+          //   type: 'cross',
+          //   label: {
+          //     formatter: function (params) {
+          //       return '快照时间：' + params.value
+          //     }
+          //   }
+          // }
+          // formatter: function (params) {
+          //   params = params[0]
+          //   var date = new Date(params.name)
+          //   return (
+          //     date.getDate() +
+          //     '/' +
+          //     (date.getMonth() + 1) +
+          //     '/' +
+          //     date.getFullYear() +
+          //     ' : ' +
+          //     params.value[1]
+          //   )
+          // }
+          // formatter: function (a) {
+          //   return _this.cc_format_number(a.data)
+          // }
+          // formatter: '{b0}: {c0}<br />{b1}: {c1}'
+        },
+        // tooltip: {
+        //   trigger: 'item',
+        //   formatter: function (a) {
+        //     return _this.cc_format_number(a.data)
+        //   }
+        //   // formatter: "{a} <br/> {b}: {c} ({d}%)"
+        // },
+        legend: {
+          data: legend
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          axisLabel: {
+            interval: 'auto',
+            rotate: -45,
+            formatter: function (value) {
+              return value + xunit
+            }
+          }
+        },
+        yAxis: {
+          type: 'value',
+          // name: '温度',
+          axisTick: {
+            inside: true
+          },
+          scale: true,
+          axisLabel: {
+            margin: 30,
+            formatter: function (value) {
+              // if (value >= 10000 && value < 10000000) {
+              //   value = value / 10000 + '万' + yunit
+              // } else if (value >= 10000000) {
+              //   value = value / 10000000 + '千万' + yunit
+              // } else if (value >= 100000000) {
+              //   value = value / 100000000 + '亿' + yunit
+              // } else {
+              //   value = value + yunit
+              // }
+              if (value >= 100000000) {
+                value = value / 100000000 + '亿' + yunit
+              } else if (value >= 10000000) {
+                value = value / 10000000 + '千万' + yunit
+              } else if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万' + yunit
+              } else {
+                value = value + yunit
+              }
+              return value
+            }
+          }
+        },
+        series: yData
+      }, true)
+      // console.log('chart===>', myChart)
+
+      this.allCharts[element] = myChart
+    },
+    getLabelByActiveName (item, val) {
+      let label = ''
+      switch (this.activeName) {
+        case 'ctr':
+          label = item.blockIdName + ',' + item.pageIdName + ',' + item.slotIdName
+          break
+        case 'package':
+          label = item.packageId + ',' + item.packageType
+          break
+        case 'active':
+          label = item.dealSource
+          break
+        // case 'tv':
+        //   text = ''
+        //   break
+        case 'top20':
+          label = item.videoId
+          break
+        case 'category':
+          label = item.classificationName
+          break
+      }
+      return label
+    },
     HandleShowDayChange () {
       this.fetchData()
     },
     HandleDataTypeChange () {
       // 切换数据展示
-      this.filter.pageNum = 1
+      this.filter.page = 1
       this.fetchData()
     },
     // HandleDateTypeChange (val) {
@@ -779,8 +1222,11 @@ export default {
     //   console.log('111111111===', this.formData.date)
     // },
     resetForm (formName) {
-      this.$refs[formName].resetFields()
+      this.$refs[formName] && this.$refs[formName].resetFields()
       console.log('formData===', this.formData)
+      // 重置
+      this.filter.page = 1
+      this.fetchData()
     },
     handelBehaviorCrowdSelectChange (e) {
       console.log(e)
@@ -796,7 +1242,8 @@ export default {
       }
       this.loading = true
       this.$service.getEffectCrowd(this.behaviorCrowdListFilter).then(data => {
-        this.behaviorCrowdList = query !== '' ? data.rows : this.behaviorCrowdList.concat(data.rows)
+        // this.behaviorCrowdList = query !== '' ? data.rows : this.behaviorCrowdList.concat(data.rows)
+        this.behaviorCrowdList = data.rows
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -819,7 +1266,8 @@ export default {
       }
       this.loading = true
       this.$service.getResource(params).then(data => {
-        this.resourceList = query !== '' ? data.rows : this.resourceList.concat(data.rows)
+        // this.resourceList = query !== '' ? data.rows : this.resourceList.concat(data.rows)
+        this.resourceList = data.rows
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -883,45 +1331,51 @@ export default {
         this.$message('删除成功')
       })
     },
-    handleEdit (row) {
-      const { tagId, tagName, tagKey, remark } = row
-      this.form.tagId = tagId
-      this.form.tagName = tagName
-      this.form.tagKey = tagKey
-      this.form.remark = remark || ''
-      this.dialogTitle = '编辑种类'
-      this.dialogVisible = true
-    },
+    // handleEdit (row) {
+    //   const { tagId, tagName, tagKey, remark } = row
+    //   this.form.tagId = tagId
+    //   this.form.tagName = tagName
+    //   this.form.tagKey = tagKey
+    //   this.form.remark = remark || ''
+    //   this.dialogTitle = '编辑种类'
+    //   this.dialogVisible = true
+    // },
     // 新增或编辑组合标签种类
-    async handleAddOrEdit () {
-      if (this.form.tagId) { // 编辑
-        await this.$service.editSpecialTagType(this.form)
-      } else { // 新增
-        await this.$service.addSpecialTagType(this.form)
-      }
-      this.fetchData()
-      this.dialogVisible = false
-      this.$message.success('保存成功')
-    },
+    // async handleAddOrEdit () {
+    //   if (this.form.tagId) { // 编辑
+    //     await this.$service.editSpecialTagType(this.form)
+    //   } else { // 新增
+    //     await this.$service.addSpecialTagType(this.form)
+    //   }
+    //   this.fetchData()
+    //   this.dialogVisible = false
+    //   this.$message.success('保存成功')
+    // },
     // 新增组合标签
-    handleAdd () {
-      // 数据置空，否则会残留编辑的数据
-      this.form = {
-        tagName: '',
-        tagKey: '',
-        remark: ''
-      }
-      this.dialogTitle = '新增种类'
-      this.dialogVisible = true
-    },
+    // handleAdd () {
+    //   // 数据置空，否则会残留编辑的数据
+    //   this.form = {
+    //     tagName: '',
+    //     tagKey: '',
+    //     remark: ''
+    //   }
+    //   this.dialogTitle = '新增种类'
+    //   this.dialogVisible = true
+    // },
     fetchData () {
+      this.clearChart()
       console.log('formData======', this.formData)
+      // const resourceIdsArr = ''
+      const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
+        return total.concat(item.split(','))
+      }, []) : []
+      console.log('resourceIdsArr===', resourceIdsArr)
       let params = {
         businessType: this.businessType,
         effectType: this.activeName,
         versionCode: this.formData.versionCode,
         // versionCode: '1,2',
-        resourceIds: '',
+        resourceIds: resourceIdsArr,
         // startPeriod: this.formData.date[0],
         // endPeriod: this.formData.date[1],
         dataType: this.showDataType,
@@ -954,30 +1408,62 @@ export default {
     //   this.typeEnum = result.tagKey
     // })
     // },
-    handleCheckListChange (val) {
-      this.$emit('change-checkList', val)
-    },
-    handleTableSelected (val, mode) {
-      this.$emit('get-table-selected', val, mode)
-    },
+    // handleCheckListChange (val) {
+    //   this.$emit('change-checkList', val)
+    // },
+    // handleTableSelected (val, mode) {
+    //   this.$emit('get-table-selected', val, mode)
+    // },
 
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时, val=20
     handleSizeChange (val) {
       this.filter.pageSize = val
       // 每次切换页码条，都把页面数重置为1
-      this.filter.pageNum = 1
+      this.filter.page = 1
       this.fetchData()
     },
     // 页码变更, 如第1页变成第2页时,val=2
     handleCurrentChange (val) {
-      this.filter.pageNum = val
+      this.filter.page = val
       this.fetchData()
+    },
+    handleRowSelectionAdd (targetItem) {
+      this.selected.push(targetItem.crowdId)
+      this.updateTableSelected()
+    },
+    handleRowSelectionRemove (targetItem) {
+      this.selected = this.selected.filter(item => {
+        return item !== targetItem.crowdId
+      })
+      this.updateTableSelected()
+    },
+    handleAllRowSelectionChange (value) {
+      if (value) {
+        if (this.tableData.data.length > 4) {
+          return this.$message.error('表格最多能选4项，无法全选')
+        }
+        this.tableData.data.forEach(this.handleRowSelectionAdd)
+      } else {
+        this.selected = []
+        this.tableData.selected = []
+      }
+    },
+    updateTableSelected () {
+      const table = this.tableData
+      const newSelectedIndex = this.selected.map(item => item)
+      table.selected = table.data.reduce((result, item, index) => {
+        if (newSelectedIndex.indexOf(item.crowdId) > -1) {
+          result.push(index)
+        }
+        return result
+      }, [])
     }
     // fetchTypeData () {
 
     // }
   },
-  created () {
+  mounted () {
+    // this.showFunnel()
     // this.fetchTypeData()
     // this.fetchData()
     // this.HandleDateTypeChange(this.formData.type) // 切换日期类型
@@ -1024,4 +1510,11 @@ export default {
         transform rotate(-90deg)
 .secondScreening
   margin 10px 0 20px
+.watchChartDiv
+  background: #ecf5ff;
+  border-color: #b3d8ff;
+  padding: 6px 20px;
+  font-size: 14px;
+  border-radius: 4px;
+  border: 1px solid #dcdfe6;
 </style>

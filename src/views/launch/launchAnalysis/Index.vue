@@ -14,47 +14,21 @@
                 <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
             </div> -->
 
-            <el-tab-pane label="影视" name="1">
-                <tab-page
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :typeTabsList="typeTabsList"
-                    :businessType="activeName"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </tab-page>
-            </el-tab-pane>
-            <el-tab-pane label="教育" name="2">
-                <tab-page
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :typeTabsList="typeTabsList"
-                    :businessType="activeName"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </tab-page>
-            </el-tab-pane>
-            <el-tab-pane label="少儿" name="3">
-                <tab-page
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :typeTabsList="typeTabsList"
-                    :businessType="activeName"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </tab-page>
-            </el-tab-pane>
+            <el-tab-pane label="影视" name="1"></el-tab-pane>
+            <el-tab-pane label="教育" name="2"></el-tab-pane>
+            <el-tab-pane label="少儿" name="3"></el-tab-pane>
         </el-tabs>
-
+        <tab-page
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :typeTabsList="typeTabsList"
+          :businessType="activeName"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData"
+        >
+        </tab-page>
     </div>
 </template>
 
