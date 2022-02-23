@@ -50,8 +50,8 @@
               clearable
               v-model="formData.resourceIds"
               :remote-method="getResourceList"
-              @clear="getResourceList"
               :placeholder="resourceIdsPlaceholder"
+              @clear="getResourceList"
             >
               <el-option
                   v-for="(item, index) in resourceList"
@@ -113,6 +113,9 @@
           <el-radio :label="2">投后数据</el-radio>
         </el-radio-group>
 
+        <a :href="downloadUrl" download ref="download_Url"></a>
+        <i class="el-icon-download download"  @click="handleDownload"></i>
+
         <span style="float: right;">
           <el-checkbox v-model="checked1" @change="HandleShowDayChange">按天展示</el-checkbox>
           <el-checkbox v-if="activeName === 'tv' || activeName === 'top20'" v-model="checked2">区分top20影片</el-checkbox>
@@ -149,21 +152,22 @@
         ></pagination>
       </div>
 
+      <!-- 折线图 -->
+      <div v-if="Object.keys(lineChartData).length > 0" style="display: flex; width: 100%; justify-content: center; padding: 40px 0">
+        <div ref="chart1" style="width: 48%; height: 360px; display: inline-block;">chart1</div>
+        <div ref="chart2" style="width: 48%; height: 360px; display: inline-block;">chart2</div>
+      </div>
+
       <!-- 漏斗图 -->
       <div style="clear: both">
         <div
           v-for="(item, index) in chartData"
           :key="'chart' + index"
           :id="'aaa'+index"
-          style="float: left; width: 500px; height: 360px; ">
+          style="float: left; width: 500px; height: 360px;">
         </div>
       </div>
 
-      <!-- 折线图 -->
-      <div v-if="Object.keys(lineChartData).length > 0" style="display: flex; justify-content: center; padding: 40px 0">
-        <div ref="chart1" style="width: 48%; height: 360px; display: inline-block;">chart1</div>
-        <div ref="chart2" style="width: 48%; height: 360px; display: inline-block;">chart2</div>
-      </div>
       <!-- this.chartData -->
 
       <!-- </tag-list> -->
@@ -194,6 +198,7 @@
 
 <script>
 // import tagList from './List'
+import qs from 'qs'
 export default {
   name: 'MyCollect',
   components: {
@@ -252,87 +257,7 @@ export default {
       totalCount: 0,
       activeName: 'ctr',
       showTypeTab: true,
-      tableData: {
-        props: {},
-        header: [
-          {
-            label: '人群ID',
-            prop: 'id',
-            width: '70'
-          },
-          {
-            label: '人群名称',
-            prop: 'group'
-          },
-          {
-            label: '日期',
-            prop: 'sshUsername',
-            render: (h, params) => {
-              return h('el-button', {
-                props: {
-                  type: 'text'
-                },
-                on: {
-                  click: () => {
-                    this.handleRead(params)
-                  }
-                }
-              }, params.row.sshUsername)
-            }
-          },
-          {
-            label: '产品包页面曝光次数',
-            prop: 'sshPassword'
-          },
-          {
-            label: '产品包页面曝光人数',
-            prop: 'projectDir'
-          },
-          {
-            label: '权益名',
-            prop: 'reloadApi'
-          },
-          {
-            label: '产品包类型',
-            prop: 'luaPath'
-          },
-          {
-            label: '成单路径',
-            prop: 'sshPort'
-          },
-          {
-            label: '产品包ID',
-            prop: 'host'
-          },
-          {
-            label: '单价(元)',
-            prop: 'remark'
-          },
-          {
-            label: '成交单量',
-            prop: 'status',
-            render: (h, { row }) => {
-              if (row.status === 1) {
-                return '启用'
-              } else {
-                return '禁用'
-              }
-            }
-          },
-          {
-            label: '成单人数',
-            prop: 'createTime'
-          },
-          {
-            label: '成交金额(元)',
-            prop: 'updateTime'
-          }
-
-        ],
-        data: [],
-        selected: [],
-        selectionType: 'multiple'
-      },
+      tableData: {},
       formData: {
         versionCode: ''
         // type: '14',
@@ -353,7 +278,8 @@ export default {
       selected: [],
       popoverVisible: true,
       chartData: [],
-      lineChartData: {}
+      lineChartData: {},
+      downloadUrl: ''
     }
   },
   computed: {
@@ -405,6 +331,7 @@ export default {
         // this.fetchData()
       }
     },
+
     activeName: {
       handler (val) {
         switch (val) {
@@ -841,6 +768,32 @@ export default {
     }
   },
   methods: {
+    // 下载
+    handleDownload () {
+      // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
+      const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
+        return total.concat(item.split(','))
+      }, []) : []
+
+      let params = {
+        businessType: this.businessType,
+        effectType: this.activeName,
+        versionCode: this.formData.versionCode,
+        resourceIds: resourceIdsArr,
+        dataType: this.showDataType,
+        showDay: this.checked1 ? 1 : 0,
+        page: this.filter.page,
+        pageSize: this.filter.pageSize
+      }
+      params = qs.stringify(params, { indices: false })
+
+      this.downloadUrl = `/api/effect/download?${params}`
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+
+    // 清除图表
     clearChart () {
       this.chartData = []
       this.lineChartData = {}
@@ -1363,9 +1316,14 @@ export default {
     //   this.dialogVisible = true
     // },
     fetchData () {
+      // 重置图表
       this.clearChart()
+      // 重置多选
+      this.selected = []
+      this.tableData.selected = []
+
       console.log('formData======', this.formData)
-      // const resourceIdsArr = ''
+      // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
       const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
         return total.concat(item.split(','))
       }, []) : []
@@ -1428,6 +1386,9 @@ export default {
       this.fetchData()
     },
     handleRowSelectionAdd (targetItem) {
+      if (this.selected.length > 1) {
+        return this.$message.error('表格最多能选2项')
+      }
       this.selected.push(targetItem.crowdId)
       this.updateTableSelected()
     },
@@ -1439,8 +1400,8 @@ export default {
     },
     handleAllRowSelectionChange (value) {
       if (value) {
-        if (this.tableData.data.length > 4) {
-          return this.$message.error('表格最多能选4项，无法全选')
+        if (this.tableData.data.length > 2) {
+          return this.$message.error('表格最多能选2项，无法全选')
         }
         this.tableData.data.forEach(this.handleRowSelectionAdd)
       } else {
@@ -1467,6 +1428,18 @@ export default {
     // this.fetchTypeData()
     // this.fetchData()
     // this.HandleDateTypeChange(this.formData.type) // 切换日期类型
+    let arr = [1, 2, [3, 4, 5, [6, 7], 8], 9, 10, [11, [12, 13]]]
+
+    const flatten = function (arr) {
+      while (arr.some(item => Array.isArray(item))) {
+        arr = [].concat(...arr)
+      }
+      return arr
+    }
+
+    console.log(flatten(arr))
+
+    const flatten2 = array => array.reduce((acc, cur) => (Array.isArray(cur) ? [...acc, ...flatten(cur)] : [...acc, cur]), [])
   }
 }
 </script>
@@ -1517,4 +1490,13 @@ export default {
   font-size: 14px;
   border-radius: 4px;
   border: 1px solid #dcdfe6;
+.download
+  float: right
+  font-size: 28px
+  margin-left: 20px
+  transition: color .15s linear
+  cursor pointer
+.download:hover
+  color #409EFF
+
 </style>

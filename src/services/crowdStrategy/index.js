@@ -783,3 +783,10 @@ export function effectGetLine (data) {
     isJSON: true
   })
 }
+export function effectDownload (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/effect/download',
+    params
+  })
+}
