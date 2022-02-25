@@ -879,7 +879,8 @@
               type="daterange"
               range-separator="至"
               start-placeholder="开始日期"
-              end-placeholder="结束日期">
+              end-placeholder="结束日期"
+              :picker-options="pickerOptionsDayinRange(30)">
             </el-date-picker>
           </el-form-item>
 
@@ -1112,6 +1113,35 @@ export default {
     // }
   },
   methods: {
+    pickerOptionsDayinRange (day) { // element日期范围选择 range 天内 开始和结束不超 day天
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          // const day1 = range * 24 * 3600 * 1000 // 2年
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          // let minTime = Date.now() - day1
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() < _minTime || time.getTime() > _maxTime
+          }
+        }
+      }
+    },
     /* mac 改变的时候触发 */
     handleMacChange () {
       this.testResult = ''

@@ -14,9 +14,9 @@
                 <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
             </div> -->
 
-            <el-tab-pane label="影视" name="1"></el-tab-pane>
-            <el-tab-pane label="教育" name="2"></el-tab-pane>
-            <el-tab-pane label="少儿" name="3"></el-tab-pane>
+            <el-tab-pane label="影视" name="影视"></el-tab-pane>
+            <el-tab-pane label="教育" name="教育"></el-tab-pane>
+            <el-tab-pane label="少儿" name="少儿"></el-tab-pane>
         </el-tabs>
         <tab-page
           :checkList="checkList"
@@ -54,7 +54,7 @@ export default {
   },
   data () {
     return {
-      activeName: '1',
+      activeName: '影视',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,

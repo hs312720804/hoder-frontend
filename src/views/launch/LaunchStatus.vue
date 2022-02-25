@@ -40,6 +40,19 @@
             @handle-size-change="handleSizeChange"
             @handle-current-change="handleCurrentChange"
         ></pagination>
+
+        <el-dialog
+          title="详情"
+          :visible.sync="showDialog"
+        >
+          <c-table
+            :props="detailTable.props"
+            :header="detailTable.header"
+            :data="detailTable.data"
+            class="table-overflow"
+          >
+          </c-table>
+        </el-dialog>
     </div>
 </template>
 
@@ -65,63 +78,86 @@ export default {
           },
           {
             label: '人群ID',
-            width: '70',
             prop: 'crowdId'
           },
           {
             label: '人群名称',
-            prop: 'crowdName',
-            width: '100'
+            prop: 'crowdName'
           },
           {
             label: '时间范围',
             // prop: 'version',
-            width: '200',
             render: (h, { row }) => {
               return row.startPeriod + '-' + row.endPeriod
             }
           },
-          {
-            label: '状态',
-            prop: 'statusName'
-          },
+          // {
+          //   label: '状态',
+          //   prop: 'statusName'
+          // },
           {
             label: '创建人',
             // prop: 'creator'
             prop: 'name'
-
           },
           {
             label: '创建时间',
-            width: '100',
             prop: 'createTime'
           },
           // {
           //   label: '业务部门',
           //   prop: 'topic'
           // },
-          {
-            label: '总体耗时',
-            prop: 'calculateTimes'
-          }
           // {
-          //   label: '操作',
-          //   fixed: 'right',
-          //   width: '100',
-          //   render: this.$c_utils.component.createOperationRender(this, {
-          //     handleViewInstructions: '查看指令'
-          //   })
+          //   label: '总体耗时',
+          //   prop: 'calculateTimes'
           // }
+          {
+            label: '操作',
+            fixed: 'right',
+            width: '100',
+            render: this.$c_utils.component.createOperationRender(this, {
+              handleView: '查看详情'
+            })
+          }
 
+        ],
+        data: []
+      },
+      showDialog: false,
+      detailTable: {
+        props: {},
+        header: [
+          {
+            label: '名称',
+            prop: 'name'
+            // prop: 'ctrFunnelStatusName',
+            // render: (h) => {
+            //   return 'ctr'
+            // }
+          },
+          {
+            label: '状态',
+            // prop: 'ctrFunnelStatusName'
+            prop: 'status'
+          },
+          {
+            label: '数量',
+            // prop: 'dealAmountCount'
+            prop: 'count'
+          }
         ],
         data: []
       }
     }
   },
   methods: {
-    // handleViewInstructions () {
-
-    // },
+    handleView ({ row }) {
+      console.log('eee===', row)
+      // alert(1)
+      this.showDialog = true
+      this.detailTable.data = row.statusList
+    },
     handleResendCommand () {
       this.$service.manualLaunch(this.outForm).then(data => {
         this.outForm.pageNum = 1

@@ -30,13 +30,12 @@
               placeholder="请选择人群ID、人群名"
             >
               <el-option
-                  v-for="item in behaviorCrowdList"
-                  :label="item.crowdName"
-                  :value="item.versionCode"
-                  :key="'versionCode' + item.crowdId + businessType + activeName"
-
+                v-for="(item, index) in behaviorCrowdList"
+                :label="item.crowdName"
+                :value="item.versionCode"
+                :key="'versionCode' + index + businessType + activeName"
               >
-                  {{ item.crowdName }} -- {{ item.crowdId }}
+                {{ item.crowdName }}_{{ item.versionCode }} ( {{ item.startPeriod }} - {{ item.endPeriod }} )
               </el-option>
             </el-select>
           </el-form-item>
@@ -54,14 +53,13 @@
               @clear="getResourceList"
             >
               <el-option
-                  v-for="(item, index) in resourceList"
-                  :label="getLabelByActiveName(item, activeName)"
-                  :value="getLabelByActiveName(item, activeName)"
-                  :key="'resource' + index + businessType + activeName"
-
+                v-for="(item, index) in resourceList"
+                :label="getLabelByActiveName(item)"
+                :value="getLabelByActiveName(item)"
+                :key="'resource' + index + businessType + activeName"
               >
                   <!-- {{ item.blockIdName + ' / ' + item.pageIdName + ' / ' + item.slotIdName }} -->
-                  {{ getLabelByActiveName(item, activeName) }}
+                  {{ getLabelByActiveName(item) }}
               </el-option>
             </el-select>
           </el-form-item>
@@ -118,7 +116,7 @@
 
         <span style="float: right;">
           <el-checkbox v-model="checked1" @change="HandleShowDayChange">按天展示</el-checkbox>
-          <el-checkbox v-if="activeName === 'tv' || activeName === 'top20'" v-model="checked2">区分top20影片</el-checkbox>
+          <!-- <el-checkbox v-if="activeName === 'tv' || activeName === 'top20'" v-model="checked2">区分top20影片</el-checkbox> -->
         </span>
 
       </div>
@@ -331,7 +329,6 @@ export default {
         // this.fetchData()
       }
     },
-
     activeName: {
       handler (val) {
         switch (val) {
@@ -341,17 +338,16 @@ export default {
               header: [
                 {
                   label: '日期',
-                  width: '100',
                   render: (h, { row }) => {
-                    return row.statsDate
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
                   }
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'group',
-                  render: (h, { row }) => {
-                    return row.id + row.crowdName
-                  }
+                  prop: 'crowdIdName'
+                  // render: (h, { row }) => {
+                  //   return row.id + row.crowdName
+                  // }
                 },
                 {
                   label: '圈定量',
@@ -438,7 +434,10 @@ export default {
                 },
                 {
                   label: '日期',
-                  prop: 'statsDate'
+                  // prop: 'statsDate'
+                  render: (h, { row }) => {
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                  }
                   // render: (h, params) => {
                   //   return h('el-button', {
                   //     props: {
@@ -521,19 +520,10 @@ export default {
                 },
                 {
                   label: '日期',
-                  prop: 'statsDate'
-                  // render: (h, params) => {
-                  //   return h('el-button', {
-                  //     props: {
-                  //       type: 'text'
-                  //     },
-                  //     on: {
-                  //       click: () => {
-                  //         this.handleRead(params)
-                  //       }
-                  //     }
-                  //   }, params.row.sshUsername)
-                  // }
+                  // prop: 'statsDate'
+                  render: (h, { row }) => {
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                  }
                 },
                 {
                   label: '圈定量',
@@ -595,14 +585,16 @@ export default {
               header: [
                 {
                   label: '日期',
-                  prop: 'statsDate',
-                  width: '70'
+                  render: (h, { row }) => {
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                  }
                 },
                 {
                   label: '人群ID&名称',
-                  render: (h, { row }) => {
-                    return row.crowdId + row.crowdName
-                  }
+                  prop: 'crowdIdName'
+                  // render: (h, { row }) => {
+                  //   return row.crowdId + row.crowdName
+                  // }
                 },
                 {
                   label: '播放次数',
@@ -649,14 +641,16 @@ export default {
               header: [
                 {
                   label: '日期',
-                  prop: 'statsDate',
-                  width: '70'
+                  render: (h, { row }) => {
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                  }
                 },
                 {
                   label: '人群ID&名称',
-                  render: (h, { row }) => {
-                    return row.crowdId + row.crowdName
-                  }
+                  prop: 'crowdIdName'
+                  // render: (h, { row }) => {
+                  //   return row.crowdId + row.crowdName
+                  // }
                 },
                 {
                   label: '业务一级分类',
@@ -717,14 +711,16 @@ export default {
               header: [
                 {
                   label: '日期',
-                  prop: 'statsDate',
-                  width: '70'
+                  render: (h, { row }) => {
+                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                  }
                 },
                 {
                   label: '人群ID&名称',
-                  render: (h, { row }) => {
-                    return row.crowdId + row.crowdName
-                  }
+                  prop: 'crowdIdName'
+                  // render: (h, { row }) => {
+                  //   return row.crowdId + row.crowdName
+                  // }
                 },
                 {
                   label: '分类（频道）',
@@ -750,7 +746,6 @@ export default {
                   label: '平均每人时长',
                   prop: 'averageWatchPeriodByNum'
                 }
-
               ],
               data: [],
               selected: [],
@@ -798,6 +793,7 @@ export default {
       this.chartData = []
       this.lineChartData = {}
     },
+    // 查看折线图
     watchLine () {
       // // 漏斗图的参数
       // const params = {
@@ -1123,7 +1119,7 @@ export default {
 
       this.allCharts[element] = myChart
     },
-    getLabelByActiveName (item, val) {
+    getLabelByActiveName (item) {
       let label = ''
       switch (this.activeName) {
         case 'ctr':
@@ -1386,8 +1382,8 @@ export default {
       this.fetchData()
     },
     handleRowSelectionAdd (targetItem) {
-      if (this.selected.length > 1) {
-        return this.$message.error('表格最多能选2项')
+      if (this.selected.length > 3) {
+        return this.$message.error('表格最多能选4项')
       }
       this.selected.push(targetItem.crowdId)
       this.updateTableSelected()
@@ -1400,9 +1396,10 @@ export default {
     },
     handleAllRowSelectionChange (value) {
       if (value) {
-        if (this.tableData.data.length > 2) {
-          return this.$message.error('表格最多能选2项，无法全选')
+        if (this.tableData.data.length > 4) {
+          return this.$message.error('表格最多能选4项，无法全选')
         }
+        console.log('11111111===', this.tableData.selected)
         this.tableData.data.forEach(this.handleRowSelectionAdd)
       } else {
         this.selected = []
@@ -1423,11 +1420,25 @@ export default {
 
     // }
   },
-  mounted () {
+  created () {
     // this.showFunnel()
     // this.fetchTypeData()
     // this.fetchData()
     // this.HandleDateTypeChange(this.formData.type) // 切换日期类型
+
+    // 参考回答：
+    // Display: table 和本身 table 是相对应的，
+
+    // 区别在于，
+    // display：table 的 css 声明能够让一个 html 元素和它的子节点像 table 元素一样，
+    // 使用基于表格的 css 布局，是我们能够轻松定义一个单元格的边界，背景等样式，
+    // 而不会产生因为使用了 table 那样的制表标签导致的语义化问题。
+
+    // 之所以现在逐渐淘汰了 table 系表格元素，是因为用 div + css 编写出来的文件比用 table 边写出来的文件小，
+    // 而且 table 必须在页面完全加载后才显示，div 则是逐行显示，table 的嵌套性太多，没有 div 简洁
+    // --------------------------------------------------------------
+
+    // --------------------------------------------------------------
     let arr = [1, 2, [3, 4, 5, [6, 7], 8], 9, 10, [11, [12, 13]]]
 
     const flatten = function (arr) {
@@ -1492,7 +1503,7 @@ export default {
   border: 1px solid #dcdfe6;
 .download
   float: right
-  font-size: 28px
+  font-size: 24px
   margin-left: 20px
   transition: color .15s linear
   cursor pointer
