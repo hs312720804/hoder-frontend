@@ -130,6 +130,7 @@
       > -->
 
       <c-table
+        v-loading="tbLoading"
         :props="tableData.props"
         :header="tableData.header"
         :data="tableData.data"
@@ -223,6 +224,7 @@ export default {
 
   data () {
     return {
+      tbLoading: false,
       allCharts: {},
       dataList: [],
       filter: {
@@ -1154,10 +1156,12 @@ export default {
       return label
     },
     HandleShowDayChange () {
+      // 重置
+      this.filter.page = 1
       this.fetchData()
     },
     HandleDataTypeChange () {
-      // 切换数据展示
+      // 重置
       this.filter.page = 1
       this.fetchData()
     },
@@ -1326,6 +1330,7 @@ export default {
     //   this.dialogVisible = true
     // },
     fetchData () {
+      this.tbLoading = true
       // 重置图表
       this.clearChart()
       // 重置多选
@@ -1355,6 +1360,7 @@ export default {
       // params = qs.stringify(params.versionCode)
 
       this.$service.getEffectData(params).then(result => {
+        this.tbLoading = false
         this.tableData.data = result.rows
         this.totalCount = result.total
       })
