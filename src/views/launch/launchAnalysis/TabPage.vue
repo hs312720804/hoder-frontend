@@ -344,10 +344,10 @@ export default {
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'crowdIdName'
-                  // render: (h, { row }) => {
-                  //   return row.id + row.crowdName
-                  // }
+                  // prop: 'crowdIdName'
+                  render: (h, { row }) => {
+                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                  }
                 },
                 {
                   label: '圈定量',
@@ -572,7 +572,6 @@ export default {
                   label: '成交金额(元)',
                   prop: 'dealAmount'
                 }
-
               ],
               data: [],
               selected: [],
@@ -591,7 +590,10 @@ export default {
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'crowdIdName'
+                  // prop: 'crowdIdName'
+                  render: (h, { row }) => {
+                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                  }
                   // render: (h, { row }) => {
                   //   return row.crowdId + row.crowdName
                   // }
@@ -647,14 +649,17 @@ export default {
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'crowdIdName'
+                  // prop: 'crowdIdName'
+                  render: (h, { row }) => {
+                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                  }
                   // render: (h, { row }) => {
                   //   return row.crowdId + row.crowdName
                   // }
                 },
                 {
                   label: '业务一级分类',
-                  prop: 'reqSource'
+                  prop: 'videoFirstLevelClassification'
                 },
                 {
                   label: '影片ID&影片名',
@@ -698,7 +703,6 @@ export default {
                   label: '平均每人时长',
                   prop: 'averageWatchPeriodByNum'
                 }
-
               ],
               data: [],
               selected: [],
@@ -717,7 +721,10 @@ export default {
                 },
                 {
                   label: '人群ID&名称',
-                  prop: 'crowdIdName'
+                  // prop: 'crowdIdName'
+                  render: (h, { row }) => {
+                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                  }
                   // render: (h, { row }) => {
                   //   return row.crowdId + row.crowdName
                   // }
@@ -808,7 +815,8 @@ export default {
       //   page: this.filter.page,
       //   pageSize: this.filter.pageSize
       // }
-      let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+      // let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+      let newParamsArr = this.selected
 
       newParamsArr = newParamsArr.map(obj => {
         return {
@@ -871,7 +879,8 @@ export default {
     watchFunnel () {
       // this.selected
       // const table = this.tableData
-      let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+      // let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
+      let newParamsArr = this.selected
 
       newParamsArr = newParamsArr.map(obj => {
         return {
@@ -889,7 +898,8 @@ export default {
       this.$service.effectGetFunnel(newParamsArr).then(data => {
         console.log('data===>', data)
         // this.showFunnel(data)
-        this.chartData = data.concat(data).concat(data)
+        // this.chartData = data.concat(data).concat(data)
+        this.chartData = data
         this.chartData.forEach((item, index) =>
           this.$nextTick(() => {
             this.showFunnel(item, `aaa${index}`)
@@ -1129,7 +1139,7 @@ export default {
           label = item.packageId + ',' + item.packageType
           break
         case 'active':
-          label = item.dealSource
+          label = item.dealSource || '--'
           break
         // case 'tv':
         //   text = ''
@@ -1175,6 +1185,10 @@ export default {
       console.log('formData===', this.formData)
       // 重置
       this.filter.page = 1
+      // 清空表格数据
+      this.tableData.data = []
+      this.totalCount = 0
+      // 查询
       this.fetchData()
     },
     handelBehaviorCrowdSelectChange (e) {
@@ -1216,7 +1230,7 @@ export default {
       this.loading = true
       this.$service.getResource(params).then(data => {
         // this.resourceList = query !== '' ? data.rows : this.resourceList.concat(data.rows)
-        this.resourceList = data.rows
+        this.resourceList = data.rows.filter(item => item)
         this.loading = false
       }).catch(() => {
         this.loading = false
@@ -1385,12 +1399,12 @@ export default {
       if (this.selected.length > 3) {
         return this.$message.error('表格最多能选4项')
       }
-      this.selected.push(targetItem.crowdId)
+      this.selected.push(targetItem)
       this.updateTableSelected()
     },
     handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
-        return item !== targetItem.crowdId
+        return item.id !== targetItem.id
       })
       this.updateTableSelected()
     },
@@ -1410,11 +1424,12 @@ export default {
       const table = this.tableData
       const newSelectedIndex = this.selected.map(item => item)
       table.selected = table.data.reduce((result, item, index) => {
-        if (newSelectedIndex.indexOf(item.crowdId) > -1) {
+        if (newSelectedIndex.some(selectItem => selectItem.id === item.id)) {
           result.push(index)
         }
         return result
       }, [])
+      // console.log('this.selected==', this.selected)
     }
     // fetchTypeData () {
 

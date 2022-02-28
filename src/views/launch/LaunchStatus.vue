@@ -81,6 +81,10 @@ export default {
             prop: 'crowdId'
           },
           {
+            label: '版本号',
+            prop: 'versionCode'
+          },
+          {
             label: '人群名称',
             prop: 'crowdName'
           },
