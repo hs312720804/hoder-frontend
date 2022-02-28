@@ -1029,7 +1029,7 @@ export default {
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      const _this = this
+      // const _this = this
       let echarts = require('echarts')
       let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
