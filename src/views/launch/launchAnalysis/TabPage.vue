@@ -86,8 +86,8 @@
           </el-form-item> -->
 
           <el-form-item>
-              <el-button type="primary" @click="fetchData">查询</el-button>
-              <el-button @click="resetForm('formData')">重置</el-button>
+            <el-button type="primary" @click="fetchData">查询</el-button>
+            <el-button @click="resetForm('formData')">重置</el-button>
           </el-form-item>
         </el-form>
 
@@ -787,7 +787,8 @@ export default {
         dataType: this.showDataType,
         showDay: this.checked1 ? 1 : 0,
         page: this.filter.page,
-        pageSize: this.filter.pageSize
+        // pageSize: this.filter.pageSize
+        pageSize: this.totalCount
       }
       params = qs.stringify(params, { indices: false })
 
@@ -1011,7 +1012,14 @@ export default {
             fontStyle: 'Microsoft YaHei',
             formatter: function (d) {
               console.log('d====', d)
-              var ins = '{s|转换率}\n' + `${d.data.percent * 100}%`
+              var ins = '{s|转换率}\n' + toPercent(d.data.percent)
+
+              function toPercent (point) {
+                var str = Number(point * 100).toFixed(1)
+                str += '%'
+                return str
+              }
+
               return ins
             },
             rich: {
@@ -1396,11 +1404,13 @@ export default {
       this.filter.page = 1
       this.fetchData()
     },
+
     // 页码变更, 如第1页变成第2页时,val=2
     handleCurrentChange (val) {
       this.filter.page = val
       this.fetchData()
     },
+
     handleRowSelectionAdd (targetItem) {
       if (this.selected.length > 3) {
         return this.$message.error('表格最多能选4项')
@@ -1408,12 +1418,14 @@ export default {
       this.selected.push(targetItem)
       this.updateTableSelected()
     },
+
     handleRowSelectionRemove (targetItem) {
       this.selected = this.selected.filter(item => {
         return item.id !== targetItem.id
       })
       this.updateTableSelected()
     },
+
     handleAllRowSelectionChange (value) {
       if (value) {
         if (this.tableData.data.length > 4) {
@@ -1426,6 +1438,7 @@ export default {
         this.tableData.selected = []
       }
     },
+
     updateTableSelected () {
       const table = this.tableData
       const newSelectedIndex = this.selected.map(item => item)
@@ -1440,39 +1453,8 @@ export default {
     // fetchTypeData () {
 
     // }
-  },
-  created () {
-    // this.showFunnel()
-    // this.fetchTypeData()
-    // this.fetchData()
-    // this.HandleDateTypeChange(this.formData.type) // 切换日期类型
-
-    // 参考回答：
-    // Display: table 和本身 table 是相对应的，
-
-    // 区别在于，
-    // display：table 的 css 声明能够让一个 html 元素和它的子节点像 table 元素一样，
-    // 使用基于表格的 css 布局，是我们能够轻松定义一个单元格的边界，背景等样式，
-    // 而不会产生因为使用了 table 那样的制表标签导致的语义化问题。
-
-    // 之所以现在逐渐淘汰了 table 系表格元素，是因为用 div + css 编写出来的文件比用 table 边写出来的文件小，
-    // 而且 table 必须在页面完全加载后才显示，div 则是逐行显示，table 的嵌套性太多，没有 div 简洁
-    // --------------------------------------------------------------
-
-    // --------------------------------------------------------------
-    let arr = [1, 2, [3, 4, 5, [6, 7], 8], 9, 10, [11, [12, 13]]]
-
-    const flatten = function (arr) {
-      while (arr.some(item => Array.isArray(item))) {
-        arr = [].concat(...arr)
-      }
-      return arr
-    }
-
-    console.log(flatten(arr))
-
-    const flatten2 = array => array.reduce((acc, cur) => (Array.isArray(cur) ? [...acc, ...flatten(cur)] : [...acc, cur]), [])
   }
+
 }
 </script>
 

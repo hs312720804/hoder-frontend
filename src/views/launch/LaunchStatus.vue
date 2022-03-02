@@ -102,7 +102,7 @@ export default {
           {
             label: '创建人',
             // prop: 'creator'
-            prop: 'name'
+            prop: 'creatorName'
           },
           {
             label: '创建时间',
