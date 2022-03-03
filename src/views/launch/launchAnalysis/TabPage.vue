@@ -914,7 +914,14 @@ export default {
       const echarts = require('echarts')
       console.log('item.first===', item)
       console.log('item.id===', id)
-      const total = `${item.total * 100}%`
+      // var ins = '{s|转换率}\n' + toPercent(d.data.percent)
+
+      function toPercent (point) {
+        var str = Number(point * 100).toFixed(1)
+        str += '%'
+        return str
+      }
+      const total = toPercent(item.total)
       const subtext = `${item.crowdName}`
       const subtext2 = `统计周期：${item.startPeriod}-${item.endPeriod}，${item.dataType}`
       const data1 = item.data
@@ -977,6 +984,7 @@ export default {
         },
         series: [{
           type: 'funnel',
+          sort: 'none',
           minSize: 90,
           maxSize: '70%',
           left: 0,

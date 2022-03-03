@@ -6,7 +6,8 @@
       @handleBackPrevStep="handleBackPrevStep"
       @handleToNextStep="handleToNextStep"
       @handleDirectStrategyListBrother="handleDirectStrategyListBrother"
-    ></add-more-crowd>
+    >
+    </add-more-crowd>
   </div>
 </template>
 
