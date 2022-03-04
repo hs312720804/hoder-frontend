@@ -1,25 +1,41 @@
 <template>
     <div v-if="reloadFlag">
         <div class="header">
-            <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
-                <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
-                <el-step title="第二步：创建人群" icon="el-icon-edit"></el-step>
-                <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step>
-            </el-steps>
+          <!-- 动态人群 -->
+          <el-steps v-if="isDynamicPeople" :active="activeStep" finish-status="success" simple style="margin-top: 20px">
+              <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
+              <el-step title="第二步：圈出人群" icon="el-icon-edit"></el-step>
+              <el-step title="第三步：动态人群配置" icon="el-icon-edit"></el-step>
+              <el-step title="第四步：设置流转条件" icon="el-icon-edit"></el-step>
+              <el-step title="第五步：投放到业务平台" icon="el-icon-edit"></el-step>
+          </el-steps>
+
+          <!-- 普通人群 -->
+          <el-steps v-else :active="activeStep" finish-status="success" simple style="margin-top: 20px">
+              <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
+              <el-step title="第二步：创建人群" icon="el-icon-edit"></el-step>
+              <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step>
+          </el-steps>
+
         </div>
         <div>
             <new-create-policy
-                    @policyNextStep="handlePolicyNextStep"
                     v-if="activeStep === 0"
+                    @policyNextStep="handlePolicyNextStep"
                     :recordId="recordId"
                     :initTagList="initTagList"
                     @resetFormData="resetFormData"
                     @handleDirectStrategyList="handleDirectStrategyList">
                 <template v-slot:isChoosePeople>
-                    <el-checkbox
+                    <!-- <el-checkbox
                         style="margin-left: 20px"
                         v-model="peoplePageCheck">
                         智能分人群模式
+                    </el-checkbox> -->
+                    <el-checkbox
+                        style="margin-left: 20px"
+                        v-model="isDynamicPeople">
+                        动态人群
                     </el-checkbox>
                 </template>
             </new-create-policy>
@@ -32,13 +48,16 @@
                     <!--@handleDirectStrategyList="handleDirectStrategyList"-->
             <!--&gt;</create-policy>-->
             <create-crowd
+                v-if="!!recordId && !peoplePageCheck && activeStep === 1"
                 :recordId="recordId"
+                :isDynamicPeople="isDynamicPeople"
                 @crowdNextStep="handleCrowdNextStep"
                 @crowdPrevStep="handleCrowdPrevStep"
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList"
-                v-if="!!recordId && !peoplePageCheck && activeStep === 1">
+            >
             </create-crowd>
+
             <!--人群流程图-->
             <create-config-scheme
                 v-if="peoplePageCheck && activeStep === 1"
@@ -48,15 +67,16 @@
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList">
             </create-config-scheme>
+
             <launch-to-business
-                    :recordId="recordId"
-                    :tempPolicyAndCrowd="tempPolicyAndCrowd"
-                    :routeSource="routeSource"
-                    @nextStep="handleNextStep"
-                    @launchPrevStep="handleLaunchPrevStep"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList"
-                    v-if="activeStep === 2"
+                v-if="activeStep === 2"
+                :recordId="recordId"
+                :tempPolicyAndCrowd="tempPolicyAndCrowd"
+                :routeSource="routeSource"
+                @nextStep="handleNextStep"
+                @launchPrevStep="handleLaunchPrevStep"
+                @resetFormData="resetFormData"
+                @handleDirectStrategyList="handleDirectStrategyList"
             ></launch-to-business>
         </div>
     </div>
@@ -85,6 +105,7 @@ export default {
       initTagList: [],
       routeSource: undefined,
       peoplePageCheck: false,
+      isDynamicPeople: false,
       programmeId: undefined,
       reloadFlag: true
     }

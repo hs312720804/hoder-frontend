@@ -1,23 +1,17 @@
 <template>
-  <el-collapse class="el-collapse" accordion v-model="activeName">
-    <el-form-item label="人群条件" class="el-collapse_item">
+<div>
+   <!-- isDynamicPeople: {{isDynamicPeople}} -->
+   <!-- 动态人群 -->
+  <div v-if="isDynamicPeople" class="el-collapse">
+    <el-form-item label="" class="el-collapse_item">
       <template v-for="(crowd, i) in inputValue">
-        <div class="items" :key="i">
-          <el-collapse-item :name="i" :key="i" class="crowd-content">
-            <template slot="title">
-              <div class="collapse-title">
-                <div>{{crowd.crowdName}}</div>
-                <div><el-button @click="handleEstimate(crowd)">估算</el-button></div>
-              </div>
-              <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
-                <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
-              </div>
-            </template>
+        <div class="items crowd-content" :key="i" >
+
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
               <el-input v-model="crowd.crowdName" placeholder="投放名称" :maxlength="50"></el-input>
             </el-form-item>
-            <div style="position: relative">
 
+            <div style="position: relative">
               <div v-if="tags.length > 0">
                 <el-form-item label="设置标签" required>
                   <!-- {{ crowd.rulesJson }} -->
@@ -64,51 +58,140 @@
                 </MultipleSelect>
               </el-form-item>
 
-              <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
-                <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
-              </el-form-item> -->
             </div>
-            <!-- {{ crowd.isShowAutoVersion }}
-            {{ crowd.autoVersion }} -->
+
             <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion">
               <el-radio-group v-model="crowd.autoVersion">
                 <el-radio :label="false">否</el-radio>
                 <el-radio :label="true">是</el-radio>
               </el-radio-group>
             </el-form-item>
-            <!-- ---{{ crowd.isShowAutoVersion }}--- -->
-            <el-form-item label="是否限制投放数量" prop="limitLaunch">
-              <el-radio-group v-model="crowd.limitLaunch">
-                <el-radio :label="false">否</el-radio>
-                <el-radio :label="true">是</el-radio>
-              </el-radio-group>
-            </el-form-item>
-
-            <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-              <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
-            </el-form-item>
-
-            <el-form-item label="备注" :prop="formProp('remark')">
-              <el-input v-model="crowd.remark" placeholder="备注"></el-input>
-            </el-form-item>
-
-            <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
-              <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
-            </el-form-item>
-          </el-collapse-item>
 
           <a class="app-params__remove-param" @click="handleRemoveParam(i)">
             <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
           </a>
         </div>
       </template>
-      <br />
-      <el-button type="primary" plain @click="handleAddParam">
-        <i class="el-icon-plus"></i>&nbsp;添加
-      </el-button>
     </el-form-item>
+  </div>
 
-  </el-collapse>
+  <!-- 普通人群 -->
+  <div v-else>
+  <!-- <div> -->
+    <el-collapse class="el-collapse" accordion v-model="activeName">
+      <el-form-item label="人群条件" class="el-collapse_item">
+        <template v-for="(crowd, i) in inputValue">
+          <div class="items" :key="i">
+            <el-collapse-item :name="i" :key="i" class="crowd-content">
+              <template slot="title">
+                <div class="collapse-title">
+                  <div>{{crowd.crowdName}}</div>
+                  <div><el-button @click="handleEstimate(crowd)">估算</el-button></div>
+                </div>
+                <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
+                  <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
+                </div>
+              </template>
+              <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
+                <el-input v-model="crowd.crowdName" placeholder="投放名称" :maxlength="50"></el-input>
+              </el-form-item>
+
+              <div style="position: relative">
+
+                <div v-if="tags.length > 0">
+                  <el-form-item label="设置标签" required>
+                    <!-- {{ crowd.rulesJson }} -->
+                    <MultipleSelect
+                      :tags="tags"
+                      :rulesJson="crowd.rulesJson"
+                      :crowd="crowd"
+                      :i="i">
+                    </MultipleSelect>
+                  </el-form-item>
+                </div>
+
+                <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
+                  <el-button
+                    type="danger"
+                    @click="handleConditionChange(crowd)"
+                    round
+                    :key="i+'condition'"
+                  >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                  </el-button>
+
+                <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                {{ crowd.dynamicPolicyJson.link }} -->
+                </div>
+
+                <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+                  <MultipleActionTagSelect
+                    ref="multipleActionTagSelect"
+                    :actionTags="actionTags"
+                    :behaviorRulesJson="crowd.behaviorRulesJson"
+                    :crowd="crowd"
+                    :i="i"
+                  >
+                  <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
+                  </MultipleActionTagSelect>
+                </el-form-item>
+
+                <el-form-item label="动态因子" v-if="specialTags.length > 0">
+                  <MultipleSelect
+                    :specialTags="specialTags"
+                    :dynamicPolicyJson="crowd.dynamicPolicyJson"
+                    :crowd="crowd"
+                    :i="i">
+                  </MultipleSelect>
+                </el-form-item>
+
+                <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
+                  <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
+                </el-form-item> -->
+              </div>
+              <!-- {{ crowd.isShowAutoVersion }}
+              {{ crowd.autoVersion }} -->
+              <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion">
+                <el-radio-group v-model="crowd.autoVersion">
+                  <el-radio :label="false">否</el-radio>
+                  <el-radio :label="true">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
+              <!-- ---{{ crowd.isShowAutoVersion }}--- -->
+              <el-form-item label="是否限制投放数量" prop="limitLaunch">
+                <el-radio-group v-model="crowd.limitLaunch">
+                  <el-radio :label="false">否</el-radio>
+                  <el-radio :label="true">是</el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
+                <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+              </el-form-item>
+
+              <el-form-item label="备注" :prop="formProp('remark')">
+                <el-input v-model="crowd.remark" placeholder="备注"></el-input>
+              </el-form-item>
+
+              <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
+                <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
+              </el-form-item>
+            </el-collapse-item>
+
+            <a class="app-params__remove-param" @click="handleRemoveParam(i)">
+              <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
+            </a>
+          </div>
+        </template>
+        <br />
+        <el-button type="primary" plain @click="handleAddParam">
+          <i class="el-icon-plus"></i>&nbsp;添加
+        </el-button>
+      </el-form-item>
+
+    </el-collapse>
+  </div>
+
+</div>
 </template>
 
 <script>
@@ -166,7 +249,21 @@ export default {
       provinceValueList: []
     }
   },
-  props: ['value', 'propPrefix', 'recordId'],
+  props: {
+    value: {
+      type: [String, Array]
+    },
+    propPrefix: {
+      type: String
+    },
+    recordId: {
+      type: Number
+    },
+    isDynamicPeople: {
+      type: Boolean,
+      default: false
+    }
+  },
   watch: {
     value: 'setInputValue'
   },
@@ -473,4 +570,8 @@ i
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
   }
+.crowd-content
+  width 100%
+  display inline-block
+  background-color: rgba(249,249,249,0.85);
 </style>

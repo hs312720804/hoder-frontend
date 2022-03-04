@@ -11,9 +11,9 @@
         </div>
         <!--人群配置-->
         <people-dialog
-            :show="peopleDialogStatus"
-            :info="editPeopleInfo"
-            @savePeople="savePeople"
+          :show="peopleDialogStatus"
+          :info="editPeopleInfo"
+          @savePeople="savePeople"
         >
         </people-dialog>
         <!--入口配置-->

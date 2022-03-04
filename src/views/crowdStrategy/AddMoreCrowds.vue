@@ -1,11 +1,13 @@
 <template>
   <div>
+    isDynamicPeople: {{isDynamicPeople}}
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"
         v-model="form.rulesJson"
         prop-prefix="rulesJson."
         :recordId="recordId"
+        :isDynamicPeople="isDynamicPeople"
       />
       <!--<el-form-item label="人群用途" prop="purpose">-->
       <!--<el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>-->
@@ -106,7 +108,7 @@ export default {
       deep: true
     }
   },
-  props: ['recordId'],
+  props: ['recordId', 'isDynamicPeople'],
   methods: {
     getRecordId () {
       return this.recordId

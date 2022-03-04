@@ -1,8 +1,9 @@
 <template>
   <div>
     <add-more-crowd
-      @resetFormData="resetFormData"
       :recordId="brotherRecordId"
+      :isDynamicPeople="isDynamicPeople"
+      @resetFormData="resetFormData"
       @handleBackPrevStep="handleBackPrevStep"
       @handleToNextStep="handleToNextStep"
       @handleDirectStrategyListBrother="handleDirectStrategyListBrother"
@@ -23,7 +24,7 @@ export default {
       brotherRecordId: undefined
     }
   },
-  props: ['recordId'],
+  props: ['recordId', 'isDynamicPeople'],
   methods: {
     handleBackPrevStep (recordId) {
       this.$emit('crowdPrevStep', 1, recordId)

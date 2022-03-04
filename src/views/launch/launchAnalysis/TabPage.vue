@@ -64,27 +64,6 @@
             </el-select>
           </el-form-item>
 
-          <!-- <el-form-item prop="type">
-            <el-radio-group v-model="formData.type" @change="HandleDateTypeChange">
-              <el-radio-button label="14" name="">近14天</el-radio-button>
-              <el-radio-button label="30" name="">近30天</el-radio-button>
-              <el-radio-button label="365" name="">全年</el-radio-button>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item prop="date">
-            <el-date-picker
-              style="width: 220px;"
-              v-model="formData.date"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              value-format="yyyy-MM-dd"
-              :picker-options="getPickerOptions()"
-            >
-            </el-date-picker>
-          </el-form-item> -->
-
           <el-form-item>
             <el-button type="primary" @click="fetchData">查询</el-button>
             <el-button @click="resetForm('formData')">重置</el-button>
@@ -1314,37 +1293,7 @@ export default {
         this.$message('删除成功')
       })
     },
-    // handleEdit (row) {
-    //   const { tagId, tagName, tagKey, remark } = row
-    //   this.form.tagId = tagId
-    //   this.form.tagName = tagName
-    //   this.form.tagKey = tagKey
-    //   this.form.remark = remark || ''
-    //   this.dialogTitle = '编辑种类'
-    //   this.dialogVisible = true
-    // },
-    // 新增或编辑组合标签种类
-    // async handleAddOrEdit () {
-    //   if (this.form.tagId) { // 编辑
-    //     await this.$service.editSpecialTagType(this.form)
-    //   } else { // 新增
-    //     await this.$service.addSpecialTagType(this.form)
-    //   }
-    //   this.fetchData()
-    //   this.dialogVisible = false
-    //   this.$message.success('保存成功')
-    // },
-    // 新增组合标签
-    // handleAdd () {
-    //   // 数据置空，否则会残留编辑的数据
-    //   this.form = {
-    //     tagName: '',
-    //     tagKey: '',
-    //     remark: ''
-    //   }
-    //   this.dialogTitle = '新增种类'
-    //   this.dialogVisible = true
-    // },
+
     fetchData () {
       this.tbLoading = true
       // 重置图表
@@ -1456,11 +1405,8 @@ export default {
         }
         return result
       }, [])
-      // console.log('this.selected==', this.selected)
     }
-    // fetchTypeData () {
 
-    // }
   }
 
 }
