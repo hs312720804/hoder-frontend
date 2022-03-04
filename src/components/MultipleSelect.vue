@@ -1,5 +1,9 @@
 <template>
   <div class="label-container multipleSelect">
+    <!-- rulesJson: {{ rulesJson }} -->
+    <div>
+      <!-- tag: {{tags}} -->
+    </div>
     <!-- 设置标签 -->
     <div v-if="tags && tags.length > 0">
       <div

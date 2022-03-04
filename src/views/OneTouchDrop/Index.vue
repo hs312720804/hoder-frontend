@@ -19,34 +19,29 @@
 
         </div>
         <div>
+          <div v-if="isDynamicPeople">
+
             <new-create-policy
-                    v-if="activeStep === 0"
-                    @policyNextStep="handlePolicyNextStep"
-                    :recordId="recordId"
-                    :initTagList="initTagList"
-                    @resetFormData="resetFormData"
-                    @handleDirectStrategyList="handleDirectStrategyList">
-                <template v-slot:isChoosePeople>
-                    <!-- <el-checkbox
-                        style="margin-left: 20px"
-                        v-model="peoplePageCheck">
-                        智能分人群模式
-                    </el-checkbox> -->
-                    <el-checkbox
-                        style="margin-left: 20px"
-                        v-model="isDynamicPeople">
-                        动态人群
-                    </el-checkbox>
-                </template>
+              v-if="activeStep === 0"
+              @policyNextStep="handlePolicyNextStep"
+              :recordId="recordId"
+              :initTagList="initTagList"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList">
+              <template v-slot:isChoosePeople>
+                  <!-- <el-checkbox
+                      style="margin-left: 20px"
+                      v-model="peoplePageCheck">
+                      智能分人群模式
+                  </el-checkbox> -->
+                  <el-checkbox
+                      style="margin-left: 20px"
+                      v-model="isDynamicPeople">
+                      动态人群
+                  </el-checkbox>
+              </template>
             </new-create-policy>
-            <!--<create-policy-->
-                    <!--@policyNextStep="handlePolicyNextStep"-->
-                    <!--v-if="activeStep === 0"-->
-                    <!--:recordId="recordId"-->
-                    <!--:initTagList="initTagList"-->
-                    <!--@resetFormData="resetFormData"-->
-                    <!--@handleDirectStrategyList="handleDirectStrategyList"-->
-            <!--&gt;</create-policy>-->
+recordId::{{recordId}}
             <create-crowd
                 v-if="!!recordId && !peoplePageCheck && activeStep === 1"
                 :recordId="recordId"
@@ -58,26 +53,105 @@
             >
             </create-crowd>
 
-            <!--人群流程图-->
-            <create-config-scheme
-                v-if="peoplePageCheck && activeStep === 1"
-                :recordId="recordId"
-                @crowdPrevStep="handleCrowdPrevStep"
-                @handleToNextStep="handleCrowdNextStep"
-                @resetFormData="resetFormData"
-                @handleDirectStrategyList="handleDirectStrategyList">
-            </create-config-scheme>
+            <!-- 动态人群设置 -->
+            <dynamic-people-setting
+              v-if="activeStep === 2"
+              :recordId="recordId"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
+            >
+            </dynamic-people-setting>
+
+            <!-- 设置流转条件 -->
+            <dynamic-people-conditions
+              v-if="activeStep === 3"
+              :recordId="recordId"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
+            >
+            </dynamic-people-conditions>
 
             <launch-to-business
-                v-if="activeStep === 2"
-                :recordId="recordId"
-                :tempPolicyAndCrowd="tempPolicyAndCrowd"
-                :routeSource="routeSource"
-                @nextStep="handleNextStep"
-                @launchPrevStep="handleLaunchPrevStep"
-                @resetFormData="resetFormData"
-                @handleDirectStrategyList="handleDirectStrategyList"
+              v-if="activeStep === 4"
+              :recordId="recordId"
+              :tempPolicyAndCrowd="tempPolicyAndCrowd"
+              :routeSource="routeSource"
+              @nextStep="handleNextStep"
+              @launchPrevStep="handleLaunchPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
             ></launch-to-business>
+          </div>
+
+          <div v-else>
+
+              <new-create-policy
+                  v-if="activeStep === 0"
+                  @policyNextStep="handlePolicyNextStep"
+                  :recordId="recordId"
+                  :initTagList="initTagList"
+                  @resetFormData="resetFormData"
+                  @handleDirectStrategyList="handleDirectStrategyList">
+                  <template v-slot:isChoosePeople>
+                      <!-- <el-checkbox
+                          style="margin-left: 20px"
+                          v-model="peoplePageCheck">
+                          智能分人群模式
+                      </el-checkbox> -->
+                      <el-checkbox
+                          style="margin-left: 20px"
+                          v-model="isDynamicPeople">
+                          动态人群
+                      </el-checkbox>
+                  </template>
+              </new-create-policy>
+              <!--<create-policy-->
+                      <!--@policyNextStep="handlePolicyNextStep"-->
+                      <!--v-if="activeStep === 0"-->
+                      <!--:recordId="recordId"-->
+                      <!--:initTagList="initTagList"-->
+                      <!--@resetFormData="resetFormData"-->
+                      <!--@handleDirectStrategyList="handleDirectStrategyList"-->
+              <!--&gt;</create-policy>-->
+
+              {{ recordId }}
+              <create-crowd
+                  v-if="!!recordId && !peoplePageCheck && activeStep === 1"
+                  :recordId="recordId"
+                  :isDynamicPeople="isDynamicPeople"
+                  @crowdNextStep="handleCrowdNextStep"
+                  @crowdPrevStep="handleCrowdPrevStep"
+                  @resetFormData="resetFormData"
+                  @handleDirectStrategyList="handleDirectStrategyList"
+              >
+              </create-crowd>
+
+              <!--人群流程图-->
+              <!-- <create-config-scheme
+                  v-if="peoplePageCheck && activeStep === 1"
+                  :recordId="recordId"
+                  @crowdPrevStep="handleCrowdPrevStep"
+                  @handleToNextStep="handleCrowdNextStep"
+                  @resetFormData="resetFormData"
+                  @handleDirectStrategyList="handleDirectStrategyList">
+              </create-config-scheme> -->
+
+              <launch-to-business
+                  v-if="activeStep === 2"
+                  :recordId="recordId"
+                  :tempPolicyAndCrowd="tempPolicyAndCrowd"
+                  :routeSource="routeSource"
+                  @nextStep="handleNextStep"
+                  @launchPrevStep="handleLaunchPrevStep"
+                  @resetFormData="resetFormData"
+                  @handleDirectStrategyList="handleDirectStrategyList"
+              ></launch-to-business>
+          </div>
+
         </div>
     </div>
 </template>
@@ -88,6 +162,8 @@ import createCrowd from './CreateCrowd'
 import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
 import createConfigScheme from './createConfigScheme'
+import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
+import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
   name: 'index',
   components: {
@@ -95,7 +171,9 @@ export default {
     createCrowd,
     LaunchToBusiness,
     newCreatePolicy,
-    createConfigScheme
+    createConfigScheme,
+    DynamicPeopleSetting,
+    DynamicPeopleConditions
   },
   data () {
     return {

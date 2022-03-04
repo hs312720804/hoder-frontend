@@ -9,14 +9,14 @@
                 <div class="tips">投放模式(pull):针对主页、产品包、广告、活动、弹窗、媒资</div>
                 <el-form-item label="投放平台" prop="biIdsPull" class="multipleSelect">
                     <el-select
-                            v-model="crowdForm.biIdsPull"
-                            multiple
+                      v-model="crowdForm.biIdsPull"
+                      multiple
                     >
                         <el-option
-                                v-for="(platform,index) in Platforms"
-                                :label="platform.biName"
-                                :value="platform.biId"
-                                :key="index"
+                          v-for="(platform,index) in Platforms"
+                          :label="platform.biName"
+                          :value="platform.biId"
+                          :key="index"
                         >
                         </el-option>
                     </el-select>
@@ -138,7 +138,7 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" v-if="!policyId" @click="submitForm('crowdForm',false)">存稿不投放</el-button>
+                <el-button type="warning" v-if="!policyId" @click="submitForm('crowdForm', false)">存稿不投放</el-button>
                 <el-button type="primary" @click="submitForm('crowdForm',true)">投放</el-button>
             </el-form-item>
         </el-form>
