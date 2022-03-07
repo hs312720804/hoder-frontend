@@ -163,7 +163,7 @@
           v-for="(item, index) in chartData"
           :key="'chart' + index"
           :id="'aaa'+index"
-          style="float: left; width: 500px; height: 360px;">
+          style="float: left; width: 500px; height: 360px; padding: 20px 0 40px">
         </div>
       </div>
 
@@ -197,7 +197,7 @@
 
 <script>
 // import tagList from './List'
-import qs from 'qs'
+import axios from 'axios'
 export default {
   name: 'MyCollect',
   components: {
@@ -259,7 +259,7 @@ export default {
       showTypeTab: true,
       tableData: {},
       formData: {
-        versionCode: ''
+        versionCode: []
         // type: '14',
         // date: []
       },
@@ -549,7 +549,7 @@ export default {
                 },
                 {
                   label: '成单总设备量',
-                  prop: 'dealContractsNum'
+                  prop: 'dealUsers'
                 },
                 {
                   label: '成单人数',
@@ -566,10 +566,7 @@ export default {
                   //   }
                   // }
                 },
-                {
-                  label: '成单人数',
-                  prop: 'dealUsers'
-                },
+
                 {
                   label: '成交金额(元)',
                   prop: 'dealAmount'
@@ -774,6 +771,10 @@ export default {
   methods: {
     // 下载
     handleDownload () {
+      if (this.totalCount > 100000) {
+      // if (this.totalCount > 10) {
+        return this.$message.error('最多下载10万条数据，请筛选后下载')
+      }
       // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
       const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
         return total.concat(item.split(','))
@@ -790,12 +791,76 @@ export default {
         // pageSize: this.filter.pageSize
         pageSize: this.totalCount
       }
-      params = qs.stringify(params, { indices: false })
+      // params = qs.stringify(params, { indices: false })
+      if (params.effectType === 'package') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            packageId: arr[0],
+            packageType: arr[1]
+          }
+        })
+      } else {
+        params.pkgs = undefined
+      }
+      const link = document.createElement('a')
 
-      this.downloadUrl = `/api/effect/download?${params}`
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      axios.post('/api/effect/download', params, { responseType: 'arraybuffer' }).then(res => {
+        // 创建Blob对象，设置文件类型
+        let blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+        let objectUrl = URL.createObjectURL(blob) // 创建URL
+        link.href = objectUrl
+        // link.download = 'xxx' // 自定义文件名
+        link.click() // 下载文件
+        URL.revokeObjectURL(objectUrl) // 释放内存
       })
+      // this.downloadUrl = `/api/effect/download?${params}`
+      // this.$nextTick(() => {
+      //   this.$refs.download_Url.click()
+      // })
+      // this.$service.effectDownload(params).then((res) => {
+      //   debugger
+
+      //   const data = res
+      //   const url = window.URL.createObjectURL(new Blob([data],
+      //     // {
+      //     //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
+      //     // }
+      //     { type: 'application/vnd.ms-excel' }
+      //   ))
+      //   this.downloadUrl = url
+      //   this.$nextTick(() => {
+      //     this.$refs.download_Url.click()
+      //   })
+      //   // const a = document.createElement('a')
+      //   // a.style.display = 'none'
+      //   // a.href = url
+      //   // a.setAttribute('download', 'excel.xlsx')
+      //   // document.body.appendChild(a)
+      //   // a.click()
+      //   // document.body.removeChild(a)
+      //   // this.dialogInfo.dialogVisible = false
+      // }).catch(err => {
+      //   console.log(err)
+      //   debugger
+      // })
+      // axios({
+      //   method: 'post',
+      //   url: '/api/effect/download',
+      //   data: params,
+      //   responseType: 'blob'
+      // }).then(res => {
+      //   let data = res.data
+      //   let url = window.URL.createObjectURL(newBlob([data]))
+      //   let link = document.createElement('a')
+      //   link.style.display = 'none'
+      //   link.href = url
+      //   link.setAttribute('download', 'test.rar')
+      //   document.body.appendChild(link)
+      //   link.click()
+      // }).catch((error) => {})
+
+      // 利用a标签自定义下载文件名
     },
 
     // 清除图表
@@ -1373,6 +1438,18 @@ export default {
         pageSize: this.filter.pageSize
       }
 
+      // 产品包成交需要加一个参数
+      if (params.effectType === 'package') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            packageId: arr[0],
+            packageType: arr[1]
+          }
+        })
+      } else {
+        params.pkgs = undefined
+      }
       // params = qs.stringify(params.versionCode)
 
       this.$service.getEffectData(params).then(result => {
