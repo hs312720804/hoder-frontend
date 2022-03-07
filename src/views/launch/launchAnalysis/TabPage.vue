@@ -96,12 +96,16 @@
       <!-- {{ tableData.selected }}
       {{ tableData.selectionType }}
       {{ this.selected }} -->
-
-      <span v-if="tableData.selected.length > 0" class="watchChartDiv">
-        已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
-        <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
-        <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
-      </span>
+      <div v-if="tableData.selected.length > 0">
+        <span class="watchChartDiv">
+          已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
+          <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
+          <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
+        </span>
+        <span style="color: #999; margin-left: 10px; font-size: 12px;">
+          漏斗图和折线图不细分具体资源位或产品包
+        </span>
+      </div>
 
       <div class="secondScreening">
         数据展示：
@@ -806,61 +810,20 @@ export default {
       const link = document.createElement('a')
 
       axios.post('/api/effect/download', params, { responseType: 'arraybuffer' }).then(res => {
+        const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
+        const title = decodeURIComponent(name) // 解码
         // 创建Blob对象，设置文件类型
-        let blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+        let blob = new Blob([res.data],
+          { type: 'application/vnd.ms-excel' }
+          // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+        )
+
         let objectUrl = URL.createObjectURL(blob) // 创建URL
         link.href = objectUrl
-        // link.download = 'xxx' // 自定义文件名
+        link.download = title // 自定义文件名
         link.click() // 下载文件
         URL.revokeObjectURL(objectUrl) // 释放内存
       })
-      // this.downloadUrl = `/api/effect/download?${params}`
-      // this.$nextTick(() => {
-      //   this.$refs.download_Url.click()
-      // })
-      // this.$service.effectDownload(params).then((res) => {
-      //   debugger
-
-      //   const data = res
-      //   const url = window.URL.createObjectURL(new Blob([data],
-      //     // {
-      //     //   type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet'
-      //     // }
-      //     { type: 'application/vnd.ms-excel' }
-      //   ))
-      //   this.downloadUrl = url
-      //   this.$nextTick(() => {
-      //     this.$refs.download_Url.click()
-      //   })
-      //   // const a = document.createElement('a')
-      //   // a.style.display = 'none'
-      //   // a.href = url
-      //   // a.setAttribute('download', 'excel.xlsx')
-      //   // document.body.appendChild(a)
-      //   // a.click()
-      //   // document.body.removeChild(a)
-      //   // this.dialogInfo.dialogVisible = false
-      // }).catch(err => {
-      //   console.log(err)
-      //   debugger
-      // })
-      // axios({
-      //   method: 'post',
-      //   url: '/api/effect/download',
-      //   data: params,
-      //   responseType: 'blob'
-      // }).then(res => {
-      //   let data = res.data
-      //   let url = window.URL.createObjectURL(newBlob([data]))
-      //   let link = document.createElement('a')
-      //   link.style.display = 'none'
-      //   link.href = url
-      //   link.setAttribute('download', 'test.rar')
-      //   document.body.appendChild(link)
-      //   link.click()
-      // }).catch((error) => {})
-
-      // 利用a标签自定义下载文件名
     },
 
     // 清除图表
@@ -925,8 +888,8 @@ export default {
           return { name: key.crowdName, data: key.data, type: 'line' }
         })
         this.$nextTick(() => {
-          this.setLinesEchart('chart1', '', amount.date, linesData, legendData)
-          this.setLinesEchart('chart2', '', dealVolume.date, linesData2, legendData2)
+          this.setLinesEchart('chart1', '成交金额', amount.date, linesData, legendData)
+          this.setLinesEchart('chart2', '成交单量', dealVolume.date, linesData2, legendData2)
         })
         // })
       })
@@ -1115,7 +1078,8 @@ export default {
       let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
-          text: title
+          text: title,
+          top: 0
         },
         tooltip: {
           trigger: 'axis'
@@ -1182,7 +1146,7 @@ export default {
           },
           scale: true,
           axisLabel: {
-            margin: 30,
+            margin: 5,
             formatter: function (value) {
               // if (value >= 10000 && value < 10000000) {
               //   value = value / 10000 + '万' + yunit
