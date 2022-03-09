@@ -262,6 +262,12 @@ export default {
     isDynamicPeople: {
       type: Boolean,
       default: false
+    },
+    policyId: {
+      type: [Number, String]
+    },
+    policyName: {
+      type: String
     }
   },
   watch: {
@@ -453,10 +459,8 @@ export default {
 
   },
   created () {
-    if (this.value) {
-      this.$service.tagInfoNew(this.recordId).then(data => {
-        // this.tags = data
-        // console.log(data)
+    if (this.isDynamicPeople) { // 动态人群
+      this.$service.getTagsByPoliceId({ policyId: this.policyId }).then(data => {
         const normalTags = []
         const actionTags = []
         const specialTags = []
@@ -477,6 +481,32 @@ export default {
         this.specialTags = specialTags
         this.setInputValue(this.value)
       })
+    } else {
+      if (this.value) {
+        this.$service.tagInfoNew(this.recordId).then(data => {
+          // this.tags = data
+          // console.log(data)
+          const normalTags = []
+          const actionTags = []
+          const specialTags = []
+          data.forEach(item => {
+            if (item.dataSource === 6) { // 效果指标
+              specialTags.push(item)
+            } else if (item.dataSource === 8) { // 行为标签
+              actionTags.push(item)
+            } else if (item.dataSource === 2) { // 大数据标签
+              actionTags.push(item)
+              normalTags.push(item)
+            } else {
+              normalTags.push(item)
+            }
+          })
+          this.tags = normalTags
+          this.actionTags = actionTags
+          this.specialTags = specialTags
+          this.setInputValue(this.value)
+        })
+      }
     }
     this.$watch('inputValue', this.emitInputValue, {
       deep: true

@@ -1,6 +1,12 @@
 <template>
   <div>
-    isDynamicPeople: {{isDynamicPeople}}
+    <div style="color: red">
+      isDynamicPeople: {{isDynamicPeople}} <br/>
+      :policyId:: {{policyId}}<br/>
+      :policyName:: {{ policyName }}<br/>
+      :crowdId:: {{ crowdId }}<br/>
+      <!-- form === {{form}} -->
+    </div>
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"
@@ -8,6 +14,8 @@
         prop-prefix="rulesJson."
         :recordId="recordId"
         :isDynamicPeople="isDynamicPeople"
+        :policyId="policyId"
+        :policyName="policyName"
       />
       <!--<el-form-item label="人群用途" prop="purpose">-->
       <!--<el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>-->
@@ -28,7 +36,7 @@
       <!--</el-form-item>-->
       <el-form-item>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-        <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
+        <el-button v-if="!isDynamicPeople" type="warning" @click="handleSave(0)">跳过保存</el-button>
         <el-button type="primary" @click="handleSave(1)">下一步</el-button>
       </el-form-item>
     </el-form>
@@ -108,7 +116,7 @@ export default {
       deep: true
     }
   },
-  props: ['recordId', 'isDynamicPeople'],
+  props: ['recordId', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
   methods: {
     getRecordId () {
       return this.recordId
@@ -541,7 +549,22 @@ export default {
         e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
         return e
       })
-      if (mode === 0) {
+
+      if (this.isDynamicPeople) {
+        const params = form.rulesJson[0]
+        console.log('data===', params)
+        params.policyId = this.policyId
+
+        // 动态人群
+        this.$service
+          .crowdSave(
+            params,
+            '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then((res) => {
+            this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
+          })
+      } else if (mode === 0) {
         this.$service
           .oneDropSaveCrowd(
             { recordId: this.recordId, data: form.rulesJson },
@@ -637,10 +660,73 @@ export default {
         )
         return false
       }
+    },
+    getCrowdDetail () {
+      if (this.crowdId != null) {
+        this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
+          const data2 = [data.policyCrowds].map(e => {
+          // if (index === 0) {
+          // purpose = e.purpose
+          // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
+          // else {
+          //     crowdExp[0] = e.crowdValidFrom === null ? '' : e.crowdValidFrom
+          //     crowdExp[1] = e.crowdValidTo === null ? '' : e.crowdValidTo
+          // }
+          // }
+            const obj = {}
+            obj.tagIds = e.tagIds.split(',')
+            obj.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
+            obj.behaviorRulesJson = JSON.parse(e.behaviorRulesJson)
+            obj.rulesJson = JSON.parse(e.rulesJson)
+
+            obj.rulesJson.rules.forEach(ruleItem => {
+              ruleItem.rules.forEach(rulesEachItem => {
+                if (
+                  rulesEachItem.tagType === 'string' &&
+                  rulesEachItem.value === 'nil'
+                ) {
+                  rulesEachItem.operator = 'null'
+                }
+                // 多选的值，回显的时候需要转成数组 2222
+                if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+                  rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+                }
+              })
+            })
+            obj.behaviorRulesJson.rules.forEach(ruleItem => {
+              ruleItem.rules.forEach(rulesEachItem => {
+              // 多选的值，回显的时候需要转成数组 2222
+                if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+                  rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+                }
+              })
+            })
+            obj.isShowAutoVersion = false
+
+            return obj
+          })
+
+          this.form = {
+          // purpose,
+            rulesJson: data2
+          // crowdExp
+          }
+          console.log('this.form===', this.form)
+          // eslint-disable-next-line no-debugger
+          // 是否是否每日更新
+          this.$nextTick(() => {
+            this.$refs.CrowdAdd.hasMoveBehaviorTagRule()
+          })
+        })
+      }
     }
   },
   created () {
-    this.handleEdit()
+    if (this.isDynamicPeople) { // 动态人群
+      this.getCrowdDetail()
+    } else {
+      this.handleEdit()
+    }
   }
 }
 </script>

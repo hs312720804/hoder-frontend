@@ -379,17 +379,49 @@ export default {
             this.$message.error('请选择策略维度！')
             return
           }
-          if (this.$parent.peoplePageCheck) {
-            let result = this.tagList.filter(item => {
-              return item.dataSource === 6
-            })
-            if (!result.length) {
-              this.$message.error('创建智能人群策略，需要选择动态指标！')
-              return
-            }
-          }
+          // if (this.$parent.peoplePageCheck) {
+          //   let result = this.tagList.filter(item => {
+          //     return item.dataSource === 6
+          //   })
+          //   if (!result.length) {
+          //     this.$message.error('创建智能人群策略，需要选择动态指标！')
+          //     return
+          //   }
+          // }
+          // 是否为动态人群
+          const isDynamicPeople = this.$parent.isDynamicPeople
+
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
-          if (mode === 1) {
+          // 动态人群
+          if (isDynamicPeople && mode === 1) {
+            let oldFormData = {
+              policyName: addForm.policyName,
+              conditionTagIds: addForm.conditionTagIds,
+              smart: isDynamicPeople
+            }
+            this.$service.policyAddSave(oldFormData).then((data) => {
+              // if (data.policyId) {
+              //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+              //     confirmButtonText: '确定',
+              //     cancelButtonText: '取消',
+              //     type: 'warning'
+              //   }).then(() => {
+              //     this.$message({
+              //       type: 'success',
+              //       message: '即将自动跳转至策略列表页'
+              //     })
+              //     this.$emit('handleDirectStrategyList')
+              //     // this.$router.push({ path: 'launch/strategyList' })
+              //   }).catch(() => {
+              //   })
+              // } else {
+              debugger
+              const policyId = data.policyId
+              const policyName = data.policyName
+              this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+              // }
+            })
+          } else if (mode === 1) {
             if (this.addForm.recordId) {
               this.$service.oneDropPolicyAddSave(addForm).then((data) => {
                 if (data.policyId) {

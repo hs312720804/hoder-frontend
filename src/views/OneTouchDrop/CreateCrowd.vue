@@ -3,9 +3,13 @@
     <add-more-crowd
       :recordId="brotherRecordId"
       :isDynamicPeople="isDynamicPeople"
+      :policyId="policyId"
+      :policyName="policyName"
+      :crowdId="crowdId"
       @resetFormData="resetFormData"
       @handleBackPrevStep="handleBackPrevStep"
       @handleToNextStep="handleToNextStep"
+      @handleDynamicCrowdNextStep="handleDynamicCrowdNextStep"
       @handleDirectStrategyListBrother="handleDirectStrategyListBrother"
     >
     </add-more-crowd>
@@ -24,13 +28,16 @@ export default {
       brotherRecordId: undefined
     }
   },
-  props: ['recordId', 'isDynamicPeople'],
+  props: ['recordId', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
   methods: {
     handleBackPrevStep (recordId) {
       this.$emit('crowdPrevStep', 1, recordId)
     },
     handleToNextStep (recordId, tempPolicyAndCrowd) {
       this.$emit('crowdNextStep', 1, recordId, tempPolicyAndCrowd)
+    },
+    handleDynamicCrowdNextStep (policyId, policyName, crowdId) {
+      this.$emit('dynamicCrowdNextStep', 1, policyId, policyName, crowdId)
     },
     resetFormData () {
       this.$emit('resetFormData')

@@ -145,8 +145,11 @@
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
-            <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
-            <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button>
+            动态人群：{{scope.row.smart}}
+            <!-- <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
+            <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button> -->
+            <el-button size="small" type="text" @click="crowdList(scope.row)" >查看人群</el-button>
+
             <!-- <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button> -->
             <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
             <el-button
@@ -551,8 +554,8 @@ export default {
                   props: {
                     type: 'text'
                   },
-                  slot: "reference"
-              }, '查看配置')])
+                  slot: 'reference'
+                }, '查看配置')])
             }
           }
         ]

@@ -18,12 +18,18 @@
           </el-steps>
 
         </div>
+        <div style="color: blue">
+          recordId:: {{recordId}}
+          policyId:: {{policyId}}
+        </div>
         <div>
+          <!-- 动态人群 -->
           <div v-if="isDynamicPeople">
 
             <new-create-policy
               v-if="activeStep === 0"
               @policyNextStep="handlePolicyNextStep"
+              @dynamicPolicyNextStep="handleDynamicPolicyNextStep"
               :recordId="recordId"
               :initTagList="initTagList"
               @resetFormData="resetFormData"
@@ -41,22 +47,28 @@
                   </el-checkbox>
               </template>
             </new-create-policy>
-recordId::{{recordId}}
+
             <create-crowd
-                v-if="!!recordId && !peoplePageCheck && activeStep === 1"
-                :recordId="recordId"
+                v-if="policyId && activeStep === 1"
+                :policyId="policyId"
+                :policyName="policyName"
+                :crowdId="crowdId"
                 :isDynamicPeople="isDynamicPeople"
                 @crowdNextStep="handleCrowdNextStep"
                 @crowdPrevStep="handleCrowdPrevStep"
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList"
+                @dynamicCrowdNextStep="handleDynamicCrowdNextStep"
             >
             </create-crowd>
 
             <!-- 动态人群设置 -->
             <dynamic-people-setting
               v-if="activeStep === 2"
-              :recordId="recordId"
+              :policyId="policyId"
+              :policyName="policyName"
+              :crowdId="crowdId"
+              :isDynamicPeople="isDynamicPeople"
               @crowdNextStep="handleCrowdNextStep"
               @crowdPrevStep="handleCrowdPrevStep"
               @resetFormData="resetFormData"
@@ -67,7 +79,10 @@ recordId::{{recordId}}
             <!-- 设置流转条件 -->
             <dynamic-people-conditions
               v-if="activeStep === 3"
-              :recordId="recordId"
+              :policyId="policyId"
+              :policyName="policyName"
+              :crowdId="crowdId"
+              :isDynamicPeople="isDynamicPeople"
               @crowdNextStep="handleCrowdNextStep"
               @crowdPrevStep="handleCrowdPrevStep"
               @resetFormData="resetFormData"
@@ -118,9 +133,8 @@ recordId::{{recordId}}
                       <!--@handleDirectStrategyList="handleDirectStrategyList"-->
               <!--&gt;</create-policy>-->
 
-              {{ recordId }}
               <create-crowd
-                  v-if="!!recordId && !peoplePageCheck && activeStep === 1"
+                  v-if="!!recordId && activeStep === 1"
                   :recordId="recordId"
                   :isDynamicPeople="isDynamicPeople"
                   @crowdNextStep="handleCrowdNextStep"
@@ -157,7 +171,7 @@ recordId::{{recordId}}
 </template>
 
 <script>
-import createPolicy from './CreatePolicy'
+// import createPolicy from './CreatePolicy'
 import createCrowd from './CreateCrowd'
 import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
@@ -167,7 +181,7 @@ import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleCon
 export default {
   name: 'index',
   components: {
-    createPolicy,
+    // createPolicy,
     createCrowd,
     LaunchToBusiness,
     newCreatePolicy,
@@ -185,7 +199,9 @@ export default {
       peoplePageCheck: false,
       isDynamicPeople: false,
       programmeId: undefined,
-      reloadFlag: true
+      reloadFlag: true,
+      policyId: undefined,
+      policyName: undefined
     }
   },
   watch: {
@@ -229,6 +245,12 @@ export default {
       this.recordId = recordId
       this.tempPolicyAndCrowd = tempPolicyAndCrowd
     },
+    handleDynamicCrowdNextStep (step, policyId, policyName, crowdId) {
+      this.activeStep = step + 1
+      this.policyId = policyId
+      this.policyName = policyName
+      this.crowdId = crowdId
+    },
     handleCrowdPrevStep (step, recordId) {
       this.activeStep = step - 1
       this.recordId = recordId
@@ -241,11 +263,18 @@ export default {
       this.recordId = recordId
       this.initTagList = tagList
     },
+    handleDynamicPolicyNextStep (tagList, policyId, policyName) {
+      this.activeStep = 1
+      this.policyId = policyId
+      this.policyName = policyName
+      this.initTagList = tagList
+    },
     resetFormData () {
       this.activeStep = 0
       this.recordId = undefined
       this.$store.commit('setPolicyId', undefined)
-      this.peoplePageCheck = false
+      // this.peoplePageCheck = false
+      this.isDynamicPeople = false
     },
     handleDirectStrategyList () {
       this.$root.$emit('stratege-list-refresh')

@@ -1,26 +1,34 @@
 <template>
   <div>
-
+    <div style="color: red">
+      第3步
+      isDynamicPeople: {{isDynamicPeople}} <br/>
+      :policyId:: {{policyId}}<br/>
+      :policyName:: {{ policyName }}<br/>
+      :crowdId:: {{ crowdId }}<br/>
+      <!-- :menu:: {{ menu }}<br/> -->
+      <!-- form === {{form}} -->
+    </div>
     <el-form ref="menu" :model="menu" label-position="left" label-width="130px" class="form-class">
       <div class="div-class">
 
         <el-form-item label="动态人群: " style="width: 500px">
           <div
             class="filed-row"
-            v-for="(field, key) in menu.fields"
+            v-for="(field, key) in menu.list"
             :key="key"
           >
-            <!-- v-dragging="{ list: menu.fields, item: field, group: 'fieldsTab' }" -->
+            <!-- v-dragging="{ list: menu.list, item: field, group: 'fieldsTab' }" -->
             <!-- < > -->
               <el-input
-                v-model="field.label"
+                v-model="field.priority"
                 placeholder="优先级"
                 clearable
                 style="width: 100px;">
               </el-input>
               <span class="split-line">—</span>
               <el-input
-                v-model="field.prop"
+                v-model="field.crowdName"
                 placeholder="名称"
                 clearable
                 style="width: 300px;"
@@ -30,7 +38,7 @@
               <div style="display:flex">
                 <!-- <el-button type="text" icon="el-icon-rank" :title="$t('dragSort')"></el-button> -->
                 <!-- <el-button type="text" icon="el-icon-delete" @click="handleReduceFiled(key)"></el-button> -->
-                <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(key)" ></el-button>
+                <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key)" ></el-button>
               </div>
           </div>
           <!-- </div> -->
@@ -40,24 +48,24 @@
 
         </el-form-item>
 
-        <el-form-item label="是否做AB实验:" prop="abTest">
-          <el-radio-group v-model="menu.abTest">
-            <el-radio :label="true">是</el-radio>
-            <el-radio :label="false">否</el-radio>
+        <el-form-item label="是否做AB实验:" prop="ab">
+          <el-radio-group v-model="menu.ab">
+            <el-radio :label="1">是</el-radio>
+            <el-radio :label="0">否</el-radio>
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="对比人群: " v-if="menu.abTest">
+        <el-form-item label="对比人群: " v-if="menu.ab">
           <el-input
-            v-model="menu.abObj.name"
+            v-model="menu.controlGroupName"
             placeholder="名称"
             clearable
             style="width: 300px;">
           </el-input>
 
-          <span class="ratio">
+          <span class="flowNum">
             占比：
-            <el-input v-model="menu.abObj.ratio" placeholder="占比" style="width: 50px;"></el-input>
+            <el-input v-model="menu.flowNum" placeholder="占比" style="width: 50px;"></el-input>
             %
           </span>
         </el-form-item>
@@ -77,41 +85,77 @@
 <script>
 export default {
   components: {},
-  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
+  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
   data () {
     return {
       menu: {
-        fields: [{
-          field: '123',
-          prop: '2143'
+        list: [{
+          crowdName: '',
+          priority: ''
         }],
-        abTest: true,
-        abObj: {
-          name: '',
-          ratio: 50
-        }
+        ab: 0,
+        controlGroupName: '',
+        flowNum: 50
       }
     }
   },
   created () {
-
+    if (this.crowdId) {
+      this.$service.getDynamicCrowd({ crowdId: this.crowdId }).then(res => {
+        this.menu = res.list ? res : {
+          list: [{
+            crowdName: '',
+            priority: ''
+          }],
+          ab: 0,
+          controlGroupName: '',
+          flowNum: 50
+        }
+      })
+    }
   },
   methods: {
     // 添加字段
     handleAddFiled () {
-      this.menu.fields.push({
-        label: '',
-        prop: ''
+      this.menu.list.push({
+        crowdName: '',
+        priority: ''
       })
     },
     // 删除字段
-    handleReduceFiled (key) {
-      this.menu.fields.splice(key, 1)
+    handleReduceFiled (field, key) {
+      if (!field.crowdId) {
+        return this.menu.list.splice(key, 1)
+      }
+      const params = {
+        policyId: field.policyId || '',
+        crowdId: field.crowdId || ''
+      }
+
+      this.$service.delDynamicCrowd(params).then(() => {
+        this.menu.list.splice(key, 1)
+      })
     },
     handleBackPrevStep () {
+      // 待定
+      // this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
       this.$emit('crowdPrevStep', 2, this.recordId)
     },
     handleToNextStep () {
+      this.menu.policyId = this.policyId
+      this.menu.crowdId = this.crowdId
+      this.menu.crowdName = `${this.policyName}(动态人群)`
+      this.menu.list = this.menu.list.map(item => {
+        return {
+          ...item,
+          crowdName: item.crowdName,
+          priority: Number(item.priority)
+
+        }
+      })
+      this.$service.addDynamicCrowd(this.menu).then(res => {
+
+      })
       this.$emit('crowdNextStep', 2, this.recordId)
     },
     resetFormData () {

@@ -790,3 +790,58 @@ export function effectDownload (params) {
     params
   })
 }
+
+export function addDynamicCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/addDynamicCrowd',
+    data,
+    isJSON: true
+  })
+}
+
+// 获取动态人群配置
+export function getDynamicCrowd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic/getDynamicCrowd',
+    params
+  })
+}
+
+// 删除动态人群配置
+export function delDynamicCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/delDynamicCrowd',
+    data,
+    isJSON: true
+  })
+}
+
+// 获取指标条件
+export function getRuleIndicators (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic/getRuleIndicators',
+    params
+  })
+}
+// 获取流转条件
+export function getDynamicRule (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic/getDynamicRule',
+    params
+  })
+}
+
+// 设置流转条件
+export function setDynamicRule (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/setDynamicRule',
+    data,
+    isJSON: true
+  })
+}
