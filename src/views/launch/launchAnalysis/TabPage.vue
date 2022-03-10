@@ -141,7 +141,7 @@
 <script>
 import axios from 'axios'
 export default {
-  name: 'MyCollect',
+  name: 'TabPage',
   components: {
     // tagList
   },
@@ -170,11 +170,6 @@ export default {
       allCharts: {},
       dataList: [],
       filter: {
-        // searchType: 1,
-        // tagType: 2,
-        // pageNum: 1,
-        // pageSize: 10,
-        // tagName: undefined
         businessType: this.businessType,
         effectType: '',
         versionCode: [],
@@ -296,18 +291,6 @@ export default {
                 {
                   label: '圈定量',
                   prop: 'crowdAmount'
-                  // render: (h, params) => {
-                  //   return h('el-button', {
-                  //     props: {
-                  //       type: 'text'
-                  //     },
-                  //     on: {
-                  //       click: () => {
-                  //         this.handleRead(params)
-                  //       }
-                  //     }
-                  //   }, params.row.sshUsername)
-                  // }
                 },
                 {
                   label: '命中量',
@@ -340,13 +323,6 @@ export default {
                 {
                   label: '点击人数',
                   prop: 'clickNum'
-                  // render: (h, { row }) => {
-                  //   if (row.status === 1) {
-                  //     return '启用'
-                  //   } else {
-                  //     return '禁用'
-                  //   }
-                  // }
                 },
                 {
                   label: 'PV CTR',
@@ -382,18 +358,6 @@ export default {
                   render: (h, { row }) => {
                     return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
                   }
-                  // render: (h, params) => {
-                  //   return h('el-button', {
-                  //     props: {
-                  //       type: 'text'
-                  //     },
-                  //     on: {
-                  //       click: () => {
-                  //         this.handleRead(params)
-                  //       }
-                  //     }
-                  //   }, params.row.sshUsername)
-                  // }
                 },
                 {
                   label: '产品包页面曝光次数',
@@ -426,13 +390,7 @@ export default {
                 {
                   label: '成交单量',
                   prop: 'dealVolume'
-                  // render: (h, { row }) => {
-                  //   if (row.status === 1) {
-                  //     return '启用'
-                  //   } else {
-                  //     return '禁用'
-                  //   }
-                  // }
+
                 },
                 {
                   label: '成单人数',
@@ -464,7 +422,6 @@ export default {
                 },
                 {
                   label: '日期',
-                  // prop: 'statsDate'
                   render: (h, { row }) => {
                     return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
                   }
@@ -500,13 +457,7 @@ export default {
                 {
                   label: '成交单量',
                   prop: 'dealContractsNum'
-                  // render: (h, { row }) => {
-                  //   if (row.status === 1) {
-                  //     return '启用'
-                  //   } else {
-                  //     return '禁用'
-                  //   }
-                  // }
+
                 },
 
                 {
@@ -535,25 +486,10 @@ export default {
                   render: (h, { row }) => {
                     return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
                   }
-                  // render: (h, { row }) => {
-                  //   return row.crowdId + row.crowdName
-                  // }
                 },
                 {
                   label: '播放次数',
                   prop: 'watchTimes'
-                  // render: (h, params) => {
-                  //   return h('el-button', {
-                  //     props: {
-                  //       type: 'text'
-                  //     },
-                  //     on: {
-                  //       click: () => {
-                  //         this.handleRead(params)
-                  //       }
-                  //     }
-                  //   }, params.row.sshUsername)
-                  // }
                 },
                 {
                   label: '播放人数',
@@ -594,9 +530,6 @@ export default {
                   render: (h, { row }) => {
                     return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
                   }
-                  // render: (h, { row }) => {
-                  //   return row.crowdId + row.crowdName
-                  // }
                 },
                 {
                   label: '业务一级分类',
@@ -730,7 +663,6 @@ export default {
         dataType: this.showDataType,
         showDay: this.checked1 ? 1 : 0,
         page: this.filter.page,
-        // pageSize: this.filter.pageSize
         pageSize: this.totalCount
       }
       // params = qs.stringify(params, { indices: false })
@@ -818,6 +750,7 @@ export default {
         // })
       })
     },
+
     getBusinessUseTendency (rangeType) {
       this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
         const series = data.series || []
@@ -992,6 +925,7 @@ export default {
         }]
       })
     },
+
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
       // const _this = this
@@ -1004,47 +938,7 @@ export default {
         },
         tooltip: {
           trigger: 'axis'
-          // formatter: function (parmas) {
-          //   let str = parmas[0].name + '<br/>'
-          //   for (let item of parmas) {
-          //     str = str + item.marker + item.seriesName + ' :  ' + item.value + yunit + '<br/>'
-          //   }
-          //   // return _this.cc_format_number(a.data)
-          //   return str
-          // }
-          // axisPointer: {
-          //   type: 'cross',
-          //   label: {
-          //     formatter: function (params) {
-          //       return '快照时间：' + params.value
-          //     }
-          //   }
-          // }
-          // formatter: function (params) {
-          //   params = params[0]
-          //   var date = new Date(params.name)
-          //   return (
-          //     date.getDate() +
-          //     '/' +
-          //     (date.getMonth() + 1) +
-          //     '/' +
-          //     date.getFullYear() +
-          //     ' : ' +
-          //     params.value[1]
-          //   )
-          // }
-          // formatter: function (a) {
-          //   return _this.cc_format_number(a.data)
-          // }
-          // formatter: '{b0}: {c0}<br />{b1}: {c1}'
         },
-        // tooltip: {
-        //   trigger: 'item',
-        //   formatter: function (a) {
-        //     return _this.cc_format_number(a.data)
-        //   }
-        //   // formatter: "{a} <br/> {b}: {c} ({d}%)"
-        // },
         legend: {
           data: legend
         },
@@ -1180,49 +1074,6 @@ export default {
       })
     },
 
-    getPickerOptions () {
-      return this.pickerOptionsDayinRange(30, 720)
-    },
-    pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
-      let _minTime = null
-      let _maxTime = null
-
-      return {
-        onPick (time) {
-          // 如果选择了只选择了一个时间
-          if (!time.maxDate) {
-            let timeRange = day * 24 * 60 * 60 * 1000
-            _minTime = time.minDate.getTime() - timeRange // 最小时间
-            _maxTime = time.minDate.getTime() + timeRange // 最大时间
-            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
-          } else {
-            _minTime = _maxTime = null
-          }
-        },
-        disabledDate: (time) => {
-          const day1 = range * 24 * 3600 * 1000 // 2年
-          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          let minTime = Date.now() - day1
-
-          // onPick后触发
-          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
-          if (_minTime && _maxTime) {
-            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
-          } else {
-            return time.getTime() > maxTime || time.getTime() < minTime
-          }
-        }
-      }
-    },
-
-    // 删除
-    handleDelete (id) {
-      this.$service.deleteSpecialTagType(id).then(() => {
-        this.fetchData()
-        this.$message('删除成功')
-      })
-    },
-
     fetchData () {
       this.tbLoading = true
       // 重置图表
@@ -1271,29 +1122,6 @@ export default {
         this.totalCount = result.total
       })
     },
-    // fetchData () {
-    // // 搜索时名称为空时，默认赋值为类型第一个
-    // if (!this.filter.tagName && this.typeTabsList.length > 0) {
-    //   this.filter.tagName = this.typeTabsList[0].groupName
-    //   this.activeName = this.typeTabsList[0].value
-    // }
-    // this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
-
-    // const filter = this.filter
-    // this.$service.searchByGroup(filter).then(data => {
-    //   const result = data
-    //   this.dataList = result.pageInfo.list
-    //   this.totalCount = result.pageInfo.total
-    //   this.dataSourceEnum = result.DataSourceMap
-    //   this.typeEnum = result.tagKey
-    // })
-    // },
-    // handleCheckListChange (val) {
-    //   this.$emit('change-checkList', val)
-    // },
-    // handleTableSelected (val, mode) {
-    //   this.$emit('get-table-selected', val, mode)
-    // },
 
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时, val=20
     handleSizeChange (val) {
