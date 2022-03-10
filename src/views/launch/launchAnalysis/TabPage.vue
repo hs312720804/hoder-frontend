@@ -10,7 +10,6 @@
       <div class="filterFields">
         <el-form :model="formData" ref="formData" :inline="true">
           <el-form-item prop="versionCode">
-
             <el-select
               filterable
               remote
@@ -1109,6 +1108,15 @@ export default {
           return {
             packageId: arr[0],
             packageType: arr[1]
+          }
+        })
+      } else if (params.effectType === 'ctr') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            blockIdName: arr[0],
+            pageIdName: arr[1],
+            slotIdName: arr[2]
           }
         })
       } else {
