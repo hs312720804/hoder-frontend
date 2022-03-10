@@ -1411,6 +1411,15 @@ export default {
             packageType: arr[1]
           }
         })
+      } else if (params.effectType === 'ctr') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            blockIdName: arr[0],
+            pageIdName: arr[1],
+            slotIdName: arr[2]
+          }
+        })
       } else {
         params.pkgs = undefined
       }
