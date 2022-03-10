@@ -68,12 +68,16 @@
       <!-- {{ tableData.selected }}
       {{ tableData.selectionType }}
       {{ this.selected }} -->
-
-      <span v-if="tableData.selected.length > 0" class="watchChartDiv">
-        已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
-        <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
-        <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
-      </span>
+      <div v-if="tableData.selected.length > 0">
+        <span class="watchChartDiv">
+          已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
+          <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
+          <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
+        </span>
+        <span style="color: #999; margin-left: 10px; font-size: 12px;">
+          漏斗图和折线图不细分具体资源位或产品包
+        </span>
+      </div>
 
       <div class="secondScreening">
         数据展示：
@@ -126,8 +130,8 @@
         <div
           v-for="(item, index) in chartData"
           :key="'chart' + index"
-          :id="'aaa'+index"
-          style="float: left; width: 500px; height: 360px;">
+          :id="'funnelChart'+index"
+          style="float: left; width: 500px; height: 360px; padding: 20px 0 40px">
         </div>
       </div>
 
@@ -135,7 +139,7 @@
 </template>
 
 <script>
-import qs from 'qs'
+import axios from 'axios'
 export default {
   name: 'MyCollect',
   components: {
@@ -197,7 +201,7 @@ export default {
       showTypeTab: true,
       tableData: {},
       formData: {
-        versionCode: ''
+        versionCode: []
         // type: '14',
         // date: []
       },
@@ -487,7 +491,7 @@ export default {
                 },
                 {
                   label: '成单总设备量',
-                  prop: 'dealContractsNum'
+                  prop: 'dealUsers'
                 },
                 {
                   label: '成单人数',
@@ -504,10 +508,7 @@ export default {
                   //   }
                   // }
                 },
-                {
-                  label: '成单人数',
-                  prop: 'dealUsers'
-                },
+
                 {
                   label: '成交金额(元)',
                   prop: 'dealAmount'
@@ -712,6 +713,10 @@ export default {
   methods: {
     // 下载
     handleDownload () {
+      if (this.totalCount > 100000) {
+      // if (this.totalCount > 10) {
+        return this.$message.error('最多下载10万条数据，请筛选后下载')
+      }
       // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
       const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
         return total.concat(item.split(','))
@@ -728,11 +733,34 @@ export default {
         // pageSize: this.filter.pageSize
         pageSize: this.totalCount
       }
-      params = qs.stringify(params, { indices: false })
+      // params = qs.stringify(params, { indices: false })
+      if (params.effectType === 'package') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            packageId: arr[0],
+            packageType: arr[1]
+          }
+        })
+      } else {
+        params.pkgs = undefined
+      }
+      const link = document.createElement('a')
 
-      this.downloadUrl = `/api/effect/download?${params}`
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      axios.post('/api/effect/download', params, { responseType: 'arraybuffer' }).then(res => {
+        const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
+        const title = decodeURIComponent(name) // 解码
+        // 创建Blob对象，设置文件类型
+        let blob = new Blob([res.data],
+          { type: 'application/vnd.ms-excel' }
+          // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
+        )
+
+        let objectUrl = URL.createObjectURL(blob) // 创建URL
+        link.href = objectUrl
+        link.download = title // 自定义文件名
+        link.click() // 下载文件
+        URL.revokeObjectURL(objectUrl) // 释放内存
       })
     },
 
@@ -784,8 +812,8 @@ export default {
           return { name: key.crowdName, data: key.data, type: 'line' }
         })
         this.$nextTick(() => {
-          this.setLinesEchart('chart1', '', amount.date, linesData, legendData)
-          this.setLinesEchart('chart2', '', dealVolume.date, linesData2, legendData2)
+          this.setLinesEchart('chart1', '成交金额', amount.date, linesData, legendData)
+          this.setLinesEchart('chart2', '成交单量', dealVolume.date, linesData2, legendData2)
         })
         // })
       })
@@ -804,9 +832,6 @@ export default {
     },
     // 查看漏斗图
     watchFunnel () {
-      // this.selected
-      // const table = this.tableData
-      // let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
       let newParamsArr = this.selected
 
       newParamsArr = newParamsArr.map(obj => {
@@ -829,7 +854,7 @@ export default {
         this.chartData = data
         this.chartData.forEach((item, index) =>
           this.$nextTick(() => {
-            this.showFunnel(item, `aaa${index}`)
+            this.showFunnel(item, `funnelChart${index}`)
           })
         )
       })
@@ -974,7 +999,8 @@ export default {
       let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
-          text: title
+          text: title,
+          top: 0
         },
         tooltip: {
           trigger: 'axis'
@@ -1041,7 +1067,7 @@ export default {
           },
           scale: true,
           axisLabel: {
-            margin: 30,
+            margin: 5,
             formatter: function (value) {
               if (value >= 100000000) {
                 value = value / 100000000 + '亿' + yunit
@@ -1225,6 +1251,18 @@ export default {
         pageSize: this.filter.pageSize
       }
 
+      // 产品包成交需要加一个参数
+      if (params.effectType === 'package') {
+        params.pkgs = this.formData.resourceIds.map((item) => {
+          const arr = item.split(',')
+          return {
+            packageId: arr[0],
+            packageType: arr[1]
+          }
+        })
+      } else {
+        params.pkgs = undefined
+      }
       // params = qs.stringify(params.versionCode)
 
       this.$service.getEffectData(params).then(result => {

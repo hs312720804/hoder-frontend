@@ -35,11 +35,12 @@ export function getLaunchMenuList (params) {
 }
 
 // 闭环效果—— 投放分析 ——列表查询接口
-export function getEffectData (params) {
+export function getEffectData (data) {
   return this.fetch({
-    method: 'GET',
+    method: 'POST',
     url: '/api/effect/getEffectData',
-    params,
-    isJSON: true
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
   })
 }

@@ -785,7 +785,7 @@ export function effectGetLine (data) {
 }
 export function effectDownload (params) {
   return this.fetch({
-    method: 'get',
+    method: 'post',
     url: '/api/effect/download',
     params
   })

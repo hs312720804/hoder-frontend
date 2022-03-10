@@ -9,6 +9,7 @@ export default function fetch ({
   params,
   isReturnAllInfor = false,
   isJSON = false,
+  isFileStream = false,
   contentType
 }) {
   NProgress.start()
@@ -33,6 +34,9 @@ export default function fetch ({
     .then(function ({ data }) {
       NProgress.done()
       const codeFormat = parseInt(data.code)
+      if (isFileStream) {
+        return isReturnAllInfor ? data : data.data
+      }
       if (codeFormat === 0 || codeFormat === 1000) {
         return isReturnAllInfor ? data : data.data
       } else if (codeFormat === 400001 || codeFormat === 9999) {
