@@ -1,5 +1,6 @@
 <template>
   <div>
+    <!-- {{selectRow}} -->
     <crowd-list
       v-show="isShowCrowdList"
       ref="list"
@@ -7,6 +8,8 @@
       @goBack="goBackFirstLayer"
       @addCrowd="addCrowd"
       @editABCrowd="editABCrowd"
+      @editDynamicPeopleSetting="editDynamicPeopleSetting"
+      @editDynamicPeopleConditions="editDynamicPeopleConditions"
     ></crowd-list>
     <crowd-add
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
@@ -37,16 +40,41 @@
       </el-tabs>
     </div>
     <crowd-a-b-add
-            v-if="!isShowCrowdList && mode === 'addABTest'"
-            @goBackCrowdListPage="goBackCrowdListPage"
-            :crowd="crowd"
+      v-if="!isShowCrowdList && mode === 'addABTest'"
+      @goBackCrowdListPage="goBackCrowdListPage"
+      :crowd="crowd"
     ></crowd-a-b-add>
+
+    <!-- 动态人群设置 -->
+    <dynamic-people-setting
+      v-if="!isShowCrowdList && mode === 'step2'"
+      :policyId="policyId"
+      :policyName="policyName"
+      :crowdId="crowdId"
+      :isDynamicPeople="isDynamicPeople"
+      mode="editCrowd"
+      @goBackCrowdListPage="goBackCrowdListPage"
+    >
+    </dynamic-people-setting>
+
+    <!-- 设置流转条件 -->
+    <dynamic-people-conditions
+      v-if="!isShowCrowdList && mode === 'step3'"
+      :policyId="policyId"
+      :policyName="policyName"
+      :crowdId="crowdId"
+      mode="editCrowd"
+      @goBackCrowdListPage="goBackCrowdListPage"
+    >
+    </dynamic-people-conditions>
   </div>
 </template>
 <script>
 import CrowdAdd from './crowdAdd'
 import CrowdList from './crowdList'
 import CrowdABAdd from './crowdAbTest'
+import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
+import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
   data () {
     return {
@@ -56,11 +84,28 @@ export default {
       tabSet: 'first',
       mode: '',
       crowd: undefined,
-      effectCrowd: false
+      effectCrowd: false,
+      activeStep: 0
     }
   },
   props: ['selectRow'],
   methods: {
+    editDynamicPeopleSetting (row) {
+      console.log('this.selectRow===', this.selectRow)
+      this.isShowCrowdList = false
+      this.mode = 'step2'
+      this.crowdId = row.crowdId
+      this.policyId = row.policyId
+      this.policyName = row.policyName
+    },
+    editDynamicPeopleConditions  (row) {
+      console.log('this.selectRow===', this.selectRow)
+      this.isShowCrowdList = false
+      this.mode = 'step3'
+      this.crowdId = row.crowdId
+      this.policyId = row.policyId
+      this.policyName = row.policyName
+    },
     goBackFirstLayer () {
       // 回到第一层页面，即策略列表页
       this.$emit('goBack')
@@ -103,7 +148,9 @@ export default {
   components: {
     CrowdAdd,
     CrowdList,
-    CrowdABAdd
+    CrowdABAdd,
+    DynamicPeopleSetting,
+    DynamicPeopleConditions
   }
 }
 </script>

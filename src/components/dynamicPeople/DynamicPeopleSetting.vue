@@ -71,12 +71,18 @@
         </el-form-item>
       </div>
 
-      <el-form-item label-width="0">
+      <el-form-item v-if="mode === 'editCrowd'" label-width="0">
+        <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
+      </el-form-item>
+
+      <el-form-item v-else label-width="0">
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <!-- <el-button type="warning" @click="handleSave(0)">跳过保存</el-button> -->
         <!-- <el-button type="primary" @click="handleSave(1)">下一步</el-button> -->
         <el-button type="primary" @click="handleToNextStep(2)">下一步</el-button>
       </el-form-item>
+
     </el-form>
   </div>
 
@@ -85,7 +91,7 @@
 <script>
 export default {
   components: {},
-  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
+  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId', 'mode'],
   data () {
     return {
       menu: {
@@ -154,9 +160,26 @@ export default {
         }
       })
       this.$service.addDynamicCrowd(this.menu).then(res => {
-
+        this.$emit('crowdNextStep', 2, this.recordId)
       })
-      this.$emit('crowdNextStep', 2, this.recordId)
+    },
+    // 编辑人群时保存
+    save () {
+      this.menu.policyId = this.policyId
+      this.menu.crowdId = this.crowdId
+      this.menu.crowdName = `${this.policyName}(动态人群)`
+      this.menu.list = this.menu.list.map(item => {
+        return {
+          ...item,
+          crowdName: item.crowdName,
+          priority: Number(item.priority)
+
+        }
+      })
+      this.$service.addDynamicCrowd(this.menu).then(res => {
+        this.$message.success('操作成功')
+        this.$emit('goBackCrowdListPage', true)
+      })
     },
     resetFormData () {
       this.$emit('resetFormData')

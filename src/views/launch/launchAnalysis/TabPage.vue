@@ -10,14 +10,7 @@
       <div class="filterFields">
         <el-form :model="formData" ref="formData" :inline="true">
           <el-form-item prop="versionCode">
-            <!-- <el-select
-              filterable
-              v-model="formData.crowdIds"
-              multiple
-              placeholder="请选择123策略"
-              @change="getCrowd"
-              @remove-tag="removeTag"
-            > -->
+
             <el-select
               filterable
               remote
@@ -100,14 +93,6 @@
 
       </div>
 
-      <!-- <tag-list
-        :tableData="tableData"
-        :dataList="tableData.dataList"
-        :check-list-parent="checkList"
-        @change-checkList="handleCheckListChange"
-        @table-selected="handleTableSelected"
-      > -->
-
       <c-table
         v-loading="tbLoading"
         :props="tableData.props"
@@ -146,36 +131,10 @@
         </div>
       </div>
 
-      <!-- this.chartData -->
-
-      <!-- </tag-list> -->
-
-      <!-- <el-dialog
-        :title="dialogTitle"
-        :visible.sync="dialogVisible"
-        width="500px">
-          <el-form label-position="left" label-width="80px" :model="form">
-            <el-form-item label="名称" required>
-                <el-input v-model="form.tagName"></el-input>
-            </el-form-item>
-            <el-form-item label="英文名" required>
-                <el-input v-model="form.tagKey"></el-input>
-            </el-form-item>
-            <el-form-item label="备注">
-                <el-input v-model="form.remark"></el-input>
-            </el-form-item>
-          </el-form>
-
-          <div slot="footer" class="dialog-footer">
-            <el-button @click="dialogVisible = false">取 消</el-button>
-            <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
-          </div>
-      </el-dialog> -->
   </div>
 </template>
 
 <script>
-// import tagList from './List'
 import qs from 'qs'
 export default {
   name: 'MyCollect',
@@ -784,20 +743,6 @@ export default {
     },
     // 查看折线图
     watchLine () {
-      // // 漏斗图的参数
-      // const params = {
-      //   businessType: this.businessType,
-      //   effectType: this.activeName,
-      //   versionCode: this.formData.versionCode,
-      //   // versionCode: '1,2',
-      //   // startPeriod: this.formData.date[0],
-      //   // endPeriod: this.formData.date[1],
-      //   dataType: this.showDataType,
-      //   showDay: this.checked1 ? 1 : 0,
-      //   page: this.filter.page,
-      //   pageSize: this.filter.pageSize
-      // }
-      // let newParamsArr = this.tableData.data.filter(item => this.selected.includes(item.crowdId))
       let newParamsArr = this.selected
 
       newParamsArr = newParamsArr.map(obj => {
@@ -1098,15 +1043,6 @@ export default {
           axisLabel: {
             margin: 30,
             formatter: function (value) {
-              // if (value >= 10000 && value < 10000000) {
-              //   value = value / 10000 + '万' + yunit
-              // } else if (value >= 10000000) {
-              //   value = value / 10000000 + '千万' + yunit
-              // } else if (value >= 100000000) {
-              //   value = value / 100000000 + '亿' + yunit
-              // } else {
-              //   value = value + yunit
-              // }
               if (value >= 100000000) {
                 value = value / 100000000 + '亿' + yunit
               } else if (value >= 10000000) {
@@ -1160,25 +1096,7 @@ export default {
       this.filter.page = 1
       this.fetchData()
     },
-    // HandleDateTypeChange (val) {
-    //   let currentDate = new Date()
-    //   let old7Date = ''
-    //   if (val === '14') {
-    //     old7Date = currentDate.setDate(currentDate.getDate() - 15)
-    //   } else if (val === '30') {
-    //     old7Date = currentDate.setDate(currentDate.getDate() - 31)
-    //   } else if (val === '365') {
-    //     old7Date = currentDate.setDate(currentDate.getDate() - 365)
-    //   }
 
-    //   let date1 = this.$moment(old7Date).format('YYYY-MM-DD')
-    //   // let date2 = this.$moment(currentDate.setDate(currentDate.getDate() - 1)).format('YYYY-MM-DD')
-    //   let date2 = this.$moment().subtract(1, 'days').format('YYYY-MM-DD')
-
-    //   this.formData.date = [date1, date2]
-
-    //   console.log('111111111===', this.formData.date)
-    // },
     resetForm (formName) {
       this.$refs[formName] && this.$refs[formName].resetFields()
       console.log('formData===', this.formData)
@@ -1235,22 +1153,7 @@ export default {
         this.loading = false
       })
     },
-    // getAddList () {
-    //   this.$service.addMultiVersionCrowd(2).then(data => {
-    //     this.launchPlatform = data.biLists
-    //     this.strategyPlatform = data.policies
-    //     this.effectTimeList = data.efTime.map(item => {
-    //       return { label: item + '天', value: item }
-    //     })
-    //     if (data.tempCrowds) {
-    //       // 行为人群列表
-    //       // this.behaviorCrowdList = data.tempCrowds.filter(item => {
-    //       //     return item.isFxFullSql === 3
-    //       // })
 
-    //     }
-    //   })
-    // },
     getPickerOptions () {
       return this.pickerOptionsDayinRange(30, 720)
     },

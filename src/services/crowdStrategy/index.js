@@ -845,3 +845,13 @@ export function setDynamicRule (data) {
     isJSON: true
   })
 }
+
+// 编辑动态人群名称
+export function updateDynamicCrowdName (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/updateDynamicCrowdName',
+    data,
+    isJSON: true
+  })
+}

@@ -1,5 +1,8 @@
 <template>
   <div>
+    <!-- <div>
+      {{ tableData }}
+    </div> -->
   <div class="crowd-list">
     <fieldset>
       <legend>{{ selectRow.policyName }}</legend>
@@ -24,7 +27,7 @@
     <!-- authority -->
     <div class="header">
       <div class="header-left">
-        <el-button-group>
+        <el-button-group v-if="!smart">
           <el-tooltip placement="top-start">
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective">
@@ -96,17 +99,199 @@
       </div>
     </div>
     <!-- talbe -->
+    <!-- 动态人群的table -->
     <el-table
-            ref="myTable"
-            :data="tableData"
-            style="width: 100%"
-            stripe
-            border
-            :row-class-name="tableRowClassName"
-            :span-method="objectSpanMethod"
-            row-key="crowdId"
-            :expand-row-keys="initExpandCrowd"
-            @expand-change="handleExpandChange"
+      v-if="smart"
+      ref="myTable"
+      :data="tableData"
+      style="width: 100%"
+      stripe
+      border
+      :row-class-name="tableRowClassName"
+      :span-method="smartObjectSpanMethod"
+      row-key="crowdId"
+    >
+
+      <el-table-column type="index" width="30"></el-table-column>
+      <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+      <el-table-column prop="crowdName" label="人群名称" width="200">
+           <template slot-scope="scope">
+               <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
+               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+           </template>
+      </el-table-column>
+      <el-table-column prop="priority" label="优先级" width="110">
+          <template slot="header">
+            优先级
+            <el-popover
+              placement="top"
+              trigger="hover"
+              class="popover-button"
+            >
+              <div>数字越大，优先级越高</div>
+            <span class="priority-tip" slot="reference">!</span>
+            </el-popover>
+          </template>
+          <template slot-scope="scope">
+              <priorityEdit @refresh="loadData" :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn" :byPassId="scope.row.id" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+          </template>
+      </el-table-column>
+
+      <el-table-column prop="status" label="状态" >
+        <template slot-scope="scope">
+          {{ launchStatusEnum[scope.row.status] }}
+          <!-- <span v-if="scope.row.putway === 1">生效中</span>
+          <span v-if="scope.row.putway === 0">已下架</span> -->
+        </template>
+      </el-table-column>
+      <el-table-column prop="status" label="流量占比" >
+        <template slot-scope="scope">
+          {{ scope.row.flowNum }}%
+          <!-- <span v-if="scope.row.putway === 1">生效中</span>
+          <span v-if="scope.row.putway === 0">已下架</span> -->
+        </template>
+      </el-table-column>
+      <!-- <el-table-column label="AB测试" width="100px">
+          <template slot-scope="scope">
+              {{ abStatusEnum[scope.row.abstatus] }}
+          </template>
+      </el-table-column> -->
+      <!-- <el-table-column prop="forcastStatus" label="估算状态" width="90">
+          <template slot-scope="scope">
+              <span v-if="scope.row.forcastStatus == 1">未估算</span>
+              <span v-if="scope.row.forcastStatus == 2">估算中</span>
+              <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+              <span v-if="scope.row.forcastStatus == 4">估算失败</span>
+          </template>
+      </el-table-column> -->
+      <!-- <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
+        <template slot-scope="scope">
+          <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
+          <span v-else>否</span>
+        </template>
+      </el-table-column> -->
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="180">
+        <template slot-scope="scope">
+          <el-icon name="time"></el-icon>
+          <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
+      <el-table-column label="操作">
+        <template slot-scope="scope">
+          <div class="el-button-group">
+
+            <el-dropdown @command="handleCommandStastic">
+              <el-button size="small" type="text">
+                统计
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['estimatedDetail',scope.row]"
+                        v-if="scope.row.forcastStatus == 3"
+                >估算画像</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >投后效果</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['homepageData',scope.row]"
+                >看主页数据</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['appointment',scope.row]"
+                >预约投后分析</el-dropdown-item>
+                <!--<el-dropdown-item-->
+                <!--:command="['redirectCrowd',scope.row]"-->
+                <!--&gt;重定向数据</el-dropdown-item>-->
+              </el-dropdown-menu>
+            </el-dropdown>
+
+            <el-dropdown @command="handleDynamicCommandOpreate">
+              <el-button size="small" type="text">
+                更多
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['edit',scope.row]"
+                        v-permission="'hoder:crowd:edit'"
+                        :disabled="scope.row.putway === 0"
+                >编辑
+                </el-dropdown-item>
+                <el-dropdown-item
+                        :command="['del',scope.row]"
+                        v-permission="'hoder:crowd:del'"
+                >删除
+                </el-dropdown-item>
+                <el-dropdown-item
+                        :command="['upDown',scope.row]"
+                >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
+                </el-dropdown-item>
+                <!-- <el-dropdown-item
+                        :command="['copy',scope.row]"
+                        :disabled="scope.row.putway === 0"
+                >人群复制
+                </el-dropdown-item> -->
+
+                <el-dropdown-item
+                        :command="['commitHistory',scope.row]"
+                >提交历史数据
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="primary"-->
+                    <!--@click="handleClickRedirectWithId(scope.row)"-->
+                    <!--v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"-->
+            <!--&gt;新增重定向投放</el-button>-->
+          </div>
+        </template>
+      </el-table-column>
+      <el-table-column label="编辑">
+        <!-- <el-button size="small" type="text">
+          编辑
+        </el-button> -->
+        <template slot-scope="scope">
+          <div class="el-button-group">
+            <!-- 编辑大人群 -->
+            <el-dropdown @command="handleBigDynamicCommandOpreate">
+              <el-button size="small" type="text">
+                编辑
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="['step1',scope.row]" v-permission="'hoder:crowd:edit'">
+                  圈出基础人群
+                </el-dropdown-item>
+                <el-dropdown-item :command="['step2',scope.row]" v-permission="'hoder:crowd:edit'">
+                  动态人群配置
+                </el-dropdown-item>
+                <el-dropdown-item :command="['step3',scope.row]" v-permission="'hoder:crowd:edit'">
+                  设置流转条件
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-button-->
+                    <!--size="small"-->
+                    <!--type="primary"-->
+                    <!--@click="handleClickRedirectWithId(scope.row)"-->
+                    <!--v-if="crowdValidEnum[scope.row.crowdValidStatus] == '已过期'"-->
+            <!--&gt;新增重定向投放</el-button>-->
+          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <el-table
+      v-else
+      ref="myTable"
+      :data="tableData"
+      style="width: 100%"
+      stripe
+      border
+      :row-class-name="tableRowClassName"
+      :span-method="objectSpanMethod"
+      row-key="crowdId"
+      :expand-row-keys="initExpandCrowd"
+      @expand-change="handleExpandChange"
     >
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
@@ -335,9 +520,9 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
-                        :command="['edit',scope.row]"
-                        v-permission="'hoder:crowd:edit'"
-                        :disabled="scope.row.putway === 0"
+                  :command="['edit',scope.row]"
+                  v-permission="'hoder:crowd:edit'"
+                  :disabled="scope.row.putway === 0"
                 >编辑
                 </el-dropdown-item>
                 <el-dropdown-item
@@ -703,193 +888,207 @@
         </div>
       </div>
     </el-dialog>
-      <!--已划分弹窗显示-->
-      <el-dialog :visible.sync="showDivideDetail" title="划分详情">
+    <!--已划分弹窗显示-->
+    <el-dialog :visible.sync="showDivideDetail" title="划分详情">
 
-        <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
-          实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
-        </div>
+      <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
+        实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+      </div>
 
-        <el-table :data="DivideTableData" style="width: 100%;" stripe border>
-            <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
-            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
-            <el-table-column prop="ratio" label="占比">
-                <template slot-scope="scope">
-                    {{ scope.row.ratio }}%
-                </template>
-            </el-table-column>
-            <el-table-column prop="count" label="数量">
+      <el-table :data="DivideTableData" style="width: 100%;" stripe border>
+          <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
+          <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+          <el-table-column prop="ratio" label="占比">
               <template slot-scope="scope">
-                {{cc_format_number(scope.row.count)}}
+                  {{ scope.row.ratio }}%
               </template>
-            </el-table-column>
-            <el-table-column label="操作" width="250">
-                <template slot-scope="scope">
-                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
-                </template>
-            </el-table-column>
-        </el-table>
-      </el-dialog>
-      <commit-history-dialog
-              :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
-              :crowdId="currentCrowdId"
-              @closeDialog="setShowCommitHistoryDialog = false"
-              @submit="handleSubmitHistory"
-      ></commit-history-dialog>
-      <el-dialog :visible.sync="showLimitLaunchDialog">
-        <div>限制投放数量为：{{this.showLimitLaunchCount}}</div>
-      </el-dialog>
-      <el-dialog
-              :visible.sync="showBypassDialog"
-              title="请求分流"
-              @close="handleCancelBypass"
-      >
-        <div>
-          <el-steps :active="showBypassStep">
-            <el-step title="设置份数">
-            </el-step>
-            <el-step title="设置分组及比例">
-            </el-step>
-          </el-steps>
-        </div>
-        <div v-show="showBypassStep === 1">
-          请求流量划分份数：
-          <el-select
-                  v-model="byPassForm.apart"
-                  @change="handleBypassApartChange"
-          >
-            <el-option
-                    v-for="(item,index) in ratioEnum"
-                    :key="index"
-                    :label="item.label"
-                    :value="item.value"
-
-            >
-            </el-option>
-          </el-select>
-          份
-          <div class="button-margin">
-            <el-button @click="handleCancelBypass">取消</el-button>
-            <el-button type="primary" @click="handleNextBypass">下一步</el-button>
-          </div>
-        </div>
-        <div v-if="showBypassStep === 2">
-          <div
-                  v-for="(tableItem,index) in byPassForm.bypass"
+          </el-table-column>
+          <el-table-column prop="count" label="数量">
+            <template slot-scope="scope">
+              {{cc_format_number(scope.row.count)}}
+            </template>
+          </el-table-column>
+          <el-table-column label="操作" width="250">
+              <template slot-scope="scope">
+                  <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                  <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+              </template>
+          </el-table-column>
+      </el-table>
+    </el-dialog>
+    <commit-history-dialog
+            :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
+            :crowdId="currentCrowdId"
+            @closeDialog="setShowCommitHistoryDialog = false"
+            @submit="handleSubmitHistory"
+    ></commit-history-dialog>
+    <el-dialog :visible.sync="showLimitLaunchDialog">
+      <div>限制投放数量为：{{this.showLimitLaunchCount}}</div>
+    </el-dialog>
+    <el-dialog
+            :visible.sync="showBypassDialog"
+            title="请求分流"
+            @close="handleCancelBypass"
+    >
+      <div>
+        <el-steps :active="showBypassStep">
+          <el-step title="设置份数">
+          </el-step>
+          <el-step title="设置分组及比例">
+          </el-step>
+        </el-steps>
+      </div>
+      <div v-show="showBypassStep === 1">
+        请求流量划分份数：
+        <el-select
+                v-model="byPassForm.apart"
+                @change="handleBypassApartChange"
+        >
+          <el-option
+                  v-for="(item,index) in ratioEnum"
                   :key="index"
-                  class="bypass-item"
+                  :label="item.label"
+                  :value="item.value"
+
           >
+          </el-option>
+        </el-select>
+        份
+        <div class="button-margin">
+          <el-button @click="handleCancelBypass">取消</el-button>
+          <el-button type="primary" @click="handleNextBypass">下一步</el-button>
+        </div>
+      </div>
+      <div v-if="showBypassStep === 2">
+        <div
+                v-for="(tableItem,index) in byPassForm.bypass"
+                :key="index"
+                class="bypass-item"
+        >
+          <div>
+            <!--<div><el-input v-model="tableItem.name"></el-input></div>-->
             <div>
-              <!--<div><el-input v-model="tableItem.name"></el-input></div>-->
-              <div>
-                <numOrTextEdit :key="tableItem.name+'_'+index" :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
+              <numOrTextEdit :key="tableItem.name+'_'+index" :obj="tableItem" :objKey="'name'" :data="tableItem.name" :validType="'text'"></numOrTextEdit>
+            </div>
+            <div>
+              <div class="table-header">
+                <div>ID</div>
+                <div>人群名称</div>
+                <div>优先级</div>
+                <div>分流占比(%)</div>
               </div>
-              <div>
-                <div class="table-header">
-                  <div>ID</div>
-                  <div>人群名称</div>
-                  <div>优先级</div>
-                  <div>分流占比(%)</div>
-                </div>
-                <div class="table-body">
-                  <div class="table-left-part">
-                    <div
-                            v-for="(tableDetailItem,index) in tableItem.crowds"
-                            :key="'tableDetailItem'+index"
-                            class="table-detail-item"
-                    >
-                      <div>{{tableDetailItem.crowdId}}</div>
-                      <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
-                      <numOrTextEdit class="edit-priority" :key="tableDetailItem.priority+'_'+index" :obj="tableDetailItem" :objKey="'priority'" :validType="'number'"></numOrTextEdit>
-                      <!--<priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>-->
-                      <i class="el-icon-minus" @click="handleRemoveCrowds(tableItem,tableDetailItem.crowdId)"></i>
-                    </div>
-                  </div>
-                  <div class="table-ratio" v-if="tableItem.crowds.length > 0">
-                    <div>
-                      <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'" :range="[0,100]"></numOrTextEdit>
-                    </div>
+              <div class="table-body">
+                <div class="table-left-part">
+                  <div
+                          v-for="(tableDetailItem,index) in tableItem.crowds"
+                          :key="'tableDetailItem'+index"
+                          class="table-detail-item"
+                  >
+                    <div>{{tableDetailItem.crowdId}}</div>
+                    <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
+                    <numOrTextEdit class="edit-priority" :key="tableDetailItem.priority+'_'+index" :obj="tableDetailItem" :objKey="'priority'" :validType="'number'"></numOrTextEdit>
+                    <!--<priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>-->
+                    <i class="el-icon-minus" @click="handleRemoveCrowds(tableItem,tableDetailItem.crowdId)"></i>
                   </div>
                 </div>
-              </div>
-              <div class="select-bottom-rows">
-                <div class="select-rows">
-                    <el-select
-                            v-model="tableItem.crowdSelect"
-                            size="small"
-                            @change="handleCrowdSelectChange(tableItem)"
-                            placeholder="请选择人群"
-                    >
-                        <el-option
-                                v-for="(selectItem,index) in selectList"
-                                :label="selectItem.crowdName+'('+selectItem.crowdId+')'"
-                                :value="selectItem.crowdId"
-                                :key="index"
-                        ></el-option>
-                    </el-select>
+                <div class="table-ratio" v-if="tableItem.crowds.length > 0">
+                  <div>
+                    <numOrTextEdit :key="tableItem.ratio+'_'+index" :obj="tableItem" :objKey="'ratio'" :data="tableItem.ratio" :validType="'number'" :range="[0,100]"></numOrTextEdit>
+                  </div>
                 </div>
-                <div class="table-ratio"></div>
               </div>
             </div>
-          </div>
-          <div class="button-margin">
-            <el-button @click="handleCancelBypass">取消</el-button>
-            <el-button @click="showBypassStep = 1">上一步</el-button>
-            <el-button type="primary" @click="handleSaveBypass">完成</el-button>
+            <div class="select-bottom-rows">
+              <div class="select-rows">
+                  <el-select
+                          v-model="tableItem.crowdSelect"
+                          size="small"
+                          @change="handleCrowdSelectChange(tableItem)"
+                          placeholder="请选择人群"
+                  >
+                      <el-option
+                              v-for="(selectItem,index) in selectList"
+                              :label="selectItem.crowdName+'('+selectItem.crowdId+')'"
+                              :value="selectItem.crowdId"
+                              :key="index"
+                      ></el-option>
+                  </el-select>
+              </div>
+              <div class="table-ratio"></div>
+            </div>
           </div>
         </div>
-      </el-dialog>
-      <!-- 查看配置弹窗-->
-      <el-dialog title="查看配置" :visible.sync="showConfiguration">
-          <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
-      </el-dialog>
-      <!-- 投前测试弹出框-->
-      <el-dialog
-        title="投前测试"
-        :visible.sync="testDialogVisible"
-        width="500px">
-        <span>
-          <c-form label-width="120px" :model="formTest" ref="formTest" :inline="true">
-            <c-form-mac label="设备信息:" v-model="formTest.mac" @change="handleMacChange" prop="mac" :rules="rules.mac"/>
-             <el-form-item>
-              <el-button type="primary" @click="handleTest">测试</el-button>
-            </el-form-item>
-            <div>
-              <el-form-item label="测试结果:" v-if="testResult !== ''">
-                <div class="test-result">
-                  <span v-if="testResult === '不属于该人群'" class="icon iconfont el-icon-cc-frown-fill"></span>
-                  <span v-else class="icon iconfont el-icon-cc-smile-fill"></span>
-                  {{testResult}}
-                </div>
-              </el-form-item>
-            </div>
-          </c-form>
-        </span>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="testDialogVisible = false">关闭</el-button>
-        </span>
-      </el-dialog>
-      <!-- 查看配置弹窗-->
-      <el-dialog title="预约投后分析" :visible.sync="showAppointment" width="500px">
-        <el-form ref="appointmentForm" :model="appointmentForm" label-width="80px" size="mini">
-          <el-form-item label="起止时间" prop="value" required>
-            <el-date-picker
-              v-model="appointmentForm.value"
-              type="daterange"
-              range-separator="至"
-              start-placeholder="开始日期"
-              end-placeholder="结束日期"
-              :picker-options="pickerOptionsDayinRange(30)">
-            </el-date-picker>
+        <div class="button-margin">
+          <el-button @click="handleCancelBypass">取消</el-button>
+          <el-button @click="showBypassStep = 1">上一步</el-button>
+          <el-button type="primary" @click="handleSaveBypass">完成</el-button>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 查看配置弹窗-->
+    <el-dialog title="查看配置" :visible.sync="showConfiguration">
+        <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input>
+    </el-dialog>
+    <!-- 投前测试弹出框-->
+    <el-dialog
+      title="投前测试"
+      :visible.sync="testDialogVisible"
+      width="500px">
+      <span>
+        <c-form label-width="120px" :model="formTest" ref="formTest" :inline="true">
+          <c-form-mac label="设备信息:" v-model="formTest.mac" @change="handleMacChange" prop="mac" :rules="rules.mac"/>
+            <el-form-item>
+            <el-button type="primary" @click="handleTest">测试</el-button>
           </el-form-item>
+          <div>
+            <el-form-item label="测试结果:" v-if="testResult !== ''">
+              <div class="test-result">
+                <span v-if="testResult === '不属于该人群'" class="icon iconfont el-icon-cc-frown-fill"></span>
+                <span v-else class="icon iconfont el-icon-cc-smile-fill"></span>
+                {{testResult}}
+              </div>
+            </el-form-item>
+          </div>
+        </c-form>
+      </span>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="testDialogVisible = false">关闭</el-button>
+      </span>
+    </el-dialog>
+    <!-- 查看配置弹窗-->
+    <el-dialog title="预约投后分析" :visible.sync="showAppointment" width="500px">
+      <el-form ref="appointmentForm" :model="appointmentForm" label-width="80px" size="mini">
+        <el-form-item label="起止时间" prop="value" required>
+          <el-date-picker
+            v-model="appointmentForm.value"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            :picker-options="pickerOptionsDayinRange(30)">
+          </el-date-picker>
+        </el-form-item>
 
-        </el-form>
-        <span slot="footer" class="dialog-footer">
-          <el-button type="primary" @click="HandleAppointment">确定</el-button>
-          <el-button @click="showAppointment = false">取消</el-button>
-        </span>
-      </el-dialog>
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="HandleAppointment">确定</el-button>
+        <el-button @click="showAppointment = false">取消</el-button>
+      </span>
+    </el-dialog>
+
+    <el-dialog
+      :visible.sync="showEditDynamicCrowdName"
+      width="500px"
+      title="修改人群名称"
+    >
+      <div class="dynamic-crowd-name">
+        人群名称：<el-input v-model="dynamicCrowd.crowdName" clearable style="width: 80%;"></el-input>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="handleEditDynamicCrowdName">确定</el-button>
+        <el-button @click="showEditDynamicCrowdName = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -909,6 +1108,8 @@ export default {
   },
   data () {
     return {
+      showEditDynamicCrowdName: false,
+      dynamicCrowd: {},
       // 表格当前页数据
       tableData: [],
       testResult: '',
@@ -1080,6 +1281,11 @@ export default {
     }
   },
   props: ['selectRow'],
+  computed: {
+    smart () {
+      return this.selectRow.smart
+    }
+  },
   created () {
     // 高阶函数
     // this.$watch('time2', this.createTimeWatcher(2, 'drawExposeLine'))
@@ -1389,7 +1595,8 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
-        this.showByPassColumn = data.bypass === 1
+        // this.showByPassColumn = data.bypass === 1
+        this.showByPassColumn = data.policy.smart
         this.initExpandCrowd = []
         if (this.tableData.length > 0) {
           this.initExpandCrowd.push(this.tableData[0].crowdId)
@@ -1986,6 +2193,77 @@ export default {
           break
       }
     },
+    // 小人群功能
+    handleDynamicCommandOpreate (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      switch (type) {
+        case 'edit':
+          this.editDynamicCrowdName(params)
+          break
+        case 'del':
+          this.del(params)
+          break
+        case 'upDown':
+          this.upDownCrowd(params)
+          break
+        case 'copy':
+          this.copyCrowd(params)
+          break
+        case 'divide':
+          this.divideAB(params, 'addABTest')
+          break
+        case 'commitHistory':
+          this.handleCommitHistory(params)
+          break
+      }
+    },
+    // 编辑大人群
+    handleBigDynamicCommandOpreate (scope) {
+      const type = scope[0]
+      const params = scope[1]
+      switch (type) {
+        case 'step1':
+          this.handleDynamicCrowdStep1(params)
+          break
+        case 'step2':
+          this.handleDynamicCrowdStep2(params)
+          break
+        case 'step3':
+          this.handleDynamicCrowdStep3(params)
+          break
+      }
+    },
+    handleDynamicCrowdStep1 (row) {
+      row.crowdId = row.crowdPid
+      this.$emit('addCrowd', row)
+    },
+    handleDynamicCrowdStep2 (row) {
+      row.crowdId = row.crowdPid
+      this.$emit('editDynamicPeopleSetting', row)
+    },
+    handleDynamicCrowdStep3 (row) {
+      row.crowdId = row.crowdPid
+      this.$emit('editDynamicPeopleConditions', row)
+    },
+    // 打开编辑动态人群名称弹窗
+    editDynamicCrowdName (params) {
+      console.log('params===', params)
+      this.dynamicCrowd = params
+      this.showEditDynamicCrowdName = true
+    },
+    // 编辑动态人群名称
+    handleEditDynamicCrowdName () {
+      const params = {
+        policyId: this.dynamicCrowd.policyId,
+        crowdId: this.dynamicCrowd.crowdId,
+        crowdName: this.dynamicCrowd.crowdName
+      }
+      this.$service.updateDynamicCrowdName(params).then(res => {
+        this.showEditDynamicCrowdName = false
+        this.$message.success('修改名称成功')
+      })
+    },
     tableRowClassName ({ row }) {
       if (row.putway === 0) { return 'gray-row' }
     },
@@ -2561,6 +2839,21 @@ export default {
         }
       }
     },
+    smartObjectSpanMethod ({ row, column, rowIndex, columnIndex }) {
+      if (columnIndex === 8 || columnIndex === 5) {
+        if (rowIndex === 0) {
+          return {
+            rowspan: 100,
+            colspan: 1
+          }
+        } else {
+          return {
+            rowspan: 0,
+            colspan: 0
+          }
+        }
+      }
+    },
     handleEditBypass () {
       this.handleByPass()
       this.showBypassStep = 2
@@ -2871,4 +3164,6 @@ fieldset>div
     width 100%
 .edit-priority  >>> .input-width
   width 50%
+.dynamic-crowd-name
+  white-space nowrap
 </style>

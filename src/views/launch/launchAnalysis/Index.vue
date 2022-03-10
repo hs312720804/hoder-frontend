@@ -4,16 +4,6 @@
           v-model="activeName"
           @tab-click="handleTabChange"
         >
-            <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
-                <el-input
-                    v-model="searchVal"
-                    placeholder="支持按标签名、Code、描述搜索"
-                    @keyup.enter.native="handleSearch"
-                >
-                </el-input>
-                <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-            </div> -->
-
             <el-tab-pane label="影视" name="影视"></el-tab-pane>
             <el-tab-pane label="教育" name="教育"></el-tab-pane>
             <el-tab-pane label="少儿" name="少儿"></el-tab-pane>
@@ -33,23 +23,11 @@
 </template>
 
 <script>
-// import labelZone from './LabelZone'
-// import myCollect from './MyCollect'
-// import tempLabelIndex from './tempLabel/TempLabelIndex'
-// import LocalLabelIndex from './localLabel/Index'
-// import specialTag from './SpecialTag'
-// import CustomTag from './CustomTag'
 import TabPage from './TabPage'
 
 export default {
   name: 'labelSquareAA',
   components: {
-    // labelZone,
-    // myCollect,
-    // tempLabelIndex,
-    // specialTag,
-    // LocalLabelIndex,
-    // CustomTag,
     TabPage
   },
   data () {

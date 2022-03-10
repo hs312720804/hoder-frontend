@@ -13,7 +13,7 @@
       <div class="div-class">
 
         <!-- <template v-for="(item, index) in rulesJson.rules"> -->
-          <div class="label-ground" :key="index">
+          <div class="label-ground">
             <div class="tag-condition--parent">
               <div class="tag-condition">
                 <el-button
@@ -21,14 +21,14 @@
                   @click="handleRulesConditionChange(rulesJson)"
                   round
                   size="small"
-                  :key="'button' + index + '_' + i"
+                  :key="'button' + '_' + i"
                 >
                   {{ rulesJson.condition === 'AND' ? '且' : '或' }}
                 </el-button>
               </div>
               <div
                 v-for="(childItem, n) in rulesJson.rules"
-                :key="index + 'tagId' + n"
+                :key="'tagId' + n"
                 :class="{ 'label-item': true, paddingTop: n > 0 }"
               >
 
@@ -61,14 +61,14 @@
 
                   <!-- number 类型 -->
                   <el-input-number
-                    :key="index + 'input'"
+                    :key="n + 'input'"
                     v-model="childItem.value"
                     placeholder="请输入内容"
                   ></el-input-number>
 
                 </span>
 
-                <span class="i" @click="handleRemoveRule(index)">
+                <span class="i" @click="handleRemoveRule(n)">
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
               </div>
@@ -107,7 +107,11 @@
           </el-tag>
         </div>
       </div> -->
-      <div>
+      <div v-if="mode === 'editCrowd'">
+        <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
+        <el-button type="primary" @click="save">保存</el-button>
+      </div>
+      <div v-else>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <!-- <el-button type="warning" @click="handleSave(0)">跳过保存</el-button> -->
         <!-- <el-button type="primary" @click="handleSave(1)">下一步</el-button> -->
@@ -122,7 +126,7 @@
 export default {
   components: {},
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
+  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId', 'mode'],
   data () {
     return {
       dataSourceColorEnum: {
@@ -158,10 +162,25 @@ export default {
     // 获取流转条件
     this.$service.getRuleIndicators().then(res => {
       this.tags = res
-      res.forEach(item => {
-        this.handleAddChildRule(item)
-      })
     })
+
+    if (this.crowdId) {
+      this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+        console.log('res===', res)
+        if (res) {
+          this.rulesJson = JSON.parse(res)
+          // this.rulesJson = (res)
+          console.log('res===', this.rulesJson)
+        } else {
+          // 获取流转条件
+          this.$service.getRuleIndicators().then(res => {
+            res.forEach(item => {
+              this.handleAddChildRule(item)
+            })
+          })
+        }
+      })
+    }
   },
   methods: {
 
@@ -220,11 +239,23 @@ export default {
       const parmas = {
         policyId: this.policyId,
         crowdId: this.crowdId,
-        dynamicJson: this.rulesJson
+        dynamicJson: JSON.stringify(this.rulesJson)
       }
       this.$service.setDynamicRule(parmas).then(res => {
 
         this.$emit('crowdNextStep', 3, this.recordId)
+      })
+    },
+    // 编辑人群时保存
+    save () {
+      const parmas = {
+        policyId: this.policyId,
+        crowdId: this.crowdId,
+        dynamicJson: JSON.stringify(this.rulesJson)
+      }
+      this.$service.setDynamicRule(parmas).then(res => {
+        this.$message.success('操作成功')
+        this.$emit('goBackCrowdListPage', true)
       })
     },
     resetFormData () {
