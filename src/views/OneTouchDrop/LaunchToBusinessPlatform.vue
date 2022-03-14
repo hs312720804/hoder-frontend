@@ -1,7 +1,7 @@
 <template>
     <div class="launchToBusiness">
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
-            <el-form-item label="投放模式" prop="launchMode">
+            <el-form-item v-if="!isDynamicPeople" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
                 <el-checkbox :disabled="!!policyId" v-model="crowdForm.launchMode.push">push模式（用于消息、微信）</el-checkbox>
             </el-form-item>
@@ -149,7 +149,7 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'LaunchToBusinessPlatform',
-  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
   data () {
     return {
       crowdForm: {
@@ -461,7 +461,11 @@ export default {
       })
     },
     handleBackPrevStep () {
-      this.$emit('launchPrevStep', 2)
+      if (this.isDynamicPeople) {
+        this.$emit('launchPrevStep', 4)
+      } else {
+        this.$emit('launchPrevStep', 2)
+      }
     },
     getCountDataEnum () {
       this.$service.getEstimateType().then((data) => {
@@ -470,6 +474,9 @@ export default {
     }
   },
   created () {
+    if (this.isDynamicPeople) {
+      this.crowdForm.launchMode.push = false
+    }
     this.getCountDataEnum()
     this.handleGetCurrentPolicy()
     this.getCrowdInitList()

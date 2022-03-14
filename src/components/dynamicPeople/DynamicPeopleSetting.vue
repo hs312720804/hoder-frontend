@@ -15,7 +15,7 @@
         <el-form-item label="动态人群: " style="width: 500px">
           <div
             class="filed-row"
-            v-for="(field, key) in menu.list"
+            v-for="(field, key) in menu.dynamicCrowd"
             :key="key"
           >
             <!-- v-dragging="{ list: menu.list, item: field, group: 'fieldsTab' }" -->
@@ -95,7 +95,7 @@ export default {
   data () {
     return {
       menu: {
-        list: [{
+        dynamicCrowd: [{
           crowdName: '',
           priority: ''
         }],
@@ -108,7 +108,7 @@ export default {
   created () {
     if (this.crowdId) {
       this.$service.getDynamicCrowd({ crowdId: this.crowdId }).then(res => {
-        this.menu = res.list ? res : {
+        this.menu = res.dynamicCrowd ? res : {
           list: [{
             crowdName: '',
             priority: ''
@@ -123,7 +123,7 @@ export default {
   methods: {
     // 添加字段
     handleAddFiled () {
-      this.menu.list.push({
+      this.menu.dynamicCrowd.push({
         crowdName: '',
         priority: ''
       })
@@ -131,7 +131,7 @@ export default {
     // 删除字段
     handleReduceFiled (field, key) {
       if (!field.crowdId) {
-        return this.menu.list.splice(key, 1)
+        return this.menu.dynamicCrowd.splice(key, 1)
       }
       const params = {
         policyId: field.policyId || '',
@@ -139,7 +139,7 @@ export default {
       }
 
       this.$service.delDynamicCrowd(params).then(() => {
-        this.menu.list.splice(key, 1)
+        this.menu.dynamicCrowd.splice(key, 1)
       })
     },
     handleBackPrevStep () {
@@ -151,7 +151,7 @@ export default {
       this.menu.policyId = this.policyId
       this.menu.crowdId = this.crowdId
       this.menu.crowdName = `${this.policyName}(动态人群)`
-      this.menu.list = this.menu.list.map(item => {
+      this.menu.dynamicCrowd = this.menu.dynamicCrowd.map(item => {
         return {
           ...item,
           crowdName: item.crowdName,
@@ -168,7 +168,7 @@ export default {
       this.menu.policyId = this.policyId
       this.menu.crowdId = this.crowdId
       this.menu.crowdName = `${this.policyName}(动态人群)`
-      this.menu.list = this.menu.list.map(item => {
+      this.menu.dynamicCrowd = this.menu.dynamicCrowd.map(item => {
         return {
           ...item,
           crowdName: item.crowdName,

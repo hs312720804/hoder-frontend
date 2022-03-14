@@ -10,6 +10,7 @@
       @handleBackPrevStep="handleBackPrevStep"
       @handleToNextStep="handleToNextStep"
       @handleDynamicCrowdNextStep="handleDynamicCrowdNextStep"
+      @handleDynamicCrowdPrevStep="handleDynamicCrowdPrevStep"
       @handleDirectStrategyListBrother="handleDirectStrategyListBrother"
     >
     </add-more-crowd>

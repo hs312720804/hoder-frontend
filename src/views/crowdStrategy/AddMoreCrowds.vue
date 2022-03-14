@@ -554,16 +554,28 @@ export default {
         const params = form.rulesJson[0]
         console.log('data===', params)
         params.policyId = this.policyId
-
-        // 动态人群
-        this.$service
-          .crowdSave(
-            params,
-            '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
-          )
-          .then((res) => {
-            this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
-          })
+        params.crowdId = this.crowdId
+        if (this.crowdId) { // 编辑
+          // 动态人群
+          this.$service
+            .crowdEdit(
+              params,
+              '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+            )
+            .then((res) => {
+              this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, this.crowdId)
+            })
+        } else {
+          // 动态人群
+          this.$service
+            .crowdSave(
+              params,
+              '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+            )
+            .then((res) => {
+              this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
+            })
+        }
       } else if (mode === 0) {
         this.$service
           .oneDropSaveCrowd(
@@ -648,7 +660,11 @@ export default {
       })
     },
     handleBackPrevStep () {
-      this.$emit('handleBackPrevStep', this.recordId)
+      if (this.isDynamicPeople) {
+        this.$emit('handleDynamicCrowdPrevStep', this.policyId, this.policyName, this.crowdId)
+      } else {
+        this.$emit('handleBackPrevStep', this.recordId)
+      }
     },
     checkNum (num) {
       const numInt = parseInt(num)

@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- {{selectRow}} -->
     <crowd-list
       v-show="isShowCrowdList"
       ref="list"
@@ -68,9 +67,15 @@
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-conditions>
-
+    <!-- {{policyId}}--{{policyName}} -->
     <!-- 添加动态人群 流程 -->
-    <oneTouchDrop v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"></oneTouchDrop>
+    <oneTouchDrop
+      v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"
+      dynamicMode="edit"
+      :initPolicyId="selectRow.policyId"
+      :initPolicyName="selectRow.policyName"
+    >
+    </oneTouchDrop>
   </div>
 </template>
 <script>

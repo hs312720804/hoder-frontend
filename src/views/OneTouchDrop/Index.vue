@@ -35,9 +35,10 @@
           <div v-if="isDynamicPeople">
 
             <new-create-policy
-              v-if="activeStep === 0"
+              v-if="activeStep === 0 && dynamicMode === 'add'"
               :recordId="recordId"
               :policyId="policyId"
+              :crowdId="crowdId"
               :initTagList="initTagList"
               :policyName="policyName"
               @resetFormData="resetFormData"
@@ -106,6 +107,10 @@
               :recordId="recordId"
               :tempPolicyAndCrowd="tempPolicyAndCrowd"
               :routeSource="routeSource"
+              :policyId="policyId"
+              :policyName="policyName"
+              :crowdId="crowdId"
+              :isDynamicPeople="isDynamicPeople"
               @nextStep="handleNextStep"
               @launchPrevStep="handleLaunchPrevStep"
               @resetFormData="resetFormData"
@@ -201,11 +206,25 @@ export default {
     DynamicPeopleConditions
   },
   props: {
-    // crowdId: {
-    //   type: [String, Number],
-    //   default: ''
-    // }
+    initPolicyId: {
+      type: [String, Number],
+      default: ''
+    },
+    initPolicyName: {
+      type: [String],
+      default: ''
+    },
+    dynamicMode: {
+      type: [String],
+      default: 'add'
+    }
   },
+  // 父组件中返回要传给下级的数据
+  // provide () {
+  //   return {
+  //     _parentThis: this._data
+  //   }
+  // },
   data () {
     return {
       activeStep: 0,
@@ -314,6 +333,12 @@ export default {
   created () {
     if (this.$route.params.source) { this.routeSource = this.$route.params.source }
     this.$store.commit('setEditSchemeConfig', false)
+    if (this.dynamicMode === 'edit') {
+      this.activeStep = 1
+      this.isDynamicPeople = true
+      this.policyId = this.initPolicyId
+      this.policyName = this.initPolicyName
+    }
   }
 }
 </script>
