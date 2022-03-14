@@ -263,7 +263,9 @@ export default {
       showTypeTab: true,
       tableData: {},
       formData: {
-        versionCode: []
+        businessType: this.businessType,
+        versionCode: [],
+        resourceIds: []
         // type: '14',
         // date: []
       },
@@ -763,7 +765,6 @@ export default {
             }
             break
         }
-
         this.getBehaviorCrowdList() // 行为人群列表
         this.getResourceList() // 资源位列表
         this.resetForm('formData') // 切换tab的时候重置筛选并查询
@@ -771,6 +772,9 @@ export default {
       },
       immediate: true
     }
+  },
+  created () {
+    this.fetchData()
   },
   methods: {
     // 下载
@@ -1424,11 +1428,12 @@ export default {
         params.pkgs = undefined
       }
       // params = qs.stringify(params.versionCode)
-
       this.$service.getEffectData(params).then(result => {
         this.tbLoading = false
         this.tableData.data = result.rows
         this.totalCount = result.total
+      }).catch(() => {
+        this.tbLoading = false
       })
     },
     // fetchData () {
