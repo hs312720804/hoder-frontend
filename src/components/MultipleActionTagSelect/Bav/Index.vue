@@ -3849,7 +3849,6 @@ export default {
      * @param {Object} defaultChild = [] 所清空下一级 child 时的默认赋值
      */
     handelChildBehavirSelectChange (params = {}) {
-      debugger
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
       if (this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {

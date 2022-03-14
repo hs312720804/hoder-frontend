@@ -31,10 +31,18 @@ export default {
   props: ['recordId', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
   methods: {
     handleBackPrevStep (recordId) {
-      this.$emit('crowdPrevStep', 1, recordId)
+      if (this.isDynamicPeople) {
+        debugger
+        this.$emit('dynamicCrowdPrevStep', 1, this.policyId, this.policyName)
+      } else {
+        this.$emit('crowdPrevStep', 1, recordId)
+      }
     },
     handleToNextStep (recordId, tempPolicyAndCrowd) {
       this.$emit('crowdNextStep', 1, recordId, tempPolicyAndCrowd)
+    },
+    handleDynamicCrowdPrevStep (policyId, policyName, crowdId) {
+      this.$emit('dynamicCrowdPrevStep', 1, policyId, policyName, crowdId)
     },
     handleDynamicCrowdNextStep (policyId, policyName, crowdId) {
       this.$emit('dynamicCrowdNextStep', 1, policyId, policyName, crowdId)

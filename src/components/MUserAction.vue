@@ -431,7 +431,6 @@ export default {
             rulesJson: item.rulesJson
           }
         })
-        // debugger
         this.$set(this.cache, tagId, {
           select: false,
           list
@@ -563,7 +562,6 @@ export default {
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
-      // debugger
       rule.rules.push({
         operator:
           tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),

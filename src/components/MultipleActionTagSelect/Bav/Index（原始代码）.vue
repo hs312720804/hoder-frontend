@@ -2,7 +2,7 @@
 <template>
   <el-form :model="childItem" ref="bav" :rules="bavFormRules" :inline="true">
     <div class="bav-attr-warp">
-    
+
       <el-tag class="oc-item" :type="dataSourceColorEnum[childItem.dataSource]">
         {{ childItem.tagName }} - {{ childItem.tagCode }}
       </el-tag>
@@ -77,7 +77,7 @@
                   <!-- 第三级 -->
                   <el-form-item
                     :prop="`bav.behaviorValue[${index}].child[${index2}].childCheckedVal`"
-                    :rules="{ required: true, message: '请选择', trigger: 'change' }"
+                    :rules="{ required: true, message: '请选择', trigger: 'change' }"
                   >
                     <el-select
                       v-model="item2.childCheckedVal"
@@ -1093,7 +1093,7 @@
                           </span>
                         </span>
                     </span>
-                    
+
                     <!-- // 不是电影的 -->
                       <!-- @change="handelQiBoChildBehavi666rSelectChange(item5, false, childItem, 6, {}, 'value', false)" -->
                     <span v-else>
@@ -2476,7 +2476,7 @@ export default {
       // seclectVal 当是【综合起播】时，需要根据选中的值特殊处理
       console.log('val===>', val)
       console.log('a===>', behaviorValue)
-      this.childItem.bav.reverseSelect = val                
+      this.childItem.bav.reverseSelect = val
 
       // 应用活跃 起波活跃
       if (
@@ -2484,7 +2484,7 @@ export default {
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
         this.childItem.tagCode === 'BAV0011'
-        ) {
+      ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
         let list
@@ -2516,7 +2516,7 @@ export default {
                 if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
                   curChild.operator = '!='
                   break
-                } else if (curChild.value &&  (curChild.child && curChild.child.length > 0)) { // 存在子集
+                } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
                   let list = this.getNodesLastItem([curChild])
                   // 递归去设置
                   this.iteratorNodes({
@@ -2557,7 +2557,7 @@ export default {
           })
         }
       }
-      console.log('整个数据',  this.childItem.bav);
+      console.log('整个数据', this.childItem.bav)
       console.log('反选后的结果behaviorValue =>', this.childItem.bav.behaviorValue)
       console.log('反选后的结果showBehaviorValue =>', this.childItem.bav.showBehaviorValue)
     },
@@ -2575,7 +2575,7 @@ export default {
     },
 
     // 循环递归查找最近有数据的项
-    iteratorNodes ({nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId} = params) {
+    iteratorNodes ({ nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId } = params) {
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
         let operator = val ? '!=' : '='
@@ -2603,7 +2603,7 @@ export default {
           if (item.value && item.filed !== 'mac') {
             // 起播行为第三级特殊处理
             if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
-              item.operator = operator === '=' ? 'like' : 'not like' 
+              item.operator = operator === '=' ? 'like' : 'not like'
             } else {
               item.operator = operator
             }
@@ -2941,8 +2941,8 @@ export default {
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
         this.childItem.tagCode === 'BAV0011') {
-          this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
-        }
+        this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
+      }
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
@@ -3000,11 +3000,10 @@ export default {
         } else {
           item.operator = '='
         }
-        if (item.child && item.child.length > 0 ) {
+        if (item.child && item.child.length > 0) {
           this.setRecoveryItem(item.child)
         } else {
           item.operator = '='
-          return
         }
       })
       return nodes
@@ -3041,7 +3040,7 @@ export default {
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
 
       vals.forEach(val => {
-        if (!val) return 
+        if (!val) return
         let obj = {}
         const lastNumberObj = [
           {
@@ -3055,7 +3054,7 @@ export default {
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val)
         const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
-        obj = matchObj ? matchObj : matchObj2
+        obj = matchObj || matchObj2
 
         // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
         if (isValueClear) obj.value = ''
@@ -3082,7 +3081,7 @@ export default {
             filed: '',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count'  }]
+            child: [{ name: '', value: '', filed: 'mac', operator: '=', type: 'count' }]
           }]
         }
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
@@ -3102,7 +3101,6 @@ export default {
 
           obj.childCheckedVal = '0' // 序号默认值为 0
         }
-
 
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild) // 根据是否最后一级，添加不同的 child
 

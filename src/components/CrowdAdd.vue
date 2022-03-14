@@ -1,6 +1,6 @@
 <template>
 <div>
-   <!-- isDynamicPeople: {{isDynamicPeople}} -->
+   inputValue: {{inputValue}}
    <!-- 动态人群 -->
   <div v-if="isDynamicPeople" class="el-collapse">
     <el-form-item label="" class="el-collapse_item">
@@ -8,7 +8,7 @@
         <div class="items crowd-content" :key="i" >
 
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
-              <el-input v-model="crowd.crowdName" placeholder="投放名称" :maxlength="50"></el-input>
+              <el-input v-model="crowd.crowdName" disabled placeholder="投放名称" :maxlength="50"></el-input>
             </el-form-item>
 
             <div style="position: relative">
@@ -338,8 +338,6 @@ export default {
     },
 
     setInputValue (val) {
-      // eslint-disable-next-line no-debugger
-      // debugger
       if (val !== this.inputValue) {
         if (val.length > 0) {
           this.inputValue = JSON.parse(JSON.stringify(val))
@@ -381,8 +379,6 @@ export default {
           this.setSeq()
         }
       }
-      // eslint-disable-next-line no-debugger
-      // debugger
       // console.log('122222222222222222------------>', this.inputValue)
     },
     emitInputValue (val) {
@@ -481,6 +477,7 @@ export default {
         this.specialTags = specialTags
         this.setInputValue(this.value)
       })
+      // this.inputValue[0].crowdName = `${this.policyName}(动态人群)`
     } else {
       if (this.value) {
         this.$service.tagInfoNew(this.recordId).then(data => {

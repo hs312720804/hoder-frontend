@@ -7,6 +7,7 @@
       :selectRow="selectRow"
       @goBack="goBackFirstLayer"
       @addCrowd="addCrowd"
+      @addDynamicCrowd="addDynamicCrowd"
       @editABCrowd="editABCrowd"
       @editDynamicPeopleSetting="editDynamicPeopleSetting"
       @editDynamicPeopleConditions="editDynamicPeopleConditions"
@@ -67,6 +68,9 @@
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-conditions>
+
+    <!-- 添加动态人群 流程 -->
+    <oneTouchDrop v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"></oneTouchDrop>
   </div>
 </template>
 <script>
@@ -75,6 +79,7 @@ import CrowdList from './crowdList'
 import CrowdABAdd from './crowdAbTest'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
+import oneTouchDrop from '@/views/OneTouchDrop/Index'
 export default {
   data () {
     return {
@@ -130,6 +135,11 @@ export default {
         this.effectCrowd = false
       }
     },
+    // 添加动态人群
+    addDynamicCrowd () {
+      this.isShowCrowdList = false
+      this.mode = 'isAddDynamicCrowd'
+    },
     goBackCrowdListPage (isLoadData) {
       this.isShowCrowdList = true
       if (isLoadData) this.$refs.list.loadData()
@@ -150,7 +160,8 @@ export default {
     CrowdList,
     CrowdABAdd,
     DynamicPeopleSetting,
-    DynamicPeopleConditions
+    DynamicPeopleConditions,
+    oneTouchDrop
   }
 }
 </script>

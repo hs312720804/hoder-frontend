@@ -18,9 +18,17 @@
           </el-steps>
 
         </div>
-        <div style="color: blue">
+        <!-- <div style="color: blue">
           recordId:: {{recordId}}
-          policyId:: {{policyId}}
+          policyId:: {{policyId}}</br>
+          initTagList: {{initTagList}}
+        </div> -->
+        <div style="color: red">
+          isDynamicPeople: {{isDynamicPeople}} <br/>
+          :policyId:: {{policyId}}<br/>
+          :policyName:: {{ policyName }}<br/>
+          :crowdId:: {{ crowdId }}<br/>
+          <!-- form === {{form}} -->
         </div>
         <div>
           <!-- 动态人群 -->
@@ -28,12 +36,14 @@
 
             <new-create-policy
               v-if="activeStep === 0"
-              @policyNextStep="handlePolicyNextStep"
-              @dynamicPolicyNextStep="handleDynamicPolicyNextStep"
               :recordId="recordId"
+              :policyId="policyId"
               :initTagList="initTagList"
+              :policyName="policyName"
               @resetFormData="resetFormData"
-              @handleDirectStrategyList="handleDirectStrategyList">
+              @handleDirectStrategyList="handleDirectStrategyList"
+              @policyNextStep="handlePolicyNextStep"
+              @dynamicPolicyNextStep="handleDynamicPolicyNextStep">
               <template v-slot:isChoosePeople>
                   <!-- <el-checkbox
                       style="margin-left: 20px"
@@ -59,6 +69,7 @@
                 @resetFormData="resetFormData"
                 @handleDirectStrategyList="handleDirectStrategyList"
                 @dynamicCrowdNextStep="handleDynamicCrowdNextStep"
+                @dynamicCrowdPrevStep="handleDynamicCrowdPrevStep"
             >
             </create-crowd>
 
@@ -189,6 +200,12 @@ export default {
     DynamicPeopleSetting,
     DynamicPeopleConditions
   },
+  props: {
+    // crowdId: {
+    //   type: [String, Number],
+    //   default: ''
+    // }
+  },
   data () {
     return {
       activeStep: 0,
@@ -201,7 +218,8 @@ export default {
       programmeId: undefined,
       reloadFlag: true,
       policyId: undefined,
-      policyName: undefined
+      policyName: undefined,
+      crowdId: undefined
     }
   },
   watch: {
@@ -251,6 +269,12 @@ export default {
       this.policyName = policyName
       this.crowdId = crowdId
     },
+    handleDynamicCrowdPrevStep (step, policyId, policyName, crowdId) {
+      this.activeStep = step - 1
+      this.policyId = policyId
+      this.policyName = policyName
+      this.crowdId = crowdId
+    },
     handleCrowdPrevStep (step, recordId) {
       this.activeStep = step - 1
       this.recordId = recordId
@@ -267,7 +291,9 @@ export default {
       this.activeStep = 1
       this.policyId = policyId
       this.policyName = policyName
+      debugger
       this.initTagList = tagList
+      console.log('tagList===', tagList)
     },
     resetFormData () {
       this.activeStep = 0

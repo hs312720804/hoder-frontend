@@ -883,7 +883,6 @@ export default {
      */
     handleAddActionRule (tag) {
       // eslint-disable-next-line no-debugger
-      debugger
       if (tag.dataSource === 2) { // 大数据标签
         this.handleAddRule(tag)
         return
@@ -1349,8 +1348,7 @@ export default {
         // if (policyData.dynamicPolicyJson) {
         //   this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
         // }
-        // eslint-disable-next-line no-debugger
-        debugger
+
         cacheIds = this.distinct(cacheIds, [])
         if (cacheIds.length !== 0) {
           cacheIds.forEach(this.fetchTagSuggestions)

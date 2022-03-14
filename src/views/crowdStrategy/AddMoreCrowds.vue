@@ -57,7 +57,7 @@ export default {
           {
             recordId: this.getRecordId(),
             tempCrowdId: undefined,
-            crowdName: undefined,
+            crowdName: this.isDynamicPeople ? `${this.policyName}(动态人群)` : undefined,
             tagIds: [],
             // 'purpose': undefined,
             remark: undefined,

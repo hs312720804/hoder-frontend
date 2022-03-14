@@ -191,7 +191,7 @@ export default {
     CustomTag,
     ThirdPartyTag
   },
-  props: ['recordId', 'initTagList'],
+  props: ['recordId', 'initTagList', 'policyId', 'policyName'],
   data () {
     return {
       activeName: 'labelZone',
@@ -399,28 +399,22 @@ export default {
               conditionTagIds: addForm.conditionTagIds,
               smart: isDynamicPeople
             }
-            this.$service.policyAddSave(oldFormData).then((data) => {
-              // if (data.policyId) {
-              //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
-              //     confirmButtonText: '确定',
-              //     cancelButtonText: '取消',
-              //     type: 'warning'
-              //   }).then(() => {
-              //     this.$message({
-              //       type: 'success',
-              //       message: '即将自动跳转至策略列表页'
-              //     })
-              //     this.$emit('handleDirectStrategyList')
-              //     // this.$router.push({ path: 'launch/strategyList' })
-              //   }).catch(() => {
-              //   })
-              // } else {
-              debugger
-              const policyId = data.policyId
-              const policyName = data.policyName
-              this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
-              // }
-            })
+            if (this.policyId) {
+              oldFormData.policyId = this.policyId
+              this.$service.policyUpate(oldFormData).then((data) => {
+                const policyId = this.policyId
+                const policyName = this.policyName
+                this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                // }
+              })
+            } else {
+              this.$service.policyAddSave(oldFormData).then((data) => {
+                const policyId = data.policyId
+                const policyName = data.policyName
+                this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                // }
+              })
+            }
           } else if (mode === 1) {
             if (this.addForm.recordId) {
               this.$service.oneDropPolicyAddSave(addForm).then((data) => {
@@ -516,6 +510,14 @@ export default {
     if (this.recordId) {
       this.getPolicyDetail()
       this.tagList = this.initTagList
+    }
+    if (this.policyId) {
+      this.tagList = this.initTagList
+      this.addForm.policyName = this.policyName
+      this.addForm.conditionTagIds = this.initTagList.map(function (v) {
+        return parseInt(v.tagId)
+      })
+      this.addForm.policyId = this.policyName
     }
   }
 }
