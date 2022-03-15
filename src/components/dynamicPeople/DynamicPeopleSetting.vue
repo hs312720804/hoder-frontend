@@ -13,6 +13,11 @@
       <div class="div-class">
 
         <el-form-item label="动态人群: " style="width: 500px">
+          <div class="filed-row">
+            占比：
+            <el-input v-model="menu.flowNum" placeholder="" class="flow-num"></el-input>
+            %
+          </div>
           <div
             class="filed-row"
             v-for="(field, key) in menu.dynamicCrowd"
@@ -31,15 +36,11 @@
                 v-model="field.crowdName"
                 placeholder="名称"
                 clearable
-                style="width: 300px;"
+                style="width: 200px;"
               >
               </el-input>
 
-              <div style="display:flex">
-                <!-- <el-button type="text" icon="el-icon-rank" :title="$t('dragSort')"></el-button> -->
-                <!-- <el-button type="text" icon="el-icon-delete" @click="handleReduceFiled(key)"></el-button> -->
-                <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key)" ></el-button>
-              </div>
+              <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key, 'dynamicCrowd')" ></el-button>
           </div>
           <!-- </div> -->
           <div class="filed-row " >
@@ -55,19 +56,41 @@
           </el-radio-group>
         </el-form-item>
 
-        <el-form-item label="对比人群: " v-if="menu.ab">
-          <el-input
+        <el-form-item label="对比人群: " v-if="menu.ab" style="width: 700px">
+          <!-- <el-input
             v-model="menu.controlGroupName"
             placeholder="名称"
             clearable
             style="width: 300px;">
-          </el-input>
+          </el-input> -->
+          <div
+            class="filed-row"
+            v-for="(field, key) in menu.controlGroup"
+            :key="key"
+          >
+            <!-- v-dragging="{ list: menu.list, item: field, group: 'fieldsTab' }" -->
+            <!-- < > -->
 
-          <span class="flowNum">
-            占比：
-            <el-input v-model="menu.flowNum" placeholder="占比" style="width: 50px;"></el-input>
-            %
-          </span>
+              <el-input
+                v-model="field.crowdName"
+                placeholder="名称"
+                clearable
+                style="width: 200px;"
+              >
+              </el-input>
+              <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key, 'controlGroup')" ></el-button>
+              <!-- <span class="split-line">—</span> -->
+              <span class="filed-row" style="margin-left: 40px;">
+                占比：
+                <el-input v-model="field.flowNum" placeholder="" class="flow-num" style="width: 50px;"></el-input>
+                %
+              </span>
+
+          </div>
+          <!-- </div> -->
+          <div class="filed-row " >
+            <el-button @click="handleAddControl" icon="el-icon-plus" class="add-btn">添加</el-button>
+          </div>
         </el-form-item>
       </div>
 
@@ -99,8 +122,9 @@ export default {
           crowdName: '',
           priority: ''
         }],
+        controlGroup: [],
         ab: 0,
-        controlGroupName: '',
+        // controlGroupName: '',
         flowNum: 50
       }
     }
@@ -109,14 +133,16 @@ export default {
     if (this.crowdId) {
       this.$service.getDynamicCrowd({ crowdId: this.crowdId }).then(res => {
         this.menu = res.dynamicCrowd ? res : {
-          list: [{
+          dynamicCrowd: [{
             crowdName: '',
             priority: ''
           }],
+          controlGroup: [],
           ab: 0,
-          controlGroupName: '',
           flowNum: 50
         }
+        this.menu.dynamicCrowd = this.menu.dynamicCrowd || []
+        this.menu.controlGroup = this.menu.controlGroup || []
       })
     }
   },
@@ -128,10 +154,16 @@ export default {
         priority: ''
       })
     },
+    handleAddControl () {
+      this.menu.controlGroup.push({
+        crowdName: '',
+        flowNum: ''
+      })
+    },
     // 删除字段
-    handleReduceFiled (field, key) {
+    handleReduceFiled (field, key, mode) {
       if (!field.crowdId) {
-        return this.menu.dynamicCrowd.splice(key, 1)
+        return this.menu[mode].splice(key, 1)
       }
       const params = {
         policyId: field.policyId || '',
@@ -139,7 +171,7 @@ export default {
       }
 
       this.$service.delDynamicCrowd(params).then(() => {
-        this.menu.dynamicCrowd.splice(key, 1)
+        this.menu[mode].splice(key, 1)
       })
     },
     handleBackPrevStep () {
@@ -173,7 +205,6 @@ export default {
           ...item,
           crowdName: item.crowdName,
           priority: Number(item.priority)
-
         }
       })
       this.$service.addDynamicCrowd(this.menu).then(res => {
@@ -202,7 +233,6 @@ export default {
   margin-bottom 20px
 }
 .filed-row{
-  display flex;
   margin-bottom 10px
 }
 .split-line{
@@ -211,7 +241,7 @@ export default {
 }
 .add-btn{
   margin 10px 28px 10px 0
-  width 100%
+  width 369px
 }
 .delete-btn{
   color #999
@@ -220,5 +250,8 @@ export default {
 }
 .ratio {
   margin-left: 60px
+}
+.flow-num{
+  width 50px
 }
 </style>

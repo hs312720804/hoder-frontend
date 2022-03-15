@@ -8,7 +8,7 @@
         :crowdId:: {{ crowdId }}<br/>
         <!-- :rulesJson:: {{ rulesJson }}<br/> -->
         <!-- form === {{form}} -->
-        {{rulesJson.rules}}
+        {{rulesJson}}
       </div>
       <div class="div-class">
 
@@ -126,7 +126,7 @@
 export default {
   components: {},
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId', 'mode'],
+  props: ['isDynamicPeople', 'policyId', 'crowdId', 'mode'],
   data () {
     return {
       dataSourceColorEnum: {
@@ -206,7 +206,7 @@ export default {
       // }
       this.rulesJson.rules.push({
         ...tag,
-        operator: '=',
+        operator: '>',
         value: ''
       })
     },
@@ -242,7 +242,6 @@ export default {
         dynamicJson: JSON.stringify(this.rulesJson)
       }
       this.$service.setDynamicRule(parmas).then(res => {
-
         this.$emit('crowdNextStep', 3, this.recordId)
       })
     },

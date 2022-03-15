@@ -266,10 +266,8 @@ export default {
     },
     policyId: {
       type: [Number, String]
-    },
-    policyName: {
-      type: String
     }
+
   },
   watch: {
     value: 'setInputValue'
@@ -478,7 +476,6 @@ export default {
         this.specialTags = specialTags
         this.setInputValue(this.value)
       })
-      // this.inputValue[0].crowdName = `${this.policyName}(动态人群)`
     } else {
       if (this.value) {
         this.$service.tagInfoNew(this.recordId).then(data => {

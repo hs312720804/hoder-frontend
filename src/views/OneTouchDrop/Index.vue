@@ -23,7 +23,7 @@
           policyId:: {{policyId}}</br>
           initTagList: {{initTagList}}
         </div> -->
-        <div style="color: red">
+        <div style="color: blue">
           isDynamicPeople: {{isDynamicPeople}} <br/>
           :policyId:: {{policyId}}<br/>
           :policyName:: {{ policyName }}<br/>
@@ -40,7 +40,6 @@
               :policyId="policyId"
               :crowdId="crowdId"
               :initTagList="initTagList"
-              :policyName="policyName"
               @resetFormData="resetFormData"
               @handleDirectStrategyList="handleDirectStrategyList"
               @policyNextStep="handlePolicyNextStep"
@@ -62,7 +61,6 @@
             <create-crowd
                 v-if="policyId && activeStep === 1"
                 :policyId="policyId"
-                :policyName="policyName"
                 :crowdId="crowdId"
                 :isDynamicPeople="isDynamicPeople"
                 @crowdNextStep="handleCrowdNextStep"
@@ -78,7 +76,6 @@
             <dynamic-people-setting
               v-if="activeStep === 2"
               :policyId="policyId"
-              :policyName="policyName"
               :crowdId="crowdId"
               :isDynamicPeople="isDynamicPeople"
               @crowdNextStep="handleCrowdNextStep"
@@ -92,7 +89,6 @@
             <dynamic-people-conditions
               v-if="activeStep === 3"
               :policyId="policyId"
-              :policyName="policyName"
               :crowdId="crowdId"
               :isDynamicPeople="isDynamicPeople"
               @crowdNextStep="handleCrowdNextStep"
@@ -108,7 +104,6 @@
               :tempPolicyAndCrowd="tempPolicyAndCrowd"
               :routeSource="routeSource"
               :policyId="policyId"
-              :policyName="policyName"
               :crowdId="crowdId"
               :isDynamicPeople="isDynamicPeople"
               @nextStep="handleNextStep"
@@ -188,6 +183,7 @@
 
 <script>
 // import createPolicy from './CreatePolicy'
+import { mapGetters } from 'vuex'
 import createCrowd from './CreateCrowd'
 import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
@@ -219,12 +215,10 @@ export default {
       default: 'add'
     }
   },
-  // 父组件中返回要传给下级的数据
-  // provide () {
-  //   return {
-  //     _parentThis: this._data
-  //   }
-  // },
+
+  computed: {
+    ...mapGetters(['policyName'])
+  },
   data () {
     return {
       activeStep: 0,
@@ -237,7 +231,7 @@ export default {
       programmeId: undefined,
       reloadFlag: true,
       policyId: undefined,
-      policyName: undefined,
+      // policyName: undefined,
       crowdId: undefined
     }
   },
@@ -272,6 +266,7 @@ export default {
       next()
     })
   },
+
   methods: {
     handleNextStep (step, recordId) {
       this.activeStep = step + 1
@@ -285,13 +280,13 @@ export default {
     handleDynamicCrowdNextStep (step, policyId, policyName, crowdId) {
       this.activeStep = step + 1
       this.policyId = policyId
-      this.policyName = policyName
+      this.$store.commit('setPolicyName', policyName)
       this.crowdId = crowdId
     },
     handleDynamicCrowdPrevStep (step, policyId, policyName, crowdId) {
       this.activeStep = step - 1
       this.policyId = policyId
-      this.policyName = policyName
+      this.$store.commit('setPolicyName', policyName)
       this.crowdId = crowdId
     },
     handleCrowdPrevStep (step, recordId) {
@@ -309,17 +304,20 @@ export default {
     handleDynamicPolicyNextStep (tagList, policyId, policyName) {
       this.activeStep = 1
       this.policyId = policyId
-      this.policyName = policyName
-      debugger
+      this.$store.commit('setPolicyId', policyId)
+      this.$store.commit('setPolicyName', policyName)
       this.initTagList = tagList
       console.log('tagList===', tagList)
     },
     resetFormData () {
       this.activeStep = 0
       this.recordId = undefined
-      this.$store.commit('setPolicyId', undefined)
       // this.peoplePageCheck = false
       this.isDynamicPeople = false
+      this.crowdId = undefined
+      this.policyId = undefined
+      this.$store.commit('setPolicyId', undefined)
+      this.$store.commit('setPolicyName', undefined)
     },
     handleDirectStrategyList () {
       this.$root.$emit('stratege-list-refresh')
@@ -337,7 +335,8 @@ export default {
       this.activeStep = 1
       this.isDynamicPeople = true
       this.policyId = this.initPolicyId
-      this.policyName = this.initPolicyName
+      this.$store.commit('setPolicyName', this.initPolicyName)
+      // this.policyName = this.initPolicyName
     }
   }
 }

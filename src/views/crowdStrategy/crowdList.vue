@@ -68,6 +68,7 @@
           <el-button
                   type="primary"
                   size="small"
+                  :disabled="tableData.length > 0"
                   @click="handleAddDynamic"
                   v-permission="'hoder:crowd:add'"
           >
@@ -162,25 +163,7 @@
             <span v-if="scope.row.putway === 0">已下架</span> -->
           </template>
         </el-table-column>
-        <!-- <el-table-column label="AB测试" width="100px">
-            <template slot-scope="scope">
-                {{ abStatusEnum[scope.row.abstatus] }}
-            </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="forcastStatus" label="估算状态" width="90">
-            <template slot-scope="scope">
-                <span v-if="scope.row.forcastStatus == 1">未估算</span>
-                <span v-if="scope.row.forcastStatus == 2">估算中</span>
-                <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
-                <span v-if="scope.row.forcastStatus == 4">估算失败</span>
-            </template>
-        </el-table-column> -->
-        <!-- <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
-          <template slot-scope="scope">
-            <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
-            <span v-else>否</span>
-          </template>
-        </el-table-column> -->
+
         <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="180">
           <template slot-scope="scope">
             <el-icon name="time"></el-icon>
@@ -2335,7 +2318,7 @@ export default {
           break
       }
     },
-    // 小人群功能
+    // 动态人群 - 小人群功能
     handleDynamicCommandOpreate (scope) {
       const type = scope[0]
       const params = scope[1]
@@ -2344,7 +2327,7 @@ export default {
           this.editDynamicCrowdName(params)
           break
         case 'del':
-          this.del(params)
+          this.delDynamicCrowd(params)
           break
         case 'upDown':
           this.upDownCrowd(params)
@@ -2359,6 +2342,26 @@ export default {
           this.handleCommitHistory(params)
           break
       }
+    },
+    // 删除字段
+    delDynamicCrowd (row) {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          const params = {
+            policyId: row.policyId || '',
+            crowdId: row.crowdId || ''
+          }
+
+          this.$service.delDynamicCrowd(params).then(() => {
+            this.loadData()
+          })
+        }).catch(function () {
+
+        })
     },
     // 编辑大人群
     handleBigDynamicCommandOpreate (scope) {

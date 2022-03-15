@@ -2,6 +2,7 @@ import API from '@/services'
 const configScheme = {
   state: {
     policyId: undefined, // 方案id
+    policyName: undefined, // 方案名称
     policyInfo: {}, // 编辑策略人群时需要携带的数据
     smartDetail: {}, // 获取流程图数据
     isSmartEdit: false // 是否处于编辑逻辑
@@ -10,6 +11,10 @@ const configScheme = {
     // 设置方案id
     setPolicyId (state, id) {
       state.policyId = id
+    },
+    // 设置方案名称
+    setPolicyName (state, name) {
+      state.policyName = name
     },
     'SET_POLICY_INFO': (state, data) => {
       state.policyInfo = data

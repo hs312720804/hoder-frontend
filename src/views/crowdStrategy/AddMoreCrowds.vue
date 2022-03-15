@@ -15,7 +15,6 @@
         :recordId="recordId"
         :isDynamicPeople="isDynamicPeople"
         :policyId="policyId"
-        :policyName="policyName"
       />
       <!--<el-form-item label="人群用途" prop="purpose">-->
       <!--<el-input v-model="form.purpose" placeholder="填写人群用途"></el-input>-->
@@ -44,9 +43,13 @@
 </template>
 <script>
 import CrowdAdd from '@/components/CrowdAdd.vue'
+import { mapGetters } from 'vuex'
 export default {
   components: {
     CrowdAdd
+  },
+  computed: {
+    ...mapGetters(['policyName'])
   },
   data: function () {
     return {
@@ -57,7 +60,7 @@ export default {
           {
             recordId: this.getRecordId(),
             tempCrowdId: undefined,
-            crowdName: this.isDynamicPeople ? `${this.policyName}(动态人群)` : undefined,
+            crowdName: undefined,
             tagIds: [],
             // 'purpose': undefined,
             remark: undefined,
@@ -116,7 +119,8 @@ export default {
       deep: true
     }
   },
-  props: ['recordId', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
+  props: ['recordId', 'isDynamicPeople', 'policyId', 'crowdId'],
+
   methods: {
     getRecordId () {
       return this.recordId
@@ -604,8 +608,6 @@ export default {
       // let purpose = undefined
       // let crowdExp = []
       this.$service.getCrowdsDetail(recordId).then(data => {
-        // eslint-disable-next-line no-debugger
-        // debugger
         const data2 = data.map(e => {
           // if (index === 0) {
           // purpose = e.purpose
@@ -651,12 +653,10 @@ export default {
           rulesJson: data2
           // crowdExp
         }
-        // eslint-disable-next-line no-debugger
         // 是否是否每日更新
         this.$nextTick(() => {
           this.$refs.CrowdAdd.hasMoveBehaviorTagRule()
         })
-        // alert(JSON.stringify(this.form))
       })
     },
     handleBackPrevStep () {
@@ -680,7 +680,7 @@ export default {
     getCrowdDetail () {
       if (this.crowdId != null) {
         this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
-          const data2 = [data.policyCrowds].map(e => {
+          const rule = [data.policyCrowds].map(e => {
           // if (index === 0) {
           // purpose = e.purpose
           // if (e.crowdValidFrom === null && e.crowdValidTo === null) {crowdExp = []}
@@ -691,6 +691,7 @@ export default {
           // }
             const obj = {}
             obj.tagIds = e.tagIds.split(',')
+            obj.crowdName = e.crowdName
             obj.dynamicPolicyJson = JSON.parse(e.dynamicPolicyJson)
             obj.behaviorRulesJson = JSON.parse(e.behaviorRulesJson)
             obj.rulesJson = JSON.parse(e.rulesJson)
@@ -723,12 +724,9 @@ export default {
           })
 
           this.form = {
-          // purpose,
-            rulesJson: data2
-          // crowdExp
+            rulesJson: rule
           }
           console.log('this.form===', this.form)
-          // eslint-disable-next-line no-debugger
           // 是否是否每日更新
           this.$nextTick(() => {
             this.$refs.CrowdAdd.hasMoveBehaviorTagRule()
@@ -743,6 +741,8 @@ export default {
     } else {
       this.handleEdit()
     }
+
+    this.form.rulesJson[0].crowdName = this.isDynamicPeople ? `${this.policyName}(动态人群)` : undefined
   }
 }
 </script>

@@ -172,6 +172,7 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 import labelZone from './LabelZone'
 import myCollect from './MyCollect'
 import tempLabelIndex from './tempLabel/TempLabelIndex'
@@ -191,7 +192,10 @@ export default {
     CustomTag,
     ThirdPartyTag
   },
-  props: ['recordId', 'initTagList', 'policyId', 'policyName'],
+  props: ['recordId', 'initTagList', 'policyId'],
+  computed: {
+    ...mapGetters(['policyName'])
+  },
   data () {
     return {
       activeName: 'labelZone',
@@ -390,10 +394,10 @@ export default {
           // }
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
-
+          debugger
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
           // 动态人群
-          if (isDynamicPeople && mode === 1) {
+          if (isDynamicPeople) {
             let oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
@@ -403,15 +407,33 @@ export default {
               oldFormData.policyId = this.policyId
               this.$service.policyUpate(oldFormData).then((data) => {
                 const policyId = this.policyId
-                const policyName = this.policyName
-                this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                const policyName = oldFormData.policyName
+
+                if (mode === 1) {
+                  this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                } else {
+                  this.$message({
+                    type: 'success',
+                    message: '即将自动跳转至策略列表页'
+                  })
+                  this.$emit('handleDirectStrategyList')
+                }
                 // }
               })
             } else {
               this.$service.policyAddSave(oldFormData).then((data) => {
                 const policyId = data.policyId
                 const policyName = data.policyName
-                this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+
+                if (mode === 1) {
+                  this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                } else {
+                  this.$message({
+                    type: 'success',
+                    message: '即将自动跳转至策略列表页'
+                  })
+                  this.$emit('handleDirectStrategyList')
+                }
                 // }
               })
             }

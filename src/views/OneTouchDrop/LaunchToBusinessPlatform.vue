@@ -1,5 +1,12 @@
 <template>
     <div class="launchToBusiness">
+      <div style="color: red">
+          isDynamicPeople: {{isDynamicPeople}} <br/>
+          :policyId:: {{policyId}}<br/>
+          :policyName:: {{ policyName }}<br/>
+          :crowdId:: {{ crowdId }}<br/>
+          <!-- form === {{form}} -->
+        </div>
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
             <el-form-item v-if="!isDynamicPeople" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
@@ -336,7 +343,6 @@ export default {
               remark: crowdForm.remark
             } : undefined
           }
-          // debugger
           // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
           if (this.policyId) {
             let data = {
