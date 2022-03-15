@@ -18,18 +18,13 @@
           </el-steps>
 
         </div>
+
         <!-- <div style="color: blue">
-          recordId:: {{recordId}}
-          policyId:: {{policyId}}</br>
-          initTagList: {{initTagList}}
-        </div> -->
-        <div style="color: blue">
           isDynamicPeople: {{isDynamicPeople}} <br/>
           :policyId:: {{policyId}}<br/>
           :policyName:: {{ policyName }}<br/>
           :crowdId:: {{ crowdId }}<br/>
-          <!-- form === {{form}} -->
-        </div>
+        </div> -->
         <div>
           <!-- 动态人群 -->
           <div v-if="isDynamicPeople">

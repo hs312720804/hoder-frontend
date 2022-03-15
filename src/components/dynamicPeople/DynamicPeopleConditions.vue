@@ -1,15 +1,13 @@
 <template>
   <div v-if="tags && tags.length > 0" class="form-class">
-      <div style="color: red">
+      <!-- <div style="color: red">
         第4步
         isDynamicPeople: {{isDynamicPeople}} <br/>
         :policyId:: {{policyId}}<br/>
         :policyName:: {{ policyName }}<br/>
         :crowdId:: {{ crowdId }}<br/>
-        <!-- :rulesJson:: {{ rulesJson }}<br/> -->
-        <!-- form === {{form}} -->
         {{rulesJson}}
-      </div>
+      </div> -->
       <div class="div-class">
 
         <!-- <template v-for="(item, index) in rulesJson.rules"> -->

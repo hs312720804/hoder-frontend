@@ -1,8 +1,5 @@
 <template>
   <div>
-    <!-- <div>
-      {{ tableData }}
-    </div> -->
   <div class="crowd-list">
     <fieldset>
       <legend>{{ selectRow.policyName }}</legend>
@@ -1714,6 +1711,7 @@ export default {
           this.tableData = data.pageInfo.list
           this.totalCount = data.pageInfo.total
           this.contrastCrowdTableData = data.dynamicCrowd // 动态人群对比人群表格数据
+          this.$emit('getBigCrowdId', data.crowdId || undefined)
         }
         // console.log('this.tableData===', this.tableData[0].rulesJson)
 

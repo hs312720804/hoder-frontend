@@ -10,6 +10,7 @@
       @editABCrowd="editABCrowd"
       @editDynamicPeopleSetting="editDynamicPeopleSetting"
       @editDynamicPeopleConditions="editDynamicPeopleConditions"
+      @getBigCrowdId="getBigCrowdId"
     ></crowd-list>
     <crowd-add
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
@@ -69,13 +70,15 @@
     </dynamic-people-conditions>
     <!-- {{policyId}}--{{policyName}} -->
     <!-- 添加动态人群 流程 -->
-    <oneTouchDrop
+    <DynamicCrowdAdd
       v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"
       dynamicMode="edit"
       :initPolicyId="selectRow.policyId"
       :initPolicyName="selectRow.policyName"
+      :initCrowdId="bigCrowdId"
+      @goBackCrowdListPage="goBackCrowdListPage"
     >
-    </oneTouchDrop>
+    </DynamicCrowdAdd>
   </div>
 </template>
 <script>
@@ -84,7 +87,7 @@ import CrowdList from './crowdList'
 import CrowdABAdd from './crowdAbTest'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
-import oneTouchDrop from '@/views/OneTouchDrop/Index'
+import DynamicCrowdAdd from './dynamicCrowdAdd'
 export default {
   data () {
     return {
@@ -95,11 +98,15 @@ export default {
       mode: '',
       crowd: undefined,
       effectCrowd: false,
-      activeStep: 0
+      activeStep: 0,
+      bigCrowdId: undefined
     }
   },
   props: ['selectRow'],
   methods: {
+    getBigCrowdId (crowdId) {
+      this.bigCrowdId = crowdId
+    },
     editDynamicPeopleSetting (row) {
       console.log('this.selectRow===', this.selectRow)
       this.isShowCrowdList = false
@@ -166,7 +173,7 @@ export default {
     CrowdABAdd,
     DynamicPeopleSetting,
     DynamicPeopleConditions,
-    oneTouchDrop
+    DynamicCrowdAdd
   }
 }
 </script>

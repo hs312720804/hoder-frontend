@@ -1,14 +1,12 @@
 <template>
   <div>
-    <div style="color: red">
+    <!-- <div style="color: red">
       第3步
       isDynamicPeople: {{isDynamicPeople}} <br/>
       :policyId:: {{policyId}}<br/>
       :policyName:: {{ policyName }}<br/>
       :crowdId:: {{ crowdId }}<br/>
-      <!-- :menu:: {{ menu }}<br/> -->
-      <!-- form === {{form}} -->
-    </div>
+    </div> -->
     <el-form ref="menu" :model="menu" label-position="left" label-width="130px" class="form-class">
       <div class="div-class">
 
@@ -112,9 +110,13 @@
 </template>
 
 <script>
+import { mapGetters } from 'vuex'
 export default {
   components: {},
-  props: ['isDynamicPeople', 'policyId', 'policyName', 'crowdId', 'mode'],
+  props: ['isDynamicPeople', 'policyId', 'crowdId', 'mode'],
+  computed: {
+    ...mapGetters(['policyName'])
+  },
   data () {
     return {
       menu: {
@@ -132,7 +134,7 @@ export default {
   created () {
     if (this.crowdId) {
       this.$service.getDynamicCrowd({ crowdId: this.crowdId }).then(res => {
-        this.menu = res.dynamicCrowd ? res : {
+        this.menu = res && res.dynamicCrowd ? res : {
           dynamicCrowd: [{
             crowdName: '',
             priority: ''

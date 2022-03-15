@@ -1,8 +1,6 @@
 <template>
 <div>
-  第二步
-   inputValue: {{inputValue}}
-   <!-- 动态人群 -->
+  <!-- 动态人群 -->
   <div v-if="isDynamicPeople" class="el-collapse">
     <el-form-item label="" class="el-collapse_item">
       <template v-for="(crowd, i) in inputValue">

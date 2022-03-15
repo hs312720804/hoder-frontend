@@ -394,7 +394,6 @@ export default {
           // }
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
-          debugger
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
           // 动态人群
           if (isDynamicPeople) {

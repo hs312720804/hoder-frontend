@@ -1,12 +1,11 @@
 <template>
     <div class="launchToBusiness">
-      <div style="color: red">
+      <!-- <div style="color: red">
           isDynamicPeople: {{isDynamicPeople}} <br/>
           :policyId:: {{policyId}}<br/>
           :policyName:: {{ policyName }}<br/>
           :crowdId:: {{ crowdId }}<br/>
-          <!-- form === {{form}} -->
-        </div>
+        </div> -->
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
             <el-form-item v-if="!isDynamicPeople" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
@@ -156,7 +155,7 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'LaunchToBusinessPlatform',
-  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'policyName', 'crowdId'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'initCrowdId'],
   data () {
     return {
       crowdForm: {
@@ -214,7 +213,7 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['policyId'])
+    ...mapGetters(['policyName'])
   },
   methods: {
     /*
@@ -343,6 +342,7 @@ export default {
               remark: crowdForm.remark
             } : undefined
           }
+          debugger
           // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
           if (this.policyId) {
             let data = {
@@ -359,11 +359,17 @@ export default {
                         name: 'myPolicy',
                         params: { changeTab: 'ToMyLaunch' }
                       })
-                    } else {
-                      this.$router.push({ path: 'launch/launchTabList' })
                     }
-                    this.$root.$emit('stratege-list-refresh')
-                    this.$emit('resetFormData')
+                    // ?????
+                    // else {
+                    // }
+                    if (this.initCrowdId) { //  人群列表页 - 新增人群
+                      this.$emit('goBackCrowdListPage')
+                    } else { // 创建策略流程
+                      this.$router.push({ path: 'launch/launchTabList' })
+                      // this.$root.$emit('stratege-list-refresh')
+                      // this.$emit('resetFormData')
+                    }
                   })
                 }, 300)
               })

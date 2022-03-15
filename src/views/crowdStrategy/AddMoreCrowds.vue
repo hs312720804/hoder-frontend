@@ -1,12 +1,11 @@
 <template>
   <div>
-    <div style="color: red">
+    <!-- <div style="color: red">
       isDynamicPeople: {{isDynamicPeople}} <br/>
       :policyId:: {{policyId}}<br/>
       :policyName:: {{ policyName }}<br/>
       :crowdId:: {{ crowdId }}<br/>
-      <!-- form === {{form}} -->
-    </div>
+    </div> -->
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"
