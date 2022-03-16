@@ -222,11 +222,11 @@
                           :disabled="scope.row.putway === 0"
                   >人群复制
                   </el-dropdown-item> -->
-
+<!--
                   <el-dropdown-item
                           :command="['commitHistory',scope.row]"
                   >提交历史数据
-                  </el-dropdown-item>
+                  </el-dropdown-item> -->
                 </el-dropdown-menu>
               </el-dropdown>
               <!--<el-button-->

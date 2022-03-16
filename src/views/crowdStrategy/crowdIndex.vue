@@ -53,7 +53,7 @@
       :policyName="policyName"
       :crowdId="crowdId"
       :isDynamicPeople="isDynamicPeople"
-      mode="editCrowd"
+      dynamicMode="edit"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-setting>
@@ -64,7 +64,7 @@
       :policyId="policyId"
       :policyName="policyName"
       :crowdId="crowdId"
-      mode="editCrowd"
+      dynamicMode="edit"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-conditions>
@@ -72,10 +72,10 @@
     <!-- 添加动态人群 流程 -->
     <DynamicCrowdAdd
       v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"
-      dynamicMode="edit"
       :initPolicyId="selectRow.policyId"
       :initPolicyName="selectRow.policyName"
       :initCrowdId="bigCrowdId"
+      dynamicMode="edit"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </DynamicCrowdAdd>

@@ -345,8 +345,7 @@ export default {
               remark: crowdForm.remark
             } : undefined
           }
-          debugger
-          // 如果是流程图创建 则不走之前投放逻辑接口 并且只能pull
+          // 动态人群的保存 只能pull
           if (this.policyId) {
             let data = {
               biIds: crowdForm.biIdsPull,
@@ -375,7 +374,13 @@ export default {
                 }, 300)
               })
             } else {
-              this.jumpToRouter(true, this.policyId)
+              if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+                this.$emit('goBackCrowdListPage')
+              } else { // 创建策略流程
+                this.$router.push({ path: 'launch/launchTabList' })
+                // this.$root.$emit('stratege-list-refresh')
+                // this.$emit('resetFormData')
+              }
             }
           } else {
             this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }, '投放成功').then((data) => {
