@@ -99,8 +99,19 @@
       <div v-if="tableData.selected.length > 0">
         <span class="watchChartDiv">
           已选择 <span style="color: #409eff">{{ tableData.selected.length }} </span> 项
-          <el-button type="text" @click="watchFunnel">查看漏斗图</el-button>
-          <el-button v-if="activeName === 'active'" type="text" @click="watchLine">查看折线图</el-button>
+
+          <el-popover
+            placement="top"
+            title=""
+            width="100"
+            trigger="manual"
+            transition="fade-in-linear"
+            content="当前数据暂无图表"
+            v-model="chartPopoverVisible">
+            <el-button type="text" @click="watchFunnel" slot="reference">查看漏斗图</el-button>
+            <el-button v-if="activeName === 'active'" type="text" @click="watchLine" slot="reference">查看折线图</el-button>
+            <!-- <el-button slot="reference" @click="chartPopoverVisible = !chartPopoverVisible">手动激活</el-button> -->
+          </el-popover>
         </span>
         <span style="color: #999; margin-left: 10px; font-size: 12px;">
           漏斗图和折线图不细分具体资源位或产品包
@@ -228,6 +239,7 @@ export default {
 
   data () {
     return {
+      chartPopoverVisible: false,
       tbLoading: false,
       allCharts: {},
       dataList: [],
@@ -871,6 +883,13 @@ export default {
       this.$service.effectGetLine(newParamsArr).then(data => {
         console.log('data===>', data)
         // this.showFunnel(data)
+        if (!data || data.length === 0) {
+          this.chartPopoverVisible = !this.chartPopoverVisible
+          setTimeout(() => {
+            this.chartPopoverVisible = !this.chartPopoverVisible
+          }, 2000)
+          return
+        }
         this.lineChartData = data
         const amount = this.lineChartData.amount
         // this.$nextTick(() => {
@@ -934,6 +953,13 @@ export default {
         console.log('data===>', data)
         // this.showFunnel(data)
         // this.chartData = data.concat(data).concat(data)
+        if (!data || data.length === 0) {
+          this.chartPopoverVisible = !this.chartPopoverVisible
+          setTimeout(() => {
+            this.chartPopoverVisible = !this.chartPopoverVisible
+          }, 2000)
+          return
+        }
         this.chartData = data
         this.chartData.forEach((item, index) =>
           this.$nextTick(() => {
@@ -1380,6 +1406,7 @@ export default {
     // },
     fetchData () {
       this.tbLoading = true
+
       // 重置图表
       this.clearChart()
       // 重置多选
