@@ -2983,7 +2983,9 @@ export default {
       }
     },
     smartObjectSpanMethod ({ row, column, rowIndex, columnIndex }) {
-      if (columnIndex === 8 || columnIndex === 5) {
+      const titleName = column.label // 表头标题
+      // if (columnIndex === 8 || columnIndex === 5) {
+      if (titleName === '流量占比' || titleName === '编辑') {
         if (rowIndex === 0) {
           return {
             rowspan: 100,

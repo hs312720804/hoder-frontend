@@ -111,9 +111,9 @@
       </div>
       <div v-else>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-        <!-- <el-button type="warning" @click="handleSave(0)">跳过保存</el-button> -->
+        <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
         <!-- <el-button type="primary" @click="handleSave(1)">下一步</el-button> -->
-        <el-button type="primary" @click="handleToNextStep(3)">下一步</el-button>
+        <el-button type="primary" @click="handleSave(3)">下一步</el-button>
       </div>
   </div>
 
@@ -233,14 +233,23 @@ export default {
     handleBackPrevStep () {
       this.$emit('crowdPrevStep', 3, this.recordId)
     },
-    handleToNextStep () {
+    handleSave (mode) {
       const parmas = {
         policyId: this.policyId,
         crowdId: this.crowdId,
         dynamicJson: JSON.stringify(this.rulesJson)
       }
       this.$service.setDynamicRule(parmas).then(res => {
-        this.$emit('crowdNextStep', 3, this.recordId)
+        if (mode === 3) { // 下一步
+          this.$emit('crowdNextStep', 3, this.recordId)
+        } else {
+          // this.$root.$emit('stratege-list-refresh')
+          // this.$router.push({ path: 'launch/strategyList' })
+          this.$emit('handleDirectStrategyList')
+
+          // this.$root.$emit('stratege-list-refresh')
+          // this.$emit('resetFormData')
+        }
       })
     },
     // 编辑人群时保存

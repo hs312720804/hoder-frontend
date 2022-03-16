@@ -144,8 +144,8 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" v-if="!policyId" @click="submitForm('crowdForm', false)">存稿不投放</el-button>
-                <el-button type="primary" @click="submitForm('crowdForm',true)">投放</el-button>
+                <el-button type="warning" @click="submitForm('crowdForm', false)">存稿不投放</el-button>
+                <el-button type="primary" @click="submitForm('crowdForm', true)">投放</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -276,9 +276,12 @@ export default {
     },
     handleGetCurrentPolicy () {
       this.$service.getAddCrowdData().then((data) => {
-        this.Platforms = data.biLists
+        this.Platforms = data.biLists // 投放平台
       })
+      if (this.isDynamicPeople) return // 动态人群，后面的不执行了
+
       const tempPolicyAndCrowdData = this.tempPolicyAndCrowd
+      console.log('tempPolicyAndCrowdData===', tempPolicyAndCrowdData)
       const currentPolicy = {
         policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
         policyName: tempPolicyAndCrowdData.tempPolicy.policyName
@@ -371,6 +374,8 @@ export default {
                   })
                 }, 300)
               })
+            } else {
+              this.jumpToRouter(true, this.policyId)
             }
           } else {
             this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }, '投放成功').then((data) => {
@@ -484,8 +489,9 @@ export default {
     }
   },
   created () {
-    if (this.isDynamicPeople) {
+    if (this.isDynamicPeople) { // 动态人群
       this.crowdForm.launchMode.push = false
+      this.crowdForm.policyIdsPull = this.policyName
     }
     this.getCountDataEnum()
     this.handleGetCurrentPolicy()
