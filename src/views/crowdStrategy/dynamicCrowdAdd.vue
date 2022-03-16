@@ -86,8 +86,6 @@
 import { mapGetters } from 'vuex'
 import createCrowd from '@/views/OneTouchDrop/CreateCrowd'
 import LaunchToBusiness from '@/views/OneTouchDrop/LaunchToBusinessPlatform'
-import newCreatePolicy from '@/views/LabelSquare/CreatePolicyWithLabelSquare'
-import createConfigScheme from '@/views/OneTouchDrop/createConfigScheme'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
@@ -96,8 +94,6 @@ export default {
     // createPolicy,
     createCrowd,
     LaunchToBusiness,
-    newCreatePolicy,
-    createConfigScheme,
     DynamicPeopleSetting,
     DynamicPeopleConditions
   },

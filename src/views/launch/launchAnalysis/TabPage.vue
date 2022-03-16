@@ -510,7 +510,7 @@ export default {
                 },
                 {
                   label: '播放总时长',
-                  prop: 'watchLastingTime'
+                  prop: 'watchLastingTimes'
                 },
                 {
                   label: '平均每次时长',
@@ -1063,14 +1063,21 @@ export default {
 
     // 人群列表
     getBehaviorCrowdList (query = '') {
-      this.behaviorCrowdListFilter.effectType = this.activeName
-      this.behaviorCrowdListFilter.keywords = query
+      // this.behaviorCrowdListFilter.effectType = this.activeName
+      // this.behaviorCrowdListFilter.keywords = query
+      const params = {
+        businessType: this.businessType,
+        effectType: this.activeName,
+        keywords: query,
+        page: 1,
+        pageSize: 100
+      }
       if (query !== '') { // 重置
-        this.behaviorCrowdListFilter.page = 1
+        // this.behaviorCrowdListFilter.page = 1
         this.behaviorCrowdList = []
       }
       this.loading = true
-      this.$service.getEffectCrowd(this.behaviorCrowdListFilter).then(data => {
+      this.$service.getEffectCrowd(params).then(data => {
         // this.behaviorCrowdList = query !== '' ? data.rows : this.behaviorCrowdList.concat(data.rows)
         this.behaviorCrowdList = data.rows
         this.loading = false
