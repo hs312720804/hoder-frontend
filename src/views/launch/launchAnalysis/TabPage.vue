@@ -637,7 +637,7 @@ export default {
                 },
                 {
                   label: '播放总时长',
-                  prop: 'watchLastingTime'
+                  prop: 'watchLastingTimes'
                 },
                 {
                   label: '平均每次时长',
