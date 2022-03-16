@@ -155,7 +155,7 @@
 import { mapGetters } from 'vuex'
 export default {
   name: 'LaunchToBusinessPlatform',
-  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'initCrowdId'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
   data () {
     return {
       crowdForm: {
@@ -360,10 +360,8 @@ export default {
                         params: { changeTab: 'ToMyLaunch' }
                       })
                     }
-                    // ?????
-                    // else {
-                    // }
-                    if (this.initCrowdId) { //  人群列表页 - 新增人群
+
+                    if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
                       this.$emit('goBackCrowdListPage')
                     } else { // 创建策略流程
                       this.$router.push({ path: 'launch/launchTabList' })

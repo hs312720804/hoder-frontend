@@ -459,23 +459,23 @@ export default {
               })
             } else {
               this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                if (data.policyId) {
-                  this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
-                    confirmButtonText: '确定',
-                    cancelButtonText: '取消',
-                    type: 'warning'
-                  }).then(() => {
-                    this.$message({
-                      type: 'success',
-                      message: '即将自动跳转至策略列表页'
-                    })
-                    this.$emit('handleDirectStrategyList')
-                  }).catch(() => {
-                  })
-                } else {
-                  this.addForm.recordId = data.recordId
-                  this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
-                }
+                // if (data.policyId) {
+                //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+                //     confirmButtonText: '确定',
+                //     cancelButtonText: '取消',
+                //     type: 'warning'
+                //   }).then(() => {
+                //     this.$message({
+                //       type: 'success',
+                //       message: '即将自动跳转至策略列表页'
+                //     })
+                //     this.$emit('handleDirectStrategyList')
+                //   }).catch(() => {
+                //   })
+                // } else {
+                this.addForm.recordId = data.recordId
+                this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
+                // }
               })
             }
           } else {
@@ -484,26 +484,26 @@ export default {
               conditionTagIds: addForm.conditionTagIds
             }
             this.$service.policyAddSave(oldFormData).then((data) => {
-              if (data.policyId) {
-                this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
-                  confirmButtonText: '确定',
-                  cancelButtonText: '取消',
-                  type: 'warning'
-                }).then(() => {
-                  this.$message({
-                    type: 'success',
-                    message: '即将自动跳转至策略列表页'
-                  })
-                  this.$emit('handleDirectStrategyList')
-                  // this.$router.push({ path: 'launch/strategyList' })
-                }).catch(() => {
-                })
-              } else {
-                // this.$root.$emit('stratege-list-refresh')
-                // this.$router.push({path: 'launch/strategyList'})
-                this.$emit('handleDirectStrategyList')
-                this.$emit('resetFormData')
-              }
+              // if (data.policyId) {
+              //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+              //     confirmButtonText: '确定',
+              //     cancelButtonText: '取消',
+              //     type: 'warning'
+              //   }).then(() => {
+              //     this.$message({
+              //       type: 'success',
+              //       message: '即将自动跳转至策略列表页'
+              //     })
+              //     this.$emit('handleDirectStrategyList')
+              //     // this.$router.push({ path: 'launch/strategyList' })
+              //   }).catch(() => {
+              //   })
+              // } else {
+              // this.$root.$emit('stratege-list-refresh')
+              // this.$router.push({path: 'launch/strategyList'})
+              this.$emit('handleDirectStrategyList')
+              this.$emit('resetFormData')
+              // }
             })
           }
         } else {

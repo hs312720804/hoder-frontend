@@ -65,7 +65,7 @@
             :routeSource="routeSource"
             :policyId="policyId"
             :crowdId="crowdId"
-            :initCrowdId="initCrowdId"
+            :dynamicMode="dynamicMode"
             :isDynamicPeople="isDynamicPeople"
             @nextStep="handleNextStep"
             @launchPrevStep="handleLaunchPrevStep"
@@ -73,6 +73,7 @@
             @handleDirectStrategyList="handleDirectStrategyList"
             @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
           ></launch-to-business>
+
         </div>
 
     </div>
@@ -222,7 +223,7 @@ export default {
   created () {
     if (this.$route.params.source) { this.routeSource = this.$route.params.source }
     this.$store.commit('setEditSchemeConfig', false)
-    if (this.dynamicMode === 'edit') {
+    if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
       this.activeStep = 0
       this.isDynamicPeople = true
       this.policyId = this.initPolicyId
