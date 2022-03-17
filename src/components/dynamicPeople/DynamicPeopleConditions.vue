@@ -105,9 +105,8 @@
           </el-tag>
         </div>
       </div> -->
-      <div v-if="dynamicMode === 'edit'">
+      <div v-if="dynamicMode === 'editSingle'">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
-        <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
         <el-button type="primary" @click="handleSave(3)">保存</el-button>
       </div>
       <div v-else>
@@ -241,13 +240,29 @@ export default {
         dynamicJson: JSON.stringify(this.rulesJson)
       }
       this.$service.setDynamicRule(parmas).then(res => {
-        if (mode === 3) { // 下一步
-          this.$emit('crowdNextStep', 3, this.recordId)
-        } else {
-          if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+        // if (mode === 3) { // 下一步
+        //   this.$emit('crowdNextStep', 3, this.recordId)
+        // } else {
+        //   if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+        //     this.$emit('goBackCrowdListPage')
+        //   } else { // 创建策略流程
+        //     this.$router.push({ path: 'launch/launchTabList' })
+        //   }
+        // }
+        if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+          if (mode === 3) {
+            this.$emit('crowdNextStep', 3)
+          } else {
             this.$emit('goBackCrowdListPage')
-          } else { // 创建策略流程
-            this.$router.push({ path: 'launch/launchTabList' })
+          }
+        } else if (this.dynamicMode === 'editSingle') { // 大人群列表 - 单个编辑
+          this.$emit('goBackCrowdListPage')
+        } else { // 策略流程
+          if (mode === 3) {
+            this.$emit('crowdNextStep', 3)
+          } else {
+            this.$emit('handleDirectStrategyList')
+            // this.$router.push({ path: 'launch/launchTabList' })
           }
         }
       })

@@ -53,7 +53,7 @@
       :policyName="policyName"
       :crowdId="crowdId"
       :isDynamicPeople="isDynamicPeople"
-      dynamicMode="edit"
+      dynamicMode="editSingle"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-setting>
@@ -64,7 +64,7 @@
       :policyId="policyId"
       :policyName="policyName"
       :crowdId="crowdId"
-      dynamicMode="edit"
+      dynamicMode="editSingle"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-conditions>

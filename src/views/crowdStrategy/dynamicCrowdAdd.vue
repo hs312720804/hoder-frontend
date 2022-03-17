@@ -43,6 +43,7 @@
             @crowdPrevStep="handleCrowdPrevStep"
             @resetFormData="resetFormData"
             @handleDirectStrategyList="handleDirectStrategyList"
+            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
           >
           </dynamic-people-setting>
 
@@ -57,6 +58,7 @@
             @crowdPrevStep="handleCrowdPrevStep"
             @resetFormData="resetFormData"
             @handleDirectStrategyList="handleDirectStrategyList"
+            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
           >
           </dynamic-people-conditions>
 

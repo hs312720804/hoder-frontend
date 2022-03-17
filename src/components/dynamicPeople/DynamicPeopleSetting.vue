@@ -91,8 +91,7 @@
           </div>
         </el-form-item>
       </div>
-
-      <el-form-item v-if="dynamicMode === 'edit'" label-width="0">
+      <el-form-item v-if="dynamicMode === 'editSingle'" label-width="0">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
         <el-button type="primary" @click="save">保存</el-button>
       </el-form-item>
@@ -113,7 +112,7 @@
 import { mapGetters } from 'vuex'
 export default {
   components: {},
-  props: ['isDynamicPeople', 'policyId', 'crowdId', 'mode'],
+  props: ['isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
   computed: {
     ...mapGetters(['policyName'])
   },
