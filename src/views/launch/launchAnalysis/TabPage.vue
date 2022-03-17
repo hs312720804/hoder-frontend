@@ -738,7 +738,7 @@ export default {
       this.$service.effectGetLine(newParamsArr).then(data => {
         console.log('data===>', data)
         // this.showFunnel(data)
-        if (!data || data.length === 0) {
+        if (!data || data.length === 0 || (data.amount.data.length === 0 && data.dealVolume.data.length === 0)) {
           this.chartPopoverVisible = !this.chartPopoverVisible
           setTimeout(() => {
             this.chartPopoverVisible = !this.chartPopoverVisible
