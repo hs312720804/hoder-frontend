@@ -78,34 +78,37 @@
             </el-radio-group>
           </el-form-item>
 
-          <el-form-item label="是否限制投放数量" prop="limitLaunch">
-            <el-radio-group
-              v-model="form.limitLaunch"
-              :disabled="limitLaunchDisabled"
+          <!-- 动态人群不展示下面的 -->
+          <template v-if="!isDynamicPeople">
+            <el-form-item label="是否限制投放数量" prop="limitLaunch">
+              <el-radio-group
+                v-model="form.limitLaunch"
+                :disabled="limitLaunchDisabled"
+              >
+                <el-radio :label="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              label="投放数量"
+              prop="limitLaunchCount"
+              v-if="form.limitLaunch"
             >
-              <el-radio :label="false">否</el-radio>
-              <el-radio :label="true">是</el-radio>
-            </el-radio-group>
-          </el-form-item>
-          <el-form-item
-            label="投放数量"
-            prop="limitLaunchCount"
-            v-if="form.limitLaunch"
-          >
-            <el-input-number
-              size="medium"
-              placeholder="不能大于1,000,000"
-              :max="1000000"
-              :min="1"
-              v-model="form.limitLaunchCount"
-            ></el-input-number>
-          </el-form-item>
-          <el-form-item label="备注" prop="remark">
-            <el-input size="small" v-model="form.remark"></el-input>
-          </el-form-item>
-          <el-form-item label="优先级" prop="priority" v-if="crowdId != null">
-            <el-input size="small" v-model="priority"></el-input>
-          </el-form-item>
+              <el-input-number
+                size="medium"
+                placeholder="不能大于1,000,000"
+                :max="1000000"
+                :min="1"
+                v-model="form.limitLaunchCount"
+              ></el-input-number>
+            </el-form-item>
+            <el-form-item label="备注" prop="remark">
+              <el-input size="small" v-model="form.remark"></el-input>
+            </el-form-item>
+            <el-form-item label="优先级" prop="priority" v-if="crowdId != null">
+              <el-input size="small" v-model="priority"></el-input>
+            </el-form-item>
+          </template>
         </el-form>
       </el-col>
     </el-row>
@@ -268,7 +271,7 @@ export default {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
-  props: ['policyId', 'crowdId', 'limitLaunchDisabled'],
+  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople'],
   methods: {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”

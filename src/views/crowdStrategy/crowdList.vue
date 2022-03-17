@@ -1481,8 +1481,6 @@ export default {
     },
     /* 投前测试 */
     isShowTest (item) {
-      // eslint-disable-next-line no-debugger
-      debugger
       const tagsList = this.selectRow.tagsList || []// 所有的tags
       const currentItemTagIds = item.tagIds || ''// 当前行的tags
       const tagsArr = currentItemTagIds.split(',')
@@ -2378,6 +2376,7 @@ export default {
       }
     },
     handleDynamicCrowdStep1 (row) {
+      row.smart = true
       row.crowdId = row.crowdPid
       this.$emit('addCrowd', row)
     },
