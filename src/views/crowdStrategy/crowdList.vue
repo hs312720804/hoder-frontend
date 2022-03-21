@@ -142,7 +142,15 @@
               </el-popover>
             </template>
             <template slot-scope="scope">
-                <priorityEdit @refresh="loadData" :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn" :byPassId="scope.row.id" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+                <priorityEdit
+                  @refresh="loadData"
+                  :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn"
+                  :byPassId="scope.row.id"
+                  :data="scope.row.priority"
+                  :policyId="scope.row.policyId"
+                  :crowdId="scope.row.crowdId"
+                  :isDynamicPeople="true">
+                </priorityEdit>
             </template>
         </el-table-column>
 
@@ -301,7 +309,15 @@
               </el-popover>
             </template>
             <template slot-scope="scope">
-                <priorityEdit @refresh="loadData" :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn" :byPassId="scope.row.id" :data="scope.row.priority" :policyId="scope.row.policyId" :crowdId="scope.row.crowdId"></priorityEdit>
+                <priorityEdit
+                  @refresh="loadData"
+                  :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn"
+                  :byPassId="scope.row.id"
+                  :data="scope.row.priority"
+                  :policyId="scope.row.policyId"
+                  :crowdId="scope.row.crowdId"
+                  :isDynamicPeople="true">
+                </priorityEdit>
             </template>
         </el-table-column>
 

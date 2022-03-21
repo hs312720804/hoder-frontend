@@ -62,6 +62,7 @@
                     :key="n + 'input'"
                     v-model="childItem.value"
                     placeholder="请输入内容"
+                    :min="0"
                   ></el-input-number>
 
                 </span>
@@ -181,26 +182,7 @@ export default {
     }
   },
   methods: {
-    numberInt (e) {
-      console.log(e.target.value)
 
-      let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
-
-      console.log(flag)
-
-      if (!flag) {
-        this.$message({
-
-          showClose: true,
-
-          message: '请输入正整数',
-
-          type: 'warning'
-
-        })
-        e.target.value = ''
-      }
-    },
     handleAddChildRule (tag) {
       // if (rule.rules.length > 50) {
       //   this.$message({

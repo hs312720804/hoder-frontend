@@ -387,6 +387,14 @@ export function updatePrioorityInCrowdList (data) {
     data
   })
 }
+// 动态人群 - 修改优先级
+export function updatePriority (data) {
+  return this.fetch({
+    method: 'PUT',
+    url: 'api/dynamic/updatePriority',
+    data
+  })
+}
 // 人群分流优先级单独修改
 export function updateBypassPriorityInCrowdList (data) {
   return this.fetch({
