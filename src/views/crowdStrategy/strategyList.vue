@@ -142,10 +142,16 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
+      <el-table-column prop="past7Active" label="是否为动态人群" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.smart" style="color: red"> 是 </span>
+          <span v-else> 否 </span>
+        </template>
+      </el-table-column>
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
-            动态人群：{{scope.row.smart}}
+            <!-- 动态人群：{{scope.row.smart}} -->
             <!-- <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
             <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button> -->
             <el-button size="small" type="text" @click="crowdList(scope.row)" >查看人群</el-button>
