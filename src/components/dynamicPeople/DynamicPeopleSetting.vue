@@ -44,7 +44,7 @@
               >
               </el-input>
 
-              <el-button type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key, 'dynamicCrowd')" ></el-button>
+              <el-button v-if="menu.dynamicCrowd.length > 2" type="text" icon="el-icon-remove-outline" class="delete-btn" @click="handleReduceFiled(field, key, 'dynamicCrowd')" ></el-button>
           </div>
           <!-- </div> -->
           <div class="filed-row " >
@@ -148,7 +148,10 @@ export default {
         this.menu = res && res.dynamicCrowd ? res : {
           dynamicCrowd: [{
             crowdName: '',
-            priority: ''
+            priority: 1
+          }, {
+            crowdName: '',
+            priority: 2
           }],
           controlGroup: [],
           ab: 0,
@@ -189,9 +192,10 @@ export default {
     },
     // 添加字段
     handleAddFiled () {
+      const len = this.menu.dynamicCrowd.length + 1 || 1
       this.menu.dynamicCrowd.push({
         crowdName: '',
-        priority: ''
+        priority: len
       })
     },
     handleAddControl () {
