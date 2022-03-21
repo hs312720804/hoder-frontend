@@ -13,7 +13,12 @@
         <el-form-item label="动态人群: " style="width: 500px">
           <div class="filed-row">
             占比：
-            <el-input v-model="menu.flowNum" placeholder="" class="flow-num"></el-input>
+            <el-input
+              v-model="menu.flowNum"
+              placeholder=""
+              class="flow-num"
+              @blur="numberInt($event)">
+            </el-input>
             %
           </div>
           <div
@@ -27,7 +32,8 @@
                 v-model="field.priority"
                 placeholder="优先级"
                 clearable
-                style="width: 100px;">
+                style="width: 100px;"
+                @blur="numberInt($event)">
               </el-input>
               <span class="split-line">—</span>
               <el-input
@@ -80,7 +86,13 @@
               <!-- <span class="split-line">—</span> -->
               <span class="filed-row" style="margin-left: 40px;">
                 占比：
-                <el-input v-model="field.flowNum" placeholder="" class="flow-num" style="width: 50px;"></el-input>
+                <el-input
+                  v-model="field.flowNum"
+                  placeholder=""
+                  class="flow-num"
+                  style="width: 50px;"
+                  @blur="numberInt($event)">
+                </el-input>
                 %
               </span>
 
@@ -148,6 +160,33 @@ export default {
     }
   },
   methods: {
+    // number (e) {
+    //   console.log('e===', e)
+
+    //   this.famount = this.famount.replace([^\.\d/g, '')
+
+    //   this.famount = this.famount.replace('.', '')
+    // },
+    numberInt (e) {
+      console.log(e.target.value)
+
+      let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
+
+      console.log(flag)
+
+      if (!flag) {
+        this.$message({
+
+          showClose: true,
+
+          message: '请输入正整数',
+
+          type: 'warning'
+
+        })
+        e.target.value = ''
+      }
+    },
     // 添加字段
     handleAddFiled () {
       this.menu.dynamicCrowd.push({
