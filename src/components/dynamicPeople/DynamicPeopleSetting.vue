@@ -38,7 +38,7 @@
               <span class="split-line">—</span>
               <el-input
                 v-model="field.crowdName"
-                placeholder="名称"
+                placeholder="人群名称"
                 clearable
                 style="width: 200px;"
               >
@@ -77,7 +77,7 @@
 
               <el-input
                 v-model="field.crowdName"
-                placeholder="名称"
+                placeholder="人群名称"
                 clearable
                 style="width: 200px;"
               >

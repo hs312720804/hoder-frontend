@@ -390,9 +390,10 @@ export function updatePrioorityInCrowdList (data) {
 // 动态人群 - 修改优先级
 export function updatePriority (data) {
   return this.fetch({
-    method: 'PUT',
+    method: 'POST',
     url: 'api/dynamic/updatePriority',
-    data
+    data,
+    isJSON: true
   })
 }
 // 人群分流优先级单独修改

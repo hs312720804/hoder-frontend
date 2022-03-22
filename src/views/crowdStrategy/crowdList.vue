@@ -142,7 +142,6 @@
               </el-popover>
             </template>
             <template slot-scope="scope">
-              动态人群
                 <priorityEdit
                   @refresh="loadData"
                   :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn"
