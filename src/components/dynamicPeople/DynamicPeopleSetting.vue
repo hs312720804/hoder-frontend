@@ -172,20 +172,14 @@ export default {
     // },
     numberInt (e) {
       console.log(e.target.value)
-
       let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
-
       console.log(flag)
 
       if (!flag) {
         this.$message({
-
           showClose: true,
-
           message: '请输入正整数',
-
           type: 'warning'
-
         })
         e.target.value = ''
       }
@@ -223,7 +217,48 @@ export default {
       // this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
       this.$emit('crowdPrevStep', 2, this.recordId)
     },
+
+    // 判断表单是否通过校验
+    isValidate () {
+      let reg = new RegExp('^[1-9]([0-9])*$')
+      const flag1 = this.menu.dynamicCrowd.every(item => {
+        // 优先级是否为正整数
+        const flag1 = item.priority && reg.test(item.priority)
+        // 校验人群名
+        const flag2 = !!item.crowdName
+
+        return flag1 && flag2
+      })
+
+      const flag2 = this.menu.controlGroup.every(item => {
+        // // 优先级是否为正整数
+        // const isPriorityNum = !item.priority || reg.test(item.priority)
+        // 比例是否为正整数
+        const isFlowNum = reg.test(item.flowNum)
+        // 校验人群名
+        const flag3 = !!item.crowdName
+
+        return isFlowNum && flag3
+      })
+
+      const flag = flag1 && flag2
+
+      if (!flag) {
+        this.$message({
+          showClose: true,
+          message: '请将表单填写完整',
+          type: 'warning'
+        })
+      }
+
+      return flag
+    },
+    // 下一步 - 保存
     handleToNextStep () {
+      // 校验优先级是否为正整数
+      if (!this.isValidate()) {
+        return
+      }
       this.menu.policyId = this.policyId
       this.menu.crowdId = this.crowdId
       this.menu.crowdName = `${this.policyName}(动态人群)`
@@ -235,12 +270,23 @@ export default {
 
         }
       })
+      this.menu.controlGroup = this.menu.controlGroup.map((item, index) => {
+        return {
+          ...item,
+          priority: Number(index + 1)
+        }
+      })
       this.$service.addDynamicCrowd(this.menu).then(res => {
         this.$emit('crowdNextStep', 2, this.recordId)
       })
     },
-    // 编辑人群时保存
+
+    // 人群列表 - 编辑动态人群配置
     save () {
+      // 校验优先级是否为正整数
+      if (!this.isValidate()) {
+        return
+      }
       this.menu.policyId = this.policyId
       this.menu.crowdId = this.crowdId
       this.menu.crowdName = `${this.policyName}(动态人群)`
@@ -249,6 +295,12 @@ export default {
           ...item,
           crowdName: item.crowdName,
           priority: Number(item.priority)
+        }
+      })
+      this.menu.controlGroup = this.menu.controlGroup.map((item, index) => {
+        return {
+          ...item,
+          priority: Number(index + 1)
         }
       })
       this.$service.addDynamicCrowd(this.menu).then(res => {

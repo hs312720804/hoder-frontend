@@ -816,11 +816,11 @@ export default {
           return
         }
         this.chartData = data
-        this.chartData.forEach((item, index) =>
+        this.chartData.forEach((item, index) => {
           this.$nextTick(() => {
             this.showFunnel(item, `funnelChart${index}`)
           })
-        )
+        })
       })
     },
     showFunnel (item, id) {
