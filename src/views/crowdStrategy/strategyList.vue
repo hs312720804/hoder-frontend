@@ -50,21 +50,22 @@
             <!--</el-button>-->
           <div>
             <el-popover
-                    placement="top"
-                    trigger="click"
-                    class="popover-button"
+              placement="top"
+              trigger="click"
+              class="popover-button"
             >
               <div>
                 <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
                   <el-checkbox label="createTime">创建时间</el-checkbox>
                   <el-checkbox label="creatorName">创建人</el-checkbox>
                   <el-checkbox label="useStatus">投放状态</el-checkbox>
+                  <el-checkbox label="smart">是否动态策略</el-checkbox>
                   <el-checkbox label="department">业务部门</el-checkbox>
                 </el-checkbox-group>
               </div>
               <i
-                      class="el-icon-cc-setting operate"
-                      slot="reference"
+                class="el-icon-cc-setting operate"
+                slot="reference"
               >
               </i>
               <!--<el-button slot="reference">选择列表展示维度</el-button>-->
@@ -130,6 +131,13 @@
         </template>
       </el-table-column>
 
+      <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.smart" > 动态策略 </span>
+          <span v-else> 普通策略 </span>
+        </template>
+      </el-table-column>
+
       <el-table-column prop="past7Active" label="7日是否有命中" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
@@ -142,12 +150,7 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
-      <el-table-column prop="past7Active" label="是否为动态人群" width="110">
-        <template slot-scope="scope">
-          <span v-if="scope.row.smart" style="color: red"> 是 </span>
-          <span v-else> 否 </span>
-        </template>
-      </el-table-column>
+
       <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
