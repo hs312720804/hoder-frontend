@@ -136,7 +136,7 @@
       </div>
 
       <!-- 漏斗图 -->
-      <div style="clear: both">
+      <div style="overflow: hidden; width: 100%">
         <div
           v-for="(item, index) in chartData"
           :key="'chart' + index"
@@ -716,6 +716,14 @@ export default {
       this.chartData = []
       this.lineChartData = {}
     },
+    // 滚动到底部
+    setBottom () {
+      this.$nextTick(() => {
+        var container = document.querySelector('.el-main')
+        // container.scrollTop = container.scrollHeight
+        container.scrollTo(0, container.scrollHeight)
+      })
+    },
     // 查看折线图
     watchLine () {
       let newParamsArr = this.selected
@@ -770,6 +778,7 @@ export default {
         this.$nextTick(() => {
           this.setLinesEchart('chart1', '成交金额', amount.date, linesData, legendData)
           this.setLinesEchart('chart2', '成交单量', dealVolume.date, linesData2, legendData2)
+          this.setBottom() // 滚动到底部
         })
         // })
       })
@@ -819,6 +828,7 @@ export default {
         this.chartData.forEach((item, index) => {
           this.$nextTick(() => {
             this.showFunnel(item, `funnelChart${index}`)
+            this.setBottom() // 滚动到底部
           })
         })
       })
