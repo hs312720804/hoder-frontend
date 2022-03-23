@@ -98,7 +98,10 @@ export default {
         const weekRang = val.bav.weekRang.value
         const timeRange = val.bav.timeRange.value
         // 当选择了星期范围或者时间区间时，禁用【天数】选项
-        if (weekRang.length === 0 && timeRange.length === 0) {
+
+        const flag1 = (weekRang.length === 0 || weekRang.every(item => item === ''))
+        const flag2 = (timeRange.length === 0 || timeRange.every(item => item === ''))
+        if (flag1 && flag2) {
           this.isDisableDaySelect = false
         } else {
           this.isDisableDaySelect = true
