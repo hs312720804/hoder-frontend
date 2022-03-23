@@ -240,7 +240,7 @@ export default {
         crowdId: this.crowdId,
         dynamicJson: JSON.stringify(this.rulesJson)
       }
-      this.$service.setDynamicRule(parmas).then(res => {
+      this.$service.setDynamicRule(parmas, '操作成功').then(res => {
         // if (mode === 3) { // 下一步
         //   this.$emit('crowdNextStep', 3, this.recordId)
         // } else {

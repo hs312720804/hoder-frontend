@@ -2417,7 +2417,7 @@ export default {
     // 打开编辑动态人群名称弹窗
     editDynamicCrowdName (params) {
       console.log('params===', params)
-      this.dynamicCrowd = params
+      this.dynamicCrowd = JSON.parse(JSON.stringify(params))
       this.showEditDynamicCrowdName = true
     },
     // 编辑动态人群名称
@@ -2427,9 +2427,9 @@ export default {
         crowdId: this.dynamicCrowd.crowdId,
         crowdName: this.dynamicCrowd.crowdName
       }
-      this.$service.updateDynamicCrowdName(params).then(res => {
+      this.$service.updateDynamicCrowdName(params, '编辑名称成功').then(res => {
+        this.loadData()
         this.showEditDynamicCrowdName = false
-        this.$message.success('修改名称成功')
       })
     },
     tableRowClassName ({ row }) {

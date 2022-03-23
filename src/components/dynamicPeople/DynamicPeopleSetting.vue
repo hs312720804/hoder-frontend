@@ -302,12 +302,11 @@ export default {
       })
       // 人群列表 - 编辑动态人群配置
       if (mode === 0) {
-        this.$service.addDynamicCrowd(this.menu).then(res => {
-          this.$message.success('操作成功')
+        this.$service.addDynamicCrowd(this.menu, '操作成功').then(res => {
           this.$emit('goBackCrowdListPage', true)
         })
       } else { // 下一步 - 保存
-        this.$service.addDynamicCrowd(this.menu).then(res => {
+        this.$service.addDynamicCrowd(this.menu, '操作成功').then(res => {
           this.$emit('crowdNextStep', 2, this.recordId)
         })
       }
