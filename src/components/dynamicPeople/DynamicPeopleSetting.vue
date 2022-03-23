@@ -105,14 +105,14 @@
       </div>
       <el-form-item v-if="dynamicMode === 'editSingle'" label-width="0">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
-        <el-button type="primary" @click="save">保存</el-button>
+        <el-button type="primary" @click="handleSave(0)">保存</el-button>
       </el-form-item>
 
       <el-form-item v-else label-width="0">
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <!-- <el-button type="warning" @click="handleSave(0)">跳过保存</el-button> -->
-        <!-- <el-button type="primary" @click="handleSave(1)">下一步</el-button> -->
-        <el-button type="primary" @click="handleToNextStep(2)">下一步</el-button>
+        <el-button type="primary" @click="handleSave(1)">下一步</el-button>
+        <!-- <el-button type="primary" @click="handleToNextStep(2)">下一步</el-button> -->
       </el-form-item>
 
     </el-form>
@@ -226,7 +226,6 @@ export default {
         const flag1 = item.priority && reg.test(item.priority)
         // 校验人群名
         const flag2 = !!item.crowdName
-
         return flag1 && flag2
       })
 
@@ -237,7 +236,6 @@ export default {
         const isFlowNum = reg.test(item.flowNum)
         // 校验人群名
         const flag3 = !!item.crowdName
-
         return isFlowNum && flag3
       })
 
@@ -247,42 +245,41 @@ export default {
         this.$message({
           showClose: true,
           message: '请将表单填写完整',
-          type: 'warning'
+          type: 'error'
         })
       }
 
       return flag
     },
     // 下一步 - 保存
-    handleToNextStep () {
-      // 校验优先级是否为正整数
-      if (!this.isValidate()) {
-        return
-      }
-      this.menu.policyId = this.policyId
-      this.menu.crowdId = this.crowdId
-      this.menu.crowdName = `${this.policyName}(动态人群)`
-      this.menu.dynamicCrowd = this.menu.dynamicCrowd.map(item => {
-        return {
-          ...item,
-          crowdName: item.crowdName,
-          priority: Number(item.priority)
-
-        }
-      })
-      this.menu.controlGroup = this.menu.controlGroup.map((item, index) => {
-        return {
-          ...item,
-          priority: Number(index + 1)
-        }
-      })
-      this.$service.addDynamicCrowd(this.menu).then(res => {
-        this.$emit('crowdNextStep', 2, this.recordId)
-      })
-    },
+    // handleToNextStep () {
+    //   // 校验优先级是否为正整数
+    //   if (!this.isValidate()) {
+    //     return
+    //   }
+    //   this.menu.policyId = this.policyId
+    //   this.menu.crowdId = this.crowdId
+    //   this.menu.crowdName = `${this.policyName}(动态人群)`
+    //   this.menu.dynamicCrowd = this.menu.dynamicCrowd.map(item => {
+    //     return {
+    //       ...item,
+    //       crowdName: item.crowdName,
+    //       priority: Number(item.priority)
+    //     }
+    //   })
+    //   this.menu.controlGroup = this.menu.controlGroup.map((item, index) => {
+    //     return {
+    //       ...item,
+    //       priority: item.priority ? Number(item.priority) : Number(index + 1)
+    //     }
+    //   })
+    //   this.$service.addDynamicCrowd(this.menu).then(res => {
+    //     this.$emit('crowdNextStep', 2, this.recordId)
+    //   })
+    // },
 
     // 人群列表 - 编辑动态人群配置
-    save () {
+    handleSave (mode) {
       // 校验优先级是否为正整数
       if (!this.isValidate()) {
         return
@@ -300,13 +297,20 @@ export default {
       this.menu.controlGroup = this.menu.controlGroup.map((item, index) => {
         return {
           ...item,
-          priority: Number(index + 1)
+          priority: item.priority ? Number(item.priority) : Number(index + 1)
         }
       })
-      this.$service.addDynamicCrowd(this.menu).then(res => {
-        this.$message.success('操作成功')
-        this.$emit('goBackCrowdListPage', true)
-      })
+      // 人群列表 - 编辑动态人群配置
+      if (mode === 0) {
+        this.$service.addDynamicCrowd(this.menu).then(res => {
+          this.$message.success('操作成功')
+          this.$emit('goBackCrowdListPage', true)
+        })
+      } else { // 下一步 - 保存
+        this.$service.addDynamicCrowd(this.menu).then(res => {
+          this.$emit('crowdNextStep', 2, this.recordId)
+        })
+      }
     },
     resetFormData () {
       this.$emit('resetFormData')
