@@ -60,7 +60,7 @@ export default {
           })
         } else if (this.isDynamicPeople) {
           // 修改动态人群的优先级
-          this.$service.updatePriority({ crowdId: this.crowdId, priority: this.priority, policyId: this.policyId }, '操作成功，修改优先级会影响该策略下人群估算数量，请点击“估算”重新估算其他人群的圈定数据').then(() => {
+          this.$service.updatePriority({ crowdId: this.crowdId, priority: this.priority, policyId: this.policyId }, '操作成功').then(() => {
             this.isEdit = false
             this.dataBackup = this.priority
             this.$emit('refresh')

@@ -885,7 +885,7 @@
     </el-dialog>
     <!--上下架确认弹窗-->
     <el-dialog title="提示" :visible.sync="showUpDownDialog">
-      <div>{{upDownTips}}</div>
+      <div>{{ upDownTips }}</div>
       <span slot="footer" class="dialog-footer">
       <el-button @click="showUpDownDialog = false">取 消</el-button>
       <el-button type="primary" @click="handleUpDown">确定</el-button>
@@ -2275,7 +2275,9 @@ export default {
     },
     handleUpDown () {
       const row = this.currentTag
-      this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据')
+      // 区分动态人群、普通提示语
+      const tipMessage = this.smart ? '操作成功' : (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据'
+      this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
         .then(() => {
           this.showUpDownDialog = false
           this.loadData()

@@ -1191,13 +1191,16 @@ export default {
 
     // 请求新增或编辑接口
     fetchAddOrEdit (data) {
+      const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
+
       if (this.crowdId != null) {
         data.crowdId = this.crowdId
         data.priority = this.priority
         this.$service
           .crowdUpdate(
             data,
-            '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+            tipMessage
+            // '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
           )
           .then(() => {
             this.$emit('goBackCrowdListPage', true)
@@ -1206,7 +1209,8 @@ export default {
         this.$service
           .crowdSave(
             data,
-            '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+            tipMessage
+            // '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
           )
           .then(() => {
             this.$emit('goBackCrowdListPage', true)

@@ -553,27 +553,26 @@ export default {
         return e
       })
 
-      if (this.isDynamicPeople) {
+      if (this.isDynamicPeople) { // 动态人群 新增、编辑
         const params = form.rulesJson[0]
-        console.log('data===', params)
         params.policyId = this.policyId
         params.crowdId = this.crowdId
-        if (this.crowdId) { // 编辑
-          // 动态人群
+        if (this.crowdId) {
+          // 动态人群 编辑
           this.$service
             .crowdEdit(
               params,
-              '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+              '操作成功'
             )
             .then((res) => {
               this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, this.crowdId)
             })
         } else {
-          // 动态人群
+          // 动态人群 新增
           this.$service
             .crowdSave(
               params,
-              '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+              '操作成功'
             )
             .then((res) => {
               this.$emit('handleDynamicCrowdNextStep', this.policyId, this.policyName, res.crowdId)
