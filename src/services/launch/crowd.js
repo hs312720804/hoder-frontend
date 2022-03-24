@@ -33,7 +33,7 @@ export function modifyLaunchPolicy (data) {
 export function getStrategyCrowds (params) {
   return this.fetch({
     method: 'GET',
-    url: '/api/crowd/getPolicyCrowds/',
+    url: '/api/crowd/getPolicyCrowds',
     params
   })
 }
