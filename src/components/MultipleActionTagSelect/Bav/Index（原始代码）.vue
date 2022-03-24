@@ -2998,12 +2998,14 @@ export default {
         if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
           item.operator = 'like'
         } else {
-          item.operator = '='
+          // item.operator = '='
+          item.operator = item.operator === '!=' ? '=' : item.operator
         }
         if (item.child && item.child.length > 0) {
           this.setRecoveryItem(item.child)
         } else {
-          item.operator = '='
+          // item.operator = '='
+          item.operator = item.operator === '!=' ? '=' : item.operator
         }
       })
       return nodes

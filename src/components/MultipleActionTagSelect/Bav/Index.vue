@@ -3919,12 +3919,14 @@ export default {
         if (this.childItem.tagCode === 'BAV0008' && item.field === 'tag') {
           item.operator = 'like'
         } else {
-          item.operator = '='
+          // item.operator = '='
+          item.operator = item.operator === '!=' ? '=' : item.operator
         }
         if (item.child && item.child.length > 0) {
           this.setRecoveryItem(item.child)
         } else {
-          item.operator = '='
+          // item.operator = '='
+          item.operator = item.operator === '!=' ? '=' : item.operator
         }
       })
       return nodes
@@ -4284,33 +4286,35 @@ export default {
             this.getTvEpisodes(obj.source, obj.value)
             this.getAppointmentInfo(obj.source, obj.value)
           }
-          obj.child = [{
-            name: '',
-            value: '',
-            field: '',
-            operator: '=',
-            type: 'string',
-            childCheckedVal: [],
-            child: [
-              {
-                name: '',
-                value: '',
-                field: '',
-                operator: '=',
-                type: 'string',
-                childCheckedVal: [''],
-                child: [
-                  {
-                    name: '',
-                    value: '',
-                    field: '',
-                    operator: '=',
-                    type: 'string'
-                  }
-                ]
-              }
-            ]
-          }]
+          if (level === 5) {
+            obj.child = [{
+              name: '',
+              value: '',
+              field: '',
+              operator: '=',
+              type: 'string',
+              childCheckedVal: [],
+              child: [
+                {
+                  name: '',
+                  value: '',
+                  field: '',
+                  operator: '=',
+                  type: 'string',
+                  childCheckedVal: [''],
+                  child: [
+                    {
+                      name: '',
+                      value: '',
+                      field: '',
+                      operator: '=',
+                      type: 'string'
+                    }
+                  ]
+                }
+              ]
+            }]
+          }
         }
 
         let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
