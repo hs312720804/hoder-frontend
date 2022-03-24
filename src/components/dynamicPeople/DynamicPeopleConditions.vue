@@ -67,7 +67,7 @@
 
                 </span>
 
-                <span class="i" @click="handleRemoveRule(n)">
+                <span class="i" @click="handleRemoveRule(n)" v-if="rulesJson.rules.length > 1">
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
               </div>
