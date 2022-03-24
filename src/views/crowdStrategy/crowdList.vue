@@ -2403,16 +2403,28 @@ export default {
     },
     handleDynamicCrowdStep1 (row) {
       row.smart = true
-      row.crowdId = row.crowdPid
-      this.$emit('addCrowd', row)
+      // row.crowdId = row.crowdPid
+      const rowObj = {
+        ...row,
+        crowdId: row.crowdPid
+      }
+      this.$emit('addCrowd', rowObj)
     },
     handleDynamicCrowdStep2 (row) {
-      row.crowdId = row.crowdPid
-      this.$emit('editDynamicPeopleSetting', row)
+      // row.crowdId = row.crowdPid
+      const rowObj = {
+        ...row,
+        crowdId: row.crowdPid
+      }
+      this.$emit('editDynamicPeopleSetting', rowObj)
     },
     handleDynamicCrowdStep3 (row) {
-      row.crowdId = row.crowdPid
-      this.$emit('editDynamicPeopleConditions', row)
+      // row.crowdId = row.crowdPid
+      const rowObj = {
+        ...row,
+        crowdId: row.crowdPid
+      }
+      this.$emit('editDynamicPeopleConditions', rowObj)
     },
     // 打开编辑动态人群名称弹窗
     editDynamicCrowdName (params) {
