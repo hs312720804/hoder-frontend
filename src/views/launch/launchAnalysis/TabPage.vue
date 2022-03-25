@@ -618,7 +618,10 @@ export default {
                 },
                 {
                   label: '分类（频道）',
-                  prop: 'classificationChannel'
+                  // prop: 'classificationChannel'
+                  render: (h, { row }) => {
+                    return `${row.classificationName} - ${row.classificationChannel}`
+                  }
                 },
                 {
                   label: '播放次数',
