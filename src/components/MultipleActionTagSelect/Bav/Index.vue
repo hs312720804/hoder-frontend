@@ -146,11 +146,9 @@
                       >
                         <div v-if="item4.name.indexOf('自定义') > -1" class="flex-row">
                           <span style="min-width: 200px;">{{ item4.name }}</span>
-                          <el-input-number :value="item4.value1" :min="1" @input="handelInputBetween($event, item4, 'value1')" controls-position="right"></el-input-number>
-                          <!-- <el-input :value="item4.value1" @input="handelInputBetween($event, item4, 'value1')" type="number"></el-input> -->
+                          <el-input-number :value="item4.value1" :min="1" @input="handelInputBetween($event, item4, 'value1')" @blur="handelInputBlur(item4)" controls-position="right"></el-input-number>
                           <div style="padding: 0 10px"><= {{ item4.name.substr(-4, 4) }} <=</div>
-                          <el-input-number :value="item4.value2" :min="1" @input="handelInputBetween($event, item4, 'value2')" controls-position="right"></el-input-number>天
-                          <!-- <el-input :value="item4.value2" @input="handelInputBetween($event, item4, 'value2')" type="number"></el-input> -->
+                          <el-input-number :value="item4.value2" :min="1" @input="handelInputBetween($event, item4, 'value2')" @blur="handelInputBlur(item4)" controls-position="right"></el-input-number>天
                         </div>
                       </div>
 
@@ -531,8 +529,8 @@
                                       <!-- {{item2.field === 'purchase_recent_two_years'}} -->
                                       <!-- 价格区间 -->
                                       <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
-                                        <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" controls-position="right"></el-input-number>
-                                      —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" controls-position="right"></el-input-number>
+                                        <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
+                                      —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
                                       </span>
 
                                       <!-- 产品包ID -->
@@ -3312,17 +3310,22 @@ export default {
       return list.find(item => item.value === val).name
     },
 
+    handelInputBlur (item) {
+      this.isFoucs = false
+
+      if (!this.isFoucs && item.value1 && item.value2 && item.value2 < item.value1) { // 自定义时间仅支持正数，过期时间的大数在前面，小数在后面
+        const num = item.value1
+        item.value1 = item.value2
+        item.value2 = num
+      }
+    },
     handelInputBetween (val, item, key) {
       this.$set(item, key, val)
       if (!item.value1 || item.value1 < 0) {
         this.$set(item, 'value1', 0)
       }
       if (!item.value2 || item.value2 < 0) { this.$set(item, 'value2', 0) }
-      if (item.value1 && item.value2 && item.value2 < item.value1) { // 自定义时间仅支持正数，过期时间的大数在前面，小数在后面
-        const num = item.value1
-        item.value1 = item.value2
-        item.value2 = num
-      }
+
       item.value = `${item.value1}-${item.value2}`
     },
 
