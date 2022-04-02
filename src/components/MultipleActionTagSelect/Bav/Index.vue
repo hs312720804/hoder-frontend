@@ -524,7 +524,7 @@
 
                                     <!-- 三期最新的格式 -->
                                     <span class="flex-row" v-else>
-                                      {{item5}}
+                                      <!-- {{item5}} -->
 
                                       <!-- {{item2.field === 'purchase_recent_two_years'}} -->
                                       <!-- 价格区间 -->
