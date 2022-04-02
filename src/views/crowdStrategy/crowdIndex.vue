@@ -139,7 +139,7 @@ export default {
       this.mode = ''
       this.isAbTest = false
       this.isShowCrowdList = false
-      this.isDynamicPeople = row.smart || false
+      this.isDynamicPeople = row && row.smart ? row.smart : false
       if (crowdId) {
         this.crowdId = crowdId
         // 当策略在投放中且在有效期内，人群限制投放不可编辑

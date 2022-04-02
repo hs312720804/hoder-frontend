@@ -524,7 +524,7 @@
 
                                     <!-- 三期最新的格式 -->
                                     <span class="flex-row" v-else>
-                                      <!-- {{item5}} -->
+                                      {{item5}}
 
                                       <!-- {{item2.field === 'purchase_recent_two_years'}} -->
                                       <!-- 价格区间 -->
@@ -3320,11 +3320,18 @@ export default {
       }
     },
     handelInputBetween (val, item, key) {
+      console.log('val===', val)
+      console.log('item===', item)
+      console.log('key===', key)
+
       this.$set(item, key, val)
+      item[key] = val
       if (!item.value1 || item.value1 < 0) {
         this.$set(item, 'value1', 0)
       }
-      if (!item.value2 || item.value2 < 0) { this.$set(item, 'value2', 0) }
+      if (!item.value2 || item.value2 < 0) {
+        this.$set(item, 'value2', 0)
+      }
 
       item.value = `${item.value1}-${item.value2}`
     },
