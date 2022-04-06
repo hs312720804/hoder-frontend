@@ -745,9 +745,9 @@ export default {
         }
       })
 
-      console.log('newParamsArr===', newParamsArr)
+      // console.log('newParamsArr===', newParamsArr)
       this.$service.effectGetLine(newParamsArr).then(data => {
-        console.log('data===>', data)
+        // console.log('data===>', data)
         // this.showFunnel(data)
 
         // if (!data || data.length === 0) {
@@ -815,9 +815,9 @@ export default {
         }
       })
 
-      console.log('newParamsArr===', newParamsArr)
+      // console.log('newParamsArr===', newParamsArr)
       this.$service.effectGetFunnel(newParamsArr).then(data => {
-        console.log('data===>', data)
+        // console.log('data===>', data)
         // this.showFunnel(data)
         // this.chartData = data.concat(data).concat(data)
         if (!data || data.length === 0) {
@@ -838,8 +838,8 @@ export default {
     },
     showFunnel (item, id) {
       const echarts = require('echarts')
-      console.log('item.first===', item)
-      console.log('item.id===', id)
+      // console.log('item.first===', item)
+      // console.log('item.id===', id)
       // var ins = '{s|转换率}\n' + toPercent(d.data.percent)
 
       function toPercent (point) {
@@ -945,7 +945,7 @@ export default {
             height: 60,
             fontStyle: 'Microsoft YaHei',
             formatter: function (d) {
-              console.log('d====', d)
+              // console.log('d====', d)
               var ins = '{s|转换率}\n' + toPercent(d.data.percent)
 
               function toPercent (point) {
@@ -1063,7 +1063,7 @@ export default {
 
     resetForm (formName) {
       this.$refs[formName] && this.$refs[formName].resetFields()
-      console.log('formData===', this.formData)
+      // console.log('formData===', this.formData)
       // 重置
       this.filter.page = 1
       // 清空表格数据
@@ -1073,7 +1073,7 @@ export default {
       this.fetchData()
     },
     handelBehaviorCrowdSelectChange (e) {
-      console.log(e)
+      // console.log(e)
     },
 
     // 人群列表
