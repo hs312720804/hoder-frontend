@@ -8,87 +8,104 @@
         :crowdId:: {{ crowdId }}<br/>
         {{rulesJson}}
       </div> -->
-      <span class="title">流转算法：</span> {{radioType}}
-      <el-radio-group v-model="radioType" style="margin: 20px 0" >
-        <el-radio :label="0">顺序</el-radio>
-        <el-radio :label="1">循环</el-radio>
-        <el-radio :label="2">随机</el-radio>
-        <el-radio :label="3">自定义</el-radio>
-      </el-radio-group>
-      <antv-graph v-if="showGraph" :type="radioType"></antv-graph>
-      <!-- <div class="div-class">
-        <div class="label-ground">
-          <div class="tag-condition--parent">
-            <div class="tag-condition">
-              <el-button
-                type="warning"
-                @click="handleRulesConditionChange(rulesJson)"
-                round
-                size="small"
-                :key="'button' + '_' + i"
+      <div class="div-class">
+
+        <!-- <template v-for="(item, index) in rulesJson.rules"> -->
+          <div class="label-ground">
+            <div class="tag-condition--parent">
+              <div class="tag-condition">
+                <el-button
+                  type="warning"
+                  @click="handleRulesConditionChange(rulesJson)"
+                  round
+                  size="small"
+                  :key="'button' + '_' + i"
+                >
+                  {{ rulesJson.condition === 'AND' ? '且' : '或' }}
+                </el-button>
+              </div>
+              <div
+                v-for="(childItem, n) in rulesJson.rules"
+                :key="'tagId' + n"
+                :class="{ 'label-item': true, paddingTop: n > 0 }"
               >
-                {{ rulesJson.condition === 'AND' ? '且' : '或' }}
-              </el-button>
-            </div>
-            <div
-              v-for="(childItem, n) in rulesJson.rules"
-              :key="'tagId' + n"
-              :class="{ 'label-item': true, paddingTop: n > 0 }"
-            >
 
-              <span class="txt">{{ childItem.tagName }}</span>
+                <span class="txt">{{ childItem.tagName }}</span>
 
-              <span class="sel">
-                <el-select
-                  style="width: 80px"
-                  name="oxve"
-                  v-model="childItem.operator"
-                  class="input-inline"
-                  @change="handleOperatorChange(childItem)"
-                >
-                  <template>
-                    <el-option value="="></el-option>
-                    <el-option value=">="></el-option>
-                    <el-option value="<="></el-option>
-                    <el-option value=">"></el-option>
-                    <el-option value="<"></el-option>
-                  </template>
+                <span class="sel">
+                  <!-- 不是时间（time）类型的下拉框 -->
+                  <el-select
+                    style="width: 80px"
+                    name="oxve"
+                    v-model="childItem.operator"
+                    class="input-inline"
+                    @change="handleOperatorChange(childItem)"
+                  >
+                    <!-- number 类型 -->
+                    <template>
+                      <el-option value="="></el-option>
+                      <el-option value=">="></el-option>
+                      <el-option value="<="></el-option>
+                      <el-option value=">"></el-option>
+                      <el-option value="<"></el-option>
+                    </template>
 
-                </el-select>
+                  </el-select>
 
-              </span>
+                </span>
 
-              <span class="in">
+                <span class="in">
+                  <!-- time 类型 -->
 
-                <el-input-number
-                  :key="n + 'input'"
-                  v-model="childItem.value"
-                  placeholder="请输入内容"
-                  :min="0"
-                ></el-input-number>
+                  <!-- number 类型 -->
+                  <el-input-number
+                    :key="n + 'input'"
+                    v-model="childItem.value"
+                    placeholder="请输入内容"
+                    :min="0"
+                  ></el-input-number>
 
-              </span>
+                </span>
 
-              <span class="i" @click="handleRemoveRule(n)" v-if="rulesJson.rules.length > 1">
-                <i class="icon iconfont el-icon-cc-delete"></i>
-              </span>
-            </div>
-            <div class="label-add">
-              <div class="optional-condition">
-                <el-tag
-                  class="oc-item"
-                  v-for="tagItem in tags"
-                  :key="tagItem.tagItem"
-                  @click.native="handleAddChildRule(tagItem)"
-                  :type="dataSourceColorEnum[tagItem.dataSource]"
-                  >{{ tagItem.tagName }}</el-tag
-                >
+                <span class="i" @click="handleRemoveRule(n)" v-if="rulesJson.rules.length > 1">
+                  <i class="icon iconfont el-icon-cc-delete"></i>
+                </span>
+              </div>
+              <div class="label-add">
+                <div class="optional-condition">
+                  <el-tag
+                    class="oc-item"
+                    v-for="tagItem in tags"
+                    :key="tagItem.tagItem"
+                    @click.native="handleAddChildRule(tagItem)"
+                    :type="dataSourceColorEnum[tagItem.dataSource]"
+                    >{{ tagItem.tagName }}</el-tag
+                  >
+                </div>
               </div>
             </div>
           </div>
+        <!-- </template> -->
+      </div>
+
+      <!-- <div class="label-or">
+        <div
+          class="optional-condition"
+          v-if="tags.length"
+          :style="{
+            'padding-top': rulesJson.rules.length > 0 ? '10px' : 0,
+          }"
+        >
+          <el-tag
+            class="oc-item"
+            v-for="item in tags"
+            :key="item.tagName"
+            @click.native="handleAddRule(item)"
+            :type="dataSourceColorEnum[item.dataSource]"
+            >{{ item.tagName }}
+          </el-tag>
         </div>
       </div> -->
-
       <div v-if="dynamicMode === 'editSingle'">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
         <el-button type="primary" @click="handleSave(3)">保存</el-button>
@@ -113,7 +130,6 @@ export default {
   props: ['isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
   data () {
     return {
-      radioType: 0,
       dataSourceColorEnum: {
         1: 'success',
         2: 'danger',
@@ -140,18 +156,7 @@ export default {
         condition: 'OR',
         rules: []
       },
-      i: 0,
-      showGraph: true
-    }
-  },
-  watch: {
-    radioType: {
-      handler () {
-        // this.showGraph = false
-        // this.$nextTick(() => {
-        //   this.showGraph = true
-        // })
-      }
+      i: 0
     }
   },
   created () {
@@ -238,6 +243,15 @@ export default {
         dynamicJson: JSON.stringify(this.rulesJson)
       }
       this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+        // if (mode === 3) { // 下一步
+        //   this.$emit('crowdNextStep', 3, this.recordId)
+        // } else {
+        //   if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+        //     this.$emit('goBackCrowdListPage')
+        //   } else { // 创建策略流程
+        //     this.$router.push({ path: 'launch/launchTabList' })
+        //   }
+        // }
         if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
           if (mode === 3) {
             this.$emit('crowdNextStep', 3)
@@ -288,7 +302,7 @@ export default {
 
 <style scoped  lang="stylus">
 .form-class{
-  // width: 80%;
+  width: 80%;
   margin: 0 auto 20px;
 }
 .div-class{
@@ -495,7 +509,5 @@ i {
   display: flex;
   flex-direction: row;
 }
-.title {
-  font-size 16px
-}
+
 </style>

@@ -7,10 +7,15 @@ const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
 // const devHost = '127.0.0.1'
 // const path = require('path')
 // const dist = path.resolve('./dist')
+
 const baseUrl = ENV === 'production'
   ? ''
   : 'http://127.0.0.1:8083'
 
+const path = require('path')
+function resolve (dir) {
+  return path.join(__dirname, dir)
+}
 module.exports = {
   publicPath: baseUrl,
 
@@ -35,5 +40,9 @@ module.exports = {
       localeDir: 'locales',
       enableInSFC: true
     }
+  },
+  chainWebpack: config => {
+    config.resolve.alias
+      .set('@antvGraph', resolve('src/components/antvGraph/src'))
   }
 }
