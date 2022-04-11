@@ -39,6 +39,7 @@
 
 <script>
 import antvGraph from '@antvGraph/Index.vue'
+import eventBus from '@antvGraph/utils/eventBus'
 export default {
   components: {
     antvGraph
@@ -76,7 +77,8 @@ export default {
       },
       i: 0,
       showGraph: true,
-      dynamicRule: {}
+      dynamicRule: {},
+      graph: undefined
     }
   },
   watch: {
@@ -103,10 +105,15 @@ export default {
           this.dynamicRule = res
         }
       })
+      this.bindEvent()
     }
   },
   methods: {
-
+    bindEvent () {
+      eventBus.$on('afterAddPage', page => {
+        this.graph = page.graph
+      })
+    },
     handleAddChildRule (tag) {
       // if (rule.rules.length > 50) {
       //   this.$message({
@@ -159,12 +166,17 @@ export default {
       this.$emit('crowdPrevStep', 3, this.recordId)
     },
     handleSave (mode) {
+      // 流程图JSON
+      const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : ''
       const parmas = {
         policyId: this.policyId,
         crowdId: this.crowdId,
-        dynamicJson: JSON.stringify(this.rulesJson)
+        mainArithmetic: this.radioType,
+        arithmetic: 1,
+        flowChart: flowChartJson
+        // dynamicJson: JSON.stringify(this.rulesJson)
       }
-      this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+      this.$service.setBigCrowdRule(parmas, '操作成功').then(res => {
         if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
           if (mode === 3) {
             this.$emit('crowdNextStep', 3)

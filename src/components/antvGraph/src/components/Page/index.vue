@@ -131,7 +131,7 @@ export default {
           const selectNode = item.target.getModel()
           // const allCrowd = this.dynamicRuleProvide.allCrowd
 
-          console.log('1111node====>', selectNode)
+          // console.log('1111node====>', selectNode)
 
           _this.crowdId = selectNode.id
           // _this.crowdRule = allCrowd.find(item => item.crowdId == _this.crowdId)

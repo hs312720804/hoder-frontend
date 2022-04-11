@@ -845,7 +845,7 @@ export function getDynamicRule (params) {
   })
 }
 
-// 设置流转条件
+// 设置小人群流转条件
 export function setDynamicRule (data) {
   return this.fetch({
     method: 'post',
@@ -854,6 +854,17 @@ export function setDynamicRule (data) {
     isJSON: true
   })
 }
+
+// 设置大人群流转条件
+export function setBigCrowdRule (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/setBigCrowdRule',
+    data,
+    isJSON: true
+  })
+}
+
 export function getCrowdRuleById (params) {
   return this.fetch({
     method: 'get',
