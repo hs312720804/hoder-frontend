@@ -7,7 +7,6 @@
         </div>
       </div>
     </div> -->
-
     <G6Editor mode="edit" :data="data" :height="600">
     </G6Editor>
   </div>
@@ -20,6 +19,11 @@ import eventBus from '@antvGraph/utils/eventBus'
 export default {
   name: 'app',
   components: { G6Editor },
+  provide () {
+    return {
+      dynamicRuleProvide: this.dynamicRule
+    }
+  },
   data () {
     return {
       width: 0,
@@ -30,28 +34,29 @@ export default {
       // Y: document.documentElement.clientHeight,
       X: 0,
       graph: null,
-      crowdList: [{
-        crowdId: 'dynamic1',
-        crowdName: '动态1'
-      }, {
-        crowdId: 'dynamic2',
-        crowdName: '动态2'
-      }, {
-        crowdId: 'dynamic3',
-        crowdName: '动态3'
-      }, {
-        crowdId: 'dynamic4',
-        crowdName: '动态4'
-      }, {
-        crowdId: 'dynamic5',
-        crowdName: '动态5'
-      }, {
-        crowdId: 'dynamic6',
-        crowdName: '动态6'
-      }, {
-        crowdId: 'dynamic7',
-        crowdName: '动态7'
-      }]
+      crowdList: []
+      // crowdList: [{
+      //   crowdId: 'dynamic1',
+      //   crowdName: '动态1'
+      // }, {
+      //   crowdId: 'dynamic2',
+      //   crowdName: '动态2'
+      // }, {
+      //   crowdId: 'dynamic3',
+      //   crowdName: '动态3'
+      // }, {
+      //   crowdId: 'dynamic4',
+      //   crowdName: '动态4'
+      // }, {
+      //   crowdId: 'dynamic5',
+      //   crowdName: '动态5'
+      // }, {
+      //   crowdId: 'dynamic6',
+      //   crowdName: '动态6'
+      // }, {
+      //   crowdId: 'dynamic7',
+      //   crowdName: '动态7'
+      // }]
       // type: 1
     }
   },
@@ -59,23 +64,41 @@ export default {
     type: {
       type: Number,
       default: 0
+    },
+    dynamicRule: {
+      type: Object,
+      default: () => {}
     }
   },
   watch: {
+    dynamicRule: {
+      handler () {
+        // this.readData()
+        this.crowdList = this.dynamicRule.allCrowd || {}
+        console.log(' this.crowdList====', this.crowdList)
+      },
+      deep: true,
+      immediate: true
+    },
     type: {
       handler (val) {
-        if (val === 0 || val === 1) {
-          this.init()
-        } else if (val === 2) {
-          this.initRandomNodes()
-        } else {
+        console.log('val=======', val)
 
+        if (this.crowdList.length > 0) {
+          if (val === 0 || val === 1) {
+            this.init()
+          } else if (val === 2) {
+            this.initRandomNodes()
+          } else {
+
+          }
+          // console.log('this====', this.$children)
+          this.readData()
         }
-        console.log('this====', this.$children)
-        this.readData()
       },
       immediate: true
     }
+
   },
   created () {
     // this.init()
@@ -186,39 +209,27 @@ export default {
         type: 'edge'
       }
       // 顺序
-      if (type === 0) {
+      if (type === 0 || type === 1) {
         data.reduce((current, item) => {
           arr.push({
             ...commonObj,
-            source: current.crowdId,
-            target: item.crowdId,
-            sourceId: current.crowdId,
-            targetId: item.crowdId
+            source: current.crowdId.toString(),
+            target: item.crowdId.toString(),
+            sourceId: current.crowdId.toString(),
+            targetId: item.crowdId.toString()
           })
           return item
         }, data[0])
 
         arr.shift()
-      } else if (type === 1) { // 循环
-        data.reduce((current, item) => {
-          arr.push({
-            ...commonObj,
-            source: current.crowdId,
-            target: item.crowdId,
-            sourceId: current.crowdId,
-            targetId: item.crowdId
-          })
-          return item
-        }, data[0])
-
-        arr.shift()
-
+      }
+      if (type === 1) { // 循环
         arr.push({
           ...commonObj,
-          source: data[data.length - 1].crowdId,
-          target: data[0].crowdId,
-          sourceId: data[data.length - 1].crowdId,
-          targetId: data[0].crowdId
+          source: (data[data.length - 1].crowdId).toString(),
+          target: (data[0].crowdId).toString(),
+          sourceId: (data[data.length - 1].crowdId).toString(),
+          targetId: (data[0].crowdId).toString()
         })
       }
 

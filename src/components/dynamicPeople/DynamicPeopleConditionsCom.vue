@@ -8,6 +8,8 @@
         :crowdId:: {{ crowdId }}<br/>
         {{rulesJson}}
       </div> -->
+      <!-- <div>{{ crowdRule }}</div> -->
+      <!-- <div>{{ rulesJson }}</div> -->
       <div class="div-class">
 
         <!-- <template v-for="(item, index) in rulesJson.rules"> -->
@@ -106,28 +108,27 @@
           </el-tag>
         </div>
       </div> -->
-      <div v-if="dynamicMode === 'editSingle'">
+      <!-- <div v-if="dynamicMode === 'editSingle'">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
         <el-button type="primary" @click="handleSave(3)">保存</el-button>
       </div>
       <div v-else>
         <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
         <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
-        <!-- <el-button type="primary" @click="handleSave(1)">下一步</el-button> -->
         <el-button type="primary" @click="handleSave(3)">下一步</el-button>
+      </div> -->
+      <div >
+        <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
+        <el-button type="primary" @click="$emit('handleSave', rulesJson, policyId)">保存</el-button>
       </div>
   </div>
 
 </template>
 
 <script>
-import antvGraph from '@antvGraph/Index.vue'
 export default {
-  components: {
-    antvGraph
-  },
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
+  props: ['isDynamicPeople', 'crowdId', 'dynamicMode', 'allCrowdRule'],
   data () {
     return {
       dataSourceColorEnum: {
@@ -139,24 +140,21 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      tags: [
-      //   {
-      //   tagId: 1,
-      //   tagKey: 'day',
-      //   tagName: '产品包曝光天数',
-      //   tagType: 'int',
-      // }, {
-      //   tagId: 2
-        // tagKey: "cout"
-        // tagName: "曝光次数"
-        // tagType: "int"
-      // }
-      ],
+      tags: [],
       rulesJson: {
         condition: 'OR',
         rules: []
       },
-      i: 0
+      i: 0,
+      crowdRule: {},
+      policyId: ''
+    }
+  },
+  watch: {
+    crowdId: {
+      handler (val) {
+        this.init()
+      }
     }
   },
   created () {
@@ -165,46 +163,37 @@ export default {
       this.tags = res
     })
 
-    if (this.crowdId) {
-      this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-        console.log('res===', res)
-        if (res) {
-          this.rulesJson = JSON.parse(res)
-          // this.rulesJson = (res)
-          console.log('res===', this.rulesJson)
-        } else {
-          // 获取流转条件
-          this.$service.getRuleIndicators().then(res => {
-            res.forEach(item => {
-              this.handleAddChildRule(item)
-            })
-          })
-        }
-      })
-    }
+    this.init()
   },
   methods: {
-
+    init () {
+      if (this.crowdId) {
+        this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
+          console.log('res===', res)
+          // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+          this.policyId = res.policyId || ''
+          if (res.dynamicJson) {
+            this.rulesJson = JSON.parse(res.dynamicJson)
+            // this.rulesJson = (res)
+            console.log('res===', this.rulesJson)
+          } else {
+          // 重置
+            this.rulesJson = {
+              condition: 'OR',
+              rules: []
+            }
+            // 获取流转条件
+            this.$service.getRuleIndicators().then(res => {
+              res.forEach(item => {
+                this.handleAddChildRule(item)
+              })
+            })
+          }
+        // }
+        })
+      }
+    },
     handleAddChildRule (tag) {
-      // if (rule.rules.length > 50) {
-      //   this.$message({
-      //     type: 'error',
-      //     message: '已达最大数量'
-      //   })
-      //   return
-      // }
-      // if (tag.tagType === 'string' || tag.tagType === 'collect') {
-      //   if (this.cache[tag.tagId] === undefined) {
-      //     this.fetchTagSuggestions(tag.tagId)
-      //   }
-      // } else if (tag.tagType === 'mix') {
-      //   if (this.cache[tag.tagId] === undefined) {
-      //     this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
-      //   }
-      // }
-      // if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
-      //   this.crowd.tagIds.push(tag.tagId)
-      // }
       this.rulesJson.rules.push({
         ...tag,
         operator: '>',

@@ -854,7 +854,13 @@ export function setDynamicRule (data) {
     isJSON: true
   })
 }
-
+export function getCrowdRuleById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic/getCrowdRuleById',
+    params
+  })
+}
 // 编辑动态人群名称
 export function updateDynamicCrowdName (data) {
   return this.fetch({

@@ -43,26 +43,62 @@ const customNode = {
           }
         })
         // ---------------------------------------------
-        group.addShape('marker', {
+        // group.addShape('marker', {
+        //   attrs: {
+        //     x: 90,
+        //     y: 9,
+        //     r: 6,
+        //     stroke: '#707070',
+        //     cursor: 'pointer',
+        //     symbol: EXPAND_ICON
+        //   },
+        //   name: 'add-item'
+        // })
+        // group.addShape('dom', {
+        //   attrs: {
+        //     width: 20,
+        //     height: 20,
+        //     html: `
+        //       <span style="margin:auto; padding:auto; color: #5B8FF9">${cfg.label}</span>
+        //       `
+        //   }
+        // })
+        // const innerCircle = group.addShape('circle', {
+        //   attrs: {
+        //     x: 0,
+        //     y: -30,
+        //     r: 10,
+        //     fill: '#096dd9',
+        //     cursor: 'pointer',
+        //     label: 'aaaaa'
+        //   }
+        // })
+        // 设置className属性
+        const innerCircle1 = group.addShape('rect', {
           attrs: {
-            x: 90,
-            y: 9,
-            r: 6,
-            stroke: '#707070',
-            cursor: 'pointer',
-            symbol: EXPAND_ICON
-          },
-          name: 'add-item'
-        })
-        group.addShape('dom', {
-          attrs: {
-            width: 20,
+            x: offsetX + width / 2 + 28,
+            y: offsetY + height / 2 - 10,
+            width: 56,
             height: 20,
-            html: `
-              <span style="margin:auto; padding:auto; color: #5B8FF9">${cfg.label}</span>
-              `
+            fill: color,
+            parent: mainId,
+            radius: 4
           }
         })
+        const innerCircle2 = group.addShape('text', {
+          attrs: {
+            x: offsetX + width / 2 + 34,
+            y: offsetY + height / 2,
+            // textAlign: 'center',
+            textBaseline: 'middle',
+            parent: mainId,
+            text: '流转条件',
+            fill: '#fff'
+          }
+        })
+        innerCircle1.set('className', 'aaaa')
+        innerCircle2.set('className', 'aaaa')
+
         // ------------------------------------------------
         group.addShape('rect', {
           attrs: {
@@ -121,7 +157,7 @@ const customNode = {
           group.addShape('text', {
             attrs: {
               id: 'label' + uniqueId(),
-              x: offsetX + width / 2,
+              x: offsetX + width / 2 - 30,
               y: offsetY + height / 2,
               textAlign: 'center',
               textBaseline: 'middle',

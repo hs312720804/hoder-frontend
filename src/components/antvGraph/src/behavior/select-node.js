@@ -26,26 +26,24 @@ export default {
     console.log('shape===', graph)
   },
   onClick (e) {
-    debugger
     const { item, target } = e
-    const targetType = target.get('type')
-    const name = target.get('name')
-    const model = item.getModel()
-    if (name === 'add-item') {
-      if (!model.children) {
-        model.children = []
-      }
-      const id = 'ra'
-      var str = prompt('请输入节点名称', '比如c3-3-4')
-      if (str) {
-        target.attrs.text = str
-        model.children.push({
-          id,
-          name: 1,
-          label: str
-        })
-        this.graph.updateChild(model, model.id)
-      }
+    // ---------------------------
+
+    // -------------------------------
+    // const name = target.get('name')
+    // const model = item.getModel()
+    if (target.get('className') === 'aaaa') { // 点击设置流转条件
+      // 如果点击是发生在节点里面的小圆上，则更新对应的label
+      // this.graph.updateItem(item, {
+      //   label: '点击了圆',
+      //   labelCfg: {
+      //     style: {
+      //       fill: '#003a8c',
+      //       fontSize: 16
+      //     }
+      //   }
+      // })
+      eventBus.$emit('nodeSettingRule', { target: item, select: true })
     } else {
       const self = this
       const item = e.item
