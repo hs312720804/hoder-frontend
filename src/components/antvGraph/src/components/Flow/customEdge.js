@@ -104,6 +104,17 @@ const customEdge = {
           ['A', radius, radius, 0, 0, 1, -width, halfHeight],
           ['Z']
         ]
+        // const amount = group.addShape('text', {
+        //   attrs: {
+        //     text: '优先级111111',
+        //     x: 10,
+        //     y: 10,
+        //     fontSize: 14,
+        //     textAlign: 'left',
+        //     textBaseline: 'middle',
+        //     fill: '#000000D9'
+        //   }
+        // })
         const keyShape = group.addShape('path', {
           attrs: {
             id: 'edge' + uniqueId(),

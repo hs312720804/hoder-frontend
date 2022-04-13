@@ -6,6 +6,7 @@
       <div style="height: 42px;"></div>
       <div class="bottom-container">
         <minimap />
+        <!-- <detail-panel /> -->
 
         <page :height="height" :width="width" :data="data" />
       </div>
@@ -17,7 +18,7 @@
 <script>
 import Toolbar from '../Toolbar'
 // import ItemPanel from "../ItemPanel";
-// import DetailPanel from "../DetailPanel";
+import DetailPanel from '../DetailPanel'
 import Minimap from '../Minimap'
 import Page from '../Page'
 import Flow from '../Flow'
@@ -32,7 +33,8 @@ export default {
     Minimap,
     Page,
     // ContextMenu,
-    Flow
+    Flow,
+    DetailPanel
   },
   props: {
     height: {

@@ -13,7 +13,11 @@ const EXPAND_ICON = function EXPAND_ICON (x, y, r) {
     ['L', x, y - 2]
   ]
 }
-
+const condition = {
+  1: '定向',
+  2: '随机',
+  3: '终止'
+}
 const customNode = {
   init () {
     G6.registerNode('customNode', {
@@ -63,21 +67,26 @@ const customNode = {
         //       `
         //   }
         // })
-        // const innerCircle = group.addShape('circle', {
-        //   attrs: {
-        //     x: 0,
-        //     y: -30,
-        //     r: 10,
-        //     fill: '#096dd9',
-        //     cursor: 'pointer',
-        //     label: 'aaaaa'
-        //   }
-        // })
+        if (cfg.arithmetic) {
+          const innerCircle = group.addShape('text', {
+            attrs: {
+              x: offsetX + width / 2 + 10,
+              y: offsetY + height + 20,
+              cursor: 'pointer',
+              label: 'aaaaa',
+              text: condition[cfg.arithmetic],
+              fill: color
+            }
+          })
+          innerCircle.set('className', 'changeArithmeticType')
+        }
+
         // 设置className属性
         const innerCircle1 = group.addShape('rect', {
           attrs: {
             x: offsetX + width / 2 + 28,
             y: offsetY + height / 2 - 10,
+            text: '流转条件',
             width: 56,
             height: 20,
             fill: color,
@@ -161,7 +170,7 @@ const customNode = {
               y: offsetY + height / 2,
               textAlign: 'start',
               textBaseline: 'middle',
-              text: cfg.label + '好',
+              text: cfg.label,
               parent: mainId,
               fill: '#565758'
             }

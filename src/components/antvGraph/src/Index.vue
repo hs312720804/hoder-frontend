@@ -75,26 +75,41 @@ export default {
       handler () {
         // this.readData()
         this.crowdList = this.dynamicRule.allCrowd || {}
-        console.log(' this.crowdList====', this.crowdList)
+
+        console.log('this.crowdList====', this.crowdList)
       },
       deep: true,
       immediate: true
     },
     type: {
       handler (val) {
-        console.log('val=======', val)
-
-        if (this.crowdList.length > 0) {
+        console.log('this.dynamicRule=======', this.dynamicRule)
+        if (val === 3 && this.dynamicRule.flowChart) { // 随机 、编辑模式
+          const flowChart = JSON.parse(this.dynamicRule.flowChart)
+          // this.data.nodes = flowChart.nodes
+          this.data.nodes = this.initDefaultNodes()
+          this.data.edges = flowChart.edges.map(item => {
+            return {
+              ...item,
+              source: item.source.toString(),
+              target: item.target.toString(),
+              sourceId: item.sourceId.toString(),
+              targetId: item.targetId.toString()
+            }
+          })
+          console.log('this.data=========>', this.data)
+          // this.data = flowChart || {}
+        } else if (this.crowdList.length > 0) { // 新增
           if (val === 0 || val === 1) {
             this.init()
           } else if (val === 2) {
             this.initRandomNodes()
           } else {
-
+            this.init()
           }
           // console.log('this====', this.$children)
-          this.readData()
         }
+        this.readData()
       },
       immediate: true
     }
@@ -147,6 +162,7 @@ export default {
         top
       }
     },
+    // 随机
     initRandomNodes () {
       const data = this.crowdList
       const commonObj = {
@@ -156,9 +172,9 @@ export default {
         ],
         type: 'node',
         shape: 'customNode',
-        color: '#1890ff',
-        image: 'https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg',
-        stateImage: '/static/img/ok.463ab0e4.svg'
+        color: '#1890ff'
+        // image: 'https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg',
+        // stateImage: '/static/img/ok.463ab0e4.svg'
       }
       let arr = data.map((item, index) => {
         const xy = this.returnStyle(index)
@@ -168,11 +184,14 @@ export default {
 
         return {
           ...commonObj,
+          ...item,
           x,
           y,
           name: item.crowdName,
           label: item.crowdName,
-          id: item.crowdId
+          id: item.crowdId,
+          arithmetic: null
+
         }
       })
 
@@ -245,32 +264,44 @@ export default {
         ],
         type: 'node',
         shape: 'customNode',
-        color: '#1890ff',
-        image: 'https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg',
-        stateImage: '/static/img/ok.463ab0e4.svg'
+        color: '#1890ff'
+        // image: 'https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg',
+        // stateImage: '/static/img/ok.463ab0e4.svg'
         // inPoints: [[0, 0.5]],
         // outPoints: [[1, 0.5]]
+      }
+      if (this.type === 3) { // 自定义
+        commonObj.inPoints = [[0, 0.5]]
+        commonObj.outPoints = [[1, 0.5]]
       }
       // this.Y = -90
       // this.X = this.width / 2
       this.X = -200
       this.Y = this.height / 2
-      console.log('this.X==', this.X)
-      console.log('this.Y==', this.Y)
+      // console.log('this.X==', this.X)
+      console.log('data======', this.data)
       let arr = data.map((item, index) => {
         const x = this.X += 300
         const y = this.Y += 1
 
         // const x = this.X += 1
         // const y = this.Y += 150
-        return {
+        const obj = {
           ...commonObj,
+          ...item,
           x,
           y,
           name: item.crowdName,
           label: item.crowdName,
-          id: item.crowdId
+          id: item.crowdId,
+          arithmetic: null
         }
+
+        if (this.type === 3) { // 自定义
+          obj.arithmetic = item.arithmetic ? item.arithmetic : 2
+        }
+
+        return obj
       })
 
       console.log('arr===>', arr)

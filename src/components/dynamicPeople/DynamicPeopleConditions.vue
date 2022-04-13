@@ -103,6 +103,7 @@ export default {
         if (res) {
           // 小人群列表
           this.dynamicRule = res
+          this.radioType = res.mainArithmetic // 流转算法
         }
       })
       this.bindEvent()

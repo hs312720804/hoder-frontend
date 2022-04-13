@@ -44,6 +44,8 @@ export default {
       //   }
       // })
       eventBus.$emit('nodeSettingRule', { target: item, select: true })
+    } else if (target.get('className') === 'changeArithmeticType') { // 设置出口算法
+      eventBus.$emit('changeArithmeticType', { target: item, select: true })
     } else {
       const self = this
       const item = e.item

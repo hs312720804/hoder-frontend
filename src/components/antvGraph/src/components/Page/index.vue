@@ -149,6 +149,37 @@ export default {
           // console.log('crowdRule=====', _this.allCrowdRule)
         })
 
+        eventBus.$on('changeArithmeticType', item => { // 修改出口方式
+          const selectNode = item.target.getModel()
+          // 1定向 2随机 3 终止
+          let i
+
+          if (!selectNode.arithmetic) {
+            i = 3
+          } else if (selectNode.arithmetic == 1) {
+            i = 2
+          } else if (selectNode.arithmetic == 2) {
+            i = 3
+          } else if (selectNode.arithmetic == 3) {
+            i = 1
+          }
+
+          console.log('changeArithmeticType=====', selectNode)
+
+          const parmas = {
+            policyId: selectNode.policyId,
+            crowdId: selectNode.crowdId,
+            arithmetic: i
+          }
+          this.$service.setDynamicRule(parmas).then(res => {
+            const model = {
+              arithmetic: i
+            }
+
+            this.graph.update(item.target, model)
+          })
+        })
+
         // 添加网格线
         _this.grid = new Grid()
         _this.graph.addPlugin(self.grid)
