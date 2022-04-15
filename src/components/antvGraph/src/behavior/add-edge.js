@@ -80,7 +80,6 @@ export default {
     if (startItem) {
       this.graph.setItemState(startItem, 'hover', false)
     }
-
     this.graph.paint()
     startPoint = null
     startItem = null
@@ -120,7 +119,7 @@ export default {
       if (this.edge) {
         // 增加边的过程中，移动时边跟着移动
         this.graph.updateItem(this.edge, {
-          //  start: startPoint,
+          start: startPoint,
           target: point
         })
       }

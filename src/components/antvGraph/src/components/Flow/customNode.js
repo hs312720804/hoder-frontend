@@ -1,7 +1,6 @@
 import G6 from '@antv/g6/build/g6'
 import { uniqueId } from '@antvGraph/utils'
 // import Shape from '@antv/g6/src/shapes'
-
 const EXPAND_ICON = function EXPAND_ICON (x, y, r) {
   return [
     ['M', x - r, y - r],
@@ -67,6 +66,7 @@ const customNode = {
         //       `
         //   }
         // })
+        // 出口条件
         if (cfg.arithmetic) {
           const innerCircle = group.addShape('text', {
             attrs: {
@@ -79,6 +79,21 @@ const customNode = {
             }
           })
           innerCircle.set('className', 'changeArithmeticType')
+        }
+
+        // 权重
+        if (cfg.weight !== null) {
+          const weightText = group.addShape('text', {
+            attrs: {
+              x: offsetX + width / 2 + 50,
+              y: offsetY + height + 20,
+              cursor: 'pointer',
+              label: 'aaaaa',
+              text: '权重：' + cfg.weight,
+              fill: color
+            }
+          })
+          weightText.set('className', 'changeWeight')
         }
 
         // 设置className属性
@@ -108,6 +123,17 @@ const customNode = {
         innerCircle1.set('className', 'aaaa')
         innerCircle2.set('className', 'aaaa')
 
+        // group.addShape('image', {
+        //   attrs: {
+        //     x: offsetX + width - 32,
+        //     y: offsetY + 8,
+        //     width: 16,
+        //     height: 16,
+        //     parent: mainId,
+        //     img: arrow
+        //   }
+        // })
+
         // ------------------------------------------------
         group.addShape('rect', {
           attrs: {
@@ -130,38 +156,29 @@ const customNode = {
         //     parent: mainId
         //   }
         // })
-        // group.addShape('image', {
+
+        // if (cfg.backImage) {
+        // const clip = new Shape.Rect({
         //   attrs: {
-        //     x: offsetX + width - 32,
-        //     y: offsetY + 8,
-        //     width: 16,
-        //     height: 16,
-        //     parent: mainId,
-        //     img: cfg.stateImage
+        //     x: offsetX,
+        //     y: offsetY,
+        //     width: width,
+        //     height: height,
+        //     fill: '#fff',
+        //     radius: 4
         //   }
         // })
-        if (cfg.backImage) {
-          // const clip = new Shape.Rect({
-          //   attrs: {
-          //     x: offsetX,
-          //     y: offsetY,
-          //     width: width,
-          //     height: height,
-          //     fill: '#fff',
-          //     radius: 4
-          //   }
-          // })
-          // group.addShape('image', {
-          //   attrs: {
-          //     x: offsetX,
-          //     y: offsetY,
-          //     width: width,
-          //     height: height,
-          //     img: cfg.backImage,
-          //     clip: clip
-          //   }
-          // })
-        }
+        // group.addShape('image', {
+        //   attrs: {
+        //     x: offsetX,
+        //     y: offsetY,
+        //     width: width,
+        //     height: height,
+        //     img: cfg.backImage,
+        //     clip: clip
+        //   }
+        // })
+        // }
         if (cfg.label) {
           group.addShape('text', {
             attrs: {
@@ -170,7 +187,7 @@ const customNode = {
               y: offsetY + height / 2,
               textAlign: 'start',
               textBaseline: 'middle',
-              text: cfg.label,
+              text: cfg.label + '    id:' + cfg.id,
               parent: mainId,
               fill: '#565758'
             }

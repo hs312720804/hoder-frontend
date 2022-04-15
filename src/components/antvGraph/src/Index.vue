@@ -75,31 +75,44 @@ export default {
       handler () {
         // this.readData()
         this.crowdList = this.dynamicRule.allCrowd || {}
-
-        console.log('this.crowdList====', this.crowdList)
       },
       deep: true,
       immediate: true
     },
     type: {
       handler (val) {
-        console.log('this.dynamicRule=======', this.dynamicRule)
-        if (val === 3 && this.dynamicRule.flowChart) { // 随机 、编辑模式
-          const flowChart = JSON.parse(this.dynamicRule.flowChart)
-          // this.data.nodes = flowChart.nodes
+        if (val === 3) { // 随机 、编辑模式
           this.data.nodes = this.initDefaultNodes()
-          this.data.edges = flowChart.edges.map(item => {
-            return {
-              ...item,
-              source: item.source.toString(),
-              target: item.target.toString(),
-              sourceId: item.sourceId.toString(),
-              targetId: item.targetId.toString()
-            }
-          })
-          console.log('this.data=========>', this.data)
+          // this.data.nodes = this.initDefaultNodes()
+          if (this.dynamicRule.flowChart) {
+            const flowChart = JSON.parse(this.dynamicRule.flowChart)
+            console.log('flowChart===', flowChart)
+            this.data.nodes = this.data.nodes.map(item => {
+              const obj = flowChart.nodes.find(node => {
+                return node.crowdId === item.crowdId
+              })
+              if (obj) {
+                return obj
+              }
+              return item
+            })
+
+            this.data.edges = flowChart.edges.map(item => {
+              return {
+                ...item,
+                source: item.source.toString(),
+                target: item.target.toString(),
+                sourceId: item.sourceId.toString(),
+                targetId: item.targetId.toString()
+              }
+            })
+          } else {
+            this.data.edges = []
+          }
+
           // this.data = flowChart || {}
         } else if (this.crowdList.length > 0) { // 新增
+          this.data.edges = []
           if (val === 0 || val === 1) {
             this.init()
           } else if (val === 2) {
@@ -245,6 +258,7 @@ export default {
       if (type === 1) { // 循环
         arr.push({
           ...commonObj,
+          label: '权重',
           source: (data[data.length - 1].crowdId).toString(),
           target: (data[0].crowdId).toString(),
           sourceId: (data[data.length - 1].crowdId).toString(),
@@ -294,11 +308,13 @@ export default {
           name: item.crowdName,
           label: item.crowdName,
           id: item.crowdId,
-          arithmetic: null
+          arithmetic: null,
+          weight: null
         }
 
         if (this.type === 3) { // 自定义
           obj.arithmetic = item.arithmetic ? item.arithmetic : 2
+          obj.weight = item.weight
         }
 
         return obj

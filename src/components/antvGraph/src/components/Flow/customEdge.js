@@ -58,15 +58,15 @@ const customEdge = {
         if (end.x > start.x) {
           path = [
             ['M', start.x, start.y],
-            [
-              'C',
-              start.x,
-              start.y + hgap / (hgap / 50),
-              end.x,
-              end.y - hgap / (hgap / 50),
-              end.x,
-              end.y - 4
-            ],
+            // [
+            //   'C',
+            //   start.x,
+            //   start.y + hgap / (hgap / 50),
+            //   end.x,
+            //   end.y - hgap / (hgap / 50),
+            //   end.x,
+            //   end.y - 4
+            // ],
             [
               'L',
               end.x,
@@ -76,15 +76,15 @@ const customEdge = {
         } else {
           path = [
             ['M', start.x, start.y],
-            [
-              'C',
-              start.x,
-              start.y + hgap / (hgap / 50),
-              end.x,
-              end.y - hgap / (hgap / 50),
-              end.x,
-              end.y - 4
-            ],
+            // [
+            //   'C',
+            //   start.x,
+            //   // start.y + hgap / (hgap / 50),
+            //   // end.x,
+            //   // end.y - hgap / (hgap / 50),
+            //   // end.x,
+            //   end.y - 4
+            // ],
             [
               'L',
               end.x,
@@ -104,28 +104,41 @@ const customEdge = {
           ['A', radius, radius, 0, 0, 1, -width, halfHeight],
           ['Z']
         ]
-        // const amount = group.addShape('text', {
+        // ------------------------------
+
+        // ------------------------------
+        // const keyShape = group.addShape('path', {
         //   attrs: {
-        //     text: '优先级111111',
-        //     x: 10,
-        //     y: 10,
-        //     fontSize: 14,
-        //     textAlign: 'left',
-        //     textBaseline: 'middle',
-        //     fill: '#000000D9'
+        //     id: 'edge' + uniqueId(),
+        //     path: path,
+        //     stroke: '#b8c3ce',
+        //     lineAppendWidth: 10,
+        //     endArrow: {
+        //       path: endArrowPath
+        //     }
         //   }
         // })
         const keyShape = group.addShape('path', {
           attrs: {
             id: 'edge' + uniqueId(),
             path: path,
+            // path: [
+            //   [ 'M', cfg.startPoint.x, cfg.startPoint.y ],
+            //   [ 'L', cfg.endPoint.x, cfg.endPoint.y ]
+            // ],
             stroke: '#b8c3ce',
             lineAppendWidth: 10,
             endArrow: {
               path: endArrowPath
             }
           }
+
         })
+
+        // 定义的其他方法，都可以在draw里面调用， 如 drawShape、drawLabel 等。
+        // this.drawShape()
+        // const labelStyle = this.getLabelStyle(cfg)
+        // console.log('labelStyle======', labelStyle)
         return keyShape
       },
       afterDraw (cfg, group) {

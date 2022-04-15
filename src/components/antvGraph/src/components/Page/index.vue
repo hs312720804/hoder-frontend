@@ -179,6 +179,38 @@ export default {
             this.graph.update(item.target, model)
           })
         })
+        eventBus.$on('changeWeight', item => { // 修改权重
+          const selectNode = item.target.getModel()
+          _this.$prompt('请输入权重', '', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            inputPattern: /^[+]{0,1}(\d+)$/,
+            inputErrorMessage: '只能输入正整数',
+            inputValue: selectNode.weight || 100
+          }).then(({ value }) => {
+            // _this.$message({
+            //   type: 'success',
+            //   message: '你的邮箱是: ' + value
+            // })
+            const parmas = {
+              policyId: selectNode.policyId,
+              crowdId: selectNode.crowdId,
+              weight: value
+            }
+            this.$service.setDynamicRule(parmas).then(res => {
+              const model = {
+                weight: value
+              }
+
+              this.graph.update(item.target, model)
+            })
+          }).catch(() => {
+            _this.$message({
+              type: 'info',
+              message: '取消输入'
+            })
+          })
+        })
 
         // 添加网格线
         _this.grid = new Grid()

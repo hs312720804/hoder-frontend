@@ -18,7 +18,7 @@
 <script>
 import Toolbar from '../Toolbar'
 // import ItemPanel from "../ItemPanel";
-import DetailPanel from '../DetailPanel'
+// import DetailPanel from '../DetailPanel'
 import Minimap from '../Minimap'
 import Page from '../Page'
 import Flow from '../Flow'
@@ -33,8 +33,8 @@ export default {
     Minimap,
     Page,
     // ContextMenu,
-    Flow,
-    DetailPanel
+    Flow
+    // DetailPanel
   },
   props: {
     height: {

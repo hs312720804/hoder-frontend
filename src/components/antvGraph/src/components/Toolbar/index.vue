@@ -142,7 +142,7 @@ export default {
       if (this.redoList.length > 0) this.command.redo()
     },
     handleDelete () {
-      if (this.selectedItem.length > 0) {
+      if (this.selectedItem && this.selectedItem.length > 0) {
         this.command.executeCommand('delete', this.selectedItem)
         this.selectedItem = null
       }
