@@ -228,6 +228,14 @@ export function hitAndBiToTalPie (params) {
     params
   })
 }
+// 访问大数据画像分析链接
+export function portraitParam (params) {
+  return this.fetch({
+    method: 'get',
+    url: `api/crowd/portraitParam/${params.crowdId}`
+  })
+}
+
 // 人群业务命中统计多折线图
 export function hitAndBiToTalLine (params) {
   return this.fetch({

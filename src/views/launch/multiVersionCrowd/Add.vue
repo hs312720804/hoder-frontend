@@ -237,7 +237,10 @@
                 <!--<el-form-item label="备注" prop="remark" class="form-width">-->
                     <!--<el-input size="small" v-model="crowdForm.remark"></el-input>-->
                 <!--</el-form-item>-->
-                <el-form-item label="是否做abTest" class="form-width" v-if="crowdForm.crowdType === 0">
+                <!-- {{ crowdForm.crowdType }} -->
+
+                <!-- 普通人群 、 行为人群 可以选择是否投放子人群 -->
+                <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3">
                     <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>

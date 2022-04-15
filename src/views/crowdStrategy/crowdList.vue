@@ -122,7 +122,7 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+        <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -289,10 +289,10 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+        <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
-                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
+                <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
@@ -526,7 +526,7 @@
         </template>
       </el-table-column>
       <el-table-column type="index" width="30"></el-table-column>
-      <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+      <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -635,6 +635,9 @@
                 <el-dropdown-item
                         :command="['appointment',scope.row]"
                 >预约投后分析</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['operationalAnalysis',scope.row]"
+                >运营123114分析</el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -1061,9 +1064,29 @@
             <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column>
             <el-table-column prop="crowdName" label="人群名称"></el-table-column>
             <el-table-column prop="ratio" label="优先级">
-                <template slot-scope="scope">
-                    {{ scope.row.priority }}
-                </template>
+              <template slot="header">
+                优先级
+                <el-popover
+                  placement="top"
+                  trigger="hover"
+                  class="popover-button"
+                >
+                  <div>数字越大，优先级越高</div>
+                <span class="priority-tip" slot="reference">!</span>
+                </el-popover>
+              </template>
+              <template slot-scope="scope">
+                  <!-- {{ scope.row.priority }} -->
+                  <priorityEdit
+                    @refresh="loadData"
+                    :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn"
+                    :byPassId="scope.row.id"
+                    :data="scope.row.priority"
+                    :policyId="scope.row.policyId"
+                    :crowdId="scope.row.crowdId"
+                    :isDynamicPeople="true">
+                  </priorityEdit>
+              </template>
             </el-table-column>
             <el-table-column prop="count" label="数量">
               <template slot-scope="scope">
@@ -1106,6 +1129,16 @@
               </template>
             </el-table-column>
         </el-table>
+        <div style="margin: 30px 0 0; overflow: auto">
+            <pagination
+              :currentpage="independentParams.pageNum"
+              :pagesize="independentParams.pageSize"
+              :totalcount="independentTotal"
+              @handle-size-change="handleIndependentSizeChange"
+              @handle-current-change="handleIndependentCurrentChange"
+            ></pagination>
+        </div>
+
       </div>
 
     </el-dialog>
@@ -1457,6 +1490,11 @@ export default {
       showDivideDetail: false,
       DivideTableData: [],
       subdividePeopleList: [],
+      independentParams: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      independentTotal: 0,
       setShowCommitHistoryDialog: false,
       currentCrowdId: undefined,
       abStatusEnum: {},
@@ -1612,10 +1650,23 @@ export default {
       this.monitorOutForm.pageNum = val
       this.handleGetMonitorTableList()
     },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleIndependentSizeChange (val) {
+      this.independentParams.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.independentParams.pageNum = 1
+      this.showDivideResult(this.independentParams.crowdId)
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleIndependentCurrentChange (val) {
+      this.independentParams.pageNum = val
+      this.showDivideResult(this.independentParams.crowdId)
+    },
     // 计算
     calculate (row) {
       this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
-        this.showDivideResult()
+        this.showDivideResult(row.crowdId)
       })
     },
     handleMonitor (row) {
@@ -2330,7 +2381,15 @@ export default {
         case 'appointment':
           this.ShowAppointmentDialog(this.currentCid)
           break
+        case 'operationalAnalysis':
+          this.goToOperationalAnalysis(this.currentCid)
+          break
       }
+    },
+    goToOperationalAnalysis (crowdId) {
+      this.$service.portraitParam({ crowdId }).then(res => {
+
+      })
     },
     // 显示投后效果弹窗
     ShowAppointmentDialog (crowdId) {
@@ -2905,14 +2964,16 @@ export default {
         this.showDivideDetail = true
         this.DivideTableData = data
       })
-      const params = {
-        crowdId,
-        pageSize: 10,
-        pageNum: 1
-      }
-      this.$service.searchIndependentAnalysisByCrowdId(params).then(data => {
+      this.independentParams.crowdId = crowdId
+      // const params = {
+      //   crowdId: this.independentParams.crowdId,
+      //   pageSize: this.independentParams.pageSize,
+      //   pageNum: this.independentParams.pageNum
+      // }
+      this.$service.searchIndependentAnalysisByCrowdId(this.independentParams).then(data => {
         this.showDivideDetail = true
         this.subdividePeopleList = data.pageInfo.list || []
+        this.independentTotal = data.pageInfo.total || 0
         this.independentLaunchStatusEnum = data.launchStatusEnum
       })
     },
