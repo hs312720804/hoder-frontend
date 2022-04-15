@@ -300,6 +300,15 @@ export function crowdUpDown (params) {
     params
   })
 }
+// 动态人群上下架
+export function putwayCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: 'api/dynamic/putwayCrowd',
+    data,
+    isJSON: true
+  })
+}
 // 人群复制
 export function crowdCopy (data) {
   return this.fetch({

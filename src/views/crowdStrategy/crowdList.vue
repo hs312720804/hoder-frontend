@@ -2274,14 +2274,23 @@ export default {
       this.currentTag = row
     },
     handleUpDown () {
+      // 11111111111111111111111
       const row = this.currentTag
       // 区分动态人群、普通提示语
       const tipMessage = this.smart ? '操作成功' : (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据'
-      this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
-        .then(() => {
-          this.showUpDownDialog = false
-          this.loadData()
-        })
+      if (this.smart) {
+        this.$service.putwayCrowd({ policyId: row.policyId, crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
+          .then(() => {
+            this.showUpDownDialog = false
+            this.loadData()
+          })
+      } else {
+        this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
+          .then(() => {
+            this.showUpDownDialog = false
+            this.loadData()
+          })
+      }
     },
     copyCrowd (row) {
       this.showCopyDialog = true
