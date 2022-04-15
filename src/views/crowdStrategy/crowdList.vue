@@ -1031,30 +1031,83 @@
     <!--已划分弹窗显示-->
     <el-dialog :visible.sync="showDivideDetail" title="划分详情">
 
-      <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
-        实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+      <div v-if="DivideTableData && DivideTableData.length > 0" style="margin: -15px 0 20px 0">
+        <span class="detailTitle">AB子人群</span> 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+        <el-table :data="DivideTableData" style="width: 100%;" stripe border>
+            <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
+            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+            <el-table-column prop="ratio" label="占比">
+                <template slot-scope="scope">
+                    {{ scope.row.ratio }}%
+                </template>
+            </el-table-column>
+            <el-table-column prop="count" label="数量">
+              <template slot-scope="scope">
+                {{cc_format_number(scope.row.count)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
       </div>
 
-      <el-table :data="DivideTableData" style="width: 100%;" stripe border>
-          <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
-          <el-table-column prop="crowdName" label="人群名称"></el-table-column>
-          <el-table-column prop="ratio" label="占比">
+      <div v-if="subdividePeopleList && subdividePeopleList.length > 0" style="margin: -15px 0 20px 0">
+        <span class="detailTitle">再分割人群</span>
+        <el-table :data="subdividePeopleList" style="width: 100%;" stripe border>
+            <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column>
+            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+            <el-table-column prop="ratio" label="优先级">
+                <template slot-scope="scope">
+                    {{ scope.row.priority }}
+                </template>
+            </el-table-column>
+            <el-table-column prop="count" label="数量">
               <template slot-scope="scope">
-                  {{ scope.row.ratio }}%
+                {{cc_format_number(scope.row.history.totalUser)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="90">
+              <template slot-scope="scope">
+                <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" width="150">
+              <template slot-scope="scope">
+                  <div v-if="scope.row.history.status">
+                      <div v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
+                          计算完成
+                      </div>
+                      <!-- 新增计算中时是否是人群派对中 -->
+                      <div v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                          {{ (independentLaunchStatusEnum[scope.row.history.status]).childrenName }}
+                      </div>
+                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
+                      >
+                          <span v-if="crowdType === 4">计算</span>
+                          <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
+                      </div>
+                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5">
+                          计算失败
+                          <!-- <el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
+                      </div>
+                      <div v-else>
+                          {{ (independentLaunchStatusEnum[scope.row.history.status]).name }}
+                      </div>
+                  </div>
               </template>
           </el-table-column>
-          <el-table-column prop="count" label="数量">
-            <template slot-scope="scope">
-              {{cc_format_number(scope.row.count)}}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="250">
+          <el-table-column label="数据监控" width="80" v-permission="'hoder:launch:crowd:ver:index'">
               <template slot-scope="scope">
-                  <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                  <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                <el-button type="text" @click="currentCid = scope.row.crowdId; handleMonitor(scope.row)">查看</el-button>
               </template>
-          </el-table-column>
-      </el-table>
+            </el-table-column>
+        </el-table>
+      </div>
+
     </el-dialog>
     <commit-history-dialog
             :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
@@ -1230,6 +1283,32 @@
         <el-button @click="showEditDynamicCrowdName = false">取消</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="数据监控" :visible.sync="monitorDialog">
+      <el-date-picker
+        v-model="monitorRangeTime"
+        type="daterange"
+        align="right"
+        @change="getDataMonitor"
+        class="monitor-time"
+        value-format="yyyy-MM-dd"
+      ></el-date-picker>
+
+      <c-table
+        :props="monitorTable.props"
+        :header="monitorTable.header"
+        :data="monitorTable.data"
+      >
+      </c-table>
+      <div style="margin: 30px 0 0; overflow: auto">
+          <pagination
+              :currentpage="monitorOutForm.pageNum"
+              :pagesize="monitorOutForm.pageSize"
+              :totalcount="monitorTotal"
+              @handle-size-change="handleMonitorSizeChange"
+              @handle-current-change="handleMonitorCurrentChange"
+          ></pagination>
+      </div>
+  </el-dialog>
   </div>
 </template>
 <script>
@@ -1377,10 +1456,12 @@ export default {
       ],
       showDivideDetail: false,
       DivideTableData: [],
+      subdividePeopleList: [],
       setShowCommitHistoryDialog: false,
       currentCrowdId: undefined,
       abStatusEnum: {},
       launchStatusEnum: {},
+      independentLaunchStatusEnum: {},
       checkList: ['creatorName'],
       downloadUrl: undefined,
       launchedExportUrl: undefined,
@@ -1419,7 +1500,64 @@ export default {
       },
       configTextarea: '',
       initExpandCrowd: [],
-      copyErrorMsg: '' // 人群复制捕获错误信息
+      copyErrorMsg: '', // 人群复制捕获错误信息
+      monitorDialog: false,
+      monitorRangeTime: undefined,
+      monitorOutForm: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      monitorTotal: 0,
+      monitorTable: {
+        props: {},
+        header: [
+          {
+            label: '人群名称',
+            prop: 'launch_name'
+          },
+          {
+            label: 'dmp人群ID',
+            prop: 'dmp_crowd_id'
+          },
+          {
+            label: '临时人群版本号',
+            prop: 'version'
+          },
+          {
+            label: '当前版本',
+            prop: 'cur_version'
+          },
+          {
+            label: '接收设备数量',
+            prop: 'receive_total_user'
+          },
+          {
+            label: '设备数量',
+            prop: 'total_user'
+          },
+          {
+            label: '临时人群es index',
+            prop: 'es_index'
+          },
+          {
+            label: '状态',
+            prop: 'status_name'
+          },
+          {
+            label: '临时人群同步日期',
+            prop: 'update_time'
+          },
+          {
+            label: '版本是否删除',
+            render: (h, params) => {
+              return h('div', {}, [
+                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+              ])
+            }
+          }
+        ],
+        data: []
+      }
     }
   },
   props: ['selectRow'],
@@ -1461,6 +1599,52 @@ export default {
     // }
   },
   methods: {
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleMonitorSizeChange (val) {
+      this.monitorOutForm.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.monitorOutForm.pageNum = 1
+      this.handleGetMonitorTableList()
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleMonitorCurrentChange (val) {
+      this.monitorOutForm.pageNum = val
+      this.handleGetMonitorTableList()
+    },
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.showDivideResult()
+      })
+    },
+    handleMonitor (row) {
+      this.monitorDialog = true
+      this.selectedRow = row
+      this.handleGetMonitorTableList()
+    },
+    getDataMonitor () {
+      this.handleGetMonitorTableList()
+    },
+    handleGetMonitorTableList () {
+      const monitorRangeTime = this.monitorRangeTime || []
+      const startDate = monitorRangeTime[0] || ''
+      const endDate = monitorRangeTime[1] || ''
+      const params = {
+        launchCrowdId: this.selectedRow.launchCrowdId,
+        startDate,
+        endDate,
+        ...this.monitorOutForm
+      }
+      this.$service.launchVersionList(params).then(data => {
+        if (data) {
+          this.monitorTotal = data.pageInfo.total
+          this.monitorTable.data = data.pageInfo.list || []
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
     pickerOptionsDayinRange (day) { // element日期范围选择 range 天内 开始和结束不超 day天
       let _minTime = null
       let _maxTime = null
@@ -2715,9 +2899,21 @@ export default {
     // 人群画像估算---结束
     // 显示划分详情
     showDivideResult (crowdId) {
+      this.DivideTableData = []
+      this.subdividePeopleList = []
       this.$service.getAbChilds(crowdId).then(data => {
         this.showDivideDetail = true
         this.DivideTableData = data
+      })
+      const params = {
+        crowdId,
+        pageSize: 10,
+        pageNum: 1
+      }
+      this.$service.searchIndependentAnalysisByCrowdId(params).then(data => {
+        this.showDivideDetail = true
+        this.subdividePeopleList = data.pageInfo.list || []
+        this.independentLaunchStatusEnum = data.launchStatusEnum
       })
     },
     // 提交历史数据
@@ -3357,4 +3553,13 @@ fieldset>div
   width 50%
 .dynamic-crowd-name
   white-space nowrap
+.detailTitle
+  font-size 16px
+  line-height: 40px;
+  margin-right: 10px;
+  font-weight: 500
+  color: #000;
+.monitor-time
+  margin-bottom: 30px;
+
 </style>

@@ -464,6 +464,14 @@ export function getAbChilds (params) {
     url: 'api/crowd/showAbChilds/' + params
   })
 }
+// 自主分析查看分割小人群
+export function searchIndependentAnalysisByCrowdId (params) {
+  return this.fetch({
+    method: 'get',
+    url: 'api/tempCrowd/searchIndependentAnalysisByCrowdId',
+    params
+  })
+}
 // 人群提交历史数据
 export function submitPolicyHistoryData (data) {
   return this.fetch({
