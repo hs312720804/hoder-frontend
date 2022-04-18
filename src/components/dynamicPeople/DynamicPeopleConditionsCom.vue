@@ -69,7 +69,7 @@
 
                 </span>
 
-                <span class="i" @click="handleRemoveRule(n)" v-if="rulesJson.rules.length > 1">
+                <span class="i" @click="handleRemoveRule(n)" >
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
               </div>
@@ -186,11 +186,11 @@ export default {
               rules: []
             }
             // 获取流转条件
-            this.$service.getRuleIndicators().then(res => {
-              res.forEach(item => {
-                this.handleAddChildRule(item)
-              })
-            })
+            // this.$service.getRuleIndicators().then(res => {
+            //   res.forEach(item => {
+            //     this.handleAddChildRule(item)
+            //   })
+            // })
           }
         // }
         })
