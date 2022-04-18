@@ -637,7 +637,7 @@
                 >预约投后分析</el-dropdown-item>
                 <el-dropdown-item
                         :command="['operationalAnalysis',scope.row]"
-                >运营123114分析</el-dropdown-item>
+                >运营分析</el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -2388,7 +2388,8 @@ export default {
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {
-
+        const url = res.url
+        window.open(url)
       })
     },
     // 显示投后效果弹窗
