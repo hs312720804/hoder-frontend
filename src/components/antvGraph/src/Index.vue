@@ -7,7 +7,7 @@
         </div>
       </div>
     </div> -->
-    <G6Editor mode="edit" :data="data" :height="600">
+    <G6Editor mode="edit" :data="data" :height="600" :width="width">
     </G6Editor>
   </div>
 </template>
@@ -139,15 +139,14 @@ export default {
 
   },
   created () {
-    // this.init()
-  },
-  mounted () {
-    this.width = document.getElementById('g6').offsetWidth
-
     const _this = this
     eventBus.$on('afterAddPage', page => {
       _this.graph = page.graph
     })
+  },
+  mounted () {
+    // 画布宽度
+    this.width = document.getElementsByClassName('el-main')[0].offsetWidth - 40
   },
   methods: {
     returnStyle (index) {

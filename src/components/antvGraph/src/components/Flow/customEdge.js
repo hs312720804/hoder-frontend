@@ -58,33 +58,41 @@ const customEdge = {
         if (end.x > start.x) {
           path = [
             ['M', start.x, start.y],
-            // [
-            //   'C',
-            //   start.x,
-            //   start.y + hgap / (hgap / 50),
-            //   end.x,
-            //   end.y - hgap / (hgap / 50),
-            //   end.x,
-            //   end.y - 4
-            // ],
+            [
+              'C',
+              start.x,
+              start.y + hgap / (hgap / 50),
+              end.x,
+              end.y - hgap / (hgap / 50),
+              end.x,
+              end.y - 4
+            ],
             [
               'L',
               end.x,
               end.y
             ]
           ]
+          // path = [[ 'M', start.x, start.y ],
+          //   [ 'L', end.x / 3 + 2 / 3 * start.x, start.y ],
+          //   [ 'L', end.x / 3 + 2 / 3 * start.x, end.y ],
+          //   [ 'L', end.x, end.y ]]
         } else {
+          // path = [[ 'M', start.x, start.y ],
+          //   [ 'L', end.x / 3 + 2 / 3 * start.x, start.y ],
+          //   [ 'L', end.x / 3 + 2 / 3 * start.x, end.y ],
+          //   [ 'L', end.x, end.y ]]
           path = [
             ['M', start.x, start.y],
-            // [
-            //   'C',
-            //   start.x,
-            //   // start.y + hgap / (hgap / 50),
-            //   // end.x,
-            //   // end.y - hgap / (hgap / 50),
-            //   // end.x,
-            //   end.y - 4
-            // ],
+            [
+              'C',
+              start.x,
+              // start.y + hgap / (hgap / 50),
+              // end.x,
+              // end.y - hgap / (hgap / 50),
+              // end.x,
+              end.y - 4
+            ],
             [
               'L',
               end.x,

@@ -65,11 +65,12 @@ export default {
     this.bindEvent()
   },
   methods: {
-    handleSave (rulesJson, policyId) {
+    handleSave (paramsObj) {
       const parmas = {
-        policyId: policyId,
+        policyId: paramsObj.policyId,
         crowdId: this.crowdId,
-        dynamicJson: JSON.stringify(rulesJson)
+        dynamicJson: JSON.stringify(paramsObj.rulesJson),
+        applyAll: paramsObj.applyAll ? 1 : 0
       }
       this.$service.setDynamicRule(parmas, '操作成功').then(res => {
         this.dialogVisible = false
@@ -83,6 +84,12 @@ export default {
         container: 'graph-container',
         height: height,
         width: width,
+        // layout: {
+        //   type: 'grid',
+        //   begin: [ 20, 20 ],
+        //   width: width - 20,
+        //   height: height - 20
+        // },
         modes: {
           // 支持的 behavior
           default: [
@@ -116,6 +123,12 @@ export default {
       eventBus.$on('afterAddPage', page => {
         _this.page = page
         _this.graph = _this.page.graph
+        // 添加网格线
+
+        _this.grid = new Grid()
+        console.log('_this.graph==========>', _this.graph)
+        _this.graph.addPlugin(_this.grid)
+
         eventBus.$on('nodeselectchange', item => {
           if (item.select === true && item.target.getType() === 'node') {
             _this.status = 'node-selected'
@@ -211,10 +224,6 @@ export default {
             })
           })
         })
-
-        // 添加网格线
-        _this.grid = new Grid()
-        _this.graph.addPlugin(self.grid)
       })
     }
 

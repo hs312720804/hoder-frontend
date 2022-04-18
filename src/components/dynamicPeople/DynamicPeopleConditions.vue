@@ -170,7 +170,11 @@ export default {
     }
   },
   beforeDestroy () {
-    this.graph && this.graph.destroyed()
+    // console.log('this.graph===>', this.graph)
+    // this.graph && this.graph.destroyed()
+    if (this.graph) {
+      this.graph = null
+    }
     eventBus.$off()
   },
   methods: {

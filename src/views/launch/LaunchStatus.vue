@@ -158,7 +158,6 @@ export default {
   methods: {
     handleView ({ row }) {
       console.log('eee===', row)
-      // alert(1)
       this.showDialog = true
       this.detailTable.data = row.statusList
     },

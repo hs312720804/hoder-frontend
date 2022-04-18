@@ -89,6 +89,7 @@
           </div>
         <!-- </template> -->
       </div>
+      <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
 
       <!-- <div class="label-or">
         <div
@@ -119,7 +120,7 @@
       </div> -->
       <div >
         <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
-        <el-button type="primary" @click="$emit('handleSave', rulesJson, policyId)">保存</el-button>
+        <el-button type="primary" @click="$emit('handleSave', {rulesJson, policyId, applyAll})">保存</el-button>
       </div>
   </div>
 
@@ -147,7 +148,8 @@ export default {
       },
       i: 0,
       crowdRule: {},
-      policyId: ''
+      policyId: '',
+      applyAll: false
     }
   },
   watch: {
@@ -172,6 +174,7 @@ export default {
           console.log('res===', res)
           // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
           this.policyId = res.policyId || ''
+          this.applyAll = !!(res.applyAll && res.applyAll === 1)
           if (res.dynamicJson) {
             this.rulesJson = JSON.parse(res.dynamicJson)
             // this.rulesJson = (res)
@@ -225,40 +228,42 @@ export default {
     handleBackPrevStep () {
       this.$emit('crowdPrevStep', 3, this.recordId)
     },
-    handleSave (mode) {
-      const parmas = {
-        policyId: this.policyId,
-        crowdId: this.crowdId,
-        dynamicJson: JSON.stringify(this.rulesJson)
-      }
-      this.$service.setDynamicRule(parmas, '操作成功').then(res => {
-        // if (mode === 3) { // 下一步
-        //   this.$emit('crowdNextStep', 3, this.recordId)
-        // } else {
-        //   if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
-        //     this.$emit('goBackCrowdListPage')
-        //   } else { // 创建策略流程
-        //     this.$router.push({ path: 'launch/launchTabList' })
-        //   }
-        // }
-        if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
-          if (mode === 3) {
-            this.$emit('crowdNextStep', 3)
-          } else {
-            this.$emit('goBackCrowdListPage')
-          }
-        } else if (this.dynamicMode === 'editSingle') { // 大人群列表 - 单个编辑
-          this.$emit('goBackCrowdListPage')
-        } else { // 策略流程
-          if (mode === 3) {
-            this.$emit('crowdNextStep', 3)
-          } else {
-            this.$emit('handleDirectStrategyList')
-            // this.$router.push({ path: 'launch/launchTabList' })
-          }
-        }
-      })
-    },
+    // handleSave (mode) {
+    //   alert(123)
+    //   const parmas = {
+    //     policyId: this.policyId,
+    //     crowdId: this.crowdId,
+    //     dynamicJson: JSON.stringify(this.rulesJson),
+    //     applyAll: this.applyAll ? 1 : 0
+    //   }
+    //   this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+    //     // if (mode === 3) { // 下一步
+    //     //   this.$emit('crowdNextStep', 3, this.recordId)
+    //     // } else {
+    //     //   if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //     //     this.$emit('goBackCrowdListPage')
+    //     //   } else { // 创建策略流程
+    //     //     this.$router.push({ path: 'launch/launchTabList' })
+    //     //   }
+    //     // }
+    //     if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //       if (mode === 3) {
+    //         this.$emit('crowdNextStep', 3)
+    //       } else {
+    //         this.$emit('goBackCrowdListPage')
+    //       }
+    //     } else if (this.dynamicMode === 'editSingle') { // 大人群列表 - 单个编辑
+    //       this.$emit('goBackCrowdListPage')
+    //     } else { // 策略流程
+    //       if (mode === 3) {
+    //         this.$emit('crowdNextStep', 3)
+    //       } else {
+    //         this.$emit('handleDirectStrategyList')
+    //         // this.$router.push({ path: 'launch/launchTabList' })
+    //       }
+    //     }
+    //   })
+    // },
     // 编辑人群时保存
     // save (mode) {
     //   const parmas = {

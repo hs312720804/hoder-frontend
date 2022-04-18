@@ -1,5 +1,5 @@
 <template>
-  <div id="mountNode" :style="{ width: width }" ref="mountNode">
+  <div id="mountNode" :style="{ width: width +'px' }" ref="mountNode">
     <div class="editor" >
 
       <toolbar />

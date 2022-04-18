@@ -193,7 +193,8 @@ export default {
       }
     },
     handleAutoZoom () {
-      this.graph.fitView(20)
+      this.graph.fitView(100)
+      // this.graph.fitCenter()
     },
     handleResetZoom () {
       this.graph.zoomTo(1, this.getViewCenter())
