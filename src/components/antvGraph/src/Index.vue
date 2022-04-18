@@ -90,20 +90,24 @@ export default {
             const flowChart = JSON.parse(this.dynamicRule.flowChart)
             console.log('flowChart===', flowChart)
 
-            this.data.nodes = defaultNodes.map(item => {
-              const obj = flowChart.nodes.find(node => {
-                return node.crowdId === item.crowdId
+            this.data.nodes = defaultNodes.map(defaultObj => {
+              const editObj = flowChart.nodes.find(node => {
+                return node.crowdId === defaultObj.crowdId
                 // console.log('node============>', node)
               })
               // console.log('obj============>', obj)
 
-              if (obj) {
-                return {
-                  ...obj,
-                  ...item
-                }
+              if (editObj) {
+                // return {
+                //   ...obj,
+                //   ...item,
+                //   x: obj.x,
+                //   y: obj.y
+
+                // }
+                return editObj
               }
-              return item
+              return defaultObj
             })
 
             this.data.edges = flowChart.edges.map(item => {
