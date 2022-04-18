@@ -33,6 +33,7 @@
       <div style="position: absolute; top: 300px; z-index: 999;">
         <span class="inputArrow"></span>
         <!-- <el-button type="text">文字按钮</el-button> -->
+        <!-- {{radioType === 3}} -->
         <template v-if="radioType === 3">
           <el-button type="text" @click="handleChangeBigArithmetic" style="display: inline-block; vertical-align: 23px;">
             {{ condition[this.bigArithmetic] }}
@@ -155,7 +156,7 @@ export default {
           // 小人群列表
           this.dynamicRule = res
           this.radioType = res.mainArithmetic // 流转算法
-          this.bigArithmetic = res.arithmetic // 大的出口条件
+          this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
 
           // 大的出口 选择定向时，选择人群id
           this.crowdOptions = res.allCrowd
