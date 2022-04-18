@@ -82,17 +82,26 @@ export default {
     type: {
       handler (val) {
         if (val === 3) { // 随机 、编辑模式
-          this.data.nodes = this.initDefaultNodes()
+          const defaultNodes = this.initDefaultNodes()
+          console.log('this.data.nodes===>1111111', defaultNodes)
+
           // this.data.nodes = this.initDefaultNodes()
           if (this.dynamicRule.flowChart) {
             const flowChart = JSON.parse(this.dynamicRule.flowChart)
             console.log('flowChart===', flowChart)
-            this.data.nodes = this.data.nodes.map(item => {
+
+            this.data.nodes = defaultNodes.map(item => {
               const obj = flowChart.nodes.find(node => {
                 return node.crowdId === item.crowdId
+                // console.log('node============>', node)
               })
+              // console.log('obj============>', obj)
+
               if (obj) {
-                return obj
+                return {
+                  ...obj,
+                  ...item
+                }
               }
               return item
             })
@@ -108,6 +117,7 @@ export default {
             })
           } else {
             this.data.edges = []
+            this.data.nodes = defaultNodes
           }
 
           // this.data = flowChart || {}

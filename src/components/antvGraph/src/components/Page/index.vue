@@ -186,7 +186,7 @@ export default {
             cancelButtonText: '取消',
             inputPattern: /^[+]{0,1}(\d+)$/,
             inputErrorMessage: '只能输入正整数',
-            inputValue: selectNode.weight || 100
+            inputValue: selectNode.weight || 0
           }).then(({ value }) => {
             // _this.$message({
             //   type: 'success',
