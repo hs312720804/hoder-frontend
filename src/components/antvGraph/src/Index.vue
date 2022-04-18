@@ -98,14 +98,16 @@ export default {
               // console.log('obj============>', obj)
 
               if (editObj) {
-                // return {
-                //   ...obj,
-                //   ...item,
-                //   x: obj.x,
-                //   y: obj.y
+                return {
+                  ...editObj,
+                  // ...defaultObj,
+                  // x: editObj.x,
+                  // y: editObj.y,
+                  inPoints: defaultObj.inPoints,
+                  outPoints: defaultObj.outPoints
 
-                // }
-                return editObj
+                }
+                // return editObj
               }
               return defaultObj
             })
