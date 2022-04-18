@@ -66,26 +66,27 @@ const customNode = {
         //       `
         //   }
         // })
+
         // 出口条件
-        if (cfg.arithmetic) {
-          const innerCircle = group.addShape('text', {
-            attrs: {
-              x: offsetX + width / 2 + 10,
-              y: offsetY + height + 20,
-              cursor: 'pointer',
-              label: 'aaaaa',
-              text: condition[cfg.arithmetic],
-              fill: color
-            }
-          })
-          innerCircle.set('className', 'changeArithmeticType')
-        }
+        // if (cfg.arithmetic) {
+        //   const innerCircle = group.addShape('text', {
+        //     attrs: {
+        //       x: offsetX + width / 2 + 10,
+        //       y: offsetY + height + 20,
+        //       cursor: 'pointer',
+        //       label: 'aaaaa',
+        //       text: condition[cfg.arithmetic],
+        //       fill: color
+        //     }
+        //   })
+        //   innerCircle.set('className', 'changeArithmeticType')
+        // }
 
         // 权重
         if (cfg.weight !== null) {
           const weightText = group.addShape('text', {
             attrs: {
-              x: offsetX + width / 2 + 50,
+              x: -(width / 2),
               y: offsetY + height + 20,
               cursor: 'pointer',
               label: 'aaaaa',
@@ -96,10 +97,10 @@ const customNode = {
           weightText.set('className', 'changeWeight')
         }
 
-        // 设置className属性
+        // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
           attrs: {
-            x: offsetX + width / 2 + 28,
+            x: width / 2 - 56,
             y: offsetY + height / 2 - 10,
             text: '流转条件',
             width: 56,
@@ -111,7 +112,7 @@ const customNode = {
         })
         const innerCircle2 = group.addShape('text', {
           attrs: {
-            x: offsetX + width / 2 + 34,
+            x: width / 2 - 50,
             y: offsetY + height / 2,
             // textAlign: 'center',
             textBaseline: 'middle',
@@ -189,7 +190,9 @@ const customNode = {
               textBaseline: 'middle',
               text: cfg.label + '    id:' + cfg.id,
               parent: mainId,
-              fill: '#565758'
+              fill: '#333',
+              fontSize: 14,
+              lineWidth: 20
             }
           })
           // group.addShape('rect', {
@@ -254,6 +257,30 @@ const customNode = {
                 opacity: 0
               }
             })
+            // group.addShape('circle', {
+            //   attrs: {
+            //     id: 'circle' + uniqueId(),
+            //     parent: id,
+            //     x: -x,
+            //     y: 0,
+            //     r: 10,
+            //     isInPointOut: true,
+            //     fill: '#1890ff',
+            //     opacity: 0
+            //   }
+            // })
+            // group.addShape('circle', {
+            //   attrs: {
+            //     id: id,
+            //     x: -x,
+            //     y: 0,
+            //     r: 3,
+            //     isInPoint: true,
+            //     fill: '#fff',
+            //     stroke: '#1890ff',
+            //     opacity: 0
+            //   }
+            // })
           }
         }
         if (cfg.outPoints) {
@@ -292,6 +319,30 @@ const customNode = {
                 opacity: 0
               }
             })
+            // group.addShape('circle', {
+            //   attrs: {
+            //     id: 'circle' + uniqueId(),
+            //     parent: id,
+            //     x: x,
+            //     y: 0,
+            //     r: 10,
+            //     isOutPointOut: true,
+            //     fill: '#1890ff',
+            //     opacity: 0// 默認0 需要時改成0.3
+            //   }
+            // })
+            // group.addShape('circle', {
+            //   attrs: {
+            //     id: id,
+            //     x: x,
+            //     y: 0,
+            //     r: 3,
+            //     isOutPoint: true,
+            //     fill: '#fff',
+            //     stroke: '#1890ff',
+            //     opacity: 0
+            //   }
+            // })
           }
         }
         // group.sort()

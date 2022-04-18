@@ -189,8 +189,8 @@ export default {
       const data = this.crowdList
       const commonObj = {
         size: [
-          '170',
-          '34'
+          '150',
+          '40'
         ],
         type: 'node',
         shape: 'customNode',
@@ -282,8 +282,8 @@ export default {
       const data = this.crowdList
       const commonObj = {
         size: [
-          '170',
-          '34'
+          '150',
+          '40'
         ],
         type: 'node',
         shape: 'customNode',

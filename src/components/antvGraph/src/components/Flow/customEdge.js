@@ -135,7 +135,8 @@ const customEdge = {
             //   [ 'L', cfg.endPoint.x, cfg.endPoint.y ]
             // ],
             stroke: '#b8c3ce',
-            lineAppendWidth: 10,
+            lineAppendWidth: 20,
+            lineWidth: 2,
             endArrow: {
               path: endArrowPath
             }
