@@ -95,6 +95,17 @@ const customNode = {
             }
           })
           weightText.set('className', 'changeWeight')
+
+          group.addShape('text', {
+            attrs: {
+              x: -(width / 2) + 90,
+              y: offsetY + height + 20,
+              cursor: 'pointer',
+              label: 'aaaaa',
+              text: `id:  ${cfg.id}`,
+              fill: color
+            }
+          })
         }
 
         // 流转条件 设置className属性
@@ -188,7 +199,7 @@ const customNode = {
               y: offsetY + height / 2,
               textAlign: 'start',
               textBaseline: 'middle',
-              text: cfg.label + '    id:' + cfg.id,
+              text: cfg.label,
               parent: mainId,
               fill: '#333',
               fontSize: 14,

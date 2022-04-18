@@ -87,10 +87,10 @@ const customEdge = {
             [
               'C',
               start.x,
-              // start.y + hgap / (hgap / 50),
-              // end.x,
-              // end.y - hgap / (hgap / 50),
-              // end.x,
+              start.y + hgap / (hgap / 50),
+              end.x,
+              end.y - hgap / (hgap / 50),
+              end.x,
               end.y - 4
             ],
             [

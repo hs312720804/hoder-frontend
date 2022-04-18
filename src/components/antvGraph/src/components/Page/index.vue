@@ -109,7 +109,7 @@ export default {
       })
       const { editor, command } = this.$parent
       editor.emit('afterAddPage', { graph: this.graph, command })
-
+      editor.on('changeNodeData')
       this.readData()
     },
     readData () {

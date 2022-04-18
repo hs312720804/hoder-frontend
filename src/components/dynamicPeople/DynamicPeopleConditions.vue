@@ -179,18 +179,17 @@ export default {
   },
   methods: {
     bindEvent () {
+      const _this = this
       eventBus.$on('afterAddPage', page => {
         this.graph = page.graph
-      })
-      eventBus.$on('deleteItem', (item) => {
-        // console.log('item==>', item)
-        // const flowChart = this.graph ? this.graph.save() : {}
-        // this.handleExitCrowdVisibleChange(flowChart)
-      })
-      eventBus.$on('addItem', item => {
-        // console.log('item==>', item)
-        // const flowChart = this.graph ? this.graph.save() : {}
-        // this.handleExitCrowdVisibleChange(flowChart)
+        this.graph.on('afteradditem', function (ev) {
+          const flowChart = _this.graph ? _this.graph.save() : {}
+          _this.handleExitCrowdVisibleChange(flowChart)
+        }) // 子项数据变化后
+        this.graph.on('afterremoveitem', function (ev) {
+          const flowChart = _this.graph ? _this.graph.save() : {}
+          _this.handleExitCrowdVisibleChange(flowChart)
+        }) // 子项数据变化后
       })
     },
     handleCommand (command) {
@@ -201,6 +200,7 @@ export default {
       // console.log('flowChart===>', flowChart)
 
       const edges = flowChart.edges
+      if (!edges) return
       const isTargetCrowdIdList = edges.map(item => item.target)
       // console.log('targetCrowdIdList====>', isTargetCrowdIdList)
       const allCrowdList = this.dynamicRule.allCrowd
@@ -211,10 +211,8 @@ export default {
       this.crowdOptions = this.crowdOptions.map(item => {
         return {
           ...item
-          // disabled: true
         }
       })
-      // console.log('this.crowdOptions==>', this.crowdOptions)
     },
     handleChangeBigArithmetic () {
       // 1定向 2随机 3 终止
@@ -225,10 +223,11 @@ export default {
       } else if (Number(this.bigArithmetic) === 1) {
         i = 2
       } else if (Number(this.bigArithmetic) === 2) {
-        i = 3
-      } else if (Number(this.bigArithmetic) === 3) {
         i = 1
       }
+      //  else if (Number(this.bigArithmetic) === 3) {
+      //   i = 1
+      // }
       this.bigArithmetic = i
     },
 
