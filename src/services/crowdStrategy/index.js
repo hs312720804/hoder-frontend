@@ -232,7 +232,7 @@ export function hitAndBiToTalPie (params) {
 export function portraitParam (params) {
   return this.fetch({
     method: 'get',
-    url: `api/crowd/portraitParam/${params.crowdId}`
+    url: `/api/crowd/portraitParam/${params.crowdId}`
   })
 }
 
@@ -453,7 +453,7 @@ export function crowdABTestEditSave ({
 export function getCrowdStatus (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/crowdStatusTrack',
+    url: '/api/crowd/crowdStatusTrack',
     params
   })
 }

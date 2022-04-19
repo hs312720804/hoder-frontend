@@ -7,7 +7,7 @@
 export function getListDimension (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/behavior/show',
+    url: '/api/behavior/show',
     params
   })
 }
@@ -15,7 +15,7 @@ export function getListDimension (params) {
 export function saveListDimension (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/behavior/show',
+    url: '/api/behavior/show',
     data
   })
 }

@@ -622,22 +622,22 @@
                 统计
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                        :command="['estimatedDetail',scope.row]"
-                        v-if="scope.row.forcastStatus == 3"
+                <el-dropdown-item v-if="scope.row.forcastStatus == 3"
+                  :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
+                <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
+                  :command="['operationalAnalysis',scope.row]"
+                >运营分析</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['detail',scope.row]"
+                  :command="['detail',scope.row]"
                 >投后效果</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['homepageData',scope.row]"
+                  :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['appointment',scope.row]"
+                  :command="['appointment',scope.row]"
                 >预约投后分析</el-dropdown-item>
-                <el-dropdown-item
-                        :command="['operationalAnalysis',scope.row]"
-                >运营分析</el-dropdown-item>
+
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -1341,7 +1341,25 @@
               @handle-current-change="handleMonitorCurrentChange"
           ></pagination>
       </div>
-  </el-dialog>
+    </el-dialog>
+    <!-- 运营分析 - 大数据页面 -->
+    <el-dialog :visible.sync="showOperationalAnalysis" width="1500px" >
+    <!-- {{operationalAnalysisUrl}} -->
+      <iframe :src="operationalAnalysisUrl" width="100%" height="800px"></iframe>
+      <!-- <iframe
+        src="http://172.20.155.102/violet/"
+        width="100%"
+        height="800px"
+        frameborder="0"
+      ></iframe> -->
+      <!-- <div>
+        <iframe src="https://www.iconfont.cn/" id="mobsf" scrolling="no" frameborder="0" style="position:absolute;top:64px;left: 240px;right:0px;bottom:100px;"></iframe>
+      </div> -->
+
+      <!-- <span slot="footer" class="dialog-footer">
+        <el-button @click="showOperationalAnalysis = false">取 消</el-button>
+      </span> -->
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1361,6 +1379,8 @@ export default {
   },
   data () {
     return {
+      showOperationalAnalysis: false,
+      operationalAnalysisUrl: '',
       showEditDynamicCrowdName: false,
       dynamicCrowd: {},
       // 表格当前页数据
@@ -1614,6 +1634,20 @@ export default {
     this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
     this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
+  // mounted () {
+  //   function changeMobsfIframe () {
+  //     const mobsf = document.getElementById('mobsf')
+  //     const deviceWidth = document.body.clientWidth
+  //     const deviceHeight = document.body.clientHeight
+  //     mobsf.style.width = (Number(deviceWidth) - 240) + 'px' // 数字是页面布局宽度差值
+  //     mobsf.style.height = (Number(deviceHeight) - 64) + 'px' // 数字是页面布局高度差
+  //   }
+  //   changeMobsfIframe()
+
+  //   window.onresize = function () {
+  //     changeMobsfIframe()
+  //   }
+  // },
   watch: {
     memberListType (val, oldVal) {
       if (val !== oldVal && oldVal.length !== 0) {
@@ -2389,7 +2423,11 @@ export default {
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {
         const url = res.url
-        window.open(url)
+        // window.open(url)
+        this.showOperationalAnalysis = true
+        this.operationalAnalysisUrl = url
+        // this.operationalAnalysisUrl = 'http://mgr-hoder.skysrt.com/#/keyIndicatorTrends'
+        // this.operationalAnalysisUrl = 'http://192.168.2.177/analysis/userportrait?policyId=2861'
       })
     },
     // 显示投后效果弹窗
