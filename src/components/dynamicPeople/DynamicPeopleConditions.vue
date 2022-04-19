@@ -136,10 +136,10 @@ export default {
   watch: {
     radioType: {
       handler () {
-        // this.showGraph = false
-        // this.$nextTick(() => {
-        //   this.showGraph = true
-        // })
+        // 修改流转算法 type 时，重新获取最新的拓扑图数据
+        this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+          this.dynamicRule = res || {}
+        })
       }
     }
   },
@@ -150,22 +150,7 @@ export default {
     // })
 
     if (this.crowdId) {
-      this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-        console.log('res===', res)
-        if (res) {
-          // 小人群列表
-          this.dynamicRule = res
-          this.radioType = res.mainArithmetic // 流转算法
-          this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
-
-          // 大的出口 选择定向时，选择人群id
-          this.crowdOptions = res.allCrowd
-          // const flowChart = res.flowChart ? JSON.parse(res.flowChart) : {}
-          // this.handleExitCrowdVisibleChange(flowChart)
-
-          this.exitCrowd = res.exitCrowd
-        }
-      })
+      this.getRule()
       this.bindEvent()
     }
   },
@@ -178,6 +163,22 @@ export default {
     eventBus.$off()
   },
   methods: {
+    getRule () {
+      this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+        console.log('res===', res)
+        if (res) {
+          // 小人群列表
+          this.dynamicRule = res
+          this.radioType = res.mainArithmetic // 流转算法
+          this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+          // 大的出口 选择定向时，选择人群id
+          this.crowdOptions = res.allCrowd
+
+          this.exitCrowd = res.exitCrowd
+        }
+      })
+    },
     bindEvent () {
       const _this = this
       eventBus.$on('afterAddPage', page => {

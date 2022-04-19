@@ -75,13 +75,8 @@ export default {
       handler () {
         // this.readData()
         this.crowdList = this.dynamicRule.allCrowd || {}
-      },
-      deep: true,
-      immediate: true
-    },
-    type: {
-      handler (val) {
-        if (val === 3) { // 随机 、编辑模式
+
+        if (this.type === 3) { // 随机 、编辑模式
           const defaultNodes = this.initDefaultNodes()
           console.log('this.data.nodes===>1111111', defaultNodes)
 
@@ -100,12 +95,11 @@ export default {
               if (editObj) {
                 return {
                   ...editObj,
-                  // ...defaultObj,
-                  // x: editObj.x,
-                  // y: editObj.y,
-                  inPoints: defaultObj.inPoints,
-                  outPoints: defaultObj.outPoints
-
+                  ...defaultObj,
+                  x: editObj.x, // 位置 - 接口传递的
+                  y: editObj.y // 位置 - 接口传递的
+                  // inPoints: defaultObj.inPoints, // 入口点 - 默认的
+                  // outPoints: defaultObj.outPoints // 入口点 - 默认的
                 }
                 // return editObj
               }
@@ -129,19 +123,25 @@ export default {
           // this.data = flowChart || {}
         } else if (this.crowdList.length > 0) { // 新增
           this.data.edges = []
-          if (val === 0 || val === 1) {
+          if (this.type === 0 || this.type === 1) {
             this.init()
-          } else if (val === 2) {
+          } else if (this.type === 2) {
             this.initRandomNodes()
           } else {
             this.init()
           }
-          // console.log('this====', this.$children)
         }
         this.readData()
       },
+      deep: true,
       immediate: true
     }
+    // type: {
+    //   handler (val) {
+
+    //   },
+    //   immediate: true
+    // }
 
   },
   created () {
