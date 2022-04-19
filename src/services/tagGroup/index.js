@@ -5,7 +5,7 @@ const cache = {
 
 export function getTagGroupList () {
   return this.fetch({
-    url: 'api/label/index'
+    url: '/api/label/index'
   }).then((data) => {
     if (cache.tagTypeList.length === 0) {
       const tagsTypeEnum = data.tagsTypeEnum
@@ -29,7 +29,7 @@ export function getTagGroupList () {
 export function createTagGroup (input) {
   return this.fetch({
     method: 'post',
-    url: 'api/labelGroup/add',
+    url: '/api/labelGroup/add',
     data: input
   })
 }
@@ -46,7 +46,7 @@ export function getDataSourceEnum () {
 export function getTagGroupTreeList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/label/indexTree',
+    url: '/api/label/indexTree',
     params
   })
 }
@@ -55,7 +55,7 @@ export function getTagGroupTreeList (params) {
 export function getParentIdList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/getGroupsParent',
+    url: '/api/labelGroup/getGroupsParent',
     params
   })
 }
@@ -64,7 +64,7 @@ export function getParentIdList (params) {
 export function editLabelGroup (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/edit',
+    url: '/api/labelGroup/edit',
     params
   })
 }
@@ -73,7 +73,7 @@ export function editLabelGroup (params) {
 export function findLabelGroupById (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/findByGroupId',
+    url: '/api/labelGroup/findByGroupId',
     params
   })
 }
@@ -82,7 +82,7 @@ export function findLabelGroupById (params) {
 export function editLabelGroupName (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/edit',
+    url: '/api/labelGroup/edit',
     params
   })
 }
@@ -91,7 +91,7 @@ export function editLabelGroupName (params) {
 export function delLabelGroup (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/delGroupsList',
+    url: '/api/labelGroup/delGroupsList',
     params
   })
 }
@@ -99,7 +99,7 @@ export function delLabelGroup (params) {
 export function copyLabelGroup (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/label/copyByGroups',
+    url: '/api/label/copyByGroups',
     params
   })
 }
@@ -107,7 +107,7 @@ export function copyLabelGroup (params) {
 export function copyLabelSingle (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/label/copyByTagIds',
+    url: '/api/label/copyByTagIds',
     params
   })
 }
@@ -115,7 +115,7 @@ export function copyLabelSingle (params) {
 export function collectTags (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/collect/label',
+    url: '/api/collect/label',
     data
   })
 }
@@ -123,14 +123,14 @@ export function collectTags (data) {
 export function cancelCollectTags (data) {
   return this.fetch({
     method: 'delete',
-    url: 'api/collect/label?' + 'tagId=' + data.tagId
+    url: '/api/collect/label?' + 'tagId=' + data.tagId
   })
 }
 // 标签列表之我的收藏
 export function collectTagsList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/collect/label',
+    url: '/api/collect/label',
     params
   })
 }
@@ -138,7 +138,7 @@ export function collectTagsList (params) {
 export function specialTagList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/specialTag/index',
+    url: '/api/specialTag/index',
     params
   })
 }
@@ -240,7 +240,7 @@ export function deleteSpecialTagType (id) {
 export function searchByGroup (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/label/searchByGroup',
+    url: '/api/label/searchByGroup',
     params
   })
 }

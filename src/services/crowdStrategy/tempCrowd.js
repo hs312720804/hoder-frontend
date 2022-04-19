@@ -2,7 +2,7 @@
 export function getTempCrowdList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd/index',
+    url: '/api/tempCrowd/index',
     params
   })
 }
@@ -10,7 +10,7 @@ export function getTempCrowdList (params) {
 export function addTempCrowd (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/tempCrowd',
+    url: '/api/tempCrowd',
     isJSON: true,
     data
   })
@@ -19,7 +19,7 @@ export function addTempCrowd (data) {
 export function updateTempCrowd (data) {
   return this.fetch({
     method: 'put',
-    url: 'api/tempCrowd',
+    url: '/api/tempCrowd',
     isJSON: true,
     data
   })
@@ -28,7 +28,7 @@ export function updateTempCrowd (data) {
 export function delNewTempCrowd (params) {
   return this.fetch({
     method: 'delete',
-    url: 'api/multiVersionCrowd/delTempCrowd',
+    url: '/api/multiVersionCrowd/delTempCrowd',
     params
   })
 }
@@ -37,7 +37,7 @@ export function delNewTempCrowd (params) {
 export function getTempCrowd (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd',
+    url: '/api/tempCrowd',
     params
   })
 }
@@ -45,7 +45,7 @@ export function getTempCrowd (params) {
 export function calculateTempCrowd (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd/calculate',
+    url: '/api/tempCrowd/calculate',
     params
   })
 }
@@ -53,7 +53,7 @@ export function calculateTempCrowd (params) {
 export function getNewTreeList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/tree',
+    url: '/api/labelGroup/tree',
     params
   })
 }
@@ -62,7 +62,7 @@ export function getNewTreeList (params) {
 export function getCalculatedTempCrowdList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd/calculatedList',
+    url: '/api/tempCrowd/calculatedList',
     params
   })
 }
@@ -71,7 +71,7 @@ export function getCalculatedTempCrowdList (params) {
 export function getTempLaunchList (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/multiVersionCrowd/getTempLaunchList',
+    url: '/api/multiVersionCrowd/getTempLaunchList',
     data
   })
 }

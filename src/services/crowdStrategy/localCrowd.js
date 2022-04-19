@@ -2,7 +2,7 @@
 export function getLocalCrowdList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd/localCrowd/index',
+    url: '/api/tempCrowd/localCrowd/index',
     params
   })
 }
@@ -10,7 +10,7 @@ export function getLocalCrowdList (params) {
 export function addLocalCrowd (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/tempCrowd/localCrowd',
+    url: '/api/tempCrowd/localCrowd',
     isJSON: true,
     data,
     contentType: 'multipart/form-data'
@@ -38,7 +38,7 @@ export function OnOrOffLocalCrowd (data) {
 export function delTempCrowd (params) {
   return this.fetch({
     method: 'delete',
-    url: 'api/tempCrowd',
+    url: '/api/tempCrowd',
     params
   })
 }
@@ -46,7 +46,7 @@ export function delTempCrowd (params) {
 export function getTempCrowd (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd',
+    url: '/api/tempCrowd',
     params
   })
 }
@@ -54,7 +54,7 @@ export function getTempCrowd (params) {
 export function calculateTempCrowd (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tempCrowd/calculate',
+    url: '/api/tempCrowd/calculate',
     params
   })
 }
@@ -62,7 +62,7 @@ export function calculateTempCrowd (params) {
 export function getNewTreeList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/labelGroup/tree',
+    url: '/api/labelGroup/tree',
     params
   })
 }
