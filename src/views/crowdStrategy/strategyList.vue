@@ -201,6 +201,9 @@
                 <el-dropdown-item
                         :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
+                <el-dropdown-item
+                          :command="['viewEffect',scope.row]"
+                  >查看效果</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-dropdown @command="handleCommandStastic">-->
@@ -415,17 +418,23 @@
               @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
+    <el-dialog :visible.sync="showViewEffect" width="70%">
+      <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
+import viewEffectDialog from '../launch/viewEffectDialog'
 export default {
   components: {
-    LaunchToBusiness
+    LaunchToBusiness,
+    viewEffectDialog
   },
   data () {
     return {
+      showViewEffect: false,
       // 表格当前页数据
       tableData: [],
       // lableDataSourceEnum: {
@@ -944,6 +953,9 @@ export default {
         this.time1 = [this.startDate, this.endDate]
         this.drawPie(this.currentPid, this.startDate, this.endDate)
         this.drawLines(this.currentPid, this.startDate, this.endDate)
+      } else if (type === 'viewEffect') {
+        this.showViewEffect = true
+        this.currentPid = params.policyId
       }
     },
     // 通用多线性参数设置

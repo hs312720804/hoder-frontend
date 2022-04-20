@@ -84,8 +84,84 @@ export default {
         container: 'graph-container',
         height: height,
         width: width,
-        fitCenter: true, // 图是否自适应画布
-        fitViewPadding: [ 20, 40, 50, 20 ],
+        // layout: {
+        //   type: 'grid'
+        //   // begin: [ 20, 20 ],
+        //   // width: width - 20,
+        //   // height: height - 20
+        // },
+        layout: {
+          type: 'force', // 设置布局算法为 force
+          linkDistance: 250, // 设置边长为 100
+          preventOverlap: true
+        },
+        // layout: {
+        //   type: 'concentric',
+        //   // type: 'force', // 设置布局算法为 force
+        //   // linkDistance: 250, // 设置边长为 100
+        //   preventOverlap: true
+        //   // maxLevelDiff: 0.5,
+        //   // sortBy: 'degree'
+        // },
+        // layout: {
+        // type: 'force'
+        // type: 'circular',
+        // center: [500, 300]
+        // type: 'Dagre',
+        // rankdir: 'TB'
+        // type: 'dagre',
+        // rankdir: 'LR', // 可选，默认为图的中心
+        // align: 'DL', // 可选
+        // nodesep: 20, // 可选
+        // ranksep: 50, // 可选
+        // controlPoints: true // 可选
+        // type: 'grid',
+        // begin: [ 0, 0 ] // 可选，
+        // preventOverlapPdding: 20, // 可选
+        // nodeSize: 30, // 可选
+        // condense: false, // 可选
+        // rows: 5, // 可选
+        // cols: 5, // 可选
+        // sortBy: 'degree' // 可选
+        // },
+        // layout: {
+        //   type: 'dagre',
+        //   nodesepFunc: d => {
+        //     if (d.id === '3') {
+        //       return 500
+        //     }
+        //     return 50
+        //   },
+        //   ranksep: 70
+        // },
+        // pixelRatio: 2,
+
+        // layout: {
+        //   type: 'dagre',
+        //   rankdir: 'LR',
+        //   align: 'DL',
+        //   nodesepFunc: () => {
+        //     return 1
+        //   },
+        //   ranksepFunc: () => {
+        //     return 1
+        //   }
+        // },
+        // layout: {
+        //   type: 'radial',
+        //   unitRadius: 220
+        // },
+        // layout: {
+        //   type: 'concentric',
+        //   maxLevelDiff: 5,
+        //   sortBy: 'degree'
+        // },
+        // fitView: true,
+        // layout: {
+        //   type: 'mds',
+        //   linkDistance: 200
+        // },
+        // animate: true,
         modes: {
           // 支持的 behavior
           default: [
@@ -107,6 +183,15 @@ export default {
       editor.emit('afterAddPage', { graph: this.graph, command })
       editor.on('changeNodeData')
       this.readData()
+
+      // 实例化时通过 layout 指定布局，在合适的时候通过 updateLayout 更新布局配置
+      // this.graph.updateLayout({
+      //   radius: 200,
+      //   startAngle: Math.PI / 4,
+      //   endAngle: Math.PI,
+      //   divisions: 5,
+      //   ordering: 'degree'
+      // })
     },
     readData () {
       let data = this.data

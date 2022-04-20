@@ -10,7 +10,7 @@
           </el-button>
         </div>
         <div>
-          策略ID：{{selectRow.policyId}}
+          策略ID：{{ selectRow.policyId }}
           策略维度:
           <el-tag
             size="mini"
@@ -157,8 +157,6 @@
         <el-table-column prop="status" label="状态" >
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
-            <!-- <span v-if="scope.row.putway === 1">生效中</span>
-            <span v-if="scope.row.putway === 0">已下架</span> -->
           </template>
         </el-table-column>
         <el-table-column prop="status" label="流量占比" >
@@ -283,6 +281,7 @@
       <el-table
         ref="myTable"
         :data="contrastCrowdTableData"
+        :row-class-name="tableRowClassName"
         style="width: 100%"
         stripe
         border
@@ -556,7 +555,11 @@
               </priorityEdit>
           </template>
       </el-table-column>
-      <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90">
+        <template slot-scope="scope">
+          {{ scope.row.remark }}
+        </template>
+      </el-table-column>
       <!--<el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">-->
         <!--<template slot-scope="scope">-->
           <!--<span v-if="scope.row.apiStatus === 1">已生效</span>-->
@@ -1113,7 +1116,7 @@
                           <span v-if="crowdType === 4">计算</span>
                           <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
                       </div>
-                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5">
+                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                           计算失败
                           <!-- <el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
                       </div>
@@ -1345,7 +1348,7 @@
     <!-- 运营分析 - 大数据页面 -->
     <el-dialog :visible.sync="showOperationalAnalysis" width="1500px" >
     <!-- {{operationalAnalysisUrl}} -->
-      <iframe :src="operationalAnalysisUrl" width="100%" height="800px"></iframe>
+      <iframe :src="operationalAnalysisUrl" width="100%" height="800px" frameborder="0" id="myIframe" ref="myIframe"></iframe>
       <!-- <iframe
         src="http://172.20.155.102/violet/"
         width="100%"
@@ -2413,7 +2416,7 @@ export default {
           this.handleClickRedirectList(this.currentCid)
           break
         case 'appointment':
-          this.ShowAppointmentDialog(this.currentCid)
+          this.showAppointmentDialog(this.currentCid)
           break
         case 'operationalAnalysis':
           this.goToOperationalAnalysis(this.currentCid)
@@ -2425,13 +2428,55 @@ export default {
         const url = res.url
         // window.open(url)
         this.showOperationalAnalysis = true
+        // this.operationalAnalysisUrl = 'http://192.168.2.177/portraittest'
         this.operationalAnalysisUrl = url
+
+        // this.$nextTick(() => {
+        //   this.iframeWin = this.$refs.myIframe.contentWindow
+        //   // // 最开始做的是点击事件是没有问题的  后面需要自动传值就不行  也试了模拟点击还是不行
+        //   // // 原因是iframe还没加载完  所以使用onload
+        //   document.getElementById('myIframe').onload = function () {
+        //     this.fatherpost(url)
+        //   }
+        // var iframe = document.querySelector('#myIframe')
+        // this.populateIframe(iframe, [
+        //   ['Authorization', 'Bearer ' + this.getToken()],
+        //   ['Access-Control-Allow-Origin', '*']
+        // ], url)
+        // })
         // this.operationalAnalysisUrl = 'http://mgr-hoder.skysrt.com/#/keyIndicatorTrends'
         // this.operationalAnalysisUrl = 'http://192.168.2.177/analysis/userportrait?policyId=2861'
       })
     },
+    // fatherpost (url) { // iframe传值
+    //   this.iframeWin.postMessage({
+    //     params: {
+    //       // data: data// 传的数据
+    //     }
+    //   }, url)
+    // },
+    getToken () {
+      return 'eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2tleSI6ImEyNjU1OWUzLTM4NzMtNDlkOS04M2JhLTZmMzZhY2I5NTdhZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.pn8TCTTvXymw5YG9EzBpXaNSfMYZoEfCJH48bpKPriCzxFa8UtI6G7DqBoyn6bs7I3U4WZYzuoNvC6g_R7cZqA'
+    },
+    populateIframe (iframe, headers, url) {
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', 'http://192.168.2.177/prod-api/auth/login')
+      xhr.responseType = 'blob'
+      headers.forEach((header) => {
+        xhr.setRequestHeader(header[0], header[1])
+      })
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === xhr.DONE) {
+          if (xhr.status === 200) {
+            iframe.src = URL.createObjectURL(xhr.response)
+          }
+        }
+      }
+      xhr.send()
+      this.operationalAnalysisUrl = url
+    },
     // 显示投后效果弹窗
-    ShowAppointmentDialog (crowdId) {
+    showAppointmentDialog (crowdId) {
       this.estimateId = crowdId
       this.showAppointment = true
     },

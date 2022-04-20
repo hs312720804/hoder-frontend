@@ -85,8 +85,9 @@
                                 <span v-if="crowdType === 4">计算</span>
                                 <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
                             </div>
-                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
-                                计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
+                                计算失败
+                                <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
                             </div>
                             <div v-else>
                                 {{ (launchStatusEnum[scope.row.history.status]).name }}

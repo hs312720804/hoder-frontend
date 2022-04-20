@@ -55,6 +55,15 @@
     <span class="separator"></span>
 
     <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
+
+    <el-select v-model="value" @change="aaa" placeholder="请选择视图模式">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
   </div>
 </template>
 
@@ -65,6 +74,22 @@ import { uniqueId, getBox } from '@antvGraph/utils'
 export default {
   data () {
     return {
+      value: '',
+      options: [{
+        label: '环形',
+        value: 0
+      },
+      // {
+      //   label: '树形',
+      //   value: 1
+      // }, {
+      //   label: '线形',
+      //   value: 2
+      // },
+      {
+        label: '无',
+        value: 3
+      }],
       page: {},
       graph: {},
       redoList: [],
@@ -90,6 +115,159 @@ export default {
     }
   },
   methods: {
+    aaa (value) {
+      if (value === 0) { // 圆形
+        this.graph.updateLayout({
+          type: 'circular',
+          // startRadius: 10, // 可选
+          // endRadius: 100, // 可选
+          // clockwise: false, // 可选
+          // divisions: 5, // 可选
+          // // ordering: 'degree', // 可选
+          // angleRatio: 1 // 可选
+          preventOverlap: true,
+          clockwise: false
+
+        })
+      } else if (value === 1) { // 树形
+        this.graph.updateLayout({
+          type: 'force', // 设置布局算法为 force
+          linkDistance: 100, // 设置边长为 100
+          preventOverlap: true
+        })
+      } else if (value === 2) { // 树形{
+        this.graph.updateLayout({
+          // type: 'radial',
+          // center: [ 500, 200 ], // 可选，默认为图的中心
+          // linkDistance: 500, // 可选，边长
+          // maxIteration: 1000, // 可选
+          // // focusNode: 'node11', // 可选
+          // unitRadius: 100, // 可选
+          // preventOverlap: true, // 可选，必须配合 nodeSize
+          // nodeSize: 130, // 可选
+          // strictRadial: true, // 可选
+          // workerEnabled: true // 可选，开启 web-worker
+
+          // type: 'fruchterman',
+          // center: [ 200, 200 ], // 可选，默认为图的中心
+          // gravity: 20, // 可选
+          // speed: 2, // 可选
+          // clustering: true, // 可选
+          // clusterGravity: 30, // 可选
+          // maxIteration: 2000, // 可选，迭代次数
+          // workerEnabled: true // 可选，开启 web-worker  }
+          // type: 'mds',
+          // linkDistance: 200,
+          // workerEnabled: true, // 可选，开启 web-worker
+          // preventOverlap: true,
+          // clockwise: true,
+          // ordering: 'topology'
+          type: 'dagre',
+          nodeSize: 20
+          // rankdir: 'LR', // 可选，默认为图的中心
+          // align: 'DL', // 可选
+          // nodesep: 20, // 可选
+          // ranksep: 50, // 可选
+          // controlPoints: true // 可选
+        })
+      } else {
+        this.graph.updateLayout({
+          type: '' // 设置布局算法为 force
+
+        })
+      }
+      // this.graph.fitView()
+      console.log('this.graph===========>>>>', this.graph)
+    },
+    test () {
+
+      // 实例化时通过 layout 指定布局，在合适的时候通过 updateLayout 更新布局配置
+      // this.graph.updateLayout({
+      //   radius: 200,
+      //   startAngle: Math.PI / 4,
+      //   endAngle: Math.PI,
+      //   divisions: 5,
+      //   ordering: 'degree'
+      // })
+      // layout: {
+      //   type: 'grid'
+      //   // begin: [ 20, 20 ],
+      //   // width: width - 20,
+      //   // height: height - 20
+      // },
+      // layout: {
+      //   type: 'force', // 设置布局算法为 force
+      //   linkDistance: 250, // 设置边长为 100
+      //   preventOverlap: true
+      // },
+      // layout: {
+      // type: 'concentric',
+      // type: 'force', // 设置布局算法为 force
+      // linkDistance: 250, // 设置边长为 100
+      // preventOverlap: true
+      // maxLevelDiff: 0.5,
+      // sortBy: 'degree'
+      // },
+      // layout: {
+      // type: 'force'
+      // type: 'circular',
+      // center: [500, 300]
+      // type: 'Dagre',
+      // rankdir: 'TB'
+      // type: 'dagre',
+      // rankdir: 'LR', // 可选，默认为图的中心
+      // align: 'DL', // 可选
+      // nodesep: 20, // 可选
+      // ranksep: 50, // 可选
+      // controlPoints: true // 可选
+      // type: 'grid',
+      // begin: [ 0, 0 ] // 可选，
+      // preventOverlapPdding: 20, // 可选
+      // nodeSize: 30, // 可选
+      // condense: false, // 可选
+      // rows: 5, // 可选
+      // cols: 5, // 可选
+      // sortBy: 'degree' // 可选
+      // },
+      // layout: {
+      //   type: 'dagre',
+      //   nodesepFunc: d => {
+      //     if (d.id === '3') {
+      //       return 500
+      //     }
+      //     return 50
+      //   },
+      //   ranksep: 70
+      // },
+      // pixelRatio: 2,
+
+      // layout: {
+      //   type: 'dagre',
+      //   rankdir: 'LR',
+      //   align: 'DL',
+      //   nodesepFunc: () => {
+      //     return 1
+      //   },
+      //   ranksepFunc: () => {
+      //     return 1
+      //   }
+      // },
+      // layout: {
+      //   type: 'radial',
+      //   unitRadius: 220
+      // },
+      // layout: {
+      //   type: 'concentric',
+      //   maxLevelDiff: 5,
+      //   sortBy: 'degree'
+      // },
+      // fitView: true,
+      // layout: {
+      //   type: 'mds',
+      //   linkDistance: 200
+      // },
+      // animate: true,
+    },
     init () {
       const { editor, command } = this.$parent
       this.editor = editor
@@ -193,7 +371,7 @@ export default {
       }
     },
     handleAutoZoom () {
-      this.graph.fitView(100)
+      this.graph.fitView()
       // this.graph.fitCenter()
     },
     handleResetZoom () {
