@@ -1,6 +1,5 @@
 <template>
     <div class="launch-statistics">
-      policyId=={{policyId}}
         <div class="statistics-header">
             <div class="date-picker">
                 <el-date-picker
