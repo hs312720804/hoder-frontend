@@ -19,7 +19,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">人群命中量对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_hit_l_1" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -27,7 +27,26 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">人群命中量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_hit_h_1" class="chart-div"></div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20" class="unit-row">
+            <el-col :span="15">
+              <div class="unit-box">
+                <div class="unit-header clearfix">付费单量对比</div>
+                <div class="unit-content">
+                    <div ref="sequence_l_8" class="chart-div"></div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="unit-box">
+                <div class="unit-header clearfix">付费单量对比</div>
+                <div class="unit-content">
+                    <div ref="sequence_h_8" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -38,7 +57,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">产品包曝光量对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_l_2" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -46,7 +65,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">产品包曝光量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_h_2" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -57,7 +76,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费设备量对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_l_3" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -65,7 +84,26 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费设备量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_h3" class="chart-div"></div>
+                </div>
+              </div>
+            </el-col>
+          </el-row>
+
+          <el-row :gutter="20" class="unit-row">
+            <el-col :span="15">
+              <div class="unit-box">
+                <div class="unit-header clearfix">付费率对比（%）</div>
+                <div class="unit-content">
+                    <div ref="sequence_l_4" class="chart-div"></div>
+                </div>
+              </div>
+            </el-col>
+            <el-col :span="9">
+              <div class="unit-box">
+                <div class="unit-header clearfix">平均付费率对比</div>
+                <div class="unit-content">
+                    <div ref="sequence_h_4" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -76,7 +114,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">客单价对比（元）</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_l_5" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -84,7 +122,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">平均客单价汇总对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_h_5" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -95,7 +133,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">总营收对比（元）</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_l_6" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -103,7 +141,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">总营收汇总对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_h_6" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -114,7 +152,7 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">各子人群命中量对比</div>
                 <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
+                    <div ref="sequence_hit_h_7" class="chart-div"></div>
                 </div>
               </div>
             </el-col>
@@ -147,6 +185,11 @@ export default {
         this.initChart()
       },
       immediate: true
+    },
+    policyId: {
+      handler (val) {
+        this.initChart()
+      }
     }
   },
   mounted () {
@@ -164,16 +207,22 @@ export default {
       // chart1
       // this.getBusinessUseTendency(this.rangeType)
       // 172.20.148.31:8011/chart/policySixIndexStats?policyId=1890&startDate=2021-11-01&endDate=2021-11-22
-      // const params = {
-      //   policyId: this.policyId,
-      //   startDate: this.timeRange[0],
-      //   endDate: this.timeRange[1]
-      // }
       const params = {
-        policyId: 1890,
-        startDate: '2021-11-01',
-        endDate: '2021-11-22'
+        policyId: this.policyId,
+        startDate: this.timeRange[0],
+        endDate: this.timeRange[1]
       }
+      // const params = {
+      //   policyId: 1890,
+      //   startDate: '2021-11-01',
+      //   endDate: '2021-11-22'
+      // }
+      // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
+      // const params = {
+      //   policyId: 2906,
+      //   startDate: '2022-03-18',
+      //   endDate: '2022-04-19'
+      // }
       // 获取所有图表数据
       this.$service.getPolicySixIndexStats(params).then(res => {
         const {
@@ -189,21 +238,25 @@ export default {
           sequence_h3,
           sequence_h_4,
           sequence_h_5,
-          sequence_h_6
+          sequence_h_6,
+          sequence_l_8,
+          sequence_h_8
         } = res
-        this.showLine(sequence_hit_l_1)
-        this.showLine(sequence_hit_h_1)
-        this.showBar(sequence_hit_h_7)
-        this.showLine(sequence_l_2)
-        this.showLine(sequence_l_3)
-        this.showLine(sequence_l_4)
-        this.showLine(sequence_l_5)
-        this.showLine(sequence_l_6)
-        this.showBar(sequence_h_2)
-        this.showBar(sequence_h3)
-        this.showBar(sequence_h_4)
-        this.showBar(sequence_h_5)
-        this.showBar(sequence_h_6)
+        this.showLine(sequence_hit_l_1, 'sequence_hit_l_1')
+        this.showLine(sequence_hit_h_1, 'sequence_hit_h_1')
+        this.showLine(sequence_l_2, 'sequence_l_2')
+        this.showLine(sequence_l_3, 'sequence_l_3')
+        this.showLine(sequence_l_4, 'sequence_l_4')
+        this.showLine(sequence_l_5, 'sequence_l_5')
+        this.showLine(sequence_l_6, 'sequence_l_5')
+        this.showLine(sequence_l_8, 'sequence_l_8')
+        this.showLine(sequence_h_8, 'sequence_h_8')
+        this.showBar(sequence_hit_h_7, 'sequence_hit_h_7')
+        this.showBar(sequence_h_2, 'sequence_h_2')
+        this.showBar(sequence_h3, 'sequence_h3')
+        this.showBar(sequence_h_4, 'sequence_h_4')
+        this.showBar(sequence_h_5, 'sequence_h_5')
+        this.showBar(sequence_h_6, 'sequence_h_6')
       })
     },
     aaa (name) {
@@ -230,7 +283,7 @@ export default {
       console.log(result)
     },
     //  折线图
-    showLine (data) {
+    showLine (data, chartID) {
       // this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
       const series = data.series || []
       const legendData = series.map((key) => {
@@ -239,14 +292,17 @@ export default {
       const linesData = series.map((key) => {
         return { name: key.name, data: key.value, type: 'line' }
       })
-      this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+      this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       // })
     },
 
     //  柱状图
-    showBar (data) {
+    showBar (data, chartID) {
+      console.log('data======111>>>', data)
+      if (data && data.xaxis) {
+        this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit)
+      }
       // this.$service.getStatisticCrowdLife({ rangeType }).then((data) => {
-      this.setBarEchart('chart5', '', data.xaxis, data.series, data.xunit, data.yunit)
       // })
     },
 
@@ -290,7 +346,7 @@ export default {
           },
           scale: true,
           axisLabel: {
-            margin: 2,
+            // margin: 2,
             formatter: function (value) {
               if (value >= 100000000) {
                 value = value / 100000000 + '亿' + yunit
@@ -350,7 +406,7 @@ export default {
           },
           scale: true,
           axisLabel: {
-            margin: 30,
+            // margin: 30,
             formatter: function (value) {
               if (value >= 100000000) {
                 value = value / 100000000 + '亿' + yunit

@@ -630,6 +630,7 @@
                 >估算画像</el-dropdown-item>
                 <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
                   :command="['operationalAnalysis',scope.row]"
+                  :disabled="scope.row.abMainCrowd !== 0"
                 >运营分析</el-dropdown-item>
                 <el-dropdown-item
                   :command="['detail',scope.row]"
@@ -647,10 +648,10 @@
               </el-dropdown-menu>
             </el-dropdown>
             <el-button
-                    v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
-                    size="small"
-                    type="text"
-                    @click="divideAB(scope.row,'addABTest')"
+                v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
+                size="small"
+                type="text"
+                @click="divideAB(scope.row,'addABTest')"
             >AB实验
             </el-button>
             <!-- <el-button

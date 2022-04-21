@@ -202,7 +202,8 @@
                         :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
                 <el-dropdown-item
-                          :command="['viewEffect',scope.row]"
+                      v-if="scope.row.smart"
+                      :command="['viewEffect',scope.row]"
                   >查看效果</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
