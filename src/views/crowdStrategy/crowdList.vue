@@ -630,7 +630,7 @@
                 >估算画像</el-dropdown-item>
                 <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
                   :command="['operationalAnalysis',scope.row]"
-                  :disabled="scope.row.abMainCrowd !== 0"
+                  :disabled="scope.row.abMainCrowd === 1"
                 >运营分析</el-dropdown-item>
                 <el-dropdown-item
                   :command="['detail',scope.row]"

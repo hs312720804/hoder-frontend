@@ -215,7 +215,6 @@ export default {
       immediate: true
     }
   },
-
   mounted () {
     // chart5
     // 图表自适应
@@ -256,14 +255,12 @@ export default {
       //   startDate: '2021-11-01',
       //   endDate: '2021-11-22'
       // }
-
       // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
       // const params = {
       //   policyId: 2906,
       //   startDate: '2022-03-18',
       //   endDate: '2022-04-19'
       // }
-
       // 获取所有图表数据
       this.$service.getPolicySixIndexStats(params).then(res => {
         const {
