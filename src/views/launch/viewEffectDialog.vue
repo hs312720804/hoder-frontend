@@ -8,7 +8,9 @@
                   range-separator="至"
                   start-placeholder="开始日期"
                   end-placeholder="结束日期"
-                  value-format="yyyy-MM-dd">
+                  value-format="yyyy-MM-dd"
+                  :picker-options="pickerOptions"
+                  @change="initChart">
                 </el-date-picker>
             </div>
         </div>
@@ -18,7 +20,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">人群命中量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_hit_l_1" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_hit_l_1 && allChartData.sequence_hit_l_1.series" ref="sequence_hit_l_1" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_hit_l_1 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -26,7 +29,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">人群命中量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_hit_h_1" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_hit_h_1 && allChartData.sequence_hit_h_1.series" ref="sequence_hit_h_1" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_hit_h_1 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -37,7 +41,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费单量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_8" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_8 && allChartData.sequence_l_8.series" ref="sequence_l_8" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_8 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -45,7 +50,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费单量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h_8" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h_8 && allChartData.sequence_h_8.series" ref="sequence_h_8" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h_8 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -56,7 +62,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">产品包曝光量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_2" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_2 && allChartData.sequence_l_2.series" ref="sequence_l_2" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_2 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -64,7 +71,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">产品包曝光量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h_2" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h_2 && allChartData.sequence_h_2.series" ref="sequence_h_2" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h_2 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -75,7 +83,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费设备量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_3" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_3 && allChartData.sequence_l_3.series" ref="sequence_l_3" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_3 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -83,7 +92,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费设备量汇总对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h3" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h3 && allChartData.sequence_h3.series" ref="sequence_h3" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h3 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -94,7 +104,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">付费率对比（%）</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_4" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_4 && allChartData.sequence_l_4.series" ref="sequence_l_4" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_4 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -102,7 +113,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">平均付费率对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h_4" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h_4 && allChartData.sequence_h_4.series" ref="sequence_h_4" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h_4 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -113,7 +125,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">客单价对比（元）</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_5" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_5 && allChartData.sequence_l_5.series" ref="sequence_l_5" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_5 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -121,7 +134,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">平均客单价汇总对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h_5" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h_5 && allChartData.sequence_h_5.series" ref="sequence_h_5" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h_5 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -132,7 +146,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">总营收对比（元）</div>
                 <div class="unit-content">
-                    <div ref="sequence_l_6" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_l_6 && allChartData.sequence_l_6.series" ref="sequence_l_6" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_l_6 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -140,7 +155,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">总营收汇总对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_h_6" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_h_6 && allChartData.sequence_h_6.series" ref="sequence_h_6" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_h_6 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -151,7 +167,8 @@
               <div class="unit-box">
                 <div class="unit-header clearfix">各子人群命中量对比</div>
                 <div class="unit-content">
-                    <div ref="sequence_hit_h_7" class="chart-div"></div>
+                    <div v-if="allChartData.sequence_hit_h_7 && allChartData.sequence_hit_h_7.series" ref="sequence_hit_h_7" class="chart-div"></div>
+                    <div v-else class="chart-div"> {{allChartData.sequence_hit_h_7 || '暂无数据'}}</div>
                 </div>
               </div>
             </el-col>
@@ -175,22 +192,30 @@ export default {
   data () {
     return {
       allCharts: {},
-      timeRange: []
-    }
-  },
-  watch: {
-    timeRange: {
-      handler (val) {
-        this.initChart()
-      },
-      immediate: true
-    },
-    policyId: {
-      handler (val) {
-        this.initChart()
+      timeRange: [],
+      allChartData: {},
+      pickerOptions: {
+        disabledDate (time) {
+          return time.getTime() > Date.now() - 8.64e6
+        }
       }
     }
   },
+  watch: {
+    // timeRange: {
+    //   handler (val) {
+    //     this.initChart()
+    //   }
+    // },
+    policyId: {
+      handler (val) {
+        this.initRange()
+        this.initChart()
+      },
+      immediate: true
+    }
+  },
+
   mounted () {
     // chart5
     // 图表自适应
@@ -202,6 +227,21 @@ export default {
     })
   },
   methods: {
+    initRange () {
+      // 设置默认时间为今天的前一周
+      const start = new Date()
+      const end = new Date()
+      const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 30))
+      const endDate = this.formatDate(end.setTime(end.getTime()))
+      this.timeRange = [startDate, endDate]
+    },
+    formatDate (d) {
+      const time = new Date(d)
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      return `${y}-${m}-${r}`
+    },
     initChart () {
       // chart1
       // this.getBusinessUseTendency(this.rangeType)
@@ -216,12 +256,14 @@ export default {
       //   startDate: '2021-11-01',
       //   endDate: '2021-11-22'
       // }
+
       // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
       // const params = {
       //   policyId: 2906,
       //   startDate: '2022-03-18',
       //   endDate: '2022-04-19'
       // }
+
       // 获取所有图表数据
       this.$service.getPolicySixIndexStats(params).then(res => {
         const {
@@ -241,21 +283,24 @@ export default {
           sequence_l_8,
           sequence_h_8
         } = res
-        this.showLine(sequence_hit_l_1, 'sequence_hit_l_1')
-        this.showLine(sequence_hit_h_1, 'sequence_hit_h_1')
-        this.showLine(sequence_l_2, 'sequence_l_2')
-        this.showLine(sequence_l_3, 'sequence_l_3')
-        this.showLine(sequence_l_4, 'sequence_l_4')
-        this.showLine(sequence_l_5, 'sequence_l_5')
-        this.showLine(sequence_l_6, 'sequence_l_5')
-        this.showLine(sequence_l_8, 'sequence_l_8')
-        this.showLine(sequence_h_8, 'sequence_h_8')
-        this.showBar(sequence_hit_h_7, 'sequence_hit_h_7')
-        this.showBar(sequence_h_2, 'sequence_h_2')
-        this.showBar(sequence_h3, 'sequence_h3')
-        this.showBar(sequence_h_4, 'sequence_h_4')
-        this.showBar(sequence_h_5, 'sequence_h_5')
-        this.showBar(sequence_h_6, 'sequence_h_6')
+        this.allChartData = res
+        this.$nextTick(() => {
+          this.showLine(sequence_hit_l_1, 'sequence_hit_l_1')
+          this.showLine(sequence_hit_h_1, 'sequence_hit_h_1')
+          this.showLine(sequence_l_2, 'sequence_l_2')
+          this.showLine(sequence_l_3, 'sequence_l_3')
+          this.showLine(sequence_l_4, 'sequence_l_4')
+          this.showLine(sequence_l_5, 'sequence_l_5')
+          this.showLine(sequence_l_6, 'sequence_l_5')
+          this.showLine(sequence_l_8, 'sequence_l_8')
+          this.showLine(sequence_h_8, 'sequence_h_8')
+          this.showBar(sequence_hit_h_7, 'sequence_hit_h_7')
+          this.showBar(sequence_h_2, 'sequence_h_2')
+          this.showBar(sequence_h3, 'sequence_h3')
+          this.showBar(sequence_h_4, 'sequence_h_4')
+          this.showBar(sequence_h_5, 'sequence_h_5')
+          this.showBar(sequence_h_6, 'sequence_h_6')
+        })
       })
     },
     aaa (name) {
@@ -283,16 +328,18 @@ export default {
     },
     //  折线图
     showLine (data, chartID) {
+      if (data && data.xaxis) {
       // this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
-      const series = data.series || []
-      const legendData = series.map((key) => {
-        return key.name
-      })
-      const linesData = series.map((key) => {
-        return { name: key.name, data: key.value, type: 'line' }
-      })
-      this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        const series = data.series || []
+        const legendData = series.map((key) => {
+          return key.name
+        })
+        const linesData = series.map((key) => {
+          return { name: key.name, data: key.value, type: 'line' }
+        })
+        this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
       // })
+      }
     },
 
     //  柱状图
@@ -372,7 +419,6 @@ export default {
 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      const _this = this
       let echarts = require('echarts')
       let myChart = echarts.init(this.$refs[element])
       myChart.setOption({

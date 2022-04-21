@@ -2427,10 +2427,10 @@ export default {
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {
         const url = res.url
-        // window.open(url)
-        this.showOperationalAnalysis = true
+        window.open(url)
+        // this.showOperationalAnalysis = true
         // this.operationalAnalysisUrl = 'http://192.168.2.177/portraittest'
-        this.operationalAnalysisUrl = url
+        // this.operationalAnalysisUrl = url
 
         // this.$nextTick(() => {
         //   this.iframeWin = this.$refs.myIframe.contentWindow
