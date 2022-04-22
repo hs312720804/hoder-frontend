@@ -628,6 +628,7 @@
                 <el-dropdown-item v-if="scope.row.forcastStatus == 3"
                   :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
+                <!-- AB 和 运营分析是互斥的 -->
                 <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
                   :command="['operationalAnalysis',scope.row]"
                   :disabled="scope.row.abMainCrowd === 1"
@@ -1065,6 +1066,7 @@
       <div v-if="subdividePeopleList && subdividePeopleList.length > 0" style="margin: -15px 0 20px 0">
         <span class="detailTitle">再分割人群</span>
         <el-table :data="subdividePeopleList" style="width: 100%;" stripe border>
+            <el-table-column prop="crowdId" label="人群ID"></el-table-column>
             <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column>
             <el-table-column prop="crowdName" label="人群名称"></el-table-column>
             <el-table-column prop="ratio" label="优先级">

@@ -419,7 +419,7 @@
               @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
-    <el-dialog :visible.sync="showViewEffect" width="70%">
+    <el-dialog :visible.sync="showViewEffect" width="80%">
       <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
     </el-dialog>
   </div>
