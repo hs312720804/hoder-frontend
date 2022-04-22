@@ -79,7 +79,7 @@
     <!-- talbe -->
     <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
       <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column prop="policyId" label="ID" width="50"></el-table-column>
+      <el-table-column prop="policyId" label="策略ID" width="70"></el-table-column>
       <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
       <!--<el-table-column prop="dataSource" label="数据来源" width="90">-->
         <!--<template scope="scope">-->

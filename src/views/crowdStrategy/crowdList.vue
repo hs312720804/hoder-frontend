@@ -122,7 +122,7 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -288,7 +288,7 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
@@ -525,7 +525,7 @@
         </template>
       </el-table-column>
       <el-table-column type="index" width="30"></el-table-column>
-      <el-table-column prop="crowdId" label="ID" width="80"></el-table-column>
+      <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -1042,7 +1042,7 @@
       <div v-if="DivideTableData && DivideTableData.length > 0" style="margin: -15px 0 20px 0">
         <span class="detailTitle">AB子人群</span> 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
         <el-table :data="DivideTableData" style="width: 100%;" stripe border>
-            <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
+            <el-table-column prop="crowdId" label="人群ID"></el-table-column>
             <el-table-column prop="crowdName" label="人群名称"></el-table-column>
             <el-table-column prop="ratio" label="占比">
                 <template slot-scope="scope">
@@ -1067,7 +1067,7 @@
         <span class="detailTitle">再分割人群</span>
         <el-table :data="subdividePeopleList" style="width: 100%;" stripe border>
             <el-table-column prop="crowdId" label="人群ID"></el-table-column>
-            <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column>
+            <!-- <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column> -->
             <el-table-column prop="crowdName" label="人群名称"></el-table-column>
             <el-table-column prop="ratio" label="优先级">
               <template slot="header">
@@ -1204,7 +1204,7 @@
             </div>
             <div>
               <div class="table-header">
-                <div>ID</div>
+                <div>人群ID</div>
                 <div>人群名称</div>
                 <div>优先级</div>
                 <div>分流占比(%)</div>
@@ -1216,7 +1216,7 @@
                           :key="'tableDetailItem'+index"
                           class="table-detail-item"
                   >
-                    <div>{{tableDetailItem.crowdId}}</div>
+                    <div>{{ tableDetailItem.crowdId }}</div>
                     <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
                     <numOrTextEdit class="edit-priority" :key="tableDetailItem.priority+'_'+index" :obj="tableDetailItem" :objKey="'priority'" :validType="'number'"></numOrTextEdit>
                     <!--<priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>-->
