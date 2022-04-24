@@ -92,7 +92,7 @@ export default {
         value: 0
       },
       {
-        label: '树形视图',
+        label: '线形视图',
         value: 1
       }
       // {
