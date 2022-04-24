@@ -111,6 +111,7 @@ export default {
     readData () {
       let data = this.data
       if (data) {
+        // read 方法的功能相当于 data 和 render 方法的结合。
         this.graph.read(data)
       }
     },

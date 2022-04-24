@@ -76,92 +76,394 @@ export default {
         this.dialogVisible = false
       })
     },
+    init1 () {
+      fetch('https://gw.alipayobjects.com/os/antvdemo/assets/data/algorithm-category.json')
+        .then(res => res.json())
+        .then(data => {
+          const width = document.getElementById('graph-container').scrollWidth
+          const height = document.getElementById('graph-container').scrollHeight || 500
+          this.graph = new G6.TreeGraph({
+            container: 'graph-container',
+            width,
+            height,
+            pixelRatio: 2,
+            modes: {
+              default: [{
+                type: 'collapse-expand',
+                onChange: function onChange (item, collapsed) {
+                  const data = item.get('model').data
+                  data.collapsed = collapsed
+                  return true
+                }
+              }, 'drag-canvas', 'zoom-canvas' ]
+            },
+            defaultNode: {
+              size: 26,
+              anchorPoints: [[ 0, 0.5 ], [ 1, 0.5 ]],
+              style: {
+                fill: '#C6E5FF',
+                stroke: '#5B8FF9'
+              }
+            },
+            defaultEdge: {
+              shape: 'cubic-horizontal',
+              style: {
+                stroke: '#A3B1BF'
+              }
+            },
+            layout: {
+              type: 'dendrogram',
+              direction: 'LR', // H / V / LR / RL / TB / BT
+              nodeSep: 30,
+              rankSep: 100
+            }
+          })
+
+          this.graph.node(function (node) {
+            return {
+              label: node.id,
+              labelCfg: {
+                position: node.children && node.children.length > 0 ? 'left' : 'right',
+                offset: 5
+              }
+            }
+          })
+
+          this.graph.data(data)
+          this.graph.render()
+          this.graph.fitView()
+        })
+    },
+    // 树形实验
+    init2 () {
+      // alert(1)
+      const data = {
+        nodes: [{
+          id: '4',
+          label: '4',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '5',
+          label: '5',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '6',
+          label: '6',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '7',
+          label: '7',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '8',
+          label: '8',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '9',
+          label: '9',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '10',
+          label: '10',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '11',
+          label: '11',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }, {
+          id: '12',
+          label: '12',
+          shape: 'customNode',
+          type: 'node',
+          size: [170, 40],
+          color: '#1890ff'
+        }],
+        edges: [{
+          source: '0',
+          target: '1'
+        }, {
+          source: '0',
+          target: '2'
+        }, {
+          source: '0',
+          target: '3'
+        }, {
+          source: '0',
+          target: '4'
+        }, {
+          source: '0',
+          target: '5'
+        }, {
+          source: '0',
+          target: '7'
+        }, {
+          source: '0',
+          target: '8'
+        }, {
+          source: '0',
+          target: '9'
+        }, {
+          source: '0',
+          target: '10'
+        }, {
+          source: '0',
+          target: '11'
+        }, {
+          source: '0',
+          target: '13'
+        }, {
+          source: '0',
+          target: '14'
+        }, {
+          source: '0',
+          target: '15'
+        }, {
+          source: '0',
+          target: '16'
+        }, {
+          source: '2',
+          target: '3'
+        }, {
+          source: '4',
+          target: '5'
+        }, {
+          source: '4',
+          target: '6'
+        }, {
+          source: '5',
+          target: '6'
+        }, {
+          source: '7',
+          target: '13'
+        }, {
+          source: '8',
+          target: '14'
+        }, {
+          source: '9',
+          target: '10'
+        }, {
+          source: '10',
+          target: '22'
+        }, {
+          source: '10',
+          target: '14'
+        }, {
+          source: '10',
+          target: '12'
+        }, {
+          source: '10',
+          target: '24'
+        }, {
+          source: '10',
+          target: '21'
+        }, {
+          source: '10',
+          target: '20'
+        }, {
+          source: '11',
+          target: '24'
+        }, {
+          source: '11',
+          target: '22'
+        }, {
+          source: '11',
+          target: '14'
+        }, {
+          source: '12',
+          target: '13'
+        }, {
+          source: '16',
+          target: '17'
+        }, {
+          source: '16',
+          target: '18'
+        }, {
+          source: '16',
+          target: '21'
+        }, {
+          source: '16',
+          target: '22'
+        }, {
+          source: '17',
+          target: '18'
+        }, {
+          source: '17',
+          target: '20'
+        }, {
+          source: '18',
+          target: '19'
+        }, {
+          source: '19',
+          target: '20'
+        }, {
+          source: '19',
+          target: '33'
+        }, {
+          source: '19',
+          target: '22'
+        }, {
+          source: '19',
+          target: '23'
+        }, {
+          source: '20',
+          target: '21'
+        }, {
+          source: '21',
+          target: '22'
+        }, {
+          source: '22',
+          target: '24'
+        }, {
+          source: '22',
+          target: '25'
+        }, {
+          source: '22',
+          target: '26'
+        }, {
+          source: '22',
+          target: '23'
+        }, {
+          source: '22',
+          target: '28'
+        }, {
+          source: '22',
+          target: '30'
+        }, {
+          source: '22',
+          target: '31'
+        }, {
+          source: '22',
+          target: '32'
+        }, {
+          source: '22',
+          target: '33'
+        }, {
+          source: '23',
+          target: '28'
+        }, {
+          source: '23',
+          target: '27'
+        }, {
+          source: '23',
+          target: '29'
+        }, {
+          source: '23',
+          target: '30'
+        }, {
+          source: '23',
+          target: '31'
+        }, {
+          source: '23',
+          target: '33'
+        }, {
+          source: '32',
+          target: '33'
+        }]
+      }
+      // const data2 = this.data
+      // data2.nodes = this.data.nodes.map(item => {
+      //   console.log('item0000=========', item)
+      //   return {
+      //     id: item.id,
+      //     name: item.name,
+      //     label: item.label,
+      //     crowdId: item.crowdId,
+      //     crowdName: item.crowdName,
+      //     shape: 'customNode',
+      //     type: 'node',
+      //     size: [170, 40],
+      //     color: '#1890ff',
+      //     x: undefined,
+      //     y: undefined
+      //   }
+      // })
+      // console.log('1=====================>', data2)
+      // console.log('2=====================>', JSON.parse(JSON.stringify(data2)))
+      const width = document.getElementById('graph-container').scrollWidth
+      const height = document.getElementById('graph-container').scrollHeight || 500
+      this.graph = new G6.Graph({
+        container: 'graph-container',
+        width,
+        height,
+        modes: {
+          default: [ 'zoom-canvas', 'drag-canvas', 'drag-node' ]
+        },
+        layout: {
+          type: 'grid',
+          begin: [ 20, 20 ],
+          width: width - 20,
+          height: height - 20
+        },
+        animate: true,
+        defaultNode: {
+          size: 20,
+          style: {
+            fill: '#C6E5FF',
+            stroke: '#5B8FF9'
+          }
+        },
+        defaultEdge: {
+          size: 1,
+          color: '#e2e2e2'
+        }
+      })
+      console.log('this.data==========>', data)
+      const { editor, command } = this.$parent
+      editor.emit('afterAddPage', { graph: this.graph, command })
+      editor.on('changeNodeData')
+      this.graph.read(data)
+      // this.readData()
+    },
     init () {
-      const height = this.height - 42
-      const width = this.width
+      const width = document.getElementById('graph-container').scrollWidth
+      const height = document.getElementById('graph-container').scrollHeight || 500
+
+      // const height = this.height - 42
+      // const width = this.width
 
       this.graph = new G6.Graph({
         container: 'graph-container',
         height: height,
         width: width,
+        // fitCenter: true, // 图是否自适应画布
         // layout: {
-        //   type: 'grid'
-        //   // begin: [ 20, 20 ],
-        //   // width: width - 20,
-        //   // height: height - 20
+        //   type: 'grid',
+        //   begin: [ 500, 500 ],
+        //   // width: 10000,
+        //   // height: 5000,
+        //   linkDistance: 200 // 设置边长为 100
         // },
-        layout: {
-          type: 'force', // 设置布局算法为 force
-          linkDistance: 250, // 设置边长为 100
-          preventOverlap: true
-        },
+        // fitViewPadding: [ 20, 40, 50, 20 ],
         // layout: {
-        //   type: 'concentric',
-        //   // type: 'force', // 设置布局算法为 force
-        //   // linkDistance: 250, // 设置边长为 100
-        //   preventOverlap: true
-        //   // maxLevelDiff: 0.5,
-        //   // sortBy: 'degree'
+        //   type: 'grid',
+        //   begin: [ 20, 20 ],
+        //   width: width - 20,
+        //   height: height - 20
         // },
-        // layout: {
-        // type: 'force'
-        // type: 'circular',
-        // center: [500, 300]
-        // type: 'Dagre',
-        // rankdir: 'TB'
-        // type: 'dagre',
-        // rankdir: 'LR', // 可选，默认为图的中心
-        // align: 'DL', // 可选
-        // nodesep: 20, // 可选
-        // ranksep: 50, // 可选
-        // controlPoints: true // 可选
-        // type: 'grid',
-        // begin: [ 0, 0 ] // 可选，
-        // preventOverlapPdding: 20, // 可选
-        // nodeSize: 30, // 可选
-        // condense: false, // 可选
-        // rows: 5, // 可选
-        // cols: 5, // 可选
-        // sortBy: 'degree' // 可选
-        // },
-        // layout: {
-        //   type: 'dagre',
-        //   nodesepFunc: d => {
-        //     if (d.id === '3') {
-        //       return 500
-        //     }
-        //     return 50
-        //   },
-        //   ranksep: 70
-        // },
-        // pixelRatio: 2,
-
-        // layout: {
-        //   type: 'dagre',
-        //   rankdir: 'LR',
-        //   align: 'DL',
-        //   nodesepFunc: () => {
-        //     return 1
-        //   },
-        //   ranksepFunc: () => {
-        //     return 1
-        //   }
-        // },
-        // layout: {
-        //   type: 'radial',
-        //   unitRadius: 220
-        // },
-        // layout: {
-        //   type: 'concentric',
-        //   maxLevelDiff: 5,
-        //   sortBy: 'degree'
-        // },
-        // fitView: true,
-        // layout: {
-        //   type: 'mds',
-        //   linkDistance: 200
-        // },
-        // animate: true,
         modes: {
           // 支持的 behavior
           default: [
@@ -182,22 +484,16 @@ export default {
       const { editor, command } = this.$parent
       editor.emit('afterAddPage', { graph: this.graph, command })
       editor.on('changeNodeData')
+      // this.graph.read(data)
       this.readData()
-
-      // 实例化时通过 layout 指定布局，在合适的时候通过 updateLayout 更新布局配置
-      // this.graph.updateLayout({
-      //   radius: 200,
-      //   startAngle: Math.PI / 4,
-      //   endAngle: Math.PI,
-      //   divisions: 5,
-      //   ordering: 'degree'
-      // })
     },
     readData () {
       let data = this.data
       if (data) {
+        // read 方法的功能相当于 data 和 render 方法的结合。
         this.graph.read(data)
       }
+      // this.graph.fitView()
     },
     bindEvent () {
       let _this = this

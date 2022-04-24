@@ -46,7 +46,29 @@ export default {
         // image: 'https://gw.alipayobjects.com/zos/rmsportal/czNEJAmyDpclFaSucYWB.svg',
         // stateImage: '/static/img/ok.463ab0e4.svg'
       }
-
+      // crowdList: [{
+      //   crowdId: 'dynamic1',
+      //   crowdName: '动态1'
+      // }, {
+      //   crowdId: 'dynamic2',
+      //   crowdName: '动态2'
+      // }, {
+      //   crowdId: 'dynamic3',
+      //   crowdName: '动态3'
+      // }, {
+      //   crowdId: 'dynamic4',
+      //   crowdName: '动态4'
+      // }, {
+      //   crowdId: 'dynamic5',
+      //   crowdName: '动态5'
+      // }, {
+      //   crowdId: 'dynamic6',
+      //   crowdName: '动态6'
+      // }, {
+      //   crowdId: 'dynamic7',
+      //   crowdName: '动态7'
+      // }]
+      // type: 1
     }
   },
   props: {
@@ -76,7 +98,9 @@ export default {
             this.data.nodes = defaultNodes.map(defaultObj => {
               const editObj = flowChart.nodes.find(node => {
                 return node.crowdId === defaultObj.crowdId
+                // console.log('node============>', node)
               })
+              // console.log('defaultObj============>', defaultObj)
 
               if (editObj) {
                 return {
@@ -87,8 +111,48 @@ export default {
                   inPoints: defaultObj.inPoints, // 入口点 - 默认的
                   outPoints: defaultObj.outPoints // 入口点 - 默认的
                 }
+                // return {
+                //   // arithmetic: 2,
+                //   // dynamicJson: '',
+                //   color: defaultObj.color,
+                //   crowdId: defaultObj.crowdId,
+                //   crowdName: defaultObj.crowdName,
+                //   degree: 1,
+                //   id: defaultObj.id,
+                //   inPoints: defaultObj.inPoints, // 入口点 - 默认的
+                //   label: defaultObj.label,
+                //   name: defaultObj.name,
+                //   outPoints: defaultObj.outPoints, // 入口点 - 默认的
+                //   policyId: defaultObj.policyId,
+                //   priority: defaultObj.priority,
+                //   shape: 'customNode',
+                //   size: [150, 40],
+                //   type: 'node',
+                //   weight: defaultObj.weight,
+                //   x: editObj.x,
+                //   y: editObj.y
+                // }
               }
               return defaultObj
+              // return {
+              //   color: defaultObj.color,
+              //   crowdId: defaultObj.crowdId,
+              //   crowdName: defaultObj.crowdName,
+              //   degree: 1,
+              //   id: defaultObj.id,
+              //   inPoints: defaultObj.inPoints, // 入口点 - 默认的
+              //   label: defaultObj.label,
+              //   name: defaultObj.name,
+              //   outPoints: defaultObj.outPoints, // 入口点 - 默认的
+              //   policyId: defaultObj.policyId,
+              //   priority: defaultObj.priority,
+              //   shape: 'customNode',
+              //   size: [150, 40],
+              //   type: 'node',
+              //   weight: defaultObj.weight,
+              //   x: defaultObj.x,
+              //   y: defaultObj.y
+              // }
             })
 
             this.data.edges = flowChart.edges.map(item => {
@@ -104,10 +168,12 @@ export default {
             this.data.edges = []
             this.data.nodes = defaultNodes
           }
+          console.log('data23333333333========', this.data)
           // this.data = flowChart || {}
         } else if (this.crowdList.length > 0) { // 新增
           this.data.edges = []
           if (this.type === 0 || this.type === 1) {
+            // alert(11)
             this.init()
           } else if (this.type === 2) {
             this.initRandomNodes()
@@ -178,6 +244,7 @@ export default {
     initRandomNodes () {
       const data = this.crowdList
       const commonObj = this.commonObj
+
       let arr = data.map((item, index) => {
         const xy = this.returnStyle(index)
 
@@ -233,6 +300,7 @@ export default {
         shape: 'customEdge',
         type: 'edge'
       }
+
       // 顺序
       if (type === 0 || type === 1) {
         data.reduce((current, item) => {
@@ -274,6 +342,8 @@ export default {
       // this.X = this.width / 2
       this.X = -200
       this.Y = this.height / 2
+      console.log('this.X===alertz=========', this.X)
+      console.log('data======', this.data)
       let arr = data.map((item, index) => {
         const x = this.X += 300
         const y = this.Y += 1
@@ -292,6 +362,44 @@ export default {
           weight: null,
           degree: 5
         }
+        // const obj = {
+        //   arithmetic: 0,
+        //   weight: 0,
+        //   inPoints: 0, // 入口点 - 默认的
+        //   outPoints: 0, // 入口点 - 默认的
+        //   color: commonObj.color,
+        //   crowdId: item.crowdId,
+        //   crowdName: item.crowdName,
+        //   degree: 1,
+        //   id: item.crowdId,
+        //   label: item.crowdName,
+        //   name: item.crowdName,
+        //   policyId: item.policyId,
+        //   priority: item.priority || '',
+        //   shape: commonObj.shape,
+        //   size: [150, 40],
+        //   type: commonObj.type,
+        //   x,
+        //   y
+
+        //   // color: defaultObj.color,
+        //   // crowdId: defaultObj.crowdId,
+        //   // crowdName: defaultObj.crowdName,
+        //   // degree: 1,
+        //   // id: defaultObj.id,
+        //   // inPoints: defaultObj.inPoints, // 入口点 - 默认的
+        //   // label: defaultObj.label,
+        //   // name: defaultObj.name,
+        //   // outPoints: defaultObj.outPoints, // 入口点 - 默认的
+        //   // policyId: defaultObj.policyId,
+        //   // priority: defaultObj.priority,
+        //   // shape: 'customNode',
+        //   // size: [150, 40],
+        //   // type: 'node',
+        //   // weight: defaultObj.weight,
+        //   // x: editObj.x,
+        //   // y: editObj.y
+        // }
 
         if (this.type === 3) { // 自定义
           obj.arithmetic = item.arithmetic ? item.arithmetic : 2

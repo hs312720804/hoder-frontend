@@ -55,27 +55,15 @@
     <span class="separator"></span>
 
     <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
-    <div style="float: right; margin: 0 10px 0 0">
-      <el-radio-group v-model="value" @change="handleChangeView">
-      <!-- <el-radio :label="3">备选项</el-radio>
-      <el-radio :label="6">备选项</el-radio>
-      <el-radio :label="9">备选项</el-radio> -->
-        <el-radio
-          v-for="item in options"
-          :key="item.value"
-          :label="item.value">
-          {{item.label}}
-        </el-radio>
-      </el-radio-group>
-      <!-- <el-select v-model="value" @change="handleChangeView" placeholder="请选择视图模式">
-        <el-option
-          v-for="item in options"
-          :key="item.value"
-          :label="item.label"
-          :value="item.value">
-        </el-option>
-      </el-select> -->
-    </div>
+
+    <el-select v-model="value" @change="aaa" placeholder="请选择视图模式">
+      <el-option
+        v-for="item in options"
+        :key="item.value"
+        :label="item.label"
+        :value="item.value">
+      </el-option>
+    </el-select>
   </div>
 </template>
 
@@ -88,18 +76,21 @@ export default {
     return {
       value: '',
       options: [{
-        label: '环形视图',
+        label: '环形',
         value: 0
       },
       {
-        label: '树形视图',
+        label: '树形',
         value: 1
-      }
+      },
       // {
-      //   label: '无',
-      //   value: 3
-      // }
-      ],
+      //   label: '线形',
+      //   value: 2
+      // },
+      {
+        label: '无',
+        value: 3
+      }],
       page: {},
       graph: {},
       redoList: [],
@@ -136,7 +127,7 @@ export default {
     }
   },
   methods: {
-    handleChangeView (value) {
+    aaa (value) {
       const width = document.getElementById('graph-container').scrollWidth
       const height = document.getElementById('graph-container').scrollHeight || 500
       if (value === 0) { // 圆形
@@ -154,11 +145,64 @@ export default {
         })
       } else if (value === 1) { // 树形
         this.graph.updateLayout({
+          // type: 'force', // 设置布局算法为 force
+          // linkDistance: 100, // 设置边长为 100
+          // preventOverlap: true
           type: 'grid',
           begin: [ 20, 20 ],
           width: width - 20,
           height: height - 20
+          // begin: [ 0, 0 ], // 可选，
+          // preventOverlap: true, // 可选，必须配合 nodeSize
+          // preventOverlapPdding: 20, // 可选
+          // nodeSize: 30 // 可选
+          // condense: false, // 可选
+          // rows: 5, // 可选
+          // cols: 5 // 可选
+          // sortBy: 'degree' // 可选
+          // workerEnabled: true       // 可选，开启 web-worker
         })
+      } else if (value === 2) { // 树形{
+        // type: 'radial',
+        // center: [ 500, 200 ], // 可选，默认为图的中心
+        // linkDistance: 500, // 可选，边长
+        // maxIteration: 1000, // 可选
+        // // focusNode: 'node11', // 可选
+        // unitRadius: 100, // 可选
+        // preventOverlap: true, // 可选，必须配合 nodeSize
+        // nodeSize: 130, // 可选
+        // strictRadial: true, // 可选
+        // workerEnabled: true // 可选，开启 web-worker
+
+        // type: 'fruchterman',
+        // center: [ 200, 200 ], // 可选，默认为图的中心
+        // gravity: 20, // 可选
+        // speed: 2, // 可选
+        // clustering: true, // 可选
+        // clusterGravity: 30, // 可选
+        // maxIteration: 2000, // 可选，迭代次数
+        // workerEnabled: true // 可选，开启 web-worker  }
+        // type: 'mds',
+        // linkDistance: 200,
+        // workerEnabled: true, // 可选，开启 web-worker
+        // preventOverlap: true,
+        // clockwise: true,
+        // ordering: 'topology'
+        // type: 'dagre',
+        // nodeSize: 20
+        // rankdir: 'LR', // 可选，默认为图的中心
+        // align: 'DL', // 可选
+        // nodesep: 20, // 可选
+        // ranksep: 50, // 可选
+        // controlPoints: true // 可选
+        // })
+        // layout: {
+        // this.graph.updateLayout({
+        //   type: 'grid',
+        //   begin: [20, 20],
+        //   width: 100,
+        //   height: 50
+        // })
       } else {
         // alert(1)
         // this.graph.updateLayout({
@@ -174,7 +218,7 @@ export default {
         this.graph.layout()
       }
       // this.graph.fitView()
-      // console.log('this.graph===========>>>>', this.graph)
+      console.log('this.graph===========>>>>', this.graph)
     },
     test () {
 
