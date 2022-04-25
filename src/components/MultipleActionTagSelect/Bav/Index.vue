@@ -2873,6 +2873,28 @@
             </el-select>
           </span>
 
+          <!-- 教育VIP 选项  item.childCheckedVal[3] -->
+          <span v-if="childItem.bav.value === '亲子'" class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              placeholder="请选择 VIP"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 11,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(11)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+          </span>
+
           <!-- 搜歌手  item.childCheckedVal[4]   搜歌曲  item.childCheckedVal[5] -->
           <span v-if="childItem.bav.value === 'K歌'" class="flex-row">
             <el-select
@@ -4635,7 +4657,10 @@ export default {
             return this.singerList
           } else if (level === 9) { // 教育 VIP
             attrlist = dict.education_vip
-          } if (level === 10) { // 视频源
+          } else if (level === 11) { // 亲子 VIP
+            attrlist = dict.vip_package_parent_children_vip
+          }
+          if (level === 10) { // 视频源
             attrlist = dict.source
           }
         } else {
