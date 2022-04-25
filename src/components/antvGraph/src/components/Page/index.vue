@@ -4,7 +4,7 @@
     <el-dialog
       title="设置动态流转条件"
       :visible.sync="dialogVisible"
-      width="800"
+      width="800px"
     >
       <DynamicPeopleConditionsCom
         :crowdId="crowdId"
