@@ -83,7 +83,7 @@ const customNode = {
         // }
 
         // 权重
-        if (cfg.weight !== null) {
+        if (cfg.weight !== null) { // 这里不能直接判断 cfg.weight ,因为有值为 0 的情况
           const weightText = group.addShape('text', {
             attrs: {
               x: -(width / 2),

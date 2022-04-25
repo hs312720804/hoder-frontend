@@ -49,11 +49,6 @@ export default {
 
     }
   },
-  computed: {
-    height () {
-      return document.documentElement.clientHeight - 230
-    }
-  },
   props: {
     type: {
       type: Number,
@@ -113,11 +108,17 @@ export default {
         } else if (this.crowdList.length > 0) { // 新增
           this.data.edges = []
           if (this.type === 0 || this.type === 1) {
-            this.init()
+            // this.init()
+            // 初始数据
+            this.data.nodes = this.initDefaultNodes()
+            this.data.edges = this.initEdges(this.type)
           } else if (this.type === 2) {
             this.initRandomNodes()
           } else {
-            this.init()
+            // this.init()
+            // 初始数据
+            this.data.nodes = this.initDefaultNodes()
+            this.data.edges = this.initEdges(this.type)
           }
         }
         this.readData()
@@ -133,6 +134,11 @@ export default {
     // }
 
   },
+  computed: {
+    height () {
+      return document.documentElement.clientHeight - 225
+    }
+  },
   created () {
     const _this = this
     eventBus.$on('afterAddPage', page => {
@@ -144,69 +150,8 @@ export default {
     this.width = document.getElementsByClassName('el-main')[0].offsetWidth - 40
   },
   methods: {
-    returnStyle (index) {
-      const obj = {
 
-        radius: 200,
-        // 每一个BOX对应的角度;
-        avd: 0,
-        // 每一个BOX对应的弧度;
-        ahd: 0,
-        dotLeft: 635,
-        // 中心点纵坐标
-        dotTop: 235
-      }
-      const len = this.crowdList.length
-      // // 半径
-      // this.radius = 200
-      // // 每一个BOX对应的角度;
-      obj.avd = 360 / len
-      // 每一个BOX对应的弧度;
-      obj.ahd = obj.avd * Math.PI / 180
-
-      const ahd = obj.ahd
-      const radius = obj.radius
-      const dotLeft = obj.dotLeft
-      const dotTop = obj.dotTop
-
-      const left = Math.sin(ahd * index) * radius + dotLeft
-      const top = Math.cos(ahd * index) * radius + dotTop
-
-      console.log('left===', left)
-      console.log('top===', top)
-      return {
-        left,
-        top
-      }
-    },
-    // 随机
-    initRandomNodes () {
-      const data = this.crowdList
-      const commonObj = this.commonObj
-      let arr = data.map((item, index) => {
-        const xy = this.returnStyle(index)
-
-        const x = xy.left
-        const y = xy.top
-
-        return {
-          ...commonObj,
-          ...item,
-          x,
-          y,
-          name: item.crowdName,
-          label: item.crowdName,
-          id: item.crowdId,
-          arithmetic: null
-        }
-      })
-
-      console.log('arr===>', arr)
-      // 初始数据
-      this.data = {
-        nodes: arr
-      }
-    },
+    // 刷新数据，渲染图表
     readData () {
       let data = this.data
       if (data) {
@@ -218,11 +163,12 @@ export default {
         this.graph.read(data)
       }
     },
-    init () {
-      // 初始数据
-      this.data.nodes = this.initDefaultNodes()
-      this.data.edges = this.initEdges(this.type)
-    },
+    // init () {
+    //   // 初始数据
+    //   this.data.nodes = this.initDefaultNodes()
+    //   this.data.edges = this.initEdges(this.type)
+    // },
+    // 初始化连线
     initEdges (type) {
       let arr = []
       const data = this.crowdList
@@ -267,6 +213,7 @@ export default {
       return arr
     },
 
+    // 初始化节点
     initDefaultNodes () {
       const data = this.crowdList
       const commonObj = this.commonObj
@@ -274,6 +221,9 @@ export default {
       if (this.type === 3) { // 自定义
         commonObj.inPoints = [[0, 0.5]]
         commonObj.outPoints = [[1, 0.5]]
+      } else { // 其他流转算法没有出入口
+        commonObj.inPoints = undefined
+        commonObj.outPoints = undefined
       }
       // this.Y = -90
       // this.X = this.width / 2
@@ -308,6 +258,80 @@ export default {
 
       console.log('arr===>', arr)
       return arr
+    },
+
+    // 初始化随机节点
+    initRandomNodes () {
+      const data = this.crowdList
+      const commonObj = this.commonObj
+
+      if (this.type === 3) { // 自定义
+        commonObj.inPoints = [[0, 0.5]]
+        commonObj.outPoints = [[1, 0.5]]
+      } else { // 其他流转算法没有出入口
+        commonObj.inPoints = undefined
+        commonObj.outPoints = undefined
+      }
+
+      let arr = data.map((item, index) => {
+        const xy = this.returnStyle(index)
+
+        const x = xy.left
+        const y = xy.top
+
+        return {
+          ...commonObj,
+          ...item,
+          x,
+          y,
+          name: item.crowdName,
+          label: item.crowdName,
+          id: item.crowdId,
+          arithmetic: null
+        }
+      })
+
+      console.log('arr===>', arr)
+      // 初始数据
+      this.data = {
+        nodes: arr
+      }
+    },
+
+    returnStyle (index) {
+      const obj = {
+
+        radius: 200,
+        // 每一个BOX对应的角度;
+        avd: 0,
+        // 每一个BOX对应的弧度;
+        ahd: 0,
+        dotLeft: 635,
+        // 中心点纵坐标
+        dotTop: 235
+      }
+      const len = this.crowdList.length
+      // // 半径
+      // this.radius = 200
+      // // 每一个BOX对应的角度;
+      obj.avd = 360 / len
+      // 每一个BOX对应的弧度;
+      obj.ahd = obj.avd * Math.PI / 180
+
+      const ahd = obj.ahd
+      const radius = obj.radius
+      const dotLeft = obj.dotLeft
+      const dotTop = obj.dotTop
+
+      const left = Math.sin(ahd * index) * radius + dotLeft
+      const top = Math.cos(ahd * index) * radius + dotTop
+
+      console.log('left===', left)
+      console.log('top===', top)
+      return {
+        left,
+        top
+      }
     }
   }
 }
