@@ -191,7 +191,7 @@ export default {
         })
         eventBus.$on('changeWeight', item => { // 修改权重
           const selectNode = item.target.getModel()
-          _this.$prompt('请输入权重', '', {
+          _this.$prompt('请输入权重（权重越大，比重越高）', '', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             inputPattern: /^[+]{0,1}(\d+)$/,

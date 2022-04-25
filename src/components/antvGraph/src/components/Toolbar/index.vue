@@ -170,7 +170,7 @@ export default {
         // })
         // this.graph.layout()
         this.graph.updateLayout({ type: '' })
-        this.graph.paint()
+        // this.graph.paint()
         this.graph.layout()
       }
       // this.graph.fitView()

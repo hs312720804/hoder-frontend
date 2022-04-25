@@ -7,7 +7,7 @@
         </div>
       </div>
     </div> -->
-    <G6Editor mode="edit" :data="data" :height="600" :width="width">
+    <G6Editor mode="edit" :data="data" :height="height" :width="width">
     </G6Editor>
   </div>
 </template>
@@ -27,7 +27,7 @@ export default {
   data () {
     return {
       width: 0,
-      height: 600,
+      // height: 600,
       data: {},
       Y: -50,
       // X: 600,
@@ -47,6 +47,11 @@ export default {
         // stateImage: '/static/img/ok.463ab0e4.svg'
       }
 
+    }
+  },
+  computed: {
+    height () {
+      return document.documentElement.clientHeight - 230
     }
   },
   props: {
