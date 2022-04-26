@@ -198,15 +198,14 @@ export default {
     },
     handleExitCrowdVisibleChange (flowChart) {
       // 流程图数据
-      // console.log('flowChart===>', flowChart)
-
       const edges = flowChart.edges
       if (!edges) return
-      const isTargetCrowdIdList = edges.map(item => item.target)
-      // console.log('targetCrowdIdList====>', isTargetCrowdIdList)
+
+      // 注意这里要统一成字符串：.toString()
+      const isTargetCrowdIdList = edges.map(item => item.target.toString())
       const allCrowdList = this.dynamicRule.allCrowd
       this.crowdOptions = allCrowdList.filter(item => {
-        return !isTargetCrowdIdList.includes(item.crowdId)
+        return !isTargetCrowdIdList.includes(item.crowdId.toString())
       }) || []
 
       this.crowdOptions = this.crowdOptions.map(item => {
