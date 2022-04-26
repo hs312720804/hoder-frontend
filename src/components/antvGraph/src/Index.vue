@@ -242,7 +242,7 @@ export default {
           y,
           name: item.crowdName,
           label: item.crowdName,
-          id: item.crowdId,
+          id: item.crowdId.toString(),
           arithmetic: null,
           weight: null,
           degree: 5
@@ -286,7 +286,7 @@ export default {
           y,
           name: item.crowdName,
           label: item.crowdName,
-          id: item.crowdId,
+          id: item.crowdId.toString(),
           arithmetic: null
         }
       })
