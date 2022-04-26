@@ -290,7 +290,7 @@
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox
                                         v-for="item in v.childs"
-                                        :label="v.policyId+'_'+item.crowdId"
+                                        :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
                                         :key="item.crowdId+''"
                                         :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
                                 >{{item.crowdName}}
@@ -303,7 +303,7 @@
                             <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                 <el-checkbox
                                         v-for="item in v.childs"
-                                        :label="item.policyId+'_'+item.crowdId"
+                                        :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
                                         :key="item.crowdId+''"
                                         :disabled="item.canLaunch === false"
                                 >{{item.crowdName}}
@@ -820,6 +820,9 @@ export default {
           } else {
             crowdForm.tempCrowdId = 0
             crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
+            if (crowdForm.abTest) {
+              crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
+            }
             crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
               return v.split('_')[1]
             }).join(',')
@@ -1201,6 +1204,9 @@ export default {
           } else {
             crowdForm.tempCrowdId = 0
             crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
+            if (crowdForm.abTest) {
+              crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
+            }
             crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
               return v.split('_')[1]
             }).join(',')
