@@ -14,16 +14,16 @@
                 </el-date-picker>
             </div>
         </div>
-        <div>
+        <div v-if="show">
           <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
             <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
               <div class="unit-box">
                 <div class="unit-header clearfix">{{ chart.title }}</div>
                 <div class="unit-content">
-                  <!-- {{ chart }}
-                  ---{{allChartData[key]}}-- -->
                   <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
-                  <div v-else class="chart-div"> {{allChartData[key] || '暂无数据'}}</div>
+                  <div v-else class="chart-div">
+                    <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
+                  </div>
                 </div>
               </div>
             </el-col>
@@ -46,6 +46,7 @@ export default {
   },
   data () {
     return {
+      show: true,
       allCharts: {},
       timeRange: [],
       allChartData: {},
@@ -89,8 +90,12 @@ export default {
     // },
     policyId: {
       handler (val) {
+        this.show = false
         this.initRange()
         this.initChart()
+        this.$nextTick(() => {
+          this.show = true
+        })
       },
       immediate: true
     }
@@ -122,28 +127,29 @@ export default {
       return `${y}-${m}-${r}`
     },
     initChart () {
+      this.allChartData = {}
       // chart1
       // this.getBusinessUseTendency(this.rangeType)
       // 172.20.148.31:8011/chart/policySixIndexStats?policyId=1890&startDate=2021-11-01&endDate=2021-11-22
-      // const params = {
-      //   policyId: this.policyId,
-      //   startDate: this.timeRange[0],
-      //   endDate: this.timeRange[1]
-      // }
+      const params = {
+        policyId: this.policyId,
+        startDate: this.timeRange[0],
+        endDate: this.timeRange[1]
+      }
       // const params = {
       //   policyId: 1890,
       //   startDate: '2021-11-01',
       //   endDate: '2021-11-22'
       // }
       // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
-      const params = {
-        policyId: 2906,
-        startDate: '2022-03-18',
-        endDate: '2022-04-19'
-      }
+      // const params = {
+      //   policyId: 2906,
+      //   startDate: '2022-03-18',
+      //   endDate: '2022-04-19'
+      // }
       // 获取所有图表数据
       this.$service.getPolicySixIndexStats(params).then(res => {
-        this.allChartData = res
+        this.allChartData = res || {}
 
         this.$nextTick(() => {
           const rowObj = this.rowObj
