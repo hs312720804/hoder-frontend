@@ -95,18 +95,17 @@ const customNode = {
             }
           })
           weightText.set('className', 'changeWeight')
-
-          group.addShape('text', {
-            attrs: {
-              x: -(width / 2) + 90,
-              y: offsetY + height + 20,
-              cursor: 'pointer',
-              label: 'aaaaa',
-              text: `id:  ${cfg.id}`,
-              fill: color
-            }
-          })
         }
+        group.addShape('text', {
+          attrs: {
+            x: -(width / 2) + 90,
+            y: offsetY + height + 20,
+            cursor: 'pointer',
+            label: 'aaaaa',
+            text: `id:  ${cfg.id}`,
+            fill: color
+          }
+        })
 
         // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
