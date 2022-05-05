@@ -85,8 +85,9 @@
                                 <span v-if="crowdType === 4">计算</span>
                                 <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
                             </div>
-                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5">
-                                计算失败，<el-button type="text" @click="calculate(scope.row)">重试</el-button>
+                            <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
+                                计算失败
+                                <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
                             </div>
                             <div v-else>
                                 {{ (launchStatusEnum[scope.row.history.status]).name }}
@@ -178,8 +179,10 @@
                                     <!--&gt;数据监控-->
                                     <!--</el-dropdown-item>-->
                                     <!-- v-if="(scope.row.history.status && ((launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7))" -->
+
+                                    <!-- 行为标签不展示删除按钮 -->
                                     <el-dropdown-item
-                                        v-if="(scope.row.history.status && (launchStatusEnum[scope.row.history.status]).code !== 2)"
+                                        v-if="(scope.row.history.status && (launchStatusEnum[scope.row.history.status]).code !== 2) && crowdType !== 3 "
                                         :command="['del',scope.row]"
                                         v-permission="'hoder:launch:crowd:ver:delete'"
                                     >删除

@@ -9,6 +9,7 @@
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
   "dependencies": {
+    "@antv/g6": "^3.2.10",
     "@antv/x6": "^1.18.1",
     "@ccprivate/admin-toolkit": "^1.1.4",
     "@stateform/element": "^0.1.14",

@@ -10,7 +10,7 @@
           </el-button>
         </div>
         <div>
-          策略ID：{{selectRow.policyId}}
+          策略ID：{{ selectRow.policyId }}
           策略维度:
           <el-tag
             size="mini"
@@ -122,7 +122,7 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -157,8 +157,6 @@
         <el-table-column prop="status" label="状态" >
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
-            <!-- <span v-if="scope.row.putway === 1">生效中</span>
-            <span v-if="scope.row.putway === 0">已下架</span> -->
           </template>
         </el-table-column>
         <el-table-column prop="status" label="流量占比" >
@@ -283,16 +281,17 @@
       <el-table
         ref="myTable"
         :data="contrastCrowdTableData"
+        :row-class-name="tableRowClassName"
         style="width: 100%"
         stripe
         border
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
-                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
+                <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
@@ -526,7 +525,7 @@
         </template>
       </el-table-column>
       <el-table-column type="index" width="30"></el-table-column>
-      <el-table-column prop="crowdId" label="ID" width="50"></el-table-column>
+      <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -556,7 +555,11 @@
               </priorityEdit>
           </template>
       </el-table-column>
-      <el-table-column v-if="(checkList.indexOf('remark') > -1)" prop="remark" label="备注" width="90"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90">
+        <template slot-scope="scope">
+          {{ scope.row.remark }}
+        </template>
+      </el-table-column>
       <!--<el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">-->
         <!--<template slot-scope="scope">-->
           <!--<span v-if="scope.row.apiStatus === 1">已生效</span>-->
@@ -622,29 +625,34 @@
                 统计
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item
-                        :command="['estimatedDetail',scope.row]"
-                        v-if="scope.row.forcastStatus == 3"
+                <el-dropdown-item v-if="scope.row.forcastStatus == 3"
+                  :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
+                <!-- AB 和 运营分析是互斥的 -->
+                <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
+                  :command="['operationalAnalysis',scope.row]"
+                  :disabled="scope.row.abMainCrowd === 1"
+                >运营分析</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['detail',scope.row]"
+                  :command="['detail',scope.row]"
                 >投后效果</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['homepageData',scope.row]"
+                  :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item>
                 <el-dropdown-item
-                        :command="['appointment',scope.row]"
+                  :command="['appointment',scope.row]"
                 >预约投后分析</el-dropdown-item>
+
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
             <el-button
-                    v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
-                    size="small"
-                    type="text"
-                    @click="divideAB(scope.row,'addABTest')"
+                v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
+                size="small"
+                type="text"
+                @click="divideAB(scope.row,'addABTest')"
             >AB实验
             </el-button>
             <!-- <el-button
@@ -1031,30 +1039,114 @@
     <!--已划分弹窗显示-->
     <el-dialog :visible.sync="showDivideDetail" title="划分详情">
 
-      <div v-if="DivideTableData.length > 0" style="margin: -15px 0 20px 0">
-        实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+      <div v-if="DivideTableData && DivideTableData.length > 0" style="margin: -15px 0 20px 0">
+        <span class="detailTitle">AB子人群</span> 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+        <el-table :data="DivideTableData" style="width: 100%;" stripe border>
+            <el-table-column prop="crowdId" label="人群ID"></el-table-column>
+            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+            <el-table-column prop="ratio" label="占比">
+                <template slot-scope="scope">
+                    {{ scope.row.ratio }}%
+                </template>
+            </el-table-column>
+            <el-table-column prop="count" label="数量">
+              <template slot-scope="scope">
+                {{cc_format_number(scope.row.count)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="250">
+                <template slot-scope="scope">
+                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
       </div>
 
-      <el-table :data="DivideTableData" style="width: 100%;" stripe border>
-          <el-table-column prop="crowdId" label="投放子ID"></el-table-column>
-          <el-table-column prop="crowdName" label="人群名称"></el-table-column>
-          <el-table-column prop="ratio" label="占比">
+      <div v-if="subdividePeopleList && subdividePeopleList.length > 0" style="margin: -15px 0 20px 0">
+        <span class="detailTitle">再分割人群</span>
+        <el-table :data="subdividePeopleList" style="width: 100%;" stripe border>
+            <el-table-column prop="crowdId" label="人群ID"></el-table-column>
+            <!-- <el-table-column prop="dmpCrowdId" label="投放子ID"></el-table-column> -->
+            <el-table-column prop="crowdName" label="人群名称"></el-table-column>
+            <el-table-column prop="ratio" label="优先级">
+              <template slot="header">
+                优先级
+                <el-popover
+                  placement="top"
+                  trigger="hover"
+                  class="popover-button"
+                >
+                  <div>数字越大，优先级越高</div>
+                <span class="priority-tip" slot="reference">!</span>
+                </el-popover>
+              </template>
               <template slot-scope="scope">
-                  {{ scope.row.ratio }}%
+                  <!-- {{ scope.row.priority }} -->
+                  <priorityEdit
+                    @refresh="loadData"
+                    :showEdit="(showByPassColumn && scope.row.id) || !showByPassColumn"
+                    :byPassId="scope.row.id"
+                    :data="scope.row.priority"
+                    :policyId="scope.row.policyId"
+                    :crowdId="scope.row.crowdId"
+                    :isDynamicPeople="true">
+                  </priorityEdit>
+              </template>
+            </el-table-column>
+            <el-table-column prop="count" label="数量">
+              <template slot-scope="scope">
+                {{cc_format_number(scope.row.history.totalUser)}}
+              </template>
+            </el-table-column>
+            <el-table-column label="操作" width="90">
+              <template slot-scope="scope">
+                <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+              </template>
+            </el-table-column>
+            <el-table-column label="状态" width="150">
+              <template slot-scope="scope">
+                  <div v-if="scope.row.history.status">
+                      <div v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
+                          计算完成
+                      </div>
+                      <!-- 新增计算中时是否是人群派对中 -->
+                      <div v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                          {{ (independentLaunchStatusEnum[scope.row.history.status]).childrenName }}
+                      </div>
+                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
+                      >
+                          <span v-if="crowdType === 4">计算</span>
+                          <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
+                      </div>
+                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
+                          计算失败
+                          <!-- <el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
+                      </div>
+                      <div v-else>
+                          {{ (independentLaunchStatusEnum[scope.row.history.status]).name }}
+                      </div>
+                  </div>
               </template>
           </el-table-column>
-          <el-table-column prop="count" label="数量">
-            <template slot-scope="scope">
-              {{cc_format_number(scope.row.count)}}
-            </template>
-          </el-table-column>
-          <el-table-column label="操作" width="250">
+          <el-table-column label="数据监控" width="80" v-permission="'hoder:launch:crowd:ver:index'">
               <template slot-scope="scope">
-                  <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                  <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                <el-button type="text" @click="currentCid = scope.row.crowdId; handleMonitor(scope.row)">查看</el-button>
               </template>
-          </el-table-column>
-      </el-table>
+            </el-table-column>
+        </el-table>
+        <div style="margin: 30px 0 0; overflow: auto">
+            <pagination
+              :currentpage="independentParams.pageNum"
+              :pagesize="independentParams.pageSize"
+              :totalcount="independentTotal"
+              @handle-size-change="handleIndependentSizeChange"
+              @handle-current-change="handleIndependentCurrentChange"
+            ></pagination>
+        </div>
+
+      </div>
+
     </el-dialog>
     <commit-history-dialog
             :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
@@ -1112,7 +1204,7 @@
             </div>
             <div>
               <div class="table-header">
-                <div>ID</div>
+                <div>人群ID</div>
                 <div>人群名称</div>
                 <div>优先级</div>
                 <div>分流占比(%)</div>
@@ -1124,7 +1216,7 @@
                           :key="'tableDetailItem'+index"
                           class="table-detail-item"
                   >
-                    <div>{{tableDetailItem.crowdId}}</div>
+                    <div>{{ tableDetailItem.crowdId }}</div>
                     <div class="crowd-name-item">{{tableDetailItem.crowdName}}</div>
                     <numOrTextEdit class="edit-priority" :key="tableDetailItem.priority+'_'+index" :obj="tableDetailItem" :objKey="'priority'" :validType="'number'"></numOrTextEdit>
                     <!--<priorityEdit :data="tableDetailItem.priority" :policyId="selectRow.policyId" :crowdId="tableDetailItem.crowdId"></priorityEdit>-->
@@ -1230,6 +1322,50 @@
         <el-button @click="showEditDynamicCrowdName = false">取消</el-button>
       </span>
     </el-dialog>
+    <el-dialog title="数据监控" :visible.sync="monitorDialog">
+      <el-date-picker
+        v-model="monitorRangeTime"
+        type="daterange"
+        align="right"
+        @change="getDataMonitor"
+        class="monitor-time"
+        value-format="yyyy-MM-dd"
+      ></el-date-picker>
+
+      <c-table
+        :props="monitorTable.props"
+        :header="monitorTable.header"
+        :data="monitorTable.data"
+      >
+      </c-table>
+      <div style="margin: 30px 0 0; overflow: auto">
+          <pagination
+              :currentpage="monitorOutForm.pageNum"
+              :pagesize="monitorOutForm.pageSize"
+              :totalcount="monitorTotal"
+              @handle-size-change="handleMonitorSizeChange"
+              @handle-current-change="handleMonitorCurrentChange"
+          ></pagination>
+      </div>
+    </el-dialog>
+    <!-- 运营分析 - 大数据页面 -->
+    <el-dialog :visible.sync="showOperationalAnalysis" width="1500px" >
+    <!-- {{operationalAnalysisUrl}} -->
+      <iframe :src="operationalAnalysisUrl" width="100%" height="800px" frameborder="0" id="myIframe" ref="myIframe"></iframe>
+      <!-- <iframe
+        src="http://172.20.155.102/violet/"
+        width="100%"
+        height="800px"
+        frameborder="0"
+      ></iframe> -->
+      <!-- <div>
+        <iframe src="https://www.iconfont.cn/" id="mobsf" scrolling="no" frameborder="0" style="position:absolute;top:64px;left: 240px;right:0px;bottom:100px;"></iframe>
+      </div> -->
+
+      <!-- <span slot="footer" class="dialog-footer">
+        <el-button @click="showOperationalAnalysis = false">取 消</el-button>
+      </span> -->
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1249,6 +1385,8 @@ export default {
   },
   data () {
     return {
+      showOperationalAnalysis: false,
+      operationalAnalysisUrl: '',
       showEditDynamicCrowdName: false,
       dynamicCrowd: {},
       // 表格当前页数据
@@ -1377,10 +1515,17 @@ export default {
       ],
       showDivideDetail: false,
       DivideTableData: [],
+      subdividePeopleList: [],
+      independentParams: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      independentTotal: 0,
       setShowCommitHistoryDialog: false,
       currentCrowdId: undefined,
       abStatusEnum: {},
       launchStatusEnum: {},
+      independentLaunchStatusEnum: {},
       checkList: ['creatorName'],
       downloadUrl: undefined,
       launchedExportUrl: undefined,
@@ -1419,7 +1564,64 @@ export default {
       },
       configTextarea: '',
       initExpandCrowd: [],
-      copyErrorMsg: '' // 人群复制捕获错误信息
+      copyErrorMsg: '', // 人群复制捕获错误信息
+      monitorDialog: false,
+      monitorRangeTime: undefined,
+      monitorOutForm: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      monitorTotal: 0,
+      monitorTable: {
+        props: {},
+        header: [
+          {
+            label: '人群名称',
+            prop: 'launch_name'
+          },
+          {
+            label: 'dmp人群ID',
+            prop: 'dmp_crowd_id'
+          },
+          {
+            label: '临时人群版本号',
+            prop: 'version'
+          },
+          {
+            label: '当前版本',
+            prop: 'cur_version'
+          },
+          {
+            label: '接收设备数量',
+            prop: 'receive_total_user'
+          },
+          {
+            label: '设备数量',
+            prop: 'total_user'
+          },
+          {
+            label: '临时人群es index',
+            prop: 'es_index'
+          },
+          {
+            label: '状态',
+            prop: 'status_name'
+          },
+          {
+            label: '临时人群同步日期',
+            prop: 'update_time'
+          },
+          {
+            label: '版本是否删除',
+            render: (h, params) => {
+              return h('div', {}, [
+                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+              ])
+            }
+          }
+        ],
+        data: []
+      }
     }
   },
   props: ['selectRow'],
@@ -1438,6 +1640,20 @@ export default {
     this.startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 8))
     this.endDate = this.formatDate(end.setTime(end.getTime() - 3600 * 1000 * 24 * 1))
   },
+  // mounted () {
+  //   function changeMobsfIframe () {
+  //     const mobsf = document.getElementById('mobsf')
+  //     const deviceWidth = document.body.clientWidth
+  //     const deviceHeight = document.body.clientHeight
+  //     mobsf.style.width = (Number(deviceWidth) - 240) + 'px' // 数字是页面布局宽度差值
+  //     mobsf.style.height = (Number(deviceHeight) - 64) + 'px' // 数字是页面布局高度差
+  //   }
+  //   changeMobsfIframe()
+
+  //   window.onresize = function () {
+  //     changeMobsfIframe()
+  //   }
+  // },
   watch: {
     memberListType (val, oldVal) {
       if (val !== oldVal && oldVal.length !== 0) {
@@ -1461,6 +1677,65 @@ export default {
     // }
   },
   methods: {
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleMonitorSizeChange (val) {
+      this.monitorOutForm.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.monitorOutForm.pageNum = 1
+      this.handleGetMonitorTableList()
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleMonitorCurrentChange (val) {
+      this.monitorOutForm.pageNum = val
+      this.handleGetMonitorTableList()
+    },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleIndependentSizeChange (val) {
+      this.independentParams.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.independentParams.pageNum = 1
+      this.showDivideResult(this.independentParams.crowdId)
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleIndependentCurrentChange (val) {
+      this.independentParams.pageNum = val
+      this.showDivideResult(this.independentParams.crowdId)
+    },
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.showDivideResult(row.crowdId)
+      })
+    },
+    handleMonitor (row) {
+      this.monitorDialog = true
+      this.selectedRow = row
+      this.handleGetMonitorTableList()
+    },
+    getDataMonitor () {
+      this.handleGetMonitorTableList()
+    },
+    handleGetMonitorTableList () {
+      const monitorRangeTime = this.monitorRangeTime || []
+      const startDate = monitorRangeTime[0] || ''
+      const endDate = monitorRangeTime[1] || ''
+      const params = {
+        launchCrowdId: this.selectedRow.launchCrowdId,
+        startDate,
+        endDate,
+        ...this.monitorOutForm
+      }
+      this.$service.launchVersionList(params).then(data => {
+        if (data) {
+          this.monitorTotal = data.pageInfo.total
+          this.monitorTable.data = data.pageInfo.list || []
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
     pickerOptionsDayinRange (day) { // element日期范围选择 range 天内 开始和结束不超 day天
       let _minTime = null
       let _maxTime = null
@@ -2144,12 +2419,67 @@ export default {
           this.handleClickRedirectList(this.currentCid)
           break
         case 'appointment':
-          this.ShowAppointmentDialog(this.currentCid)
+          this.showAppointmentDialog(this.currentCid)
+          break
+        case 'operationalAnalysis':
+          this.goToOperationalAnalysis(this.currentCid)
           break
       }
     },
+    goToOperationalAnalysis (crowdId) {
+      this.$service.portraitParam({ crowdId }).then(res => {
+        const url = res.url
+        window.open(url)
+        // this.showOperationalAnalysis = true
+        // this.operationalAnalysisUrl = 'http://192.168.2.177/portraittest'
+        // this.operationalAnalysisUrl = url
+
+        // this.$nextTick(() => {
+        //   this.iframeWin = this.$refs.myIframe.contentWindow
+        //   // // 最开始做的是点击事件是没有问题的  后面需要自动传值就不行  也试了模拟点击还是不行
+        //   // // 原因是iframe还没加载完  所以使用onload
+        //   document.getElementById('myIframe').onload = function () {
+        //     this.fatherpost(url)
+        //   }
+        // var iframe = document.querySelector('#myIframe')
+        // this.populateIframe(iframe, [
+        //   ['Authorization', 'Bearer ' + this.getToken()],
+        //   ['Access-Control-Allow-Origin', '*']
+        // ], url)
+        // })
+        // this.operationalAnalysisUrl = 'http://mgr-hoder.skysrt.com/#/keyIndicatorTrends'
+        // this.operationalAnalysisUrl = 'http://192.168.2.177/analysis/userportrait?policyId=2861'
+      })
+    },
+    // fatherpost (url) { // iframe传值
+    //   this.iframeWin.postMessage({
+    //     params: {
+    //       // data: data// 传的数据
+    //     }
+    //   }, url)
+    // },
+    getToken () {
+      return 'eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2tleSI6ImEyNjU1OWUzLTM4NzMtNDlkOS04M2JhLTZmMzZhY2I5NTdhZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.pn8TCTTvXymw5YG9EzBpXaNSfMYZoEfCJH48bpKPriCzxFa8UtI6G7DqBoyn6bs7I3U4WZYzuoNvC6g_R7cZqA'
+    },
+    populateIframe (iframe, headers, url) {
+      var xhr = new XMLHttpRequest()
+      xhr.open('POST', 'http://192.168.2.177/prod-api/auth/login')
+      xhr.responseType = 'blob'
+      headers.forEach((header) => {
+        xhr.setRequestHeader(header[0], header[1])
+      })
+      xhr.onreadystatechange = () => {
+        if (xhr.readyState === xhr.DONE) {
+          if (xhr.status === 200) {
+            iframe.src = URL.createObjectURL(xhr.response)
+          }
+        }
+      }
+      xhr.send()
+      this.operationalAnalysisUrl = url
+    },
     // 显示投后效果弹窗
-    ShowAppointmentDialog (crowdId) {
+    showAppointmentDialog (crowdId) {
       this.estimateId = crowdId
       this.showAppointment = true
     },
@@ -2274,14 +2604,23 @@ export default {
       this.currentTag = row
     },
     handleUpDown () {
+      // 11111111111111111111111
       const row = this.currentTag
       // 区分动态人群、普通提示语
       const tipMessage = this.smart ? '操作成功' : (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据'
-      this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
-        .then(() => {
-          this.showUpDownDialog = false
-          this.loadData()
-        })
+      if (this.smart) {
+        this.$service.putwayCrowd({ policyId: row.policyId, crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
+          .then(() => {
+            this.showUpDownDialog = false
+            this.loadData()
+          })
+      } else {
+        this.$service.crowdUpDown({ crowdId: row.crowdId, putway: row.putway === 1 ? 0 : 1 }, tipMessage)
+          .then(() => {
+            this.showUpDownDialog = false
+            this.loadData()
+          })
+      }
     },
     copyCrowd (row) {
       this.showCopyDialog = true
@@ -2706,9 +3045,23 @@ export default {
     // 人群画像估算---结束
     // 显示划分详情
     showDivideResult (crowdId) {
+      this.DivideTableData = []
+      this.subdividePeopleList = []
       this.$service.getAbChilds(crowdId).then(data => {
         this.showDivideDetail = true
         this.DivideTableData = data
+      })
+      this.independentParams.crowdId = crowdId
+      // const params = {
+      //   crowdId: this.independentParams.crowdId,
+      //   pageSize: this.independentParams.pageSize,
+      //   pageNum: this.independentParams.pageNum
+      // }
+      this.$service.searchIndependentAnalysisByCrowdId(this.independentParams).then(data => {
+        this.showDivideDetail = true
+        this.subdividePeopleList = data.pageInfo.list || []
+        this.independentTotal = data.pageInfo.total || 0
+        this.independentLaunchStatusEnum = data.launchStatusEnum
       })
     },
     // 提交历史数据
@@ -3348,4 +3701,13 @@ fieldset>div
   width 50%
 .dynamic-crowd-name
   white-space nowrap
+.detailTitle
+  font-size 16px
+  line-height: 40px;
+  margin-right: 10px;
+  font-weight: 500
+  color: #000;
+.monitor-time
+  margin-bottom: 30px;
+
 </style>

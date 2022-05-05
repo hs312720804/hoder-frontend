@@ -153,7 +153,6 @@ import axios from 'axios'
 export default {
   name: 'TabPage',
   components: {
-    // tagList
   },
   props: {
     checkList: {

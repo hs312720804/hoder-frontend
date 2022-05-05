@@ -261,8 +261,8 @@
                                 </el-dropdown-item>
                                         <!-- v-if="((scope.row.isFxFullSql === 1) || (scope.row.isFxFullSql === 0 && (launchStatusEnum[scope.row.history.status]).code === 3 || (launchStatusEnum[scope.row.history.status]).code === 91))" -->
                                 <el-dropdown-item
-                                        :command="['monitor',scope.row]"
-                                        v-permission="'hoder:launch:crowd:ver:index'"
+                                  :command="['monitor',scope.row]"
+                                  v-permission="'hoder:launch:crowd:ver:index'"
                                 >数据监控
                                 </el-dropdown-item>
                                 <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">

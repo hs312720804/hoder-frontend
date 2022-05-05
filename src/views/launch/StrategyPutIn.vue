@@ -1,6 +1,6 @@
 <template>
     <div class="launchToBusiness">
-        <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="100px">
+        <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="110px">
             <el-form-item v-if="!tempPolicyAndCrowd.smart" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull" :disabled="pullSuccessPushFail">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
                 <el-checkbox v-model="crowdForm.launchMode.push">push模式（用于消息、微信）</el-checkbox>
@@ -68,7 +68,7 @@
                 <el-form-item label="备注" prop="remark">
                     <el-input size="small" v-model="crowdForm.remark"></el-input>
                 </el-form-item>
-                <el-form-item label="是否做abTest">
+                <el-form-item label="是否投放子人群">
                     <el-radio-group v-model="crowdForm.abTest">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>

@@ -6,7 +6,7 @@ export function getTagList (input) {
     tagCategoryId: tagId
   } = input
   return this.fetch({
-    url: 'api/label/detail',
+    url: '/api/label/detail',
     params: {
       tagId,
       attrName,
@@ -27,7 +27,7 @@ export function getTagList (input) {
 }
 
 export function upsertTag (input) {
-  const url = input.attrId ? 'api/labelAttr/update' : 'api/labelAttr/save'
+  const url = input.attrId ? '/api/labelAttr/update' : '/api/labelAttr/save'
   return this.fetch({
     method: 'post',
     url,
@@ -38,7 +38,7 @@ export function upsertTag (input) {
 export function deleteTag (input) {
   return this.fetch({
     method: 'post',
-    url: 'api/labelAttr/del',
+    url: '/api/labelAttr/del',
     data: input
   })
 }
@@ -46,7 +46,7 @@ export function deleteTag (input) {
 export function tagBatchsave (input) {
   return this.fetch({
     method: 'post',
-    url: 'api/labelAttr/batchSave',
+    url: '/api/labelAttr/batchSave',
     data: input
   })
 }
@@ -55,7 +55,7 @@ export function tagBatchsave (input) {
 export function getTagDictDatabaseList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/tagDict/index',
+    url: '/api/tagDict/index',
     params
   })
 }
@@ -126,7 +126,7 @@ export function getManualLaunchList (params) {
 export function getVideo (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getVideo',
+    url: '/api/auto/getVideo',
     params
   })
 }
@@ -134,7 +134,7 @@ export function getVideo (params) {
 export function getShortVideoAuthor (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getShortVideoAuthor',
+    url: '/api/auto/getShortVideoAuthor',
     params
   })
 }
@@ -143,7 +143,7 @@ export function getShortVideoAuthor (params) {
 export function getVideoEpisode (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getVideoEpisode',
+    url: '/api/auto/getVideoEpisode',
     params
   })
 }
@@ -152,7 +152,7 @@ export function getVideoEpisode (params) {
 export function getMusicByName (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getMusicByName',
+    url: '/api/auto/getMusicByName',
     params
   })
 }
@@ -161,7 +161,7 @@ export function getMusicByName (params) {
 export function getMusicByAuthor (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getMusicByAuthor',
+    url: '/api/auto/getMusicByAuthor',
     params
   })
 }
@@ -170,7 +170,7 @@ export function getMusicByAuthor (params) {
 export function getMenberIds (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/members/getIds',
+    url: '/api/auto/members/getIds',
     params
   })
 }
@@ -179,7 +179,7 @@ export function getMenberIds (params) {
 export function getTopic (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/auto/getTopic',
+    url: '/api/auto/getTopic',
     params
   })
 }

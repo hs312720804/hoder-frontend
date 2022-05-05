@@ -130,7 +130,7 @@ export function getEstimateType (params) {
 export function estimatePeople (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/crowdForcast',
+    url: '/api/crowd/crowdForcast',
     params
   })
 }
@@ -138,7 +138,7 @@ export function estimatePeople (params) {
 // export function singleCrowdEstimate(params) {
 //     return this.fetch({
 //         method: 'get',
-//         url: 'api/singleCrowdEstimate',
+//         url: '/api/singleCrowdEstimate',
 //         params
 //     })
 // }
@@ -146,7 +146,7 @@ export function estimatePeople (params) {
 export function batchCrowdEstimate (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/batchCrowdEstimate',
+    url: '/api/batchCrowdEstimate',
     params
   })
 }
@@ -154,7 +154,7 @@ export function batchCrowdEstimate (params) {
 export function estimateResult (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/crowdForcastLastOnceResult',
+    url: '/api/crowd/crowdForcastLastOnceResult',
     params
   })
 }
@@ -162,7 +162,7 @@ export function estimateResult (params) {
 // export function estimateTemp(data) {
 //     return this.fetch({
 //         method: 'post',
-//         url: 'api/syncCrowdEstimate',
+//         url: '/api/syncCrowdEstimate',
 //         data
 //     })
 // }
@@ -171,7 +171,7 @@ export function estimateTemp (object) {
   newFormData.append('crowdRule', JSON.stringify(object))
   return this.fetch({
     method: 'post',
-    url: 'api/syncCrowdEstimate',
+    url: '/api/syncCrowdEstimate',
     data: newFormData
   })
 }
@@ -179,7 +179,7 @@ export function estimateTemp (object) {
 // export function estimateNewResult(params) {
 //     return this.fetch({
 //         method: 'get',
-//         url: 'api/estimateResult',
+//         url: '/api/estimateResult',
 //         params
 //     })
 // }
@@ -187,7 +187,7 @@ export function estimateTemp (object) {
 export function seeDevFile (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/devTool/loadFile',
+    url: '/api/devTool/loadFile',
     params
   })
 }
@@ -199,7 +199,7 @@ export function seeDevFile (params) {
 export function seeDevFileList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/policy/luaMultiVersion',
+    url: '/api/policy/luaMultiVersion',
     params
   })
 }
@@ -208,7 +208,7 @@ export function seeDevFileList (params) {
 export function policyWithBiTotalPie (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/policyTotalWithBiPie',
+    url: '/api/crowdAndPolicyStatistics/policyTotalWithBiPie',
     params
   })
 }
@@ -216,7 +216,7 @@ export function policyWithBiTotalPie (params) {
 export function policyWithBiTotalLine (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/policyTotalWithBiLine',
+    url: '/api/crowdAndPolicyStatistics/policyTotalWithBiLine',
     params
   })
 }
@@ -224,15 +224,23 @@ export function policyWithBiTotalLine (params) {
 export function hitAndBiToTalPie (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/hitAndBiToTalPie',
+    url: '/api/crowdAndPolicyStatistics/hitAndBiToTalPie',
     params
   })
 }
+// 访问大数据画像分析链接
+export function portraitParam (params) {
+  return this.fetch({
+    method: 'get',
+    url: `/api/crowd/portraitParam/${params.crowdId}`
+  })
+}
+
 // 人群业务命中统计多折线图
 export function hitAndBiToTalLine (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/hitAndBiToTalLine',
+    url: '/api/crowdAndPolicyStatistics/hitAndBiToTalLine',
     params
   })
 }
@@ -240,7 +248,7 @@ export function hitAndBiToTalLine (params) {
 export function exposeCrowdTotalPie (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/exposeCrowdTotalPie',
+    url: '/api/crowdAndPolicyStatistics/exposeCrowdTotalPie',
     params
   })
 }
@@ -248,7 +256,7 @@ export function exposeCrowdTotalPie (params) {
 export function exposeCrowdTotalLine (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/exposeCrowdTotalLine',
+    url: '/api/crowdAndPolicyStatistics/exposeCrowdTotalLine',
     params
   })
 }
@@ -256,7 +264,7 @@ export function exposeCrowdTotalLine (params) {
 export function clickCrowdTotalPie (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/clickCrowdTotalPie',
+    url: '/api/crowdAndPolicyStatistics/clickCrowdTotalPie',
     params
   })
 }
@@ -264,7 +272,7 @@ export function clickCrowdTotalPie (params) {
 export function clickCrowdTotalLine (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/clickCrowdTotalLine',
+    url: '/api/crowdAndPolicyStatistics/clickCrowdTotalLine',
     params
   })
 }
@@ -272,7 +280,7 @@ export function clickCrowdTotalLine (params) {
 export function crowdLanuchData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/hopperDateMap',
+    url: '/api/crowdAndPolicyStatistics/hopperDateMap',
     params
   })
 }
@@ -280,7 +288,7 @@ export function crowdLanuchData (params) {
 export function exposeProvinceScale (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowdAndPolicyStatistics/exposeProvinceScale',
+    url: '/api/crowdAndPolicyStatistics/exposeProvinceScale',
     params
   })
 }
@@ -288,7 +296,7 @@ export function exposeProvinceScale (params) {
 export function policyUseInBi (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/policy/policyUseInBi',
+    url: '/api/policy/policyUseInBi',
     params
   })
 }
@@ -296,15 +304,24 @@ export function policyUseInBi (params) {
 export function crowdUpDown (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/updateCrowdPutway',
+    url: '/api/crowd/updateCrowdPutway',
     params
+  })
+}
+// 动态人群上下架
+export function putwayCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/putwayCrowd',
+    data,
+    isJSON: true
   })
 }
 // 人群复制
 export function crowdCopy (data) {
   return this.fetch({
     method: 'post',
-    url: 'api/crowd/copyPolicyCrowd',
+    url: '/api/crowd/copyPolicyCrowd',
     data
   })
 }
@@ -312,7 +329,7 @@ export function crowdCopy (data) {
 export function getAllPolicyList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/getPolicyList',
+    url: '/api/crowd/getPolicyList',
     params
   })
 }
@@ -320,28 +337,28 @@ export function getAllPolicyList (params) {
 export function getEstimatedBaseInfo (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapBasic/' + params
+    url: '/api/map/esCrdStsMapBasic/' + params
   })
 }
 // 人群估算画像省份分布
 export function getEstimatedProvinceAndCityData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapProvinceAndCityPct/' + params
+    url: '/api/map/esCrdStsMapProvinceAndCityPct/' + params
   })
 }
 // 人群估算画像TOP列表
 export function getEstimatedCityTopData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapCityTop/' + params
+    url: '/api/map/esCrdStsMapCityTop/' + params
   })
 }
 // 人群估算画像用户类别
 export function getEstimatedUserTypeData (data) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapUserCgy/' + data.id,
+    url: '/api/map/esCrdStsMapUserCgy/' + data.id,
     params: {
       'category': data.category
     }
@@ -351,14 +368,14 @@ export function getEstimatedUserTypeData (data) {
 export function getEstimatedUserBehaviorData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapLookBehavior/' + params
+    url: '/api/map/esCrdStsMapLookBehavior/' + params
   })
 }
 // 人群估算画像付费分布
 export function getEstimatedPayData (data) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapPayPct/' + data.id,
+    url: '/api/map/esCrdStsMapPayPct/' + data.id,
     params: {
       'category': data.category
     }
@@ -368,7 +385,7 @@ export function getEstimatedPayData (data) {
 export function getEstimatedTvEnumData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/enumData/estimateTVEnum',
+    url: '/api/enumData/estimateTVEnum',
     params
   })
 }
@@ -376,14 +393,14 @@ export function getEstimatedTvEnumData (params) {
 export function getEstimatedAcitivityBehaviorData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/map/esCrdStsMapActBehavior/' + params
+    url: '/api/map/esCrdStsMapActBehavior/' + params
   })
 }
 // 人群优先级单独修改
 export function updatePrioorityInCrowdList (data) {
   return this.fetch({
     method: 'PUT',
-    url: 'api/crowd/updatePriorityInCrowdList',
+    url: '/api/crowd/updatePriorityInCrowdList',
     data
   })
 }
@@ -391,7 +408,7 @@ export function updatePrioorityInCrowdList (data) {
 export function updatePriority (data) {
   return this.fetch({
     method: 'POST',
-    url: 'api/dynamic/updatePriority',
+    url: '/api/dynamic/updatePriority',
     data,
     isJSON: true
   })
@@ -400,7 +417,7 @@ export function updatePriority (data) {
 export function updateBypassPriorityInCrowdList (data) {
   return this.fetch({
     method: 'PUT',
-    url: 'api/crowd/updateBypassPriorityInCrowdList',
+    url: '/api/crowd/updateBypassPriorityInCrowdList',
     data
   })
 }
@@ -436,7 +453,7 @@ export function crowdABTestEditSave ({
 export function getCrowdStatus (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/crowdStatusTrack',
+    url: '/api/crowd/crowdStatusTrack',
     params
   })
 }
@@ -444,7 +461,7 @@ export function getCrowdStatus (params) {
 export function crowdRequestDetail (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/trackDetail',
+    url: '/api/crowd/trackDetail',
     params
   })
 }
@@ -452,7 +469,15 @@ export function crowdRequestDetail (params) {
 export function getAbChilds (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/showAbChilds/' + params
+    url: '/api/crowd/showAbChilds/' + params
+  })
+}
+// 自主分析查看分割小人群
+export function searchIndependentAnalysisByCrowdId (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tempCrowd/searchIndependentAnalysisByCrowdId',
+    params
   })
 }
 // 人群提交历史数据
@@ -845,7 +870,7 @@ export function getDynamicRule (params) {
   })
 }
 
-// 设置流转条件
+// 设置小人群流转条件
 export function setDynamicRule (data) {
   return this.fetch({
     method: 'post',
@@ -855,6 +880,23 @@ export function setDynamicRule (data) {
   })
 }
 
+// 设置大人群流转条件
+export function setBigCrowdRule (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic/setBigCrowdRule',
+    data,
+    isJSON: true
+  })
+}
+
+export function getCrowdRuleById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic/getCrowdRuleById',
+    params
+  })
+}
 // 编辑动态人群名称
 export function updateDynamicCrowdName (data) {
   return this.fetch({

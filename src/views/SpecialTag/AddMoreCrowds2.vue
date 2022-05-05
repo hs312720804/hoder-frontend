@@ -503,7 +503,6 @@ export default {
     }
   },
   created () {
-    // alert(111)
     // this.handleEdit()
     // debugger
     this.detail = this.sTagIndex.specialTagDetail.specialTag || ''

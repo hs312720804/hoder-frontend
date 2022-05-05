@@ -1,7 +1,7 @@
 export function getTagCategoryList (input) {
   const { pageSize, currentPage: pageNum, name: tagName } = input
   return this.fetch({
-    url: 'api/label/index',
+    url: '/api/label/index',
     params: {
       groupId: input.groupId,
       tagName,
@@ -25,7 +25,7 @@ export function getTagCategoryList (input) {
 }
 
 export function upsertTagCategory (input) {
-  const url = input.tagId ? 'api/label/update' : 'api/label/save'
+  const url = input.tagId ? '/api/label/update' : '/api/label/save'
   return this.fetch({
     method: 'post',
     url,
@@ -36,14 +36,14 @@ export function upsertTagCategory (input) {
 export function deleteTagCategory (input) {
   return this.fetch({
     method: 'post',
-    url: 'api/label/del',
+    url: '/api/label/del',
     data: input
   })
 }
 
 export function readTagCategory ({ id }) {
   return this.fetch({
-    url: 'api/label/detail',
+    url: '/api/label/detail',
     params: {
       tagId: id
     }
@@ -59,7 +59,7 @@ export function readTagCategory ({ id }) {
 
 export function getDatasource (params) {
   return this.fetch({
-    url: 'api/enumData/getDataSource',
+    url: '/api/enumData/getDataSource',
     method: 'get',
     params
   })

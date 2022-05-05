@@ -79,7 +79,7 @@
     <!-- talbe -->
     <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
       <el-table-column type="index" width="50"></el-table-column>
-      <el-table-column prop="policyId" label="ID" width="50"></el-table-column>
+      <el-table-column prop="policyId" label="策略ID" width="70"></el-table-column>
       <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
       <!--<el-table-column prop="dataSource" label="数据来源" width="90">-->
         <!--<template scope="scope">-->
@@ -201,6 +201,10 @@
                 <el-dropdown-item
                         :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
+                <el-dropdown-item
+                      v-if="scope.row.smart"
+                      :command="['viewEffect',scope.row]"
+                  >查看效果</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-dropdown @command="handleCommandStastic">-->
@@ -415,17 +419,23 @@
               @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
+    <el-dialog :visible.sync="showViewEffect" width="80%">
+      <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
+import viewEffectDialog from '../launch/viewEffectDialog'
 export default {
   components: {
-    LaunchToBusiness
+    LaunchToBusiness,
+    viewEffectDialog
   },
   data () {
     return {
+      showViewEffect: false,
       // 表格当前页数据
       tableData: [],
       // lableDataSourceEnum: {
@@ -944,6 +954,9 @@ export default {
         this.time1 = [this.startDate, this.endDate]
         this.drawPie(this.currentPid, this.startDate, this.endDate)
         this.drawLines(this.currentPid, this.startDate, this.endDate)
+      } else if (type === 'viewEffect') {
+        this.showViewEffect = true
+        this.currentPid = params.policyId
       }
     },
     // 通用多线性参数设置

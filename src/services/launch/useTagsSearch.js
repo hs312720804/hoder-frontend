@@ -1,21 +1,21 @@
 export function getTempTagList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/dataSearcher/tempTagList',
+    url: '/api/dataSearcher/tempTagList',
     params
   })
 }
 export function getTempTagAttrList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/dataSearcher/tempTagAttrList',
+    url: '/api/dataSearcher/tempTagAttrList',
     params
   })
 }
 export function getUserTagList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/dataSearcher/queryMacTags',
+    url: '/api/dataSearcher/queryMacTags',
     params
   })
 }
@@ -23,7 +23,7 @@ export function getUserTagList (params) {
 export function getBigDataUserTagList (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/crowd/mac/tagInfo',
+    url: '/api/crowd/mac/tagInfo',
     params
   })
 }
@@ -32,7 +32,7 @@ export function getBigDataUserTagList (params) {
 export function getHitSearchData (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/dataSearcher/validatePolicyHit',
+    url: '/api/dataSearcher/validatePolicyHit',
     params
   })
 }
@@ -40,7 +40,7 @@ export function getHitSearchData (params) {
 export function getAutoFilledParams (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/dataSearcher/queryMacVisitedLog',
+    url: '/api/dataSearcher/queryMacVisitedLog',
     params
   })
 }

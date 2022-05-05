@@ -434,7 +434,7 @@ export default {
             },
             {
               tagName: 'text',
-              textContent: '出口',
+              textContent: '出口11111',
               selector: 'icon',
               attrs: {
                 fill: '#ffffff',

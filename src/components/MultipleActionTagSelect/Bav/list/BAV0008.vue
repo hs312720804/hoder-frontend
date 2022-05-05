@@ -721,7 +721,6 @@ export default {
           obj.childCheckedVal = typeof (obj.childCheckedVal) === 'string' ? defaultchild.map(item => item.value).join(',') : defaultchild.map(item => item.value)
         }
         if (isValueClear) { // 清空当前对象的child里面的值 (一二级联动时的交互)
-          alert(123)
           obj.childCheckedVal = []
           if (obj.child.length > 0) {
             obj.child[0].value = ''
@@ -794,8 +793,6 @@ export default {
     },
     // 起播行为递归清空子集的值
     clearChildVal (obj) {
-      debugger
-      alert(123)
       if (!obj.child || !obj.child.length) {
         return
       }

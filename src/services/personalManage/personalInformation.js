@@ -5,7 +5,7 @@ import axios from 'axios'
 export function get_user_json (params) {
   return this.fetch({
     method: 'get',
-    url: 'api/manage/user/personalInformation',
+    url: '/api/manage/user/personalInformation',
     params
   }).then((data) => {
     return data
@@ -15,7 +15,7 @@ export function get_user_json (params) {
 export function updateUserInformation (params) {
   return this.fetch({
     method: 'post',
-    url: 'api/manage/user/updateUsernameAndEmail',
+    url: '/api/manage/user/updateUsernameAndEmail',
     params
   }).then((data) => {
     return data
