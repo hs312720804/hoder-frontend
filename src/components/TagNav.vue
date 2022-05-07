@@ -114,7 +114,7 @@ export default {
   props: {
     defaultPath: {
       type: String,
-      default: '/'
+      default: '/statisticsHomePage'
     },
     initTags: {
       type: Array,
