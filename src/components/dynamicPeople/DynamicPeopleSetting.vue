@@ -37,9 +37,10 @@
                 placeholder="优先级"
                 clearable
                 style="width: 100px;"
-                @focus="inputFocus($event)"
+                @focus="inputFocus($event, key)"
                 @blur="numberInt($event)">
               </el-input>
+              <div v-if="focusIndex === key" class="tip-box">数字越大，优先级越高，顺序流转和循环流转时优先级高的人群优先命中</div>
               <span class="split-line">—</span>
               <el-input
                 v-model="field.crowdName"
@@ -144,7 +145,8 @@ export default {
         ab: 0,
         // controlGroupName: '',
         flowNum: 100
-      }
+      },
+      focusIndex: -1
     }
   },
   created () {
@@ -179,9 +181,8 @@ export default {
 
     //   this.famount = this.famount.replace('.', '')
     // },
-    inputFocus (e) {
-      console.log(e.target)
-      console.log('focus')
+    inputFocus (e, index) {
+      this.focusIndex = index
     },
     numberInt (e) {
       // console.log(e.target.value)
@@ -346,6 +347,7 @@ export default {
 }
 .filed-row{
   margin-bottom 10px
+  position relative
 }
 .split-line{
   margin 0 10px
@@ -365,5 +367,15 @@ export default {
 }
 .flow-num{
   width 50px
+}
+.tip-box{
+  position: absolute;
+  z-index: 99;
+  width: 999px;
+  color: #999;
+  font-size: 12px;
+  top: 36px;
+  height: 15px;
+  line-height: 15px;
 }
 </style>
