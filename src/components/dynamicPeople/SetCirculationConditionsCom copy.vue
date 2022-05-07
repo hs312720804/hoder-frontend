@@ -1,40 +1,33 @@
 <template>
-  <div>
-    <!-- <div>{{ rulesJson }}</div> -->
-    <div v-if="tags && tags.length > 0" class="label-container">
-      <div v-if="tags && tags.length > 0" >
-        <div
-          v-show="rulesJson.rules.length > 1"
-          class="label-or-space"
-          :key="i + 'or'"
-        >
-          <el-button
-            type="success"
-            round
-            :key="'button2' + '_' + i"
-            @click="handleRulesConditionChange(rulesJson)"
-          >
-            {{ rulesJson.condition === 'AND' ? '且' : '或' }}
-          </el-button>
-        </div>
-        <template v-for="(item, index) in rulesJson.rules">
-          <div class="label-ground" :key="index">
+  <div v-if="tags && tags.length > 0" class="form-class">
+      <!-- <div style="color: red">
+        第4步
+        isDynamicPeople: {{isDynamicPeople}} <br/>
+        :policyId:: {{policyId}}<br/>
+        :policyName:: {{ policyName }}<br/>
+        :crowdId:: {{ crowdId }}<br/>
+        {{rulesJson}}
+      </div> -->
+      <!-- <div>{{ crowdRule }}</div> -->
+      <!-- <div>{{ rulesJson }}</div> -->
+      <div class="div-class">
+
+        <!-- <template v-for="(item, index) in rulesJson.rules"> -->
+          <div class="label-ground">
             <div class="tag-condition--parent">
-              <!-- 1111111111111111
-              {{ item.rules }} -->
-              <div class="tag-condition" v-show="item.rules.length > 1">
+              <div class="tag-condition">
                 <el-button
                   type="warning"
-                  @click="handleRulesConditionChange(item)"
+                  @click="handleRulesConditionChange(rulesJson)"
                   round
                   size="small"
-                  :key="'button' + index + '_' + i"
+                  :key="'button' + '_' + i"
                 >
-                  {{ item.condition === 'AND' ? '且' : '或' }}
+                  {{ rulesJson.condition === 'AND' ? '且' : '或' }}
                 </el-button>
               </div>
               <div
-                v-for="(childItem, n) in item.rules"
+                v-for="(childItem, n) in rulesJson.rules"
                 :key="'tagId' + n"
                 :class="{ 'label-item': true, paddingTop: n > 0 }"
               >
@@ -48,6 +41,7 @@
                     name="oxve"
                     v-model="childItem.operator"
                     class="input-inline"
+                    @change="handleOperatorChange(childItem)"
                   >
                     <!-- number 类型 -->
                     <template>
@@ -75,7 +69,7 @@
 
                 </span>
 
-                <span class="i" @click="handleRemoveRule(item, childItem)" >
+                <span class="i" @click="handleRemoveRule(n)" >
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
               </div>
@@ -85,7 +79,7 @@
                     class="oc-item"
                     v-for="tagItem in tags"
                     :key="tagItem.tagItem"
-                    @click.native="handleAddChildRule(item, tagItem)"
+                    @click.native="handleAddChildRule(tagItem)"
                     :type="dataSourceColorEnum[tagItem.dataSource]"
                     >{{ tagItem.tagName }}</el-tag
                   >
@@ -93,33 +87,43 @@
               </div>
             </div>
           </div>
-        </template>
-        <div class="label-or">
-          <div
-            class="optional-condition"
-            v-if="tags.length"
-            :style="{
-              'padding-top': rulesJson.rules.length > 0 ? '10px' : 0,
-            }"
-          >
-            <el-tag
-              class="oc-item"
-              v-for="item in tags"
-              :key="item.tagName"
-              @click.native="handleAddRule(item)"
-              :type="dataSourceColorEnum[item.dataSource]"
-              >{{ item.tagName }}
-            </el-tag>
-          </div>
-        </div>
+        <!-- </template> -->
       </div>
-    </div>
-    <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
-    <div>
-      <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
-      <el-button type="primary" @click="$emit('handleSave', {rulesJson, policyId, applyAll})">保存</el-button>
-    </div>
+      <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
+
+      <!-- <div class="label-or">
+        <div
+          class="optional-condition"
+          v-if="tags.length"
+          :style="{
+            'padding-top': rulesJson.rules.length > 0 ? '10px' : 0,
+          }"
+        >
+          <el-tag
+            class="oc-item"
+            v-for="item in tags"
+            :key="item.tagName"
+            @click.native="handleAddRule(item)"
+            :type="dataSourceColorEnum[item.dataSource]"
+            >{{ item.tagName }}
+          </el-tag>
+        </div>
+      </div> -->
+      <!-- <div v-if="dynamicMode === 'editSingle'">
+        <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
+        <el-button type="primary" @click="handleSave(3)">保存</el-button>
+      </div>
+      <div v-else>
+        <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
+        <el-button type="warning" @click="handleSave(0)">跳过保存</el-button>
+        <el-button type="primary" @click="handleSave(3)">下一步</el-button>
+      </div> -->
+      <div >
+        <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
+        <el-button type="primary" @click="$emit('handleSave', {rulesJson, policyId, applyAll})">保存</el-button>
+      </div>
   </div>
+
 </template>
 
 <script>
@@ -192,18 +196,8 @@ export default {
         })
       }
     },
-    handleAddRule (tag) {
+    handleAddChildRule (tag) {
       this.rulesJson.rules.push({
-        condition: 'AND',
-        rules: [{
-          ...tag,
-          operator: '>',
-          value: ''
-        }]
-      })
-    },
-    handleAddChildRule (rule, tag) {
-      rule.rules.push({
         ...tag,
         operator: '>',
         value: ''
@@ -212,39 +206,98 @@ export default {
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
-    // handleRemoveRule (index) {
-    //   const rulesJson = this.rulesJson
-    //   rulesJson.rules.splice(index, 1)
-    // },
-    handleRemoveRule (rule, childRule) {
+    handleRemoveRule (index) {
       const rulesJson = this.rulesJson
-      rule.rules.splice(rule.rules.indexOf(childRule), 1)
+      rulesJson.rules.splice(index, 1)
+      // const tagIds = []
+      // rulesJson.rules.forEach(e => {
+      //   e.rules.forEach(n => {
+      //     if (!tagIds.includes(n.tagId)) {
+      //       tagIds.push(n.tagId)
+      //     }
+      //   })
+      // })
+      // if (this.crowd && this.crowd.rulesJson) this.crowd.tagIds = tagIds
 
-      if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function (item) {
-          return item !== rule
-        })
-      }
+      // if (rule.rules.length === 0) {
+      //   rulesJson.rules = rulesJson.rules.filter(function (item) {
+      //     return item !== rule
+      //   })
+      // }
     },
     handleBackPrevStep () {
       this.$emit('crowdPrevStep', 3, this.recordId)
     },
-
+    // handleSave (mode) {
+    //   alert(123)
+    //   const parmas = {
+    //     policyId: this.policyId,
+    //     crowdId: this.crowdId,
+    //     dynamicJson: JSON.stringify(this.rulesJson),
+    //     applyAll: this.applyAll ? 1 : 0
+    //   }
+    //   this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+    //     // if (mode === 3) { // 下一步
+    //     //   this.$emit('crowdNextStep', 3, this.recordId)
+    //     // } else {
+    //     //   if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //     //     this.$emit('goBackCrowdListPage')
+    //     //   } else { // 创建策略流程
+    //     //     this.$router.push({ path: 'launch/launchTabList' })
+    //     //   }
+    //     // }
+    //     if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //       if (mode === 3) {
+    //         this.$emit('crowdNextStep', 3)
+    //       } else {
+    //         this.$emit('goBackCrowdListPage')
+    //       }
+    //     } else if (this.dynamicMode === 'editSingle') { // 大人群列表 - 单个编辑
+    //       this.$emit('goBackCrowdListPage')
+    //     } else { // 策略流程
+    //       if (mode === 3) {
+    //         this.$emit('crowdNextStep', 3)
+    //       } else {
+    //         this.$emit('handleDirectStrategyList')
+    //         // this.$router.push({ path: 'launch/launchTabList' })
+    //       }
+    //     }
+    //   })
+    // },
+    // 编辑人群时保存
+    // save (mode) {
+    //   const parmas = {
+    //     policyId: this.policyId,
+    //     crowdId: this.crowdId,
+    //     dynamicJson: JSON.stringify(this.rulesJson)
+    //   }
+    //   this.$service.setDynamicRule(parmas).then(res => {
+    //     this.$message.success('操作成功')
+    //     if (mode === 3) { // 下一步
+    //       this.$emit('crowdNextStep', 3, this.recordId)
+    //     } else {
+    //       if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //         this.$emit('goBackCrowdListPage')
+    //       } else { // 创建策略流程
+    //         this.$router.push({ path: 'launch/launchTabList' })
+    //       }
+    //     }
+    //   })
+    // },
     resetFormData () {
       this.$emit('resetFormData')
     },
     handleDirectStrategyListBrother () {
       this.$emit('handleDirectStrategyList')
     }
-
   }
 }
 </script>
 
 <style scoped  lang="stylus">
-.label-container{
-  margin: 0 0 20px;
-  padding: 0 0 0 40px;
+.form-class{
+  width: 80%;
+  margin: 0 auto 20px;
 }
 .div-class{
   padding: 20px;
@@ -293,7 +346,6 @@ export default {
 .label-item {
   display: flex;
   position: relative;
-  line-height: 40px
 }
 
 .paddingTop {
@@ -424,7 +476,7 @@ i {
   top: 10px;
   right: 0;
   bottom: 5px;
-  left: 0;
+  left: -40px;
   width: 3px;
   height: auto;
   margin: auto 0;

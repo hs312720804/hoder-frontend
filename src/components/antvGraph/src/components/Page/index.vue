@@ -228,10 +228,3 @@ export default {
   }
 }
 </script>
-
-<style lang="stylus" scoped>
-
-.form-class{
-  width 100%
-}
-</style>
