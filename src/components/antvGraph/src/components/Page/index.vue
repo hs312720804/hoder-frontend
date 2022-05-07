@@ -6,13 +6,13 @@
       :visible.sync="dialogVisible"
       width="800px"
     >
-      <DynamicPeopleConditionsCom
+      <SetCirculationConditionsCom
         :crowdId="crowdId"
         :allCrowdRule="dynamicRuleProvide.allCrowd"
         @handleCancel="dialogVisible = false"
         @handleSave="handleSave"
         >
-      </DynamicPeopleConditionsCom>
+      </SetCirculationConditionsCom>
 
     </el-dialog>
   </div>
@@ -24,12 +24,12 @@ import G6 from '@antv/g6/build/g6'
 import { initBehavors } from '@antvGraph/behavior'
 import eventBus from '@antvGraph/utils/eventBus'
 import Grid from '@antv/g6/build/grid'
-// import DynamicPeopleConditionsCom from '@/DynamicPeopleConditions copy'
-import DynamicPeopleConditionsCom from '@/components/dynamicPeople/DynamicPeopleConditionsCom'
+// import SetCirculationConditionsCom from '@/DynamicPeopleConditions copy'
+import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom'
 
 export default {
   components: {
-    DynamicPeopleConditionsCom
+    SetCirculationConditionsCom
   },
   inject: ['dynamicRuleProvide'],
   data () {

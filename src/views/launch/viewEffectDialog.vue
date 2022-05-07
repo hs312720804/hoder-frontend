@@ -63,7 +63,7 @@ export default {
         'sequence_h_2': { type: 'bar', title: '产品包曝光量汇总对比', span: 9 }
       }, {
         'sequence_l_3': { type: 'line', title: '付费设备量对比', span: 15 },
-        'sequence_h3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
+        'sequence_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
       }, {
         'sequence_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
         'sequence_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }

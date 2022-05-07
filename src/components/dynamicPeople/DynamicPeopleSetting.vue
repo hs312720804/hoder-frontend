@@ -28,11 +28,16 @@
           >
             <!-- v-dragging="{ list: menu.list, item: field, group: 'fieldsTab' }" -->
             <!-- < > -->
+              <!-- <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="top-start">
+                <el-button>上左</el-button>
+              </el-tooltip> -->
+
               <el-input
                 v-model="field.priority"
                 placeholder="优先级"
                 clearable
                 style="width: 100px;"
+                @focus="inputFocus($event)"
                 @blur="numberInt($event)">
               </el-input>
               <span class="split-line">—</span>
@@ -138,7 +143,7 @@ export default {
         controlGroup: [],
         ab: 0,
         // controlGroupName: '',
-        flowNum: 50
+        flowNum: 100
       }
     }
   },
@@ -148,14 +153,14 @@ export default {
         this.menu = res && res.dynamicCrowd ? res : {
           dynamicCrowd: [{
             crowdName: '',
-            priority: 1
+            priority: ''
           }, {
             crowdName: '',
-            priority: 2
+            priority: ''
           }],
           controlGroup: [],
           ab: 0,
-          flowNum: 50
+          flowNum: 100
         }
         this.menu.dynamicCrowd = this.menu.dynamicCrowd || []
         this.menu.controlGroup = this.menu.controlGroup || []
@@ -163,6 +168,10 @@ export default {
     }
   },
   methods: {
+    // v-if 和 v-show 的区别
+    // v-if 是通过动态控制元素显示或者消失。
+    // v-show 是通过display: show 或者 none
+
     // number (e) {
     //   console.log('e===', e)
 
@@ -170,8 +179,12 @@ export default {
 
     //   this.famount = this.famount.replace('.', '')
     // },
+    inputFocus (e) {
+      console.log(e.target)
+      console.log('focus')
+    },
     numberInt (e) {
-      console.log(e.target.value)
+      // console.log(e.target.value)
       let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
       console.log(flag)
 
@@ -186,10 +199,10 @@ export default {
     },
     // 添加字段
     handleAddFiled () {
-      const len = this.menu.dynamicCrowd.length + 1 || 1
+      // const len = this.menu.dynamicCrowd.length + 1 || 1
       this.menu.dynamicCrowd.push({
         crowdName: '',
-        priority: len
+        priority: ''
       })
     },
     handleAddControl () {

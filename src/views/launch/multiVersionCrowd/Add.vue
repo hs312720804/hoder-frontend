@@ -252,7 +252,7 @@
                             :disabled="disabledCrowdType"
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                        <el-radio :label="1">临时人群/本地人群</el-radio><!-- true -->
+                        <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>

@@ -146,7 +146,7 @@ export default {
             // this.crowdForm.match = data.historyResMatch || []
             this.list = data.pageInfo.list || '暂无数据'
             if (this.list === undefined || this.list.length === 0) {
-              this.noneText = '无命中记录'
+              this.noneText = '该人群不存在'
             }
           })
         }

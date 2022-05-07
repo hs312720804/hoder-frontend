@@ -257,13 +257,13 @@
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item :command="['step1',scope.row]" v-permission="'hoder:crowd:edit'">
-                    圈出基础人群
+                    编辑基础人群
                   </el-dropdown-item>
                   <el-dropdown-item :command="['step2',scope.row]" v-permission="'hoder:crowd:edit'">
-                    动态人群配置
+                    编辑动态人群
                   </el-dropdown-item>
                   <el-dropdown-item :command="['step3',scope.row]" v-permission="'hoder:crowd:edit'">
-                    设置流转条件
+                    编辑流转条件
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -1057,7 +1057,8 @@
             <el-table-column label="操作" width="250">
                 <template slot-scope="scope">
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
+                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -1099,9 +1100,10 @@
                 {{cc_format_number(scope.row.history.totalUser)}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="90">
+            <el-table-column label="操作" width="160">
               <template slot-scope="scope">
                 <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
               </template>
             </el-table-column>
             <el-table-column label="状态" width="150">

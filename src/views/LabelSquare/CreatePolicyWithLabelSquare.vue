@@ -31,7 +31,7 @@
               </label-zone>
           </el-tab-pane>
 
-          <el-tab-pane label="行为标签" name="behaviorLabel">
+          <!-- <el-tab-pane label="行为标签" name="behaviorLabel">
               <temp-label-index
                   :show-selection="showSelection"
                   :currentSelectTag="tagList"
@@ -41,7 +41,7 @@
                   :crowdType=3
               >
               </temp-label-index>
-          </el-tab-pane>
+          </el-tab-pane> -->
 
           <el-tab-pane label="组合标签" name="specialTag">
               <special-tag

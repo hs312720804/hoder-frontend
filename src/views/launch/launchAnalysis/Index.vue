@@ -60,7 +60,7 @@ export default {
           value: 'active'
         },
         {
-          groupName: '观影行为',
+          groupName: '起播数据',
           value: 'tv'
         },
         {
