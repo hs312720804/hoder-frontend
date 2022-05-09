@@ -425,6 +425,7 @@
       :expand-row-keys="initExpandCrowd"
       @expand-change="handleExpandChange"
     >
+      <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
@@ -524,21 +525,21 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column type="index" width="30"></el-table-column>
-      <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+      <el-table-column type="index" width="40" align="center"></el-table-column>
+      <el-table-column prop="crowdId" label="人群ID" width="90" sortable :sort-method="handleSortChange"></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
                <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
-      <el-table-column prop="priority" label="优先级" width="110">
+      <el-table-column prop="priority" label="优先级" width="110" sortable :sort-method="handleSortChange">
           <template slot="header">
             优先级
             <el-popover
-                    placement="top"
-                    trigger="hover"
-                    class="popover-button"
+              placement="top"
+              trigger="hover"
+              class="popover-button"
             >
               <div>数字越大，优先级越高</div>
             <span class="priority-tip" slot="reference">!</span>
@@ -555,10 +556,7 @@
               </priorityEdit>
           </template>
       </el-table-column>
-      <el-table-column v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90">
-        <template slot-scope="scope">
-          {{ scope.row.remark }}
-        </template>
+      <el-table-column prop="remark" v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90" key="remark" >
       </el-table-column>
       <!--<el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">-->
         <!--<template slot-scope="scope">-->
@@ -577,7 +575,7 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="status" label="状态" width="70px">
+      <el-table-column prop="status" label="状态" width="70" sortable :sort-method="handleSortChange">
         <template slot-scope="scope">
           {{ launchStatusEnum[scope.row.status] }}
           <!-- <span v-if="scope.row.putway === 1">生效中</span>
@@ -1679,6 +1677,10 @@ export default {
     // }
   },
   methods: {
+    handleSortChange (a, b, i, type) {
+      // console.log('a====', a)
+      // console.log('b====', b)
+    },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
       this.monitorOutForm.pageSize = val

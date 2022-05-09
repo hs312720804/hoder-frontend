@@ -254,11 +254,11 @@
 
     <!--新增界面-->
     <el-dialog
-            :title="title"
-            :visible.sync="addFormVisible"
-            v-if="addFormVisible"
-            v-model="addFormVisible"
-            :close-on-click-modal="false"
+      :title="title"
+      :visible.sync="addFormVisible"
+      v-if="addFormVisible"
+      v-model="addFormVisible"
+      :close-on-click-modal="false"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
@@ -283,8 +283,17 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签</div>
-        <el-form-item label="策略维度" prop="conditionTagIds" style="margin-top: 30px">
+        <div class="tags-tips">
+          <!-- 1111注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+          <span class="checkbox--red">红色为大数据标签</span>,
+          <span class="checkbox--green">绿色为自定义/本地标签</span>,
+          <span class="checkbox--blue">蓝色为账号标签</span>,
+          <span class="checkbox--yellow">黄色为实时标签</span>,
+          <span class="checkbox--orange">紫色为动态指标</span>,
+          <span class="checkbox--orange2">棕色为组合标签</span>,
+          <span class="checkbox--cyan">青色为行为标签</span>
+        </div>
+        <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
                     <!--v-for="item in conditionTagIdsData"-->
@@ -1189,10 +1198,8 @@ export default {
   width 70%
   margin-right 20px
 .tags-tips
-  position absolute
-  right 20px
-  color red
   font-size 12px
+  text-align: center;
 .page-num
   width 30px
   height 30px

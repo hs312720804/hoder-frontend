@@ -15,6 +15,7 @@
             占比：
             <el-input
               v-model="menu.flowNum"
+              style="width: 70px"
               placeholder=""
               class="flow-num"
               @blur="numberInt($event)">
@@ -345,8 +346,8 @@ export default {
   background-color: rgba(249,249,249,0.85);
   margin-bottom 20px
 }
-.filed-row{
-  margin-bottom 10px
+.filed-row {
+  margin-bottom 15px
   position relative
 }
 .split-line{
