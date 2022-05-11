@@ -1680,23 +1680,23 @@ export default {
   methods: {
     handleSortChange (obj) {
       console.log('column====', obj)
-      // console.log('prop====', prop)
-      // console.log('order====', order)
-      console.log('========================')
+      console.log('<========================>')
 
       // orderField：  人群ID：crowd_id, 优先级：priority  状态： putway
 
       // order：    ASC,DESC 切换
 
       let sortParams = {
-        orderField: obj.prop,
-        // order: obj.order === 'descending' ? 'DESC' : 'ASC',
-        pageNum: 1 // 页码重置为 1
+        orderField: obj.prop
       }
+      this.currentPage = 1 // 页码重置为 1
+
       if (obj.order === 'descending') {
         sortParams.order = 'DESC'
       } else if (obj.order === 'ascending') {
         sortParams.order = 'ASC'
+      } else {
+        sortParams.order = null
       }
       this.loadData(sortParams)
     },
