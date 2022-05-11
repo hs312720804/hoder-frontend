@@ -178,7 +178,7 @@ export default {
     position fixed
     top 118px
     right 35px
-    width 20%
+    width 350px
     z-index 999
     .icon-fixed
         position absolute

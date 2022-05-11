@@ -262,7 +262,7 @@ export default {
         // margin 10px 0
     .search-input
         display flex
-        width 30%
+        width 350px
         position: absolute;
         z-index: 9999;
         right: 0;

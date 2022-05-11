@@ -44,3 +44,69 @@ export function getEffectData (data) {
     responseType: 'arraybuffer'
   })
 }
+
+// 流量CTR
+export function getCtr (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getCtr',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 产品包成交
+export function getPackage (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getPackage',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 活跃成交
+export function getActive (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getActive',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 观影行为
+export function getTv (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getTv',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 观影top
+export function getTvTop (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getTvTop',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}
+
+// 观影分类
+export function getCategory (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/effect/getCategory',
+    data,
+    isJSON: true,
+    responseType: 'arraybuffer'
+  })
+}

@@ -424,6 +424,7 @@
       row-key="crowdId"
       :expand-row-keys="initExpandCrowd"
       @expand-change="handleExpandChange"
+      @sort-change="handleSortChange"
     >
       <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
       <el-table-column v-if="showByPassColumn" label="分流占比">
@@ -526,14 +527,14 @@
         </template>
       </el-table-column>
       <el-table-column type="index" width="40" align="center"></el-table-column>
-      <el-table-column prop="crowdId" label="人群ID" width="90" sortable :sort-method="handleSortChange"></el-table-column>
+      <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
                <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
                <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
-      <el-table-column prop="priority" label="优先级" width="110" sortable :sort-method="handleSortChange">
+      <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
           <template slot="header">
             优先级
             <el-popover
@@ -575,7 +576,7 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="status" label="状态" width="70" sortable :sort-method="handleSortChange">
+      <el-table-column prop="status" label="状态" width="70" sortable="custom">
         <template slot-scope="scope">
           {{ launchStatusEnum[scope.row.status] }}
           <!-- <span v-if="scope.row.putway === 1">生效中</span>
@@ -1677,9 +1678,27 @@ export default {
     // }
   },
   methods: {
-    handleSortChange (a, b, i, type) {
-      // console.log('a====', a)
-      // console.log('b====', b)
+    handleSortChange (obj) {
+      console.log('column====', obj)
+      // console.log('prop====', prop)
+      // console.log('order====', order)
+      console.log('========================')
+
+      // orderField：  人群ID：crowd_id, 优先级：priority  状态： putway
+
+      // order：    ASC,DESC 切换
+
+      let sortParams = {
+        orderField: obj.prop,
+        // order: obj.order === 'descending' ? 'DESC' : 'ASC',
+        pageNum: 1 // 页码重置为 1
+      }
+      if (obj.order === 'descending') {
+        sortParams.order = 'DESC'
+      } else if (obj.order === 'ascending') {
+        sortParams.order = 'ASC'
+      }
+      this.loadData(sortParams)
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
@@ -1966,7 +1985,7 @@ export default {
       })
     },
     // 从服务器读取数据
-    loadData () {
+    loadData (sortParams) {
       this.$service.getListDimension({ type: 2 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -1977,6 +1996,13 @@ export default {
       this.criteria['pageNum'] = this.currentPage
       this.criteria['pageSize'] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
+
+      if (sortParams) {
+        this.criteria = {
+          ...this.criteria,
+          ...sortParams
+        }
+      }
       this.$service.viewCrowd(this.criteria).then(data => {
         if (data.bypass === 1) {
           // 分流的人群
