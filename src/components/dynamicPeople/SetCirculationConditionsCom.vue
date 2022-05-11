@@ -6,10 +6,11 @@
         <div
           v-show="rulesJson.rules.length > 1"
           class="label-or-space"
+          :style="{'border-color': rulesJson.condition === 'AND' ?  '#67c23a' : '#e6a23c'}"
           :key="i + 'or'"
         >
           <el-button
-            type="success"
+            :type="rulesJson.condition === 'AND' ? 'success' : 'warning'"
             round
             :key="'button2' + '_' + i"
             @click="handleRulesConditionChange(rulesJson)"
@@ -22,9 +23,9 @@
             <div class="tag-condition--parent">
               <!-- 1111111111111111
               {{ item.rules }} -->
-              <div class="tag-condition" v-show="item.rules.length > 1">
+              <div class="tag-condition" v-show="item.rules.length > 1" :style="{'border-color': item.condition === 'AND'?  '#67c23a' : '#e6a23c'}">
                 <el-button
-                  type="warning"
+                   :type="item.condition === 'AND' ? 'success' : 'warning'"
                   @click="handleRulesConditionChange(item)"
                   round
                   size="small"
@@ -115,7 +116,7 @@
       </div>
     </div>
     <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
-    <div>
+    <div style="float: right">
       <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
       <el-button type="primary" @click="$emit('handleSave', {rulesJson, policyId, applyAll})">保存</el-button>
     </div>
