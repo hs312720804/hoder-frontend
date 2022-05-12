@@ -580,21 +580,22 @@ export default {
                 prop: 'pageIdName',
                 width: 150,
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'pageIdName')
               },
               {
                 label: '板块（专辑）id&名称',
                 prop: 'blockIdName',
                 width: 180,
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'blockIdName')
               },
               {
                 label: '推荐位id&名称',
                 prop: 'slotIdName',
                 width: 150,
                 sortable: true,
-                sortMethod: this.sortDevName
+                // sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'slotIdName')
               },
               {
                 label: '曝光次数',
@@ -605,8 +606,6 @@ export default {
                 label: '曝光人数',
                 prop: 'exposureNum',
                 sortable: true
-                // sortMethod: this.sortDevName,
-                // defaultSort: " {prop: 'exposureNum'} "
               },
               {
                 label: '点击次数',
@@ -670,19 +669,19 @@ export default {
                 label: '权益名',
                 prop: 'equityPackageName',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'equityPackageName')
               },
               {
                 label: '产品包类型',
                 prop: 'packageType',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'packageType')
               },
               {
                 label: '成单路径',
                 prop: 'dealSource',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'dealSource')
               },
               {
                 label: '产品包ID',
@@ -760,7 +759,7 @@ export default {
                 label: '成交路径',
                 prop: 'dealSource',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'dealSource')
               },
               {
                 label: '成单总设备量',
@@ -860,7 +859,7 @@ export default {
                 label: '业务一级分类',
                 prop: 'videoFirstLevelClassification',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'videoFirstLevelClassification')
               },
               {
                 label: '影片ID&影片名',
@@ -868,7 +867,7 @@ export default {
                   return row.videoId + row.videoName
                 },
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, ['videoId', 'videoName'])
               },
               {
                 label: '影片排名',
@@ -946,7 +945,7 @@ export default {
                 label: '分类',
                 prop: 'classificationName',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'classificationName')
                 // render: (h, { row }) => {
                 //   return `${row.classificationName} - ${row.classificationChannel}`
                 // }
@@ -955,7 +954,7 @@ export default {
                 label: '频道',
                 prop: 'classificationChannel',
                 sortable: true,
-                sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'classificationChannel')
               },
               {
                 label: '播放次数',
@@ -990,10 +989,23 @@ export default {
           break
       }
     },
-    sortDevName (str1, str2) {
-      console.log('str1===', str1)
-      console.log('str2===', str2)
-      console.log('=================================')
+    sortDevName (obj1, obj2, propName) {
+      let str1 = ''
+      let str2 = ''
+      if (Array.isArray(propName)) {
+        str1 = propName.map(prop => {
+          return obj1[prop]
+        }).join()
+        str2 = propName.map(prop => {
+          return obj2[prop]
+        }).join()
+      } else {
+        str1 = obj1[propName]
+        str2 = obj2[propName]
+      }
+      // console.log('str1===', str1)
+      // console.log('str2===', str2)
+      // console.log('=================================')
       let res = 0
       for (let i = 0; ;i++) {
         if (!str1[i] || !str2[i]) {
@@ -1027,16 +1039,19 @@ export default {
       return res
     },
     getChartType (char) {
-      // 数字可按照排序的要求进行自定义，我这边产品的要求是
+      // 数字可按照排序的要求进行自定义
       // 数字（0->9）->大写字母（A->Z）->小写字母（a->z）->中文拼音（a->z）
       if (/^[\u4e00-\u9fa5]$/.test(char)) {
-        return ['zh', 300]
+        return ['zh', 100]
       }
-      if (/^[a-zA-Z]$/.test(char)) {
+      if (/^[A-Z]$/.test(char)) {
+        return ['EN', 300]
+      }
+      if (/^[a-z]$/.test(char)) {
         return ['en', 200]
       }
       if (/^[0-9]$/.test(char)) {
-        return ['number', 100]
+        return ['number', 400]
       }
       return ['others', 999]
     },
