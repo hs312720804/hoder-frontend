@@ -45,7 +45,7 @@
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
         <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
         <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
-        <el-table-column prop="launchName" label="名称"></el-table-column>
+        <el-table-column prop="launchName" label="名称" width="230"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
         <el-table-column prop="count" label="使用次数">
           <!--<template slot-scope="scope">-->
@@ -216,7 +216,7 @@ export default {
   },
   data () {
     return {
-      myself: 0,
+      myself: 1,
       tableData: [],
       filter: {},
       launchName: undefined,
