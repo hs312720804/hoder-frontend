@@ -152,7 +152,7 @@ export default {
           clockwise: false
 
         })
-      } else if (value === 1) { // 树形
+      } else if (value === 1) { // 线形
         this.graph.updateLayout({
           type: 'grid',
           begin: [ 20, 20 ],

@@ -346,7 +346,6 @@ export default {
 
 <style scoped  lang="stylus">
 .form-class{
-  // width: 80%;
   margin: 0 auto 20px;
 }
 .div-class{

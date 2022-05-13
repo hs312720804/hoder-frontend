@@ -43,6 +43,7 @@ import notice from '@/views/setting/messageNotice/index'
 import oneTouchDrop from '@/views/OneTouchDrop/Index'
 import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
+import crowdCirculationTrack from '@/views/crowdStrategy/crowdCirculationTrack'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
 import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
@@ -333,6 +334,16 @@ const children = [
       tagId: 'anomalyEcharts'
     }
   },
+  {
+    name: 'crowdCirculationTrack',
+    path: 'launchHelper/crowdCirculationTrack',
+    component: crowdCirculationTrack,
+    meta: {
+      title: '人群流转轨迹',
+      tagId: 'crowdCirculationTrack'
+    }
+  },
+
   {
     name: 'DeliveryMonitor',
     path: 'launchHelper/DeliveryMonitor',

@@ -190,6 +190,7 @@ export default {
         '/launchAdmin': 'launchTabList',
         '/launchAnalysis': 'launchAnalysis',
         '/anomaly/index': 'anomalyEcharts',
+        '/crowdCirculationTrack': 'crowdCirculationTrack',
         '/myPolicy/index': 'myPolicy',
         '/groupImageInsight/index': 'groupImageInsight',
         '/userTagsSearch/index': 'userTagsSearch',
