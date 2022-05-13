@@ -3262,9 +3262,11 @@ export default {
             value: '',
             field: '',
             operator: '=',
-            type: 'string'
+            type: 'string',
+            multipleSelect: false
           }
-        ]
+        ],
+        multipleSelect: false
       },
       dataSourceColorEnum: {
         1: 'success',
@@ -3275,7 +3277,7 @@ export default {
         7: 'warningOrange2',
         8: 'warningCyan'
       },
-      moDefaultChild: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }],
+      moDefaultChild: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
       // BAV0006DefaultChild: [{
       //   name: '',
       //   value: '',
@@ -3889,9 +3891,11 @@ export default {
         this.childItem.tagCode === 'BAV0002' ||
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
-        this.childItem.tagCode === 'BAV0011') {
+        this.childItem.tagCode === 'BAV0011'
+      ) {
         this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
       }
+
       // 每次切换重置数据
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
@@ -3906,7 +3910,8 @@ export default {
           field: 'mac',
           type: 'count',
           operator: '=',
-          value: ''
+          value: '',
+          multipleSelect: false
         }
 
         const businessType = this.childItem.bav.value
@@ -3976,7 +3981,7 @@ export default {
      * @param {Number} level 第几级（为获取下拉框list）
      */
     getValListByVals (params) {
-      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level, reverseSelectAttr, parentId, extra = {} } = params
+      const { vals, behaviorValue, attrList, hasChild = false, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, level = 1, reverseSelectAttr, parentId, extra = {} } = params
       console.log('params==>', params)
       let list = []
 
@@ -3995,8 +4000,10 @@ export default {
               field: 'app_version',
               operator: '=',
               type: 'string',
-              child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
-            }]
+              child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+              multipleSelect: false
+            }],
+            multipleSelect: false
           }]
         } else {
           list = [{
@@ -4005,7 +4012,8 @@ export default {
             field: '',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+            multipleSelect: false
           }]
         }
       }
@@ -4021,7 +4029,8 @@ export default {
             value: '',
             field: 'mac',
             operator: '=',
-            type: 'count'
+            type: 'count',
+            multipleSelect: false
           }
         ]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
@@ -4064,8 +4073,9 @@ export default {
                     field: 'app_version',
                     operator: '=',
                     type: 'string',
-                    child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
-                  }]
+                    child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
+                  }],
+                  multipleSelect: false
                 }]
                 break
               case 3:
@@ -4075,7 +4085,8 @@ export default {
                   field: 'app_version',
                   operator: '=',
                   type: 'string',
-                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+                  multipleSelect: false
                 }]
                 break
             }
@@ -4088,11 +4099,12 @@ export default {
                   field: '',
                   operator: '=',
                   type: 'string',
-                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+                  multipleSelect: false
                 }]
                 break
               case 3:
-                defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
                 break
             }
           }
@@ -4113,8 +4125,9 @@ export default {
                   field: '',
                   operator: '=',
                   type: 'string',
-                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
-                }]
+                  child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
+                }],
+                multipleSelect: false
               }]
               break
             case 3:
@@ -4124,14 +4137,15 @@ export default {
                 field: '',
                 operator: '=',
                 type: 'string',
-                child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+                child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+                multipleSelect: false
               }]
               break
           }
         }
 
         if (this.childItem.tagCode === 'BAV0003' && level === 5) { // 【购买行为】
-          defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+          defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
         }
 
         if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
@@ -4141,10 +4155,17 @@ export default {
             field: 'block_pid',
             operator: '=',
             type: 'string',
-            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count' }]
+            child: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
+            multipleSelect: false
           }]
 
           obj.childCheckedVal = '0' // 序号默认值为 0
+        }
+
+        if (this.childItem.tagCode === 'BAV0009' && level === 2) { // 【应用状态】 选择了第 2 级的时候添加属性: "multipleSelect":"true"
+          obj.multipleSelect = true
+        } else if (this.childItem.tagCode === 'BAV0010' && level === 1) { // 【用户活跃】 选择了第 1 级的时候添加属性: "multipleSelect":"true"
+          obj.multipleSelect = true
         }
 
         /* ------------------------------------------------------------ */
@@ -4226,16 +4247,18 @@ export default {
             operator: '=',
             type: 'string',
             child: [],
-            childCheckedVal: []
+            childCheckedVal: [],
+            multipleSelect: false
           }],
           videoType: '',
           source: '',
-          childCheckedVal: ['']
+          childCheckedVal: [''],
+          multipleSelect: false
         }]
       }
       vals.forEach(val => {
         const lastNumberObj = [
-          { name: '', value: '', field: 'mac', operator: '=', type: 'count' }
+          { name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }
         ]
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         let obj = []
@@ -4340,11 +4363,14 @@ export default {
                       value: '',
                       field: '',
                       operator: '=',
-                      type: 'string'
+                      type: 'string',
+                      multipleSelect: false
                     }
-                  ]
+                  ],
+                  multipleSelect: false
                 }
-              ]
+              ],
+              multipleSelect: false
             }]
           }
         }
