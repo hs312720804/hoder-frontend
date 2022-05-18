@@ -220,7 +220,7 @@ export default {
     .search-input
         position relative
         display flex
-        width 30%
+        width 350px
     .icon-fixed
         position absolute
         top 8px

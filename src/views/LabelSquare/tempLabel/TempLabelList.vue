@@ -529,9 +529,9 @@ export default {
         justify-content space-between
         margin 10px 0
     .search-input
-        position relative
-        display flex
-        width 350px
+      position relative
+      display flex
+      width 350px
     .icon-fixed
         position absolute
         top 8px

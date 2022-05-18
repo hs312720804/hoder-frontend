@@ -182,10 +182,10 @@ export default {
     width 350px
     z-index 999
     .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
+      position absolute
+      top 8px
+      right 10px
+      transform rotate(-90deg)
 .label-content >>> .el-tabs__header
     position fixed
     width 100%

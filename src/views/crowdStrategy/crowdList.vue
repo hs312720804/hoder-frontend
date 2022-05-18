@@ -122,7 +122,7 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
@@ -154,7 +154,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" >
+        <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
@@ -288,14 +288,14 @@
         row-key="crowdId"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90"  ></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="110">
+        <el-table-column prop="priority" label="优先级" width="110" >
             <template slot="header">
               优先级
               <el-popover
@@ -320,7 +320,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" >
+        <el-table-column prop="status" label="状态">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
@@ -3077,21 +3077,21 @@ export default {
     showDivideResult (crowdId) {
       this.DivideTableData = []
       this.subdividePeopleList = []
+
+      // 查询AB人群
       this.$service.getAbChilds(crowdId).then(data => {
         this.showDivideDetail = true
         this.DivideTableData = data
       })
+
+      // 查询再分割人群
       this.independentParams.crowdId = crowdId
-      // const params = {
-      //   crowdId: this.independentParams.crowdId,
-      //   pageSize: this.independentParams.pageSize,
-      //   pageNum: this.independentParams.pageNum
-      // }
+
       this.$service.searchIndependentAnalysisByCrowdId(this.independentParams).then(data => {
         this.showDivideDetail = true
-        this.subdividePeopleList = data.pageInfo.list || []
-        this.independentTotal = data.pageInfo.total || 0
-        this.independentLaunchStatusEnum = data.launchStatusEnum
+        this.subdividePeopleList = data ? data.pageInfo.list : []
+        this.independentTotal = data ? data.pageInfo.total : 0
+        this.independentLaunchStatusEnum = data ? data.launchStatusEnum : {}
       })
     },
     // 提交历史数据

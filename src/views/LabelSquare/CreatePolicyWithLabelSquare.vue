@@ -576,7 +576,7 @@ export default {
     position relative
     // top 0
     // right 30px
-    width 30%
+    width 350px
     z-index 999
     margin 10px 0
     .icon-fixed
