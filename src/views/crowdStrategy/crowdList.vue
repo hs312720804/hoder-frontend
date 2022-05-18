@@ -1777,11 +1777,24 @@ export default {
         },
         disabledDate: (time) => {
           // const day1 = range * 24 * 3600 * 1000 // 2年
-          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          // let minTime = Date.now() - day1
+
+          if (this.DivideTableData.length > 0) { // 是否为再分割人群列表弹窗
+            // AB 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+            // 如果是AB子人群，则预约的起止时间不超过当前配置的实验有效期，超过的日期则为灰色不可点
+            let abStartTime = new Date(this.DivideTableData[0].abStartTime).getTime()
+            let abEndTime = new Date(this.DivideTableData[0].abEndTime).getTime()
+
+            // 选择了一个时间的时候
+            if (_minTime && _maxTime) {
+              return time.getTime() < _minTime || time.getTime() > _maxTime || time.getTime() < abStartTime || time.getTime() > abEndTime
+            }
+
+            // 没有选择时间, 或者选择了两个时间的时候
+            return time.getTime() < abStartTime || time.getTime() > abEndTime
+          }
 
           // onPick后触发
-          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          // 选择了一个时间的时候
           if (_minTime && _maxTime) {
             return time.getTime() < _minTime || time.getTime() > _maxTime
           }
@@ -3075,8 +3088,10 @@ export default {
     // 人群画像估算---结束
     // 显示划分详情
     showDivideResult (crowdId) {
-      this.DivideTableData = []
-      this.subdividePeopleList = []
+      // 重置
+      this.DivideTableData = [] // AB人群列表
+      this.subdividePeopleList = [] // 再分割人群列表
+      this.appointmentForm.value = [] // 预约投后分析时间 value
 
       // 查询AB人群
       this.$service.getAbChilds(crowdId).then(data => {
