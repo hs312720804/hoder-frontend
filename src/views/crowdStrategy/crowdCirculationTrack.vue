@@ -46,6 +46,9 @@ export default {
         policyId: '',
         mac: '',
         sourceSign: '',
+        // policyId: 124,
+        // mac: 'E56D2070F97D',
+        // sourceSign: 1,
         beginTime: '',
         endTime: ''
       },
@@ -72,7 +75,7 @@ export default {
       dialogVisible: false,
       crowdId: undefined, // 小人群ID
       allCrowdRule: [],
-      len: 118 // 模拟数据个数
+      len: 10 // 模拟数据个数
     }
   },
   components: {
@@ -141,7 +144,6 @@ export default {
           sortBy: 'cluster'
         },
         defaultNode: {
-
           shape: 'circle-node',
           size: 70,
           style: {
@@ -157,14 +159,14 @@ export default {
             selected: {
               lineWidth: 5
             }
+          },
+          labelCfg: {
+            position: 'top',
+            offset: 10,
+            style: {
+            // ... 文本样式的配置
+            }
           }
-          // labelCfg: {
-          //   position: 'bottom',
-          //   offset: 10,
-          //   style: {
-          //   // ... 文本样式的配置
-          //   }
-          // }
 
         },
         defaultEdge: {
@@ -215,22 +217,24 @@ export default {
       const nodes = []
       const edges = []
 
+      // -- 真实数据 --
       let len = data.length
       data.map(item => {
         nodes.push({
           id: item.crowdId,
-          label: `人群${item.crowdId}`,
+          label: item.crowdName,
           cluster: len--,
           date: item.hitDate
         })
       })
+      // --真实数据 end--
 
       // -- 模拟数据 --
       // let num = this.len
       // for (let i = 1; i < this.len; i++) {
       //   nodes.push({
       //     id: i,
-      //     label: `人群${i}`,
+      //     label: '【双旦测试】爱奇艺所有用户',
       //     cluster: num--,
       //     date: '2022-05-16 16:35:30'
       //   })
