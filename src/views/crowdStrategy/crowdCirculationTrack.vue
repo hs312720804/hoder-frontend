@@ -19,7 +19,8 @@
           start-placeholder="开始日期"
           range-separator="至"
           end-placeholder="结束日期"
-          clearable>
+          clearable
+          :picker-options="pickerOptions">
         </el-date-picker>
       </el-form-item>
       <el-form-item>
@@ -59,13 +60,12 @@ export default {
         mac: { required: true, message: '请输入mac', trigger: 'blur' },
         sourceSign: { required: true, message: '请输入sourceSign', trigger: 'blur' }
       },
-      pickerOptions: {
+      pickerOptions: { // 策略投放后到今天的日期都可以选
         disabledDate: (time) => {
-          const day1 = 30 * 24 * 3600 * 1000
-          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          // const day1 = 30 * 24 * 3600 * 1000
           let maxTime = Date.now()
-          let minTime = Date.now() - day1
-          return time.getTime() > maxTime || time.getTime() < minTime
+          // let minTime = Date.now() - day1
+          return time.getTime() > maxTime
         }
       },
       list: [],
