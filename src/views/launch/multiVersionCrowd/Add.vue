@@ -769,6 +769,7 @@ export default {
         if (v.split('_')[0] != policyId) { return v }
       })
     },
+    // 获取选择的策略下的人群
     getCrowd () {
       let policyId = null
       if (this.crowdForm.abTest) {
@@ -1011,7 +1012,7 @@ export default {
       this.$service.getEstimateType().then((data) => {
         this.estimateItems = data
       })
-      if (model === 1) {
+      if (model === 1) { // 新增自定义人群
         this.$service.addMultiVersionCrowd(this.model).then(data => {
           this.launchPlatform = data.biLists
           this.effectTimeList = data.efTime.map(item => {
@@ -1021,7 +1022,7 @@ export default {
         this.$service.searchTags().then(data => {
           this.tagsList = data
         })
-      } else {
+      } else { // 新增
         if (this.showAllParent) {
           this.$service.addMyMultiVersionCrowd(this.model).then(data => {
             this.launchPlatform = data.biLists
@@ -1042,7 +1043,6 @@ export default {
               // this.behaviorCrowdList = data.tempCrowds.filter(item => {
               //     return item.isFxFullSql === 3
               // })
-
             }
           })
         }
@@ -1061,6 +1061,7 @@ export default {
       }
       return result
     },
+    // 人群圈定 视频源枚举
     handleGetVideoList () {
       this.$service.getVideoSourceList().then(data => {
         this.videoSourceList = data
@@ -1079,6 +1080,7 @@ export default {
         this.crowdForm.setCalculate = false
       }
     },
+    // 临时标签/本地标签 下拉列表
     getTempCrowdList (query = '') {
       this.tempListFilter.launchName = query
       if (query !== '') { // 重置
@@ -1097,6 +1099,7 @@ export default {
         this.loading = false
       })
     },
+    // 行为人群下拉列表
     getBehaviorCrowdList (query = '') {
       this.behaviorCrowdListFilter.launchName = query
       if (query !== '') { // 重置
@@ -1254,10 +1257,13 @@ export default {
   created () {
     this.tempCrowdList = []
     this.tempListpages = 0
-    this.getTempCrowdList() // 临时人群列表
+
+    this.getAddList(this.model) // 普通人群策略列表
+    this.getTempCrowdList() // 临时人群/本地人群列表
     this.getBehaviorCrowdList() // 行为人群列表
-    this.getAddList(this.model)
-    this.handleGetVideoList()
+    this.handleGetVideoList() // 人群圈定 视频源枚举
+
+    // 编辑
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
       this.title = '编辑'
       this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
@@ -1368,7 +1374,7 @@ export default {
         }
       })
     } else {
-      this.title = this.model == 1 ? '新增自定义人群' : '新增'
+      this.title = Number(this.model) === 1 ? '新增自定义人群' : '新增'
     }
   }
 }
