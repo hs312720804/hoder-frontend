@@ -1680,10 +1680,9 @@ export default {
   methods: {
     handleSortChange (obj) {
       console.log('column====', obj)
-      console.log('<========================>')
+      console.log('<========================>', this.initExpandCrowd)
 
       // orderField：  人群ID：crowd_id, 优先级：priority  状态： putway
-
       // order：    ASC,DESC 切换
 
       let sortParams = {
@@ -1698,7 +1697,7 @@ export default {
       } else {
         sortParams.order = null
       }
-      this.loadData(sortParams)
+      this.loadData(sortParams, 'sort')
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
@@ -1998,7 +1997,7 @@ export default {
       })
     },
     // 从服务器读取数据
-    loadData (sortParams) {
+    loadData (sortParams, loadType) {
       this.$service.getListDimension({ type: 2 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -2060,9 +2059,11 @@ export default {
         this.crowdValidEnum = data.crowdValidEnum
         // this.showByPassColumn = data.bypass === 1
         this.showByPassColumn = data.policy.smart
-        this.initExpandCrowd = []
-        if (this.tableData.length > 0) {
-          this.initExpandCrowd.push(this.tableData[0].crowdId)
+        if (loadType !== 'sort') {
+          this.initExpandCrowd = []
+          if (this.tableData.length > 0) {
+            this.initExpandCrowd.push(this.tableData[0].crowdId)
+          }
         }
         // 再插入一项
         this.tableMerge[0] = this.tableMerge[0] + 1
@@ -3354,6 +3355,11 @@ export default {
       this.showBypassStep = 2
     },
     handleExpandChange (row, expandedRows) {
+      // 获取当前展开行的 crowdId
+      this.initExpandCrowd = expandedRows.map(item => {
+        return item.crowdId
+      })
+
       if (this.showByPassColumn) {
         const currentCrowds = expandedRows.map(item => {
           return item.crowdId
