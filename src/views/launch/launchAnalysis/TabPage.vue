@@ -252,6 +252,7 @@
           <el-form-item>
             <el-button type="primary" @click="fetchData">查询</el-button>
             <el-button @click="resetForm('formData')">重置</el-button>
+            <el-button type="text" @click="handelGo()" style="margin-left: 30px">效果数据计算进展</el-button>
           </el-form-item>
         </el-form>
 
@@ -544,6 +545,11 @@ export default {
     this.fetchData()
   },
   methods: {
+    handelGo () {
+      // this.$router.push({ path: 'launch/launchTabList' })
+      this.$router.push({ name: 'launchStatus' })
+      // launchHelper/LaunchStatus
+    },
     setTableData (val) {
       switch (val) {
         case 'ctr':
