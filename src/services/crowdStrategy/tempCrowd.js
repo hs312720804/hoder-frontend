@@ -67,11 +67,28 @@ export function getCalculatedTempCrowdList (params) {
   })
 }
 
-// 新增、编辑投放获取临时人群列表; 获取行为人群列表
+// 新增、编辑投放获取临时人群列表; 获取行为人群 - 人群列表
 export function getTempLaunchList (data) {
   return this.fetch({
     method: 'post',
     url: '/api/multiVersionCrowd/getTempLaunchList',
     data
+  })
+}
+// 新增投放 - 获取行为人群 - 策略列表
+export function getBehaviorABPolicy (data) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/policy/getBehaviorABPolicy',
+    data
+  })
+}
+
+// 根据策略ID获取行为人群AB子人群接口
+export function getABChildByPolicyId (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/crowd/getABChildByPolicyId',
+    params
   })
 }

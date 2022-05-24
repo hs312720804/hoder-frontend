@@ -259,62 +259,66 @@
                         <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
-                <el-form-item v-if="crowdForm.crowdType === 0"
+
+                <!-- 普通人群 -->
+                <template v-if="crowdForm.crowdType === 0">
+                  <el-form-item
                     label="选择策略"
                     prop="policyIds"
                     class="multipleSelect form-width"
-                >
+                  >
                     <el-select
-                            filterable
-                            v-model="crowdForm.policyIds"
-                            :key="crowdForm.abTest"
-                            :multiple="!crowdForm.abTest"
-                            placeholder="请选择策略"
-                            @change="getCrowd"
-                            @remove-tag="removeTag"
-                            :disabled="status!==undefined && (status === 2 || status === 3)"
+                      filterable
+                      v-model="crowdForm.policyIds"
+                      :key="crowdForm.abTest"
+                      :multiple="!crowdForm.abTest"
+                      placeholder="请选择策略"
+                      @change="getCrowd"
+                      @remove-tag="removeTag"
+                      :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
-                        <el-option
-                                v-for="item in strategyPlatform"
-                                :key="item.policyId+''"
-                                :label="item.policyName"
-                                :value="item.policyId+''"
-                        >{{ item.policyName }}
-                        </el-option>
+                      <el-option
+                        v-for="item in strategyPlatform"
+                        :key="item.policyId+''"
+                        :label="item.policyName"
+                        :value="item.policyId+''"
+                      >{{ item.policyName }}
+                      </el-option>
                     </el-select>
-                </el-form-item>
-                <!-- 选择普通人群 -->
-                <el-form-item v-if="crowdForm.crowdType === 0"
-                    label="选择人群"
-                    prop="policyCrowdIds"
-                >
-                    <div v-if="!crowdForm.abTest">
-                        <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
-                                <el-checkbox
-                                        v-for="item in v.childs"
-                                        :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
-                                        :key="item.crowdId+''"
-                                        :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
-                                >{{item.crowdName}}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </div>
-                    <div v-else>
-                        <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
-                            <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
-                                <el-checkbox
-                                        v-for="item in v.childs"
-                                        :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
-                                        :key="item.crowdId+''"
-                                        :disabled="item.canLaunch === false"
-                                >{{item.crowdName}}
-                                </el-checkbox>
-                            </el-checkbox-group>
-                        </el-form-item>
-                    </div>
-                </el-form-item>
+                  </el-form-item>
+
+                  <el-form-item
+                      label="选择人群"
+                      prop="policyCrowdIds"
+                  >
+                      <div v-if="!crowdForm.abTest">
+                          <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
+                              <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                                  <el-checkbox
+                                          v-for="item in v.childs"
+                                          :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
+                                          :key="item.crowdId+''"
+                                          :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
+                                  >{{ item.crowdName }}
+                                  </el-checkbox>
+                              </el-checkbox-group>
+                          </el-form-item>
+                      </div>
+                      <div v-else>
+                          <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="index">
+                              <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                                  <el-checkbox
+                                          v-for="item in v.childs"
+                                          :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
+                                          :key="item.crowdId+''"
+                                          :disabled="item.canLaunch === false"
+                                  >{{item.crowdName}}
+                                  </el-checkbox>
+                              </el-checkbox-group>
+                          </el-form-item>
+                      </div>
+                  </el-form-item>
+                </template>
 
                 <!-- 选择临时人群 -->
                 <el-form-item v-if="crowdForm.crowdType === 1"
@@ -367,42 +371,91 @@
                     <!--</div>-->
                 </el-form-item>
 
-                <!-- 选择行为人群 -->
-                <el-form-item v-if="crowdForm.crowdType === 3"
+                <!-- 选择行为人群 & 投放子人群 -->
+                <template v-if="crowdForm.crowdType === 3 && crowdForm.abTest">
+                  <el-form-item
+                    label="选择策略"
+                    prop="policyIds"
+                    class="multipleSelect form-width"
+                  >
+                    <el-select
+                      filterable
+                      v-model="crowdForm.policyIds"
+                      :key="crowdForm.abTest"
+                      :multiple="!crowdForm.abTest"
+                      placeholder="请选择策略"
+                      @change="getABChildByPolicyId"
+                      @remove-tag="removeTag"
+                    >
+                      <el-option
+                        v-for="item in behaviorPolicyList"
+                        :key="item.policyId+''"
+                        :label="item.policyName"
+                        :value="item.policyId+''"
+                      >{{ item.policyName }}
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+
+                  <el-form-item
+                    label="选择人群"
+                    prop="policyCrowdIds"
+                  >
+
+                    <el-form-item v-for="(v,index) in crowdData" :label="v.Pid" :key="v.policyId+'_'+index">
+                        <!-- {{crowdData}} -->
+
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                            <el-checkbox
+                                v-for="item in v.childs"
+                                :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
+                                :key="item.crowdId+''"
+                                :disabled="item.canLaunch === false"
+                            >{{item.crowdName}}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                    </el-form-item>
+
+                  </el-form-item>
+                </template>
+
+                <!-- 选择行为人群 & 不投放子人群 -->
+                <template v-else-if="crowdForm.crowdType === 3">
+                  <el-form-item
                     label="选择人群"
                     prop="tempCrowdId"
-                >
-                    <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
-                    <!-- {{this.crowdForm.policyCrowdIds}} -->
-                    <el-select
-                        filterable
-                        remote
-                        clearable
-                        v-model="crowdForm.policyCrowdIds[0]"
-                        @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0], behaviorCrowdList)"
-                        v-loadmore="{'methord': handelLoadmore}"
-                        :remote-method="getBehaviorCrowdList"
-                        @clear="getBehaviorCrowdList"
-                    >
-                        <el-option
-                            v-for="item in behaviorCrowdList"
-                            :label="item.launchName"
-                            :value="item.policyIds+'_'+item.policyCrowdIds"
-                            :key="item.launchCrowdId+''"
-
-                        >
-                            {{ item.launchName }} -- {{ item.launchCrowdId }}
-                        </el-option>
-                        <!-- <el-option
-                            v-for="item in behaviorCrowdList"
-                            :label="item.launchName"
-                            :value="item.launchCrowdId"
-                            :key="item.launchCrowdId"
-                        >
-                            {{ item.launchName }}
-                        </el-option> -->
-                    </el-select>
-                </el-form-item>
+                  >
+                      <!-- @change="handelBehaviorCrowdSelectChange($event, crowdForm.tempCrowdId)" -->
+                      <!-- {{this.crowdForm.policyCrowdIds}} -->
+                      <el-select
+                          filterable
+                          remote
+                          clearable
+                          v-model="crowdForm.policyCrowdIds[0]"
+                          @change="handelBehaviorCrowdSelectChange($event, crowdForm.policyCrowdIds[0], behaviorCrowdList)"
+                          v-loadmore="{'methord': handelLoadmore}"
+                          :remote-method="getBehaviorCrowdList"
+                          @clear="getBehaviorCrowdList"
+                      >
+                          <el-option
+                              v-for="item in behaviorCrowdList"
+                              :label="item.launchName"
+                              :value="item.policyIds+'_'+item.policyCrowdIds"
+                              :key="item.launchCrowdId+''"
+                          >
+                              {{ item.launchName }} -- {{ item.launchCrowdId }}
+                          </el-option>
+                          <!-- <el-option
+                              v-for="item in behaviorCrowdList"
+                              :label="item.launchName"
+                              :value="item.launchCrowdId"
+                              :key="item.launchCrowdId"
+                          >
+                              {{ item.launchName }}
+                          </el-option> -->
+                      </el-select>
+                  </el-form-item>
+                </template>
                 <!--<el-form-item label="数据有效期" prop="expiryDay" class="form-width">-->
                     <!--<el-select-->
                             <!--v-model="crowdForm.expiryDay"-->
@@ -418,46 +471,46 @@
                     <!--</el-select>-->
                 <!--</el-form-item>-->
                 <el-form-item
-                        label="每天是否更新"
-                        prop="autoVersion"
-                        class="form-width"
-                        v-if="crowdForm.crowdType === 0"
+                  v-if="crowdForm.crowdType === 0"
+                  label="每天是否更新"
+                  prop="autoVersion"
+                  class="form-width"
                 >
-                    <el-select
-                            v-model="crowdForm.autoVersion"
-                            :disabled="status!==undefined && (status === 2 || status === 3)"
-                    >
-                        <el-option label="是" :value="1"></el-option>
-                        <el-option label="否" :value="0"></el-option>
-                    </el-select>
+                  <el-select
+                    v-model="crowdForm.autoVersion"
+                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                  >
+                    <el-option label="是" :value="1"></el-option>
+                    <el-option label="否" :value="0"></el-option>
+                  </el-select>
                 </el-form-item>
                 <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && crowdForm.crowdType === 0" class="form-width">
-                    <el-time-picker
-                            v-model="crowdForm.autoLaunchTime"
-                            value-format="HH:mm:ss"
-                            :disabled="status!==undefined && (status === 2 || status === 3)"
-                            :picker-options="{
-                                selectableRange: '9:00:00 - 23:59:59'
-                            }"
-                    ></el-time-picker>
+                  <el-time-picker
+                    v-model="crowdForm.autoLaunchTime"
+                    value-format="HH:mm:ss"
+                    :disabled="status!==undefined && (status === 2 || status === 3)"
+                    :picker-options="{
+                        selectableRange: '9:00:00 - 23:59:59'
+                    }"
+                  ></el-time-picker>
                 </el-form-item>
             </el-form>
             <div slot="footer" class="footer">
-                <el-button @click="cancelAdd">返回</el-button>
-                <el-button type="primary" @click="addSubmit">保存</el-button>
-                <!-- 需要投放提示 -->
-                <!-- <el-button
-                        v-if="!(status!==undefined && (status === 2 || status === 3))"
-                        type="primary"
-                        @click="handelLaunch"
-                >直接投放</el-button> -->
+              <el-button @click="cancelAdd">返回</el-button>
+              <el-button type="primary" @click="addSubmit">保存</el-button>
+              <!-- 需要投放提示 -->
+              <!-- <el-button
+                      v-if="!(status!==undefined && (status === 2 || status === 3))"
+                      type="primary"
+                      @click="handelLaunch"
+              >直接投放</el-button> -->
 
-                <!-- 不需要投放提示 -->
-                <el-button
-                        v-if="!(status!==undefined && (status === 2 || status === 3))"
-                        type="primary"
-                        @click="launchDirectly"
-                >直接投放</el-button>
+              <!-- 不需要投放提示 -->
+              <el-button
+                v-if="!(status!==undefined && (status === 2 || status === 3))"
+                type="primary"
+                @click="launchDirectly"
+              >直接投放</el-button>
 
             </div>
 
@@ -473,14 +526,15 @@
 
             <!-- 投放提示估算弹窗 -->
             <el-dialog :visible.sync="showEstimate">
-                <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
-                <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
-                    <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
-                </el-checkbox-group>
-                    <span slot="footer" class="dialog-footer">
-                    <el-button @click="showEstimate = false">取 消</el-button>
-                    <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
-                </span>
+              <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
+              <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
+                  <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+              </el-checkbox-group>
+                  <span slot="footer" class="dialog-footer">
+                  <el-button @click="showEstimate = false">取 消</el-button>
+                  <el-button type="primary" @click="handleEstimate(estimateValue)">投 放</el-button>
+              </span>
+              <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
             </el-dialog>
         </div>
     </div>
@@ -773,7 +827,7 @@ export default {
         if (v.split('_')[0] != policyId) { return v }
       })
     },
-    // 获取选择的策略下的人群
+    // 普通人群 - 获取选择的策略下的人群
     getCrowd () {
       let policyId = null
       if (this.crowdForm.abTest) {
@@ -783,6 +837,37 @@ export default {
       }
       this.$service
         .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+        .then(data => {
+          if (this.crowdForm.abTest) {
+            // 重置
+            this.crowdForm.policyCrowdIds = [] // 选择人群
+            this.crowdForm.crowdId = '' // 大人群ID
+
+            let newDataForm = []
+            const pid = Object.keys(data[0].childs)
+            console.log('pid===>', pid)
+            pid.forEach((item) => {
+              newDataForm.push({ Pid: item, childs: data[0].childs[item] })
+            })
+            console.log('newDataForm====', newDataForm)
+            this.crowdData = newDataForm
+          } else {
+            this.crowdData = data
+          }
+        })
+        .catch(() => {})
+    },
+
+    // 行为人群 - 获取选择的策略下的人群
+    getABChildByPolicyId () {
+      let policyId = null
+      if (this.crowdForm.abTest) {
+        policyId = this.crowdForm.policyIds
+      } else {
+        policyId = this.crowdForm.policyIds.join(',')
+      }
+      this.$service
+        .getABChildByPolicyId({ policyId })
         .then(data => {
           if (this.crowdForm.abTest) {
             // 重置
@@ -804,42 +889,55 @@ export default {
     // 新增
     addSubmit () {
       this.islaunchDirectly = false
-      if (this.model == 1 && this.isTempCrowd) {
+      if (Number(this.model) === 1 && this.isTempCrowd) {
         this.saveDefineCrowd()
       } else {
         this.saveNormalCrowd()
       }
     },
+    // 根据接口需要，重构参数结构
+    reParamsData () {
+      let crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
+      crowdForm.biIds = crowdForm.biIds.join(',')
+      if (crowdForm.crowdType === 1) { // 临时人群
+        crowdForm.abTest = false
+        crowdForm.policyIds = undefined
+        crowdForm.policyCrowdIds = undefined
+      } else if (crowdForm.crowdType === 3) { // 行为人群
+        crowdForm.tempCrowdId = undefined
+        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
+
+        // 投放子人群
+        if (crowdForm.abTest) {
+          crowdForm.crowdType = 9
+          crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
+        }
+
+        crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
+          return v.split('_')[1]
+        }).join(',')
+      } else { // 普通人群
+        crowdForm.tempCrowdId = undefined
+        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
+
+        crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
+          return v.split('_')[1]
+        }).join(',')
+      }
+
+      return crowdForm
+
+      // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
+      // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
+      //     return v.split("_")[1]
+      // }).join(",")
+    },
     saveNormalCrowd () {
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
-          let crowdForm = JSON.stringify(this.crowdForm)
-          crowdForm = JSON.parse(crowdForm)
-          crowdForm.biIds = crowdForm.biIds.join(',')
-          // 选择的是临时人群
-          if (crowdForm.crowdType === 1) {
-            crowdForm.abTest = false
-            crowdForm.policyIds = undefined
-            crowdForm.policyCrowdIds = undefined
-          } else if (crowdForm.crowdType === 3) {
-            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
-            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
-              return v.split('_')[1]
-            }).join(',')
-          } else {
-            crowdForm.tempCrowdId = 0
-            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
-            if (crowdForm.abTest) {
-              crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
-            }
-            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
-              return v.split('_')[1]
-            }).join(',')
-          }
-          // crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(",")
-          // crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v)=>{
-          //     return v.split("_")[1]
-          // }).join(",")
+          // 获取接口所需参数
+          const crowdForm = this.reParamsData(this.crowdForm)
+
           if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then((data) => {
               this.callback()
@@ -1123,6 +1221,14 @@ export default {
         this.loading = false
       })
     },
+
+    // 行为人群 - 策略列表
+    getBehaviorPolicyList () {
+      this.$service.getBehaviorABPolicy().then(data => {
+        this.behaviorPolicyList = data || []
+      })
+    },
+
     // 是否投放子人群
     handleAbTestChange (val) {
       // 重置
@@ -1130,8 +1236,8 @@ export default {
         this.crowdForm.policyIds = ''
         this.crowdData = []
       } else {
-        this.crowdData = []
         this.crowdForm.policyIds = []
+        this.crowdData = []
       }
 
       this.crowdForm.policyCrowdIds = []
@@ -1165,9 +1271,9 @@ export default {
     },
 
     // 确认投放
-    confirmLaunch () {
-      this.showEstimatePop()
-    },
+    // confirmLaunch () {
+    //   this.showEstimatePop()
+    // },
 
     // 直接投放，没有投放提示
     launchDirectly () {
@@ -1184,10 +1290,16 @@ export default {
 
     showEstimatePop () {
       this.showEstimate = true
+      console.log(' this.crowdForm.crowdType==', this.crowdForm.crowdType)
+      console.log(' this.crowdForm.crowdType==', this.crowdForm.crowdType === '3')
+      console.log(' this.crowdForm.crowdType==', this.crowdForm.crowdType === 3)
       // 当普通投放，勾选了 账号去重关联，投放默认置灰且全部勾选
       if (this.crowdForm.setCalculate) {
         this.accountDefine = true
         this.estimateValue = ['0', '1', '2', '3']
+      } else if (this.crowdForm.crowdType === 3) { // 行为人群push时，不支持选择数据类型，数据类型选择的其他选项置灰不可选，在类型下展示“Tips: 行为人群当前仅支持push设备类型”
+        this.accountDefine = true
+        this.estimateValue = ['0']
       } else {
         this.accountDefine = false
         this.estimateValue = ['0']
@@ -1203,29 +1315,9 @@ export default {
 
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
-          let crowdForm = JSON.stringify(this.crowdForm)
-          crowdForm = JSON.parse(crowdForm)
-          crowdForm.biIds = crowdForm.biIds.join(',')
-          // 选择的是临时人群
-          if (crowdForm.crowdType === 1) {
-            crowdForm.abTest = false
-            crowdForm.policyIds = undefined
-            crowdForm.policyCrowdIds = undefined
-          } else if (crowdForm.crowdType === 3) {
-            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
-            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
-              return v.split('_')[1]
-            }).join(',')
-          } else {
-            crowdForm.tempCrowdId = 0
-            crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
-            if (crowdForm.abTest) {
-              crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
-            }
-            crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
-              return v.split('_')[1]
-            }).join(',')
-          }
+          // 获取接口所需参数
+          const crowdForm = this.reParamsData(this.crowdForm)
+
           if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
               this.currentLaunchId = this.editLaunchCrowdId
@@ -1272,7 +1364,8 @@ export default {
 
     this.getAddList(this.model) // 普通人群策略列表
     this.getTempCrowdList() // 临时人群/本地人群列表
-    this.getBehaviorCrowdList() // 行为人群列表
+    this.getBehaviorPolicyList() // 行为人群 - 策略列表
+    this.getBehaviorCrowdList() // 行为人群 - 人群列表
     this.handleGetVideoList() // 人群圈定 视频源枚举
 
     // 编辑
@@ -1286,7 +1379,7 @@ export default {
         // row.crowdType不为null，则 row.crowdType == 1 是临时人群
         // row.crowdType为null，当row.tempCrowdId=0，就是普通人群
         // this.isTempCrowd = (row.crowdType && row.crowdType === 1) ? true : !row.tempCrowdId
-        if (this.model == 1 && !row.tempCrowdId) {
+        if (Number(this.model) === 1 && !row.tempCrowdId) {
           // const biIds = this.distinct(data.launchCrowdBiIds,[])
           const biIds = data.launchCrowdBiIds
           let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
@@ -1430,4 +1523,7 @@ export default {
     width 230px
   .form-width
     width 60%
+.tip
+  color: #999;
+  margin: 20px 0 0 0;
 </style>
