@@ -3,6 +3,9 @@
         <el-row>
             <el-col :span="24">
                 <div class="title">{{title}}</div>
+                <!-- policyIds - {{ this.crowdForm.policyIds }} // 选择策略
+                policyCrowdIds - {{ crowdForm.policyCrowdIds }} // 选择人群
+                crowdId - {{ this.crowdForm.crowdId }} // 大人群ID -->
             </el-col>
         </el-row>
         <!--新增编辑界面-->
@@ -724,11 +727,12 @@ export default {
         this.crowdDefineForm.videoSourceIds = []
       }
     },
-    'crowdForm.crowdType' (val, oldVal) { // 切换时置空
-      if (val === 3 && oldVal === 2) {
-        // 行为人群
-        this.crowdForm.policyCrowdIds = ['']
-      }
+    'crowdForm.crowdType' () { // 切换时置空
+      // 重置
+      this.crowdForm.policyIds = '' // 选择策略
+      this.crowdForm.policyCrowdIds = [] // 选择人群
+      this.crowdForm.crowdId = '' // 大人群ID
+      this.crowdData = [] // 选择人群列表
     }
   },
 
@@ -781,6 +785,10 @@ export default {
         .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
         .then(data => {
           if (this.crowdForm.abTest) {
+            // 重置
+            this.crowdForm.policyCrowdIds = [] // 选择人群
+            this.crowdForm.crowdId = '' // 大人群ID
+
             let newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
@@ -1115,7 +1123,9 @@ export default {
         this.loading = false
       })
     },
+    // 是否投放子人群
     handleAbTestChange (val) {
+      // 重置
       if (val) {
         this.crowdForm.policyIds = ''
         this.crowdData = []
@@ -1123,6 +1133,8 @@ export default {
         this.crowdData = []
         this.crowdForm.policyIds = []
       }
+
+      this.crowdForm.policyCrowdIds = []
     },
 
     // 投放提示
