@@ -120,16 +120,17 @@
         :row-class-name="tableRowClassName"
         :span-method="smartObjectSpanMethod"
         row-key="crowdId"
+        @sort-change="handleSortChange"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="90"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="110">
+        <el-table-column prop="priority" label="优先级" width="110" sortable="custom">
             <template slot="header">
               优先级
               <el-popover
@@ -154,7 +155,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="status" label="状态" sortable="custom">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
@@ -286,16 +287,17 @@
         stripe
         border
         row-key="crowdId"
+        @sort-change="handleSortChange"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="90"  ></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="110" >
+        <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
             <template slot="header">
               优先级
               <el-popover
@@ -320,7 +322,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态">
+        <el-table-column prop="status" label="状态" sortable="custom">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
