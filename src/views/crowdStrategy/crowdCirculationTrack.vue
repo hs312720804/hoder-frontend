@@ -73,7 +73,6 @@ export default {
       pageId: 'graph-container',
       graph: null,
       dialogVisible: false,
-      crowdId: undefined, // 小人群ID
       allCrowdRule: [],
       len: 10 // 模拟数据个数
     }
@@ -219,9 +218,10 @@ export default {
 
       // -- 真实数据 --
       let len = data.length
-      data.map(item => {
+      data.map((item, index) => {
         nodes.push({
-          id: item.crowdId,
+          id: index + 1,
+          crowdId: item.crowdId,
           label: item.crowdName,
           cluster: len--,
           date: item.hitDate
