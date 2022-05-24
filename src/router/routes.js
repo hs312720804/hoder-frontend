@@ -779,6 +779,7 @@ const routes = [
   {
     path: '/',
     component: Main,
+    redirect: '/statisticsHomePage',
     children
   },
   {
