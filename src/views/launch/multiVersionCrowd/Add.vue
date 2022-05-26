@@ -245,7 +245,7 @@
 
                 <!-- 普通人群 、 行为人群 可以选择是否投放子人群 -->
                 <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3">
-                    <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange">
+                    <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange" :disabled="status!==undefined && (status === 2 || status === 3)">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
                     </el-radio-group>
@@ -353,6 +353,7 @@
                         v-model="crowdForm.tempCrowdId"
                         v-loadmore="{'methord': handelLoadmore}"
                         :remote-method="getTempCrowdList"
+                        :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                         <el-option
                             v-for="item in tempCrowdList"
@@ -405,6 +406,7 @@
                       placeholder="请选择策略"
                       @change="getABChildByPolicyId"
                       @remove-tag="removeTag"
+                      :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                       <el-option
                         v-for="item in behaviorPolicyList"
@@ -457,6 +459,7 @@
                           v-loadmore="{'methord': handelLoadmore}"
                           :remote-method="getBehaviorCrowdList"
                           @clear="getBehaviorCrowdList"
+                          :disabled="status!==undefined && (status === 2 || status === 3)"
                       >
                           <el-option
                               v-for="item in behaviorCrowdList"
