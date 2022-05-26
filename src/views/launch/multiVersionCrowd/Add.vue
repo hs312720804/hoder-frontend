@@ -3,6 +3,7 @@
         <el-row>
             <el-col :span="24">
                 <div class="title">{{title}}</div>
+                <!-- <div>{{ crowdForm }}</div> -->
                 <!-- policyIds - {{ this.crowdForm.policyIds }} // 选择策略
                 policyCrowdIds - {{ crowdForm.policyCrowdIds }} // 选择人群
                 crowdId - {{ this.crowdForm.crowdId }} // 大人群ID -->
@@ -267,6 +268,7 @@
                     prop="policyIds"
                     class="multipleSelect form-width"
                   >
+                  <!-- {{crowdForm.policyIds}} -->
                     <el-select
                       filterable
                       v-model="crowdForm.policyIds"
@@ -291,15 +293,33 @@
                       label="选择人群"
                       prop="policyCrowdIds"
                   >
-                      <div v-if="!crowdForm.abTest">
+                      <!-- {{ crowdForm.policyCrowdIds }} -->
+                              <!-- :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)" -->
+
+                      <el-form-item v-for="(v,index) in crowdData" :label="crowdForm.abTest ? v.Pid: v.policyName" :key="v.policyId+'_'+index">
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                            <el-checkbox
+                              v-for="item in v.childs"
+                              :label="item.policyId+'_'+item.crowdId"
+                              :key="item.crowdId+''"
+                              :disabled="item.canLaunch === false"
+                            >
+                            {{ item.crowdName }}
+                            <!-- {{ item.crowdId }} -->
+                            </el-checkbox>
+                        </el-checkbox-group>
+                      </el-form-item>
+
+                      <!-- <div v-if="!crowdForm.abTest">
                           <el-form-item v-for="(v,index) in crowdData" :label="v.policyName" :key="v.policyId+'_'+index">
                               <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                   <el-checkbox
                                           v-for="item in v.childs"
-                                          :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
+                                          :label="item.policyId+'_'+item.crowdId"
                                           :key="item.crowdId+''"
                                           :disabled="item.canLaunch === false || (item.behaviorRulesJson && JSON.parse(item.behaviorRulesJson).rules && JSON.parse(item.behaviorRulesJson).rules.length > 0)"
-                                  >{{ item.crowdName }}
+                                  >
+                                  {{ item.crowdName}}
                                   </el-checkbox>
                               </el-checkbox-group>
                           </el-form-item>
@@ -309,14 +329,14 @@
                               <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                                   <el-checkbox
                                           v-for="item in v.childs"
-                                          :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
+                                          :label="item.policyId+'_'+item.crowdId"
                                           :key="item.crowdId+''"
                                           :disabled="item.canLaunch === false"
                                   >{{item.crowdName}}
                                   </el-checkbox>
                               </el-checkbox-group>
                           </el-form-item>
-                      </div>
+                      </div> -->
                   </el-form-item>
                 </template>
 
@@ -373,6 +393,7 @@
 
                 <!-- 选择行为人群 & 投放子人群 -->
                 <template v-if="crowdForm.crowdType === 3 && crowdForm.abTest">
+                <!-- crowdForm.policyIds 111=={{crowdForm.policyIds}} -->
                   <el-form-item
                     label="选择策略"
                     prop="policyIds"
@@ -381,8 +402,6 @@
                     <el-select
                       filterable
                       v-model="crowdForm.policyIds"
-                      :key="crowdForm.abTest"
-                      :multiple="!crowdForm.abTest"
                       placeholder="请选择策略"
                       @change="getABChildByPolicyId"
                       @remove-tag="removeTag"
@@ -408,10 +427,12 @@
                         <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
                             <el-checkbox
                                 v-for="item in v.childs"
-                                :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
+                                :label="item.policyId+'_'+item.crowdId+'_'+item.pid"
                                 :key="item.crowdId+''"
                                 :disabled="item.canLaunch === false"
-                            >{{item.crowdName}}
+                            >
+                            {{ item.crowdName }}
+                            <!-- {{ item.crowdId }} -->
                             </el-checkbox>
                         </el-checkbox-group>
                     </el-form-item>
@@ -441,7 +462,7 @@
                               v-for="item in behaviorCrowdList"
                               :label="item.launchName"
                               :value="item.policyIds+'_'+item.policyCrowdIds"
-                              :key="item.launchCrowdId+''"
+                              :key="item.policyCrowdIds"
                           >
                               {{ item.launchName }} -- {{ item.launchCrowdId }}
                           </el-option>
@@ -745,7 +766,8 @@ export default {
         pageSize: 10
       },
       tempListpages: 0,
-      behaviorCrowdList: [],
+      behaviorPolicyList: [], // 行为人群 - 策略列表
+      behaviorCrowdList: [], // 行为人群 - 所选策略下的人群列表
       behaviorCrowdListFilter: {
         crowdType: 3,
         pageNum: 1,
@@ -758,7 +780,6 @@ export default {
   props: ['editLaunchCrowdId', 'model', 'editStatus', 'parentSource', 'showAllParent'],
   watch: {
     // 'crowdForm.abTest': function (val, oldVal) {
-    //     debugger
     //     // 根第一次加载的时候不判断，当值变的时候再触发
     //     if (oldVal && this.firstTimeLoad) {
     //         this.crowdForm.policyIds = val ? '' : []
@@ -808,7 +829,7 @@ export default {
     },
 
     handelBehaviorCrowdSelectChange (e, selectedV, list) {
-      this.crowdForm.policyIds = selectedV.split('_')[0].split(',')
+      this.crowdForm.policyIds = selectedV.split('_')[0]
       const policyCrowdIds = selectedV.split('_')[1]
       // item.policyIds+'_'+item.policyCrowdIds
       this.crowdForm.tempCrowdId = list.find(item => {
@@ -835,8 +856,7 @@ export default {
       } else {
         policyId = this.crowdForm.policyIds.join(',')
       }
-      this.$service
-        .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+      return this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
         .then(data => {
           if (this.crowdForm.abTest) {
             // 重置
@@ -845,7 +865,6 @@ export default {
 
             let newDataForm = []
             const pid = Object.keys(data[0].childs)
-            console.log('pid===>', pid)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
             })
@@ -866,8 +885,7 @@ export default {
       } else {
         policyId = this.crowdForm.policyIds.join(',')
       }
-      this.$service
-        .getABChildByPolicyId({ policyId })
+      return this.$service.getABChildByPolicyId({ policyId })
         .then(data => {
           if (this.crowdForm.abTest) {
             // 重置
@@ -904,20 +922,21 @@ export default {
         crowdForm.policyIds = undefined
         crowdForm.policyCrowdIds = undefined
       } else if (crowdForm.crowdType === 3) { // 行为人群
-        crowdForm.tempCrowdId = undefined
-        crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
+        // crowdForm.tempCrowdId = undefined
+        crowdForm.policyIds = crowdForm.policyIds
 
         // 投放子人群
         if (crowdForm.abTest) {
           crowdForm.crowdType = 9
           crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
+          crowdForm.tempCrowdId = crowdForm.policyCrowdIds[0].split('_')[2]
         }
 
         crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
           return v.split('_')[1]
         }).join(',')
       } else { // 普通人群
-        crowdForm.tempCrowdId = undefined
+        crowdForm.tempCrowdId = 0
         crowdForm.policyIds = crowdForm.abTest ? crowdForm.policyIds : crowdForm.policyIds.join(',')
 
         crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
@@ -938,7 +957,7 @@ export default {
           // 获取接口所需参数
           const crowdForm = this.reParamsData(this.crowdForm)
 
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+          if (this.editLaunchCrowdId !== null && this.editLaunchCrowdId !== undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then((data) => {
               this.callback()
               if (crowdForm.crowdType === 3 && this.islaunchDirectly) { // 行为人群
@@ -1355,6 +1374,145 @@ export default {
           return false
         }
       })
+    },
+    async setEdit () {
+      // 编辑
+      if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+        this.title = '编辑'
+        this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(async data => {
+          let row = data.launchCrowd
+          let abTestRatio = data.ratio || {}
+          // 当 row.tempCrowdId=0，就是普通人群
+          this.isTempCrowd = !row.tempCrowdId
+          // row.crowdType不为null，则 row.crowdType == 1 是临时人群
+          // row.crowdType为null，当row.tempCrowdId=0，就是普通人群
+          // this.isTempCrowd = (row.crowdType && row.crowdType === 1) ? true : !row.tempCrowdId
+          if (Number(this.model) === 1 && !row.tempCrowdId) { // 自定义人群
+          // const biIds = this.distinct(data.launchCrowdBiIds,[])
+            const biIds = data.launchCrowdBiIds
+            let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
+            this.crowdDefineForm = {
+              launchCrowdId: row.launchCrowdId,
+              launchName: row.launchName,
+              biIds: biIds,
+              crowdSql: row.crowdSql,
+              expiryDay: row.expiryDay,
+              autoVersion: row.autoVersion,
+              calType: row.calType.split(','),
+              proTempTag: row.proTempTag,
+              autoLaunchTime: row.autoLaunchTime,
+              tagId: row.tagId,
+              abTest: row.abTest,
+              ratios: abTestRatio,
+              macInitialValue: macInitialValue === null ? undefined : macInitialValue, // Mac基准值
+              macAbovePer: macAbovePer === null ? undefined : macAbovePer, // Mac最大阈值
+              macBelowPer: macBelowPer === null ? undefined : macBelowPer, // Mac最小阈值
+              wxInitialValue: wxInitialValue === null ? undefined : wxInitialValue, // 微信基准值
+              wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, // 微信最大阈值
+              wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, // 微信最小阈值
+              // minMacEstimateCount: row.minMacEstimateCount,
+              // maxMacEstimateCount: row.maxMacEstimateCount,
+              // minWxEstimateCount: row.minWxEstimateCount,
+              // maxWxEstimateCount: row.maxWxEstimateCount,
+              videoSource: row.videoSource === null ? '0' : '1',
+              videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(',')
+            }
+            if (row.abTest) {
+              this.abTestApart = Object.keys(abTestRatio).length
+              let a = []
+              Object.keys(abTestRatio).forEach(item => {
+                a.push(abTestRatio[item])
+              })
+              let arr = []
+              for (let i = 0; i < this.abTestApart; i++) {
+                arr.push(i)
+              }
+              this.copiesItem = arr
+              this.percent = a
+            }
+            this.status = this.editStatus
+          } else {
+            // *****************************************************
+            this.launchPlatform = data.biLists
+            // this.strategyPlatform = data.policies
+            this.crowdForm.launchCrowdId = row.launchCrowdId
+            this.crowdForm.dmpCrowdId = row.dmpCrowdId
+            this.crowdForm.launchName = row.launchName
+            this.crowdForm.biIds = data.launchCrowdBiIds
+            // this.crowdForm.crowdType = row.tempCrowdId ? 1 : 0
+            this.crowdForm.crowdType = row.crowdType ? row.crowdType : (row.tempCrowdId ? 1 : 0)
+            this.disabledCrowdType = true
+            // this.crowdForm.remark = row.remark
+            // this.crowdForm.dataSource = row.dataSource
+            // this.crowdForm.expiryDay = row.expiryDay
+            this.crowdForm.autoVersion = row.autoVersion
+            this.crowdForm.autoLaunchTime = row.autoLaunchTime
+            this.crowdForm.abTest = row.abTest
+            if (this.crowdForm.biIds.join(',') === '7') {
+              this.showAccountRelative = true
+            }
+            this.crowdForm.setCalculate = row.setCalculate
+            this.status = this.editStatus
+            // if (row.tempCrowdId) {
+            if (this.crowdForm.crowdType === 1) { // 临时人群
+              this.crowdForm.tempCrowdId = row.tempCrowdId
+              this.crowdForm.policyIds = undefined
+              this.crowdForm.policyCrowdIds = undefined
+            } else if (this.crowdForm.crowdType === 3) { // 行为人群
+            // 上面切换 crowdType 时会清空数据，因此将数据赋值放到下一轮循环时执行。
+              this.$nextTick(async () => {
+                this.crowdForm.tempCrowdId = row.tempCrowdId
+                this.crowdForm.policyIds = row.policyIds
+                // :label="v.policyId+'_'+item.crowdId+'_'+item.pid"
+                this.crowdForm.policyCrowdIds.push(`${row.policyIds}_${row.policyCrowdIds}`)
+              })
+            } else if (this.crowdForm.crowdType === 0) { // 普通人群
+              this.crowdForm.tempCrowdId = undefined
+
+              // 上面切换 crowdType 时会清空数据，因此将数据赋值放到下一轮循环时执行。
+              this.$nextTick(async () => {
+                this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(',')
+                // 等待获取所选策略下的人群列表
+                await this.getCrowd()
+                data.respcl && data.respcl.forEach(element => {
+                  element.childs.forEach(v => {
+                    if (v.choosed) { this.crowdForm.policyCrowdIds.push(`${element.policyId}_${v.crowdId}`) }
+                    console.log('this.crowdForm.policyCrowdIds===', this.crowdForm.policyCrowdIds)
+                  })
+                })
+              })
+            } else if (this.crowdForm.crowdType === 9) {
+              // 行为人群 + 投放子人群 的 crowdType 为 9
+              this.crowdForm.crowdType = 3
+              this.crowdForm.tempCrowdId = row.tempCrowdId
+              console.log('row===', row.policyIds)
+
+              // 上面切换 crowdType 时会清空数据，因此将数据赋值放到下一轮循环时执行。
+              this.$nextTick(async () => {
+                this.crowdForm.policyIds = row.policyIds
+                // 等待获取所选策略下的人群列表
+                await this.getABChildByPolicyId()
+
+                data.respcl && data.respcl.forEach(element => {
+                  element.childs.forEach((v, index) => {
+                    // item.policyId+'_'+item.crowdId+'_'+item.pid
+                    if (v.choosed) { this.crowdForm.policyCrowdIds.push(`${element.policyId}_${v.crowdId}_${v.pid}`) }
+                  })
+                })
+              })
+              // data.respcl.forEach(element => {
+              //   element.childs.forEach(v => {
+              //     if (v.choosed) { this.crowdForm.policyCrowdIds.push(element.policyId + '_' + v.crowdId) }
+              //   })
+              // })
+            }
+            // ***********************************************************
+          // this.firstTimeLoad = true
+          }
+        })
+      } else {
+        this.title = Number(this.model) === 1 ? '新增自定义人群' : '新增'
+      }
     }
   },
 
@@ -1362,125 +1520,13 @@ export default {
     this.tempCrowdList = []
     this.tempListpages = 0
 
+    this.setEdit() // 初始化编辑数据
+
     this.getAddList(this.model) // 普通人群策略列表
     this.getTempCrowdList() // 临时人群/本地人群列表
     this.getBehaviorPolicyList() // 行为人群 - 策略列表
     this.getBehaviorCrowdList() // 行为人群 - 人群列表
     this.handleGetVideoList() // 人群圈定 视频源枚举
-
-    // 编辑
-    if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
-      this.title = '编辑'
-      this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
-        let row = data.launchCrowd
-        let abTestRatio = data.ratio || {}
-        // 当row.tempCrowdId=0，就是普通人群
-        this.isTempCrowd = !row.tempCrowdId
-        // row.crowdType不为null，则 row.crowdType == 1 是临时人群
-        // row.crowdType为null，当row.tempCrowdId=0，就是普通人群
-        // this.isTempCrowd = (row.crowdType && row.crowdType === 1) ? true : !row.tempCrowdId
-        if (Number(this.model) === 1 && !row.tempCrowdId) {
-          // const biIds = this.distinct(data.launchCrowdBiIds,[])
-          const biIds = data.launchCrowdBiIds
-          let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
-          this.crowdDefineForm = {
-            launchCrowdId: row.launchCrowdId,
-            launchName: row.launchName,
-            biIds: biIds,
-            crowdSql: row.crowdSql,
-            expiryDay: row.expiryDay,
-            autoVersion: row.autoVersion,
-            calType: row.calType.split(','),
-            proTempTag: row.proTempTag,
-            autoLaunchTime: row.autoLaunchTime,
-            tagId: row.tagId,
-            abTest: row.abTest,
-            ratios: abTestRatio,
-            macInitialValue: macInitialValue === null ? undefined : macInitialValue, // Mac基准值
-            macAbovePer: macAbovePer === null ? undefined : macAbovePer, // Mac最大阈值
-            macBelowPer: macBelowPer === null ? undefined : macBelowPer, // Mac最小阈值
-            wxInitialValue: wxInitialValue === null ? undefined : wxInitialValue, // 微信基准值
-            wxAbovePer: wxAbovePer === null ? undefined : wxAbovePer, // 微信最大阈值
-            wxBelowPer: wxBelowPer === null ? undefined : wxBelowPer, // 微信最小阈值
-            // minMacEstimateCount: row.minMacEstimateCount,
-            // maxMacEstimateCount: row.maxMacEstimateCount,
-            // minWxEstimateCount: row.minWxEstimateCount,
-            // maxWxEstimateCount: row.maxWxEstimateCount,
-            videoSource: row.videoSource === null ? '0' : '1',
-            videoSourceIds: row.videoSource === null ? [] : row.videoSource.split(',')
-          }
-          if (row.abTest) {
-            this.abTestApart = Object.keys(abTestRatio).length
-            let a = []
-            Object.keys(abTestRatio).forEach(item => {
-              a.push(abTestRatio[item])
-            })
-            let arr = []
-            for (let i = 0; i < this.abTestApart; i++) {
-              arr.push(i)
-            }
-            this.copiesItem = arr
-            this.percent = a
-          }
-          this.status = this.editStatus
-        } else {
-          this.launchPlatform = data.biLists
-          // this.strategyPlatform = data.policies
-          this.crowdForm.launchCrowdId = row.launchCrowdId
-          this.crowdForm.dmpCrowdId = row.dmpCrowdId
-          this.crowdForm.launchName = row.launchName
-          this.crowdForm.biIds = data.launchCrowdBiIds
-          // this.crowdForm.crowdType = row.tempCrowdId ? 1 : 0
-          this.crowdForm.crowdType = row.crowdType ? row.crowdType : (row.tempCrowdId ? 1 : 0)
-          this.disabledCrowdType = true
-          // this.crowdForm.remark = row.remark
-          // this.crowdForm.dataSource = row.dataSource
-          // this.crowdForm.expiryDay = row.expiryDay
-          this.crowdForm.autoVersion = row.autoVersion
-          this.crowdForm.autoLaunchTime = row.autoLaunchTime
-          this.crowdForm.abTest = row.abTest
-          if (this.crowdForm.biIds.join(',') === '7') {
-            this.showAccountRelative = true
-          }
-          this.crowdForm.setCalculate = row.setCalculate
-          this.status = this.editStatus
-          // if (row.tempCrowdId) {
-          if (this.crowdForm.crowdType === 1) { // 临时人群
-            this.crowdForm.tempCrowdId = row.tempCrowdId
-            this.crowdForm.policyIds = []
-            this.crowdForm.policyCrowdIds = []
-          } else if (this.crowdForm.crowdType === 3) { // 行为人群
-            // 行为人群列表
-            // if (data.tempCrowds) {
-            //     this.behaviorCrowdList = data.tempCrowds.filter(item => {
-            //         return item.isFxFullSql === 3
-            //     })
-            // }
-            this.crowdForm.tempCrowdId = row.tempCrowdId
-            this.crowdForm.policyCrowdIds.push(row.policyIds + '_' + row.policyCrowdIds)
-          } else if (this.crowdForm.crowdType === 0) { // 普通人群
-            this.crowdForm.tempCrowdId = undefined
-            this.crowdForm.policyIds = row.abTest ? row.policyIds : row.policyIds.split(',')
-            this.getCrowd()
-            data.respcl && data.respcl.forEach(element => {
-              element.childs.forEach(v => {
-                if (v.choosed) { this.crowdForm.policyCrowdIds.push(element.policyId + '_' + v.crowdId) }
-              })
-            })
-          } else {
-            this.crowdForm.tempCrowdId = undefined
-            data.respcl.forEach(element => {
-              element.childs.forEach(v => {
-                if (v.choosed) { this.crowdForm.policyCrowdIds.push(element.policyId + '_' + v.crowdId) }
-              })
-            })
-          }
-          // this.firstTimeLoad = true
-        }
-      })
-    } else {
-      this.title = Number(this.model) === 1 ? '新增自定义人群' : '新增'
-    }
   }
 }
 </script>
