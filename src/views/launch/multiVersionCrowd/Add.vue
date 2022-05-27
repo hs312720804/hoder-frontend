@@ -213,10 +213,11 @@
                 </el-form-item>
                 <el-form-item label="投放平台" class="multipleSelect form-width" prop="biIds">
                     <el-select
-                            v-model="crowdForm.biIds"
-                            @change="handleBiIdChange"
-                            multiple
-                            placeholder="请选择投放平台"
+                      v-model="crowdForm.biIds"
+                      @change="handleBiIdChange"
+                      multiple
+                      placeholder="请选择投放平台"
+                      :disabled="status!==undefined && (status === 2 || status === 3)"
                     >
                         <el-option
                                 v-for="item in launchPlatform"
@@ -932,7 +933,7 @@ export default {
         if (crowdForm.abTest) {
           crowdForm.crowdType = 9
           crowdForm.crowdId = crowdForm.policyCrowdIds[0].split('_')[2]
-          crowdForm.tempCrowdId = crowdForm.policyCrowdIds[0].split('_')[2]
+          // crowdForm.tempCrowdId = crowdForm.policyCrowdIds[0].split('_')[2]
         }
 
         crowdForm.policyCrowdIds = crowdForm.policyCrowdIds.map((v) => {
@@ -1487,7 +1488,7 @@ export default {
             } else if (this.crowdForm.crowdType === 9) {
               // 行为人群 + 投放子人群 的 crowdType 为 9
               this.crowdForm.crowdType = 3
-              this.crowdForm.tempCrowdId = row.tempCrowdId
+              this.crowdForm.tempCrowdId = undefined
               console.log('row===', row.policyIds)
 
               // 上面切换 crowdType 时会清空数据，因此将数据赋值放到下一轮循环时执行。
