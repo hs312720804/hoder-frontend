@@ -5,8 +5,8 @@
           @tab-click="handleTabChange"
         >
             <el-tab-pane label="影视" name="影视"></el-tab-pane>
-            <el-tab-pane label="教育" name="教育"></el-tab-pane>
-            <el-tab-pane label="少儿" name="少儿"></el-tab-pane>
+            <!-- <el-tab-pane label="教育" name="教育"></el-tab-pane>
+            <el-tab-pane label="少儿" name="少儿"></el-tab-pane> -->
             <el-tab-pane label="亲子" name="亲子"></el-tab-pane>
         </el-tabs>
         <tab-page
