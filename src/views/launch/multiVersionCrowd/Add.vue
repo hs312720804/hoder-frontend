@@ -959,7 +959,7 @@ export default {
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
           // 获取接口所需参数
-          const crowdForm = this.reParamsData(this.crowdForm)
+          const crowdForm = this.reParamsData()
 
           if (this.editLaunchCrowdId !== null && this.editLaunchCrowdId !== undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then((data) => {

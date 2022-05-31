@@ -469,8 +469,8 @@ export default {
     },
     businessType: {
       handler () {
-        this.getBehaviorCrowdList() // 行为人群列表
-        this.getResourceList() // 资源位列表
+        // this.getBehaviorCrowdList() // 行为人群列表
+        // this.getResourceList() // 资源位列表
         this.resetForm('formData') // 切换tab的时候重置筛选并查询
         // this.fetchData()
       }

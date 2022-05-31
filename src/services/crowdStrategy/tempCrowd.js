@@ -92,3 +92,11 @@ export function getABChildByPolicyId (params) {
     params
   })
 }
+// 根据策略ID获取行为人群
+export function getBehaviorCrowdByPolicyId (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/crowd/getBehaviorCrowdByPolicyId',
+    params
+  })
+}
