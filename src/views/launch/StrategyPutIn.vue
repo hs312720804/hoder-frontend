@@ -23,15 +23,15 @@
                 </el-form-item>
                 <el-form-item label="当前策略">
                     <el-select
-                            v-model="crowdForm.policyIdsPull"
-                            multiple
-                            disabled
+                      v-model="crowdForm.policyIdsPull"
+                      multiple
+                      disabled
                     >
                         <el-option
-                        v-for="(strategy,index) in strategyData"
-                        :label="strategy.policyId + '-' +strategy.policyName"
-                        :value="strategy.policyId"
-                        :key="index"
+                          v-for="(strategy,index) in strategyData"
+                          :label="strategy.policyId + '-' +strategy.policyName"
+                          :value="strategy.policyId"
+                          :key="index"
                         >
                         </el-option>
                         <!--<el-option-->
