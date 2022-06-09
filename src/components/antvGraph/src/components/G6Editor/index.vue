@@ -1,7 +1,6 @@
 <template>
   <div id="mountNode" :style="{ width: width +'px' }" ref="mountNode">
-    <div class="editor" >
-
+    <div class="editor">
       <toolbar />
       <div style="height: 42px;"></div>
       <div class="bottom-container">

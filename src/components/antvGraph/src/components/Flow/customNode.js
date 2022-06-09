@@ -1,6 +1,37 @@
 import G6 from '@antv/g6/build/g6'
 import { uniqueId } from '@antvGraph/utils'
 // import Shape from '@antv/g6/src/shapes'
+
+/** 参数说明：
+   * 根据长度截取先使用字符串，超长部分追加…
+   * str 对象字符串
+   * len 目标字节长度
+   * 返回值： 处理结果字符串
+   */
+function cutString (str, len) {
+  // length属性读出来的汉字长度为1
+  if (str.length * 2 <= len) {
+    return str
+  }
+  var strlen = 0
+  var s = ''
+  for (var i = 0; i < str.length; i++) {
+    s = s + str.charAt(i)
+    if (str.charCodeAt(i) > 128) {
+      strlen = strlen + 2
+      if (strlen >= len) {
+        return s.substring(0, s.length - 1) + '...'
+      }
+    } else {
+      strlen = strlen + 1
+      if (strlen >= len) {
+        return s.substring(0, s.length - 2) + '...'
+      }
+    }
+  }
+  return s
+}
+
 const EXPAND_ICON = function EXPAND_ICON (x, y, r) {
   return [
     ['M', x - r, y - r],
@@ -191,18 +222,28 @@ const customNode = {
         // })
         // }
         if (cfg.label) {
+          var str = cfg.label
+          // eslint-disable-next-line no-control-regex
+          str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{10}\x01?/g, '$&\n').replace(/\x01/g, '')
+          if (str.length > 15) {
+            str = cutString(str, 20)
+          }
+
           group.addShape('text', {
             attrs: {
               id: 'label' + uniqueId(),
+              // x: offsetX + width / 2 - 70,
+              // y: offsetY + height / 2,
               x: offsetX + width / 2 - 70,
-              y: offsetY + height / 2,
-              textAlign: 'start',
-              textBaseline: 'middle',
-              text: cfg.label,
+              y: offsetY + height / 2 - 12,
+              textAlign: 'middle',
+              textBaseline: 'top',
+              text: str,
               parent: mainId,
               fill: '#333',
               fontSize: 14,
-              lineWidth: 20
+              lineWidth: 20,
+              width: 30
             }
           })
           // group.addShape('rect', {
