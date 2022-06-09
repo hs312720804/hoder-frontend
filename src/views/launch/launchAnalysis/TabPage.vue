@@ -625,13 +625,19 @@ export default {
               },
               {
                 label: 'PV CTR',
-                prop: 'clickPv',
-                sortable: true
+                // prop: 'clickPv',
+                sortable: true,
+                render: (h, { row }) => {
+                  return row.clickPv ? `${row.clickPv * 100}%` : '-'
+                }
               },
               {
                 label: 'UV CTR',
                 prop: 'clickUv',
-                sortable: true
+                sortable: true,
+                render: (h, { row }) => {
+                  return row.clickUv ? `${row.clickUv * 100}%` : '-'
+                }
               }
 
             ],
@@ -704,11 +710,11 @@ export default {
                 prop: 'dealVolume',
                 sortable: true
               },
-              {
-                label: '成单人数',
-                prop: 'dealNum',
-                sortable: true
-              },
+              // {
+              //   label: '成单人数',
+              //   prop: 'dealNum',
+              //   sortable: true
+              // },
               {
                 label: '成交金额(元)',
                 prop: 'dealAmount',
@@ -772,11 +778,11 @@ export default {
                 prop: 'dealUsers',
                 sortable: true
               },
-              {
-                label: '成单人数',
-                prop: 'dealUsers',
-                sortable: true
-              },
+              // {
+              //   label: '成单人数',
+              //   prop: 'dealUsers',
+              //   sortable: true
+              // },
               {
                 label: '成交单量',
                 prop: 'dealContractsNum',
