@@ -650,11 +650,18 @@
               </el-dropdown-menu>
             </el-dropdown>
             <el-button
-                v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
-                size="small"
-                type="text"
-                @click="divideAB(scope.row,'addABTest')"
-            >AB实验
+              v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
+              size="small"
+              type="text"
+              @click="divideAB(scope.row,'addABTest')">
+              AB实验
+            </el-button>
+
+            <el-button
+              size="small"
+              type="text"
+              @click="handleDynamicTest(scope.row)">
+              动态实验
             </el-button>
             <!-- <el-button
                     :disabled="isShowTest(scope.row)"
@@ -1906,6 +1913,11 @@ export default {
     },
     handleAddDynamic () {
       this.$emit('addDynamicCrowd')
+    },
+
+    // 动态实验
+    handleDynamicTest (row) {
+      this.$emit('handleDynamicTest', row)
     },
     edit (row) {
       this.$emit('addCrowd', row)

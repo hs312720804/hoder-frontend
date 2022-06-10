@@ -117,8 +117,8 @@
     </div>
     <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
     <div style="float: right">
-      <el-button type="warning" @click="$emit('handleCancel')">取消</el-button>
-      <el-button type="primary" @click="$emit('handleSave', {rulesJson, policyId, applyAll})">保存</el-button>
+      <el-button type="warning" @click="handleCancel">取消</el-button>
+      <el-button type="primary" @click="handleSave">保存</el-button>
     </div>
   </div>
 </template>
@@ -126,7 +126,7 @@
 <script>
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'crowdId', 'dynamicMode', 'allCrowdRule'],
+  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
   data () {
     return {
       dataSourceColorEnum: {
@@ -146,7 +146,8 @@ export default {
       i: 0,
       crowdRule: {},
       policyId: '',
-      applyAll: false
+      applyAll: false,
+      initRulesJson: {}
     }
   },
   watch: {
@@ -161,36 +162,60 @@ export default {
     this.$service.getRuleIndicators().then(res => {
       this.tags = res
     })
-
+  },
+  mounted () {
     this.init()
   },
   methods: {
+    handleSave () {
+      // 保存时，重置初始数据
+      this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
+      this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+    },
+    handleCancel () {
+      this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
+      this.$emit('handleCancel')
+    },
     init () {
       if (this.crowdId) {
-        this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
-          console.log('res===', res)
-          // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-          this.policyId = res.policyId || ''
-          this.applyAll = !!(res.applyAll && res.applyAll === 1)
-          if (res.dynamicJson) {
-            this.rulesJson = JSON.parse(res.dynamicJson)
-            // this.rulesJson = (res)
-            console.log('res===', this.rulesJson)
-          } else {
-          // 重置
-            this.rulesJson = {
-              condition: 'OR',
-              rules: []
-            }
-            // 获取流转条件
-            // this.$service.getRuleIndicators().then(res => {
-            //   res.forEach(item => {
-            //     this.handleAddChildRule(item)
-            //   })
-            // })
-          }
-        // }
+        const graphData = this.graph.save()
+        console.log('res===', graphData)
+
+        const res = graphData.nodes.find(item => {
+          return Number(item.crowdId) === Number(this.crowdId)
         })
+        // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        this.policyId = res.policyId || ''
+        // this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        if (res.dynamicJson) {
+          this.initRulesJson = JSON.parse(res.dynamicJson)
+          this.rulesJson = JSON.parse(res.dynamicJson)
+          console.log('res===', this.rulesJson)
+        } else {
+          // 重置
+          this.rulesJson = {
+            condition: 'OR',
+            rules: []
+          }
+        }
+
+        // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
+        //   console.log('res===', res)
+        //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        //   this.policyId = res.policyId || ''
+        //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        //   if (res.dynamicJson) {
+        //     this.rulesJson = JSON.parse(res.dynamicJson)
+        //     // this.rulesJson = (res)
+        //     console.log('res===', this.rulesJson)
+        //   } else {
+        //   // 重置
+        //     this.rulesJson = {
+        //       condition: 'OR',
+        //       rules: []
+        //     }
+        //   }
+        // })
       }
     },
     handleAddRule (tag) {

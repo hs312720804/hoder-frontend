@@ -1,14 +1,13 @@
 <template>
   <div class="form-class">
-      <!-- <div style="color: red">
+      <div style="color: red">
         第4步
-        isDynamicPeople: {{isDynamicPeople}} <br/>
-        :policyId:: {{policyId}}<br/>
-        :policyName:: {{ policyName }}<br/>
+        isDynamicPeople: {{ isDynamicPeople }} <br/>
+        :policyId:: {{ policyId }}<br/>
         :crowdId:: {{ crowdId }}<br/>
-        {{rulesJson}}<br/>
-        dynamicRule: {{dynamicRule}}
-      </div> -->
+        dynamicRule: {{ dynamicRule }}
+
+      </div>
 
       <div class="top">
         <span class="title">流转算法：</span>
@@ -56,22 +55,6 @@
           </el-select>
         </template>
 
-        <!-- {{ crowdOptions }} -->
-        <!-- <el-dropdown trigger="click" @command="handleCommand" @visible-change="handleExitCrowdVisibleChange">
-          <span class="el-dropdown-link">
-            下拉菜单<i class="el-icon-arrow-down el-icon--right"></i>
-          </span>
-          <el-dropdown-menu slot="dropdown">
-            <el-dropdown-item
-              v-for="item in crowdOptions"
-              :key="item.crowdId"
-              :command="item.crowdId"
-              :disabled="item.disabled"
-            >
-              {{item.crowdName}}
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </el-dropdown> -->
       </div>
 
       <!-- 拓扑图 -->
@@ -145,15 +128,10 @@ export default {
     }
   },
   created () {
-    // 获取流转条件
-    // this.$service.getRuleIndicators().then(res => {
-    //   this.tags = res
-    // })
-
-    if (this.crowdId) {
-      this.getRule()
-      this.bindEvent()
-    }
+    // if (this.crowdId) {
+    this.getRule()
+    this.bindEvent()
+    // }
   },
   beforeDestroy () {
     // console.log('this.graph===>', this.graph)
@@ -165,20 +143,71 @@ export default {
   },
   methods: {
     getRule () {
-      this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-        console.log('res===', res)
-        if (res) {
-          // 小人群列表
-          this.dynamicRule = res
-          this.radioType = res.mainArithmetic // 流转算法
-          this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+      const res = {
+        'policyId': 4112,
+        'flowChart': null,
+        'mainArithmetic': 0,
+        'allCrowd': [{
+          'policyId': 4112,
+          'dynamicJson': null,
+          'weight': 0,
+          'arithmetic': null,
+          'priority': 345,
+          'crowdId': 11222,
+          'crowdName': '345'
+        }, {
+          'policyId': 4112,
+          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          'weight': 120,
+          'arithmetic': null,
+          'priority': 23,
+          'crowdId': 11223,
+          'crowdName': '23'
+        }],
+        'arithmetic': null,
+        'unused': [{
+          'policyId': 4112,
+          'dynamicJson': null,
+          'weight': 0,
+          'arithmetic': null,
+          'priority': 345,
+          'crowdId': 11222,
+          'crowdName': '345'
+        }, {
+          'policyId': 4112,
+          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          'weight': 120,
+          'arithmetic': null,
+          'priority': 23,
+          'crowdId': 11223,
+          'crowdName': '23'
+        }],
+        'crowdId': 11219,
+        'exitCrowd': null
+      }
 
-          // 大的出口 选择定向时，选择人群id
-          this.crowdOptions = res.allCrowd
+      this.dynamicRule = res
+      this.radioType = res.mainArithmetic // 流转算法
+      this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
 
-          this.exitCrowd = res.exitCrowd
-        }
-      })
+      // 大的出口 选择定向时，选择人群id
+      this.crowdOptions = res.allCrowd
+
+      this.exitCrowd = res.exitCrowd
+      // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+      //   console.log('res===', res)
+      //   if (res) {
+      //     // 小人群列表
+      //     this.dynamicRule = res
+      //     this.radioType = res.mainArithmetic // 流转算法
+      //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+      //     // 大的出口 选择定向时，选择人群id
+      //     this.crowdOptions = res.allCrowd
+
+      //     this.exitCrowd = res.exitCrowd
+      //   }
+      // })
     },
     bindEvent () {
       const _this = this
@@ -187,7 +216,8 @@ export default {
         this.graph.on('afteradditem', function (ev) {
           const flowChart = _this.graph ? _this.graph.save() : {}
           _this.handleExitCrowdVisibleChange(flowChart)
-        }) // 子项数据变化后
+        })
+        // 子项数据变化后
         this.graph.on('afterremoveitem', function (ev) {
           const flowChart = _this.graph ? _this.graph.save() : {}
           _this.handleExitCrowdVisibleChange(flowChart)
@@ -566,7 +596,7 @@ i {
   background: #fff
 }
 .inputArrow{
-  background: url('../../assets/icons/arrow.svg')
+  // background: url('@/assets/icons/arrow.svg')
   background-size: cover;
   width: 63px;
   height: 60px;

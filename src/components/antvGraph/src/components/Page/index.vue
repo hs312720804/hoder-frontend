@@ -9,6 +9,7 @@
       <SetCirculationConditionsCom
         :crowdId="crowdId"
         :allCrowdRule="dynamicRuleProvide.allCrowd"
+        :graph="graph"
         @handleCancel="dialogVisible = false"
         @handleSave="handleSave"
         >
@@ -38,7 +39,8 @@ export default {
       graph: null,
       dialogVisible: false,
       crowdId: undefined, // 小人群ID
-      allCrowdRule: []
+      allCrowdRule: [],
+      currentTarget: null
     }
   },
   props: {
@@ -72,9 +74,15 @@ export default {
         dynamicJson: JSON.stringify(paramsObj.rulesJson),
         applyAll: paramsObj.applyAll ? 1 : 0
       }
-      this.$service.setDynamicRule(parmas, '操作成功').then(res => {
-        this.dialogVisible = false
-      })
+      // this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+      this.dialogVisible = false
+
+      const model = {
+        dynamicJson: parmas.dynamicJson
+      }
+
+      this.graph.update(this.currentTarget, model) // 更新 流转规则 数据
+      // })
     },
     init () {
       const height = this.height - 42
@@ -139,24 +147,10 @@ export default {
         })
         eventBus.$on('nodeSettingRule', item => {
           const selectNode = item.target.getModel()
-          // const allCrowd = this.dynamicRuleProvide.allCrowd
-
-          // console.log('1111node====>', selectNode)
 
           _this.crowdId = selectNode.id
-          // _this.crowdRule = allCrowd.find(item => item.crowdId == _this.crowdId)
-          // _this.allCrowdRule = allCrowd.map(item => {
-          //   return {
-          //     ...item,
-          //     dynamicJson: item.dynamicJson ? JSON.parse(item.dynamicJson) : null
-          //   }
-          // })
-          // this.dynamicRuleProvide.allCrowd = _this.allCrowdRule
-          // item.crowdId == _this.crowdId)
-
+          _this.currentTarget = item.target // 当前操作对象
           _this.dialogVisible = true
-
-          // console.log('crowdRule=====', _this.allCrowdRule)
         })
 
         eventBus.$on('changeArithmeticType', item => { // 修改出口方式
@@ -181,14 +175,15 @@ export default {
             crowdId: selectNode.crowdId,
             arithmetic: i
           }
-          this.$service.setDynamicRule(parmas).then(res => {
-            const model = {
-              arithmetic: i
-            }
+          // this.$service.setDynamicRule(parmas).then(res => {
+          const model = {
+            arithmetic: i
+          }
 
-            this.graph.update(item.target, model)
-          })
+          this.graph.update(item.target, model) // 更新 出口方式 数据
+          // })
         })
+
         eventBus.$on('changeWeight', item => { // 修改权重
           const selectNode = item.target.getModel()
           _this.$prompt('请输入权重（权重越大，比重越高）', '', {
@@ -208,13 +203,13 @@ export default {
               crowdId: selectNode.crowdId,
               weight: value
             }
-            this.$service.setDynamicRule(parmas).then(res => {
-              const model = {
-                weight: value
-              }
+            // this.$service.setDynamicRule(parmas).then(res => {
+            const model = {
+              weight: value
+            }
 
-              this.graph.update(item.target, model)
-            })
+            this.graph.update(item.target, model) // 更新 优先级 数据
+            // })
           }).catch(() => {
             _this.$message({
               type: 'info',

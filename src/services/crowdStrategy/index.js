@@ -906,3 +906,50 @@ export function updateDynamicCrowdName (data) {
     isJSON: true
   })
 }
+
+// 编辑动态人群名称
+export function addDynamic2Crowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/add',
+    data,
+    isJSON: true
+  })
+}
+// 获取小人群列表
+export function getDynamic2CrowdList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/list',
+    data,
+    isJSON: true
+  })
+}
+// 新建实验分组
+export function addDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/add',
+    data,
+    isJSON: true
+  })
+}
+
+// 获取实验组列表
+export function getDynamic2PlanList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/plan/list',
+    params
+  })
+}
+
+// 删除实验组
+export function deleteDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/del',
+    data,
+    isJSON: true
+  })
+}

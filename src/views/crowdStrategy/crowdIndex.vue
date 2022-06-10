@@ -11,6 +11,7 @@
       @editDynamicPeopleSetting="editDynamicPeopleSetting"
       @editDynamicPeopleConditions="editDynamicPeopleConditions"
       @getBigCrowdId="getBigCrowdId"
+      @handleDynamicTest="handleDynamicTest"
     ></crowd-list>
     <crowd-add
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
@@ -34,9 +35,9 @@
         </el-tab-pane>
         <el-tab-pane label="编辑AB子人群" name="second">
           <crowd-a-b-add
-                  :crowd="crowd"
-                  :mode="isAbTest ? 'editABTest' : ''"
-                  @goBackCrowdListPage="goBackCrowdListPage"
+            :crowd="crowd"
+            :mode="isAbTest ? 'editABTest' : ''"
+            @goBackCrowdListPage="goBackCrowdListPage"
           ></crowd-a-b-add>
         </el-tab-pane>
       </el-tabs>
@@ -47,7 +48,7 @@
       :crowd="crowd"
     ></crowd-a-b-add>
 
-    <!-- 动态人群设置 -->
+    <!-- 动态人群设置
     <dynamic-people-setting
       v-if="!isShowCrowdList && mode === 'step2'"
       :policyId="policyId"
@@ -58,7 +59,7 @@
     >
     </dynamic-people-setting>
 
-    <!-- 设置流转条件 -->
+    设置流转条件
     <dynamic-people-conditions
       v-if="!isShowCrowdList && mode === 'step3'"
       :policyId="policyId"
@@ -68,8 +69,7 @@
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </dynamic-people-conditions>
-    <!-- {{policyId}}--{{policyName}} -->
-    <!-- 添加动态人群 流程 -->
+    添加动态人群 流程
     <DynamicCrowdAdd
       v-if="!isShowCrowdList && mode === 'isAddDynamicCrowd'"
       :initPolicyId="selectRow.policyId"
@@ -78,7 +78,17 @@
       dynamicMode="edit"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
-    </DynamicCrowdAdd>
+    </DynamicCrowdAdd> -->
+
+    <!-- 动态人群3期 动态实验 流程 -->
+    <DynamicTest
+      v-if="!isShowCrowdList && mode === 'isDynamicTest'"
+      :initPolicyId="selectRow.policyId"
+      :initPolicyName="selectRow.policyName"
+      :initCrowdId="bigCrowdId"
+      @goBackCrowdListPage="goBackCrowdListPage"
+    >
+    </DynamicTest>
   </div>
 </template>
 <script>
@@ -88,6 +98,7 @@ import CrowdABAdd from './crowdAbTest'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 import DynamicCrowdAdd from './dynamicCrowdAdd'
+import DynamicTest from './dynamicTest/Index'
 export default {
   data () {
     return {
@@ -154,6 +165,14 @@ export default {
       this.isShowCrowdList = false
       this.mode = 'isAddDynamicCrowd'
     },
+
+    // 添加动态人群
+    handleDynamicTest (row) {
+      this.isShowCrowdList = false
+      this.mode = 'isDynamicTest'
+      this.bigCrowdId = row.crowdId // 大人群ID
+    },
+
     goBackCrowdListPage (isLoadData) {
       this.isShowCrowdList = true
       if (isLoadData) this.$refs.list.loadData()
@@ -175,7 +194,8 @@ export default {
     CrowdABAdd,
     DynamicPeopleSetting,
     DynamicPeopleConditions,
-    DynamicCrowdAdd
+    DynamicCrowdAdd,
+    DynamicTest
   }
 }
 </script>

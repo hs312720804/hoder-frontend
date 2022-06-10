@@ -17,8 +17,7 @@
       <el-menu
         :default-active="activeRouteName"
         class="main_menu menu"
-        :collapse="isCollapseMenu"
-      >
+        :collapse="isCollapseMenu">
         <template v-for="(item, index) in $appState.menus">
           <el-menu-item
                   v-if="item.child.length === 0"
