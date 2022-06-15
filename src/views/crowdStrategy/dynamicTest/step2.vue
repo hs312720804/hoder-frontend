@@ -78,19 +78,41 @@
 
       <div class="circulationModeName">
         {{ getCirculationMode(radioType) }}流转
-        <el-input v-model="currentGroup.flowNum" placeholder="占比" style="width: 120px; vertical-align: text-top;"></el-input>
+        <el-tooltip class="item" effect="dark" content="分组占比" placement="top-start">
+          <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input>%</div>
+        </el-tooltip>
       </div>
       <div style="position: relative">
         <!-- 拓扑图 -->
         <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
       </div>
-      <el-dialog title="新建分组" :visible.sync="dialogFormVisible" width="800px">
+      <el-dialog title="新建分组" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="800px">
         <!-- {{form}} -->
-        <el-form ref="groupForm" :model="form" :label-width="formLabelWidth" class="addGroupForm">
+        <el-form ref="groupForm" :model="form" :rules="rules" :label-width="formLabelWidth" class="addGroupForm">
+
           <el-form-item label="分组名称：" required>
-            <el-input v-model="form.name" autocomplete="off"></el-input>
+            <el-col :span="13" style="margin-right: 13px;">
+              <el-form-item prop="name">
+                <el-input v-model="form.name" clearable autocomplete="off" ></el-input>
+              </el-form-item>
+            </el-col>
+            <el-col :span="5">
+              <el-form-item prop="mainArithmetic">
+                <el-tooltip class="item" effect="dark" content="分组算法" placement="top-start">
+                  <el-select v-model="form.mainArithmetic" clearable placeholder="请选择" style="width: 200px;">
+                    <el-option
+                      v-for="item in options"
+                      :key="item.value"
+                      :label="item.label"
+                      :value="item.value">
+                    </el-option>
+                  </el-select>
+                </el-tooltip>
+              </el-form-item>
+            </el-col>
+
           </el-form-item>
-          <el-form-item label="分组算法：" required>
+          <!-- <el-form-item label="分组算法：" required>
             <el-select v-model="form.mainArithmetic" placeholder="请选择">
               <el-option
                 v-for="item in options"
@@ -99,14 +121,27 @@
                 :value="item.value">
               </el-option>
             </el-select>
-          </el-form-item>
-          <el-form-item label="选择方案：" required >
+          </el-form-item> -->
+
+          <el-form-item label="选择方案：" prop="cid" required style="margin-bottom: 36px">
             <!-- 可拖拽穿梭框 -->
             <!-- 重新打开弹窗时，重置重新挂载穿梭框 -->
-            <DragSortMultiSelect v-if="dialogFormVisible" v-model="form.cid" :data="dynamic2CrowdList"></DragSortMultiSelect>
+              <template v-if="form.mainArithmetic === 4">
+                <el-select v-model="form.cid" placeholder="请选择方案">
+                  <el-option
+                    v-for="item in dynamic2CrowdList"
+                    :key="item.id"
+                    :label="item.label"
+                    :value="item.id">
+                  </el-option>
+                </el-select>
+              </template>
+              <template v-else>
+                <DragSortMultiSelect v-if="dialogFormVisible" v-model="form.cid" :data="dynamic2CrowdList"></DragSortMultiSelect>
+              </template>
           </el-form-item>
-          <el-form-item label="分组占比：" required>
-            <el-input v-model="form.flowNum" autocomplete="off"></el-input>%
+          <el-form-item label="分组占比：" required prop="flowNum">
+            <el-input v-model="form.flowNum" autocomplete="off" style="margin: 0 10px 0 0"></el-input>%
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -141,6 +176,7 @@ export default {
       return data
     }
     return {
+
       groupCheckIndex: undefined,
       radioType: 0,
       dataSourceColorEnum: {
@@ -182,6 +218,19 @@ export default {
         cid: [],
         flowNum: ''
       },
+      rules: {
+        name: [
+          { required: true, message: '请输入分组名称', trigger: 'blur' }
+        ],
+        mainArithmetic: [
+          { required: true, message: '请选择流转算法', trigger: 'change' }
+        ],
+        // cid: [
+        //   { type: 'array', required: true, message: '请至少选择一个方案', trigger: 'change' }
+        // ],
+        flowNum: [
+          { required: true, message: '请输入分组占比', trigger: 'blur' }
+        ] },
       formLabelWidth: '120px',
       options: [{
         value: 0,
@@ -195,6 +244,9 @@ export default {
       }, {
         value: 3,
         label: '自定义'
+      }, {
+        value: 4,
+        label: '不流转'
       }],
       dynamic2CrowdList: [], // 小人群列表
       dynamic2GroupList: [], // 分组列表
@@ -210,6 +262,13 @@ export default {
     //     })
     //   }
     // }
+    'form.mainArithmetic' (val, oldV) {
+      if (val === 4) {
+        this.form.cid = ''
+      } else if (oldV === 4) {
+        this.form.cid = []
+      }
+    },
     dynamic2GroupList: {
       handler (val) {
         console.log('33333val===所有的数据===>', val)
@@ -304,13 +363,17 @@ export default {
     },
     // 新建实验分组
     handleSaveGroup () {
-      const params = {
-        ...this.form,
-        cid: this.form.cid.join(',')
-      }
-      this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
-        this.dialogFormVisible = false
-        this.getDynamic2PlanList()
+      this.$refs['groupForm'].validate((valid) => {
+        if (valid) {
+          const params = {
+            ...this.form,
+            cid: Array.isArray(this.form.cid) ? this.form.cid.join(',') : this.form.cid
+          }
+          this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
+            this.dialogFormVisible = false
+            this.getDynamic2PlanList()
+          })
+        }
       })
     },
 
@@ -344,12 +407,12 @@ export default {
     addGroup () {
       this.dialogFormVisible = true
       console.log('this.$refs.groupForm===', this.$refs.groupForm)
-      // this.$refs.groupForm.resetFields() // 重置表单数据
+      this.$refs.groupForm && this.$refs.groupForm.resetFields() // 重置表单数据
       this.form = {
         name: '',
         policyId: this.policyId,
         crowdId: this.crowdId,
-        mainArithmetic: '',
+        mainArithmetic: 0,
         cid: [],
         flowNum: ''
       }
@@ -603,6 +666,7 @@ export default {
 <style scoped  lang="stylus">
 .form-class{
   margin: 0 auto 20px;
+  position: relative
 }
 .div-class{
   padding: 20px;
@@ -809,7 +873,9 @@ i {
   flex-direction: row;
 }
 .title {
-  font-size 16px
+  font-size: 18px;
+  color: #67c23a;
+  font-weight: 800;
 }
 
 .top {
@@ -828,18 +894,28 @@ i {
   display: inline-block;
 }
 .addGroupForm .el-input, .addGroupForm .el-select {
-  width: 300px;
+  width: 200px;
 }
 .circulationModeName {
   // position: absolute;
   font-size: 23px;
   text-align: center;
-  width: 100%;
-  top: 6px;
+  top: 107px;
   color: gray;
   z-index: 999
+  position: absolute;
+  left: 50%;
 }
 .addGroupBtn{
   margin 0 10px
+}
+
+.flowNum{
+  width: 86px;
+  vertical-align: text-top;
+  white-space: nowrap;
+  font-size: 16px;
+  float: right;
+  margin: 0 10px;
 }
 </style>

@@ -2,7 +2,6 @@
   <div id="mountNode" :style="{ width: width +'px' }" ref="mountNode">
     <div class="editor">
       <toolbar />
-      <div style="height: 42px;"></div>
       <div class="bottom-container">
         <minimap />
         <!-- <detail-panel /> -->
@@ -41,7 +40,7 @@ export default {
     },
     width: {
       type: Number,
-      default: document.documentElement.clientWidth
+      default: document.documentElement.clientWidth - 20
     },
     data: {
       type: Object,

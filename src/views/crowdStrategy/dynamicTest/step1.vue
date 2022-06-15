@@ -111,26 +111,54 @@ export default {
 
     // 添加字段
     handleAddFiled () {
-      this.menu.child.push({
-        crowdName: ''
-      })
+      if (this.menu.child.length < 32) { // 动态方案数量上限为32
+        this.menu.child.push({
+          crowdName: ''
+        })
+      }
     },
 
     // 删除字段
     handleReduceFiled (field, key, mode) {
+      // 未保存的直接删除，不用走接口
       if (!field.crowdId) {
         return this.menu[mode].splice(key, 1)
       }
+
       const params = {
         policyId: field.policyId || '',
         crowdId: field.crowdId || ''
       }
 
-      this.$service.delDynamicCrowd(params).then(() => {
+      this.$service.delDynamic2Crowd(params, '删除成功').then(() => {
         this.menu[mode].splice(key, 1)
+      }).catch(err => {
+        console.log('err===', err)
+        const current = this.menu[mode][key].crowdName
+        this.$confirm(`${current} 在${err.message}, 请确认删除`, '提示', {
+          confirmButtonText: '确定',
+          cancelButtonText: '取消',
+          type: 'warning'
+        }).then(() => {
+          // 确认删除
+          this.$service.delDynamic2CrowdConfirm(params, '删除成功').then(() => {
+            this.menu[mode].splice(key, 1)
+          })
+        }).catch(() => {
+          this.$message({
+            type: 'info',
+            message: '已取消删除'
+          })
+        })
+
+        // this.$prompt(`${err.message}, 请确认删除`, '', {
+        //   confirmButtonText: '确定',
+        //   cancelButtonText: '取消'
+        // }).then(({ value }) => {
+
+        // })
       })
     },
-
     // 判断表单是否通过校验
     isValidate () {
       let reg = new RegExp('^[1-9]([0-9])*$')

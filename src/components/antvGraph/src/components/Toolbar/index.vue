@@ -55,7 +55,7 @@
     <span class="separator"></span>
 
     <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
-    <div style="float: right; margin: 0 10px 0 0">
+    <div style="float: right; margin: 0 10px 0 0; line-height: 32px;">
       <el-radio-group v-model="value" @change="handleChangeView">
       <!-- <el-radio :label="3">备选项</el-radio>
       <el-radio :label="6">备选项</el-radio>
@@ -456,13 +456,14 @@ export default {
 <style scoped>
 .toolbar {
   box-sizing: border-box;
-  padding: 8px 0px;
+  padding: 10px 0px;
   width: 100%;
-  border: 1px solid #e9e9e9;
-  height: 42px;
+  /* border: 1px solid #e9e9e9;
+  border-top: none;
+  height: 40px;*/
   z-index: 3;
   box-shadow: 0px 8px 12px 0px rgba(0, 52, 107, 0.04);
-  position: absolute;
+  margin-top: -15px
 }
 .toolbar .command:nth-of-type(1) {
   margin-left: 24px;

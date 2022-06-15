@@ -963,3 +963,22 @@ export function saveDynamic2Plan (data) {
     isJSON: true
   })
 }
+
+// 删除动态人群配置
+export function delDynamic2Crowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/del',
+    data,
+    isJSON: true
+  })
+}
+// 删除动态人群配置
+export function delDynamic2CrowdConfirm (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/del/confirm',
+    data,
+    isJSON: true
+  })
+}

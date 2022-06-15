@@ -1,12 +1,13 @@
 <template>
   <div class="demo">
+    <!-- {{selectValue}} -->
     <el-transfer
       v-model="selectValue"
       filterable
       :data="data"
       :filter-method="filterMethod"
       :target-order="'push'"
-      :titles="['左边数据', '右边数据']"
+      :titles="['待选方案', '已选方案']"
       :props="{ key: 'id', label: 'label' }"
       :left-default-checked="hasCheckedWHLeftData"
       @left-check-change="handleWHLeftChange"
@@ -15,9 +16,12 @@
     >
       <span slot-scope="{ option }">
         {{ option.id }} - {{ option.label }}
-        <i class="el-icon-s-operation"></i>
+        <el-tooltip class="item" effect="dark" content="拖拽移动顺序" placement="top-start">
+          <i v-if="returnIconShow(option.id)" class="el-icon-s-operation"></i>
+        </el-tooltip>
       </span>
     </el-transfer>
+    <div class="tip">提示：已选方案的顺序决定了顺序流转、随机流转的顺序</div>
   </div>
 </template>
 <script>
@@ -114,6 +118,10 @@ export default {
     })
   },
   methods: {
+    // 只有选中数据显示拖拽按钮
+    returnIconShow (id) {
+      return this.selectValue.includes(id)
+    },
     // 数据左侧列表元素被用户选中 / 取消选中时触发
     handleWHLeftChange (key, key1) {
       var _this = this
@@ -259,5 +267,8 @@ a {
   position: absolute;
   top: 7px;
   left: 166px;
+}
+.tip {
+  float: right;
 }
 </style>

@@ -123,11 +123,11 @@
                           v-model="peoplePageCheck">
                           智能分人群模式
                       </el-checkbox> -->
-                      <el-checkbox
+                      <!-- <el-checkbox
                           style="margin-left: 20px"
                           v-model="isDynamicPeople">
                           动态人群
-                      </el-checkbox>
+                      </el-checkbox> -->
                   </template>
               </new-create-policy>
               <!--<create-policy-->
