@@ -21,7 +21,7 @@ export default {
   components: { G6Editor },
   provide () {
     return {
-      dynamicRuleProvide: this.dynamicRule
+      graphData: () => this.data
     }
   },
   data () {
@@ -64,48 +64,26 @@ export default {
       handler () {
         this.crowdList = this.dynamicRule.allCrowd || {}
 
-        if (this.type === 3) { // 随机 、编辑模式
+        // 编辑
+        if (this.dynamicRule.flowChart) {
+          const flowChart = JSON.parse(this.dynamicRule.flowChart)
+          this.data = flowChart
+          this.readData()
+          return
+        }
+
+        // 新增（初始化）
+        // 顺序，循环没有权重；随机，自定义有权重；
+        if (this.type === 3) { // 自定义 算法
           const defaultNodes = this.initDefaultNodes()
-          console.log('this.data.nodes===>1111111', defaultNodes)
 
           // this.data.nodes = this.initDefaultNodes()
-          if (this.dynamicRule.flowChart) { // 编辑数据
-            const flowChart = JSON.parse(this.dynamicRule.flowChart)
-            console.log('flowChart===', flowChart)
 
-            this.data.nodes = defaultNodes.map(defaultObj => {
-              const editObj = flowChart.nodes.find(node => {
-                return node.crowdId === defaultObj.crowdId
-              })
+          this.data.edges = []
+          this.data.nodes = defaultNodes
 
-              if (editObj) {
-                return {
-                  ...editObj,
-                  ...defaultObj,
-                  x: editObj.x, // 位置 - 接口传递的
-                  y: editObj.y, // 位置 - 接口传递的
-                  inPoints: defaultObj.inPoints, // 入口点 - 默认的
-                  outPoints: defaultObj.outPoints // 入口点 - 默认的
-                }
-              }
-              return defaultObj
-            })
-
-            this.data.edges = flowChart.edges.map(item => {
-              return {
-                ...item,
-                source: item.source.toString(),
-                target: item.target.toString(),
-                sourceId: item.sourceId.toString(),
-                targetId: item.targetId.toString()
-              }
-            })
-          } else {
-            this.data.edges = []
-            this.data.nodes = defaultNodes
-          }
           // this.data = flowChart || {}
-        } else if (this.crowdList.length > 0) { // 新增
+        } else if (this.crowdList.length > 0) { // 顺序、循环、随机 算法
           this.data.edges = []
           if (this.type === 0 || this.type === 1) {
             // this.init()
@@ -256,7 +234,6 @@ export default {
         return obj
       })
 
-      console.log('arr===>', arr)
       return arr
     },
 
@@ -291,7 +268,6 @@ export default {
         }
       })
 
-      console.log('arr===>', arr)
       // 初始数据
       this.data = {
         nodes: arr
@@ -326,8 +302,6 @@ export default {
       const left = Math.sin(ahd * index) * radius + dotLeft
       const top = Math.cos(ahd * index) * radius + dotTop
 
-      console.log('left===', left)
-      console.log('top===', top)
       return {
         left,
         top

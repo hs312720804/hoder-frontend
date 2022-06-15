@@ -6,7 +6,6 @@
       <div class="bottom-container">
         <minimap />
         <!-- <detail-panel /> -->
-
         <page :height="height" :width="width" :data="data" />
       </div>
     </div>

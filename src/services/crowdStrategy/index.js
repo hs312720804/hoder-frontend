@@ -953,3 +953,13 @@ export function deleteDynamic2Plan (data) {
     isJSON: true
   })
 }
+
+// 保存整个实验组
+export function saveDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/edit',
+    data,
+    isJSON: true
+  })
+}

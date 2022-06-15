@@ -1,6 +1,5 @@
 <template>
   <div>
-    <!-- <div>{{ rulesJson }}</div> -->
     <div v-if="tags && tags.length > 0" class="label-container">
       <div v-if="tags && tags.length > 0" >
         <div
@@ -127,6 +126,12 @@
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
   props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
+  inject: ['graphData'],
+  computed: {
+    computedGraphData () {
+      return this.graphData()
+    }
+  },
   data () {
     return {
       dataSourceColorEnum: {
@@ -178,12 +183,12 @@ export default {
     },
     init () {
       if (this.crowdId) {
-        const graphData = this.graph.save()
-        console.log('res===', graphData)
+        const graphData = this.computedGraphData // 当前图表的数据
 
         const res = graphData.nodes.find(item => {
           return Number(item.crowdId) === Number(this.crowdId)
         })
+
         // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
         this.policyId = res.policyId || ''
         // this.applyAll = !!(res.applyAll && res.applyAll === 1)

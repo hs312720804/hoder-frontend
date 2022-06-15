@@ -1,18 +1,19 @@
 <template>
   <div class="page">
     <div :id="pageId" class="graph-container" style="position: relative;"></div>
+
+    <!-- v-if 用于每次打开都重新挂载 -->
     <el-dialog
+      v-if="dialogVisible"
       title="设置动态流转条件"
       :visible.sync="dialogVisible"
       width="800px"
     >
       <SetCirculationConditionsCom
         :crowdId="crowdId"
-        :allCrowdRule="dynamicRuleProvide.allCrowd"
         :graph="graph"
         @handleCancel="dialogVisible = false"
-        @handleSave="handleSave"
-        >
+        @handleSave="handleSave">
       </SetCirculationConditionsCom>
 
     </el-dialog>
@@ -32,7 +33,6 @@ export default {
   components: {
     SetCirculationConditionsCom
   },
-  inject: ['dynamicRuleProvide'],
   data () {
     return {
       pageId: 'graph-container',
@@ -150,7 +150,9 @@ export default {
 
           _this.crowdId = selectNode.id
           _this.currentTarget = item.target // 当前操作对象
-          _this.dialogVisible = true
+          this.$nextTick(() => {
+            _this.dialogVisible = true
+          })
         })
 
         eventBus.$on('changeArithmeticType', item => { // 修改出口方式
@@ -170,11 +172,11 @@ export default {
 
           console.log('changeArithmeticType=====', selectNode)
 
-          const parmas = {
-            policyId: selectNode.policyId,
-            crowdId: selectNode.crowdId,
-            arithmetic: i
-          }
+          // const parmas = {
+          //   policyId: selectNode.policyId,
+          //   crowdId: selectNode.crowdId,
+          //   arithmetic: i
+          // }
           // this.$service.setDynamicRule(parmas).then(res => {
           const model = {
             arithmetic: i
@@ -194,15 +196,11 @@ export default {
             inputValue: selectNode.weight || 0,
             closeOnClickModal: false
           }).then(({ value }) => {
-            // _this.$message({
-            //   type: 'success',
-            //   message: '你的邮箱是: ' + value
-            // })
-            const parmas = {
-              policyId: selectNode.policyId,
-              crowdId: selectNode.crowdId,
-              weight: value
-            }
+            // const parmas = {
+            //   policyId: selectNode.policyId,
+            //   crowdId: selectNode.crowdId,
+            //   weight: value
+            // }
             // this.$service.setDynamicRule(parmas).then(res => {
             const model = {
               weight: value

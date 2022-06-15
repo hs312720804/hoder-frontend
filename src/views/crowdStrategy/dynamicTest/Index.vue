@@ -143,6 +143,4 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.header
-    margin-bottom 20px
 </style>

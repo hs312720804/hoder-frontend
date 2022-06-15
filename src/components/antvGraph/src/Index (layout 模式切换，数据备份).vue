@@ -233,8 +233,6 @@ export default {
       const left = Math.sin(ahd * index) * radius + dotLeft
       const top = Math.cos(ahd * index) * radius + dotTop
 
-      console.log('left===', left)
-      console.log('top===', top)
       return {
         left,
         top

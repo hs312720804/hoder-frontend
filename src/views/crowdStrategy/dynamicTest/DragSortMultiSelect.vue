@@ -1,8 +1,7 @@
 <template>
   <div class="demo">
-    {{value}}
     <el-transfer
-      v-model="value"
+      v-model="selectValue"
       filterable
       :data="data"
       :filter-method="filterMethod"
@@ -47,11 +46,15 @@ export default {
   },
   watch: {
     value (val) {
+      this.selectValue = val
+    },
+    selectValue (val) {
       this.$emit('input', val)
     }
   },
   data () {
     return {
+      selectValue: [],
       filterMethod (query, item) {
         let regStr = query.replace('/*/g', '.*')
         let reg = new RegExp(regStr)

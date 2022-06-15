@@ -1,43 +1,53 @@
 <template>
   <div class="form-class">
-      <div style="color: red">
-        <!-- 第4步
+      <!-- <div style="color: red">
+        第4步
         :policyId:: {{ policyId }}<br/>
+        <hr>
         :crowdId:: {{ crowdId }}<br/>
-        dynamicRule: {{ dynamicRule }} -->
-
-      </div>
+        <hr>
+        当前图表的数据:<br/> {{ dynamicRule }}<br/>
+        <hr>
+        所有分组: <br/>{{ dynamic2GroupList }}<br/>
+        <hr>
+        当前选中的分组数据: <br/>{{ currentGroup }}<br/>
+        <hr>
+        groupCheckIndex::{{groupCheckIndex}}
+      </div> -->
 
       <div class="top">
-        <span class="title">实验分组</span>
-        {{ dynamic2GroupList }}
-         <el-tabs
-          v-model="groupCheckIndex"
-          type="card"
-          closable
-          @tab-remove="removeTab"
-          @tab-click="handleClick">
-          <el-tab-pane
-            v-for="(group, index) in dynamic2GroupList"
-            :key="group.id"
-            :label="group.name"
-            :name="String(index)">
-          </el-tab-pane>
-        </el-tabs>
-        <el-button
-          type="success"
-          icon="el-icon-plus"
-          @click="addGroup">
-          添加分组
-        </el-button>
+        <div>
+          <span class="title">实验分组</span>
+          <el-button
+            type="success"
+            icon="el-icon-plus"
+            @click="addGroup"
+            class="addGroupBtn">
+            添加分组
+          </el-button>
+        </div>
 
-        <div class="btn">
+        <div>
           <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
           <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
           <el-button type="primary" @click="handleSave(3)">保存</el-button>
         </div>
-
       </div>
+
+      <!-- 分组列表 -->
+       <!-- @tab-click="handleClick" -->
+      <el-tabs
+        v-model="groupCheckIndex"
+        type="card"
+        closable
+        @tab-remove="removeTab">
+        <el-tab-pane
+          v-for="(group, index) in dynamic2GroupList"
+          :key="group.id"
+          :label="group.name"
+          :name="String(index)">
+        </el-tab-pane>
+      </el-tabs>
 
       <div style="position: absolute; top: 300px; z-index: 999;">
         <span class="inputArrow"></span>
@@ -66,13 +76,17 @@
 
       </div>
 
-      <!-- 拓扑图 -->
-
-      <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
-
+      <div class="circulationModeName">
+        {{ getCirculationMode(radioType) }}流转
+        <el-input v-model="currentGroup.flowNum" placeholder="占比" style="width: 120px; vertical-align: text-top;"></el-input>
+      </div>
+      <div style="position: relative">
+        <!-- 拓扑图 -->
+        <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
+      </div>
       <el-dialog title="新建分组" :visible.sync="dialogFormVisible" width="800px">
-        {{form}}
-        <el-form :model="form" :label-width="formLabelWidth" class="addGroupForm">
+        <!-- {{form}} -->
+        <el-form ref="groupForm" :model="form" :label-width="formLabelWidth" class="addGroupForm">
           <el-form-item label="分组名称：" required>
             <el-input v-model="form.name" autocomplete="off"></el-input>
           </el-form-item>
@@ -88,7 +102,8 @@
           </el-form-item>
           <el-form-item label="选择方案：" required >
             <!-- 可拖拽穿梭框 -->
-            <AAA v-model="form.cid" :data="dynamic2CrowdList"></AAA>
+            <!-- 重新打开弹窗时，重置重新挂载穿梭框 -->
+            <DragSortMultiSelect v-if="dialogFormVisible" v-model="form.cid" :data="dynamic2CrowdList"></DragSortMultiSelect>
           </el-form-item>
           <el-form-item label="分组占比：" required>
             <el-input v-model="form.flowNum" autocomplete="off"></el-input>%
@@ -106,11 +121,11 @@
 <script>
 import antvGraph from '@antvGraph/Index.vue'
 import eventBus from '@antvGraph/utils/eventBus'
-import AAA from './DragSortMultiSelect'
+import DragSortMultiSelect from './DragSortMultiSelect'
 export default {
   components: {
     antvGraph,
-    AAA
+    DragSortMultiSelect
   },
   props: ['policyId', 'crowdId'],
 
@@ -126,7 +141,7 @@ export default {
       return data
     }
     return {
-      groupCheckIndex: 0,
+      groupCheckIndex: undefined,
       radioType: 0,
       dataSourceColorEnum: {
         1: 'success',
@@ -144,7 +159,10 @@ export default {
       },
       i: 0,
       showGraph: true,
-      dynamicRule: {},
+      dynamicRule: {
+        flowChart: null,
+        allCrowd: []
+      },
       graph: undefined,
       condition: {
         1: '定向',
@@ -179,39 +197,88 @@ export default {
         label: '自定义'
       }],
       dynamic2CrowdList: [], // 小人群列表
-      dynamic2GroupList: [] // 分组列表
+      dynamic2GroupList: [], // 分组列表
+      currentGroup: {} // 当前选中的分组数据
     }
   },
   watch: {
-    radioType: {
-      handler () {
-        // 修改流转算法 type 时，重新获取最新的拓扑图数据
-        this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-          this.dynamicRule = res || {}
-        })
-      }
+    // radioType: {
+    //   handler () {
+    //     // 修改流转算法 type 时，重新获取最新的拓扑图数据
+    //     this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+    //       this.dynamicRule = res || {}
+    //     })
+    //   }
+    // }
+    dynamic2GroupList: {
+      handler (val) {
+        console.log('33333val===所有的数据===>', val)
+      },
+      deep: true
+    },
+    groupCheckIndex: {
+      handler (val, oldV) {
+        if (this.dynamic2GroupList.length > 0) {
+          // 获取当前图表的graph数据，并保存
+          const currentGroupChartJson = this.getChartJson()
+          if (currentGroupChartJson) {
+            console.log('currentGroupChartJson====', currentGroupChartJson)
+            this.dynamic2GroupList[oldV].flowChart = currentGroupChartJson || null
+          }
+
+          // 设置分组中小人群数据、图表数据
+          this.setGroupData(val)
+          console.log('dynamic2GroupList===========', this.dynamic2GroupList)
+        }
+      },
+      immediate: true
     }
   },
   created () {
     // if (this.crowdId) {
+    this.bindEvent()
     this.getDynamic2CrowdList() // 获取小人群列表
     this.getDynamic2PlanList() // 获取实验组列表
-    this.getRule()
-    this.bindEvent()
+    // this.getRule()
     // }
   },
   beforeDestroy () {
     // console.log('this.graph===>', this.graph)
     // this.graph && this.graph.destroyed()
+    // alert('beforeDestroy')
     if (this.graph) {
       this.graph = null
     }
     eventBus.$off()
   },
   methods: {
-    // 选中分组
-    handleClick (item) {
-      console.log('item===>', item)
+    getCirculationMode (type) {
+      const obj = this.options.find(item => item.value === type)
+      return obj.label
+    },
+    // 设置分组中小人群数据、图表数据
+    setGroupData (val) {
+      this.currentGroup = this.dynamic2GroupList[val]
+      const currentGroup = this.currentGroup
+
+      const cid = currentGroup.cid // 方案id 'id1, id2'
+      this.radioType = currentGroup.mainArithmetic // 流转算法
+
+      const params = {
+        crowdId: this.crowdId, // 大人群ID    不能为空
+        child: cid
+      }
+      // 获取人群中的方案
+      this.$service.getDynamic2CrowdList(params).then(res => {
+        this.dynamicRule.flowChart = currentGroup.flowChart
+        this.dynamicRule.allCrowd = res
+      })
+    },
+    getChartJson () {
+      console.log('this.graph===', this.graph)
+      const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : null
+      console.log('flowChartJson===', flowChartJson)
+      return flowChartJson
     },
     // 删除分组
     removeTab (index) {
@@ -225,7 +292,7 @@ export default {
           id: currentGroup.id
         }
         this.$service.deleteDynamic2Plan(params, '删除分组成功').then(res => {
-          this.groupCheckIndex = '0'
+          // this.groupCheckIndex = '0'
           this.getDynamic2PlanList()
         })
       }).catch(() => {
@@ -251,10 +318,13 @@ export default {
     getDynamic2PlanList () {
       this.$service.getDynamic2PlanList({ crowdId: this.crowdId }).then(res => {
         this.dynamic2GroupList = res || []
+        this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
+        // 设置分组中小人群数据、图表数据
+        this.setGroupData(0)
       })
     },
 
-    // 获取小人群列表
+    // 获取全部小人群列表
     getDynamic2CrowdList () {
       const params = {
         crowdId: this.crowdId // 大人群ID    不能为空
@@ -273,6 +343,16 @@ export default {
     },
     addGroup () {
       this.dialogFormVisible = true
+      console.log('this.$refs.groupForm===', this.$refs.groupForm)
+      // this.$refs.groupForm.resetFields() // 重置表单数据
+      this.form = {
+        name: '',
+        policyId: this.policyId,
+        crowdId: this.crowdId,
+        mainArithmetic: '',
+        cid: [],
+        flowNum: ''
+      }
     },
     getRule () {
       const res = {
@@ -344,6 +424,7 @@ export default {
     bindEvent () {
       const _this = this
       eventBus.$on('afterAddPage', page => {
+        // alert('create')
         this.graph = page.graph
         this.graph.on('afteradditem', function (ev) {
           const flowChart = _this.graph ? _this.graph.save() : {}
@@ -442,23 +523,35 @@ export default {
       //   })
       // }
     },
-    handleBackPrevStep () {
-      this.$emit('crowdPrevStep', 1, this.recordId)
-    },
+    // handleBackPrevStep () {
+    //   this.$emit('crowdPrevStep', 1, this.recordId)
+    // },
     handleSave (mode) {
       // 流程图JSON
-      const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : ''
-      const parmas = {
-        policyId: this.policyId,
-        crowdId: this.crowdId,
-        mainArithmetic: this.radioType,
-        // arithmetic: 1,
-        flowChart: flowChartJson,
-        exitCrowd: this.exitCrowd,
-        arithmetic: this.bigArithmetic
-        // dynamicJson: JSON.stringify(this.rulesJson)
+      // const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : ''
+      // const parmas = {
+      //   policyId: this.policyId,
+      //   crowdId: this.crowdId,
+      //   mainArithmetic: this.radioType,
+      //   // arithmetic: 1,
+      //   flowChart: flowChartJson,
+      //   exitCrowd: this.exitCrowd,
+      //   arithmetic: this.bigArithmetic
+      //   // dynamicJson: JSON.stringify(this.rulesJson)
+      // }
+
+      // 获取当前图表的graph数据，并保存
+      const currentGroupChartJson = this.getChartJson()
+      if (currentGroupChartJson) {
+        console.log('currentGroupChartJson====', currentGroupChartJson)
+        this.dynamic2GroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
       }
-      this.$service.setBigCrowdRule(parmas, '操作成功').then(res => {
+
+      // 整个实验分组的数据
+      const parmas = this.dynamic2GroupList
+
+      this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
+        this.$emit('goBackCrowdListPage')
         // if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
         //   if (mode === 3) {
         //     this.$emit('crowdNextStep', 3)
@@ -718,14 +811,14 @@ i {
 .title {
   font-size 16px
 }
-.btn{
-  position: absolute;right: 0;top: 0;
-}
+
 .top {
   position relative
-  right: 0
   width 100%
   background: #fff
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
 }
 .inputArrow{
   // background: url('@/assets/icons/arrow.svg')
@@ -736,5 +829,17 @@ i {
 }
 .addGroupForm .el-input, .addGroupForm .el-select {
   width: 300px;
+}
+.circulationModeName {
+  // position: absolute;
+  font-size: 23px;
+  text-align: center;
+  width: 100%;
+  top: 6px;
+  color: gray;
+  z-index: 999
+}
+.addGroupBtn{
+  margin 0 10px
 }
 </style>
