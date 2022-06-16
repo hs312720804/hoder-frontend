@@ -129,7 +129,7 @@
             </el-select>
           </el-form-item> -->
 
-          <el-form-item label="选择方案：" prop="cid" required style="margin-bottom: 36px">
+          <el-form-item label="选择方案：" required style="margin-bottom: 36px">
             <!-- 可拖拽穿梭框 -->
             <!-- 重新打开弹窗时，重置重新挂载穿梭框 -->
               <template v-if="form.mainArithmetic === 4">
@@ -147,7 +147,7 @@
               </template>
           </el-form-item>
           <el-form-item label="分组占比：" required prop="flowNum">
-            <el-input v-model="form.flowNum" autocomplete="off" style="margin: 0 10px 0 0"></el-input>%
+            <el-input v-model="form.flowNum" clearable autocomplete="off" style="margin: 0 10px 0 0"></el-input>%
           </el-form-item>
         </el-form>
         <div slot="footer" class="dialog-footer">
@@ -231,9 +231,9 @@ export default {
         mainArithmetic: [
           { required: true, message: '请选择流转算法', trigger: 'change' }
         ],
-        // cid: [
-        //   { type: 'array', required: true, message: '请至少选择一个方案', trigger: 'change' }
-        // ],
+        cid: [
+          { required: true, message: '请至少选择一个方案', trigger: 'change' }
+        ],
         flowNum: [
           { required: true, message: '请输入分组占比', trigger: 'blur' }
         ] },

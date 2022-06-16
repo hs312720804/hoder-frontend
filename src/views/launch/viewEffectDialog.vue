@@ -39,7 +39,7 @@
 export default {
   name: 'viewEffectDialog',
   props: {
-    policyId: {
+    crowdId: {
       type: [Number, String],
       default: ''
     }
@@ -56,28 +56,28 @@ export default {
         }
       },
       rowObj: [{ // 图表信息，需要和后端约定好名称
-        'sequence_hit_l_1': { type: 'line', title: '人群命中对比', span: 15 },
-        'sequence_hit_h_1': { type: 'bar', title: '人群命中量汇总对比', span: 9 }
+        'crowdGroup_hit_l_1': { type: 'line', title: '人群命中次数对比', span: 15 },
+        'crowdGroup_hit_h_1': { type: 'bar', title: '人群命中次数汇总对比', span: 9 }
       }, {
-        'sequence_l_2': { type: 'line', title: '产品包曝光量对比', span: 15 },
-        'sequence_h_2': { type: 'bar', title: '产品包曝光量汇总对比', span: 9 }
+        'crowdGroup_l_2': { type: 'line', title: '产品包曝光设备量对比', span: 15 },
+        'crowdGroup_h_2': { type: 'bar', title: '产品包曝光设备量汇总对比', span: 9 }
       }, {
-        'sequence_l_3': { type: 'line', title: '付费设备量对比', span: 15 },
-        'sequence_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
+        'crowdGroup_l_3': { type: 'line', title: '付费设备量对比', span: 15 },
+        'crowdGroup_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
       }, {
-        'sequence_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
-        'sequence_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }
+        'crowdGroup_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
+        'crowdGroup_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }
       }, {
-        'sequence_l_5': { type: 'line', title: '客单价对比（元）', span: 15 },
-        'sequence_h_5': { type: 'bar', title: '平均客单价汇总对比', span: 9 }
+        'crowdGroup_l_5': { type: 'line', title: '客单价对比（元）', span: 15 },
+        'crowdGroup_h_5': { type: 'bar', title: '平均客单价汇总对比', span: 9 }
       }, {
-        'sequence_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
-        'sequence_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
+        'crowdGroup_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
+        'crowdGroup_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
       }, {
-        'sequence_l_8': { type: 'line', title: '付费单量对比', span: 15 },
-        'sequence_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
+        'crowdGroup_l_8': { type: 'line', title: '付费单量对比', span: 15 },
+        'crowdGroup_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
       }, {
-        'sequence_hit_h_7': { type: 'bar', title: '各子人群命中量对比', span: 24 }
+        'crowdGroup_hit_h_7': { type: 'bar', title: '各子人群命中次数对比', span: 24 }
       }
       ]
     }
@@ -88,7 +88,7 @@ export default {
     //     this.initChart()
     //   }
     // },
-    policyId: {
+    crowdId: {
       handler (val) {
         this.show = false
         this.initRange()
@@ -130,20 +130,20 @@ export default {
       this.allChartData = {}
       // chart1
       // this.getBusinessUseTendency(this.rangeType)
-      // 172.20.148.31:8011/chart/policySixIndexStats?policyId=1890&startDate=2021-11-01&endDate=2021-11-22
-      const params = {
-        policyId: this.policyId,
-        startDate: this.timeRange[0],
-        endDate: this.timeRange[1]
-      }
+      // 172.20.148.31:8011/chart/policySixIndexStats?crowdId=1890&startDate=2021-11-01&endDate=2021-11-22
       // const params = {
-      //   policyId: 1890,
-      //   startDate: '2021-11-01',
-      //   endDate: '2021-11-22'
+      //   crowdId: this.crowdId,
+      //   startDate: this.timeRange[0],
+      //   endDate: this.timeRange[1]
       // }
-      // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
+      const params = {
+        crowdId: 3219,
+        startDate: '2022-05-11',
+        endDate: '2022-06-10'
+      }
+      // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?crowdId=2906&startDate=2022-03-18&endDate=2022-04-19
       // const params = {
-      //   policyId: 2906,
+      //   crowdId: 2906,
       //   startDate: '2022-03-18',
       //   endDate: '2022-04-19'
       // }

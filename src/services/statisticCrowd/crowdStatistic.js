@@ -241,11 +241,19 @@ export function getStatisticCrowdLaunch (params) {
   })
 }
 
+// // 动态人群效果对比接口
+// export function getPolicySixIndexStats (params) {
+//   return this.fetch({
+//     method: 'get',
+//     url: '/api/chart/policySixIndexStats',
+//     params
+//   })
+// }
 // 动态人群效果对比接口
 export function getPolicySixIndexStats (params) {
   return this.fetch({
     method: 'get',
-    url: '/api/chart/policySixIndexStats',
+    url: '/api/chart/crowdGroupIndexStatistics',
     params
   })
 }

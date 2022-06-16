@@ -201,10 +201,10 @@
                 <el-dropdown-item
                         :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
-                <el-dropdown-item
+                <!-- <el-dropdown-item
                       v-if="scope.row.smart"
                       :command="['viewEffect',scope.row]"
-                  >查看效果</el-dropdown-item>
+                  >查看效果</el-dropdown-item> -->
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-dropdown @command="handleCommandStastic">-->

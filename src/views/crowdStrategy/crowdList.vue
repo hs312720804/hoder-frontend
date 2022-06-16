@@ -1393,6 +1393,11 @@
         <el-button @click="showOperationalAnalysis = false">取 消</el-button>
       </span> -->
     </el-dialog>
+
+    <!-- 动态人群 - 查看效果 -->
+    <el-dialog :visible.sync="showViewEffect" width="80%">
+      <viewEffectDialog :crowdId="currentCid"></viewEffectDialog>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1402,13 +1407,16 @@ import priorityEdit from '../../components/PriorityEdit'
 import crowdStatusResource from './CrowdStatusResource'
 import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
+import viewEffectDialog from '../launch/viewEffectDialog'
+
 export default {
   components: {
     // Table,
     priorityEdit,
     crowdStatusResource,
     CommitHistoryDialog,
-    numOrTextEdit
+    numOrTextEdit,
+    viewEffectDialog
   },
   data () {
     return {
@@ -1684,7 +1692,9 @@ export default {
           }
         ],
         data: []
-      }
+      },
+      showViewEffect: false
+
     }
   },
   props: ['selectRow'],
@@ -2507,11 +2517,16 @@ export default {
     // 策略使用以及各业务使用次数统计
     handleCommandStastic (scope) {
       const type = scope[0]
-      this.currentCid = scope[1].crowdId
+      const row = scope[1]
+      this.currentCid = row.crowdId
       switch (type) {
         // 统计投后效果
         case 'detail':
-          this.showCrowdDetailDialog()
+          if (row.dynamicFlag === 1) { // 动态人群
+            this.showViewEffect = true
+          } else {
+            this.showCrowdDetailDialog()
+          }
           break
           // 人群画像估算
         case 'estimatedDetail':
@@ -2524,7 +2539,7 @@ export default {
           this.getActiveBehavior()
           break
         case 'homepageData':
-          this.handleSeeHomepageData(this.currentCid, scope[1].crowdName)
+          this.handleSeeHomepageData(this.currentCid, row.crowdName)
           break
         case 'redirectCrowd':
           this.handleClickRedirectList(this.currentCid)

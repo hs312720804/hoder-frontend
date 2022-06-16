@@ -1,6 +1,6 @@
 const ENV = process.env.NODE_ENV
-// const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
-const BACKEND = process.env.BACKEND || '172.20.135.121:8011' // 圈人群二期数据
+const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
+// const BACKEND = process.env.BACKEND || '172.20.135.121:8011' // 动态人群 3 期
 // const BACKEND = process.env.BACKEND || '172.20.148.31:8011' // 许成卿 - 运营分析
 
 // const BACKEND = process.env.BACKEND || '172.20.135.124:8011'
