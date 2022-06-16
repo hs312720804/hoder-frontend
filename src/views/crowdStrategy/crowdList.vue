@@ -532,8 +532,14 @@
       <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
            <template slot-scope="scope">
-               <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
-               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+             <!-- 动态人群 -->
+             <el-button v-if="scope.row.dynamicFlag===1" type="text" @click="showDynamicList(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+
+              <!-- 普通人群 -->
+              <span v-else-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
+
+              <!-- AB实验人群 或者 再分割人群 -->
+              <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
       <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
@@ -1158,6 +1164,17 @@
       </div>
 
     </el-dialog>
+
+    <!--动态人群实验组列表-->
+    <el-dialog :visible.sync="showDynamicListDetail" title="划分详情">
+      <c-table
+        :props="dynamic2GroupListTable.props"
+        :header="dynamic2GroupListTable.header"
+        :data="dynamic2GroupListTable.data"
+      >
+      </c-table>
+    </el-dialog>
+
     <commit-history-dialog
             :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
             :crowdId="currentCrowdId"
@@ -1628,6 +1645,42 @@ export default {
                 h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
               ])
             }
+          }
+        ],
+        data: []
+      },
+      dynamic2GroupList: [], // 动态人群实验分组列表
+      showDynamicListDetail: false,
+      dynamic2GroupListTable: {
+        props: {},
+        header: [
+          {
+            label: '流转ID',
+            prop: 'id'
+          },
+          {
+            label: '流转名称',
+            prop: 'name'
+          },
+          {
+            label: '占比',
+            prop: 'flowNum',
+            render: (h, { row }) => {
+              console.log(row)
+              return h('div', {}, `${row.flowNum}%`)
+            }
+          },
+          {
+            label: '流转方式',
+            prop: 'mainArithmetic',
+            render: (h, { row }) => {
+              const options = ['顺序', '循环', '随机', '自定义', '不流转']
+              return options[row.mainArithmetic]
+            }
+          },
+          {
+            label: '数量',
+            prop: 'receive_total_user'
           }
         ],
         data: []
@@ -3103,6 +3156,16 @@ export default {
         this.setBarEchart('activeBehavior', '圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)', names, values)
       })
     },
+
+    // 获取实验组列表
+    showDynamicList (crowdId) {
+      this.$service.getDynamic2PlanList({ crowdId }).then(res => {
+        // this.dynamic2GroupList = res || []
+        this.dynamic2GroupListTable.data = res || []
+        this.showDynamicListDetail = true
+      })
+    },
+
     // 人群画像估算---结束
     // 显示划分详情
     showDivideResult (crowdId) {

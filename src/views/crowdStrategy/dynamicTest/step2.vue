@@ -88,6 +88,9 @@
           <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
         </div>
       </div>
+      <div v-else>
+        <el-empty description="暂无分组，请添加"></el-empty>
+      </div>
 
       <el-dialog title="新建分组" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="800px">
         <!-- {{form}} -->
