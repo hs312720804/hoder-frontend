@@ -1,7 +1,7 @@
 <template>
   <div class="form-class">
-      <!-- <div style="color: red">
-        第4步
+      <!-- <div style="color: red"> -->
+        <!-- 第4步
         :policyId:: {{ policyId }}<br/>
         <hr>
         :crowdId:: {{ crowdId }}<br/>
@@ -9,11 +9,11 @@
         当前图表的数据:<br/> {{ dynamicRule }}<br/>
         <hr>
         所有分组: <br/>{{ dynamic2GroupList }}<br/>
-        <hr>
-        当前选中的分组数据: <br/>{{ currentGroup }}<br/>
-        <hr>
-        groupCheckIndex::{{groupCheckIndex}}
-      </div> -->
+        <hr> -->
+        <!-- 当前选中的分组数据: <br/>{{ currentGroup }}<br/> -->
+        <!-- <hr> -->
+        <!-- groupCheckIndex::{{groupCheckIndex}} -->
+      <!-- </div> -->
 
       <div class="top">
         <div>
@@ -34,58 +34,61 @@
         </div>
       </div>
 
-      <!-- 分组列表 -->
-       <!-- @tab-click="handleClick" -->
-      <el-tabs
-        v-model="groupCheckIndex"
-        type="card"
-        closable
-        @tab-remove="removeTab">
-        <el-tab-pane
-          v-for="(group, index) in dynamic2GroupList"
-          :key="group.id"
-          :label="group.name"
-          :name="String(index)">
-        </el-tab-pane>
-      </el-tabs>
+      <div v-if="dynamic2GroupList.length > 0">
+        <!-- 分组列表 -->
+        <!-- @tab-click="handleClick" -->
+        <el-tabs
+          v-model="groupCheckIndex"
+          type="card"
+          closable
+          @tab-remove="removeTab">
+          <el-tab-pane
+            v-for="(group, index) in dynamic2GroupList"
+            :key="group.id"
+            :label="group.name"
+            :name="String(index)">
+          </el-tab-pane>
+        </el-tabs>
 
-      <div style="position: absolute; top: 172px; z-index: 999;">
-        <span class="inputArrow"></span>
-        <!-- <el-button type="text">文字按钮</el-button> -->
-        <!-- {{radioType === 3}} -->
-        <template v-if="radioType === 3">
-          <el-button type="text" @click="handleChangeBigArithmetic" style="display: inline-block; vertical-align: 23px;">
-            {{ condition[this.bigArithmetic] }}
-            <!-- {{ this.bigArithmetic }} -->
-          </el-button>
-          <!-- <div>1定向 2随机 3 终止</div> -->
-          <el-select
-            v-if="Number(this.bigArithmetic) == 1"
-            v-model="currentGroup.exitCrowd"
-            placeholder="请选择"
-            style="width: 100px; display: inline-block; vertical-align: 23px;"
-          >
-            <el-option
-              v-for="item in crowdOptions"
-              :key="item.crowdId"
-              :label="item.crowdName"
-              :value="item.crowdId">
-            </el-option>
-          </el-select>
-        </template>
+        <div style="position: absolute; top: 172px; z-index: 999;">
+          <span class="inputArrow"></span>
+          <!-- <el-button type="text">文字按钮</el-button> -->
+          <!-- {{radioType === 3}} -->
+          <template v-if="radioType === 3">
+            <el-button type="text" @click="handleChangeBigArithmetic" style="display: inline-block; vertical-align: 23px;">
+              {{ condition[this.bigArithmetic] }}
+              <!-- {{ this.bigArithmetic }} -->
+            </el-button>
+            <!-- <div>1定向 2随机 3 终止</div> -->
+            <el-select
+              v-if="Number(this.bigArithmetic) == 1"
+              v-model="currentGroup.exitCrowd"
+              placeholder="请选择"
+              style="width: 100px; display: inline-block; vertical-align: 23px;"
+            >
+              <el-option
+                v-for="item in crowdOptions"
+                :key="item.crowdId"
+                :label="item.crowdName"
+                :value="item.crowdId">
+              </el-option>
+            </el-select>
+          </template>
 
+        </div>
+
+        <div class="circulationModeName">
+          {{ getCirculationMode(radioType) }}流转
+          <el-tooltip class="item" effect="dark" content="分组占比" placement="top-start">
+            <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input>%</div>
+          </el-tooltip>
+        </div>
+        <div style="position: relative">
+          <!-- 拓扑图 -->
+          <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
+        </div>
       </div>
 
-      <div class="circulationModeName">
-        {{ getCirculationMode(radioType) }}流转
-        <el-tooltip class="item" effect="dark" content="分组占比" placement="top-start">
-          <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input>%</div>
-        </el-tooltip>
-      </div>
-      <div style="position: relative">
-        <!-- 拓扑图 -->
-        <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
-      </div>
       <el-dialog title="新建分组" :visible.sync="dialogFormVisible" :close-on-click-modal="false" width="800px">
         <!-- {{form}} -->
         <el-form ref="groupForm" :model="form" :rules="rules" :label-width="formLabelWidth" class="addGroupForm">
