@@ -49,7 +49,7 @@
         </el-tab-pane>
       </el-tabs>
 
-      <div style="position: absolute; top: 300px; z-index: 999;">
+      <div style="position: absolute; top: 172px; z-index: 999;">
         <span class="inputArrow"></span>
         <!-- <el-button type="text">文字按钮</el-button> -->
         <!-- {{radioType === 3}} -->
@@ -61,7 +61,7 @@
           <!-- <div>1定向 2随机 3 终止</div> -->
           <el-select
             v-if="Number(this.bigArithmetic) == 1"
-            v-model="exitCrowd"
+            v-model="currentGroup.exitCrowd"
             placeholder="请选择"
             style="width: 100px; display: inline-block; vertical-align: 23px;"
           >
@@ -322,6 +322,7 @@ export default {
 
       const cid = currentGroup.cid // 方案id 'id1, id2'
       this.radioType = currentGroup.mainArithmetic // 流转算法
+      this.bigArithmetic = currentGroup.arithmetic || 2 // 大的出口条件， 默认【随机】
 
       const params = {
         crowdId: this.crowdId, // 大人群ID    不能为空
@@ -331,6 +332,9 @@ export default {
       this.$service.getDynamic2CrowdList(params).then(res => {
         this.dynamicRule.flowChart = currentGroup.flowChart
         this.dynamicRule.allCrowd = res
+
+        // 大的出口 选择定向时，选择人群id
+        this.crowdOptions = res
       })
     },
     getChartJson () {
@@ -417,73 +421,73 @@ export default {
         flowNum: ''
       }
     },
-    getRule () {
-      const res = {
-        'policyId': 4112,
-        'flowChart': null,
-        'mainArithmetic': 0,
-        'allCrowd': [{
-          'policyId': 4112,
-          'dynamicJson': null,
-          'weight': 0,
-          'arithmetic': null,
-          'priority': 345,
-          'crowdId': 11222,
-          'crowdName': '345'
-        }, {
-          'policyId': 4112,
-          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          'weight': 120,
-          'arithmetic': null,
-          'priority': 23,
-          'crowdId': 11223,
-          'crowdName': '23'
-        }],
-        'arithmetic': null,
-        'unused': [{
-          'policyId': 4112,
-          'dynamicJson': null,
-          'weight': 0,
-          'arithmetic': null,
-          'priority': 345,
-          'crowdId': 11222,
-          'crowdName': '345'
-        }, {
-          'policyId': 4112,
-          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          'weight': 120,
-          'arithmetic': null,
-          'priority': 23,
-          'crowdId': 11223,
-          'crowdName': '23'
-        }],
-        'crowdId': 11219,
-        'exitCrowd': null
-      }
+    // getRule () {
+    //   const res = {
+    //     'policyId': 4112,
+    //     'flowChart': null,
+    //     'mainArithmetic': 0,
+    //     'allCrowd': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'arithmetic': null,
+    //     'unused': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'crowdId': 11219,
+    //     'exitCrowd': null
+    //   }
 
-      this.dynamicRule = res
-      this.radioType = res.mainArithmetic // 流转算法
-      this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+    //   this.dynamicRule = res
+    //   this.radioType = res.mainArithmetic // 流转算法
+    //   this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
 
-      // 大的出口 选择定向时，选择人群id
-      this.crowdOptions = res.allCrowd
+    //   // 大的出口 选择定向时，选择人群id
+    //   this.crowdOptions = res.allCrowd
 
-      this.exitCrowd = res.exitCrowd
-      // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-      //   console.log('res===', res)
-      //   if (res) {
-      //     // 小人群列表
-      //     this.dynamicRule = res
-      //     this.radioType = res.mainArithmetic // 流转算法
-      //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+    //   this.exitCrowd = res.exitCrowd
+    //   // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+    //   //   console.log('res===', res)
+    //   //   if (res) {
+    //   //     // 小人群列表
+    //   //     this.dynamicRule = res
+    //   //     this.radioType = res.mainArithmetic // 流转算法
+    //   //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
 
-      //     // 大的出口 选择定向时，选择人群id
-      //     this.crowdOptions = res.allCrowd
+    //   //     // 大的出口 选择定向时，选择人群id
+    //   //     this.crowdOptions = res.allCrowd
 
-      //     this.exitCrowd = res.exitCrowd
-      //   }
-      // })
-    },
+    //   //     this.exitCrowd = res.exitCrowd
+    //   //   }
+    //   // })
+    // },
     bindEvent () {
       const _this = this
       eventBus.$on('afterAddPage', page => {
@@ -536,6 +540,10 @@ export default {
       //   i = 1
       // }
       this.bigArithmetic = i
+      // 设置当前分组的数据
+      this.currentGroup.arithmetic = i // 大人群出口方式
+
+      // this.dynamic2GroupList[this.groupCheckIndex].arithmetic = i
     },
 
     handleAddChildRule (tag) {
@@ -887,7 +895,7 @@ i {
   padding: 12px 0;
 }
 .inputArrow{
-  // background: url('@/assets/icons/arrow.svg')
+  background: url('../../../assets/icons/arrow.svg')
   background-size: cover;
   width: 63px;
   height: 60px;
