@@ -6,9 +6,9 @@
         <hr>
         :crowdId:: {{ crowdId }}<br/>
         <hr>
-        当前图表的数据:<br/> {{ dynamicRule }}<br/>
+        当前图表的数据:<br/> {{ currentGraphData }}<br/>
         <hr>
-        所有分组: <br/>{{ dynamic2GroupList }}<br/>
+        所有分组的全部数据: <br/>{{ allGroupList }}<br/>
         <hr> -->
         <!-- 当前选中的分组数据: <br/>{{ currentGroup }}<br/> -->
         <!-- <hr> -->
@@ -34,7 +34,7 @@
         </div>
       </div>
 
-      <div v-if="dynamic2GroupList.length > 0">
+      <div v-if="allGroupList.length > 0">
         <!-- 分组列表 -->
         <!-- @tab-click="handleClick" -->
         <el-tabs
@@ -43,7 +43,7 @@
           closable
           @tab-remove="removeTab">
           <el-tab-pane
-            v-for="(group, index) in dynamic2GroupList"
+            v-for="(group, index) in allGroupList"
             :key="group.id"
             :label="group.name"
             :name="String(index)">
@@ -85,7 +85,8 @@
         </div>
         <div style="position: relative">
           <!-- 拓扑图 -->
-          <antv-graph v-if="dynamicRule.allCrowd && dynamicRule.allCrowd.length > 0" :type="radioType" :dynamicRule="dynamicRule"></antv-graph>
+          <!-- currentGraphData: 当前图表的数据 -->
+          <antv-graph v-if="currentGraphData.allCrowd && currentGraphData.allCrowd.length > 0" :type="radioType" :currentGraphData="currentGraphData"></antv-graph>
         </div>
       </div>
       <div v-else>
@@ -135,7 +136,7 @@
               <template v-if="form.mainArithmetic === 4">
                 <el-select v-model="form.cid" placeholder="请选择方案">
                   <el-option
-                    v-for="item in dynamic2CrowdList"
+                    v-for="item in smallCrowdList"
                     :key="item.id"
                     :label="item.label"
                     :value="item.id">
@@ -143,7 +144,7 @@
                 </el-select>
               </template>
               <template v-else>
-                <DragSortMultiSelect v-if="dialogFormVisible" v-model="form.cid" :data="dynamic2CrowdList"></DragSortMultiSelect>
+                <DragSortMultiSelect v-if="dialogFormVisible" v-model="form.cid" :data="smallCrowdList"></DragSortMultiSelect>
               </template>
           </el-form-item>
           <el-form-item label="分组占比：" required prop="flowNum">
@@ -171,16 +172,16 @@ export default {
   props: ['policyId', 'crowdId'],
 
   data () {
-    const generateData = _ => {
-      const data = []
-      for (let i = 1; i <= 5; i++) {
-        data.push({
-          key: i,
-          label: `方案 ${i}`
-        })
-      }
-      return data
-    }
+    // const generateData = _ => {
+    //   const data = []
+    //   for (let i = 1; i <= 5; i++) {
+    //     data.push({
+    //       key: i,
+    //       label: `方案 ${i}`
+    //     })
+    //   }
+    //   return data
+    // }
     return {
 
       groupCheckIndex: undefined,
@@ -201,7 +202,7 @@ export default {
       },
       i: 0,
       showGraph: true,
-      dynamicRule: {
+      currentGraphData: { // 当前图表的数据
         flowChart: null,
         allCrowd: []
       },
@@ -215,7 +216,7 @@ export default {
       exitCrowd: '',
       crowdOptions: [],
       dialogFormVisible: false,
-      data: generateData(),
+      // data: generateData(),
       form: {
         name: '',
         policyId: this.policyId,
@@ -254,8 +255,8 @@ export default {
         value: 4,
         label: '不流转'
       }],
-      dynamic2CrowdList: [], // 小人群列表
-      dynamic2GroupList: [], // 分组列表
+      smallCrowdList: [], // 小人群列表
+      allGroupList: [], // 所有分组的全部数据
       currentGroup: {} // 当前选中的分组数据
     }
   },
@@ -275,25 +276,22 @@ export default {
         this.form.cid = []
       }
     },
-    dynamic2GroupList: {
+    allGroupList: {
       handler (val) {
-        console.log('33333val===所有的数据===>', val)
       },
       deep: true
     },
     groupCheckIndex: {
       handler (val, oldV) {
-        if (this.dynamic2GroupList.length > 0) {
+        if (this.allGroupList.length > 0) {
           // 获取当前图表的graph数据，并保存
           const currentGroupChartJson = this.getChartJson()
           if (currentGroupChartJson) {
-            console.log('currentGroupChartJson====', currentGroupChartJson)
-            this.dynamic2GroupList[oldV].flowChart = currentGroupChartJson || null
+            this.allGroupList[oldV].flowChart = currentGroupChartJson || null
           }
 
           // 设置分组中小人群数据、图表数据
           this.setGroupData(val)
-          console.log('dynamic2GroupList===========', this.dynamic2GroupList)
         }
       },
       immediate: true
@@ -323,7 +321,7 @@ export default {
     },
     // 设置分组中小人群数据、图表数据
     setGroupData (val) {
-      this.currentGroup = this.dynamic2GroupList[val]
+      this.currentGroup = this.allGroupList[val]
       const currentGroup = this.currentGroup
 
       const cid = currentGroup.cid // 方案id 'id1, id2'
@@ -336,8 +334,8 @@ export default {
       }
       // 获取人群中的方案
       this.$service.getDynamic2CrowdList(params).then(res => {
-        this.dynamicRule.flowChart = currentGroup.flowChart
-        this.dynamicRule.allCrowd = res
+        this.currentGraphData.flowChart = currentGroup.flowChart
+        this.currentGraphData.allCrowd = res
 
         // 大的出口 选择定向时，选择人群id
         this.crowdOptions = res
@@ -351,7 +349,7 @@ export default {
     },
     // 删除分组
     removeTab (index) {
-      const currentGroup = this.dynamic2GroupList[index]
+      const currentGroup = this.allGroupList[index]
       this.$confirm(`此操作将永久删除 ${currentGroup.name} 分组, 是否继续?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -390,7 +388,7 @@ export default {
     // 获取实验组列表
     getDynamic2PlanList () {
       this.$service.getDynamic2PlanList({ crowdId: this.crowdId }).then(res => {
-        this.dynamic2GroupList = res || []
+        this.allGroupList = res || []
         this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
         // 设置分组中小人群数据、图表数据
         this.setGroupData(0)
@@ -403,7 +401,7 @@ export default {
         crowdId: this.crowdId // 大人群ID    不能为空
       }
       this.$service.getDynamic2CrowdList(params).then(res => {
-        this.dynamic2CrowdList = res.map(item => {
+        this.smallCrowdList = res.map(item => {
           return {
             id: item.crowdId,
             label: item.crowdName
@@ -427,73 +425,7 @@ export default {
         flowNum: ''
       }
     },
-    // getRule () {
-    //   const res = {
-    //     'policyId': 4112,
-    //     'flowChart': null,
-    //     'mainArithmetic': 0,
-    //     'allCrowd': [{
-    //       'policyId': 4112,
-    //       'dynamicJson': null,
-    //       'weight': 0,
-    //       'arithmetic': null,
-    //       'priority': 345,
-    //       'crowdId': 11222,
-    //       'crowdName': '345'
-    //     }, {
-    //       'policyId': 4112,
-    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-    //       'weight': 120,
-    //       'arithmetic': null,
-    //       'priority': 23,
-    //       'crowdId': 11223,
-    //       'crowdName': '23'
-    //     }],
-    //     'arithmetic': null,
-    //     'unused': [{
-    //       'policyId': 4112,
-    //       'dynamicJson': null,
-    //       'weight': 0,
-    //       'arithmetic': null,
-    //       'priority': 345,
-    //       'crowdId': 11222,
-    //       'crowdName': '345'
-    //     }, {
-    //       'policyId': 4112,
-    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-    //       'weight': 120,
-    //       'arithmetic': null,
-    //       'priority': 23,
-    //       'crowdId': 11223,
-    //       'crowdName': '23'
-    //     }],
-    //     'crowdId': 11219,
-    //     'exitCrowd': null
-    //   }
 
-    //   this.dynamicRule = res
-    //   this.radioType = res.mainArithmetic // 流转算法
-    //   this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
-
-    //   // 大的出口 选择定向时，选择人群id
-    //   this.crowdOptions = res.allCrowd
-
-    //   this.exitCrowd = res.exitCrowd
-    //   // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
-    //   //   console.log('res===', res)
-    //   //   if (res) {
-    //   //     // 小人群列表
-    //   //     this.dynamicRule = res
-    //   //     this.radioType = res.mainArithmetic // 流转算法
-    //   //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
-
-    //   //     // 大的出口 选择定向时，选择人群id
-    //   //     this.crowdOptions = res.allCrowd
-
-    //   //     this.exitCrowd = res.exitCrowd
-    //   //   }
-    //   // })
-    // },
     bindEvent () {
       const _this = this
       eventBus.$on('afterAddPage', page => {
@@ -520,7 +452,7 @@ export default {
 
       // 注意这里要统一成字符串：.toString()
       const isTargetCrowdIdList = edges.map(item => item.target.toString())
-      const allCrowdList = this.dynamicRule.allCrowd
+      const allCrowdList = this.currentGraphData.allCrowd
       this.crowdOptions = allCrowdList.filter(item => {
         return !isTargetCrowdIdList.includes(item.crowdId.toString())
       }) || []
@@ -549,7 +481,7 @@ export default {
       // 设置当前分组的数据
       this.currentGroup.arithmetic = i // 大人群出口方式
 
-      // this.dynamic2GroupList[this.groupCheckIndex].arithmetic = i
+      // this.allGroupList[this.groupCheckIndex].arithmetic = i
     },
 
     handleAddChildRule (tag) {
@@ -621,11 +553,11 @@ export default {
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
         console.log('currentGroupChartJson====', currentGroupChartJson)
-        this.dynamic2GroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
+        this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
       }
 
-      // 整个实验分组的数据
-      const parmas = this.dynamic2GroupList
+      // 所有实验分组的数据
+      const parmas = this.allGroupList
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
         this.$emit('goBackCrowdListPage')
@@ -673,6 +605,73 @@ export default {
     handleDirectStrategyListBrother () {
       this.$emit('handleDirectStrategyList')
     }
+    // getRule () {
+    //   const res = {
+    //     'policyId': 4112,
+    //     'flowChart': null,
+    //     'mainArithmetic': 0,
+    //     'allCrowd': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'arithmetic': null,
+    //     'unused': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'crowdId': 11219,
+    //     'exitCrowd': null
+    //   }
+
+    //   this.dynamicRule = res
+    //   this.radioType = res.mainArithmetic // 流转算法
+    //   this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+    //   // 大的出口 选择定向时，选择人群id
+    //   this.crowdOptions = res.allCrowd
+
+    //   this.exitCrowd = res.exitCrowd
+    //   // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+    //   //   console.log('res===', res)
+    //   //   if (res) {
+    //   //     // 小人群列表
+    //   //     this.dynamicRule = res
+    //   //     this.radioType = res.mainArithmetic // 流转算法
+    //   //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+    //   //     // 大的出口 选择定向时，选择人群id
+    //   //     this.crowdOptions = res.allCrowd
+
+    //   //     this.exitCrowd = res.exitCrowd
+    //   //   }
+    //   // })
+    // },
   }
 }
 </script>

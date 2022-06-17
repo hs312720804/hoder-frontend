@@ -7,7 +7,7 @@
         </div>
       </div>
     </div> -->
-    <G6Editor mode="edit" :data="data" :height="height" :width="width">
+    <G6Editor mode="edit" :data="flowChartData" :height="height" :width="width">
     </G6Editor>
   </div>
 </template>
@@ -19,16 +19,16 @@ import eventBus from '@antvGraph/utils/eventBus'
 export default {
   name: 'app',
   components: { G6Editor },
-  provide () {
-    return {
-      graphData: () => this.data
-    }
-  },
+  // provide () {
+  //   return {
+  //     graphData: () => this.data
+  //   }
+  // },
   data () {
     return {
       width: 0,
       // height: 600,
-      data: {},
+      flowChartData: {},
       Y: -50,
       // X: 600,
       // Y: document.documentElement.clientHeight,
@@ -54,20 +54,19 @@ export default {
       type: Number,
       default: 0
     },
-    dynamicRule: {
+    currentGraphData: {
       type: Object,
       default: () => {}
     }
   },
   watch: {
-    dynamicRule: {
+    currentGraphData: {
       handler () {
-        this.crowdList = this.dynamicRule.allCrowd || {}
+        this.crowdList = this.currentGraphData.allCrowd || {}
 
-        // 编辑
-        if (this.dynamicRule.flowChart) {
-          const flowChart = JSON.parse(this.dynamicRule.flowChart)
-          this.data = flowChart
+        // 编辑 直接使用传入的json
+        if (this.currentGraphData.flowChart) {
+          this.flowChartData = JSON.parse(this.currentGraphData.flowChart)
           this.readData()
           return
         }
@@ -79,24 +78,22 @@ export default {
 
           // this.data.nodes = this.initDefaultNodes()
 
-          this.data.edges = []
-          this.data.nodes = defaultNodes
-
-          // this.data = flowChart || {}
+          this.flowChartData.edges = []
+          this.flowChartData.nodes = defaultNodes
         } else if (this.crowdList.length > 0) { // 顺序、循环、随机 算法
-          this.data.edges = []
+          this.flowChartData.edges = []
           if (this.type === 0 || this.type === 1) {
             // this.init()
             // 初始数据
-            this.data.nodes = this.initDefaultNodes()
-            this.data.edges = this.initEdges(this.type)
+            this.flowChartData.nodes = this.initDefaultNodes()
+            this.flowChartData.edges = this.initEdges(this.type)
           } else if (this.type === 2) {
             this.initRandomNodes()
           } else {
             // this.init()
             // 初始数据
-            this.data.nodes = this.initDefaultNodes()
-            this.data.edges = this.initEdges(this.type)
+            this.flowChartData.nodes = this.initDefaultNodes()
+            this.flowChartData.edges = this.initEdges(this.type)
           }
         }
         this.readData()
@@ -131,20 +128,20 @@ export default {
 
     // 刷新数据，渲染图表
     readData () {
-      let data = this.data
-      if (data) {
+      let flowChartData = this.flowChartData
+      if (flowChartData) {
         // this.graph.clear()
-        this.graph && this.graph.refresh(data)
+        this.graph && this.graph.refresh(flowChartData)
       }
       if (this.graph) {
         this.graph.refresh()
-        this.graph.read(data)
+        this.graph.read(flowChartData)
       }
     },
     // init () {
     //   // 初始数据
-    //   this.data.nodes = this.initDefaultNodes()
-    //   this.data.edges = this.initEdges(this.type)
+    //   this.flowChartData.nodes = this.initDefaultNodes()
+    //   this.flowChartData.edges = this.initEdges(this.type)
     // },
     // 初始化连线
     initEdges (type) {

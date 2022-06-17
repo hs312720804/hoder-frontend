@@ -75,13 +75,33 @@ export default {
         applyAll: paramsObj.applyAll ? 1 : 0
       }
       // this.$service.setDynamicRule(parmas, '操作成功').then(res => {
-      this.dialogVisible = false
 
-      const model = {
-        dynamicJson: parmas.dynamicJson
+      if (parmas.applyAll) { // 应用全部人群
+        const graphData = this.graph.save()
+        const nodes = graphData.nodes
+
+        const setApplyAllNodes = nodes.map(item => {
+          return {
+            ...item,
+            dynamicJson: parmas.dynamicJson
+          }
+        })
+
+        const graphData2 = { // 覆盖nodes属性
+          ...graphData,
+          nodes: setApplyAllNodes
+        }
+        this.graph.read(graphData2)
+      } else { // 修改单个人群
+        const model = {
+          dynamicJson: parmas.dynamicJson
+        }
+
+        this.graph.update(this.currentTarget, model) // 更新 流转规则 数据
       }
 
-      this.graph.update(this.currentTarget, model) // 更新 流转规则 数据
+      this.dialogVisible = false
+
       // })
     },
     init () {

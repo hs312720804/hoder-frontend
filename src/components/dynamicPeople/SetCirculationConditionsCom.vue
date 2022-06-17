@@ -126,12 +126,12 @@
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
   props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
-  inject: ['graphData'],
-  computed: {
-    computedGraphData () {
-      return this.graphData()
-    }
-  },
+  // inject: ['graphData'],
+  // computed: {
+  //   computedGraphData () {
+  //     return this.graphData()
+  //   }
+  // },
   data () {
     return {
       dataSourceColorEnum: {
@@ -163,7 +163,7 @@ export default {
     }
   },
   created () {
-    // 获取流转条件
+    // 获取标签
     this.$service.getRuleIndicators().then(res => {
       this.tags = res
     })
@@ -183,7 +183,8 @@ export default {
     },
     init () {
       if (this.crowdId) {
-        const graphData = this.computedGraphData // 当前图表的数据
+        // const graphData = this.computedGraphData // 当前图表的数据
+        const graphData = this.graph.save() // 当前图表的数据
 
         const res = graphData.nodes.find(item => {
           return Number(item.crowdId) === Number(this.crowdId)
@@ -197,7 +198,7 @@ export default {
           this.rulesJson = JSON.parse(res.dynamicJson)
           console.log('res===', this.rulesJson)
         } else {
-          // 重置
+          // 初始化
           this.rulesJson = {
             condition: 'OR',
             rules: []

@@ -59,10 +59,10 @@ export default {
         'crowdGroup_hit_l_1': { type: 'line', title: '人群命中次数对比', span: 15 },
         'crowdGroup_hit_h_1': { type: 'bar', title: '人群命中次数汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_2': { type: 'line', title: '产品包曝光设备量对比', span: 15 },
+        'crowdGroup_l_2': { type: 'line', title: '产品包曝光设备量对比（个）', span: 15 },
         'crowdGroup_h_2': { type: 'bar', title: '产品包曝光设备量汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_3': { type: 'line', title: '付费设备量对比', span: 15 },
+        'crowdGroup_l_3': { type: 'line', title: '付费设备量对比（个）', span: 15 },
         'crowdGroup_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
       }, {
         'crowdGroup_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
@@ -74,10 +74,10 @@ export default {
         'crowdGroup_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
         'crowdGroup_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_8': { type: 'line', title: '付费单量对比', span: 15 },
+        'crowdGroup_l_8': { type: 'line', title: '付费单量对比（单）', span: 15 },
         'crowdGroup_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
       }, {
-        'crowdGroup_hit_h_7': { type: 'bar', title: '各子人群命中次数对比', span: 24 }
+        'crowdGroup_hit_h_7': { type: 'bar', title: '各子人群命中次数对比（个）', span: 24 }
       }
       ]
     }
@@ -189,18 +189,20 @@ export default {
     //  折线图
     showLine (data, chartID) {
       // console.log('showLine======111>>>', ...arguments)
-
       if (data && data.xaxis) {
-      // this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
         const series = data.series || []
         const legendData = series.map((key) => {
           return key.name
         })
         const linesData = series.map((key) => {
-          return { name: key.name, data: key.value, type: 'line' }
+          if (data.yunit === '%') {
+            const arr = key.value.map(v => v * 100)
+            return { name: key.name, data: arr, type: 'line' }
+          } else {
+            return { name: key.name, data: key.value, type: 'line' }
+          }
         })
         this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
-      // })
       }
     },
 
@@ -208,10 +210,11 @@ export default {
     showBar (data, chartID) {
       // console.log('showBar======111>>>', ...chartID)
       if (data && data.xaxis) {
+        if (data.yunit === '%') {
+          data.series = data.series.map(v => v * 100)
+        }
         this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit)
       }
-      // this.$service.getStatisticCrowdLife({ rangeType }).then((data) => {
-      // })
     },
 
     // 通用柱状图参数设置
@@ -288,9 +291,9 @@ export default {
 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      console.log('setBarEchart======111>>>', this.$refs)
-      console.log('setBarEchart======111>>>', element)
-      console.log('setBarEchart======111>>>', this.$refs[element])
+      // console.log('setBarEchart======111>>>', this.$refs)
+      // console.log('setBarEchart======111>>>', element)
+      // console.log('setBarEchart======111>>>', this.$refs[element])
       let echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
       let myChart = echarts.init(document.getElementById(element))
