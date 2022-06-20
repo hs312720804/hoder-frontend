@@ -207,6 +207,7 @@ export default {
     handleDynamicTest (row, mode) {
       this.isShowCrowdList = false
       this.mode = mode
+      this.crowdId = row.crowdId
       this.bigCrowdId = row.crowdId // 大人群ID
       console.log('mode====', mode)
     }

@@ -21,8 +21,8 @@
           <el-button
             type="success"
             icon="el-icon-plus"
-            @click="addGroup"
-            class="addGroupBtn">
+            class="addGroupBtn"
+            @click="addGroup">
             添加分组
           </el-button>
         </div>
