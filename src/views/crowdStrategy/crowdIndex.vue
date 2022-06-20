@@ -1,15 +1,15 @@
 <template>
   <div>
+    <!-- @editDynamicPeopleSetting="editDynamicPeopleSetting"
+    @editDynamicPeopleConditions="editDynamicPeopleConditions"
+    @addDynamicCrowd="addDynamicCrowd" -->
     <crowd-list
       v-show="isShowCrowdList"
       ref="list"
       :selectRow="selectRow"
       @goBack="goBackFirstLayer"
       @addCrowd="addCrowd"
-      @addDynamicCrowd="addDynamicCrowd"
       @editABCrowd="editABCrowd"
-      @editDynamicPeopleSetting="editDynamicPeopleSetting"
-      @editDynamicPeopleConditions="editDynamicPeopleConditions"
       @getBigCrowdId="getBigCrowdId"
       @handleDynamicTest="handleDynamicTest"
     ></crowd-list>
@@ -80,15 +80,38 @@
     >
     </DynamicCrowdAdd> -->
 
-    <!-- 动态人群3期 动态实验 流程 -->
+    <!-- 动态人群3期 新增动态实验 流程 -->
     <DynamicTest
-      v-if="!isShowCrowdList && mode === 'isDynamicTest'"
+      v-if="!isShowCrowdList && mode === 'addDynamicTest'"
       :initPolicyId="selectRow.policyId"
       :initPolicyName="selectRow.policyName"
       :initCrowdId="bigCrowdId"
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </DynamicTest>
+    <!-- 编辑动态实验 -->
+    <div v-if="!isShowCrowdList && mode === 'editDynamicCrowd'">
+      <el-tabs v-model="tabSet" type="card">
+        <el-tab-pane label="编辑人群条件" name="first">
+          <crowd-add
+            :crowdId="crowdId"
+            :policyId="selectRow.policyId"
+            :limitLaunchDisabled="effectCrowd"
+            @goBackCrowdListPage="goBackCrowdListPage"
+          >
+          </crowd-add>
+        </el-tab-pane>
+        <el-tab-pane label="编辑动态人群" name="second">
+          <DynamicTest
+            :initPolicyId="selectRow.policyId"
+            :initPolicyName="selectRow.policyName"
+            :initCrowdId="bigCrowdId"
+            @goBackCrowdListPage="goBackCrowdListPage"
+          >
+          </DynamicTest>
+        </el-tab-pane>
+      </el-tabs>
+    </div>
   </div>
 </template>
 <script>
@@ -119,22 +142,22 @@ export default {
     getBigCrowdId (crowdId) {
       this.bigCrowdId = crowdId
     },
-    editDynamicPeopleSetting (row) {
-      console.log('this.selectRow===', this.selectRow)
-      this.isShowCrowdList = false
-      this.mode = 'step2'
-      this.crowdId = row.crowdId
-      this.policyId = row.policyId
-      this.policyName = row.policyName
-    },
-    editDynamicPeopleConditions  (row) {
-      console.log('this.selectRow===', this.selectRow)
-      this.isShowCrowdList = false
-      this.mode = 'step3'
-      this.crowdId = row.crowdId
-      this.policyId = row.policyId
-      this.policyName = row.policyName
-    },
+    // editDynamicPeopleSetting (row) {
+    //   console.log('this.selectRow===', this.selectRow)
+    //   this.isShowCrowdList = false
+    //   this.mode = 'step2'
+    //   this.crowdId = row.crowdId
+    //   this.policyId = row.policyId
+    //   this.policyName = row.policyName
+    // },
+    // editDynamicPeopleConditions  (row) {
+    //   console.log('this.selectRow===', this.selectRow)
+    //   this.isShowCrowdList = false
+    //   this.mode = 'step3'
+    //   this.crowdId = row.crowdId
+    //   this.policyId = row.policyId
+    //   this.policyName = row.policyName
+    // },
     goBackFirstLayer () {
       // 回到第一层页面，即策略列表页
       this.$emit('goBack')
@@ -161,17 +184,10 @@ export default {
       }
     },
     // 添加动态人群
-    addDynamicCrowd () {
-      this.isShowCrowdList = false
-      this.mode = 'isAddDynamicCrowd'
-    },
-
-    // 添加动态人群
-    handleDynamicTest (row) {
-      this.isShowCrowdList = false
-      this.mode = 'isDynamicTest'
-      this.bigCrowdId = row.crowdId // 大人群ID
-    },
+    // addDynamicCrowd () {
+    //   this.isShowCrowdList = false
+    //   this.mode = 'isAddDynamicCrowd'
+    // },
 
     goBackCrowdListPage (isLoadData) {
       this.isShowCrowdList = true
@@ -186,7 +202,22 @@ export default {
       this.mode = mode
       // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
       this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
+    },
+    // 添加动态人群
+    handleDynamicTest (row, mode) {
+      this.isShowCrowdList = false
+      this.mode = mode
+      this.bigCrowdId = row.crowdId // 大人群ID
+      console.log('mode====', mode)
     }
+
+    // 编辑动态人群
+    // editDynamicCrowd (row) {
+    //   this.isShowCrowdList = false
+    //   this.bigCrowdId = row.crowdId // 大人群ID
+    //   this.mode = 'editDynamicCrowd'
+    // }
+
   },
   components: {
     CrowdAdd,

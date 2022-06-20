@@ -669,7 +669,7 @@
               v-if="isShow('Dynamic', scope.row)"
               size="small"
               type="text"
-              @click="handleDynamicTest(scope.row)">
+              @click="handleDynamicTest(scope.row, 'addDynamicTest')">
               动态实验
             </el-button>
             <!-- <el-button
@@ -2017,9 +2017,9 @@ export default {
       this.$emit('addDynamicCrowd')
     },
 
-    // 动态实验
-    handleDynamicTest (row) {
-      this.$emit('handleDynamicTest', row)
+    // 新增/编辑动态实验
+    handleDynamicTest (row, mode) {
+      this.$emit('handleDynamicTest', row, mode)
     },
     edit (row) {
       this.$emit('addCrowd', row)
@@ -2824,8 +2824,10 @@ export default {
       const params = scope[1]
       switch (type) {
         case 'edit':
-          if (params.abMainCrowd === 1) {
+          if (params.abMainCrowd === 1) { // AB人群
             this.divideAB(params, 'editABTest')
+          } else if (params.dynamicFlag === 1) { // 编辑动态人群
+            this.handleDynamicTest(params, 'editDynamicCrowd')
           } else {
             this.edit(params)
           }
