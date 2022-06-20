@@ -542,6 +542,19 @@
               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
            </template>
       </el-table-column>
+      <el-table-column prop="crowdName" label="人群类型" width="100">
+        <template slot-scope="scope">
+          <!-- 动态人群 -->
+          <span v-if="scope.row.dynamicFlag===1">动态人群</span>
+          <!-- 普通人群 -->
+          <span v-else-if="scope.row.abMainCrowd === 0">普通人群</span>
+          <!-- AB实验人群 -->
+          <span v-else-if="scope.row.abMainCrowd===1">AB实验人群</span>
+          <!-- 再分割人群 -->
+          <span v-else-if="scope.row.abMainCrowd===3">再分割人群</span>
+
+        </template>
+      </el-table-column>
       <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
           <template slot="header">
             优先级
@@ -1171,6 +1184,7 @@
 
     <!--动态人群实验组列表-->
     <el-dialog :visible.sync="showDynamicListDetail" title="划分详情">
+      <span class="detailTitle">动态流转</span>
       <c-table
         :props="dynamic2GroupListTable.props"
         :header="dynamic2GroupListTable.header"

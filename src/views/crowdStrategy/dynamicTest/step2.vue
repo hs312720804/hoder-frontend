@@ -28,7 +28,7 @@
         </div>
 
         <div>
-          <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
+          <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button>
           <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
           <el-button type="primary" @click="handleSave(3)">保存</el-button>
         </div>
@@ -378,17 +378,16 @@ export default {
           }
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
             this.dialogFormVisible = false
-            this.getDynamic2PlanList()
+            this.getDynamic2PlanList('add')
           })
         }
       })
     },
 
     // 获取实验组列表
-    getDynamic2PlanList () {
+    getDynamic2PlanList (mode) {
       this.$service.getDynamic2PlanList({ crowdId: this.crowdId }).then(res => {
         const groupList = res || [] // 新数据
-        console.log('groupList===', groupList)
 
         // 现有的分组，就用已有的数据
         // 新增的分组，赋新值
@@ -412,8 +411,11 @@ export default {
           console.log('currentGroupChartJson====', currentGroupChartJson)
           this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
         }
-
-        this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
+        if (mode === 'add') {
+          this.groupCheckIndex = (this.allGroupList.length - 1).toString()
+        } else {
+          this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
+        }
         // 设置分组中小人群数据、图表数据
         this.setGroupData(0)
       })
