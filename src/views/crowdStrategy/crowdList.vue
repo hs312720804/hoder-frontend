@@ -635,10 +635,9 @@
                 <el-dropdown-item v-if="scope.row.forcastStatus == 3"
                   :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
-                <!-- AB 和 运营分析是互斥的 -->
-                <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
+                <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+                <el-dropdown-item v-if="isShow('Yunying', scope.row)"
                   :command="['operationalAnalysis',scope.row]"
-                  :disabled="scope.row.abMainCrowd === 1"
                 >运营分析</el-dropdown-item>
                 <el-dropdown-item
                   :command="['detail',scope.row]"
@@ -655,25 +654,29 @@
                 <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
+
+            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
             <el-button
-              v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
+              v-if="isShow('AB', scope.row)"
               size="small"
               type="text"
               @click="divideAB(scope.row,'addABTest')">
               AB实验
             </el-button>
 
+            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
             <el-button
+              v-if="isShow('Dynamic', scope.row)"
               size="small"
               type="text"
               @click="handleDynamicTest(scope.row)">
               动态实验
             </el-button>
             <!-- <el-button
-                    :disabled="isShowTest(scope.row)"
-                    size="small"
-                    type="text"
-                    @click="handleOpenTestDialog(scope.row)"
+              :disabled="isShowTest(scope.row)"
+              size="small"
+              type="text"
+              @click="handleOpenTestDialog(scope.row)"
             >投前测试
             </el-button> -->
             <el-dropdown @command="handleCommandOpreate">
@@ -1750,6 +1753,42 @@ export default {
     // }
   },
   methods: {
+    // 互斥
+    isShow (key, row) {
+      // abMainCrowd    0-普通人群  1-ab主   2-ab的小   3-再分割
+
+      // abMainCrowd = 1  代表是AB分割人群
+      // abMainCrowd = 3 代表是再分割人群
+      // dynamicFlag = 1 代表是动态人群
+
+      // 显示的条件：
+
+      // // AB
+      // const showAB = row.abMainCrowd === 0 && !row.limitLaunch
+
+      // // 运营分析
+      // const showYunying = row.behaviorTempCrowdId && row.abMainCrowd !== 1
+
+      // // 动态实验
+      // const showDynamic = row.dynamicFlag === 1
+
+      // AB人群
+      const isAB = row.abMainCrowd === 1
+
+      // 运营分析（再分割人群）
+      const isYunying = row.abMainCrowd === 3
+
+      // 动态实验
+      const isDynamic = row.dynamicFlag === 1
+
+      if (key === 'AB') {
+        return !isAB && !isYunying && !isDynamic && !row.limitLaunch
+      } else if (key === 'Yunying') {
+        return !isAB && !isDynamic
+      } else if (key === 'Dynamic') {
+        return !isAB && !isYunying && !isDynamic
+      }
+    },
     handleSortChange (obj) {
       console.log('column====', obj)
       console.log('<========================>', this.initExpandCrowd)
