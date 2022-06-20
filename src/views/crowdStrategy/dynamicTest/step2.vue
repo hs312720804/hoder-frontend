@@ -276,11 +276,11 @@ export default {
         this.form.cid = []
       }
     },
-    allGroupList: {
-      handler (val) {
-      },
-      deep: true
-    },
+    // allGroupList: {
+    //   handler (val) {
+    //   },
+    //   deep: true
+    // },
     groupCheckIndex: {
       handler (val, oldV) {
         if (this.allGroupList.length > 0) {
@@ -342,9 +342,8 @@ export default {
       })
     },
     getChartJson () {
-      console.log('this.graph===', this.graph)
       const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : null
-      console.log('flowChartJson===', flowChartJson)
+
       return flowChartJson
     },
     // 删除分组
@@ -388,7 +387,32 @@ export default {
     // 获取实验组列表
     getDynamic2PlanList () {
       this.$service.getDynamic2PlanList({ crowdId: this.crowdId }).then(res => {
-        this.allGroupList = res || []
+        const groupList = res || [] // 新数据
+        console.log('groupList===', groupList)
+
+        // 现有的分组，就用已有的数据
+        // 新增的分组，赋新值
+        this.allGroupList = groupList.map(item => {
+          const oldItem = this.allGroupList.filter(obj => obj.id === item.id)
+
+          if (oldItem.length > 0) {
+            return {
+              ...oldItem[0]
+            }
+          } else {
+            return {
+              ...item
+            }
+          }
+        })
+
+        // 获取当前图表的graph数据，并保存
+        const currentGroupChartJson = this.getChartJson()
+        if (currentGroupChartJson) {
+          console.log('currentGroupChartJson====', currentGroupChartJson)
+          this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
+        }
+
         this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
         // 设置分组中小人群数据、图表数据
         this.setGroupData(0)

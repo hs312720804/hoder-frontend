@@ -602,6 +602,7 @@
               <span v-if="scope.row.forcastStatus == 2">估算中</span>
               <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
               <span v-if="scope.row.forcastStatus == 4">估算失败</span>
+              <span v-if="scope.row.forcastStatus == 6">暂不支持该类标签</span>
           </template>
       </el-table-column>
       <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
@@ -625,7 +626,7 @@
                     size="small"
                     type="text"
                     @click="handleClickEstimate(scope.row)"
-                    :disabled="scope.row.putway === 0"
+                    :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 6"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="text">

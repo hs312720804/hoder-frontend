@@ -67,6 +67,7 @@ export default {
     this.bindEvent()
   },
   methods: {
+    // 保存流转条件
     handleSave (paramsObj) {
       const parmas = {
         policyId: paramsObj.policyId,
