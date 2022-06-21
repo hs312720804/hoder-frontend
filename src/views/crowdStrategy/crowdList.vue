@@ -636,10 +636,10 @@
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button
-                    size="small"
-                    type="text"
-                    @click="handleClickEstimate(scope.row)"
-                    :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 6"
+              size="small"
+              type="text"
+              @click="handleClickEstimate(scope.row)"
+              :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 6"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="text">
@@ -2090,7 +2090,7 @@ export default {
         calIdType
       }
       if (this.estimateType === 'single') {
-        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }, '提交估算成功').then(
+        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }).then(
           () => {
             this.showEstimate = false
             this.loadData()

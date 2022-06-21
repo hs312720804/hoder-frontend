@@ -2,6 +2,8 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+import { Notification } from 'element-ui'
+
 export default function fetch ({
   method = 'get',
   url,
@@ -41,6 +43,12 @@ export default function fetch ({
         return isReturnAllInfor ? data : data.data
       } else if (codeFormat === 400001 || codeFormat === 9999) {
         location.href = location.origin + location.pathname + '#/login'
+      } else if (codeFormat === 3000) {
+        return Notification({
+          title: '提示',
+          type: 'warning',
+          message: data.msg
+        })
       } else {
         console.log('errData==>', data)
         if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {

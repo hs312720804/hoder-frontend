@@ -7,8 +7,8 @@
         :crowdId:: {{ crowdId }}<br/>
         <hr>
         当前图表的数据:<br/> {{ currentGraphData }}<br/>
-        <hr>
-        所有分组的全部数据: <br/>{{ allGroupList }}<br/>
+        <hr> -->
+        <!-- 所有分组的全部数据: <br/>{{ allGroupList }}<br/>
         <hr> -->
         <!-- 当前选中的分组数据: <br/>{{ currentGroup }}<br/> -->
         <!-- <hr> -->
@@ -407,8 +407,8 @@ export default {
 
         // 获取当前图表的graph数据，并保存
         const currentGroupChartJson = this.getChartJson()
-        if (currentGroupChartJson) {
-          console.log('currentGroupChartJson====', currentGroupChartJson)
+        if (currentGroupChartJson && this.allGroupList[this.groupCheckIndex]) {
+        // if (currentGroupChartJson) {
           this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
         }
         if (mode === 'add') {
