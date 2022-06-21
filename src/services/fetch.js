@@ -41,14 +41,14 @@ export default function fetch ({
       }
       if (codeFormat === 0 || codeFormat === 1000) {
         return isReturnAllInfor ? data : data.data
-      } else if (codeFormat === 400001 || codeFormat === 9999) {
-        location.href = location.origin + location.pathname + '#/login'
       } else if (codeFormat === 3000) {
         return Notification({
           title: '提示',
           type: 'warning',
           message: data.msg
         })
+      } else if (codeFormat === 400001 || codeFormat === 9999) {
+        location.href = location.origin + location.pathname + '#/login'
       } else {
         console.log('errData==>', data)
         if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {

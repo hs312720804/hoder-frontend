@@ -628,7 +628,7 @@ export default {
                 // prop: 'clickPv',
                 sortable: true,
                 render: (h, { row }) => {
-                  return row.clickPv ? `${row.clickPv * 100}%` : '-'
+                  return row.clickPv ? `${parseFloat((row.clickPv * 100).toPrecision(12))}%` : '-'
                 }
               },
               {
@@ -636,7 +636,7 @@ export default {
                 prop: 'clickUv',
                 sortable: true,
                 render: (h, { row }) => {
-                  return row.clickUv ? `${row.clickUv * 100}%` : '-'
+                  return row.clickUv ? `${parseFloat((row.clickUv * 100).toPrecision(12))}%` : '-'
                 }
               }
 

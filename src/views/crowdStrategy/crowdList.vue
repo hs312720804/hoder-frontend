@@ -2090,12 +2090,15 @@ export default {
         calIdType
       }
       if (this.estimateType === 'single') {
-        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }).then(
-          () => {
-            this.showEstimate = false
-            this.loadData()
-          }
-        )
+        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }).then(() => {
+          this.showEstimate = false
+          this.loadData()
+          this.$notify({
+            title: '操作成功',
+            type: 'success',
+            message: '提交估算成功'
+          })
+        })
       } else {
         this.$service.batchCrowdEstimate(formData, '提交估算成功').then(
           () => {
