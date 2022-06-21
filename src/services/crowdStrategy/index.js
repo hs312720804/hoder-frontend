@@ -131,7 +131,8 @@ export function estimatePeople (params) {
   return this.fetch({
     method: 'get',
     url: '/api/crowd/crowdForcast',
-    params
+    params,
+    isReturnAllInfor: true
   })
 }
 // 新人群估算

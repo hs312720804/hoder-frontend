@@ -39,14 +39,8 @@ export default function fetch ({
       if (isFileStream) {
         return isReturnAllInfor ? data : data.data
       }
-      if (codeFormat === 0 || codeFormat === 1000) {
+      if (codeFormat === 0 || codeFormat === 1000 || codeFormat === 3000) {
         return isReturnAllInfor ? data : data.data
-      } else if (codeFormat === 3000) {
-        return Notification({
-          title: '提示',
-          type: 'warning',
-          message: data.msg
-        })
       } else if (codeFormat === 400001 || codeFormat === 9999) {
         location.href = location.origin + location.pathname + '#/login'
       } else {
