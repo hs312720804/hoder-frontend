@@ -87,8 +87,9 @@ export default {
             // 初始数据
             this.flowChartData.nodes = this.initDefaultNodes()
             this.flowChartData.edges = this.initEdges(this.type)
-          } else if (this.type === 2) {
-            this.initRandomNodes()
+          } else if (this.type === 2) { // 随机
+            this.flowChartData.nodes = this.initRandomNodes()
+            this.flowChartData.edges = []
           } else {
             // this.init()
             // 初始数据
@@ -266,9 +267,11 @@ export default {
       })
 
       // 初始数据
-      this.data = {
-        nodes: arr
-      }
+      // this.data = {
+      //   nodes: arr
+      // }
+
+      return arr
     },
 
     returnStyle (index) {

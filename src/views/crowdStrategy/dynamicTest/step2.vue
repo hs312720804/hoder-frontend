@@ -5,8 +5,8 @@
         :policyId:: {{ policyId }}<br/>
         <hr>
         :crowdId:: {{ crowdId }}<br/>
-        <hr>
-        当前图表的数据:<br/> {{ currentGraphData }}<br/>
+        <hr> -->
+        <!-- 当前图表的数据:<br/> {{ currentGraphData }}<br/>
         <hr> -->
         <!-- 所有分组的全部数据: <br/>{{ allGroupList }}<br/>
         <hr> -->
