@@ -172,6 +172,16 @@ export default {
   props: ['policyId', 'crowdId'],
 
   data () {
+    // const generateData = _ => {
+    //   const data = []
+    //   for (let i = 1; i <= 5; i++) {
+    //     data.push({
+    //       key: i,
+    //       label: `方案 ${i}`
+    //     })
+    //   }
+    //   return data
+    // }
     return {
 
       groupCheckIndex: undefined,
@@ -276,7 +286,7 @@ export default {
         if (this.allGroupList.length > 0) {
           // 获取当前图表的graph数据，并保存
           const currentGroupChartJson = this.getChartJson()
-          if (currentGroupChartJson && this.allGroupList[oldV]) {
+          if (currentGroupChartJson) {
             this.allGroupList[oldV].flowChart = currentGroupChartJson || null
           }
 
@@ -348,9 +358,8 @@ export default {
           id: currentGroup.id
         }
         this.$service.deleteDynamic2Plan(params, '删除分组成功').then(res => {
-          // this.getDynamic2PlanList()
-          this.allGroupList.splice(index, 1)
-          this.groupCheckIndex = '0'
+          // this.groupCheckIndex = '0'
+          this.getDynamic2PlanList()
         })
       }).catch(() => {
         this.$message({
@@ -502,6 +511,25 @@ export default {
     },
 
     handleAddChildRule (tag) {
+      // if (rule.rules.length > 50) {
+      //   this.$message({
+      //     type: 'error',
+      //     message: '已达最大数量'
+      //   })
+      //   return
+      // }
+      // if (tag.tagType === 'string' || tag.tagType === 'collect') {
+      //   if (this.cache[tag.tagId] === undefined) {
+      //     this.fetchTagSuggestions(tag.tagId)
+      //   }
+      // } else if (tag.tagType === 'mix') {
+      //   if (this.cache[tag.tagId] === undefined) {
+      //     this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
+      //   }
+      // }
+      // if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
+      //   this.crowd.tagIds.push(tag.tagId)
+      // }
       this.rulesJson.rules.push({
         ...tag,
         operator: '>',
@@ -514,9 +542,39 @@ export default {
     handleRemoveRule (index) {
       const rulesJson = this.rulesJson
       rulesJson.rules.splice(index, 1)
-    },
+      // const tagIds = []
+      // rulesJson.rules.forEach(e => {
+      //   e.rules.forEach(n => {
+      //     if (!tagIds.includes(n.tagId)) {
+      //       tagIds.push(n.tagId)
+      //     }
+      //   })
+      // })
+      // if (this.crowd && this.crowd.rulesJson) this.crowd.tagIds = tagIds
 
+      // if (rule.rules.length === 0) {
+      //   rulesJson.rules = rulesJson.rules.filter(function (item) {
+      //     return item !== rule
+      //   })
+      // }
+    },
+    // handleBackPrevStep () {
+    //   this.$emit('crowdPrevStep', 1, this.recordId)
+    // },
     handleSave (mode) {
+      // 流程图JSON
+      // const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : ''
+      // const parmas = {
+      //   policyId: this.policyId,
+      //   crowdId: this.crowdId,
+      //   mainArithmetic: this.radioType,
+      //   // arithmetic: 1,
+      //   flowChart: flowChartJson,
+      //   exitCrowd: this.exitCrowd,
+      //   arithmetic: this.bigArithmetic
+      //   // dynamicJson: JSON.stringify(this.rulesJson)
+      // }
+
       // 获取当前图表的graph数据，并保存
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
@@ -529,15 +587,117 @@ export default {
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
         this.$emit('goBackCrowdListPage')
+        // if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+        //   if (mode === 3) {
+        //     this.$emit('crowdNextStep', 3)
+        //   } else {
+        //     this.$emit('goBackCrowdListPage')
+        //   }
+        // } else if (this.dynamicMode === 'editSingle') { // 大人群列表 - 单个编辑
+        //   this.$emit('goBackCrowdListPage')
+        // } else { // 策略流程
+        //   if (mode === 3) {
+        //     this.$emit('crowdNextStep', 3)
+        //   } else {
+        //     this.$emit('handleDirectStrategyList')
+        //     // this.$router.push({ path: 'launch/launchTabList' })
+        //   }
+        // }
       })
     },
-
+    // 编辑人群时保存
+    // save (mode) {
+    //   const parmas = {
+    //     policyId: this.policyId,
+    //     crowdId: this.crowdId,
+    //     dynamicJson: JSON.stringify(this.rulesJson)
+    //   }
+    //   this.$service.setDynamicRule(parmas).then(res => {
+    //     this.$message.success('操作成功')
+    //     if (mode === 3) { // 下一步
+    //       this.$emit('crowdNextStep', 3, this.recordId)
+    //     } else {
+    //       if (this.dynamicMode === 'edit') { // 大人群列表 -添加动态人群
+    //         this.$emit('goBackCrowdListPage')
+    //       } else { // 创建策略流程
+    //         this.$router.push({ path: 'launch/launchTabList' })
+    //       }
+    //     }
+    //   })
+    // },
     resetFormData () {
       this.$emit('resetFormData')
     },
     handleDirectStrategyListBrother () {
       this.$emit('handleDirectStrategyList')
     }
+    // getRule () {
+    //   const res = {
+    //     'policyId': 4112,
+    //     'flowChart': null,
+    //     'mainArithmetic': 0,
+    //     'allCrowd': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'arithmetic': null,
+    //     'unused': [{
+    //       'policyId': 4112,
+    //       'dynamicJson': null,
+    //       'weight': 0,
+    //       'arithmetic': null,
+    //       'priority': 345,
+    //       'crowdId': 11222,
+    //       'crowdName': '345'
+    //     }, {
+    //       'policyId': 4112,
+    //       'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+    //       'weight': 120,
+    //       'arithmetic': null,
+    //       'priority': 23,
+    //       'crowdId': 11223,
+    //       'crowdName': '23'
+    //     }],
+    //     'crowdId': 11219,
+    //     'exitCrowd': null
+    //   }
+
+    //   this.dynamicRule = res
+    //   this.radioType = res.mainArithmetic // 流转算法
+    //   this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+    //   // 大的出口 选择定向时，选择人群id
+    //   this.crowdOptions = res.allCrowd
+
+    //   this.exitCrowd = res.exitCrowd
+    //   // this.$service.getDynamicRule({ crowdId: this.crowdId }).then(res => {
+    //   //   console.log('res===', res)
+    //   //   if (res) {
+    //   //     // 小人群列表
+    //   //     this.dynamicRule = res
+    //   //     this.radioType = res.mainArithmetic // 流转算法
+    //   //     this.bigArithmetic = res.arithmetic || 2 // 大的出口条件， 默认【随机】
+
+    //   //     // 大的出口 选择定向时，选择人群id
+    //   //     this.crowdOptions = res.allCrowd
+
+    //   //     this.exitCrowd = res.exitCrowd
+    //   //   }
+    //   // })
+    // },
   }
 }
 </script>
