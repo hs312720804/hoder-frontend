@@ -277,6 +277,7 @@ export default {
           // 获取当前图表的graph数据，并保存
           const currentGroupChartJson = this.getChartJson()
           if (currentGroupChartJson && this.allGroupList[oldV]) {
+          // if (currentGroupChartJson) {
             this.allGroupList[oldV].flowChart = currentGroupChartJson || null
           }
 
@@ -329,6 +330,7 @@ export default {
       this.$service.getDynamic2CrowdList(params).then(res => {
         this.currentGraphData.flowChart = currentGroup.flowChart
         this.currentGraphData.allCrowd = res
+
         // 大的出口 选择定向时，选择人群id
         this.crowdOptions = res
       })
@@ -351,9 +353,9 @@ export default {
           id: currentGroup.id
         }
         this.$service.deleteDynamic2Plan(params, '删除分组成功').then(res => {
-          // this.getDynamic2PlanList('delete')
-          this.allGroupList.splice(index, 1)
-          this.groupCheckIndex = (this.allGroupList.length - 1).toString()
+          this.getDynamic2PlanList('delete')
+          // this.allGroupList.splice(index, 1)
+          // this.groupCheckIndex = '0'
         })
       }).catch(() => {
         this.$message({
@@ -371,10 +373,8 @@ export default {
             cid: Array.isArray(this.form.cid) ? this.form.cid.join(',') : this.form.cid
           }
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
-            this.allGroupList.push(res)
-            this.groupCheckIndex = (this.allGroupList.length - 1).toString()
             this.dialogFormVisible = false
-            // this.getDynamic2PlanList('add')
+            this.getDynamic2PlanList('add')
           })
         }
       })
@@ -383,40 +383,37 @@ export default {
     // 获取实验组列表
     getDynamic2PlanList (mode) {
       this.$service.getDynamic2PlanList({ crowdId: this.crowdId }).then(res => {
-        // const groupList = res || [] // 新数据
-        this.allGroupList = res || [] // 新数据
+        const groupList = res || [] // 新数据
 
-        // // 现有的分组，就用已有的数据
-        // // 新增的分组，赋新值
-        // this.allGroupList = groupList.map(item => {
-        //   const oldItem = this.allGroupList.filter(obj => obj.id === item.id)
+        // 现有的分组，就用已有的数据
+        // 新增的分组，赋新值
+        this.allGroupList = groupList.map(item => {
+          const oldItem = this.allGroupList.filter(obj => obj.id === item.id)
 
-        //   if (oldItem.length > 0) {
-        //     return {
-        //       ...oldItem[0]
-        //     }
-        //   } else {
-        //     return {
-        //       ...item
-        //     }
-        //   }
-        // })
+          if (oldItem.length > 0) {
+            return {
+              ...oldItem[0]
+            }
+          } else {
+            return {
+              ...item
+            }
+          }
+        })
 
-        // // 获取当前图表的graph数据，并保存
-        // const currentGroupChartJson = this.getChartJson()
-        // if (currentGroupChartJson && this.allGroupList[this.groupCheckIndex]) {
-        // // if (currentGroupChartJson) {
-        //   this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
-        // }
-        // if (mode === 'add' || mode === 'delete') {
-        //   this.groupCheckIndex = (this.allGroupList.length - 1).toString()
-        // } else {
-        //   this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
-        // }
-        // 设置分组中小人群数据、图表数据
-        if (this.allGroupList.length) {
-          this.setGroupData(0)
+        // 获取当前图表的graph数据，并保存
+        const currentGroupChartJson = this.getChartJson()
+        if (currentGroupChartJson && this.allGroupList[this.groupCheckIndex]) {
+        // if (currentGroupChartJson) {
+          this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
         }
+        if (mode === 'add' || mode === 'delete') {
+          this.groupCheckIndex = (this.allGroupList.length - 1).toString()
+        } else {
+          this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
+        }
+        // 设置分组中小人群数据、图表数据
+        this.setGroupData(0)
       })
     },
 
