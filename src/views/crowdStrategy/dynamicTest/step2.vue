@@ -7,8 +7,8 @@
         :crowdId:: {{ crowdId }}<br/>
         <hr> -->
         <!-- 当前图表的数据:<br/> {{ currentGraphData }}<br/>
-        <hr> -->
-        <!-- 所有分组的全部数据: <br/>{{ allGroupList }}<br/>
+        <hr>
+        所有分组的全部数据: <br/>{{ allGroupList }}<br/>
         <hr> -->
         <!-- 当前选中的分组数据: <br/>{{ currentGroup }}<br/> -->
         <!-- <hr> -->
@@ -277,11 +277,14 @@ export default {
           // 获取当前图表的graph数据，并保存
           const currentGroupChartJson = this.getChartJson()
           if (currentGroupChartJson && this.allGroupList[oldV]) {
+          // if (currentGroupChartJson) {
             this.allGroupList[oldV].flowChart = currentGroupChartJson || null
           }
 
           // 设置分组中小人群数据、图表数据
           this.setGroupData(val)
+
+          console.log('val=======', val)
         }
       },
       immediate: true
@@ -311,6 +314,7 @@ export default {
     },
     // 设置分组中小人群数据、图表数据
     setGroupData (val) {
+      debugger
       this.currentGroup = this.allGroupList[val]
       const currentGroup = this.currentGroup
 
@@ -332,6 +336,7 @@ export default {
       })
     },
     getChartJson () {
+      debugger
       const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : null
 
       return flowChartJson
@@ -348,9 +353,9 @@ export default {
           id: currentGroup.id
         }
         this.$service.deleteDynamic2Plan(params, '删除分组成功').then(res => {
-          // this.getDynamic2PlanList()
-          this.allGroupList.splice(index, 1)
-          this.groupCheckIndex = '0'
+          this.getDynamic2PlanList('delete')
+          // this.allGroupList.splice(index, 1)
+          // this.groupCheckIndex = '0'
         })
       }).catch(() => {
         this.$message({
@@ -402,7 +407,7 @@ export default {
         // if (currentGroupChartJson) {
           this.allGroupList[this.groupCheckIndex].flowChart = currentGroupChartJson || null
         }
-        if (mode === 'add') {
+        if (mode === 'add' || mode === 'delete') {
           this.groupCheckIndex = (this.allGroupList.length - 1).toString()
         } else {
           this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
