@@ -164,6 +164,8 @@
 import antvGraph from '@antvGraph/Index.vue'
 import eventBus from '@antvGraph/utils/eventBus'
 import DragSortMultiSelect from './DragSortMultiSelect'
+import CreateNodesAndEdges from '@/components/antvGraph/src/createNodesAndEdges'
+
 export default {
   components: {
     antvGraph,
@@ -247,7 +249,16 @@ export default {
       }],
       smallCrowdList: [], // 小人群列表
       allGroupList: [], // 所有分组的全部数据
-      currentGroup: {} // 当前选中的分组数据
+      currentGroup: {}, // 当前选中的分组数据
+      commonObj: {
+        size: [
+          150,
+          40
+        ],
+        type: 'node',
+        shape: 'customNode',
+        color: '#1890ff'
+      }
     }
   },
   watch: {
@@ -287,6 +298,11 @@ export default {
         }
       },
       immediate: true
+    }
+  },
+  computed: {
+    height () {
+      return document.documentElement.clientHeight - 225
     }
   },
   created () {
@@ -368,14 +384,52 @@ export default {
         })
       })
     },
+    // 新增分组，根据选择算法和方案，生成flowChart
+    async getFlowChart (type, bigCrowdId, cid) {
+      // 获取人群中的方案
+      const params = {
+        crowdId: bigCrowdId, // 大人群ID    不能为空
+        child: cid
+      }
+      let crowdList = await this.$service.getDynamic2CrowdList(params).then(res => {
+        return res
+      })
+
+      const createNodesAndEdges = new CreateNodesAndEdges(type, crowdList, this.commonObj, this.height)
+
+      // 新增（初始化）
+      // 顺序，循环没有权重；随机，自定义有权重；
+
+      let flowChartData = {
+        nodes: [],
+        edges: []
+      }
+      if (type === 3) { // 3-自定义 算法
+        flowChartData.nodes = createNodesAndEdges.initDefaultNodes()
+        flowChartData.edges = []
+      } else if (type === 2) { // 2-随机 算法
+        flowChartData.nodes = createNodesAndEdges.initRandomNodes()
+        flowChartData.edges = []
+      } else { // 0-顺序、1-循环、4-不流转 算法
+        // 初始数据
+        flowChartData.nodes = createNodesAndEdges.initDefaultNodes()
+        flowChartData.edges = createNodesAndEdges.initEdges() // 区分顺序、循环、不流转
+      }
+      return JSON.stringify(flowChartData)
+    },
     // 新建实验分组
     handleSaveGroup () {
-      this.$refs['groupForm'].validate((valid) => {
+      this.$refs['groupForm'].validate(async (valid) => {
         if (valid) {
           const params = {
             ...this.form,
             cid: Array.isArray(this.form.cid) ? this.form.cid.join(',') : this.form.cid
           }
+
+          // 生成拓扑图数据
+          const flowChart = await this.getFlowChart(params.mainArithmetic, params.crowdId, params.cid)
+          params.flowChart = flowChart
+
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
             this.allGroupList.push(res)
             this.groupCheckIndex = (this.allGroupList.length - 1).toString()
