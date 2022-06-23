@@ -313,7 +313,6 @@ export default {
     },
     // 设置分组中小人群数据、图表数据
     setGroupData (val) {
-      debugger
       this.currentGroup = this.allGroupList[val]
       const currentGroup = this.currentGroup
 
@@ -334,7 +333,6 @@ export default {
       })
     },
     getChartJson () {
-      debugger
       const flowChartJson = this.graph ? JSON.stringify(this.graph.save()) : null
 
       return flowChartJson
@@ -353,7 +351,15 @@ export default {
         this.$service.deleteDynamic2Plan(params, '删除分组成功').then(res => {
           // this.getDynamic2PlanList('delete')
           this.allGroupList.splice(index, 1)
+
+          const groupCheckIndexOld = this.groupCheckIndex
           this.groupCheckIndex = (this.allGroupList.length - 1).toString()
+
+          // 删除分组时，如果索引不会变量，则需要手动触发 setGroupData 方法
+          if (groupCheckIndexOld === this.groupCheckIndex) {
+            // 设置分组中小人群数据、图表数据
+            this.setGroupData(this.groupCheckIndex)
+          }
         })
       }).catch(() => {
         this.$message({

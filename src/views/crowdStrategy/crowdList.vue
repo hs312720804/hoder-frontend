@@ -1706,7 +1706,7 @@ export default {
           },
           {
             label: '数量',
-            prop: 'receive_total_user'
+            prop: 'crowdNum'
           }
         ],
         data: []
