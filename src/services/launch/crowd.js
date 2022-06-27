@@ -376,3 +376,13 @@ export function dynamicCrowdHitLink (data) {
     isJSON: true
   })
 }
+
+// 动态人群命中链路查询接口
+export function hitDetail (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/policy/hitDetail',
+    data,
+    isJSON: true
+  })
+}

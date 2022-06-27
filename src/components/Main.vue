@@ -197,7 +197,8 @@ export default {
         '/oneTouchDrop/index': 'oneTouchDrop',
         '/specialTag/index': 'specialTag',
         '/launchHelper/status': 'launchStatus',
-        '/launchHelper/resendCommand': 'resendCommand'
+        '/launchHelper/resendCommand': 'resendCommand',
+        '/hitQuery': 'hitQuery'
       },
       activeName: 'first',
       updateMessage: [],

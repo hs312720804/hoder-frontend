@@ -55,6 +55,7 @@ import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
+import hitQuery from '@/views/launch/hitQuery'
 
 const children = [
   // {
@@ -374,6 +375,17 @@ const children = [
       icon: 'el-icon-cc-file'
     }
   },
+  {
+    name: 'hitQuery',
+    path: '/hitQuery',
+    component: hitQuery,
+    meta: {
+      title: '命中查询结果',
+      tagId: 'hitQuery',
+      icon: 'el-icon-cc-file'
+    }
+  },
+
   {
     name: 'resendCommand',
     path: 'launchHelper/resendCommand',

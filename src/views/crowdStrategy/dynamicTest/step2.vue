@@ -140,6 +140,7 @@
                     :key="item.id"
                     :label="item.label"
                     :value="item.id">
+                    {{ item.id }} - {{ item.label }}
                   </el-option>
                 </el-select>
               </template>
