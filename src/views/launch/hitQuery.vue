@@ -30,7 +30,7 @@
         <el-descriptions-item label="策略名称" label-class-name="my-label" content-class-name="my-content">{{ searchData.policyName }}</el-descriptions-item>
         <el-descriptions-item label="MAC" label-class-name="my-label" content-class-name="my-content">{{ form.mac }}</el-descriptions-item>
         <el-descriptions-item label="人群名称顺序" label-class-name="my-label" content-class-name="my-content">
-          白色：无法命中，绿色：当前命中，黄色：可以命中</el-descriptions-item>
+          白色填充：无法命中，绿色填充：当前命中，黄色填充：可以命中</el-descriptions-item>
       </el-descriptions>
       <div style="margin: 20px 0">
         <div
@@ -44,7 +44,7 @@
               'hoverColor': index === hoverIndex,
               'clickColor': index === clickIndex,
               'white': item.hit === 0,
-              'yellow': index === 4,
+              'yellow': item.hit === 1,
               'green': item.crowdId === currentHit}"
             @mouseover="hoverIndex = index"
             @mouseout="hoverIndex = -1"
@@ -74,8 +74,10 @@ export default {
   data () {
     return {
       form: {
-        policyId: '4107',
-        mac: '1ca7708b28e4',
+        // policyId: '4107',
+        // mac: '1ca7708b28e4',
+        policyId: '',
+        mac: '',
         cOpenId: '',
         thirdUserId: '',
         vUserId: ''
@@ -144,13 +146,13 @@ export default {
     // this.init()
   },
   methods: {
-
     handleClickDetail (item, index) {
       this.clickIndex = index
       this.detailtags.data = item.tags
     },
+
     handleSearch () {
-      // 清空数据、清空图表
+      // 清空数据
       this.list = []
       this.hoverIndex = -1
 
@@ -184,7 +186,6 @@ export default {
     // },
 
   }
-
 }
 </script>
 
@@ -196,11 +197,23 @@ export default {
   width: 100px
   height: 100px
   display: inline-block
-  border 7px solid #579779
+  border 7px solid #78a6d5
   border-radius 50%
   line-height 100px
   text-align center
   font-size 20px
+.line
+  display: inline-block;
+  width: 85px;
+  border: 3px solid #8dbdef
+.arrow-right
+  transform: rotate(-45deg);
+  border: solid #8dbdef;
+  border-width: 0 6px 6px 0;
+  display: inline-block;
+  padding: 6px;
+  vertical-align: -6px;
+  margin: 0 3px 0 -13px;
 .hoverColor
   border 7px solid #409EFF
   color #000
@@ -215,22 +228,12 @@ export default {
   // border: 1px solid #409eff;
   box-shadow: 0 0 25px rgb(64 158 255);
   border: 7px solid #409eff;
-.line
-  display: inline-block;
-  width: 85px;
-  border: 3px solid #b5b5b5;
+
 /deep/ .my-label
   width: 120px;
   font-size: 16px;
 /deep/ .my-content {
   font-size: 16px;
 }
-.arrow-right
-  transform: rotate(-45deg);
-  border: solid #b5b5b5;
-  border-width: 0 6px 6px 0;
-  display: inline-block;
-  padding: 6px;
-  vertical-align: -6px;
-  margin: 0 3px 0 -13px;
+
 </style>

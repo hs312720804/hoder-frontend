@@ -1,34 +1,33 @@
 <template>
-    <div class="box7">
-        <div class="title">处理进度</div>
-        <div class="box7-content">
-          <div class="line-box">
-            <div class="line1">
-              <div
-              :class="box1Info.dqhjbh === '0101' ? 'now' : box1Info.dqhjbh > '0101' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>省公司下发</span></div>
-              <div :class="box1Info.dqhjbh > '0101' ? 'finishedLine' : ''" class="xiafa">下发</div>
-              <div :class="box1Info.dqhjbh === '0102' ? 'now' : box1Info.dqhjbh > '0102' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>地市局下发</span></div>
-              <div :class="box1Info.dqhjbh > '0102' ? 'finishedLine' : ''" class="xiafa">下发</div>
-              <div :class="box1Info.dqhjbh === '0103' ? 'now' : box1Info.dqhjbh > '0103' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>区县局下发</span></div>
-              <div :class="box1Info.dqhjbh > '0103' ? 'finishedLine' : ''" class="xiafa">下发</div>
-              <div :class="box1Info.dqhjbh === '0104' ? 'now' : box1Info.dqhjbh > '0104' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>派单</span></div>
-              <div :class="box1Info.dqhjbh > '0104' ? 'finishedLine' : ''" class="middle-xiafa">下发</div>
-            </div>
-            <div class="line2">
-              <div :class="box1Info.dqhjbh === '0105' ? 'now' : box1Info.dqhjbh > '0105' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>工单处理</span></div>
-              <div :class="box1Info.dqhjbh > '0105' ? 'finishedLine' : ''" class="shangjiao">上交</div>
-              <div :class="box1Info.dqhjbh === '0106' ? 'now' : box1Info.dqhjbh > '0106' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>班长审核</span></div>
-              <div :class="box1Info.dqhjbh > '0106' ? 'finishedLine' : ''" class="shangjiao">上交</div>
-              <div :class="box1Info.dqhjbh === '0107' ? 'now' : box1Info.dqhjbh > '0107' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>区县局审核</span></div>
-              <div :class="box1Info.dqhjbh > '0107' ? 'finishedLine' : ''" class="shangjiao">上交</div>
-              <div :class="box1Info.dqhjbh === '0108' ? 'now' : box1Info.dqhjbh > '0108' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>地市局审核</span></div>
-              <div :class="box1Info.dqhjbh > '0108' ? 'finishedLine' : ''" class="last-shangjiao">上交</div>
-            </div>
-            <div :class="box1Info.dqhjbh === '0110' ? 'now' : box1Info.dqhjbh > '0110' ? 'finishedIcon' : ''" class="last-item"><div class="icon"></div><span>归档</span></div>
-          </div>
+  <div class="box7">
+    <div class="title">处理进度</div>
+    <div class="box7-content">
+      <div class="line-box">
+        <div class="line1">
+          <div
+          :class="box1Info.dqhjbh === '0101' ? 'now' : box1Info.dqhjbh > '0101' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>省公司下发</span></div>
+          <div :class="box1Info.dqhjbh > '0101' ? 'finishedLine' : ''" class="xiafa">下发</div>
+          <div :class="box1Info.dqhjbh === '0102' ? 'now' : box1Info.dqhjbh > '0102' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>地市局下发</span></div>
+          <div :class="box1Info.dqhjbh > '0102' ? 'finishedLine' : ''" class="xiafa">下发</div>
+          <div :class="box1Info.dqhjbh === '0103' ? 'now' : box1Info.dqhjbh > '0103' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>区县局下发</span></div>
+          <div :class="box1Info.dqhjbh > '0103' ? 'finishedLine' : ''" class="xiafa">下发</div>
+          <div :class="box1Info.dqhjbh === '0104' ? 'now' : box1Info.dqhjbh > '0104' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>派单</span></div>
+          <div :class="box1Info.dqhjbh > '0104' ? 'finishedLine' : ''" class="middle-xiafa">下发</div>
         </div>
+        <div class="line2">
+          <div :class="box1Info.dqhjbh === '0105' ? 'now' : box1Info.dqhjbh > '0105' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>工单处理</span></div>
+          <div :class="box1Info.dqhjbh > '0105' ? 'finishedLine' : ''" class="shangjiao">上交</div>
+          <div :class="box1Info.dqhjbh === '0106' ? 'now' : box1Info.dqhjbh > '0106' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>班长审核</span></div>
+          <div :class="box1Info.dqhjbh > '0106' ? 'finishedLine' : ''" class="shangjiao">上交</div>
+          <div :class="box1Info.dqhjbh === '0107' ? 'now' : box1Info.dqhjbh > '0107' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>区县局审核</span></div>
+          <div :class="box1Info.dqhjbh > '0107' ? 'finishedLine' : ''" class="shangjiao">上交</div>
+          <div :class="box1Info.dqhjbh === '0108' ? 'now' : box1Info.dqhjbh > '0108' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>地市局审核</span></div>
+          <div :class="box1Info.dqhjbh > '0108' ? 'finishedLine' : ''" class="last-shangjiao">上交</div>
+        </div>
+        <div :class="box1Info.dqhjbh === '0110' ? 'now' : box1Info.dqhjbh > '0110' ? 'finishedIcon' : ''" class="last-item"><div class="icon"></div><span>归档</span></div>
       </div>
-
+    </div>
+  </div>
 </template>
 
 <script>
