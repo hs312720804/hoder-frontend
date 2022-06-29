@@ -3,20 +3,20 @@
   <div>
     <div class="title"></div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
-        <el-form-item label="MAC地址" prop="mac">
-          <el-input v-model="form.mac" clearable></el-input>
-        </el-form-item>
-      <el-form-item label="策略ID：" prop="policyId" >
+      <el-form-item label="MAC地址" prop="mac">
+        <el-input v-model="form.mac" clearable></el-input>
+      </el-form-item>
+      <el-form-item label="策略ID：" prop="policyId">
         <el-input v-model="form.policyId" clearable></el-input>
       </el-form-item>
       <el-form-item label="openID" prop="cOpenId">
-        <el-input v-model="form.cOpenId" clearable></el-input>
+        <el-input v-model="form.cOpenId" clearable placeholder="酷开账号"></el-input>
       </el-form-item>
       <el-form-item label="thirdUserId" prop="thirdUserId">
-        <el-input v-model="form.thirdUserId" clearable></el-input>
+        <el-input v-model="form.thirdUserId" clearable placeholder="第三方账号，腾讯，优酷..."></el-input>
       </el-form-item>
       <el-form-item label="vUserId" prop="vUserId">
-        <el-input v-model="form.vUserId" clearable></el-input>
+        <el-input v-model="form.vUserId" clearable placeholder="微信账号"></el-input>
       </el-form-item>
 
       <el-form-item>
@@ -29,7 +29,7 @@
         <el-descriptions-item label="策略ID" label-class-name="my-label" content-class-name="my-content">{{ searchData.policyId }}</el-descriptions-item>
         <el-descriptions-item label="策略名称" label-class-name="my-label" content-class-name="my-content">{{ searchData.policyName }}</el-descriptions-item>
         <el-descriptions-item label="MAC" label-class-name="my-label" content-class-name="my-content">{{ form.mac }}</el-descriptions-item>
-        <el-descriptions-item label="人群名称顺序" label-class-name="my-label" content-class-name="my-content">
+        <el-descriptions-item label="人群命中顺序" label-class-name="my-label" content-class-name="my-content">
           白色填充：无法命中，绿色填充：当前命中，黄色填充：可以命中</el-descriptions-item>
       </el-descriptions>
       <div style="margin: 20px 0">
@@ -45,7 +45,8 @@
               'clickColor': index === clickIndex,
               'white': item.hit === 0,
               'yellow': item.hit === 1,
-              'green': item.crowdId === currentHit}"
+              'green': item.crowdId === currentHit
+            }"
             @mouseover="hoverIndex = index"
             @mouseout="hoverIndex = -1"
             @click.stop="handleClickDetail(item, index)">
@@ -82,7 +83,6 @@ export default {
         thirdUserId: '',
         vUserId: ''
       },
-
       rules: {
         policyId: { required: true, message: '请输入策略id', trigger: 'blur' },
         mac: { required: true, message: '请输入mac', trigger: 'blur' }
@@ -143,7 +143,6 @@ export default {
 
   },
   mounted () {
-    // this.init()
   },
   methods: {
     handleClickDetail (item, index) {
