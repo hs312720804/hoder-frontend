@@ -18,7 +18,6 @@
       <el-form-item label="vUserId" prop="vUserId">
         <el-input v-model="form.vUserId" clearable placeholder="微信账号"></el-input>
       </el-form-item>
-
       <el-form-item>
         <el-button type="primary" @click="handleSearch">查询</el-button>
       </el-form-item>
@@ -205,6 +204,7 @@ export default {
   display: inline-block;
   width: 85px;
   border: 3px solid #8dbdef
+  height: 0px
 .arrow-right
   transform: rotate(-45deg);
   border: solid #8dbdef;

@@ -4,8 +4,7 @@
     <div class="box7-content">
       <div class="line-box">
         <div class="line1">
-          <div
-          :class="box1Info.dqhjbh === '0101' ? 'now' : box1Info.dqhjbh > '0101' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>省公司下发</span></div>
+          <div :class="box1Info.dqhjbh === '0101' ? 'now' : box1Info.dqhjbh > '0101' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>省公司下发</span></div>
           <div :class="box1Info.dqhjbh > '0101' ? 'finishedLine' : ''" class="xiafa">下发</div>
           <div :class="box1Info.dqhjbh === '0102' ? 'now' : box1Info.dqhjbh > '0102' ? 'finishedIcon' : ''" class="item"><div class="icon"></div><span>地市局下发</span></div>
           <div :class="box1Info.dqhjbh > '0102' ? 'finishedLine' : ''" class="xiafa">下发</div>
@@ -73,6 +72,7 @@ export default {
   },
   mounted () {
     // this.init()
+
   },
   methods: {
 
