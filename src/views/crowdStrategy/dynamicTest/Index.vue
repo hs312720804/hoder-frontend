@@ -5,6 +5,7 @@
           <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
               <el-step title="第一步：动态方案配置" icon="el-icon-edit"></el-step>
               <el-step title="第二步：流转方案配置" icon="el-icon-edit"></el-step>
+              <el-step title="第三步：填写实验有效期" icon="el-icon-edit"></el-step>
           </el-steps>
 
         </div>
@@ -43,6 +44,19 @@
           >
           </step2>
 
+          <!-- 第三步：填写实验有效期 -->
+          <step3
+            v-if="activeStep === 2"
+            :policyId="policyId"
+            :crowdId="crowdId"
+            @crowdNextStep="handleCrowdNextStep"
+            @crowdPrevStep="handleCrowdPrevStep"
+            @resetFormData="resetFormData"
+            @handleDirectStrategyList="handleDirectStrategyList"
+            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
+          >
+          </step3>
+
         </div>
 
     </div>
@@ -51,14 +65,16 @@
 <script>
 // import createPolicy from './CreatePolicy'
 import { mapGetters } from 'vuex'
-import step1 from './step1'
-import step2 from './step2'
+import step1 from './step1.vue'
+import step2 from './step2.vue'
+import step3 from './step3.vue'
 export default {
   name: 'index',
   components: {
     // createPolicy,
     step1,
-    step2
+    step2,
+    step3
   },
   props: {
     initPolicyId: {

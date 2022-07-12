@@ -20,7 +20,7 @@
       </div>
       <div style="display: flex; justify-content: space-between; ">
         <div class="search-input">
-          <el-input placeholder="支持按人群名、ID搜索" class="header-input" v-model="launchName" @keyup.enter.native="fetchData">
+          <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="launchName" @keyup.enter.native="fetchData">
           </el-input>
           <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
         </div>

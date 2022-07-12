@@ -983,3 +983,21 @@ export function delDynamic2CrowdConfirm (data) {
     isJSON: true
   })
 }
+
+// 保存实验有效期
+export function setDynamicTime (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/setDynamicTime',
+    data,
+    isJSON: true
+  })
+}
+// 获取实验有效期
+export function getDynamicTime (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/getDynamicTime',
+    params
+  })
+}

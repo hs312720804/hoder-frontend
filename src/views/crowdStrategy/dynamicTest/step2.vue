@@ -28,9 +28,10 @@
         </div>
 
         <div>
-          <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button>
+          <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
           <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-          <el-button type="primary" @click="handleSave(3)">保存</el-button>
+          <!-- <el-button type="info" @click="handleBackPrevStep">下一步</el-button> -->
+          <el-button type="primary" @click="handleSave">下一步</el-button>
         </div>
       </div>
 
@@ -585,7 +586,7 @@ export default {
       rulesJson.rules.splice(index, 1)
     },
 
-    handleSave (mode) {
+    handleSave () {
       // 获取当前图表的graph数据，并保存
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
@@ -597,7 +598,8 @@ export default {
       const parmas = this.allGroupList
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
-        this.$emit('goBackCrowdListPage')
+        // this.$emit('goBackCrowdListPage')
+        this.$emit('crowdNextStep', 2)
       })
     },
 

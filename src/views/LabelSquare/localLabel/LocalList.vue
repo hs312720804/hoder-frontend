@@ -30,7 +30,7 @@
             </div>
             <div class="search-input">
                 <el-input
-                        placeholder="支持按人群名、ID搜索"
+                        placeholder="支持按标签名、ID搜索"
                         class="header-input"
                         v-model="launchName"
                         @keyup.enter.native="fetchData"
