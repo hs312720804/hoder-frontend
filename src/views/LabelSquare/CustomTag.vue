@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import tagList from './TagList'
+import tagList from './TagList.vue'
 import TagCategoryUpsert from '../TagCategory/Upsert.vue'
 export default {
   name: 'MyCollect',

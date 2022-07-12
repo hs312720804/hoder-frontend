@@ -116,7 +116,7 @@
 </template>
 <script>
 import CrowdAdd from './crowdAdd'
-import CrowdList from './crowdList'
+import CrowdList from './crowdList.vue'
 import CrowdABAdd from './crowdAbTest'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'

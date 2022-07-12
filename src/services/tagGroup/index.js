@@ -244,3 +244,37 @@ export function searchByGroup (params) {
     params
   })
 }
+
+// 标签列表 - 模型标签
+export function searchModelTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/modelTag/page',
+    params
+  })
+}
+// 标签列表 - 模型标签 - 新增
+export function addModelTag (data) {
+  return this.fetch({
+    method: 'POST',
+    url: '/api/modelTag/',
+    data,
+    isJSON: true
+  })
+}
+// 标签列表 - 模型标签 - 编辑
+export function editModelTag (data) {
+  return this.fetch({
+    method: 'PUT',
+    url: '/api/modelTag/',
+    data,
+    isJSON: true
+  })
+}
+// 标签列表 - 模型标签 - 删除
+export function deleteModelTag (id) {
+  return this.fetch({
+    method: 'DELETE',
+    url: `/api/modelTag/${id}`
+  })
+}
