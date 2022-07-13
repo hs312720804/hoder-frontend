@@ -174,6 +174,7 @@
               <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
                 <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
               </el-form-item>
+              <el-button type="text" class="copyCrowd" @click="handleCopyCrowd(crowd, i)">复制人群</el-button>
             </el-collapse-item>
 
             <a class="app-params__remove-param" @click="handleRemoveParam(i)">
@@ -382,7 +383,11 @@ export default {
       this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
       this.$emit('input', this.inputValue)
     },
-    handleAddParam () {
+    // 复制人群
+    handleCopyCrowd (crowd, index) {
+      this.handleAddParam(crowd, index)
+    },
+    handleAddParam (copyCrowdData, copyCrowdIndex) {
       const length = this.inputValue.length
       this.activeName = length
       if (length >= 5) {
@@ -392,36 +397,43 @@ export default {
         })
         return
       }
-      this.inputValue.push(
-        {
-          'recordId': this.getRecordId(),
-          'tempCrowdId': undefined,
-          'crowdName': undefined,
-          'tagIds': [],
-          'purpose': undefined,
-          'remark': undefined,
-          'crowdOrder': length + 1,
-          'rulesJson': {
-            condition: 'OR',
-            rules: []
-          },
-          'behaviorRulesJson': {
-            link: 'AND',
-            condition: 'OR',
-            rules: []
-          },
-          'dynamicPolicyJson': {
-            link: 'AND',
-            condition: 'OR',
-            rules: []
-          },
-          'autoVersion': false,
-          'isShowAutoVersion': false,
-          'limitLaunch': false,
-          'limitLaunchCount': undefined,
-          total0: undefined
-        }
-      )
+      if (copyCrowdData) { // 复制人群
+        this.inputValue.push({
+          ...copyCrowdData,
+          'crowdName': `${copyCrowdData.crowdName ? copyCrowdData.crowdName : '复制人群'}（${copyCrowdIndex + 1}）`
+        })
+      } else { // 添加人群
+        this.inputValue.push(
+          {
+            'recordId': this.getRecordId(),
+            'tempCrowdId': undefined,
+            'crowdName': undefined,
+            'tagIds': [],
+            'purpose': undefined,
+            'remark': undefined,
+            'crowdOrder': length + 1,
+            'rulesJson': {
+              condition: 'OR',
+              rules: []
+            },
+            'behaviorRulesJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
+            'dynamicPolicyJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
+            'autoVersion': false,
+            'isShowAutoVersion': false,
+            'limitLaunch': false,
+            'limitLaunchCount': undefined,
+            total0: undefined
+          }
+        )
+      }
       this.setSeq()
     },
     getRecordId () {
@@ -597,4 +609,6 @@ i
   width 100%
   display inline-block
   background-color: rgba(249,249,249,0.85);
+.copyCrowd
+  float right
 </style>
