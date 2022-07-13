@@ -3,6 +3,17 @@ import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
 
+// 响应拦截器, 401 状态码时，跳转至登录页
+axios.interceptors.response.use((response) => {
+  return response
+}, function (error) {
+  if (error.response.status === 401) {
+    window.location = '/login'
+  } else {
+    return Promise.reject(error)
+  }
+})
+
 export default function fetch ({
   method = 'get',
   url,
