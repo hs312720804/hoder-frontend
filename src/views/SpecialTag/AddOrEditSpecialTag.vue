@@ -45,7 +45,7 @@
             </temp-label-index>
         </el-tab-pane>
 
-         <el-tab-pane label="组合标签" name="specialTag">
+        <el-tab-pane label="组合标签" name="specialTag">
             <special-tag
                 :tagName="myCollectTagName"
                 :checkList="checkList"
@@ -131,6 +131,18 @@
           </my-collect>
         </el-tab-pane>
 
+        <!-- <el-tab-pane label="模型标签" name="modelLabel">
+            <ModelLabelIndex
+                :checkList="checkList"
+                :show-selection="showSelection"
+                :currentSelectTag="tagList"
+                @clear-search="handleClearSearch"
+                @change-checkList="handleCheckListChange"
+                @get-table-selected="handleGetTableSelectedData"
+            >
+            </ModelLabelIndex>
+        </el-tab-pane> -->
+
       </el-tabs>
     </div>
 
@@ -201,6 +213,7 @@ import LocalLabelIndex from '../LabelSquare/localLabel/Index'
 import specialTag from '../LabelSquare/SpecialTag'
 import CustomTag from '../LabelSquare/CustomTag'
 import ThirdPartyTag from '../LabelSquare/ThirdPartyTag'
+import ModelLabelIndex from '../LabelSquare/ModelLabel/ModelLabelIndex.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -211,7 +224,8 @@ export default {
     specialTag,
     LocalLabelIndex,
     CustomTag,
-    ThirdPartyTag
+    ThirdPartyTag,
+    ModelLabelIndex
   },
   props: ['mode', 'initTagList', 'usedTagList'],
   data () {

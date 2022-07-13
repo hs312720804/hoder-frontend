@@ -166,7 +166,12 @@ export default {
         // eslint-disable-next-line
         // debugger
         const result = data
-        this.dataList = result.records
+        this.dataList = result.records.map(item => {
+          return {
+            ...item,
+            tagId: item.id
+          }
+        }) || []
         this.totalCount = result.total
         // this.dataSourceEnum = result.DataSourceMap
         // this.typeEnum = result.tagKey

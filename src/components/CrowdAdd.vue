@@ -266,7 +266,6 @@ export default {
     policyId: {
       type: [Number, String]
     }
-
   },
   watch: {
     value: 'setInputValue'

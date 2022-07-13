@@ -6,7 +6,10 @@
       v-show="!tagId"
       v-loading="loading"
       element-loading-text="拼命加载中"
-      element-loading-spinner="el-icon-loading" border :data="dataList" @select="handleSelectOrCancel"
+      element-loading-spinner="el-icon-loading"
+      border
+      :data="dataList"
+      @select="handleSelectOrCancel"
       @select-all="handleSelectAllOrCancel">
       <el-table-column type="selection" width="55" v-if="showSelection">
       </el-table-column>
