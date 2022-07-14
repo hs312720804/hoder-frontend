@@ -15,7 +15,20 @@
         @handleCancel="dialogVisible = false"
         @handleSave="handleSave">
       </SetCirculationConditionsCom>
+    </el-dialog>
 
+    <el-dialog
+      v-if="entryDialogVisible"
+      title="设置进入条件"
+      :visible.sync="entryDialogVisible"
+      width="800px"
+    >
+      <SetEntryConditionsCom
+        :crowdId="crowdId"
+        :graph="graph"
+        @handleCancel="entryDialogVisible = false"
+        @handleSave="handleSave">
+      </SetEntryConditionsCom>
     </el-dialog>
   </div>
 </template>
@@ -27,11 +40,13 @@ import { initBehavors } from '@antvGraph/behavior'
 import eventBus from '@antvGraph/utils/eventBus'
 import Grid from '@antv/g6/build/grid'
 // import SetCirculationConditionsCom from '@/DynamicPeopleConditions copy'
-import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom'
+import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
+import SetEntryConditionsCom from '@/components/dynamicPeople/SetEntryConditionsCom.vue'
 
 export default {
   components: {
-    SetCirculationConditionsCom
+    SetCirculationConditionsCom,
+    SetEntryConditionsCom
   },
   data () {
     return {
@@ -40,7 +55,8 @@ export default {
       dialogVisible: false,
       crowdId: undefined, // 小人群ID
       allCrowdRule: [],
-      currentTarget: null
+      currentTarget: null,
+      entryDialogVisible: false
     }
   },
   props: {
@@ -166,13 +182,23 @@ export default {
             _this.node = null
           }
         })
-        eventBus.$on('nodeSettingRule', item => {
+        eventBus.$on('nodeSettingRule', item => { // 设置流转条件
           const selectNode = item.target.getModel()
 
           _this.crowdId = selectNode.id
           _this.currentTarget = item.target // 当前操作对象
           this.$nextTick(() => {
             _this.dialogVisible = true
+          })
+        })
+
+        eventBus.$on('nodeSettingEntry', item => { // 设置入口条件
+          const selectNode = item.target.getModel()
+
+          _this.crowdId = selectNode.id
+          _this.currentTarget = item.target // 当前操作对象
+          this.$nextTick(() => {
+            _this.entryDialogVisible = true
           })
         })
 

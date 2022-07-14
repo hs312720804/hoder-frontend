@@ -32,7 +32,7 @@ export default {
     // -------------------------------
     // const name = target.get('name')
     // const model = item.getModel()
-    if (target.get('className') === 'aaaa') { // 点击设置流转条件
+    if (target.get('className') === 'handleCirculationConditions') { // 点击设置流转条件
       // 如果点击是发生在节点里面的小圆上，则更新对应的label
       // this.graph.updateItem(item, {
       //   label: '点击了圆',
@@ -45,6 +45,8 @@ export default {
       // })
       //
       eventBus.$emit('nodeSettingRule', { target: item, select: true })
+    } else if (target.get('className') === 'handleClickEntryConditions') { // 点击设置入口条件
+      eventBus.$emit('nodeSettingEntry', { target: item, select: true })
     } else if (target.get('className') === 'changeArithmeticType') { // 设置出口算法
       eventBus.$emit('changeArithmeticType', { target: item, select: true })
     } else if (target.get('className') === 'changeWeight') { // 权重

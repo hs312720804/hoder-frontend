@@ -138,6 +138,20 @@ const customNode = {
           }
         })
 
+        // // 流转条件 设置className属性
+        // const innerCircle2 = group.addShape('rect', {
+        //   attrs: {
+        //     x: - 56,
+        //     y: offsetY + height / 2 - 10,
+        //     text: '入口条件',
+        //     width: 56,
+        //     height: 20,
+        //     fill: color,
+        //     parent: mainId,
+        //     radius: 4
+        //   }
+        // })
+
         // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
           attrs: {
@@ -162,9 +176,22 @@ const customNode = {
             fill: '#fff'
           }
         })
-        innerCircle1.set('className', 'aaaa')
-        innerCircle2.set('className', 'aaaa')
+        innerCircle1.set('className', 'handleCirculationConditions')
+        innerCircle2.set('className', 'handleCirculationConditions')
 
+        const innerCircle3 = group.addShape('text', {
+          attrs: {
+            x: -130,
+            y: offsetY + height / 2,
+            // textAlign: 'center',
+            textBaseline: 'middle',
+            parent: mainId,
+            text: '入口条件',
+            fill: '#000'
+          }
+        })
+
+        innerCircle3.set('className', 'handleClickEntryConditions')
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + width - 32,

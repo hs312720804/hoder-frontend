@@ -248,6 +248,9 @@ export default {
       }, {
         value: 4,
         label: '不流转'
+      }, {
+        value: 5,
+        label: '智能'
       }],
       smallCrowdList: [], // 小人群列表
       allGroupList: [], // 所有分组的全部数据
