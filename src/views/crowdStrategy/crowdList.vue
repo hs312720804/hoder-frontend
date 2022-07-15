@@ -75,19 +75,27 @@
         <!-- 动态人群 - 新增 -->
         <div v-else>
           <el-button
-                  type="primary"
-                  size="small"
-                  @click="handleAdd"
-                  v-permission="'hoder:crowd:add'"
+            type="primary"
+            size="small"
+            @click="handleAdd"
+            v-permission="'hoder:crowd:add'"
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
+          </el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleLink"
+            v-permission="'hoder:crowd:add'"
+          >
+            <a class="fa fa-plus" style="color: white"></a>引用人群
           </el-button>
         </div>
         <div>
           <el-popover
-                  placement="top"
-                  trigger="click"
-                  class="popover-button"
+            placement="top"
+            trigger="click"
+            class="popover-button"
           >
             <div>
               <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
@@ -546,6 +554,8 @@
         <template slot-scope="scope">
           <!-- 动态人群 -->
           <span v-if="scope.row.dynamicFlag===1">动态人群</span>
+          <!-- 引用人群 -->
+          <span v-else-if="isReferCrowd(scope.row.referCrowdId)">引用人群</span>
           <!-- 普通人群 -->
           <span v-else-if="scope.row.abMainCrowd === 0">普通人群</span>
           <!-- AB实验人群 -->
@@ -599,23 +609,32 @@
       <!--</el-table-column>-->
       <el-table-column prop="status" label="状态" width="70" sortable="custom">
         <template slot-scope="scope">
-          {{ launchStatusEnum[scope.row.status] }}
-          <!-- <span v-if="scope.row.putway === 1">生效中</span>
-          <span v-if="scope.row.putway === 0">已下架</span> -->
+          <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+
+          <span v-else>{{ launchStatusEnum[scope.row.status] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">
-          <template slot-scope="scope">
-              {{ abStatusEnum[scope.row.abstatus] }}
-          </template>
+        <template slot-scope="scope">
+          <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+
+          <span v-else>{{ abStatusEnum[scope.row.abstatus] }}</span>
+        </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
           <template slot-scope="scope">
-              <span v-if="scope.row.forcastStatus == 1">未估算</span>
-              <span v-if="scope.row.forcastStatus == 2">估算中</span>
-              <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
-              <span v-if="scope.row.forcastStatus == 4">估算失败</span>
-              <span v-if="scope.row.forcastStatus == 6">暂不支持该类标签</span>
+            <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+
+          <span v-else>
+            <span v-if="scope.row.forcastStatus == 1">未估算</span>
+            <span v-if="scope.row.forcastStatus == 2">估算中</span>
+            <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+            <span v-if="scope.row.forcastStatus == 4">估算失败</span>
+            <span v-if="scope.row.forcastStatus == 6">暂不支持该类标签</span>
+          </span>
           </template>
       </el-table-column>
       <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
@@ -636,6 +655,7 @@
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button
+              v-if="!isReferCrowd(scope.row.referCrowdId)"
               size="small"
               type="text"
               @click="handleClickEstimate(scope.row)"
@@ -671,7 +691,7 @@
 
             <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
             <el-button
-              v-if="isShow('AB', scope.row)"
+              v-if="isShow('AB', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
               size="small"
               type="text"
               @click="divideAB(scope.row,'addABTest')">
@@ -680,7 +700,7 @@
 
             <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
             <el-button
-              v-if="isShow('Dynamic', scope.row)"
+              v-if="isShow('Dynamic', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
               size="small"
               type="text"
               @click="handleDynamicTest(scope.row, 'addDynamicTest')">
@@ -699,6 +719,7 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
                   :command="['edit',scope.row]"
                   v-permission="'hoder:crowd:edit'"
                   :disabled="scope.row.putway === 0"
@@ -714,8 +735,9 @@
                 >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
                 </el-dropdown-item>
                 <el-dropdown-item
-                        :command="['copy',scope.row]"
-                        :disabled="scope.row.putway === 0"
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
+                  :command="['copy',scope.row]"
+                  :disabled="scope.row.putway === 0"
                 >人群复制
                 </el-dropdown-item>
                 <!--<el-dropdown-item-->
@@ -724,7 +746,8 @@
                 <!--&gt;A/B test划分-->
                 <!--</el-dropdown-item>-->
                 <el-dropdown-item
-                        :command="['commitHistory',scope.row]"
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
+                  :command="['commitHistory',scope.row]"
                 >提交历史数据
                 </el-dropdown-item>
               </el-dropdown-menu>
@@ -1768,6 +1791,10 @@ export default {
     // }
   },
   methods: {
+    // 是否为引用人群
+    isReferCrowd (id) {
+      return id
+    },
     // 互斥
     isShow (key, row) {
       // abMainCrowd    0-普通人群  1-ab主   2-ab的小   3-再分割
@@ -2027,6 +2054,9 @@ export default {
     },
     handleAdd () {
       this.$emit('addCrowd')
+    },
+    handleLink () {
+      this.$emit('addLinkCrowd')
     },
     handleAddDynamic () {
       this.$emit('addDynamicCrowd')
@@ -3922,5 +3952,6 @@ fieldset>div
   color: #000;
 .monitor-time
   margin-bottom: 30px;
-
+.boldCss
+  font-weight 800
 </style>

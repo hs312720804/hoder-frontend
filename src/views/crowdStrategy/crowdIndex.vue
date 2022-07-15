@@ -9,6 +9,7 @@
       :selectRow="selectRow"
       @goBack="goBackFirstLayer"
       @addCrowd="addCrowd"
+      @addLinkCrowd="openAddLinkCrowd"
       @editABCrowd="editABCrowd"
       @getBigCrowdId="getBigCrowdId"
       @handleDynamicTest="handleDynamicTest"
@@ -112,6 +113,22 @@
         </el-tab-pane>
       </el-tabs>
     </div>
+    <el-dialog
+      title="引用人群"
+      :visible.sync="linkDialogVisible"
+    >
+      <linkCrowd
+        ref="linkCrowdCom"
+        v-model="multipleSelection"
+        @goBackCrowdListPage="goBackCrowdListPage"
+      >
+      </linkCrowd>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="handleCancel">取 消</el-button>
+        <el-button @click="handleClear">全部清空</el-button>
+        <el-button type="primary" @click="handleConfirm">确 定</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -122,6 +139,7 @@ import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSettin
 import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 import DynamicCrowdAdd from './dynamicCrowdAdd'
 import DynamicTest from './dynamicTest/Index'
+import LinkCrowd from './linkCrowd.vue'
 export default {
   data () {
     return {
@@ -134,11 +152,42 @@ export default {
       effectCrowd: false,
       activeStep: 0,
       bigCrowdId: undefined,
-      isDynamicPeople: false
+      isDynamicPeople: false,
+      linkDialogVisible: false,
+      multipleSelection: []
     }
   },
   props: ['selectRow'],
+
   methods: {
+    // 添加引用人群
+    openAddLinkCrowd (row) {
+      this.$refs.linkCrowdCom && this.$refs.linkCrowdCom.$refs.multipleTable && this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()
+      this.linkDialogVisible = true
+    },
+    // 取消
+    handleCancel () {
+      this.linkDialogVisible = false
+    },
+    // 全部清空
+    handleClear () {
+      // this.multipleSelection = []
+      this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()
+    },
+    // 确定 - 创建引用人群
+    handleConfirm () {
+      const parmas = this.multipleSelection.map(item => {
+        return {
+          crowdName: `${item.crowdName}（引用人群）`,
+          policyId: this.selectRow.policyId,
+          referCrowdId: item.crowdId
+        }
+      })
+      this.$service.createReferCrowd(parmas, '操作成功').then(res => {
+        this.goBackCrowdListPage(true)
+        this.linkDialogVisible = false
+      })
+    },
     getBigCrowdId (crowdId) {
       this.bigCrowdId = crowdId
     },
@@ -227,7 +276,8 @@ export default {
     DynamicPeopleSetting,
     DynamicPeopleConditions,
     DynamicCrowdAdd,
-    DynamicTest
+    DynamicTest,
+    LinkCrowd
   }
 }
 </script>

@@ -1001,3 +1001,21 @@ export function getDynamicTime (params) {
     params
   })
 }
+// 引用人群列表
+export function getLinkCrowdList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/refer/getCrowdList',
+    params
+  })
+}
+
+// 人群列表批量引用人群接口
+export function createReferCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/refer/createReferCrowd',
+    data,
+    isJSON: true
+  })
+}
