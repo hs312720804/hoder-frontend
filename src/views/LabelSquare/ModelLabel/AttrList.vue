@@ -1,6 +1,6 @@
 <template>
     <el-card shadow="never">
-        <div slot="header">
+        <div slot="header" v-if="!showSelection">
             <span>标签列表</span>
             <el-form :inline="true" style="float: right">
                 <el-form-item>
@@ -26,7 +26,17 @@
             </el-form>
         </div>
         <div>
-          <el-table ref="tempChangeTable" :data="itemList" border>
+          <el-table
+            ref="changeTable"
+            :data="itemList"
+            border
+            @select="handleSelectOrCancel"
+            @select-all="handleSelectAllOrCancel">
+            <el-table-column
+              type="selection"
+              width="55"
+              v-if="showSelection"
+            ></el-table-column>
             <el-table-column prop="launchCrowdId" label="标签ID"></el-table-column>
             <el-table-column prop="dmpCrowdId" label="人群ID" width="120"></el-table-column>
             <el-table-column prop="launchName" label="名称" width="230"></el-table-column>
@@ -100,7 +110,7 @@
                 {{ scope.row.history.version }}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="200" >
+            <el-table-column v-if="!showSelection" label="操作" width="200" >
               <template slot-scope="scope">
                 <el-button-group>
                   <el-button
@@ -242,8 +252,49 @@ export default {
       launchStatusEnum: {}
     }
   },
-  props: ['row'],
+  props: {
+    row: {
+      type: Object
+    },
+    showSelection: {
+      type: Boolean
+    }
+
+  },
+  watch: {
+    row: {
+      handler (val) {
+        alert(1231)
+        this.fetchData()
+      },
+      deep: true
+    }
+  },
   methods: {
+    handleSelectOrCancel (select, row) {
+      const selectedFlag = select.length && select.indexOf(row) !== -1
+      // true就是选中，0或者false是取消选中
+      if (selectedFlag) {
+        this.$refs.changeTable.toggleRowSelection(row, true)
+        this.$emit('table-selected', row, 'add')
+      } else {
+        this.$refs.changeTable.toggleRowSelection(row, false)
+        this.$emit('table-selected', row, 'del')
+      }
+    },
+    handleSelectAllOrCancel (select) {
+      // 当select长度为0，则是取消全选，否则是全选
+      const data = this.itemList
+      if (select.length === 0) {
+        for (var i = 0; i < data.length; i++) {
+          this.$emit('table-selected', data[i], 'del')
+        }
+      } else {
+        for (var j = 0; j < data.length; j++) {
+          this.$emit('table-selected', data[j], 'add')
+        }
+      }
+    },
     getFilter () {
       return {
         modelTagId: this.row.id,
@@ -273,9 +324,7 @@ export default {
       // }
       this.launchCrowdId = null // 编辑时的标签id
       this.dialogVisible = true
-      this.$nextTick(() => {
-        this.$refs['attrFormRef'].resetFields()
-      })
+      this.$refs['attrFormRef'] && this.$refs['attrFormRef'].resetFields()
     },
     handleAddOrEdit () {
       this.$refs['attrFormRef'].validate((valid) => {

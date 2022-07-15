@@ -6,27 +6,32 @@
       </el-col>
       <el-col :span="20">
       <el-select
-          name="oxve"
-          v-model="value"
-          class="input-inline"
-        >
-          <!-- number 类型 -->
-          <template>
-            <el-option value="="></el-option>
-            <el-option value=">="></el-option>
-            <el-option value="<="></el-option>
-            <el-option value=">"></el-option>
-            <el-option value="<"></el-option>
-          </template>
+        name="oxve"
+        v-model="selectModelGroupValue"
+        class="input-inline"
+        :multiple="false"
+        @change="handleSelectModelGroup"
 
-        </el-select>
+      >
+        <!-- number 类型 -->
+        <template>
+
+          <el-option
+            v-for="item in dataList"
+            :key="item.id"
+            :value="item.id"
+            :label="item.tagName">
+          </el-option>
+
+        </template>
+
+      </el-select>
       </el-col>
     </el-row>
     <el-row>
       <el-col :span="4"  class="row-title">
       设置进入条件：
       </el-col>
-      6600/30
       <el-col :span="20">
       <div v-if="tags && tags.length > 0" class="label-container">
         <div v-if="tags && tags.length > 0">
@@ -48,7 +53,7 @@
           <template v-for="(item, index) in rulesJson.rules">
             <div class="label-ground" :key="index">
               <div class="tag-condition--parent">
-                {{ item.rules }} -->
+                <!-- {{ item.rules }} -->
                 <div class="tag-condition" v-show="item.rules.length > 1" :style="{'border-color': item.condition === 'AND'?  '#67c23a' : '#e6a23c'}">
                   <el-button
                     :type="item.condition === 'AND' ? 'success' : 'warning'"
@@ -77,35 +82,22 @@
                     >
                       <!-- number 类型 -->
                       <template>
-                        <el-option value="="></el-option>
-                        <el-option value=">="></el-option>
-                        <el-option value="<="></el-option>
-                        <el-option value=">"></el-option>
-                        <el-option value="<"></el-option>
+                        <el-option value="=" label="是"></el-option>
+                        <el-option value="!=" label="否"></el-option>
                       </template>
 
                     </el-select>
 
                   </span>
 
-                  <span class="in">
-                    <!-- time 类型 -->
-
-                    <!-- number 类型 -->
-                    <!-- <el-input-number
-                      :key="n + 'input'"
-                      v-model="childItem.value"
-                      placeholder="请输入内容"
-                      :min="0"
-                    ></el-input-number> -->
-
+                  <!-- <span class="in">
                     <el-select
                       :key="n + 'input'"
                       name="oxve"
                       v-model="childItem.value"
                       class="input-inline"
                     >
-                      <!-- number 类型 -->
+
                       <template>
                         <el-option value="="></el-option>
                         <el-option value=">="></el-option>
@@ -116,7 +108,7 @@
 
                     </el-select>
 
-                  </span>
+                  </span> -->
 
                   <span class="i" @click="handleRemoveRule(item, childItem)" >
                     <i class="icon iconfont el-icon-cc-delete"></i>
@@ -197,7 +189,13 @@ export default {
       policyId: '',
       applyAll: false,
       initRulesJson: {},
-      value: ''
+      selectModelGroupValue: '',
+      filter: {
+        pageNum: 1,
+        pageSize: 100,
+        condition: ''
+      },
+      dataList: []
     }
   },
   watch: {
@@ -209,14 +207,44 @@ export default {
   },
   created () {
     // 获取标签
-    this.$service.getRuleIndicators().then(res => {
-      this.tags = res
-    })
+    // this.$service.getRuleIndicators().then(res => {
+    //   this.tags = res
+    // })
   },
   mounted () {
+    this.fetchData()
     this.init()
   },
   methods: {
+    handleSelectModelGroup (val) {
+      this.fetchTagData()
+    },
+    fetchData () {
+      const filter = this.filter
+      this.$service.searchModelTag(filter).then(data => {
+        const result = data
+        this.dataList = result.records.map(item => {
+          return {
+            ...item,
+            tagId: item.id
+          }
+        }) || []
+      })
+    },
+    getFilter () {
+      return {
+        modelTagId: this.selectModelGroupValue,
+        pageNum: 1,
+        pageSize: 100,
+        crowdType: 5
+      }
+    },
+    fetchTagData () {
+      const filter = this.getFilter()
+      this.$service.getTempCrowdList(filter).then(data => {
+        this.tags = data.pageInfo.list
+      })
+    },
     handleSave () {
       // 保存时，重置初始数据
       this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
@@ -274,7 +302,7 @@ export default {
         condition: 'AND',
         rules: [{
           ...tag,
-          operator: '>',
+          operator: '=',
           value: ''
         }]
       })
@@ -282,7 +310,7 @@ export default {
     handleAddChildRule (rule, tag) {
       rule.rules.push({
         ...tag,
-        operator: '>',
+        operator: '=',
         value: ''
       })
     },

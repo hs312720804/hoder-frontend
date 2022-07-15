@@ -130,7 +130,7 @@
           </el-tab-pane>
 
           <el-tab-pane label="模型标签" name="modelLabel">
-              <ModelLabelIndex
+              <ModelLabelIndexSelect
                   :checkList="checkList"
                   :show-selection="showSelection"
                   :currentSelectTag="tagList"
@@ -138,7 +138,7 @@
                   @change-checkList="handleCheckListChange"
                   @get-table-selected="handleGetTableSelectedData"
               >
-              </ModelLabelIndex>
+              </ModelLabelIndexSelect>
           </el-tab-pane>
 
         </el-tabs>
@@ -192,7 +192,7 @@ import LocalLabelIndex from './localLabel/Index'
 import specialTag from './SpecialTag'
 import CustomTag from './CustomTag'
 import ThirdPartyTag from './ThirdPartyTag'
-import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
+import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -204,7 +204,7 @@ export default {
     LocalLabelIndex,
     CustomTag,
     ThirdPartyTag,
-    ModelLabelIndex
+    ModelLabelIndexSelect
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
