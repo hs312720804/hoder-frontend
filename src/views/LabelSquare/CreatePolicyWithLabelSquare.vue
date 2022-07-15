@@ -129,7 +129,7 @@
               </my-collect>
           </el-tab-pane>
 
-          <!-- <el-tab-pane label="模型标签" name="modelLabel">
+          <el-tab-pane label="模型标签" name="modelLabel">
               <ModelLabelIndex
                   :checkList="checkList"
                   :show-selection="showSelection"
@@ -139,7 +139,7 @@
                   @get-table-selected="handleGetTableSelectedData"
               >
               </ModelLabelIndex>
-          </el-tab-pane> -->
+          </el-tab-pane>
 
         </el-tabs>
     </div>
@@ -393,9 +393,9 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm)
           addForm = JSON.parse(addForm)
-          if (addForm.conditionTagIds.length === 0) {
-            this.$message.error('请选择策略维度！')
-            return
+          if (addForm.conditionTagIds.length === 0) { // 创建策略时，标签不是必选的，因此下面两行代码注释掉
+            // this.$message.error('请选择策略维度！')
+            // return
           }
           // if (this.$parent.peoplePageCheck) {
           //   let result = this.tagList.filter(item => {

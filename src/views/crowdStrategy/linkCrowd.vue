@@ -11,7 +11,7 @@
         <el-button type="primary" @click="fetchLinkCrowdList">查询</el-button>
       </el-form-item>
     </el-form>
-    selectValue: {{ selectValue }}
+    <!-- selectValue: {{ selectValue }} -->
     <el-table
       ref="multipleTable"
       :data="linkCrowdTableData"
@@ -24,7 +24,8 @@
       <el-table-column
         :reserve-selection="true"
         type="selection"
-        width="55">
+        width="55"
+        :selectable="selected">
       </el-table-column>
       <el-table-column
         label="人群ID"
@@ -97,6 +98,14 @@ export default {
     this.fetchLinkCrowdList()
   },
   methods: {
+    selected (row, index) {
+      // if (row.WaitConfirmRecord.is_confirm == 1) {
+      //   return false // 不可勾选
+      // } else {
+      //   return true // 可勾选
+      // }
+      return true
+    },
     // 查询引用人群列表
     fetchLinkCrowdList () {
       this.$service.getLinkCrowdList(this.linkParams).then(res => {

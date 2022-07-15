@@ -6,6 +6,7 @@
       :policyName:: {{ policyName }}<br/>
       :crowdId:: {{ crowdId }}<br/>
     </div> -->
+    <!-- {{form.rulesJson}} -->
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"

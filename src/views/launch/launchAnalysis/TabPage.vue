@@ -1610,7 +1610,6 @@ export default {
         if (this.tableData.data.length > 4) {
           return this.$message.error('表格最多能选4项，无法全选')
         }
-        console.log('11111111===', this.tableData.selected)
         this.tableData.data.forEach(this.handleRowSelectionAdd)
       } else {
         this.selected = []

@@ -2294,7 +2294,6 @@
         </span>
       </span>
 
-      <!-- 1111111111111 -->
       <!-- <div>{{childItem.bav}}</div> -->
     </div>
   </el-form>
@@ -2334,7 +2333,6 @@ export default {
   watch: {
     'childItem.bav': {
       handler (val) {
-        // console.log('1111111111====', val)
         const weekRang = val.weekRang.value
         const timeRange = val.timeRange.value
         // 当选择了星期范围或者时间区间时，禁用【天数】选项

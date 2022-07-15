@@ -48,7 +48,6 @@
           <template v-for="(item, index) in rulesJson.rules">
             <div class="label-ground" :key="index">
               <div class="tag-condition--parent">
-                <!-- 1111111111111111
                 {{ item.rules }} -->
                 <div class="tag-condition" v-show="item.rules.length > 1" :style="{'border-color': item.condition === 'AND'?  '#67c23a' : '#e6a23c'}">
                   <el-button

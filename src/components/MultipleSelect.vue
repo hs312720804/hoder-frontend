@@ -140,7 +140,6 @@
               <span class="in">
                 <!-- time 类型 -->
 
-                <!-- 11111111111111 -->
                 <span v-if="childItem.tagType === 'time'">
                   <template v-if="childItem.dateAreaType !== 0">
                     <!-- 二期之后的版本 -->
@@ -234,7 +233,6 @@
                     </template>
                   </template>
                 </span>
-                <!-- 11111111111111111 end-->
 
                 <!-- string 、 collect 、 mix 类型 -->
                 <template v-else-if="
@@ -414,7 +412,6 @@
                   >
                 </template>
               </span>
-              <!-- 11111111111111111 end -->
               <template v-if="cache[childItem.tagId]">
                 <span
                   v-if="
