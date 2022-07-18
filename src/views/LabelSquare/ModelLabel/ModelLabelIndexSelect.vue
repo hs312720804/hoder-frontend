@@ -14,10 +14,15 @@
 
           <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
           <template v-if="activeTab === item.tagName">
-            <AttrList
-            :row="row"
-            :showSelection="true"
-            @table-selected="handleTableSelected" ></AttrList>
+            <AttrListSelect
+              :row="row"
+              :data-list="tagList"
+              :data-source-enum="dataSourceEnum"
+              :type-enum="typeEnum"
+              :loading="loading"
+              :showSelection="true"
+              @table-selected="handleTableSelected">
+            </AttrListSelect>
           </template>
         </el-tab-pane>
       </el-tabs>
@@ -26,11 +31,11 @@
 </template>
 
 <script>
-import AttrList from './AttrList'
+import AttrListSelect from './AttrListSelect'
 export default {
   name: 'LabelZone',
   components: {
-    AttrList
+    AttrListSelect
   },
   props: {
 
@@ -45,12 +50,12 @@ export default {
     // }
   },
   watch: {
-    activeTab: {
-      handler (val) {
-        const obj = this.dataList.find(item => item.tagName === val)
-        this.row = { id: obj.id }
-      }
-    }
+    // activeTab: {
+    //   handler (val) {
+    //     const obj = this.dataList.find(item => item.tagName === val)
+    //     this.row = { id: obj.id }
+    //   }
+    // }
   },
 
   data () {
@@ -63,12 +68,8 @@ export default {
       //   groupId: undefined,
       //   tagName: undefined
       // },
-      // dataSourceEnum: {},
-      // typeEnum: {},
       toggleShow: false,
       loading: true,
-      // tagCategory: {},
-      // definedTagId: undefined,
       // 111111111111111111111111111111
       dataList: [],
       filter: {
@@ -93,6 +94,7 @@ export default {
       totalCount: 0,
       tagCategory: {},
       definedTagId: '',
+      tagList: [],
       row: {}
     }
   },
@@ -134,27 +136,30 @@ export default {
     //     this.fetchTagList()
     //   })
     // },
+    // 搜索可勾选的模型标签
     fetchTagList () {
-      const filter = this.filter
-      if (this.filter.groupId) {
-        this.$service.getTagGroupTreeList(filter).then((data) => {
-          this.dataList = data.pageInfo.list
-          this.dataSourceEnum = data.lableDataSourceEnum
-          this.typeEnum = data.tagsTypeEnum
+      const obj = this.dataList.find(item => item.tagName === this.activeTab)
+      // const filter = this.filter
+      if (obj) {
+        this.$service.getModelTag({ modelTagId: obj.id }).then((data) => {
+          this.tagList = data.list || []
+          this.dataSourceEnum = data.DataSourceMap
+          this.typeEnum = data.tagKey
           this.loading = false
         })
       }
     },
-    fetchTagAllList () {
-      const filter = JSON.parse(JSON.stringify(this.filter))
-      filter.groupId = 0
-      this.$service.getTagGroupTreeList(filter).then((data) => {
-        this.dataList = data.pageInfo.list
-        this.dataSourceEnum = data.lableDataSourceEnum
-        this.typeEnum = data.tagsTypeEnum
-        this.loading = false
-      })
-    },
+    // fetchTagAllList () {
+    //   const filter = JSON.parse(JSON.stringify(this.filter))
+    //   filter.groupId = 0
+    //   this.$service.getTagGroupTreeList(filter).then((data) => {
+    //     this.dataList = data.pageInfo.list
+    //     this.dataSourceEnum = data.lableDataSourceEnum
+    //     this.typeEnum = data.tagsTypeEnum
+    //     this.loading = false
+    //   })
+    // },
+    // 点击模型标签文件夹
     handleTabClick () {
       // // 当前tab再次点击收缩表格
       // if (this.filter.groupId !== this.activeTab) {
@@ -169,43 +174,22 @@ export default {
       // this.filter.tagName = undefined
       // // this.dataList = []
       // this.$emit('clear-search')
-      // this.$emit('fetch-checkList')
-      // this.fetchTagList()
+      this.$emit('fetch-checkList')
+      this.fetchTagList()
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
-    },
-    handleAddTagCategory () {
-      this.tagCategory = {
-        groupId: this.definedTagId
-      }
-      this.$refs.tagCategoryUpsert.showCreateDialog = true
     }
-
-    // getNewTree () {
-    //     this.$service.getNewTreeList().then(data => {
-    //         console.log(data)
-    //         const result = []
-    //         data.forEach(item => {
-    //             item.children.forEach(secondChild => {
-    //                 const childList = secondChild.children.map(childItem => {
-    //                     if (childItem.groupName === '自定义标签') {
-    //                         this.definedTagId = childItem.groupId
-    //                     }
-    //                     return {groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount}
-    //                 })
-    //                 result.push({ parentName:secondChild.groupName,parentId: secondChild.groupId, children: childList })
-    //             })
-    //         })
-    //         this.treeData = result
-    //         // this.activeTab = result[0].children[0].groupId
-    //         // this.filter.groupId = this.activeTab
-    //         this.fetchTagList()
-    //     })
+    // handleAddTagCategory () {
+    //   this.tagCategory = {
+    //     groupId: this.definedTagId
+    //   }
+    //   this.$refs.tagCategoryUpsert.showCreateDialog = true
     // }
+
   },
   created () {
-    this.$root.$on('label-zone-list-refresh', this.fetchData)
+    this.$root.$on('model-tag-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

@@ -115,7 +115,7 @@
                 <el-button-group>
                   <el-button
                     size="small"
-                    type="success"
+                    type="text"
                     @click="openEditDialog(scope.row)"
                     v-permission="'hoder:label:attr:modify'"
                   >
@@ -123,12 +123,22 @@
                   </el-button>
                   <el-button
                     size="small"
-                    type="info"
+                    type="text"
                     v-permission="'hoder:label:attr:del'"
                     @click="handleDeleteTag(scope.row)"
                   >
                     删除
                   </el-button>
+                  <el-button
+                    size="small"
+                    type="text"
+                    @click="handleMonitor(scope.row)"
+                    v-permission="'hoder:launch:crowd:ver:index'"
+                  >
+                    数据监控
+                  </el-button>
+                  <!-- <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">数据监控
+                  </el-dropdown-item> -->
                 </el-button-group>
               </template>
                 <!-- <el-button-group>
@@ -202,6 +212,32 @@
             <el-button type="primary" @click="handleAddOrEdit">保 存</el-button>
           </div>
         </el-dialog>
+      <el-dialog title="数据监控" :visible.sync="monitorDialog">
+        <el-date-picker
+          v-model="monitorRangeTime"
+          type="daterange"
+          align="right"
+          @change="getDataMonitor"
+          class="monitor-time"
+          value-format="yyyy-MM-dd"
+        ></el-date-picker>
+
+        <c-table
+          :props="monitorTable.props"
+          :header="monitorTable.header"
+          :data="monitorTable.data"
+        >
+        </c-table>
+        <div style="margin: 30px 0 0; overflow: auto">
+            <pagination
+                :currentpage="monitorOutForm.pageNum"
+                :pagesize="monitorOutForm.pageSize"
+                :totalcount="monitorTotal"
+                @handle-size-change="handleMonitorSizeChange"
+                @handle-current-change="handleMonitorCurrentChange"
+            ></pagination>
+        </div>
+      </el-dialog>
 
     </el-card>
 
@@ -249,7 +285,64 @@ export default {
           { required: true, message: '请输入SQL语句', trigger: 'blur' }
         ]
       },
-      launchStatusEnum: {}
+      launchStatusEnum: {},
+      monitorDialog: false,
+      monitorRangeTime: undefined,
+      monitorOutForm: {
+        pageSize: 10,
+        pageNum: 1
+      },
+      monitorTotal: 0,
+      monitorTable: {
+        props: {},
+        header: [
+          {
+            label: '人群名称',
+            prop: 'launch_name'
+          },
+          {
+            label: 'dmp人群ID',
+            prop: 'dmp_crowd_id'
+          },
+          {
+            label: '临时人群版本号',
+            prop: 'version'
+          },
+          {
+            label: '当前版本',
+            prop: 'cur_version'
+          },
+          {
+            label: '接收设备数量',
+            prop: 'receive_total_user'
+          },
+          {
+            label: '设备数量',
+            prop: 'total_user'
+          },
+          {
+            label: '临时人群es index',
+            prop: 'es_index'
+          },
+          {
+            label: '状态',
+            prop: 'status_name'
+          },
+          {
+            label: '临时人群同步日期',
+            prop: 'update_time'
+          },
+          {
+            label: '版本是否删除',
+            render: (h, params) => {
+              return h('div', {}, [
+                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+              ])
+            }
+          }
+        ],
+        data: []
+      }
     }
   },
   props: {
@@ -264,13 +357,52 @@ export default {
   watch: {
     row: {
       handler (val) {
-        alert(1231)
         this.fetchData()
       },
       deep: true
     }
   },
   methods: {
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleMonitorSizeChange (val) {
+      this.monitorOutForm.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.monitorOutForm.pageNum = 1
+      this.handleGetMonitorTableList()
+    },
+
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleMonitorCurrentChange (val) {
+      this.monitorOutForm.pageNum = val
+      this.handleGetMonitorTableList()
+    },
+    handleMonitor (row) {
+      this.monitorDialog = true
+      this.selectedRow = row
+      this.getDataMonitor()
+    },
+    getDataMonitor () {
+      this.handleGetMonitorTableList()
+    },
+    handleGetMonitorTableList () {
+      const monitorRangeTime = this.monitorRangeTime || []
+      const startDate = monitorRangeTime[0] || ''
+      const endDate = monitorRangeTime[1] || ''
+      const params = {
+        launchCrowdId: this.selectedRow.launchCrowdId,
+        startDate,
+        endDate,
+        ...this.monitorOutForm
+      }
+      this.$service.launchVersionList(params).then(data => {
+        if (data) {
+          this.monitorTotal = data.pageInfo.total
+          this.monitorTable.data = data.pageInfo.list || []
+        } else {
+          this.resultContent = '暂无数据'
+        }
+      })
+    },
     handleSelectOrCancel (select, row) {
       const selectedFlag = select.length && select.indexOf(row) !== -1
       // true就是选中，0或者false是取消选中

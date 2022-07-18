@@ -278,3 +278,12 @@ export function deleteModelTag (id) {
     url: `/api/modelTag/${id}`
   })
 }
+
+// 一鍵投放 - 模型标签勾选列表
+export function getModelTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/modelTag/getTags',
+    params
+  })
+}

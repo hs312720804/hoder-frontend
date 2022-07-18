@@ -1,5 +1,6 @@
 <template>
   <div>
+    {{rulesJson}}
     <el-row>
       <el-col :span="4" class="row-title">
       选择入口标签：
@@ -266,9 +267,9 @@ export default {
         // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
         this.policyId = res.policyId || ''
         // this.applyAll = !!(res.applyAll && res.applyAll === 1)
-        if (res.dynamicJson) {
-          this.initRulesJson = JSON.parse(res.dynamicJson)
-          this.rulesJson = JSON.parse(res.dynamicJson)
+        if (res.enterCondition) { // 入口条件 json
+          this.initRulesJson = JSON.parse(res.enterCondition)
+          this.rulesJson = JSON.parse(res.enterCondition)
           console.log('res===', this.rulesJson)
         } else {
           // 初始化
@@ -277,24 +278,6 @@ export default {
             rules: []
           }
         }
-
-        // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
-        //   console.log('res===', res)
-        //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-        //   this.policyId = res.policyId || ''
-        //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
-        //   if (res.dynamicJson) {
-        //     this.rulesJson = JSON.parse(res.dynamicJson)
-        //     // this.rulesJson = (res)
-        //     console.log('res===', this.rulesJson)
-        //   } else {
-        //   // 重置
-        //     this.rulesJson = {
-        //       condition: 'OR',
-        //       rules: []
-        //     }
-        //   }
-        // })
       }
     },
     handleAddRule (tag) {

@@ -408,6 +408,11 @@ export default {
           this.fetchTempCheckListData()
           this.$root.$emit('third-tag-list-refresh')
           break
+        case 'modelLabel':
+          // 模型标签
+          // this.fetchListData()
+          this.$root.$emit('model-tag-list-refresh')
+          break
       }
     },
     handleGetTableSelectedData (val, mode) {
