@@ -316,12 +316,12 @@ export default {
     openAddDialog () {
       this.dialogTitle = '新增样本属性'
       // 初始化表单
-      // this.attrForm = {
-      //   launchName: '',
-      //   crowdSql: '',
-      //   modelTagId: this.row.id,
-      //   tempCrowd: true
-      // }
+      this.attrForm = {
+        launchName: '',
+        crowdSql: '',
+        modelTagId: this.row.id,
+        tempCrowd: true
+      }
       this.launchCrowdId = null // 编辑时的标签id
       this.dialogVisible = true
       this.$refs['attrFormRef'] && this.$refs['attrFormRef'].resetFields()
