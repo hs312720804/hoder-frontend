@@ -213,6 +213,7 @@
   <el-dialog
     title="引用人群"
     :visible.sync="linkDialogVisible"
+    width="800px"
   >
     <linkCrowd
       ref="linkCrowdCom"
