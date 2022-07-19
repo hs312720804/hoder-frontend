@@ -79,10 +79,20 @@
         </div>
 
         <div class="circulationModeName">
-          {{ getCirculationMode(radioType) }}流转
+          <span v-if="radioType === 4">不流转</span>
+          <span v-else>{{ getCirculationMode(radioType) }}流转</span>
           <el-tooltip class="item" effect="dark" content="分组占比" placement="top-start">
             <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input>%</div>
           </el-tooltip>
+          <span v-if="radioType === 5" class="openLoopStyle">
+            开启循环
+            <el-switch
+              v-model="currentGroup.openLoop"
+              :active-value="1"
+              :inactive-value="0"
+            >
+            </el-switch>
+          </span>
         </div>
         <div style="position: relative">
           <!-- 拓扑图 -->
@@ -870,5 +880,12 @@ i {
   font-size: 16px;
   float: right;
   margin: 0 10px;
+}
+.openLoopStyle{
+  position: absolute;
+  width: 180px;
+  top: 50px;
+  font-size: 16px;
+  right: 0px;
 }
 </style>

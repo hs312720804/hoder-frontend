@@ -137,7 +137,7 @@ const customNode = {
             fill: color
           }
         })
-
+        console.log('cfg===', cfg)
         // // 流转条件 设置className属性
         // const innerCircle2 = group.addShape('rect', {
         //   attrs: {

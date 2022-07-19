@@ -265,15 +265,15 @@ export default {
         launchName: undefined
       },
       attrForm: {
-        launchName: '',
-        crowdSql: '',
-        modelTagId: this.row.id,
-        tempCrowd: true,
-        'calType': '0',
-        'macBelowPer': 5,
-        'checkRecvPercentage': 0,
-        'videoSource': '0',
-        'videoSourceIds': []
+        // launchName: '',
+        // crowdSql: '',
+        // modelTagId: this.row.id,
+        // tempCrowd: true,
+        // calType: '0'
+        // 'macBelowPer': 5,
+        // 'checkRecvPercentage': 0,
+        // 'videoSource': '0',
+        // 'videoSourceIds': []
       },
       dialogVisible: false,
       dialogTitle: '新增样本属性',
@@ -363,6 +363,15 @@ export default {
     }
   },
   methods: {
+    initParams () {
+      this.attrForm = {
+        launchName: '',
+        crowdSql: '',
+        modelTagId: this.row.id,
+        tempCrowd: true,
+        calType: '0'
+      }
+    },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
       this.monitorOutForm.pageSize = val
@@ -448,12 +457,14 @@ export default {
     openAddDialog () {
       this.dialogTitle = '新增样本属性'
       // 初始化表单
-      this.attrForm = {
-        launchName: '',
-        crowdSql: '',
-        modelTagId: this.row.id,
-        tempCrowd: true
-      }
+      // this.attrForm = {
+      //   launchName: '',
+      //   crowdSql: '',
+      //   modelTagId: this.row.id,
+      //   tempCrowd: true,
+      //   calType: '0'
+      // }
+      this.initParams()
       this.launchCrowdId = null // 编辑时的标签id
       this.dialogVisible = true
       this.$refs['attrFormRef'] && this.$refs['attrFormRef'].resetFields()
@@ -526,6 +537,7 @@ export default {
     }
   },
   created () {
+    this.initParams()
     this.fetchData()
   }
 }

@@ -27,7 +27,7 @@
         :crowdId="crowdId"
         :graph="graph"
         @handleCancel="entryDialogVisible = false"
-        @handleSave="handleSave">
+        @handleSave="handleSaveEntryCondition">
       </SetEntryConditionsCom>
     </el-dialog>
   </div>
@@ -83,6 +83,20 @@ export default {
     this.bindEvent()
   },
   methods: {
+    // 保存入口条件
+    handleSaveEntryCondition (paramsObj) {
+      const parmas = {
+        selectModelGroupValue: paramsObj.selectModelGroupValue,
+        enterCondition: JSON.stringify(paramsObj.enterCondition)
+      }
+      const model = {
+        selectModelGroupValue: parmas.selectModelGroupValue,
+        enterCondition: parmas.enterCondition
+      }
+
+      this.graph.update(this.currentTarget, model) // 更新 入口条件 数据
+      this.entryDialogVisible = false
+    },
     // 保存流转条件
     handleSave (paramsObj) {
       const parmas = {
@@ -100,7 +114,8 @@ export default {
         const setApplyAllNodes = nodes.map(item => {
           return {
             ...item,
-            dynamicJson: parmas.dynamicJson
+            dynamicJson: parmas.dynamicJson,
+            applyAll: parmas.applyAll // 保存【应用全部人群】数据
           }
         })
 
@@ -111,7 +126,8 @@ export default {
         this.graph.read(graphData2)
       } else { // 修改单个人群
         const model = {
-          dynamicJson: parmas.dynamicJson
+          dynamicJson: parmas.dynamicJson,
+          applyAll: parmas.applyAll // 保存【应用全部人群】数据
         }
 
         this.graph.update(this.currentTarget, model) // 更新 流转规则 数据

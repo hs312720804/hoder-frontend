@@ -20,7 +20,7 @@
         <template v-for="(item, index) in rulesJson.rules">
           <div class="label-ground" :key="index">
             <div class="tag-condition--parent">
-              {{ item.rules }} -->
+              <!-- {{ item.rules }} -->
               <div class="tag-condition" v-show="item.rules.length > 1" :style="{'border-color': item.condition === 'AND'?  '#67c23a' : '#e6a23c'}">
                 <el-button
                    :type="item.condition === 'AND' ? 'success' : 'warning'"
@@ -192,6 +192,9 @@ export default {
         // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
         this.policyId = res.policyId || ''
         // this.applyAll = !!(res.applyAll && res.applyAll === 1)
+
+        this.applyAll = res.applyAll === 1
+
         if (res.dynamicJson) {
           this.initRulesJson = JSON.parse(res.dynamicJson)
           this.rulesJson = JSON.parse(res.dynamicJson)

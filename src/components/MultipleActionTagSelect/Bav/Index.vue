@@ -3214,10 +3214,8 @@ export default {
     }
     // 'childItem.bav.showBehaviorValue': {
     //   handler (val) {
-    // debugger
     // if (this.childItem.tagCode === 'BAV0012') { // 【综合起播】数据需要重组
     //   console.log('123141==>', this.childItem.bav.behaviorValue)
-    //   debugger
     //   alert(23)
     //   let ccc = []
     //   const showBehaviorValue = this.childItem.bav.showBehaviorValue

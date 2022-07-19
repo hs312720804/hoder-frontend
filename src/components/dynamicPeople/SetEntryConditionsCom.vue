@@ -1,6 +1,8 @@
 <template>
   <div>
-    {{rulesJson}}
+    <!-- {{rulesJson}}
+    <hr>
+    {{ selectModelGroupValue }} -->
     <el-row>
       <el-col :span="4" class="row-title">
       选择入口标签：
@@ -10,13 +12,11 @@
         name="oxve"
         v-model="selectModelGroupValue"
         class="input-inline"
-        :multiple="false"
+        :multiple="true"
         @change="handleSelectModelGroup"
-
       >
         <!-- number 类型 -->
         <template>
-
           <el-option
             v-for="item in dataList"
             :key="item.id"
@@ -34,8 +34,9 @@
       设置进入条件：
       </el-col>
       <el-col :span="20">
-      <div v-if="tags && tags.length > 0" class="label-container">
+      <div class="label-container">
         <div v-if="tags && tags.length > 0">
+        <!-- <div > -->
           <div
             v-show="rulesJson.rules.length > 1"
             class="label-or-space"
@@ -190,7 +191,7 @@ export default {
       policyId: '',
       applyAll: false,
       initRulesJson: {},
-      selectModelGroupValue: '',
+      selectModelGroupValue: [],
       filter: {
         pageNum: 1,
         pageSize: 100,
@@ -232,24 +233,85 @@ export default {
         }) || []
       })
     },
-    getFilter () {
-      return {
-        modelTagId: this.selectModelGroupValue,
-        pageNum: 1,
-        pageSize: 100,
-        crowdType: 5
-      }
-    },
+    // getFilter () {
+    //   return {
+    //     modelTagId: this.selectModelGroupValue,
+    //     pageNum: 1,
+    //     pageSize: 100,
+    //     crowdType: 5
+    //   }
+    // },
+    // fetchTagData () {
+    //   const filter = this.getFilter()
+    //   this.$service.getTempCrowdList(filter).then(data => {
+    //     this.tags = data.pageInfo.list
+    //   })
+    // },
     fetchTagData () {
-      const filter = this.getFilter()
-      this.$service.getTempCrowdList(filter).then(data => {
-        this.tags = data.pageInfo.list
+      const modelTagIds = this.selectModelGroupValue.join(',')
+      this.$service.getModelTag({ modelTagIds }).then((data) => {
+        const list = [
+          {
+            'tagVersion': 'dmp_crowd_111923_2022071803',
+            'tagId': 9848,
+            'tagType': 'collect',
+            'tagName': '123112312',
+            'tagKey': 'temp_crowd_8087',
+            'dataSource': 11
+          },
+          {
+            'tagVersion': 'dmp_crowd_111924_2022071802',
+            'tagId': 9849,
+            'tagType': 'collect',
+            'tagName': '2222222',
+            'tagKey': 'temp_crowd_8088',
+            'dataSource': 11
+          },
+          {
+            'tagVersion': 'dmp_crowd_111940_2022071802',
+            'tagId': 9851,
+            'tagType': 'collect',
+            'tagName': '模型标签3',
+            'tagKey': 'temp_crowd_8090',
+            'dataSource': 11
+          },
+          {
+            'tagVersion': 'dmp_crowd_111941_2022071802',
+            'tagId': 9852,
+            'tagType': 'collect',
+            'tagName': '模型标签4',
+            'tagKey': 'temp_crowd_8091',
+            'dataSource': 11
+          },
+          {
+            'tagVersion': 'dmp_crowd_111944_2022071803',
+            'tagId': 9854,
+            'tagType': 'collect',
+            'tagName': '1111',
+            'tagKey': 'temp_crowd_8093',
+            'dataSource': 11
+          }
+        ]
+        // this.tags = data.list || []
+        this.tags = list
       })
     },
     handleSave () {
+      // tagVersion 字段的值，赋给 value 字段
+      const rules = this.rulesJson.rules.map(item => {
+        const rules = item.rules
+        item.rules = rules.map(obj => {
+          return {
+            ...obj,
+            value: obj.tagVersion
+          }
+        })
+        return item
+      })
+      this.rulesJson.rules = rules
       // 保存时，重置初始数据
       this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-      this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+      this.$emit('handleSave', { enterCondition: this.rulesJson, selectModelGroupValue: this.selectModelGroupValue })
     },
     handleCancel () {
       this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
@@ -266,7 +328,16 @@ export default {
 
         // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
         this.policyId = res.policyId || ''
-        // this.applyAll = !!(res.applyAll && res.applyAll === 1)
+
+        if (res.selectModelGroupValue) { // 选择的模型标签分组
+          this.selectModelGroupValue = res.selectModelGroupValue
+          // 获取标签
+          this.fetchTagData()
+        } else {
+          // 初始化
+          this.selectModelGroupValue = []
+        }
+
         if (res.enterCondition) { // 入口条件 json
           this.initRulesJson = JSON.parse(res.enterCondition)
           this.rulesJson = JSON.parse(res.enterCondition)

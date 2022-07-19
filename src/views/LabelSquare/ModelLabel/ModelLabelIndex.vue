@@ -35,14 +35,14 @@
     </tag-list>
 
     <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
-      <el-form label-position="left" label-width="120px" :model="form">
-        <el-form-item label="名称" required>
+      <el-form :model="form" ref="formRef" :rules="rules" label-position="left" label-width="120px" >
+        <el-form-item label="名称" prop="tagName">
           <el-input v-model="form.tagName"></el-input>
         </el-form-item>
-        <el-form-item label="英文名" required>
+        <el-form-item label="英文名" prop="tagEnName">
           <el-input v-model="form.tagEnName"></el-input>
         </el-form-item>
-        <el-form-item label="是否每日更新" prop="autoVersion" required>
+        <el-form-item label="是否每日更新" prop="autoVersion">
           <el-radio-group v-model="form.autoVersion">
             <el-radio :label="0">否</el-radio>
             <el-radio :label="1">是</el-radio>
@@ -116,7 +116,15 @@ export default {
       dialogTitle: '',
       totalCount: 0,
       tagCategory: {},
-      definedTagId: ''
+      definedTagId: '',
+      rules: {
+        tagName: [
+          { required: true, message: '请输入名称', trigger: 'blur' }
+        ],
+        tagEnName: [
+          { required: true, message: '请输入英文名', trigger: 'blur' }
+        ]
+      }
     }
   },
   methods: {
@@ -137,15 +145,19 @@ export default {
       this.dialogVisible = true
     },
     // 新增或编辑组合标签种类
-    async handleAddOrEdit () {
-      if (this.form.id) { // 编辑
-        await this.$service.editModelTag(this.form)
-      } else { // 新增
-        await this.$service.addModelTag(this.form)
-      }
-      this.fetchData()
-      this.dialogVisible = false
-      this.$message.success('保存成功')
+    handleAddOrEdit () {
+      this.$refs['formRef'].validate(async (valid) => {
+        if (valid) {
+          if (this.form.id) { // 编辑
+            await this.$service.editModelTag(this.form)
+          } else { // 新增
+            await this.$service.addModelTag(this.form)
+          }
+          this.fetchData()
+          this.dialogVisible = false
+          this.$message.success('保存成功')
+        }
+      })
     },
     // 新增组合标签
     handleAdd () {
