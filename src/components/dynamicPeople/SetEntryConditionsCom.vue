@@ -292,8 +292,8 @@ export default {
             'dataSource': 11
           }
         ]
-        // this.tags = data.list || []
-        this.tags = list
+        this.tags = data.list || []
+        // this.tags = list
       })
     },
     handleSave () {
