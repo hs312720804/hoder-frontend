@@ -1,5 +1,6 @@
 <template>
   <div class="label-content">
+    <!-- {{addForm.conditionTagIds}} -->
     <div class="table-list" :style="{marginBottom: bottomHeight}">
 
         <el-tabs
@@ -350,6 +351,7 @@ export default {
           break
       }
     },
+    // 选择或取消选择 tag
     handleGetTableSelectedData (val, mode) {
       // 只支持单数组，多数组要多次调用这个
       const tagList = this.tagList
@@ -394,11 +396,11 @@ export default {
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       this.setContentBottomMargin()
     },
+    // 下一步
     saveAndNext (mode) {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          let addForm = JSON.stringify(this.addForm)
-          addForm = JSON.parse(addForm)
+          let addForm = JSON.parse(JSON.stringify(this.addForm))
           if (addForm.conditionTagIds.length === 0) { // 创建策略时，标签不是必选的，因此下面两行代码注释掉
             // this.$message.error('请选择策略维度！')
             // return
@@ -534,7 +536,7 @@ export default {
     getPolicyDetail () {
       this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
         const formData = data
-        formData.conditionTagIds = formData.conditionTagIds.split(',').map(function (v) {
+        formData.conditionTagIds = formData.conditionTagIds === '' ? [] : formData.conditionTagIds.split(',').map(function (v) {
           return parseInt(v)
         })
         this.addForm = {

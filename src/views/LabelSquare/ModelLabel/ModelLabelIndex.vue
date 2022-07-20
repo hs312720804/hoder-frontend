@@ -10,7 +10,7 @@
         <el-input
           placeholder="支持按标签名、ID搜索"
           class="header-input"
-          v-model="filter.tagName"
+          v-model="filter.condition"
           @keyup.enter.native="fetchData"></el-input>
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div>
@@ -130,8 +130,14 @@ export default {
   methods: {
     // 删除
     handleDelete (id) {
-      this.$service.deleteModelTag(id, '删除成功').then(() => {
-        this.fetchData()
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.deleteModelTag(id, '删除成功').then(() => {
+          this.fetchData()
+        })
       })
     },
     handleEdit (row) {

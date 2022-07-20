@@ -1,5 +1,5 @@
 <template>
-  <div class="label-zone">
+  <div class="label-zone tab-content">
 <!-- {{activeTab}} -->
       <el-tabs v-model="activeTab" @tab-click="handleTabClick">
         <el-tab-pane
@@ -77,7 +77,7 @@ export default {
         // searchType: 1,
         // tagType: 1,
         pageNum: 1,
-        pageSize: 100,
+        pageSize: 1000,
         condition: ''
         // tagName: undefined
       },

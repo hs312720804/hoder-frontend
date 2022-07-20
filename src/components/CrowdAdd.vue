@@ -405,9 +405,11 @@ export default {
           this.inputValue = JSON.parse(JSON.stringify(val))
           // this.setSeq()
         } else { // 初始化
-          if (this.inputValue.length > 0) {
+          // 如果已有人群规则，或者选择的 tag 数量为 0，就不做任何操作
+          if (this.inputValue.length > 0 || this.tagList.length === 0) {
             return
           }
+          // 人群规则初始值
           this.inputValue.push(
             {
               'recordId': this.getRecordId(),
@@ -551,7 +553,7 @@ export default {
         const normalTags = []
         const actionTags = []
         const specialTags = []
-        data.forEach(item => {
+        data && data.forEach(item => {
           if (item.dataSource === 6) { // 效果指标
             specialTags.push(item)
           } else if (item.dataSource === 8) { // 行为标签
@@ -576,7 +578,7 @@ export default {
           const normalTags = []
           const actionTags = []
           const specialTags = []
-          data.forEach(item => {
+          data && data.forEach(item => {
             if (item.dataSource === 6) { // 效果指标
               specialTags.push(item)
             } else if (item.dataSource === 8) { // 行为标签

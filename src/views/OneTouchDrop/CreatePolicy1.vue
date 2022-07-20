@@ -178,6 +178,7 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm)
           addForm = JSON.parse(addForm)
+
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
           if (mode === 1) {
             if (this.addForm.recordId) {
