@@ -71,7 +71,7 @@ export default {
     showSelection: {
       type: Boolean
     },
-    currentSelectedTags: {
+    currentSelectTag: {
       type: Array
     }
 
@@ -89,16 +89,16 @@ export default {
       this.checkList = val
     },
     'dataList': 'updateTableSelected',
-    'currentSelectedTags': 'updateTableSelected'
+    'currentSelectTag': 'updateTableSelected'
   },
   methods: {
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     },
-
+    // 更新选中状态
     updateTableSelected () {
       const arr = []
-      const currentSelectRows = this.currentSelectedTags
+      const currentSelectRows = this.currentSelectTag
       this.dataList.forEach((item, index) => {
         currentSelectRows.forEach((i) => {
           if (item.tagId === i.tagId) {

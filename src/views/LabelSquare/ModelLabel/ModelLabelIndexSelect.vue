@@ -21,7 +21,9 @@
               :type-enum="typeEnum"
               :loading="loading"
               :showSelection="true"
-              @table-selected="handleTableSelected">
+              :currentSelectTag="currentSelectTag"
+              @table-selected="handleTableSelected"
+              >
             </AttrListSelect>
           </template>
         </el-tab-pane>
@@ -38,16 +40,15 @@ export default {
     AttrListSelect
   },
   props: {
-
     // checkList: {
     //   type: Array
     // },
     // showSelection: {
     //   type: Boolean
     // },
-    // currentSelectTag: {
-    //   type: Array
-    // }
+    currentSelectTag: {
+      type: Array
+    }
   },
   watch: {
     // activeTab: {
@@ -114,6 +115,11 @@ export default {
           }
         }) || []
         this.totalCount = result.total
+        if (this.dataList.length > 0) {
+          // 默认选择第一个 tab
+          this.activeTab = this.dataList[0].tagName
+          this.fetchTagList()
+        }
       })
     },
 

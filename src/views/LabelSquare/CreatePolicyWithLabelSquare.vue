@@ -225,7 +225,8 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success'
       },
       showSelection: true,
       addForm: this.genDefaultForm(),
