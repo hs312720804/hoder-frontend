@@ -85,7 +85,7 @@ export default {
           } else if (this.type === 2) { // 2-随机 算法
             this.flowChartData.nodes = createNodesAndEdges.initRandomNodes()
             this.flowChartData.edges = []
-          } else { // 0-顺序、1-循环、4-不流转 算法
+          } else { // 0-顺序、1-循环、4-不流转 、5-算法
             // 初始数据
             this.flowChartData.nodes = createNodesAndEdges.initDefaultNodes()
             this.flowChartData.edges = createNodesAndEdges.initEdges() // 区分顺序、循环、不流转

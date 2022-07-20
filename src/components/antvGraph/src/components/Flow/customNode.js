@@ -127,16 +127,16 @@ const customNode = {
           })
           weightText.set('className', 'changeWeight')
         }
-        group.addShape('text', {
-          attrs: {
-            x: -(width / 2) + 90,
-            y: offsetY + height + 20,
-            cursor: 'pointer',
-            label: 'aaaaa',
-            text: `id:  ${cfg.id}`,
-            fill: color
-          }
-        })
+        // group.addShape('text', {
+        //   attrs: {
+        //     x: -(width / 2) + 90,
+        //     y: offsetY + height + 20,
+        //     cursor: 'pointer',
+        //     label: 'aaaaa',
+        //     text: `id:  ${cfg.id}`,
+        //     fill: color
+        //   }
+        // })
         console.log('cfg===', cfg)
         // // 流转条件 设置className属性
         // const innerCircle2 = group.addShape('rect', {
@@ -179,19 +179,21 @@ const customNode = {
         innerCircle1.set('className', 'handleCirculationConditions')
         innerCircle2.set('className', 'handleCirculationConditions')
 
-        const innerCircle3 = group.addShape('text', {
-          attrs: {
-            x: -130,
-            y: offsetY + height / 2,
-            // textAlign: 'center',
-            textBaseline: 'middle',
-            parent: mainId,
-            text: '入口条件',
-            fill: '#000'
-          }
-        })
+        if (cfg.mainType === 5) { // 选择了【智能】算法
+          const innerCircle3 = group.addShape('text', {
+            attrs: {
+              x: -130,
+              y: offsetY + height / 2,
+              // textAlign: 'center',
+              textBaseline: 'middle',
+              parent: mainId,
+              text: '入口条件',
+              fill: color || '#409EFF'
+            }
+          })
 
-        innerCircle3.set('className', 'handleClickEntryConditions')
+          innerCircle3.set('className', 'handleClickEntryConditions')
+        }
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + width - 32,
