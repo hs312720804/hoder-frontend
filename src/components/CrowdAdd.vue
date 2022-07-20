@@ -196,8 +196,6 @@
             </a>
           </div>
         </template>
-        <br />
-
         <!-- 选择了标签才有【添加】按钮 -->
         <el-button v-if="tags.length > 0" type="primary" plain @click="handleAddParam">
           <i class="el-icon-plus"></i>&nbsp;添加
@@ -342,12 +340,12 @@ export default {
       this.$refs.linkCrowdCom && this.$refs.linkCrowdCom.$refs.multipleTable && this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()
       this.linkDialogVisible = true
     },
-    handleCurrentChange (index) {
-      this.initCurrentPage = index
-      this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
-        this.tagList = data.pageInfo.list
-      })
-    },
+    // handleCurrentChange (index) {
+    //   this.initCurrentPage = index
+    //   this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
+    //     this.tagList = data.pageInfo.list
+    //   })
+    // },
     changeSeq () {
       this.inputValue.sort(function (x, y) {
         return x.crowdOrder - y.crowdOrder
@@ -578,6 +576,7 @@ export default {
           const normalTags = []
           const actionTags = []
           const specialTags = []
+          this.tagList = data || []// 所有已选的标签
           data && data.forEach(item => {
             if (item.dataSource === 6) { // 效果指标
               specialTags.push(item)
@@ -628,7 +627,8 @@ export default {
   >>>.el-collapse-item__wrap
     background-color rgba(249, 249, 249, 0.85)
     padding 10px
-    border none
+    // border none
+    border-bottom: 1px dashed #ededed;
 .el-collapse
   border-top none
   border-bottom none
