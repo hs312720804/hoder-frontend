@@ -86,7 +86,7 @@ class CreateNodesAndEdges {
         id: item.crowdId.toString(),
         arithmetic: null,
         weight: null,
-        degree: 5,
+        // degree: 5,
         mainType: this.type // 分组算法
       }
 
@@ -128,7 +128,8 @@ class CreateNodesAndEdges {
         name: item.crowdName,
         label: item.crowdName,
         id: item.crowdId.toString(),
-        arithmetic: null
+        arithmetic: null,
+        mainType: this.type // 分组算法
       }
     })
 

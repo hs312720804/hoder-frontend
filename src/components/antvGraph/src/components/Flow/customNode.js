@@ -114,7 +114,8 @@ const customNode = {
         // }
 
         // 权重
-        if (cfg.weight !== null && cfg.weight !== undefined) { // 这里不能直接判断 cfg.weight ,因为有值为 0 的情况
+        // if (cfg.weight !== null && cfg.weight !== undefined) { // 这里不能直接判断 cfg.weight ,因为有值为 0 的情况
+        if ((cfg.weight !== null && cfg.weight !== undefined) || cfg.mainType === 2 || cfg.mainType === 3) { // 选择了【随机】、【自定义】算法, 才显示【权重】
           const weightText = group.addShape('text', {
             attrs: {
               x: -(width / 2),
