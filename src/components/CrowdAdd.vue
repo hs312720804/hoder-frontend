@@ -461,25 +461,36 @@ export default {
       })
       this.linkDialogVisible = false
     },
+    // 获取复制人群的后缀
+    getCopyIndex (index, name) {
+      const cName = `${name || '复制人群'}（${index + 1}）`
+      const obj = this.inputValue.find(item => item.crowdName === cName)
+      if (obj) { // 有同名的人群
+        return this.getCopyIndex(index + 1, name)
+      } else {
+        return cName
+      }
+    },
     // 添加人群
     handleAddParam ({ copyCrowdData, copyCrowdIndex, linkCrowd }) {
       const length = this.inputValue.length
       this.activeName = length
-      if (length >= 5) {
+      if (length >= 50) {
         this.$message({
           type: 'error',
-          message: '最多添加5个'
+          message: '最多添加50个'
         })
         return
       }
       if (copyCrowdData) { // 复制人群
-        var date = new Date()
-        var hour = date.getHours() // 时
-        var minutes = date.getMinutes() // 分
-        let time = `${hour}${minutes}`
+        // var date = new Date()
+        // var hour = date.getHours() // 时
+        // var minutes = date.getMinutes() // 分
+        // let time = `${hour}${minutes}`
+        const copyName = this.getCopyIndex(0, copyCrowdData.crowdName)
         this.inputValue.push({
           ...copyCrowdData,
-          'crowdName': `${copyCrowdData.crowdName ? copyCrowdData.crowdName : '复制人群'}（${time}）`
+          'crowdName': copyName
         })
       } else { // 添加普通人群、引用其他人群
         const crowdName = linkCrowd ? `${linkCrowd.crowdName}（引用人群）` : undefined
