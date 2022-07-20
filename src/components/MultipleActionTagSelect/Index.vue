@@ -472,10 +472,13 @@
                   </el-tooltip> -->
 
                   <!-- 选择动态时间提示 -->
-                  <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
+                  <div v-if="childItem.version > 0 && childItem.dateAreaType === 1" style="color: gray; font-size: 12px;">
+                    提示：负数表示过去的日期，例如过去一周到未来3天，可以表示成-7天到3天
+                  </div>
+                  <!-- <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
                     <div slot="content">提示：负数表示过去的日期，比如-1表示昨天，0表示今天，1表示明天</div>
                     <el-button type="text">提示</el-button>
-                  </el-tooltip>
+                  </el-tooltip> -->
 
                   <!-- 圈人群二期之前版本提示 -->
                   <el-tooltip v-else-if="childItem.version === 0" class="item" effect="dark" placement="top-start" >

@@ -141,7 +141,7 @@ export default {
       const obj = this.dataList.find(item => item.tagName === this.activeTab)
       // const filter = this.filter
       if (obj) {
-        this.$service.getModelTag({ modelTagId: obj.id }).then((data) => {
+        this.$service.getModelTag({ modelTagIds: obj.id }).then((data) => {
           this.tagList = data.list || []
           this.dataSourceEnum = data.DataSourceMap
           this.typeEnum = data.tagKey
