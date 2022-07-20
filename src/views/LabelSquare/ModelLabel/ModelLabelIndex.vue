@@ -184,7 +184,7 @@ export default {
         // eslint-disable-next-line
         // debugger
         const result = data
-        this.dataList = result.records.map(item => {
+        this.dataList = result.list.map(item => {
           return {
             ...item,
             tagId: item.id

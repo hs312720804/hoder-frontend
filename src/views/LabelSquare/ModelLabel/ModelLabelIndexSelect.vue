@@ -108,7 +108,7 @@ export default {
       const filter = this.filter
       this.$service.searchModelTag(filter).then(data => {
         const result = data
-        this.dataList = result.records.map(item => {
+        this.dataList = result.list.map(item => {
           return {
             ...item,
             tagId: item.id
