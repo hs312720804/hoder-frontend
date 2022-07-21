@@ -27,12 +27,12 @@
           </el-button>
         </div>
 
-        <div>
           <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
-          <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
           <!-- <el-button type="info" @click="handleBackPrevStep">下一步</el-button> -->
+        <!-- <div>
+          <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
           <el-button type="primary" @click="handleSave">下一步</el-button>
-        </div>
+        </div> -->
       </div>
 
       <div v-if="allGroupList.length > 0">
@@ -848,6 +848,7 @@ i {
   display: flex;
   justify-content: space-between;
   padding: 12px 0;
+  flex-direction: row-reverse;
 }
 .inputArrow{
   background: url('../../../assets/icons/arrow.svg')

@@ -637,6 +637,7 @@ export default {
     bottom 0
     background-color #fff
     z-index 999
+    width: calc(100% - 363px);
   .table-list
     width 100%
     height 100%

@@ -1,5 +1,6 @@
 <template>
-    <div v-if="reloadFlag">
+  <div>
+    <div v-if="reloadFlag" style="height: calc(100vh - 200px); overflow: auto;">
         <div class="header">
           <!-- 动态人群 -->
           <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
@@ -33,6 +34,7 @@
 
           <!-- 设置流转条件 -->
           <step2
+            ref="step2"
             v-if="activeStep === 1"
             :policyId="policyId"
             :crowdId="crowdId"
@@ -60,6 +62,12 @@
         </div>
 
     </div>
+
+    <div v-if="activeStep === 1" class="bottomBtn">
+      <el-button type="primary" @click="handleSave" class="btn">下一步</el-button>
+      <el-button type="info" @click="handleBackPrevStep" class="btn">上一步</el-button>
+    </div>
+  </div>
 </template>
 
 <script>
@@ -110,7 +118,12 @@ export default {
   },
 
   methods: {
-
+    handleBackPrevStep () {
+      this.$refs.step2.handleBackPrevStep()
+    },
+    handleSave () {
+      this.$refs.step2.handleSave()
+    },
     handleCrowdNextStep (step, recordId, tempPolicyAndCrowd) {
       this.activeStep = step
       this.recordId = recordId
@@ -159,4 +172,21 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
+.bottomBtn {
+  position: absolute;
+  background: #fff;
+  z-index: 999;
+  width: 100%;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding 10px 10px 0 0
+  margin-right 10px
+  .btn {
+    float right
+  }
+  .btn + .btn {
+    margin-right 10px
+  }
+}
 </style>
