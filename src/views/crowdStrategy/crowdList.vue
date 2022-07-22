@@ -609,10 +609,7 @@
       <!--</el-table-column>-->
       <el-table-column prop="status" label="状态" width="70" sortable="custom">
         <template slot-scope="scope">
-          <!-- 引用人群 -->
-          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
-
-          <span v-else>{{ launchStatusEnum[scope.row.status] }}</span>
+          <span >{{ launchStatusEnum[scope.row.status] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">
@@ -639,7 +636,9 @@
       </el-table-column>
       <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
         <template slot-scope="scope">
-          <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
+           <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+          <el-button type="text" v-else-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
           <span v-else>否</span>
         </template>
       </el-table-column>
@@ -651,7 +650,7 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button
