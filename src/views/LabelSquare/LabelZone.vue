@@ -1,6 +1,26 @@
 <template>
     <div class="label-zone">
-        <div v-if="tagName === undefined || tagName === ''">
+        <div class="header" v-if="!showSelection">
+
+          <div></div>
+          <div class="search-input">
+            <!-- <el-input
+              placeholder="支持按标签名、ID搜索"
+              class="header-input"
+              v-model="filter.condition"
+              @keyup.enter.native="fetchData"></el-input>
+            <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i> -->
+            <el-input
+              v-model="searchVal"
+              placeholder="支持按标签名、Code、描述搜索"
+              @keyup.enter.native="handleSearch"
+            >
+            </el-input>
+            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          </div>
+
+        </div>
+        <div v-if="filter.tagName === undefined || filter.tagName === ''">
 
             <div
                     v-for="item in treeData"
@@ -108,11 +128,28 @@ export default {
       toggleShow: false,
       loading: true,
       tagCategory: {},
-      definedTagId: undefined
+      definedTagId: undefined,
+      searchVal: ''
     }
   },
   watch: {
-    'tagName': function (val) {
+    // 'searchVal': function (val) {
+    //   if (val !== undefined && val !== '') {
+    //     this.filter.tagName = val
+    //     this.fetchTagAllList()
+    //   } else {
+    //     this.filter.tagName = val
+    //     this.fetchTagList()
+    //   }
+    // }
+  },
+  methods: {
+    handleClearSearch () {
+      this.searchVal = undefined
+    },
+    handleSearch () {
+      const val = this.searchVal
+      // debugger
       if (val !== undefined && val !== '') {
         this.filter.tagName = val
         this.fetchTagAllList()
@@ -120,9 +157,7 @@ export default {
         this.filter.tagName = val
         this.fetchTagList()
       }
-    }
-  },
-  methods: {
+    },
     fetchData () {
       this.$service.getNewTreeList().then(data => {
         const result = []
@@ -195,6 +230,7 @@ export default {
       // 切换tab清空搜索框的值
       this.filter.tagName = undefined
       // this.dataList = []
+      this.handleClearSearch()
       this.$emit('clear-search')
       this.$emit('fetch-checkList')
       this.fetchTagList()
@@ -247,8 +283,8 @@ export default {
     margin-bottom 5px
     position relative
     z-index 1
-    &:first-child
-        margin-top 50px
+    // &:first-child
+    //     margin-top 50px
 .label-zone >>> .el-icon-cc-star-fill
     color #E6A13C
 .label-zone >>> .el-button-group
@@ -256,6 +292,8 @@ export default {
     align-items center
     .el-button
         margin 0 5px
+.label-zone
+  margin-top 50px
 .title
     font-weight bold
 .popover-button
@@ -288,4 +326,17 @@ export default {
     font-size 28px
     position absolute
     top 0
+.header
+    display flex
+    justify-content space-between
+    margin 10px 0
+.search-input
+    position relative
+    display flex
+    width 350px
+.icon-fixed
+    position absolute
+    top 8px
+    right 10px
+    transform rotate(-90deg)
 </style>
