@@ -253,13 +253,15 @@ const customNode = {
         // }
         if (cfg.label) {
           var str = cfg.label
+          // 14个字符，就换行
           // eslint-disable-next-line no-control-regex
-          str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{10}\x01?/g, '$&\n').replace(/\x01/g, '')
-          if (str.length > 15) {
-            str = cutString(str, 20)
+          str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{14}\x01?/g, '$&\n').replace(/\x01/g, '')
+
+          if (str.length > 14) {
+            str = cutString(str, 28)
           }
 
-          group.addShape('text', {
+          const titleName = group.addShape('text', {
             attrs: {
               id: 'label' + uniqueId(),
               // x: offsetX + width / 2 - 70,
@@ -271,11 +273,13 @@ const customNode = {
               text: str,
               parent: mainId,
               fill: '#333',
-              fontSize: 14,
-              lineWidth: 20,
-              width: 30
+              fontSize: str.length > 10 ? 12 : 14,
+              lineWidth: 50,
+              width: 50
             }
           })
+          // 添加名称悬浮框
+          titleName.set('className', 'hoverTitleName')
           // group.addShape('rect', {
           //   attrs: {
           //     id: 'label' + uniqueId(),

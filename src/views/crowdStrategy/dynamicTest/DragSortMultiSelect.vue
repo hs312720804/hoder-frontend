@@ -15,7 +15,14 @@
       @right-check-change="handleWHRightChange"
     >
       <span slot-scope="{ option }">
-        {{ option.id }} - {{ option.label }}
+        <!-- {{ option.id }} - {{ option.label }} -->
+        <el-tooltip class="item" effect="dark" :content="option.label" placement="top-start">
+          <div>{{ option.id }} - {{ option.label }}</div>
+        </el-tooltip>
+        <!-- <el-tooltip placement="top">
+          <div slot="content"><div>{{ option.id }} - {{ option.label }}</div></div>
+          <div>{{ option.id }} - {{ option.label }}</div>
+        </el-tooltip> -->
         <el-tooltip class="item" effect="dark" content="拖拽移动顺序" placement="top-start">
           <i v-if="returnIconShow(option.id)" class="el-icon-s-operation"></i>
         </el-tooltip>

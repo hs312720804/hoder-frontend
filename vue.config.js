@@ -12,8 +12,8 @@ const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
 // const dist = path.resolve('./dist')
 
 const baseUrl = ENV === 'production'
-  ? ''
-  : 'http://127.0.0.1:8083'
+  ? '/'
+  : '/'
 
 const path = require('path')
 function resolve (dir) {

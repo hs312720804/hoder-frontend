@@ -1,6 +1,10 @@
 <template>
   <div class="page">
     <div :id="pageId" class="graph-container" style="position: relative;"></div>
+    <!-- 名称悬浮框 -->
+    <div v-show="!!currentNode" class="hover_con" :style="positionStyle">
+      {{currentNode}}
+    </div>
 
     <!-- v-if 用于每次打开都重新挂载 -->
     <el-dialog
@@ -56,7 +60,10 @@ export default {
       crowdId: undefined, // 小人群ID
       allCrowdRule: [],
       currentTarget: null,
-      entryDialogVisible: false
+      entryDialogVisible: false,
+      currentNode: '',
+      popUpShow: false,
+      positionStyle: { top: '0px', left: '0px' }
     }
   },
   props: {
@@ -158,6 +165,15 @@ export default {
             'keyboard',
             'customer-events',
             'add-menu'
+            // {
+            //   type: 'tooltip',
+            //   formatText: function formatText (model) {
+            //     console.log('model------->', model)
+            //     const text = model.crowdName
+
+            //     return text
+            //   }
+            // }
           ],
           mulitSelect: ['mulit-select'],
           addEdge: ['add-edge'],
@@ -278,9 +294,45 @@ export default {
             })
           })
         })
+
+        eventBus.$on('handleHoverTitleName', obj => { // hover
+          // 鼠标离开时，隐藏悬浮框
+          if (obj.onMouseleave) {
+            _this.currentNode = ''
+            _this.positionStyle = { top: '0px', left: '0px' }
+            return
+          }
+          const selectNode = obj.target.getModel()
+          // console.log('handleHoverTitleName=====', selectNode)
+          _this.currentNode = selectNode.crowdName
+          // console.log('handleHoverTitleName=====', _this.currentNode)
+          // console.log('obj++++++++++>>>', obj)
+          // const x = obj.event.x - 90 + 'px'
+          // const y = obj.event.y - 80 + 'px'
+          // const x = selectNode.x - 80 + 'px'
+          // const y = selectNode.y + 30 + 'px'
+          const x = obj.event.clientX - 250 + 'px'
+          const y = obj.event.clientY - 350 + 'px'
+          _this.positionStyle = { top: y, left: x }
+        })
       })
     }
 
   }
 }
 </script>
+<style lang="stylus">
+
+.hover_con{
+  background: #303133;
+  color: #FFF;
+  position: absolute;
+  border-radius: 4px;
+  padding: 10px;
+  z-index: 2000;
+  font-size: 12px;
+  line-height: 1.2;
+  min-width: 10px;
+  word-wrap: break-word;
+}
+</style>
