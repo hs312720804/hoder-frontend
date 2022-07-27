@@ -9,8 +9,9 @@ axios.interceptors.response.use((response) => {
   return response
 }, function (error) {
   console.log('error===', error)
-  if (error.response.status === 401) {
-    window.location = '/login'
+  if (error.response && error.response.status === 401) {
+    // window.location = '/login'
+    window.location.reload()
   } else {
     return Promise.reject(error)
   }

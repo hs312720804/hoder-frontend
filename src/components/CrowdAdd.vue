@@ -449,7 +449,9 @@ export default {
     },
     // 复制人群
     handleCopyCrowd (crowd, index) {
-      this.handleAddParam({ copyCrowdData: crowd, copyCrowdIndex: index })
+      // 深拷贝
+      const crowdData = JSON.parse(JSON.stringify(crowd))
+      this.handleAddParam({ copyCrowdData: crowdData, copyCrowdIndex: index })
     },
     // 确定 - 创建引用人群
     handleConfirm () {
