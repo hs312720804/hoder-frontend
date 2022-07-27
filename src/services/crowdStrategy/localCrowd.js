@@ -20,8 +20,8 @@ export function addLocalCrowd (data) {
 export function updateLocalCrowd (data) {
   return this.fetch({
     method: 'put',
-    url: `api/tempCrowd/localCrowd/${data.id}`,
-    // url: `api/tempCrowd/localCrowd`,
+    url: `/api/tempCrowd/localCrowd/${data.id}`,
+    // url: `/api/tempCrowd/localCrowd`,
     data: data.formData
   })
 }
@@ -29,7 +29,7 @@ export function updateLocalCrowd (data) {
 export function OnOrOffLocalCrowd (data) {
   return this.fetch({
     method: 'post',
-    url: `api/tempCrowd/localCrowd/OnOrOff/${data.localCrowdId}`,
+    url: `/api/tempCrowd/localCrowd/OnOrOff/${data.localCrowdId}`,
     data
   })
 }

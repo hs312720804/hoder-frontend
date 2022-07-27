@@ -146,7 +146,7 @@ export function specialTagList (params) {
 export function specialTagDetailList (params) {
   return this.fetch({
     method: 'get',
-    url: `api/specialTag/list/${params.tagId}`,
+    url: `/api/specialTag/list/${params.tagId}`,
     params
   })
 }
@@ -154,14 +154,14 @@ export function specialTagDetailList (params) {
 export function specialTagChild (params) {
   return this.fetch({
     method: 'get',
-    url: `api/specialTag/child/${params.id}`
+    url: `/api/specialTag/child/${params.id}`
   })
 }
 // 特定标签--修改
 export function editSpecialTag ({ rulesJson }) {
   return this.fetch({
     method: 'put',
-    url: `api/specialTag`,
+    url: `/api/specialTag`,
     data: rulesJson,
     isJSON: true
   })
@@ -170,7 +170,7 @@ export function editSpecialTag ({ rulesJson }) {
 export function addSpecialTag ({ rulesJson }) {
   return this.fetch({
     method: 'post',
-    url: `api/specialTag`,
+    url: `/api/specialTag`,
     data: rulesJson,
     isJSON: true
   })
@@ -179,7 +179,7 @@ export function addSpecialTag ({ rulesJson }) {
 export function specialTagDetail ({ specialTagId }) {
   return this.fetch({
     method: 'get',
-    url: `api/specialTag/${specialTagId}`
+    url: `/api/specialTag/${specialTagId}`
   })
 }
 
@@ -187,14 +187,14 @@ export function specialTagDetail ({ specialTagId }) {
 export function deleteSpecialTagAttr (id) {
   return this.fetch({
     method: 'delete',
-    url: `api/specialTag/${id}`
+    url: `/api/specialTag/${id}`
   })
 }
 
 // export function tempCrowdList(params) {
 //     return this.fetch({
 //         method: 'get',
-//         url: `api/tempCrowd/index`,
+//         url: `/api/tempCrowd/index`,
 //         params
 //     })
 // }
@@ -203,7 +203,7 @@ export function deleteSpecialTagAttr (id) {
 export function saveSpecialTag (params) {
   return this.fetch({
     method: 'get',
-    url: `api/specialTag/tagList`,
+    url: `/api/specialTag/tagList`,
     params
   })
 }
@@ -212,7 +212,7 @@ export function saveSpecialTag (params) {
 export function addSpecialTagType (data) {
   return this.fetch({
     method: 'post',
-    url: `api/specialTag/tags`,
+    url: `/api/specialTag/tags`,
     data,
     isJSON: true
   })
@@ -222,7 +222,7 @@ export function addSpecialTagType (data) {
 export function editSpecialTagType (data) {
   return this.fetch({
     method: 'put',
-    url: `api/specialTag/tags`,
+    url: `/api/specialTag/tags`,
     data,
     isJSON: true
   })
@@ -232,7 +232,7 @@ export function editSpecialTagType (data) {
 export function deleteSpecialTagType (id) {
   return this.fetch({
     method: 'delete',
-    url: `api/specialTag/tags/${id}`
+    url: `/api/specialTag/tags/${id}`
   })
 }
 
