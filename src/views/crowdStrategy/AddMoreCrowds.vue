@@ -352,32 +352,72 @@ export default {
             return
           }
 
+          let allList = []
+
+          const allBavRule = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect : []
           // 获取到组件中的form 校验必填项
-          // 周期范围 ref
-          const rangeFormList = []
-          const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
-          rangeRefList && rangeRefList.forEach(item => {
-            rangeFormList.push(item.$refs.rangeForm)
-          })
+          if (allBavRule.length > 0) {
+            // 周期范围 ref
 
-          // value值 ref
-          const typeFormList = []
-          const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+            // const rangeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range : []
+            // const rangeRefList = this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.range || []
+            // rangeRefList && rangeRefList.forEach(item => {
+            //   rangeFormList.push(item.$refs.rangeForm)
+            // })
+            console.log('allBavRule---------------->', allBavRule)
+            // let rangeFormList = []
+            // allBavRule.forEach(item => {
+            //   if (item.$refs.range) {
+            //     rangeFormList.push(item.$refs.range[0].$refs['rangeForm'])
+            //   }
+            // })
 
-          const bavFormList = []
+            // value值 ref
+            let rangeFormList = []
+            let bavFormList = []
+            let typeRefList = []
+            let typeFormList = []
 
-          typeRefList && typeRefList.forEach(item => {
-            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
-            if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
-              item.$refs.typeRef.forEach(obj => {
-                typeFormList.push(obj.$refs.typeForm)
-              })
-            } else if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') {
-              typeFormList.push(item.$refs.typeRef.$refs.typeForm)
-            }
-          })
+            // const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
+            allBavRule.forEach(item => {
+              const range = item.$refs.range
+              const bav = item.$refs.bav
+              if (range && range.length > 0) {
+                range.forEach(r => {
+                  rangeFormList.push(r.$refs.rangeForm)
+                })
+              }
+              if (bav && bav.length > 0) {
+                bav.forEach(b => {
+                  // rangeFormList.push(r.$refs['rangeForm'])
+                  bavFormList.push(b.$refs.bav)
+                })
+                typeRefList = typeRefList.concat(bav)
+              }
+              // if (item.$refs && item.$refs.bav && item.$refs.bav[0]) {
+              // }
+            })
 
-          let allList = rangeFormList.concat(typeFormList, bavFormList)
+            // let bavFormList = []
+
+            typeRefList && typeRefList.forEach(item => {
+              // debugger
+              if (item.$refs.bav) bavFormList.push(item.$refs.bav)
+              if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
+                item.$refs.typeRef.forEach(obj => {
+                  typeFormList.push(obj.$refs.typeForm)
+                })
+              } else if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') {
+                typeFormList.push(item.$refs.typeRef.$refs.typeForm)
+              }
+            })
+
+            allList = rangeFormList.concat(typeFormList, bavFormList)
+            console.log('rangeFormList=======', rangeFormList)
+            console.log('typeFormList=======', typeFormList)
+            console.log('bavFormList=======', bavFormList)
+            console.log('allList=======', allList)
+          }
 
           // 选择了属性为空的 time 类型的标签, 需要提示
           if (this.timeTagKongList.length > 0) {

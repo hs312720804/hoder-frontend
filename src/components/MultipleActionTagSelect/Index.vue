@@ -67,6 +67,7 @@
                   ref="bav"
                   :childItem="childItem"
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
+                  :key="index + 'bavRule' + n"
                 >
                 </Bav>
               </div>

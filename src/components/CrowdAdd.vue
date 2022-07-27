@@ -80,7 +80,7 @@
   <!-- <div> -->
     <el-collapse class="el-collapse" accordion v-model="activeName">
       <el-form-item label="人群条件" class="el-collapse_item">
-        <template v-for="(crowd, i) in inputValue">
+        <div v-for="(crowd, i) in inputValue" :key="i + 'crowd'">
           <div class="items" :key="i">
             <el-collapse-item :name="i" :key="i" class="crowd-content">
               <template slot="title">
@@ -137,6 +137,7 @@
 
                   <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
                     <MultipleActionTagSelect
+                      :key="i+'bav'"
                       ref="multipleActionTagSelect"
                       :actionTags="actionTags"
                       :behaviorRulesJson="crowd.behaviorRulesJson"
@@ -195,9 +196,10 @@
               <i class="icon iconfont el-icon-cc-delete"></i>
             </a>
           </div>
-        </template>
+        </div>
         <!-- 选择了标签才有【添加】按钮 -->
-        <el-button v-if="tags.length > 0" type="primary" plain @click="handleAddParam">
+        <!-- <el-button v-if="tags.length > 0" type="primary" plain @click="handleAddParam"> -->
+        <el-button v-if="tags.length > 0 || actionTags.length > 0 || specialTags.length > 0" type="primary" plain @click="handleAddParam">
           <i class="el-icon-plus"></i>&nbsp;添加
         </el-button>
         <el-button type="primary" plain @click="handleOpenAddLinkCrowd">
