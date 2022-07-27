@@ -1,5 +1,5 @@
 <template>
-<div>
+<div style="margin-right: 30px">
   <!-- {{inputValue}} -->
   <!-- 动态人群 -->
   <div v-if="isDynamicPeople" class="el-collapse">
