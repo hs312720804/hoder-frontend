@@ -1,8 +1,9 @@
 <template>
     <div class="label-zone">
-        <div class="header" v-if="!showSelection">
+      <!-- <div class="header" v-if="!showSelection"> -->
+          <div class="header" >
+          <div v-if="!showSelection"></div>
 
-          <div></div>
           <div class="search-input">
             <!-- <el-input
               placeholder="支持按标签名、ID搜索"

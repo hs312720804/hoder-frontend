@@ -1,8 +1,9 @@
 <template>
   <div class="my-collect">
-      <div class="header" v-if="!showSelection">
+      <!-- <div class="header" v-if="!showSelection"> -->
+      <div class="header">
 
-        <div></div>
+        <div v-if="!showSelection"></div>
         <div class="search-input">
           <el-input
             v-model="searchVal"
