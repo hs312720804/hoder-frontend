@@ -5,7 +5,7 @@
         <el-tab-pane
           v-for="item in dataList"
           :key="item.id"
-          :name="item.tagName"
+          :name="'_'+ item.id"
           :label="item.tagName"
         >
           <!-- <span slot="label">
@@ -13,7 +13,7 @@
           </span> -->
 
           <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
-          <template v-if="activeTab === item.tagName">
+          <template v-if="activeTab === (`_${item.id}`)">
             <AttrListSelect
               :row="row"
               :data-list="tagList"
@@ -117,7 +117,7 @@ export default {
         this.totalCount = result.total
         if (this.dataList.length > 0) {
           // 默认选择第一个 tab
-          this.activeTab = this.dataList[0].tagName
+          this.activeTab = `_${this.dataList[0].id}`
           this.fetchTagList()
         }
       })
@@ -144,7 +144,13 @@ export default {
     // },
     // 搜索可勾选的模型标签
     fetchTagList () {
-      const obj = this.dataList.find(item => item.tagName === this.activeTab)
+      // console.log('this.activeTab===', this.activeTab)
+
+      const obj = this.dataList.find(item => {
+        const name = `_${item.id}`
+        return name === this.activeTab
+      })
+      // console.log('obj===', obj)
       // const filter = this.filter
       if (obj) {
         this.$service.getModelTag({ modelTagIds: obj.id }).then((data) => {
@@ -180,7 +186,7 @@ export default {
       // this.filter.tagName = undefined
       // // this.dataList = []
       // this.$emit('clear-search')
-      this.$emit('fetch-checkList')
+      // this.$emit('fetch-checkList')
       this.fetchTagList()
     },
     handleCheckListChange (val) {
