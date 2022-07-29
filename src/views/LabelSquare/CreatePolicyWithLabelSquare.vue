@@ -8,7 +8,7 @@
           @tab-click="handleTabChange"
         >
 
-          <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
+          <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
             <el-input
               v-model="searchVal"
               placeholder="支持按标签名、Code、描述搜索"
@@ -16,7 +16,7 @@
             >
             </el-input>
             <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-          </div>
+          </div> -->
 
           <el-tab-pane label="设备标签" name="labelZone">
               <label-zone
@@ -575,6 +575,8 @@ export default {
       .el-tabs__nav-wrap
         z-index 1
     >>> .my-collect
+        margin-top 0
+    >>> .label-zone
         margin-top 0
     >>> .temp-label-list
         margin-top 0
