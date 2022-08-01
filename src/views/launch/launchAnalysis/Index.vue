@@ -286,15 +286,12 @@ export default {
     this.showFunnel()
 
     const data = [
-      { value: 1048, name: 'Search Engine' },
-      { value: 735, name: 'Direct' },
-      { value: 580, name: 'Email' },
-      { value: 484, name: 'Union Ads' },
-      { value: 300, name: '1 Ads' },
-      { value: 300, name: '2 Ads' },
-      { value: 300, name: '3 Ads' },
-      { value: 300, name: '4 Ads' },
-      { value: 300, name: 'Video Ads' }
+      { value: 1048, name: '电视剧' },
+      { value: 735, name: '电影' },
+      { value: 580, name: '综艺' },
+      { value: 484, name: '纪录片' },
+      { value: 300, name: '少儿' },
+      { value: 300, name: '其他' }
     ]
     this.setPie('pie1', data)
     this.setPie('pie2', data)
@@ -559,6 +556,10 @@ export default {
           // data: yData.length === 0 ? this.fillEmptyData.data : yData,
           data: yData,
           type: 'bar',
+          showBackground: true,
+          backgroundStyle: {
+            color: 'rgba(180, 180, 180, 0.2)'
+          },
           barWidth: '10%',
           label: {
             show: true
@@ -578,7 +579,7 @@ export default {
       let myChart = echarts.init(document.getElementById(element))
       myChart.setOption({
         title: {
-          text: title
+          text: title || '多线性图'
         },
         tooltip: {
           trigger: 'axis'
@@ -694,14 +695,15 @@ export default {
             color: '#464c54', // 图例文字颜色
             rich: {
               name: {
-                fontSize: 12,
-                color: '#011',
-                padding: [4, 0, 0, 0]
+                fontSize: 14,
+                height: 30,
+                color: '#011'
+                // padding: [0, 0, 20, 0]
               },
               num: {
                 fontSize: 12,
                 fontWeight: 100,
-                padding: [10, 0, 0, 0],
+                // padding: [0, 0, 20, 0],
                 color: '#000'
               }
             }
@@ -713,6 +715,7 @@ export default {
             // }
           }
         },
+        color: ['#fc8251', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
         series: [
           {
             name: 'Access From',
@@ -720,14 +723,27 @@ export default {
             // radius: ['40%', '70%'],
             // avoidLabelOverlap: true,
 
-            center: ['25%', '42%'],
+            center: ['25%', 'center'],
             radius: ['40%', '60%'],
             avoidLabelOverlap: true,
-            itemStyle: {
-              borderRadius: 10,
-              borderColor: '#fff',
-              borderWidth: 2
-            },
+            // itemStyle: {
+            //   // borderRadius: 10,
+            //   // borderColor: '#fff',
+            //   // borderWidth: 2,
+            //   normal: {
+            //     color: function (colors) {
+            //       var colorList = [
+            //         '#fc8251',
+            //         '#5470c6',
+            //         '#91cd77',
+            //         '#ef6567',
+            //         '#f9c956',
+            //         '#75bedc'
+            //       ]
+            //       return colorList[colors.dataIndex]
+            //     }
+            //   }
+            // },
             label: {
               show: false,
               position: 'center'
@@ -735,8 +751,8 @@ export default {
             emphasis: {
               label: {
                 show: true,
-                fontSize: '40',
-                fontWeight: 'bold'
+                fontSize: '30'
+                // fontWeight: 'bold'
               }
             },
             labelLine: {

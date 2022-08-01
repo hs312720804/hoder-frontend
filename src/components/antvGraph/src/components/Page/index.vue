@@ -180,6 +180,14 @@ export default {
           moveNode: ['drag-item']
         }
       })
+      // 初始化为线型布局
+      this.graph.updateLayout({
+        type: 'grid',
+        begin: [ 20, 20 ],
+        width: width - 20,
+        height: height - 20
+      })
+
       const { editor, command } = this.$parent
       editor.emit('afterAddPage', { graph: this.graph, command })
       editor.on('changeNodeData')

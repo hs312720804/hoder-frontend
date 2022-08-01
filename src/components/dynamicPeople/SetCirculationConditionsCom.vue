@@ -40,7 +40,22 @@
 
                 <span class="txt">{{ childItem.tagName }}</span>
 
-                <span class="sel">
+                <span>
+
+                  <el-select
+                    style="width: 180px"
+                    name="oxve"
+                    v-model="childItem.sourceSign"
+                    class="input-inline"
+                  >
+                    <!-- number 类型 -->
+                    <template>
+                      <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
+                    </template>
+
+                  </el-select>
+                </span>
+                <span >
                   <!-- 不是时间（time）类型的下拉框 -->
                   <el-select
                     style="width: 80px"
@@ -151,7 +166,8 @@ export default {
       crowdRule: {},
       policyId: '',
       applyAll: false,
-      initRulesJson: {}
+      initRulesJson: {},
+      soureceSignList: []
     }
   },
   watch: {
@@ -165,6 +181,9 @@ export default {
     // 获取标签
     this.$service.getRuleIndicators().then(res => {
       this.tags = res
+    })
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
     })
   },
   mounted () {
@@ -232,6 +251,7 @@ export default {
         rules: [{
           ...tag,
           operator: '>',
+          sourceSign: '',
           value: ''
         }]
       })
@@ -240,6 +260,7 @@ export default {
       rule.rules.push({
         ...tag,
         operator: '>',
+        sourceSign: '',
         value: ''
       })
     },
@@ -344,6 +365,7 @@ export default {
 
 .label-item .txt, .label-item .sel {
   width: 150px;
+  // margin-right: 20px
 }
 
 .label-item .txt {
