@@ -2,8 +2,8 @@
  <div class='' id='' style="background: #f3f4fa; margin: -20px; padding: 20px;">
   <!-- {{ formInline }} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
-    <el-form-item label="人群ID:" prop="userId">
-      <el-input v-model="formInline.userId" placeholder="请输入"></el-input>
+    <el-form-item label="人群ID:" prop="crowdId">
+      <el-input v-model="formInline.crowdId" placeholder="请输入"></el-input>
     </el-form-item>
 
     <el-form-item label="分析周期:" prop="timeRange">
@@ -14,16 +14,22 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           value-format="yyyy-MM-dd"
-          :picker-options="pickerOptions"
         >
       </el-date-picker>
+          <!-- :picker-options="pickerOptions" -->
     </el-form-item>
     <br/>
-    <el-form-item label="业务范围:" prop="type">
-      <el-checkbox-group v-model="formInline.type">
+    <el-form-item label="业务范围:" prop="sourceNameList">
+      <!-- <el-checkbox-group v-model="formInline.sourceNameList">
         <el-checkbox :label="0" name="type">全选</el-checkbox>
-        <el-checkbox :label="1" name="type">影视VIP</el-checkbox>
-        <el-checkbox :label="2" name="type">奇异果VIP</el-checkbox>
+        <el-checkbox :label="影视VIP" name="type">影视VIP</el-checkbox>
+        <el-checkbox :label="奇异果VIP" name="type">奇异果VIP</el-checkbox>
+      </el-checkbox-group> -->
+
+      <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+      <div style="margin: 15px 0;"></div>
+      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange">
+        <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
     <el-form-item>
@@ -32,211 +38,249 @@
   </el-form>
 
   <!-- 总览 -->
-  <div >
-    <div class="big-title">总览</div>
-    <div class="wrap-div">
-      <div class="overview-table">
-        <el-row :gutter="20">
+  <!-- {{overview}} -->
+  <div :style="{'opacity': allChartData.vipPkgShow ? 100 : 0}">
+    <div >
+      <div class="big-title">总览</div>
+      <div class="wrap-div">
+        <div class="overview-table">
+          <el-row :gutter="20">
 
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">主页活跃人数</div>
-            <div class="text-two">
-              126,560
-            </div>
-            <div class="small-box">
-              <div class="small">
-                <span>圈定用户数</span>
-                <span>666666666</span>
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">主页活跃人数</div>
+              <div class="text-two">
+                {{ cc_format_number(overview.homepageActiveUv) }}
               </div>
-            </div>
-          </div></el-col>
-
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">起播活跃率</div>
-            <div class="text-two">
-              78%
-            </div>
-            <div class="small-box">
-              <div class="small">
-                <span>起播人数</span>
-                <span>主页活跃人数</span>
-              </div>
-              <div class="small">
-                <span>圈定用户数</span>
-                <span>666666666</span>
-              </div>
-            </div>
-          </div></el-col>
-
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">产品包曝光率</div>
-            <div class="text-two">
-              78%
-            </div>
-            <div class="small-box">
-              <div class="small">
-                <span>产品包曝光人数</span>
-                <span>666666666</span>
-              </div>
-              <div class="small">
-                <span>起播人数</span>
-                <span>666666666</span>
-              </div>
-            </div>
-          </div></el-col>
-
-        </el-row>
-
-        <el-row :gutter="20">
-
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">下单率</div>
-            <div class="text-two">
-              78%
-            </div>
-            <div class="small-box">
-              <div class="small">
-                <span>下单人数</span>
-                <span>111111</span>
-              </div>
-              <div class="small">
-                <span>曝光人数</span>
-                <span>666666666</span>
-              </div>
-            </div>
-          </div></el-col>
-
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">产品包曝光率</div>
-            <div class="text-two">
-              78%
-            </div>
-            <div class="small-box">
-              <div class="small">
-                <span>付费人数</span>
-                <span>666666666</span>
-              </div>
-              <div class="small">
-                <span>曝光人数</span>
-                <span>666666666</span>
-              </div>
-            </div>
-          </div></el-col>
-
-          <el-col :span="8"><div class="ibox">
-            <div class="title-one">付费金额</div>
-            <div class="text-two" style="height: 70px">
-              126,560
-            </div>
-
-          </div></el-col>
-
-        </el-row>
-
-      </div>
-
-      <!-- 漏斗图 -->
-      <div class="chart-wrap">
-        <div ref="chart1" class="chart-1" >chart1</div>
-      </div>
-    </div>
-  </div>
-
-  <!-- tabs -->
-  <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
-    <el-tab-pane label="内容型" name="one">
-      <!-- 柱状图、折线图 -->
-      <div class="launch-statistics">
-          <template v-if="show">
-            <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
-              <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
-                <div class="unit-box" >
-                  <div class="unit-header clearfix"><span v-if="chart.title">{{ chart.title }}</span></div>
-                  <div class="unit-content" v-if="chart.title">
-                    <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
-                    <div v-else class="chart-div">
-                      <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
-                    </div>
-                  </div>
-                </div>
-              </el-col>
-            </el-row>
-
-          </template>
-          <el-row :gutter="20" class="unit-row" >
-            <el-col :span="12">
-              <div class="unit-box" >
-                <div class="unit-header clearfix">
-                  观影分类占比
-                </div>
-                <div class="unit-content" >
-                  <div ref="pie1" class="chart-1"></div>
+              <div class="small-box">
+                <div class="small">
+                  <span>圈定用户数</span>
+                  <span>
+                    {{ cc_format_number(overview.quandingUv) }}
+                  </span>
                 </div>
               </div>
-            </el-col>
-            <el-col :span="12">
-              <div class="unit-box" >
-                <div class="unit-header clearfix">
-                  观影分类占比
+            </div></el-col>
+
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">起播活跃率</div>
+              <div class="text-two">
+                {{ overview.totalPlayRate }}
+              </div>
+              <div class="small-box">
+                <div class="small">
+                  <span>起播人数</span>
+                  <span>
+                    {{ cc_format_number(overview.totalPlayUv) }}
+                  </span>
                 </div>
-                <div class="unit-content" >
-                  <div ref="pie2" class="chart-1"></div>
+                <div class="small">
+                  <span>主页活跃人数</span>
+                  <span>
+                    {{ cc_format_number(overview.homepageActiveUv) }}
+                  </span>
                 </div>
               </div>
-            </el-col>
+            </div></el-col>
+
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">产品包曝光率</div>
+              <div class="text-two">
+                {{ overview.totalPkgShowRate }}
+              </div>
+              <div class="small-box">
+                <div class="small">
+                  <span>产品包曝光人数</span>
+                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
+                </div>
+                <div class="small">
+                  <span>起播人数</span>
+                  <span>{{ cc_format_number(overview.totalPlayUv) }}</span>
+                </div>
+              </div>
+            </div></el-col>
+
           </el-row>
 
+          <el-row :gutter="20">
+
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">下单率</div>
+              <div class="text-two">
+                {{ overview.totalPkgXiadanRate }}
+              </div>
+              <div class="small-box">
+                <div class="small">
+                  <span>下单人数</span>
+                  <span>{{ cc_format_number(overview.totalPkgXiadanUv) }}</span>
+                </div>
+                <div class="small">
+                  <span>曝光人数</span>
+                  <span>{{ cc_format_number(overview.totalPkgPayUv) }}</span>
+                </div>
+              </div>
+            </div></el-col>
+
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">产品包曝光率</div>
+              <div class="text-two">
+                {{ overview.totalPkgShowRate }}
+              </div>
+              <div class="small-box">
+                <div class="small">
+                  <span>付费人数</span>
+                  <span>{{ cc_format_number(overview.totalPkgPayUv) }}</span>
+                </div>
+                <div class="small">
+                  <span>曝光人数</span>
+                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
+                </div>
+              </div>
+            </div></el-col>
+
+            <el-col :span="8"><div class="ibox">
+              <div class="title-one">付费金额</div>
+              <div class="text-two" style="height: 70px">
+                {{ cc_format_number(overview.totalPrice) }}
+              </div>
+
+            </div></el-col>
+
+          </el-row>
+
+        </div>
+
+        <!-- 漏斗图 -->
+        <div class="chart-wrap">
+          <div ref="chart1" class="chart-1" >chart1</div>
+        </div>
       </div>
+    </div>
 
-    </el-tab-pane>
+    <!-- tabs -->
+    <el-tabs v-model="activeName" type="card" @tab-click="handleClick">
+      <el-tab-pane label="内容型" name="one">
+        <!-- 柱状图、折线图 -->
+        <div class="launch-statistics">
+            <template v-if="show">
+              <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+                <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+                  <div class="unit-box">
+                    <!-- {{allChartData[key]}} -->
+                    <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+                    <div class="unit-header clearfix">
+                      <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                        {{ allChartData[key].title }}
+                      </span>
+                      <span v-else>
+                        {{chart.title}}
+                      </span>
 
-    <el-tab-pane label="付费型" name="two">
-
-      <!-- 柱状图、折线图 -->
-      <div class="launch-statistics">
-          <template v-if="show">
-            <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
-              <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
-                <div class="unit-box" >
-                  <div class="unit-header clearfix"><span v-if="chart.title">{{ chart.title }}</span></div>
-                  <div class="unit-content" v-if="chart.title">
-                    <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
-                    <div v-else class="chart-div">
-                      <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
                     </div>
+
+                    <div class="unit-content" v-if="chart.title">
+                      <div v-if="allChartData[key] && (allChartData[key].series || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+                      <div v-else class="chart-div">
+                        <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+
+            </template>
+            <!-- <el-row :gutter="20" class="unit-row" >
+              <el-col :span="12">
+                <div class="unit-box" >
+                  <div class="unit-header clearfix">
+                    观影分类占比
+                  </div>
+                  <div class="unit-content" >
+                    <div ref="pie1" class="chart-1"></div>
                   </div>
                 </div>
               </el-col>
-            </el-row>
+              <el-col :span="12">
+                <div class="unit-box" >
+                  <div class="unit-header clearfix">
+                    观影分类占比
+                  </div>
+                  <div class="unit-content" >
+                    <div ref="pie2" class="chart-1"></div>
+                  </div>
+                </div>
+              </el-col>
+            </el-row> -->
 
-          </template>
+        </div>
 
-      </div>
-    </el-tab-pane>
-  </el-tabs>
+      </el-tab-pane>
+
+      <el-tab-pane label="付费型" name="two">
+
+        <!-- 柱状图、折线图 -->
+        <div class="launch-statistics">
+            <template v-if="show">
+              <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
+                <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+                  <div class="unit-box" >
+
+                    <!-- <div class="unit-header clearfix"><span v-if="chart.title">{{ chart.title }}</span></div> -->
+                    <div class="unit-header clearfix">
+                      <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                        {{ allChartData[key].title }}
+                      </span>
+                      <span v-else>
+                        {{chart.title}}
+                      </span>
+
+                    </div>
+
+                    <div class="unit-content" v-if="chart.title">
+                      <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
+                      <div v-else class="chart-div">
+                        <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
+                      </div>
+                    </div>
+                  </div>
+                </el-col>
+              </el-row>
+
+            </template>
+
+        </div>
+      </el-tab-pane>
+    </el-tabs>
+  </div>
 
  </div>
 </template>
 
 <script>
+const cityOptions = ['影视VIP', '奇异果VIP', '4K花园']
 export default {
   components: {},
   data () {
     return {
+      checkAll: true,
+      checkedCities: [],
+      cities: cityOptions,
+      isIndeterminate: false,
+      // allData: {},
+      overview: {},
       formInline: {
-        userId: '',
-        type: [],
-        timeRange: []
+        crowdId: '10013',
+        sourceNameList: ['影视VIP', '奇异果VIP', '4K花园'],
+        timeRange: ['2022-07-18', '2022-07-19']
       },
       rules: {
-        userId: [
-          { required: true, message: '请输入人群ID', trigger: 'blur' },
-          { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        crowdId: [
+          { required: true, message: '请输入人群ID', trigger: 'blur' }
+          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         timeRange: [
           { type: 'array', required: true, message: '请选择日期', trigger: 'change' }
         ],
-        type: [
+        sourceNameList: [
           { type: 'array', required: true, message: '请至少选择一个业务范围', trigger: 'change' }
         ]
 
@@ -254,47 +298,52 @@ export default {
       activeName: 'one',
       rowObj: [
         {
-          'crowdGroup_h_2': { type: 'bar', title: '各权益曝光人数及占比', span: 8 },
-          'crowdGroup_h_3': { type: 'bar', title: '各权益下单人数及占比', span: 8 },
-          'crowdGroup_h_4': { type: 'bar', title: '各权益付费人数及占比', span: 8 }
+          'vipPkgShow': { type: 'bar', title: '各权益曝光人数及占比', span: 8 },
+          'vipPkgXiadan': { type: 'bar', title: '各权益下单人数及占比', span: 8 },
+          'vipPkgPay': { type: 'bar', title: '各权益付费人数及占比', span: 8 }
         }, {
-          'crowdGroup_l_3': { type: 'line', title: '影视VIP曝光趋势', span: 8 },
-          'crowdGroup_l_4': { type: 'line', title: '影视VIP下单趋势', span: 8 },
-          'crowdGroup_l_5': { type: 'line', title: '影视VIP付费趋势', span: 8 }
+          'vipPkgShowTrend': { type: 'line', title: '影视VIP曝光趋势', span: 8 },
+          'vipPkgXiadanTrend': { type: 'line', title: '影视VIP下单趋势', span: 8 },
+          'vipPkgPayTrend': { type: 'line', title: '影视VIP付费趋势', span: 8 }
         }, {
-          'crowdGroup_h_5': { type: 'bar', title: '影视VIP曝光路径人数及占比', span: 8 },
-          'crowdGroup_h_8': { type: 'bar', title: '影视VIP下单产品包分类人数及占比', span: 8 },
-          'crowdGroup_h_6': { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
+          'pathPkgShow': { type: 'bar', title: '影视VIP曝光路径人数及占比', span: 8 },
+          'productTypePkgXiadan': { type: 'bar', title: '影视VIP下单产品包分类人数及占比', span: 8 },
+          'pathPkgPay': { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
         },
         {
-          'empty1': { span: 8 },
-          'empty2': { span: 8 },
-          'crowdGroup_h_7': { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
+          // 'empty1': { span: 8 },
+          // 'empty2': { span: 8 },
+          'productTypePkgPay': { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
         }
       ],
       rowObj2: [
         {
-          'crowdGroup_h_2': { type: 'bar', title: '各权益起播人数及占比', span: 12 },
-          'crowdGroup_h_3': { type: 'bar', title: '影视VIP起播趋势', span: 12 }
+          'vipPlay': { type: 'bar', title: '各权益起播人数及占比', span: 12 },
+          'vipPlayTrend': { type: 'line', title: '影视VIP起播趋势', span: 12 }
+        }, {
+          'viewingCategoryRank': { type: 'pie', title: '各权益观影分类TOP5及占比', span: 12 }
         }
       ],
-      crowdId: 11882
+      crowdId: 11882,
+      colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc']
+      // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
   },
-  mounted () {
-    this.showFunnel()
 
-    const data = [
-      { value: 1048, name: '电视剧' },
-      { value: 735, name: '电影' },
-      { value: 580, name: '综艺' },
-      { value: 484, name: '纪录片' },
-      { value: 300, name: '少儿' },
-      { value: 300, name: '其他' }
-    ]
-    this.setPie('pie1', data)
-    this.setPie('pie2', data)
+  mounted () {
+    // this.showFunnel()
+
+    // const data = [
+    //   { value: 1048, name: '电视剧' },
+    //   { value: 735, name: '电影' },
+    //   { value: 580, name: '综艺' },
+    //   { value: 484, name: '纪录片' },
+    //   { value: 300, name: '少儿' },
+    //   { value: 300, name: '其他' }
+    // ]
+    // this.setPie('pie1', data)
+    // this.setPie('pie2', data)
 
     // chart5
     // 图表自适应
@@ -304,15 +353,17 @@ export default {
         chart.resize()
       }
     })
-
-    this.show = false
-    this.initRange()
-    this.initChart()
-    this.$nextTick(() => {
-      this.show = true
-    })
   },
   methods: {
+    handleCheckAllChange (val) {
+      this.formInline.sourceNameList = val ? cityOptions : []
+      this.isIndeterminate = false
+    },
+    handleCheckedCitiesChange (value) {
+      let checkedCount = value.length
+      this.checkAll = checkedCount === this.cities.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    },
     handleClick (tab, event) {
       console.log(tab, event)
       this.show = false
@@ -322,18 +373,26 @@ export default {
         this.show = true
       })
     },
-    onSubmit () {
-      console.log('submit!')
-    },
+
     // 漏斗图
-    showFunnel () {
+    showFunnel (element, data) {
+      const chartData =
+ [
+   { value: data.homepageActiveUv, name: '主页活跃' },
+   { value: data.totalPlayUv, name: '起播' },
+   { value: data.totalPkgShowUv, name: '产品包曝光' },
+   { value: data.totalPkgXiadanUv, name: '下单' },
+   { value: data.totalPkgPayUv, name: '成交' }
+ ]
+
+      const _this = this
       const option = {
         title: {
           text: '漏斗图'
         },
         tooltip: {
-          trigger: 'item',
-          formatter: '{a} <br/>{b} : {c}%'
+          trigger: 'item'
+          // formatter: '{a} <br/>{b} : {c}%'
         },
         toolbox: {
           feature: {
@@ -345,6 +404,7 @@ export default {
         legend: {
           data: ['Show', 'Click', 'Visit', 'Inquiry', 'Order']
         },
+        color: _this.colorList,
         series: [
           {
             name: '漏斗图',
@@ -354,7 +414,7 @@ export default {
             bottom: 60,
             width: '80%',
             min: 0,
-            max: 100,
+            max: data.homepageActiveUv,
             minSize: '0%',
             maxSize: '100%',
             sort: 'descending',
@@ -379,13 +439,14 @@ export default {
                 fontSize: 20
               }
             },
-            data: [
-              { value: 60, name: 'Visit' },
-              { value: 40, name: 'Inquiry' },
-              { value: 20, name: 'Order' },
-              { value: 80, name: 'Click' },
-              { value: 100, name: 'Show' }
-            ]
+            data: chartData
+            //  [
+            //   { value: 60, name: 'Visit' },
+            //   { value: 40, name: 'Inquiry' },
+            //   { value: 20, name: 'Order' },
+            //   { value: 80, name: 'Click' },
+            //   { value: 100, name: 'Show' }
+            // ]
           }
         ]
       }
@@ -409,13 +470,32 @@ export default {
       let r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
-    initChart () {
+
+    onSubmit () {
+      // console.log('submit!')
+      this.show = false
+      this.initRange()
+      this.initChart()
+      this.$nextTick(() => {
+        this.show = true
+      })
+    },
+    initChart (sourceName) {
       this.allChartData = {}
+      // const params = {
+      //   crowdId: 10013,
+      //   sourceNameList: '影视VIP,奇异果VIP,4K花园',
+      //   startDate: '2022-07-18',
+      //   endDate: '2022-07-19',
+      //   sourceName: sourceName || ''
+      // }
 
       const params = {
-        crowdId: this.crowdId,
-        startDate: this.timeRange[0],
-        endDate: this.timeRange[1]
+        crowdId: this.formInline.crowdId,
+        sourceNameList: this.formInline.sourceNameList.join(','),
+        startDate: this.formInline.timeRange[0],
+        endDate: this.formInline.timeRange[1],
+        sourceName: sourceName || ''
       }
 
       // const params = {
@@ -425,9 +505,13 @@ export default {
       // }
 
       // 获取所有图表数据
-      this.$service.getPolicySixIndexStats2(params).then(res => {
+      this.$service.rightsInterestsOutcome(params).then(res => {
+        // this.allData = res || {}
+        this.overview = res.overview.data || {}
+        // this.$service.getPolicySixIndexStats2(params).then(res => {
         this.allChartData = res || {}
 
+        this.showFunnel('chart1', this.overview)
         this.$nextTick(() => {
           const rowObj = this.rowObj
           const rowObj2 = this.rowObj2
@@ -436,8 +520,10 @@ export default {
             for (let key in item) {
               if (item[key].type === 'line') {
                 this.showLine(this.allChartData[key], key)
-              } else {
+              } else if (item[key].type === 'bar') {
                 this.showBar(this.allChartData[key], key)
+              } else {
+                this.showPie(this.allChartData[key], key)
               }
             }
           })
@@ -446,8 +532,10 @@ export default {
             for (let key in item) {
               if (item[key].type === 'line') {
                 this.showLine(this.allChartData[key], key)
-              } else {
+              } else if (item[key].type === 'bar') {
                 this.showBar(this.allChartData[key], key)
+              } else {
+                this.showPie(this.allChartData[key], key)
               }
             }
           })
@@ -456,13 +544,14 @@ export default {
     },
     //  折线图
     showLine (data, chartID) {
+      let hasY2 = false
       // console.log('showLine======111>>>', ...arguments)
       if (data && data.xaxis) {
         const series = data.series || []
-        const legendData = series.map((key) => {
+        let legendData = series.map((key) => {
           return key.name
         })
-        const linesData = series.map((key) => {
+        let linesData = series.map((key) => {
           if (data.yunit === '%') {
             const arr = key.value.map(v => v * 100)
             return { name: key.name, data: arr, type: 'line' }
@@ -470,7 +559,37 @@ export default {
             return { name: key.name, data: key.value, type: 'line' }
           }
         })
-        this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        if (data.series2) {
+          hasY2 = true
+          const series2 = data.series2 || []
+          let legendData2 = series2.map((key) => {
+            return key.name
+          })
+          let linesData2 = series2.map((key) => {
+            if (data.yunit === '%') {
+              const arr = key.value.map(v => v * 100)
+              return { name: key.name, data: arr, type: 'line', yAxisIndex: 1 }
+            } else {
+              return { name: key.name, data: key.value, type: 'line', yAxisIndex: 1 }
+            }
+          })
+          legendData = legendData.concat(legendData2)
+          linesData = linesData.concat(linesData2)
+          console.log('legendData===', legendData)
+          console.log('linesData===', linesData)
+        }
+        let yAxisObjName1 = ''
+        let yAxisObjName2 = ''
+        if (chartID === 'vipPlayTrend') {
+          yAxisObjName1 = '人数'
+          yAxisObjName2 = '时长'
+        }
+        if (chartID === 'vipPkgPayTrend') {
+          yAxisObjName1 = '人数'
+          yAxisObjName2 = '金额'
+        }
+
+        this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit, hasY2, yAxisObjName1, yAxisObjName2)
       }
     },
 
@@ -481,16 +600,34 @@ export default {
         if (data.yunit === '%') {
           data.series = data.series.map(v => v * 100)
         }
-        this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit)
+        this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
+      }
+    },
+    //  柱状图
+    showPie (data, chartID) {
+      console.log('showBar======111>>>', data)
+      if (data.data) {
+        const d = data.data.map((v, index) => {
+          return {
+            ...v,
+            value: v.count
+            // name: '123'
+          }
+        })
+        console.log('d==------------------------>', d)
+        console.log('d==------------------------>', chartID)
+        // showPie
+        // console.log('')
+        this.setPie(chartID, d)
       }
     },
 
     // 通用柱状图参数设置
-    setBarEchart (element, title, xData, yData, xunit = '', yunit = '') {
+    setBarEchart (element, title, xData, yData, xunit = '', yunit = '', dataaxis = []) {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
-      // const _this = this
+      const _this = this
       let echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
       let myChart = echarts.init(document.getElementById(element))
@@ -500,16 +637,20 @@ export default {
         },
         tooltip: {
           // trigger: 'item',
-          trigger: 'axis'
-          // formatter: function (parmas) {
-          //   let str = parmas[0].name + '<br/>'
-          //   for (let item of parmas) {
-          //     str = str + item.marker + item.name + ': ' + item.value + yunit + '<br/>'
-          //   }
-          //   // return _this.cc_format_number(a.data)
-          //   return str
-          // }
+          trigger: 'axis',
+          formatter: function (parmas) {
+            // console.log('parmas------------->', parmas)
+
+            let str = parmas[0].marker + parmas[0].name + '<br/>'
+            // let str = ''
+            for (let item of parmas) {
+              str = str + item.name + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>' + '占比: ' + dataaxis[item.dataIndex]
+            }
+            // return _this.cc_format_number(a.data)
+            return str
+          }
         },
+        color: _this.colorList,
         grid: {
           left: '3%',
           right: '4%',
@@ -562,29 +703,107 @@ export default {
           },
           barWidth: '10%',
           label: {
-            show: true
+            show: true,
+            position: 'top',
+            formatter: function (data) {
+              // console.log('value----->', data.dataIndex)
+              return `占比：${dataaxis[data.dataIndex]}`
+            },
+            color: '#000'
           }
         }]
       }, true)
+
+      if (element === 'vipPkgShow' || element === 'vipPkgXiadan' || element === 'vipPkgPay' || element === 'vipPlay') {
+        myChart.getZr().off('click')
+        myChart.getZr().on('click', params => {
+          let pointInPixel = [params.offsetX, params.offsetY]
+          if (myChart.containPixel('grid', pointInPixel)) {
+            let xIndex = myChart.convertFromPixel({ seriesIndex: 0 }, [params.offsetX, params.offsetY])[0]
+            // console.log(xIndex)
+            // console.log(xData)
+            const sourceName = xData[xIndex]
+            // alert(1)
+            _this.initChart(sourceName)
+            // console.log('current--------->', sourceName)
+          }
+        })
+      }
+
       this.allCharts[element] = myChart
     },
+    getAAA (sourceName) {
+      const params = {
+        crowdId: 10013,
+        sourceNameList: '影视VIP,奇异果VIP,4K花园',
+        startDate: '2022-07-18',
+        endDate: '2022-07-19',
+        sourceName
+      }
 
+      // })
+      // const params = {
+      //   crowdId: this.crowdId,
+      //   startDate: this.timeRange[0],
+      //   endDate: this.timeRange[1]
+      // }
+
+      // const params = {
+      //   crowdId: 3219,
+      //   startDate: '2022-05-11',
+      //   endDate: '2022-06-10'
+      // }
+
+      // 获取所有图表数据
+      this.$service.rightsInterestsOutcome(params).then(res => {
+
+      })
+    },
     // 通用多线性参数设置
-    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
+    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
       let echarts = require('echarts')
+      const _this = this
+      const yAxisObj = {
+        type: 'value',
+        name: yAxisObjName1,
+        axisTick: {
+          inside: true
+        },
+        // scale: true,
+        axisLabel: {
+          // margin: 30,
+          formatter: function (value) {
+            if (value >= 100000000) {
+              value = value / 100000000 + '亿' + yunit
+            } else if (value >= 10000000) {
+              value = value / 10000000 + '千万' + yunit
+            } else if (value >= 10000 && value < 10000000) {
+              value = value / 10000 + '万' + yunit
+            } else {
+              value = value + yunit
+            }
+            return value
+          }
+        }
+      }
       // let myChart = echarts.init(this.$refs[element])
-      let myChart = echarts.init(document.getElementById(element))
-      myChart.setOption({
+      const option = {
         title: {
-          text: title || '多线性图'
+          text: title
         },
         tooltip: {
-          trigger: 'axis'
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
         },
-
+        color: _this.colorList,
         legend: {
           data: legend
         },
@@ -599,39 +818,24 @@ export default {
             }
           }
         },
-        yAxis: {
-          type: 'value',
-          // name: '温度',
-          axisTick: {
-            inside: true
-          },
-          scale: true,
-          axisLabel: {
-            // margin: 30,
-            formatter: function (value) {
-              if (value >= 100000000) {
-                value = value / 100000000 + '亿' + yunit
-              } else if (value >= 10000000) {
-                value = value / 10000000 + '千万' + yunit
-              } else if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万' + yunit
-              } else {
-                value = value + yunit
-              }
-              return value
-            }
-          }
-        },
+        yAxis: [yAxisObj],
         series: yData
-      }, true)
+      }
       // console.log('chart===>', myChart)
-
+      if (hasY2) {
+        option.yAxis.push({ ...yAxisObj, name: yAxisObjName2 })
+      }
+      let myChart = echarts.init(document.getElementById(element))
+      myChart.setOption(option, true)
       this.allCharts[element] = myChart
     },
 
     // 环形图
     setPie (element, data) {
+      console.log('aaaaaaaaaaa--------------->', element)
+      console.log('aaaaaaaaaaa--------------->', data)
       // const name = '登录量'
+      const _this = this
       const option = {
         tooltip: {
           trigger: 'item'
@@ -659,7 +863,7 @@ export default {
           },
           align: 'left', // 图例icon在左侧
           formatter: function (name) {
-            console.log('p------->', name)
+            // console.log('p------->', name)
             // 文字太长时只取20个字符
             // const label = p.length > 20 ? p.substr(0, 20) : p
             // 文字宽度：后台设有宽度时使用后台传的值，若没有默认70
@@ -672,7 +876,7 @@ export default {
             let tarValue
             for (let i = 0; i < data.length; i++) {
               if (data[i].name === name) {
-                tarValue = data[i].value
+                tarValue = data[i].percent
               }
             }
 
@@ -715,10 +919,11 @@ export default {
             // }
           }
         },
-        color: ['#fc8251', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+        color: _this.colorList,
+
         series: [
           {
-            name: 'Access From',
+            // name: 'Access From',
             type: 'pie',
             // radius: ['40%', '70%'],
             // avoidLabelOverlap: true,
@@ -763,9 +968,11 @@ export default {
         ]
       }
       let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      // let myChart = echarts.init(this.$refs[element])
+      let myChart = echarts.init(document.getElementById(element))
 
       myChart.setOption(option)
+      this.allCharts[element] = myChart
     }
 
   }

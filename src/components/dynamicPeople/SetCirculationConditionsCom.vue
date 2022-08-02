@@ -191,6 +191,17 @@ export default {
   },
   methods: {
     handleSave () {
+      // 必填校验
+      // console.log('1111================', this.rulesJson)
+
+      // this.rulesJson.rules.forEach(item => {
+      //   console.log('item================', item)
+      //   item.rules.
+      // })
+      // for (let i = 0; i < ) {
+
+      // }
+      // return
       // 保存时，重置初始数据
       this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
       this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
