@@ -832,8 +832,8 @@ export default {
 
     // 环形图
     setPie (element, data) {
-      console.log('aaaaaaaaaaa--------------->', element)
-      console.log('aaaaaaaaaaa--------------->', data)
+      // console.log('aaaaaaaaaaa--------------->', element)
+      // console.log('aaaaaaaaaaa--------------->', data)
       // const name = '登录量'
       const _this = this
       const option = {
