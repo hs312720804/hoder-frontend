@@ -30,11 +30,11 @@
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i+'condition'"
-                >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }} 111111111111
                 </el-button>
 
-              <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
-              {{ crowd.dynamicPolicyJson.link }} -->
+              <!-- {{ (crowd.behaviorRulesJson.link || crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
+              {{ crowd.behaviorRulesJson.link }} -->
               </div>
 
               <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
@@ -128,7 +128,7 @@
                       @click="handleConditionChange(crowd)"
                       round
                       :key="i+'condition'"
-                    >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                    >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
                     </el-button>
 
                   <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
@@ -555,8 +555,9 @@ export default {
       })
     },
     handleConditionChange (crowd) {
-      crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
-      crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
+      crowd.behaviorRulesJson.link = crowd.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
+      // crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
+      crowd.rulesJson.link = crowd.behaviorRulesJson.link
     }
 
   },

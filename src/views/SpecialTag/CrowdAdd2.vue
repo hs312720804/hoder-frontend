@@ -32,7 +32,7 @@
                   round
                   :key="i + 'condition'"
                 >
-                  {{ crowd.dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
+                  {{ crowd.behaviorRulesJson.link === 'OR' ? '或' : '且' }}
                 </el-button>
               </div>
 
@@ -585,8 +585,8 @@ export default {
     },
 
     handleConditionChange (crowd) {
-      crowd.dynamicPolicyJson.link =
-        crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+      crowd.behaviorRulesJson.link =
+        crowd.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
     },
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'

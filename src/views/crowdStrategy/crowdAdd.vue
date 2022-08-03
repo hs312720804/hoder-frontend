@@ -41,16 +41,16 @@
                 @click="handleConditionChange()"
                 round
                 :key="'condition'"
-                >{{ dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
+                >{{ behaviorRulesJson.link === 'OR' ? '或' : '且' }}
               </el-button>
             </div> -->
             <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
               <el-button
                 type="danger"
-                @click="handleConditionChange(crowd)"
+                @click="handleConditionChange()"
                 round
                 :key="'condition'"
-              >{{ (dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+              >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
             </div>
 
             <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
@@ -1277,8 +1277,8 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     handleConditionChange () {
-      this.dynamicPolicyJson.link =
-        this.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+      this.behaviorRulesJson.link =
+        this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
     }
   },
   created () {
