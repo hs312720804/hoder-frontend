@@ -10,8 +10,11 @@ axios.interceptors.response.use((response) => {
 }, function (error) {
   console.log('error===', error)
   if (error.response && error.response.status === 401) {
-    window.location = '/'
+    // window.location = '/'
     // window.location.reload()
+    // this.$logout().then(() => {
+    //   this.$router.push({ name: 'login' })
+    // })
   } else {
     return Promise.reject(error)
   }
