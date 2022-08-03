@@ -27,19 +27,20 @@
       </el-checkbox-group> -->
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-      <div style="margin: 15px 0;"></div>
+      <!-- <div style="margin: 15px 0;"></div> -->
       <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange">
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="onSubmit">分析</el-button>
+      <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
     </el-form-item>
   </el-form>
 
   <!-- 总览 -->
   <!-- {{overview}} -->
   <div :style="{'opacity': allChartData.vipPkgShow ? 100 : 0}">
+  <!-- <div> -->
     <div >
       <div class="big-title">总览</div>
       <div class="wrap-div">
@@ -64,7 +65,7 @@
             <el-col :span="8"><div class="ibox">
               <div class="title-one">起播活跃率</div>
               <div class="text-two">
-                {{ overview.totalPlayRate }}
+                {{ toPercent(overview.totalPlayRate) }}
               </div>
               <div class="small-box">
                 <div class="small">
@@ -85,7 +86,7 @@
             <el-col :span="8"><div class="ibox">
               <div class="title-one">产品包曝光率</div>
               <div class="text-two">
-                {{ overview.totalPkgShowRate }}
+                {{ toPercent(overview.totalPkgShowRate) }}
               </div>
               <div class="small-box">
                 <div class="small">
@@ -106,7 +107,7 @@
             <el-col :span="8"><div class="ibox">
               <div class="title-one">下单率</div>
               <div class="text-two">
-                {{ overview.totalPkgXiadanRate }}
+                {{ toPercent(overview.totalPkgXiadanRate) }}
               </div>
               <div class="small-box">
                 <div class="small">
@@ -115,15 +116,15 @@
                 </div>
                 <div class="small">
                   <span>曝光人数</span>
-                  <span>{{ cc_format_number(overview.totalPkgPayUv) }}</span>
+                  <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span>
                 </div>
               </div>
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">产品包曝光率</div>
+              <div class="title-one">付费率</div>
               <div class="text-two">
-                {{ overview.totalPkgShowRate }}
+                {{ toPercent(overview.totalPkgShowRate) }}
               </div>
               <div class="small-box">
                 <div class="small">
@@ -150,8 +151,8 @@
         </div>
 
         <!-- 漏斗图 -->
-        <div class="chart-wrap">
-          <div ref="chart1" class="chart-1" >chart1</div>
+        <div class="chart-wrap" v-if="show">
+          <div  ref="chart1" class="chart-1" >chart1</div>
         </div>
       </div>
     </div>
@@ -325,7 +326,8 @@ export default {
         }
       ],
       crowdId: 11882,
-      colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc']
+      colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+      loading: false
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -365,9 +367,7 @@ export default {
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
     },
     handleClick (tab, event) {
-      console.log(tab, event)
       this.show = false
-      this.initRange()
       this.initChart()
       this.$nextTick(() => {
         this.show = true
@@ -455,26 +455,31 @@ export default {
 
       myChart.setOption(option)
     },
-    initRange () {
-      // 设置默认时间为今天的前一周
-      const start = new Date()
-      const end = new Date()
-      const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 30))
-      const endDate = this.formatDate(end.setTime(end.getTime()))
-      this.timeRange = [startDate, endDate]
+    // initRange () {
+    //   // 设置默认时间为今天的前一周
+    //   const start = new Date()
+    //   const end = new Date()
+    //   const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 30))
+    //   const endDate = this.formatDate(end.setTime(end.getTime()))
+    //   this.timeRange = [startDate, endDate]
+    // },
+    // formatDate (d) {
+    //   const time = new Date(d)
+    //   let y = time.getFullYear() // 年份
+    //   let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+    //   let r = time.getDate().toString().padStart(2, '0') // 日子
+    //   return `${y}-${m}-${r}`
+    // },
+    toPercent (point) {
+      var str = Number(point * 100).toFixed(1)
+      str += '%'
+      return str
     },
-    formatDate (d) {
-      const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
-      return `${y}-${m}-${r}`
-    },
-
+    // 分析
     onSubmit () {
       // console.log('submit!')
+      this.loading = true
       this.show = false
-      this.initRange()
       this.initChart()
       this.$nextTick(() => {
         this.show = true
@@ -507,11 +512,15 @@ export default {
       // 获取所有图表数据
       this.$service.rightsInterestsOutcome(params).then(res => {
         // this.allData = res || {}
+        this.loading = false
+
         this.overview = res.overview.data || {}
         // this.$service.getPolicySixIndexStats2(params).then(res => {
         this.allChartData = res || {}
 
+        // 漏斗图
         this.showFunnel('chart1', this.overview)
+
         this.$nextTick(() => {
           const rowObj = this.rowObj
           const rowObj2 = this.rowObj2
@@ -540,6 +549,8 @@ export default {
             }
           })
         })
+      }).catch(() => {
+        this.loading = false
       })
     },
     //  折线图
@@ -707,7 +718,7 @@ export default {
             position: 'top',
             formatter: function (data) {
               // console.log('value----->', data.dataIndex)
-              return `占比：${dataaxis[data.dataIndex]}`
+              return `${dataaxis[data.dataIndex]}`
             },
             color: '#000'
           }
