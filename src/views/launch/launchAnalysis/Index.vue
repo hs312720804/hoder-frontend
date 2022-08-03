@@ -5,6 +5,9 @@
     <el-form-item label="人群ID:" prop="crowdId">
       <el-input v-model="formInline.crowdId" placeholder="请输入"></el-input>
     </el-form-item>
+    <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
+      {{ crowdName }}
+    </el-form-item>
 
     <el-form-item label="分析周期:" prop="timeRange">
        <el-date-picker
@@ -32,15 +35,20 @@
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
-    <el-form-item>
+    <el-form-item style="margin-left: 136px">
       <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
     </el-form-item>
   </el-form>
 
   <!-- 总览 -->
   <!-- {{overview}} -->
-  <div :style="{'opacity': allChartData.vipPkgShow ? 100 : 0}">
+  <div :class="{'aaa': !allChartData.vipPkgShow }">
+  <!-- <div v-if="allChartData.vipPkgShow" > -->
   <!-- <div> -->
+    <!-- 111=={{allChartData}}
+    <div v-if="allChartData">
+      <el-empty></el-empty>
+    </div> -->
     <div >
       <div class="big-title">总览</div>
       <div class="wrap-div">
@@ -231,7 +239,7 @@
                         {{ allChartData[key].title }}
                       </span>
                       <span v-else>
-                        {{chart.title}}
+                        {{ chart.title }}
                       </span>
 
                     </div>
@@ -312,8 +320,8 @@ export default {
           'pathPkgPay': { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
         },
         {
-          // 'empty1': { span: 8 },
-          // 'empty2': { span: 8 },
+          'empty1': { span: 8 },
+          'empty2': { span: 8 },
           'productTypePkgPay': { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
         }
       ],
@@ -327,7 +335,8 @@ export default {
       ],
       crowdId: 11882,
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
-      loading: false
+      loading: false,
+      crowdName: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -487,6 +496,7 @@ export default {
     },
     initChart (sourceName) {
       this.allChartData = {}
+      this.crowdName = ''
       // const params = {
       //   crowdId: 10013,
       //   sourceNameList: '影视VIP,奇异果VIP,4K花园',
@@ -508,7 +518,9 @@ export default {
       //   startDate: '2022-05-11',
       //   endDate: '2022-06-10'
       // }
-
+      this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
+        this.crowdName = res.policyCrowds.crowdName
+      })
       // 获取所有图表数据
       this.$service.rightsInterestsOutcome(params).then(res => {
         // this.allData = res || {}
@@ -531,7 +543,7 @@ export default {
                 this.showLine(this.allChartData[key], key)
               } else if (item[key].type === 'bar') {
                 this.showBar(this.allChartData[key], key)
-              } else {
+              } else if (item[key].type === 'pie') {
                 this.showPie(this.allChartData[key], key)
               }
             }
@@ -543,7 +555,7 @@ export default {
                 this.showLine(this.allChartData[key], key)
               } else if (item[key].type === 'bar') {
                 this.showBar(this.allChartData[key], key)
-              } else {
+              } else if (item[key].type === 'pie') {
                 this.showPie(this.allChartData[key], key)
               }
             }
@@ -1092,5 +1104,9 @@ export default {
   padding: 0 15px;
   font-size: 14px;
 }
-
+.aaa {
+  opacity 0
+  // height: 200px;
+  // overflow: hidden;
+}
 </style>
