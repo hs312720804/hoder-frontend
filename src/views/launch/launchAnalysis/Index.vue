@@ -1,9 +1,9 @@
 <template>
  <div class='' id='' style="background: #f3f4fa; margin: -20px; padding: 20px;">
   <!-- {{ formInline }} -->
-  <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline">
+  <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
     <el-form-item label="人群ID:" prop="crowdId">
-      <el-input v-model="formInline.crowdId" placeholder="请输入"></el-input>
+      <el-input v-model="formInline.crowdId" placeholder="请输入" clearable></el-input>
     </el-form-item>
     <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
       {{ crowdName }}
@@ -159,8 +159,8 @@
         </div>
 
         <!-- 漏斗图 -->
-        <div class="chart-wrap" v-if="show">
-          <div  ref="chart1" class="chart-1" >chart1</div>
+        <div class="chart-wrap">
+          <div ref="chart1" class="chart-1" >chart1</div>
         </div>
       </div>
     </div>
@@ -170,7 +170,8 @@
       <el-tab-pane label="内容型" name="one">
         <!-- 柱状图、折线图 -->
         <div class="launch-statistics">
-            <template v-if="show">
+            <!-- <template v-if="show"> -->
+            <template>
               <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
                 <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
                   <div class="unit-box">
@@ -228,7 +229,7 @@
 
         <!-- 柱状图、折线图 -->
         <div class="launch-statistics">
-            <template v-if="show">
+            <template>
               <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
                 <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
                   <div class="unit-box" >
@@ -295,7 +296,7 @@ export default {
 
       },
 
-      show: true,
+      show: false,
       allCharts: {},
       timeRange: [],
       allChartData: {},
@@ -343,8 +344,6 @@ export default {
   },
 
   mounted () {
-    // this.showFunnel()
-
     // const data = [
     //   { value: 1048, name: '电视剧' },
     //   { value: 735, name: '电影' },
@@ -376,23 +375,23 @@ export default {
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
     },
     handleClick (tab, event) {
-      this.show = false
-      this.initChart()
       this.$nextTick(() => {
-        this.show = true
+        for (var key of Object.keys(this.allCharts)) {
+          const chart = this.allCharts[key]
+          chart.resize()
+        }
       })
     },
 
     // 漏斗图
     showFunnel (element, data) {
-      const chartData =
- [
-   { value: data.homepageActiveUv, name: '主页活跃' },
-   { value: data.totalPlayUv, name: '起播' },
-   { value: data.totalPkgShowUv, name: '产品包曝光' },
-   { value: data.totalPkgXiadanUv, name: '下单' },
-   { value: data.totalPkgPayUv, name: '成交' }
- ]
+      const chartData = [
+        { value: data.homepageActiveUv, name: '主页活跃' },
+        { value: data.totalPlayUv, name: '起播' },
+        { value: data.totalPkgShowUv, name: '产品包曝光' },
+        { value: data.totalPkgXiadanUv, name: '下单' },
+        { value: data.totalPkgPayUv, name: '成交' }
+      ]
 
       const _this = this
       const option = {
@@ -487,11 +486,15 @@ export default {
     // 分析
     onSubmit () {
       // console.log('submit!')
-      this.loading = true
-      this.show = false
-      this.initChart()
-      this.$nextTick(() => {
-        this.show = true
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          this.loading = true
+          this.show = false
+          this.initChart()
+          this.$nextTick(() => {
+            this.show = true
+          })
+        }
       })
     },
     initChart (sourceName) {
@@ -529,40 +532,44 @@ export default {
         this.overview = res.overview.data || {}
         // this.$service.getPolicySixIndexStats2(params).then(res => {
         this.allChartData = res || {}
-
-        // 漏斗图
+        // 概览 - 漏斗图
         this.showFunnel('chart1', this.overview)
-
+        this.show = true
         this.$nextTick(() => {
-          const rowObj = this.rowObj
-          const rowObj2 = this.rowObj2
-          rowObj.forEach(item => {
-            // key 是代表 ref 值
-            for (let key in item) {
-              if (item[key].type === 'line') {
-                this.showLine(this.allChartData[key], key)
-              } else if (item[key].type === 'bar') {
-                this.showBar(this.allChartData[key], key)
-              } else if (item[key].type === 'pie') {
-                this.showPie(this.allChartData[key], key)
-              }
-            }
-          })
-          rowObj2.forEach(item => {
-            // key 是代表 ref 值
-            for (let key in item) {
-              if (item[key].type === 'line') {
-                this.showLine(this.allChartData[key], key)
-              } else if (item[key].type === 'bar') {
-                this.showBar(this.allChartData[key], key)
-              } else if (item[key].type === 'pie') {
-                this.showPie(this.allChartData[key], key)
-              }
-            }
-          })
+          // 详情图表
+          this.drawChart()
         })
       }).catch(() => {
         this.loading = false
+      })
+    },
+
+    drawChart () {
+      const rowObj = this.rowObj
+      const rowObj2 = this.rowObj2
+      rowObj.forEach(item => {
+        // key 是代表 ref 值
+        for (let key in item) {
+          if (item[key].type === 'line') {
+            this.showLine(this.allChartData[key], key)
+          } else if (item[key].type === 'bar') {
+            this.showBar(this.allChartData[key], key)
+          } else if (item[key].type === 'pie') {
+            this.showPie(this.allChartData[key], key)
+          }
+        }
+      })
+      rowObj2.forEach(item => {
+        // key 是代表 ref 值
+        for (let key in item) {
+          if (item[key].type === 'line') {
+            this.showLine(this.allChartData[key], key)
+          } else if (item[key].type === 'bar') {
+            this.showBar(this.allChartData[key], key)
+          } else if (item[key].type === 'pie') {
+            this.showPie(this.allChartData[key], key)
+          }
+        }
       })
     },
     //  折线图
@@ -674,6 +681,16 @@ export default {
           }
         },
         color: _this.colorList,
+        dataZoom: [
+          {
+            disabled: yData.length <= 10,
+            type: 'inside'
+          },
+          {
+            show: yData.length > 10,
+            type: 'slider'
+          }
+        ],
         grid: {
           left: '3%',
           right: '4%',
@@ -685,7 +702,7 @@ export default {
           data: xData,
           axisLabel: {
             interval: 'auto',
-            rotate: -45,
+            rotate: yData.length > 10 ? -45 : 0,
             formatter: function (value) {
               return value + xunit
             }
@@ -724,7 +741,7 @@ export default {
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
           },
-          barWidth: '10%',
+          barWidth: yData.length > 10 ? '30%' : 20, // 10%
           label: {
             show: true,
             position: 'top',
@@ -835,7 +852,7 @@ export default {
           data: xData,
           axisLabel: {
             interval: 'auto',
-            rotate: -45,
+            rotate: yData.length > 10 ? -45 : 0,
             formatter: function (value) {
               return value + xunit
             }
