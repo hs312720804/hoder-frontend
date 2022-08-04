@@ -41,14 +41,7 @@
   </el-form>
 
   <!-- 总览 -->
-  <!-- {{overview}} -->
-  <div :class="{'aaa': !allChartData.vipPkgShow }">
-  <!-- <div v-if="allChartData.vipPkgShow" > -->
-  <!-- <div> -->
-    <!-- 111=={{allChartData}}
-    <div v-if="allChartData">
-      <el-empty></el-empty>
-    </div> -->
+  <div v-if="!!allChartData.overview">
     <div >
       <div class="big-title">总览</div>
       <div class="wrap-div">
@@ -241,6 +234,11 @@
     </el-tabs>
   </div>
 
+  <!-- 初始页面 或者 查询为空 时 -->
+  <div v-else style="height: calc(100vh - 321px);">
+    <el-empty v-if="emptyTxt" :description="emptyTxt" ></el-empty>
+  </div>
+
  </div>
 </template>
 
@@ -316,7 +314,8 @@ export default {
       crowdId: 11882,
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
-      crowdName: ''
+      crowdName: '',
+      emptyTxt: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -477,7 +476,7 @@ export default {
       })
     },
     initChart (sourceName) {
-      this.allChartData = {}
+      // this.allChartData = {}
       this.crowdName = ''
       // const params = {
       //   crowdId: 10013,
@@ -500,25 +499,32 @@ export default {
       //   startDate: '2022-05-11',
       //   endDate: '2022-06-10'
       // }
+      // 先查询人群是否存在，若存在，再去分析
       this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
         this.crowdName = res.policyCrowds.crowdName
-      })
-      // 获取所有图表数据
-      this.$service.rightsInterestsOutcome(params).then(res => {
-        // this.allData = res || {}
-        this.loading = false
 
-        this.overview = res.overview.data || {}
-        // this.$service.getPolicySixIndexStats2(params).then(res => {
-        this.allChartData = res || {}
-        // 概览 - 漏斗图
-        this.showFunnel('chart1', this.overview)
-        this.show = true
-        this.$nextTick(() => {
-          // 详情图表
-          this.drawChart()
+        // 获取所有图表数据
+        this.$service.rightsInterestsOutcome(params).then(res => {
+        // this.allData = res || {}
+          this.loading = false
+          if (!res.overview) {
+            this.emptyTxt = '数据正在分析中，请稍后重试'
+            this.allChartData = {}
+            return
+          }
+          this.overview = res.overview.data || {}
+          this.allChartData = res || {}
+          // 概览 - 漏斗图
+          this.show = true
+          this.$nextTick(() => {
+            this.showFunnel('chart1', this.overview)
+            // 详情图表
+            this.drawChart()
+          })
         })
       }).catch(() => {
+        // console.log('err--------------->', err)
+        // this.allChartData = {}
         this.loading = false
       })
     },
@@ -1100,10 +1106,5 @@ export default {
   line-height: 56px;
   padding: 0 15px;
   font-size: 14px;
-}
-.aaa {
-  opacity 0
-  // height: 200px;
-  // overflow: hidden;
 }
 </style>
