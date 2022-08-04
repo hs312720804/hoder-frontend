@@ -22,7 +22,7 @@
           <!-- :picker-options="pickerOptions" -->
     </el-form-item>
     <br/>
-    <el-form-item label="业务范围:" prop="sourceNameList">
+    <el-form-item label="业务范围:" prop="sourceNameList" style="max-width: 70%; white-space: nowrap;">
       <!-- <el-checkbox-group v-model="formInline.sourceNameList">
         <el-checkbox :label="0" name="type">全选</el-checkbox>
         <el-checkbox :label="影视VIP" name="type">影视VIP</el-checkbox>
@@ -31,7 +31,7 @@
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
       <!-- <div style="margin: 15px 0;"></div> -->
-      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange">
+      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange" style="white-space: break-spaces;">
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
     </el-form-item>
@@ -187,10 +187,11 @@
 
                     </div>
 
-                    <div class="unit-content" v-if="chart.title">
+                    <div class="unit-content" v-if="show && chart.title">
+                        <!-- {{ allChartData[key] && allChartData[key].series }} -->
                       <div v-if="allChartData[key] && (allChartData[key].series || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
                       <div v-else class="chart-div">
-                        <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
+                        <el-empty description="暂无数据"></el-empty>
                       </div>
                     </div>
                   </div>
@@ -198,29 +199,6 @@
               </el-row>
 
             </template>
-            <!-- <el-row :gutter="20" class="unit-row" >
-              <el-col :span="12">
-                <div class="unit-box" >
-                  <div class="unit-header clearfix">
-                    观影分类占比
-                  </div>
-                  <div class="unit-content" >
-                    <div ref="pie1" class="chart-1"></div>
-                  </div>
-                </div>
-              </el-col>
-              <el-col :span="12">
-                <div class="unit-box" >
-                  <div class="unit-header clearfix">
-                    观影分类占比
-                  </div>
-                  <div class="unit-content" >
-                    <div ref="pie2" class="chart-1"></div>
-                  </div>
-                </div>
-              </el-col>
-            </el-row> -->
-
         </div>
 
       </el-tab-pane>
@@ -245,10 +223,11 @@
 
                     </div>
 
-                    <div class="unit-content" v-if="chart.title">
-                      <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
+                    <div class="unit-content" v-if="show && chart.title" >
+                      <!-- {{ allChartData[key] && allChartData[key].series }} -->
+                      <div v-if="allChartData[key] && allChartData[key].series && allChartData[key].series.length > 0" :ref="key" :id="key" class="chart-div"></div>
                       <div v-else class="chart-div">
-                        <el-empty :description="allChartData[key] || '暂无数据'"></el-empty>
+                        <el-empty description="暂无数据"></el-empty>
                       </div>
                     </div>
                   </div>
@@ -266,12 +245,12 @@
 </template>
 
 <script>
-const cityOptions = ['影视VIP', '奇异果VIP', '4K花园']
+const cityOptions = ['影视VIP', '奇异果VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '埋堆堆VIP', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '1905', '欢喜', '广电直播', '亲子VIP', '音乐K歌会员', '电竞VIP']
 export default {
   components: {},
   data () {
     return {
-      checkAll: true,
+      checkAll: false,
       checkedCities: [],
       cities: cityOptions,
       isIndeterminate: false,
@@ -279,7 +258,7 @@ export default {
       overview: {},
       formInline: {
         crowdId: '10013',
-        sourceNameList: ['影视VIP', '奇异果VIP', '4K花园'],
+        sourceNameList: [],
         timeRange: ['2022-07-18', '2022-07-19']
       },
       rules: {
@@ -296,7 +275,7 @@ export default {
 
       },
 
-      show: false,
+      show: true,
       allCharts: {},
       timeRange: [],
       allChartData: {},
@@ -421,8 +400,8 @@ export default {
             top: 60,
             bottom: 60,
             width: '80%',
-            min: 0,
-            max: data.homepageActiveUv,
+            // min: 0,
+            // max: data.homepageActiveUv,
             minSize: '0%',
             maxSize: '100%',
             sort: 'descending',
@@ -484,13 +463,13 @@ export default {
       return str
     },
     // 分析
-    onSubmit () {
+    onSubmit (sourceName) {
       // console.log('submit!')
       this.$refs['ruleForm'].validate((valid) => {
         if (valid) {
           this.loading = true
           this.show = false
-          this.initChart()
+          this.initChart(sourceName)
           this.$nextTick(() => {
             this.show = true
           })
@@ -576,7 +555,7 @@ export default {
     showLine (data, chartID) {
       let hasY2 = false
       // console.log('showLine======111>>>', ...arguments)
-      if (data && data.xaxis) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
         const series = data.series || []
         let legendData = series.map((key) => {
           return key.name
@@ -626,14 +605,15 @@ export default {
     //  柱状图
     showBar (data, chartID) {
       // console.log('showBar======111>>>', ...chartID)
-      if (data && data.xaxis) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
         if (data.yunit === '%') {
           data.series = data.series.map(v => v * 100)
         }
+        console.log('23333=========>', data)
         this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
       }
     },
-    //  柱状图
+    //  环形图
     showPie (data, chartID) {
       console.log('showBar======111>>>', data)
       if (data.data) {
@@ -764,7 +744,7 @@ export default {
             // console.log(xData)
             const sourceName = xData[xIndex]
             // alert(1)
-            _this.initChart(sourceName)
+            _this.onSubmit(sourceName)
             // console.log('current--------->', sourceName)
           }
         })
