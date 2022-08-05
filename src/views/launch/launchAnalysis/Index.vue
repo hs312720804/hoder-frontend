@@ -125,7 +125,7 @@
             <el-col :span="8"><div class="ibox">
               <div class="title-one">付费率</div>
               <div class="text-two">
-                {{ toPercent(overview.totalPkgShowRate) }}
+                {{ toPercent(overview.totalPkgPayRate) }}
               </div>
               <div class="small-box">
                 <div class="small">
