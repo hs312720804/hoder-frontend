@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <el-form :model="rulesJson" ref="ruleForm" >
     <div v-if="tags && tags.length > 0" class="label-container">
       <div v-if="tags && tags.length > 0" >
         <div
@@ -23,7 +23,7 @@
               <!-- {{ item.rules }} -->
               <div class="tag-condition" v-show="item.rules.length > 1" :style="{'border-color': item.condition === 'AND'?  '#67c23a' : '#e6a23c'}">
                 <el-button
-                   :type="item.condition === 'AND' ? 'success' : 'warning'"
+                  :type="item.condition === 'AND' ? 'success' : 'warning'"
                   @click="handleRulesConditionChange(item)"
                   round
                   size="small"
@@ -40,20 +40,28 @@
 
                 <span class="txt">{{ childItem.tagName }}</span>
 
-                <span>
+                <span style="margin-top: 4px;">
+                  <el-form-item
+                    label=""
+                    :prop="'rules.' + index + '.rules.' + n + '.sourceSign'"
+                    :rules="{
+                      required: true, message: '产品包不能为空', trigger: 'change'
+                    }">
+                    <el-select
+                      placeholder="请选择产品包"
+                      clearable
+                      style="width: 180px"
+                      name="oxve"
+                      v-model="childItem.sourceSign"
+                      class="input-inline"
+                    >
+                      <!-- number 类型 -->
+                      <template>
+                        <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
+                      </template>
 
-                  <el-select
-                    style="width: 180px"
-                    name="oxve"
-                    v-model="childItem.sourceSign"
-                    class="input-inline"
-                  >
-                    <!-- number 类型 -->
-                    <template>
-                      <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
-                    </template>
-
-                  </el-select>
+                    </el-select>
+                  </el-form-item>
                 </span>
                 <span >
                   <!-- 不是时间（time）类型的下拉框 -->
@@ -133,7 +141,7 @@
       <el-button type="warning" @click="handleCancel">取消</el-button>
       <el-button type="primary" @click="handleSave">保存</el-button>
     </div>
-  </div>
+  </el-form>
 </template>
 
 <script>
@@ -192,19 +200,13 @@ export default {
   methods: {
     handleSave () {
       // 必填校验
-      // console.log('1111================', this.rulesJson)
-
-      // this.rulesJson.rules.forEach(item => {
-      //   console.log('item================', item)
-      //   item.rules.
-      // })
-      // for (let i = 0; i < ) {
-
-      // }
-      // return
-      // 保存时，重置初始数据
-      this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-      this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+      this.$refs['ruleForm'].validate((valid) => {
+        if (valid) {
+          // 保存时，重置初始数据
+          this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
+          this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+        }
+      })
     },
     handleCancel () {
       this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))

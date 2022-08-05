@@ -10,7 +10,7 @@
     </el-form-item>
 
     <el-form-item label="分析周期:" prop="timeRange">
-       <el-date-picker
+      <el-date-picker
           v-model="formInline.timeRange"
           type="daterange"
           range-separator="至"
