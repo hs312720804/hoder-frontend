@@ -255,9 +255,11 @@ export default {
       // allData: {},
       overview: {},
       formInline: {
-        crowdId: '10013',
+        // crowdId: '10013',
+        crowdId: '',
         sourceNameList: [],
-        timeRange: ['2022-07-18', '2022-07-19']
+        // timeRange: ['2022-07-18', '2022-07-19']
+        timeRange: []
       },
       rules: {
         crowdId: [
