@@ -29,6 +29,7 @@
               </template>
             </el-select>
           </el-form-item>
+          <template v-if="childItem.bav.value !== '有效会员' && childItem.bav.value !== '无效会员'">
           <div
             v-for="(item, index) in childItem.bav.behaviorValue"
             :key="item.value"
@@ -55,7 +56,7 @@
               >
 
                   <el-option
-                   v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})"
+                    v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})"
                     :value="attrChildItem.value"
                     :label="attrChildItem.name"
                     :key="attrChildItem.value"
@@ -75,7 +76,7 @@
               >
 
                 <span class="w100">{{ item2.name }}</span>
-                <span class="flex-row">
+                <span class="flex-row" v-if="item2.name !== '有效会员' && item2.name !== '无效会员'">
                   <!-- 第三级 -->
                   <el-form-item
                     :prop="`bav.behaviorValue[${index}].child[${index2}].childCheckedVal`"
@@ -171,6 +172,7 @@
               </div>
             </div>
           </div>
+          </template>
         </div>
       </span>
 
@@ -3831,7 +3833,7 @@ export default {
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const behaviorAttrList = this.getBehaviorAttrList(level)
 
-      if (childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
+      if (childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 【起播活跃】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
         this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
           name: '',
@@ -4184,8 +4186,8 @@ export default {
       // 动态设置子集的id与parentId
       list = this.setChildId(list, parentId)
 
-      console.log('list===>', list)
-      console.log('nodes===>', this.childItem.bav)
+      // console.log('list===>', list)
+      // console.log('nodes===>', this.childItem.bav)
       return list
     },
 
