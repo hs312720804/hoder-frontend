@@ -1,4 +1,5 @@
 <template>
+    <!-- 投放分析（旧） -->
     <div class="label-content">
         <el-tabs
           v-model="activeName"

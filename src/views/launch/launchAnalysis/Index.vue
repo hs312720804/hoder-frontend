@@ -405,7 +405,7 @@ export default {
             // max: data.homepageActiveUv,
             minSize: '0%',
             maxSize: '100%',
-            sort: 'descending',
+            sort: 'none', // none-按照数据顺序展示 ; descending-倒序
             gap: 2,
             label: {
               show: true,

@@ -188,6 +188,7 @@ export default {
         '/manager/notice/index': 'notice',
         '/launchAdmin': 'launchTabList',
         '/launchAnalysis': 'launchAnalysis',
+        '/launchAnalysisTable': 'launchAnalysisTable',
         '/anomaly/index': 'anomalyEcharts',
         '/crowdCirculationTrack': 'crowdCirculationTrack',
         '/myPolicy/index': 'myPolicy',
