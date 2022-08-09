@@ -41,7 +41,7 @@
   </el-form>
 
   <!-- 总览 -->
-  <div v-if="!!allChartData.overview">
+  <div v-if="!!allChartData.overview && allChartData.overview.data">
     <div >
       <div class="big-title">总览</div>
       <div class="wrap-div">
@@ -509,20 +509,21 @@ export default {
         this.$service.rightsInterestsOutcome(params).then(res => {
         // this.allData = res || {}
           this.loading = false
-          if (!res.overview) {
+
+          if (!!res.overview && res.overview.data) {
+            this.overview = res.overview.data || {}
+            this.allChartData = res || {}
+            // 概览 - 漏斗图
+            this.show = true
+            this.$nextTick(() => {
+              this.showFunnel('chart1', this.overview)
+              // 详情图表
+              this.drawChart()
+            })
+          } else {
             this.emptyTxt = '数据正在分析中，请稍后重试'
             this.allChartData = {}
-            return
           }
-          this.overview = res.overview.data || {}
-          this.allChartData = res || {}
-          // 概览 - 漏斗图
-          this.show = true
-          this.$nextTick(() => {
-            this.showFunnel('chart1', this.overview)
-            // 详情图表
-            this.drawChart()
-          })
         })
       }).catch(() => {
         // console.log('err--------------->', err)
@@ -598,12 +599,14 @@ export default {
         let yAxisObjName1 = ''
         let yAxisObjName2 = ''
         if (chartID === 'vipPlayTrend') {
-          yAxisObjName1 = '人数'
+          yAxisObjName1 = '人数/次数'
           yAxisObjName2 = '时长'
-        }
-        if (chartID === 'vipPkgPayTrend') {
+        } else if (chartID === 'vipPkgPayTrend') {
           yAxisObjName1 = '人数'
           yAxisObjName2 = '金额'
+        } else if (chartID === 'vipPkgShowTrend') {
+          yAxisObjName1 = '人数/次数'
+          yAxisObjName2 = '人均次数'
         }
 
         this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit, hasY2, yAxisObjName1, yAxisObjName2)
@@ -617,7 +620,7 @@ export default {
         if (data.yunit === '%') {
           data.series = data.series.map(v => v * 100)
         }
-        console.log('23333=========>', data)
+        // console.log('23333=========>', data)
         this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
       }
     },
