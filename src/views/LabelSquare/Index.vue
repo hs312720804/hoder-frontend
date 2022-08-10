@@ -112,6 +112,18 @@
                 </temp-label-index>
             </el-tab-pane>
 
+            <el-tab-pane label="模型标签" name="modelLabel">
+                <ModelLabelIndex
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                >
+                </ModelLabelIndex>
+            </el-tab-pane>
+
             <el-tab-pane label="我的收藏" name="myCollect">
                 <my-collect
                     :tagName="myCollectTagName"
@@ -123,18 +135,6 @@
                     :currentSelectTag="tagList"
                 >
                 </my-collect>
-            </el-tab-pane>
-
-            <el-tab-pane label="模型标签" name="modelLabel">
-                <ModelLabelIndex
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </ModelLabelIndex>
             </el-tab-pane>
 
         </el-tabs>

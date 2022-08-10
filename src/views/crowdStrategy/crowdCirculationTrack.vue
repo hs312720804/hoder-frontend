@@ -2,14 +2,29 @@
   <div>
     <div class="title">查询指定Mac的流转轨迹</div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
-      <el-form-item label="策略ID：" prop="policyId">
-        <el-input v-model="form.policyId" clearable></el-input>
+      <el-form-item label="人群ID：" prop="crowdId">
+        <el-input v-model="form.crowdId" clearable></el-input>
       </el-form-item>
       <el-form-item label="MAC地址" prop="mac">
         <el-input v-model="form.mac" clearable></el-input>
       </el-form-item>
-      <el-form-item label="SourceSign" prop="sourceSign">
-        <el-input v-model="form.sourceSign" clearable></el-input>
+      <el-form-item label="产品包" prop="sourceSign">
+        <!-- <el-input v-model="form.sourceSign" clearable></el-input> -->
+        <el-select
+          placeholder="请选择产品包"
+          clearable
+          style="width: 180px"
+          name="oxve"
+          v-model="form.sourceSign"
+          class="input-inline"
+        >
+          <!-- number 类型 -->
+          <template>
+            <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
+          </template>
+
+        </el-select>
+
       </el-form-item>
       <el-form-item label="日期：" prop="date">
         <el-date-picker
@@ -56,7 +71,7 @@ export default {
       dateRange: [],
       dateList: [],
       rules: {
-        policyId: { required: true, message: '请输入策略id', trigger: 'blur' },
+        crowdId: { required: true, message: '请输入策略id', trigger: 'blur' },
         mac: { required: true, message: '请输入mac', trigger: 'blur' },
         sourceSign: { required: true, message: '请输入sourceSign', trigger: 'blur' }
       },
@@ -74,13 +89,18 @@ export default {
       graph: null,
       dialogVisible: false,
       allCrowdRule: [],
-      len: 10 // 模拟数据个数
+      len: 10, // 模拟数据个数
+      soureceSignList: []
+
     }
   },
   components: {
     Flow
   },
   created () {
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
     // 扩展内置的 【circle】 shape
     const defaultNodeConf = {
       afterDraw (cfg, group) {
@@ -276,7 +296,7 @@ export default {
     },
     getFilter () {
       const filter = {
-        policyId: this.form.policyId,
+        crowdId: this.form.crowdId,
         mac: this.form.mac,
         sourceSign: this.form.sourceSign,
         beginTime: this.dateRange[0],

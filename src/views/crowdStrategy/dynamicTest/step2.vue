@@ -14,35 +14,16 @@
         <!-- <hr> -->
         <!-- groupCheckIndex::{{groupCheckIndex}} -->
       <!-- </div> -->
-
       <div class="top">
-        <div>
-          <span class="title">实验分组</span>
-          <el-button
-            type="success"
-            icon="el-icon-plus"
-            class="addGroupBtn"
-            @click="addGroup">
-            添加分组
-          </el-button>
-        </div>
-
-          <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
-          <!-- <el-button type="info" @click="handleBackPrevStep">下一步</el-button> -->
-        <!-- <div>
-          <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-          <el-button type="primary" @click="handleSave">下一步</el-button>
-        </div> -->
-      </div>
-
-      <div v-if="allGroupList.length > 0">
-        <!-- 分组列表 -->
-        <!-- @tab-click="handleClick" -->
+      <!-- <div> -->
         <el-tabs
+          v-if="allGroupList.length > 0"
           v-model="groupCheckIndex"
           type="card"
           closable
-          @tab-remove="removeTab">
+          @tab-remove="removeTab"
+          style="width: calc(100% - 112px);"
+        >
           <el-tab-pane
             v-for="(group, index) in allGroupList"
             :key="group.id"
@@ -50,8 +31,30 @@
             :name="String(index)">
           </el-tab-pane>
         </el-tabs>
+          <!-- <span class="title">实验分组</span> -->
+        <el-button
+          style="position: absolute; right: 0; top: 17px"
+          type="success"
+          icon="el-icon-plus"
+          class="addGroupBtn"
+          @click="addGroup">
+          添加分组
+        </el-button>
 
-        <div style="position: absolute; top: 172px; z-index: 999;">
+          <!-- <el-button type="info" @click="graph && graph.destroy(); $emit('goBackCrowdListPage')">返回</el-button> -->
+          <!-- <el-button type="info" @click="handleBackPrevStep">下一步</el-button> -->
+        <!-- <div>
+          <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
+          <el-button type="primary" @click="handleSave">下一步</el-button>
+        </div> -->
+
+          <!-- 分组列表 -->
+          <!-- @tab-click="handleClick" -->
+
+      </div>
+
+      <div v-if="allGroupList.length > 0">
+        <div style="position: absolute; top: 102px; z-index: 999;">
           <span class="inputArrow"></span>
           <!-- <el-button type="text">文字按钮</el-button> -->
           <!-- {{radioType === 3}} -->
@@ -82,7 +85,7 @@
           <span v-if="radioType === 4">不流转</span>
           <span v-else>{{ getCirculationMode(radioType) }}流转</span>
           <el-tooltip class="item" effect="dark" content="分组占比" placement="top-start">
-            <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input>%</div>
+            <div class="flowNum"><el-input v-model="currentGroup.flowNum" placeholder="占比" ></el-input><span style="margin-left: 8px">%</span></div>
           </el-tooltip>
           <span v-if="radioType === 5" class="openLoopStyle">
             开启循环
@@ -842,13 +845,13 @@ i {
 }
 
 .top {
-  position relative
-  width 100%
-  background: #fff
-  display: flex;
-  justify-content: space-between;
+  // position relative
+  // width 100%
+  // background: #fff
+  // display: flex;
+  // justify-content: space-between;
   padding: 12px 0;
-  flex-direction: row-reverse;
+  // flex-direction: row-reverse;
 }
 .inputArrow{
   background: url('../../../assets/icons/arrow.svg')
@@ -862,13 +865,15 @@ i {
 }
 .circulationModeName {
   // position: absolute;
-  font-size: 23px;
+  font-size: 16px;
+  line-height 30px
   text-align: center;
-  top: 107px;
-  color: gray;
+  top: 57px;
+  color: #000;
   z-index: 999
   position: absolute;
   left: 50%;
+  // left: 285px;
 }
 .addGroupBtn{
   margin 0 10px

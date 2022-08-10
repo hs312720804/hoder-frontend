@@ -862,6 +862,7 @@ export function getRuleIndicators (params) {
     params
   })
 }
+
 // 获取流转条件
 export function getDynamicRule (params) {
   return this.fetch({
@@ -1017,5 +1018,14 @@ export function createReferCrowd (data) {
     url: '/api/refer/createReferCrowd',
     data,
     isJSON: true
+  })
+}
+
+// 获取指标条件
+export function getSourceSign (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/getSourceSign',
+    params
   })
 }

@@ -559,7 +559,6 @@ export default {
       // crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
       crowd.rulesJson.link = crowd.behaviorRulesJson.link
     }
-
   },
   created () {
     if (this.isDynamicPeople) { // 动态人群

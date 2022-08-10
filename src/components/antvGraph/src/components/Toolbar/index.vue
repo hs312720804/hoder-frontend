@@ -20,14 +20,14 @@
     <span class="separator"></span>
     <!-- <i data-command="copy" class="command iconfont icon-copy-o disable" title="复制"></i>
     <i data-command="paste" class="command iconfont icon-paster-o disable" title="粘贴"></i> -->
-    <i
+    <!-- <i
       data-command="delete"
       class="command iconfont icon-delete-o"
       title="删除"
       :class="selectedItem?'':'disable'"
       @click="handleDelete"
     ></i>
-    <span class="separator"></span>
+    <span class="separator"></span> -->
     <i
       data-command="zoomIn"
       class="command iconfont icon-zoom-in-o"
@@ -54,8 +54,8 @@
     ></i>
     <span class="separator"></span>
 
-    <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
-    <div style="float: right; margin: 0 10px 0 0; line-height: 32px;">
+    <!-- <el-button @click="consoleData" type="primary">控制台输出数据</el-button> -->
+    <div style="float: right; margin: 0 20px 0 0; ">
       <el-radio-group v-model="value" @change="handleChangeView">
       <!-- <el-radio :label="3">备选项</el-radio>
       <el-radio :label="6">备选项</el-radio>
@@ -456,7 +456,7 @@ export default {
 <style scoped>
 .toolbar {
   box-sizing: border-box;
-  padding: 10px 0px;
+  /* padding: 10px 0px; */
   width: 100%;
   /* border: 1px solid #e9e9e9;
   border-top: none;

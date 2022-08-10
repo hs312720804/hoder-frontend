@@ -33,6 +33,8 @@ function afterEach (to) {
 }
 
 const router = new Router({ routes })
+// const router = new Router({ routes, base: '/', mode: 'history' })
+
 router.beforeEach(beforeEach.bind(router))
 router.afterEach(afterEach.bind(router))
 

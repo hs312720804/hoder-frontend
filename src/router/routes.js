@@ -6,6 +6,7 @@ import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
 import launchTabList from '@/views/launch/LaunchTabList'
 import launchAnalysis from '@/views/launch/launchAnalysis/Index'
+import launchAnalysisTable from '@/views/launch/launchAnalysis/Table'
 import strategy from '@/views/launch/strategy/List'
 import validate from '@/views/launch/CrowdValidate'
 // import dictionaryManage from '@/views/setting/dictionaryManage'
@@ -248,10 +249,21 @@ const children = [
     component: launchAnalysis,
     meta: {
       tagId: 'launchTabList',
-      title: '投后分析',
+      title: '投后分析（新）',
       icon: 'el-icon-cc-file'
     }
   },
+  {
+    name: 'launchAnalysisTable',
+    path: 'launch/launchAnalysisTable',
+    component: launchAnalysisTable,
+    meta: {
+      tagId: 'launchAnalysisTable',
+      title: '投后分析（旧）',
+      icon: 'el-icon-cc-file'
+    }
+  },
+
   {
     name: 'myPolicy',
     path: 'launch/myPolicy',

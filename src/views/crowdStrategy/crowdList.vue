@@ -733,10 +733,10 @@
                         :command="['upDown',scope.row]"
                 >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
                 </el-dropdown-item>
+                  <!-- :disabled="scope.row.putway === 0" -->
                 <el-dropdown-item
                   v-if="!isReferCrowd(scope.row.referCrowdId)"
                   :command="['copy',scope.row]"
-                  :disabled="scope.row.putway === 0"
                 >人群复制
                 </el-dropdown-item>
                 <!--<el-dropdown-item-->

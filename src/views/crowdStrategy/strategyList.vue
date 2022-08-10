@@ -59,7 +59,7 @@
                   <el-checkbox label="createTime">创建时间</el-checkbox>
                   <el-checkbox label="creatorName">创建人</el-checkbox>
                   <el-checkbox label="useStatus">投放状态</el-checkbox>
-                  <el-checkbox label="smart">是否动态策略</el-checkbox>
+                  <!-- <el-checkbox label="smart">是否动态策略</el-checkbox> -->
                   <el-checkbox label="department">业务部门</el-checkbox>
                 </el-checkbox-group>
               </div>
@@ -131,12 +131,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
+      <!-- <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.smart" > 动态策略 </span>
           <span v-else> 普通策略 </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column prop="past7Active" label="7日是否有命中" width="110">
         <template slot-scope="scope">

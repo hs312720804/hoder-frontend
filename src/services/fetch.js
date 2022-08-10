@@ -8,13 +8,10 @@ axios.interceptors.response.use((response) => {
   // console.log('response===', response)
   return response
 }, function (error) {
-  console.log('error===', error)
   if (error.response && error.response.status === 401) {
-    // window.location = '/'
+    // window.location = '/login'
     // window.location.reload()
-    // this.$logout().then(() => {
-    //   this.$router.push({ name: 'login' })
-    // })
+    console.log('token 失效啦')
   } else {
     return Promise.reject(error)
   }
