@@ -1729,6 +1729,14 @@ export default {
           {
             label: '数量',
             prop: 'crowdNum'
+          },
+          {
+            label: '操作',
+            // fixed: 'right',
+            // width: '100',
+            render: this.$c_utils.component.createOperationRender(this, {
+              handleEditDynamic2GroupList: '编辑'
+            })
           }
         ],
         data: []
@@ -1790,6 +1798,12 @@ export default {
     // }
   },
   methods: {
+    handleEditDynamic2GroupList({row}) {
+      // const crowdId = row.crowdId
+      // console.log(...arguments)
+      this.handleDynamicTest(row, 'editDynamicCrowd', { tabSet: 'second', initActiveStep: 1 })
+      this.showDynamicListDetail = false
+    },
     // 是否为引用人群
     isReferCrowd (id) {
       return id
@@ -2062,8 +2076,8 @@ export default {
     },
 
     // 新增/编辑动态实验
-    handleDynamicTest (row, mode) {
-      this.$emit('handleDynamicTest', row, mode)
+    handleDynamicTest (row, mode, tabSet) {
+      this.$emit('handleDynamicTest', row, mode, tabSet)
     },
     edit (row) {
       this.$emit('addCrowd', row)

@@ -66,6 +66,8 @@
     <div v-if="activeStep === 1" class="bottomBtn">
       <el-button type="primary" @click="handleSave" class="btn">下一步</el-button>
       <el-button type="info" @click="handleBackPrevStep" class="btn">上一步</el-button>
+      <el-button type="info" @click="$emit('goBackCrowdListPage')" class="btn">返 回</el-button>
+
     </div>
   </div>
 </template>
@@ -96,6 +98,10 @@ export default {
     initCrowdId: {
       type: [String, Number],
       default: undefined
+    },
+    initActiveStep: {
+      type: [Number],
+      default: 0
     }
   },
 
@@ -104,7 +110,7 @@ export default {
   },
   data () {
     return {
-      activeStep: 1,
+      activeStep: 0,
       recordId: undefined,
       tempPolicyAndCrowd: {},
       routeSource: undefined,
@@ -163,10 +169,11 @@ export default {
     if (this.$route.params.source) { this.routeSource = this.$route.params.source }
     this.$store.commit('setEditSchemeConfig', false)
 
-    this.activeStep = 0
+    // this.activeStep = 0
     this.policyId = this.initPolicyId // 策略ID
     this.$store.commit('setPolicyName', this.initPolicyName)
     this.crowdId = this.initCrowdId // 大人群ID
+    this.activeStep = this.initActiveStep // 第几步
   }
 }
 </script>

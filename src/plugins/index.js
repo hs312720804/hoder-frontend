@@ -22,7 +22,7 @@ Vue.use(AppState)
 Vue.component('pagination', pagination)
 Vue.prototype.$moment = moment
 Vue.directive('permission', function (el, binding, vNode) {
-  if (vNode.context.$appState.permissions[binding.value] === undefined) {
+  if (vNode.context.$appState.permissions[binding.value] === undefined || vNode.context.$appState.$get('permissions')[binding.value] === undefined) {
     el.style.display = 'none'
   }
 })
@@ -95,3 +95,41 @@ Vue.prototype.cc_format_number = function (number) {
   }
 
 }
+
+// Vue.prototype.cc_format_number = function (str) {
+//   // 如果不是字符或者数字，则直接返回
+//   if (typeof str !== 'string' && typeof str !== 'number') {
+//     return str
+//   }
+//   if (typeof str !== 'string') {
+//     str = str.toString()
+//   }
+//   var newStr = "";
+//   var count = 0;
+//   // 当数字是整数
+//   if (str.indexOf(".") == -1) {
+//       for (var i = str.length - 1; i >= 0; i--) {
+//           if (count % 3 == 0 && count != 0) {
+//               newStr = str.charAt(i) + "," + newStr;
+//           } else {
+//               newStr = str.charAt(i) + newStr;
+//           }
+//           count++;
+//       }
+//       str = newStr ; //自动补小数点后两位
+//       return str;
+//   }
+//   // 当数字带有小数
+//   else {
+//       for (var i = str.indexOf(".") - 1; i >= 0; i--) {
+//           if (count % 3 == 0 && count != 0) {
+//               newStr = str.charAt(i) + "," + newStr;
+//           } else {
+//               newStr = str.charAt(i) + newStr; //逐个字符相接起来
+//           }
+//           count++;
+//       }
+//       str = newStr + (str + "00").substr((str + "00").indexOf("."), 3);
+//       return str;
+//   }
+// }

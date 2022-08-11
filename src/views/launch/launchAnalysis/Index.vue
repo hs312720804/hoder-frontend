@@ -182,7 +182,7 @@
 
                     <div class="unit-content" v-if="show && chart.title">
                         <!-- {{ allChartData[key] && allChartData[key].series }} -->
-                      <div v-if="allChartData[key] && (allChartData[key].series || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+                      <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
                       <div v-else class="chart-div">
                         <el-empty description="暂无数据"></el-empty>
                       </div>
@@ -627,7 +627,7 @@ export default {
     //  环形图
     showPie (data, chartID) {
       console.log('showBar======111>>>', data)
-      if (data.data) {
+      if (data && data.data) {
         const d = data.data.map((v, index) => {
           return {
             ...v,

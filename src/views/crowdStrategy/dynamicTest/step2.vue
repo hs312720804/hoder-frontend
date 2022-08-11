@@ -22,7 +22,7 @@
           type="card"
           closable
           @tab-remove="removeTab"
-          style="width: calc(100% - 112px);"
+          style="width: calc(100% - 112px)"
         >
           <el-tab-pane
             v-for="(group, index) in allGroupList"
@@ -187,10 +187,10 @@ export default {
     DragSortMultiSelect
   },
   props: ['policyId', 'crowdId'],
-
+  inject: ['crowdIndexThis'],
   data () {
     return {
-
+      initDynamicGroupId: this.crowdIndexThis.dynamicGroupId,
       groupCheckIndex: undefined,
       radioType: 0,
       dataSourceColorEnum: {
@@ -492,7 +492,17 @@ export default {
         //   this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
         // }
         // 设置分组中小人群数据、图表数据
-        if (this.allGroupList.length) {
+//         if (this.allGroupList.length) {
+//           this.setGroupData(0)
+//         }
+
+        // 直接跳转到对应的tab
+        if (this.initDynamicGroupId) { 
+          const index = this.allGroupList.findIndex(item => item.id === this.initDynamicGroupId)
+          // console.log('2---------------------->', index)
+          // this.setGroupData(index)
+          this.groupCheckIndex = index.toString()
+        } else if (this.allGroupList.length) {
           this.setGroupData(0)
         }
       })

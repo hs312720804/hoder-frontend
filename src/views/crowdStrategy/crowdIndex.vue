@@ -107,6 +107,7 @@
             :initPolicyId="selectRow.policyId"
             :initPolicyName="selectRow.policyName"
             :initCrowdId="bigCrowdId"
+            :initActiveStep="initActiveStep"
             @goBackCrowdListPage="goBackCrowdListPage"
           >
           </DynamicTest>
@@ -154,11 +155,16 @@ export default {
       bigCrowdId: undefined,
       isDynamicPeople: false,
       linkDialogVisible: false,
-      multipleSelection: []
+      multipleSelection: [],
+      dynamicGroupId: undefined
     }
   },
   props: ['selectRow'],
-
+  provide() {
+    return {
+      crowdIndexThis: this
+    }
+  },
   methods: {
     // 添加引用人群
     openAddLinkCrowd (row) {
@@ -253,12 +259,17 @@ export default {
       this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
     },
     // 添加动态人群
-    handleDynamicTest (row, mode) {
+    handleDynamicTest (row, mode, defaultSetingObj) {
       this.isShowCrowdList = false
       this.mode = mode
       this.crowdId = row.crowdId
       this.bigCrowdId = row.crowdId // 大人群ID
-      console.log('mode====', mode)
+      // debugger
+      // defaultSetingObj = defaultSetingObj ? {tabSet = 'first', initActiveStep = 0}
+      this.tabSet = defaultSetingObj ? defaultSetingObj.tabSet : 'first'
+      this.initActiveStep = defaultSetingObj ? defaultSetingObj.initActiveStep : 0
+      this.dynamicGroupId = row.id || undefined
+      // console.log('mode====', mode)
     }
 
     // 编辑动态人群
