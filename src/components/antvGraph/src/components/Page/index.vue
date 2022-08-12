@@ -95,12 +95,12 @@ export default {
       const parmas = {
         selectModelGroupValue: paramsObj.selectModelGroupValue,
         enterCondition: JSON.stringify(paramsObj.enterCondition), // 规则
-        tagKeys: paramsObj.tagKeys // 规则的 tagkey 集合
+        tagIds: paramsObj.tagIds // 规则的 tagkey 集合
       }
       const model = {
         selectModelGroupValue: parmas.selectModelGroupValue,
         enterCondition: parmas.enterCondition,
-        tagKeys: parmas.tagKeys
+        tagIds: parmas.tagIds
       }
 
       this.graph.update(this.currentTarget, model) // 更新 入口条件 数据
