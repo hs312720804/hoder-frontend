@@ -2,7 +2,7 @@
   <div>
     <!-- {{ rulesJson }}
     <hr>
-    {{ tagKeys }}
+    {{ tagIds }}
     <hr>
     {{ selectModelGroupValue }} -->
     <el-row>
@@ -200,7 +200,7 @@ export default {
         condition: ''
       },
       dataList: [],
-      tagKeys: [] // 设置规则的 tagkey 集合
+      tagIds: [] // 设置规则的 tagkey 集合
     }
   },
   watch: {
@@ -312,11 +312,11 @@ export default {
         return item
       })
       this.rulesJson.rules = rules
-      this.tagKeys = [...new Set(this.tagKeys)]
-      // console.log('this.tagKeys', this.tagKeys)
+      this.tagIds = [...new Set(this.tagIds)]
+      // console.log('this.tagIds', this.tagIds)
       // 保存时，重置初始数据
       this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-      this.$emit('handleSave', { enterCondition: this.rulesJson, selectModelGroupValue: this.selectModelGroupValue, tagKeys: this.tagKeys })
+      this.$emit('handleSave', { enterCondition: this.rulesJson, selectModelGroupValue: this.selectModelGroupValue, tagIds: this.tagIds })
     },
     handleCancel () {
       this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
@@ -356,8 +356,8 @@ export default {
           }
         }
 
-        if (res.tagKeys) { // 选择标签的 tagkey 集合
-          this.tagKeys = res.tagKeys
+        if (res.tagIds) { // 选择标签的 tagkey 集合
+          this.tagIds = res.tagIds
         }
       }
     },
@@ -371,7 +371,7 @@ export default {
         }]
       })
 
-      this.tagKeys.push(tag.tagKey)
+      this.tagIds.push(tag.tagId)
     },
     handleAddChildRule (rule, tag) {
       rule.rules.push({
@@ -379,7 +379,7 @@ export default {
         operator: '=',
         value: ''
       })
-      this.tagKeys.push(tag.tagKey)
+      this.tagIds.push(tag.tagId)
     },
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
