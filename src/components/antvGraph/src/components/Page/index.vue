@@ -94,11 +94,13 @@ export default {
     handleSaveEntryCondition (paramsObj) {
       const parmas = {
         selectModelGroupValue: paramsObj.selectModelGroupValue,
-        enterCondition: JSON.stringify(paramsObj.enterCondition)
+        enterCondition: JSON.stringify(paramsObj.enterCondition), // 规则
+        tagKeys: paramsObj.tagKeys // 规则的 tagkey 集合
       }
       const model = {
         selectModelGroupValue: parmas.selectModelGroupValue,
-        enterCondition: parmas.enterCondition
+        enterCondition: parmas.enterCondition,
+        tagKeys: parmas.tagKeys
       }
 
       this.graph.update(this.currentTarget, model) // 更新 入口条件 数据
