@@ -1,6 +1,8 @@
 <template>
   <div>
-    <!-- {{rulesJson}}
+    <!-- {{ rulesJson }}
+    <hr>
+    {{ tagKeys }}
     <hr>
     {{ selectModelGroupValue }} -->
     <el-row>
@@ -197,7 +199,8 @@ export default {
         pageSize: 100,
         condition: ''
       },
-      dataList: []
+      dataList: [],
+      tagKeys: [] // 设置规则的 tagkey 集合
     }
   },
   watch: {
@@ -250,48 +253,48 @@ export default {
     fetchTagData () {
       const modelTagIds = this.selectModelGroupValue.join(',')
       this.$service.getModelTag({ modelTagIds }).then((data) => {
-        const list = [
-          {
-            'tagVersion': 'dmp_crowd_111923_2022071803',
-            'tagId': 9848,
-            'tagType': 'collect',
-            'tagName': '123112312',
-            'tagKey': 'temp_crowd_8087',
-            'dataSource': 11
-          },
-          {
-            'tagVersion': 'dmp_crowd_111924_2022071802',
-            'tagId': 9849,
-            'tagType': 'collect',
-            'tagName': '2222222',
-            'tagKey': 'temp_crowd_8088',
-            'dataSource': 11
-          },
-          {
-            'tagVersion': 'dmp_crowd_111940_2022071802',
-            'tagId': 9851,
-            'tagType': 'collect',
-            'tagName': '模型标签3',
-            'tagKey': 'temp_crowd_8090',
-            'dataSource': 11
-          },
-          {
-            'tagVersion': 'dmp_crowd_111941_2022071802',
-            'tagId': 9852,
-            'tagType': 'collect',
-            'tagName': '模型标签4',
-            'tagKey': 'temp_crowd_8091',
-            'dataSource': 11
-          },
-          {
-            'tagVersion': 'dmp_crowd_111944_2022071803',
-            'tagId': 9854,
-            'tagType': 'collect',
-            'tagName': '1111',
-            'tagKey': 'temp_crowd_8093',
-            'dataSource': 11
-          }
-        ]
+        // const list = [
+        //   {
+        //     'tagVersion': 'dmp_crowd_111923_2022071803',
+        //     'tagId': 9848,
+        //     'tagType': 'collect',
+        //     'tagName': '123112312',
+        //     'tagKey': 'temp_crowd_8087',
+        //     'dataSource': 11
+        //   },
+        //   {
+        //     'tagVersion': 'dmp_crowd_111924_2022071802',
+        //     'tagId': 9849,
+        //     'tagType': 'collect',
+        //     'tagName': '2222222',
+        //     'tagKey': 'temp_crowd_8088',
+        //     'dataSource': 11
+        //   },
+        //   {
+        //     'tagVersion': 'dmp_crowd_111940_2022071802',
+        //     'tagId': 9851,
+        //     'tagType': 'collect',
+        //     'tagName': '模型标签3',
+        //     'tagKey': 'temp_crowd_8090',
+        //     'dataSource': 11
+        //   },
+        //   {
+        //     'tagVersion': 'dmp_crowd_111941_2022071802',
+        //     'tagId': 9852,
+        //     'tagType': 'collect',
+        //     'tagName': '模型标签4',
+        //     'tagKey': 'temp_crowd_8091',
+        //     'dataSource': 11
+        //   },
+        //   {
+        //     'tagVersion': 'dmp_crowd_111944_2022071803',
+        //     'tagId': 9854,
+        //     'tagType': 'collect',
+        //     'tagName': '1111',
+        //     'tagKey': 'temp_crowd_8093',
+        //     'dataSource': 11
+        //   }
+        // ]
         this.tags = data.list || []
         // this.tags = list
       })
@@ -309,9 +312,11 @@ export default {
         return item
       })
       this.rulesJson.rules = rules
+      this.tagKeys = [...new Set(this.tagKeys)]
+      // console.log('this.tagKeys', this.tagKeys)
       // 保存时，重置初始数据
       this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-      this.$emit('handleSave', { enterCondition: this.rulesJson, selectModelGroupValue: this.selectModelGroupValue })
+      this.$emit('handleSave', { enterCondition: this.rulesJson, selectModelGroupValue: this.selectModelGroupValue, tagKeys: this.tagKeys })
     },
     handleCancel () {
       this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
@@ -329,6 +334,7 @@ export default {
         // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
         this.policyId = res.policyId || ''
 
+        // 初始化数据
         if (res.selectModelGroupValue) { // 选择的模型标签分组
           this.selectModelGroupValue = res.selectModelGroupValue
           // 获取标签
@@ -349,6 +355,10 @@ export default {
             rules: []
           }
         }
+
+        if (res.tagKeys) { // 选择标签的 tagkey 集合
+          this.tagKeys = res.tagKeys
+        }
       }
     },
     handleAddRule (tag) {
@@ -360,6 +370,8 @@ export default {
           value: ''
         }]
       })
+
+      this.tagKeys.push(tag.tagKey)
     },
     handleAddChildRule (rule, tag) {
       rule.rules.push({
@@ -367,6 +379,7 @@ export default {
         operator: '=',
         value: ''
       })
+      this.tagKeys.push(tag.tagKey)
     },
     handleRulesConditionChange (item) {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
