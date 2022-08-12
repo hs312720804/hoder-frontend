@@ -22,7 +22,8 @@ Vue.use(AppState)
 Vue.component('pagination', pagination)
 Vue.prototype.$moment = moment
 Vue.directive('permission', function (el, binding, vNode) {
-  if (vNode.context.$appState.permissions[binding.value] === undefined || vNode.context.$appState.$get('permissions')[binding.value] === undefined) {
+  // if (vNode.context.$appState.permissions[binding.value] === undefined || vNode.context.$appState.$get('permissions')[binding.value] === undefined) {
+  if (vNode.context.$appState.permissions[binding.value] === undefined) {
     el.style.display = 'none'
   }
 })

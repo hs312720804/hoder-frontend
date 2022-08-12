@@ -45,13 +45,12 @@
                   <Range
                     ref="range"
                     :childItem="childItem"
-                    :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
+                    :type="getRangeType(childItem.tagCode)"
                     :options="bavAttrList[childItem.categoryCode]"
                     :show="showRange"
                     @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
                   >
                   </Range>
-
                   <i
                     :class="showRange ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"
                     class="range animated shake"
@@ -421,9 +420,9 @@
                     <el-button
                       v-if="childItem.isDynamicTime !== 3"
                       @click="
-                        childItem.isDynamicTime = 3
-                        childItem.dateAreaType = 0
-                        childItem.operator = 'between'
+                        childItem.isDynamicTime = 3;
+                        childItem.dateAreaType = 0;
+                        childItem.operator = 'between';
                         childItem.value = childItem.startDay + '-' + childItem.endDay
                       "
                       >切换至新方案
@@ -710,6 +709,13 @@ export default {
     }
   },
   methods: {
+    getRangeType(tagCode) {
+      let type = ['range', 'week', 'time']
+      if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') {
+        type = ['range']
+      }
+      return type
+    },
     handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType === 0) {
