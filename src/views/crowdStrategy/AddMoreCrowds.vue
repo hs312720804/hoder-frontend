@@ -555,7 +555,7 @@ export default {
               rulesItem.value = rulesItem.value.join(',')
             }
 
-            if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
+            if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === "fixed") { // 固定周期 日期多选
               const newValue = rulesItem.bav.rang.newValue
               let data = []
               newValue.forEach(item => {
