@@ -3248,13 +3248,13 @@
                 </div>
                 
               </span>
-              <el-checkbox
+              <!-- <el-checkbox
                 class="reverse-check"
                 v-model="childItem.bav.reverseSelect"
                 @change="ReverseSelect($event, item2.child)"
               >
                 圈出未活跃
-              </el-checkbox>
+              </el-checkbox> -->
             </span>
 
           </div>
