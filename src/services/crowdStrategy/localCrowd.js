@@ -66,3 +66,21 @@ export function getNewTreeList (params) {
     params
   })
 }
+// 标签广场 - 神策分析
+export function sensorCrowdAnalysis (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/sensorCrowdAnalysis',
+    params,
+    isReturnAllInfor: true
+  })
+}
+// 人群列表 - 神策分析
+export function sensorHitData (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/sensorHitData',
+    params,
+    isReturnAllInfor: true
+  })
+}

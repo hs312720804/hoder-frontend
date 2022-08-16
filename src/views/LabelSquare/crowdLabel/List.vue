@@ -41,7 +41,8 @@
     <div>
       <!-- {{tableData}} -->
       <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel" @select-all="handleSelectAllOrCancel">
-        <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
+        <el-table-column type="selection" width="55" v-if="showSelection" :selectable="checkSelectable"
+        ></el-table-column>
         <el-table-column prop="crowdId" label="人群ID" width="120"></el-table-column>
         <el-table-column prop="crowdName" label="人群名" width="230"></el-table-column>
      
@@ -151,6 +152,10 @@ export default {
     }
   },
   methods: {
+    // 判断表格的复选框是否置灰、禁止选择
+    checkSelectable(row, index) {
+      return row.status === 1 // 只有状态为 生效中的才能选
+    },
     handleMonitor (row) {
       this.monitorDialog = true
       this.selectedRow = row
@@ -315,7 +320,9 @@ export default {
         }
       } else {
         for (var j = 0; j < data.length; j++) {
-          this.$emit('table-selected', data[j], 'add')
+          if (data[j].status === 1) { // 只有状态为生效中的才能被勾选
+            this.$emit('table-selected', data[j], 'add')
+          }
         }
       }
     },

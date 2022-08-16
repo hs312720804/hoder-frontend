@@ -151,6 +151,9 @@
                   </el-dropdown-item>
                   <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">数据监控
                   </el-dropdown-item>
+                  <el-dropdown-item :command="['shenCeAnalysis', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">神策分析
+                  </el-dropdown-item>
+                 
                 </el-dropdown-menu>
               </el-dropdown>
             </el-button-group>
@@ -408,7 +411,23 @@ export default {
         case 'monitor':
           this.handleMonitor(params)
           break
+        case 'shenCeAnalysis':
+          this.handleShenCeAnalysis(params)
+          break
       }
+    },
+    handleShenCeAnalysis(row) {
+      const launchCrowdId = row.launchCrowdId
+      console.log('launchCrowdId', launchCrowdId)
+      this.$service.sensorCrowdAnalysis({launchCrowdId}).then(res => {
+        console.log('res', res)
+        // 人群已经发送到神策平台，请前往神策继续分析
+        if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
+          this.$message.success(res.result)
+        } else {
+          this.$message.info(res.result)
+        }
+      })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleSizeChange (val) {

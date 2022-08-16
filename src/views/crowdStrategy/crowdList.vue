@@ -539,16 +539,16 @@
       <el-table-column type="index" width="40" align="center"></el-table-column>
       <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
-           <template slot-scope="scope">
-             <!-- 动态人群 -->
-             <el-button v-if="scope.row.dynamicFlag===1" type="text" @click="showDynamicList(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+          <template slot-scope="scope">
+            <!-- 动态人群 -->
+            <el-button v-if="scope.row.dynamicFlag===1" type="text" @click="showDynamicList(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
 
               <!-- 普通人群 -->
-              <span v-else-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
+              <span v-else-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
 
               <!-- AB实验人群 或者 再分割人群 -->
               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
-           </template>
+          </template>
       </el-table-column>
       <el-table-column prop="crowdName" label="人群类型" width="100">
         <template slot-scope="scope">
@@ -748,6 +748,10 @@
                   v-if="!isReferCrowd(scope.row.referCrowdId)"
                   :command="['commitHistory',scope.row]"
                 >提交历史数据
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="['shenCeAnalysis',scope.row]"
+                >神策分析
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -1354,7 +1358,8 @@
         <el-button @click="testDialogVisible = false">关闭</el-button>
       </span>
     </el-dialog>
-    <!-- 查看配置弹窗-->
+
+    <!-- 预约投后分析-->
     <el-dialog title="预约投后分析" :visible.sync="showAppointment" width="500px">
       <el-form ref="appointmentForm" :model="appointmentForm" label-width="80px" size="mini">
         <el-form-item label="起止时间" prop="value" required>
@@ -1438,6 +1443,27 @@
     <el-dialog :visible.sync="showViewEffect" width="80%">
       <viewEffectDialog :crowdId="currentCid"></viewEffectDialog>
     </el-dialog>
+
+    <!-- 神策分析-->
+    <el-dialog title="选择命中数据的时间范围" :visible.sync="shenCeDialog" width="500px">
+      <el-form ref="shenCeForm" :model="shenCeForm" label-width="80px" size="mini">
+        <el-form-item label="起止时间" prop="dateRange" required>
+          <el-date-picker
+            v-model="shenCeForm.dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd">
+          </el-date-picker>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="ConfirmShenCeAnalysis">确定</el-button>
+        <el-button @click="shenCeDialog = false">取消</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1460,6 +1486,11 @@ export default {
   },
   data () {
     return {
+      shenCeForm: {
+        dateRange: [],
+        crowdId: ''
+      },
+      shenCeDialog: false,
       showOperationalAnalysis: false,
       operationalAnalysisUrl: '',
       showEditDynamicCrowdName: false,
@@ -2918,7 +2949,33 @@ export default {
         case 'commitHistory':
           this.handleCommitHistory(params)
           break
+        case 'shenCeAnalysis':
+          this.handleShenCeAnalysis(params)
+          break
       }
+    },
+    handleShenCeAnalysis(row) {
+      this.shenCeForm.crowdId = row.crowdId
+      this.shenCeDialog = true
+    },
+    ConfirmShenCeAnalysis(row) {
+      const parmas = {
+        crowdId: this.shenCeForm.crowdId,
+        startDate: this.shenCeForm.dateRange[0],
+        endDate: this.shenCeForm.dateRange[1]
+      }
+      this.$service.sensorHitData(parmas).then(res => {
+        console.log('res', res)
+
+        // 人群已经发送到神策平台，请前往神策继续分析
+        if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
+          this.$message.success(res.result)
+        } else {
+          this.$message.info(res.result)
+        }
+        this.shenCeDialog = false
+
+      })
     },
     // 动态人群 - 小人群功能
     handleDynamicCommandOpreate (scope) {
