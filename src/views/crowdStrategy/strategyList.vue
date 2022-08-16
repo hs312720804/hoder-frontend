@@ -98,7 +98,8 @@
           <span class="checkbox--yellow">黄色</span>为实时标签,
           <span class="checkbox--orange">紫色</span>为动态指标,
           <span class="checkbox--orange2">棕色</span>为组合标签,
-          <span class="checkbox--cyan">青色</span>为行为标签）
+          <span class="checkbox--cyan">青色</span>为行为标签,
+          <span class="checkbox--gray">灰色</span>为人群标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -1177,20 +1178,7 @@ export default {
 .checkList
   height: 200px
   overflow: auto
-.checkbox--red
-  color #f56c6c
-.checkbox--green
-  color #67c23a
-.checkbox--blue
-  color #409eff
-.checkbox--yellow
-  color #e6a23c
-.checkbox--orange
-  color #512DA8
-.checkbox--orange2
-  color #795548
-.checkbox--cyan
-  color #00bcd4
+
 .strategy-search
   display flex
   margin-bottom 10px

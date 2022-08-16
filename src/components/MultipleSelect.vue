@@ -79,7 +79,7 @@
                   </template>
 
                   <!-- collect 类型 -->
-                  <template v-if="childItem.tagType === 'collect'">
+                  <template v-if="childItem.tagType === 'collect' || childItem.tagType === 'crowd'">
                     <el-option value="=" label="是"></el-option>
                     <el-option value="!=" label="不是"></el-option>
                   </template>
@@ -137,7 +137,7 @@
                 </template>
               </span>
 
-              <span class="in">
+              <span class="in" v-if="childItem.tagType !== 'crowd'">
                 <!-- time 类型 -->
 
                 <span v-if="childItem.tagType === 'time'">
@@ -468,8 +468,8 @@
                   :key="tagItem.tagItem"
                   @click.native="handleAddChildRule(item, tagItem)"
                   :type="dataSourceColorEnum[tagItem.dataSource]"
-                  >{{ tagItem.tagName }}</el-tag
-                >
+                  >{{ tagItem.tagName }}
+                </el-tag>
               </div>
             </div>
           </div>
@@ -817,7 +817,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       cityData: [],
       provinceValueList: []
@@ -1069,7 +1071,7 @@ export default {
             tagCode: tag.tagKey,
             tagName: tag.tagName,
             dataSource: tag.dataSource,
-            value: tag.tagType === 'time' ? '-' : '',
+            value: tag.tagType === 'time' || tag.tagType === 'crowd' ? '-' : '',
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -1129,7 +1131,7 @@ export default {
         tagCode: tag.tagKey,
         tagName: tag.tagName,
         dataSource: tag.dataSource,
-        value: tag.tagType === 'time' ? '-' : '',
+        value: tag.tagType === 'time' || tag.tagType === 'crowd' ? '-' : '',
         tagId: tag.tagId,
         tagType: tag.tagType,
         categoryName: tag.tagName,
@@ -1256,6 +1258,8 @@ export default {
         item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
         item.value = []
+      } else if (item.tagType === 'crowd') { // crowd value值固定为 '-'
+        item.value = '-'
       } else {
         item.value = ''
       }

@@ -251,7 +251,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       cityData: [],
       provinceValueList: [],
@@ -1501,6 +1503,14 @@ i {
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
+  }
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+    }
   }
 }
 

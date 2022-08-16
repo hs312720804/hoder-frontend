@@ -100,3 +100,12 @@ export function getBehaviorCrowdByPolicyId (params) {
     params
   })
 }
+
+// 人群标签查询接口
+export function getCrowdCrowdTagList (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/policy/getCrowdCrowdTagList',
+    params
+  })
+}

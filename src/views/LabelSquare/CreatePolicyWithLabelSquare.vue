@@ -129,6 +129,18 @@
               </ModelLabelIndexSelect>
           </el-tab-pane>
 
+          <el-tab-pane label="人群标签" name="crowdLabel">
+              <CrowdLabel
+                  :show-selection="showSelection"
+                  :currentSelectTag="tagList"
+                  :checkList="tempCheckList"
+                  :crowdType=2
+                  @get-table-selected="handleGetTableSelectedData"
+                  @change-checkList="handleTempCheckListChange"
+              >
+              </CrowdLabel>
+          </el-tab-pane>
+
           <el-tab-pane label="我的收藏" name="myCollect">
               <my-collect
                   :tagName="myCollectTagName"
@@ -158,7 +170,7 @@
                 closable
                 @close="removeTag(item)"
         >
-          {{item.tagName}}
+          {{ item.tagName }}
         </el-tag>
       </el-form-item>
       <div class="tags-tips">
@@ -168,7 +180,8 @@
         <span class="checkbox--yellow">黄色</span>为实时标签,
         <span class="checkbox--orange">紫色</span>为动态指标,
         <span class="checkbox--orange2">棕色</span>为组合标签,
-        <span class="checkbox--cyan">青色</span>为行为标签
+        <span class="checkbox--cyan">青色</span>为行为标签,
+        <span class="checkbox--gray">灰色</span>为人群标签
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -193,6 +206,7 @@ import specialTag from './SpecialTag'
 import CustomTag from './CustomTag'
 import ThirdPartyTag from './ThirdPartyTag'
 import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
+import CrowdLabel from './crowdLabel/Index.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -204,7 +218,8 @@ export default {
     LocalLabelIndex,
     CustomTag,
     ThirdPartyTag,
-    ModelLabelIndexSelect
+    ModelLabelIndexSelect,
+    CrowdLabel
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
@@ -226,7 +241,8 @@ export default {
         6: 'warningOrange',
         7: 'warningOrange2',
         8: 'warningCyan',
-        11: 'success'
+        11: 'success',
+        12: 'gray'
       },
       showSelection: true,
       addForm: this.genDefaultForm(),
@@ -248,7 +264,8 @@ export default {
       return {
         recordId: undefined,
         policyName: '',
-        conditionTagIds: []
+        conditionTagIds: [],
+        crowdTagCrowdIds: [] // 人群标签的 crowdId 集合
       }
     },
     handleSearch () {
@@ -348,6 +365,11 @@ export default {
           // this.fetchListData()
           this.$root.$emit('model-tag-list-refresh')
           break
+        case 'crowdLabel':
+          // 人群标签
+          // this.fetchListData()
+          this.$root.$emit('crowd-label-list-refresh')
+          break
       }
     },
     // 选择或取消选择 tag
@@ -366,7 +388,14 @@ export default {
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
-          this.addForm.conditionTagIds.push(val.tagId)
+          
+          if (val.dataSource === 12) {
+            // 人群标签 id 集合
+            this.addForm.crowdTagCrowdIds.push(val.tagId) 
+          } else {
+            // 其他的标签 id 集合
+            this.addForm.conditionTagIds.push(val.tagId) 
+          }
           this.setContentBottomMargin()
         }
       } else {
@@ -376,7 +405,13 @@ export default {
           if (tagList[j].tagId === val.tagId) {
             index = j
             this.tagList.splice(index, 1)
-            this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
+            if (val.dataSource === 12) {
+              // 人群标签 id 集合
+              this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== val.tagId)
+            } else {
+              // 其他的标签 id 集合
+              this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
+            }
             this.setContentBottomMargin()
             return
           }
@@ -391,7 +426,14 @@ export default {
     },
     removeTag (tag) {
       const addForm = this.addForm
-      addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      if (tag.dataSource === 12) {
+        // 人群标签 id 集合
+        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
+      } else {
+        // 其他的标签 id 集合
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      }
+      
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       this.setContentBottomMargin()
     },
@@ -415,12 +457,18 @@ export default {
           // }
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
-          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          // 其他的标签 id 集合
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',') 
+
+          // 人群标签 id 集合
+          addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
+
           // 动态人群
           if (isDynamicPeople) {
             let oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds,
               smart: isDynamicPeople
             }
             if (this.policyId) {
@@ -502,7 +550,8 @@ export default {
           } else {
             let oldFormData = {
               policyName: addForm.policyName,
-              conditionTagIds: addForm.conditionTagIds
+              conditionTagIds: addForm.conditionTagIds,
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds, // 人群标签
             }
             this.$service.policyAddSave(oldFormData).then((data) => {
               // if (data.policyId) {
@@ -538,10 +587,17 @@ export default {
         formData.conditionTagIds = formData.conditionTagIds === '' ? [] : formData.conditionTagIds.split(',').map(function (v) {
           return parseInt(v)
         })
+        
+        // 人群标签ID
+        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds ? formData.crowdTagCrowdIds.split(',').map(function (v) {
+          return parseInt(v)
+        }) : []
+
         this.addForm = {
           recordId: this.recordId,
           policyName: formData.policyName,
-          conditionTagIds: formData.conditionTagIds
+          conditionTagIds: formData.conditionTagIds,
+          crowdTagCrowdIds: formData.crowdTagCrowdIds,
         }
       })
     }
@@ -556,9 +612,19 @@ export default {
     if (this.policyId) {
       this.tagList = this.initTagList
       this.addForm.policyName = this.policyName
-      this.addForm.conditionTagIds = this.initTagList.map(function (v) {
-        return parseInt(v.tagId)
+      this.addForm.conditionTagIds = []
+      this.addForm.crowdTagCrowdIds = []
+      this.initTagList.forEach(function (v) {
+        if (v.dataSource === 12) {
+          this.addForm.crowdTagCrowdIds.push(parseInt(v.tagId)) // 人群标签
+        } else {
+          this.addForm.conditionTagIds.push(parseInt(v.tagId))
+        }
       })
+      // this.initTagList.map(function (v) {
+      //   return parseInt(v.tagId)
+      // })
+      
       this.addForm.policyId = this.policyName
     }
   }
@@ -595,6 +661,12 @@ export default {
         color: #00bcd4;
         background-color: rgba(0, 189, 214, .1);
         border-color: #00bcd42b
+    >>> .el-tag--gray
+        color: #fff;
+        background-color: rgba(165,155,149, 1);
+        border-color: rgba(165,155,149, 1);
+        .el-tag__close
+          color #fff
   .search-input
     position relative
     // top 0
@@ -619,20 +691,7 @@ export default {
     color #000
     font-size 12px
     margin-left 100px
-  .checkbox--red
-    color #f56c6c
-  .checkbox--green
-    color #67c23a
-  .checkbox--blue
-    color #409eff
-  .checkbox--yellow
-    color #e6a23c
-  .checkbox--orange
-    color #512DA8
-  .checkbox--orange2
-    color #795548
-  .checkbox--cyan
-    color #00bcd4
+  
   .fix-bottom-form
     position fixed
     bottom 0

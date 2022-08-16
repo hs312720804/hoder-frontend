@@ -124,6 +124,18 @@
                 </ModelLabelIndex>
             </el-tab-pane>
 
+            <el-tab-pane label="人群标签" name="crowdLabel">
+                <CrowdLabel
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    :checkList="tempCheckList"
+                    :crowdType=2
+                    @get-table-selected="handleGetTableSelectedData"
+                    @change-checkList="handleTempCheckListChange"
+                >
+                </CrowdLabel>
+            </el-tab-pane>
+
             <el-tab-pane label="我的收藏" name="myCollect">
                 <my-collect
                     :tagName="myCollectTagName"
@@ -162,6 +174,7 @@ import specialTag from './SpecialTag'
 import CustomTag from './CustomTag'
 import ThirdPartyTag from './ThirdPartyTag'
 import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
+import CrowdLabel from './crowdLabel/Index.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -173,7 +186,8 @@ export default {
     LocalLabelIndex,
     CustomTag,
     ThirdPartyTag,
-    ModelLabelIndex
+    ModelLabelIndex,
+    CrowdLabel
   },
   data () {
     return {
@@ -274,6 +288,13 @@ export default {
           // this.fetchListData()
           this.$root.$emit('model-tag-list-refresh')
           break
+        case 'crowdLabel':
+          // 人群标签
+          // this.fetchListData()
+          this.$root.$emit('crowd-label-list-refresh')
+          break
+
+          
       }
     },
     handleGetTableSelectedData (val, mode) {
