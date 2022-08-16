@@ -1617,7 +1617,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       conditionEnum: {
         'AND': '且',
@@ -3966,4 +3968,29 @@ fieldset>div
   margin-bottom: 30px;
 .boldCss
   font-weight 800
+>>> .el-tag--warningOrange
+  color #512DA8
+  background-color rgba(119, 81, 200, .4)
+  border-color rgba(81, 45, 168, .45)
+  .el-tag__close
+    color #512DA8
+>>> .el-tag--warningOrange2
+  color: #795548;
+  background-color: rgba(167, 130, 117, .5);
+  border-color: #7955488c;
+  .el-tag__close
+    color #512DA8
+>>> .el-tag--warningCyan {
+  color: #00bcd4;
+  background-color: rgba(0, 189, 214, .1);
+  border-color: #00bcd42b
+}
+>>> .el-tag--gray {
+  color: #fff;
+  background-color: rgba(165,155,149, 1);
+  border-color: rgba(165,155,149, 1);
+  .el-tag__close {
+    color #fff
+  }
+}
 </style>
