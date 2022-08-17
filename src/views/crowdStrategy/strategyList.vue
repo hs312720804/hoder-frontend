@@ -313,12 +313,13 @@
             <el-button @click="getTags()">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
-              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
-                <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="dataSourceColorClassEnum[item.tDataSource]"
-                             :label="item.tagId"
-                             :key="item.tagId"
-                             @change="handleTagChange($event,item)"
+              <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
+                <el-checkbox 
+                  v-for="item in conditionTagsFiltered"
+                  :class="dataSourceColorClassEnum[item.tDataSource]"
+                  :label="item.tagId"
+                  :key="item.tagId"
+                  @change="handleTagChange($event,item)"
                 >
                   {{item.tagName}}
                 </el-checkbox>
@@ -500,7 +501,8 @@ export default {
         policyId: '',
         policyName: '',
         // dataSource: "2",
-        conditionTagIds: []
+        conditionTagIds: [],
+        crowdTagCrowdIds: []
         // 以上为表单提交的参数
       },
       addFormRules: {
@@ -645,6 +647,9 @@ export default {
           this.time1 = oldVal
         }
       }
+    },
+    tagList(val) {
+      this.checkedList = val.map(item => item.tagId)
     }
   },
   methods: {
@@ -705,18 +710,43 @@ export default {
     },
     removeTag (tag) {
       const addForm = this.addForm
-      addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      if (tag.tDataSource === 12) {
+        // 人群标签 id 集合
+        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
+      } else {
+        // 其他的标签 id 集合
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      }
+      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
     },
     handleTagChange (flag, item) {
       var arr = []
-      if (flag) { this.tagList.push(item) } else {
+      if (flag) { 
+        this.tagList.push(item) 
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds.push(item.tagId) 
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds.push(item.tagId) 
+        }
+      } else {
         arr = this.tagList
         for (var i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
+
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== item.tagId)
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
+        }
       }
+      
     },
     resetSearch () {
       this.searchValue = ''
@@ -755,6 +785,21 @@ export default {
         .map(function (v) {
           return parseInt(v)
         })
+      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
+        .split(',')
+        .map(function (v) {
+          return parseInt(v)
+        }) || []
+      // this.addForm.conditionTagIds = []
+      // this.addForm.crowdTagCrowdIds = []
+
+      // this.tagList.forEach(function (v) {
+      //   if (v.dataSource === 12) {
+      //     this.addForm.crowdTagCrowdIds.push(parseInt(v.tagId)) // 人群标签
+      //   } else {
+      //     this.addForm.conditionTagIds.push(parseInt(v.tagId))
+      //   }
+      // })
       // row.conditionTagIds.split(",");
     },
     crowdList (row) {
@@ -898,7 +943,10 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm)
           addForm = JSON.parse(addForm)
+          // 人群标签 id 集合
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          // 其他的标签 id 集合
+          addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
           if (this.addForm.policyId != '') {
             this.$service.policyUpate(addForm, '编辑成功').then(() => {
               this.loadData()
