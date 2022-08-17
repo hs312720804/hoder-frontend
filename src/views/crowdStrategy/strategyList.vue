@@ -260,6 +260,7 @@
       v-if="addFormVisible"
       v-model="addFormVisible"
       :close-on-click-modal="false"
+      width="800px"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
@@ -292,7 +293,8 @@
           <span class="checkbox--yellow">黄色为实时标签</span>,
           <span class="checkbox--orange">紫色为动态指标</span>,
           <span class="checkbox--orange2">棕色为组合标签</span>,
-          <span class="checkbox--cyan">青色为行为标签</span>
+          <span class="checkbox--cyan">青色为行为标签</span>,
+          <span class="checkbox--gray">灰色为人群标签</span>
         </div>
         <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
@@ -530,7 +532,9 @@ export default {
         5: 'checkbox--yellow',
         6: 'checkbox--orange',
         7: 'checkbox--orange2',
-        8: 'checkbox--cyan'
+        8: 'checkbox--cyan',
+        11: 'success',
+        12: 'gray'
       },
       dataSourceColorEnum: {
         1: 'success',
@@ -539,7 +543,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       showAll: false,
       seeDetailData: {
@@ -1188,6 +1194,7 @@ export default {
 .tags-tips
   font-size 12px
   text-align: center;
+  white-space nowrap
 .page-num
   width 30px
   height 30px
@@ -1280,7 +1287,17 @@ ul > li
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
-
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
+  }
 .header-left
   display flex
   align-items center

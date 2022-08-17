@@ -552,17 +552,20 @@
       </el-table-column>
       <el-table-column prop="crowdName" label="人群类型" width="100">
         <template slot-scope="scope">
+          <!-- 12314 -->
+          <!-- {{ scope.row.isCrowdTagCrowd }} -->
           <!-- 动态人群 -->
           <span v-if="scope.row.dynamicFlag===1">动态人群</span>
           <!-- 引用人群 -->
           <span v-else-if="isReferCrowd(scope.row.referCrowdId)">引用人群</span>
-          <!-- 普通人群 -->
-          <span v-else-if="scope.row.abMainCrowd === 0">普通人群</span>
           <!-- AB实验人群 -->
           <span v-else-if="scope.row.abMainCrowd===1">AB实验人群</span>
           <!-- 再分割人群 -->
           <span v-else-if="scope.row.abMainCrowd===3">再分割人群</span>
-
+          <!-- 复合人群 -->
+          <span v-else-if="scope.row.isCrowdTagCrowd === 1">复合人群</span>
+          <!-- 普通人群 -->
+          <span v-else-if="scope.row.abMainCrowd === 0">普通人群</span>
         </template>
       </el-table-column>
       <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
@@ -4048,6 +4051,10 @@ fieldset>div
   border-color: rgba(165,155,149, 1);
   .el-tag__close {
     color #fff
+    &:hover{
+      background-color: #666
+    }
   }
 }
+
 </style>

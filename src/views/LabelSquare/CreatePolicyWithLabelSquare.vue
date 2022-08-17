@@ -667,6 +667,10 @@ export default {
         border-color: rgba(165,155,149, 1);
         .el-tag__close
           color #fff
+          &:hover{
+            background-color: #666
+          }
+
   .search-input
     position relative
     // top 0

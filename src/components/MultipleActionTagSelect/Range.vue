@@ -240,6 +240,16 @@ export default {
     }
   },
   methods: {
+     getPickerOptions (tagCode) {
+      if (tagCode === 'BAV0003') { // 【购买行为】
+        // return this.pickerOptions720  // 可选两年内的周期
+        return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来1个月】 的周期内，开始和结束不超 【2年】
+      } else if (tagCode === 'BAV0008') { // 【起播行为】
+        return this.pickerOptionsDayinRange(90, 180)  // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【3个月】
+      } else { // 其他
+        return this.pickerOptionsDayinRange(30, 180) // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【1个月】
+      }
+    },
     pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
       let _minTime = null
       let _maxTime = null
@@ -281,15 +291,7 @@ export default {
         return 30
       }
     },
-    getPickerOptions (tagCode) {
-      if (tagCode === 'BAV0003') { // 【购买行为】
-        return this.pickerOptions720  // 可选两年内的周期
-      } else if (tagCode === 'BAV0008') { // 【起播行为】
-        return this.pickerOptionsDayinRange(90, 180)  // 可选在 6 个月的周期内，开始和结束不超 3 个月
-      } else { // 其他
-        return this.pickerOptionsDayinRange(30, 180) // 可选在 6 个月的周期内，开始和结束不超 1 个月
-      }
-    },
+   
     HandleChange (val) {
       this.childItem.bav.rang.value = val // 给一个值，避免出现必选红框
     },
