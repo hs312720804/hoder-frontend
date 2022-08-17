@@ -845,16 +845,31 @@ export default {
         vals.forEach(val => {
           if (!val) return
           let obj = {}
-          const lastNumberObj = [
-            {
-              name: '',
-              value: '',
-              field: 'mac',
-              operator: '=',
-              type: 'count',
-              multipleSelect: false
-            }
-          ]
+          let lastNumberObj = {}
+          if (this.childItem.tagCode === 'BAV0013' || this.childItem.tagCode === 'BAV0014') {
+            // 【续费包签约状态 - BAV0013】、【连续包签约-续费-解约次数 - BAV0014】 最后一级不给默认 value
+            lastNumberObj = [
+              {
+                name: '',
+                value: '',
+                field: '',
+                operator: '=',
+                type: '',
+                multipleSelect: false
+              }
+            ]
+          } else {
+            lastNumberObj = [
+              {
+                name: '',
+                value: '',
+                field: 'mac',
+                operator: '=',
+                type: 'count',
+                multipleSelect: false
+              }
+            ]
+          }
           // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
           const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
           const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
@@ -970,7 +985,7 @@ export default {
             defaultchild = [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }]
           }
   
-          if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 模块活跃 选择推荐位 下一级是序号+【次数/天数】
+          if (selectPropKeyValue === 'selectKey' && obj[selectPropKeyValue] === 'album_id1') { // BAV0004 【模块活跃】 选择推荐位 下一级是序号+【次数/天数】
             defaultchild = [{
               name: '1',
               value: '0',
