@@ -273,7 +273,7 @@ export default {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
-  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople'],
+  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'],
   methods: {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
@@ -1289,7 +1289,7 @@ export default {
     this.$service
       .getTagsByPoliceId({ policyId: this.form.policyId })
       .then(data => {
-        const normalTags = []
+        let normalTags = []
         const actionTags = []
         const specialTags = []
         data.forEach(item => {
@@ -1304,6 +1304,10 @@ export default {
             normalTags.push(item)
           }
         })
+        // 如果当前人群已经当做人群标签被使用了，那么就不能使用人群标签，需要过滤掉
+        if (this.crowd && this.crowd.isUsedAsTag === 1) {
+          normalTags = normalTags.filter(item => item.dataSource !== 12)
+        }
         this.tags = normalTags
         this.actionTags = actionTags
         this.specialTags = specialTags

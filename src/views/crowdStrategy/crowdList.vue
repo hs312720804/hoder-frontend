@@ -553,7 +553,7 @@
       <el-table-column prop="crowdName" label="人群类型" width="100">
         <template slot-scope="scope">
           <!-- 12314 -->
-          <!-- {{ scope.row.isCrowdTagCrowd }} -->
+          <!-- 是否被使用了 -- {{ scope.row.isUsedAsTag }} -->
           <!-- 动态人群 -->
           <span v-if="scope.row.dynamicFlag===1">动态人群</span>
           <!-- 引用人群 -->
@@ -2933,7 +2933,8 @@ export default {
             this.divideAB(params, 'editABTest')
           } else if (params.dynamicFlag === 1) { // 编辑动态人群
             this.handleDynamicTest(params, 'editDynamicCrowd')
-          } else {
+          } else { 
+            // 编辑人群规则
             this.edit(params)
           }
           break

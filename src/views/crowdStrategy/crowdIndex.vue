@@ -16,6 +16,7 @@
     ></crowd-list>
     <crowd-add
       v-if="!isShowCrowdList && !isAbTest && mode === ''"
+      :crowd="crowd"
       :isDynamicPeople="isDynamicPeople"
       :crowdId="crowdId"
       :policyId="selectRow.policyId"
@@ -23,10 +24,13 @@
       @goBackCrowdListPage="goBackCrowdListPage"
     >
     </crowd-add>
+
+    <!-- 编辑AB人群 -->
     <div v-if="!isShowCrowdList && isAbTest && mode === 'editABTest'">
       <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
           <crowd-add
+            :crowd="crowd"
             :crowdId="crowdId"
             :policyId="selectRow.policyId"
             :limitLaunchDisabled="effectCrowd"
@@ -95,6 +99,7 @@
       <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
           <crowd-add
+            :crowd="crowd"
             :crowdId="crowdId"
             :policyId="selectRow.policyId"
             :limitLaunchDisabled="effectCrowd"
@@ -197,28 +202,14 @@ export default {
     getBigCrowdId (crowdId) {
       this.bigCrowdId = crowdId
     },
-    // editDynamicPeopleSetting (row) {
-    //   console.log('this.selectRow===', this.selectRow)
-    //   this.isShowCrowdList = false
-    //   this.mode = 'step2'
-    //   this.crowdId = row.crowdId
-    //   this.policyId = row.policyId
-    //   this.policyName = row.policyName
-    // },
-    // editDynamicPeopleConditions  (row) {
-    //   console.log('this.selectRow===', this.selectRow)
-    //   this.isShowCrowdList = false
-    //   this.mode = 'step3'
-    //   this.crowdId = row.crowdId
-    //   this.policyId = row.policyId
-    //   this.policyName = row.policyName
-    // },
     goBackFirstLayer () {
       // 回到第一层页面，即策略列表页
       this.$emit('goBack')
     },
 
+    // 新增、编辑人群
     addCrowd (row) {
+      this.crowd = row
       const tableData = this.$refs.list.tableData
       if (tableData.length > 49) {
         return this.$message.warning('策略下人群数量已达最大值')
@@ -238,17 +229,8 @@ export default {
         this.effectCrowd = false
       }
     },
-    // 添加动态人群
-    // addDynamicCrowd () {
-    //   this.isShowCrowdList = false
-    //   this.mode = 'isAddDynamicCrowd'
-    // },
-
-    goBackCrowdListPage (isLoadData) {
-      this.isShowCrowdList = true
-      if (isLoadData) this.$refs.list.loadData()
-    },
-    // 编辑abtest人群
+   
+    // 编辑 abtest 人群
     editABCrowd (row, mode) {
       this.crowd = row
       this.isShowCrowdList = false
@@ -258,8 +240,9 @@ export default {
       // 当策略在投放中且在有效期内，或已经是ab划分的主人群，人群限制投放不可编辑
       this.effectCrowd = ((this.selectRow.useStatus === '投放中' && row.apiStatus == 2) || this.isAbTest)
     },
-    // 添加动态人群
+    // 添加/编辑 动态人群
     handleDynamicTest (row, mode, defaultSetingObj) {
+      this.crowd = row
       this.isShowCrowdList = false
       this.mode = mode
       this.crowdId = row.crowdId
@@ -270,14 +253,38 @@ export default {
       this.initActiveStep = defaultSetingObj ? defaultSetingObj.initActiveStep : 0
       this.dynamicGroupId = row.id || undefined
       // console.log('mode====', mode)
-    }
-
+    },
+    goBackCrowdListPage (isLoadData) {
+      this.isShowCrowdList = true
+      if (isLoadData) this.$refs.list.loadData()
+    },
     // 编辑动态人群
     // editDynamicCrowd (row) {
     //   this.isShowCrowdList = false
     //   this.bigCrowdId = row.crowdId // 大人群ID
     //   this.mode = 'editDynamicCrowd'
     // }
+    // editDynamicPeopleSetting (row) {
+    //   console.log('this.selectRow===', this.selectRow)
+    //   this.isShowCrowdList = false
+    //   this.mode = 'step2'
+    //   this.crowdId = row.crowdId
+    //   this.policyId = row.policyId
+    //   this.policyName = row.policyName
+    // },
+    // editDynamicPeopleConditions  (row) {
+    //   console.log('this.selectRow===', this.selectRow)
+    //   this.isShowCrowdList = false
+    //   this.mode = 'step3'
+    //   this.crowdId = row.crowdId
+    //   this.policyId = row.policyId
+    //   this.policyName = row.policyName
+    // },
+    // 添加动态人群
+    // addDynamicCrowd () {
+    //   this.isShowCrowdList = false
+    //   this.mode = 'isAddDynamicCrowd'
+    // },
 
   },
   components: {
