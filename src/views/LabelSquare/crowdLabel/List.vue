@@ -78,7 +78,7 @@
             {{ scope.row.dmpCrowdId }}
           </template> -->
         </el-table-column>
-        <el-table-column label="所属策略名">
+        <el-table-column label="所属策略名" prop="policyName">
           <!-- <template slot-scope="scope">
             {{ scope.row.history.version }}
           </template> -->

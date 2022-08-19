@@ -1467,6 +1467,11 @@
         <el-button @click="shenCeDialog = false">取消</el-button>
       </span>
     </el-dialog>
+
+    <!-- 流转链路分析 -->
+    <el-dialog title="流转链路分析" :visible.sync="showFlowLinkAnalysisDialog" :fullscreen="true">
+      <LinkAnalysis :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName"></LinkAnalysis>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1477,6 +1482,7 @@ import crowdStatusResource from './CrowdStatusResource'
 import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
 import viewEffectDialog from '../launch/viewEffectDialog'
+import LinkAnalysis from './LinkAnalysis/Index'
 
 export default {
   components: {
@@ -1485,10 +1491,15 @@ export default {
     crowdStatusResource,
     CommitHistoryDialog,
     numOrTextEdit,
-    viewEffectDialog
+    viewEffectDialog,
+    LinkAnalysis
   },
   data () {
     return {
+      analysisTableData: [],
+      showFlowLinkAnalysisDialog: false,
+      linkProps: {},
+      linkPropsName: {},
       shenCeForm: {
         dateRange: [],
         crowdId: ''
@@ -1769,9 +1780,10 @@ export default {
           {
             label: '操作',
             // fixed: 'right',
-            // width: '100',
+            width: '150',
             render: this.$c_utils.component.createOperationRender(this, {
-              handleEditDynamic2GroupList: '编辑'
+              handleEditDynamic2GroupList: '编辑',
+              handleFlowLinkAnalysis: '流转链路分析'
             })
           }
         ],
@@ -1834,6 +1846,159 @@ export default {
     // }
   },
   methods: {
+    //流转链路分析
+    handleFlowLinkAnalysis ({row}) {
+      const parmas = {
+        crowdIds: '11679, 11680',
+        dynamicRuleIds: '77',
+        startDate: '2022-07-30',
+        endDate: '2022-08-07'
+      }
+      const data = [{
+        arup: 59.48,
+        payUv: 964,
+        path: 11679,
+        price: 57334.00,
+        payRate: 0.01,
+        dynamicRuleName: '分组1',
+        child: [{
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          nowCrowdName: '方案1',
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-3',
+              }
+          ]
+        }, {
+          nowCrowdName: '方案2',
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131
+        }],
+        
+      }]
+
+      
+
+      this.linkProps = {
+        // name: 'dynamicRuleName',
+        children: 'child'
+      }
+      
+      this.linkPropsName = {
+        path: '路径',
+        payUv: '设备量',
+        arup: '客单价',
+        fatherPath: '父路径',
+        price: '付费总金额',
+        payRate: '付费率',
+        hitUv: '命中量',
+        // dynamicRuleName: '分组名称',
+        // nowCrowdName: '人群名称'
+        ratio: '比例',
+        level: '层级'
+      }
+      // this.$service.getCrowdFlowPath(parmas).then(res => {
+        //   this.showFlowLinkAnalysisDialog = true
+        // const data = res
+        this.showFlowLinkAnalysisDialog = true
+        this.analysisTableData = this.constructLinkData(data, 0)
+
+        console.log('this.analysisTableData====', this.analysisTableData)
+      // })
+
+    },
+    // 递归处理路径分析
+    constructLinkData(data, zLevel) {
+      const childLevel = zLevel + 1 // child 的层级加1
+      if (!data || data.length === 0) {
+        return [] 
+      }
+      let len = data ? data.length : 0
+      return data.map(item => {
+        let obj = {}
+
+        // 第一级 什么都不变
+        if (zLevel === 0) {
+          return {
+            name: item.dynamicRuleName,
+            child: this.constructLinkData(item.child, childLevel),
+            ratio: 100, // 等分比例
+            level: zLevel
+          }
+        }
+        // 往他的 child 插入一条已转化对象
+        else if (item.payUv > 0 && (item.name || item.dynamicRuleName || item.nowCrowdName)) {
+          // len = len + 1
+          const zhuanhuaObj = {
+            payUv: item.payUv,
+            payRate: item.payRate,
+            arup: item.arup,
+            price: item.price,
+            ratio: 1 / len * 100 // 等分比例
+          }
+          // obj.child = []
+          const child = item.child && item.child.length > 0 ? item.child : []
+          child.unshift(zhuanhuaObj)
+          
+          obj = {
+            name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
+            child: this.constructLinkData(child, childLevel),
+            payUv: item.payUv,
+            // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
+            ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            level: zLevel
+          }
+
+        } else {   // 没有完全转化的
+          obj = {
+            name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
+            payUv: item.payUv > 0 ? item.payUv : undefined,
+            payRate: item.payRate ? item.payRate : undefined,
+            arup: item.arup ? item.arup : undefined,
+            price: item.price ? item.price : undefined,
+            ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            level: zLevel
+          }
+        }
+        return obj
+      })
+    },
+
+
     handleEditDynamic2GroupList({row}) {
       // const crowdId = row.crowdId
       // console.log(...arguments)

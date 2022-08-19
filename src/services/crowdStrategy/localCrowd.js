@@ -84,3 +84,11 @@ export function sensorHitData (params) {
     isReturnAllInfor: true
   })
 }
+// 查询分组内人群流转路径效果接口
+export function getCrowdFlowPath (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/crowdFlowPath',
+    params
+  })
+}
