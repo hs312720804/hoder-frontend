@@ -51,6 +51,9 @@
             <el-button type="text" @click="handleEdit(scope.row)">
               编辑
             </el-button>
+            <el-button type="text" @click="handleRefresh(scope.row)">
+              更新模型
+            </el-button>
             <el-button type="text" @click="handleDelete(scope.row)">
               删除
             </el-button>
@@ -129,6 +132,9 @@ export default {
     handleSeeTagCategoryDetail (row) {
       this.tagId = row.id
       this.currentRow = row
+    },
+    handleRefresh(row) {
+      this.$service.updateModelTag({modelTagId: row.id}, '更新成功')
     },
     handleDelete (row) {
       this.$emit('delete', row.id)

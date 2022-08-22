@@ -287,3 +287,12 @@ export function getModelTag (params) {
     params
   })
 }
+
+// 标签广场 - 模型标签 - 更新模型
+export function updateModelTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/modelTag/updateModelTag',
+    params
+  })
+}

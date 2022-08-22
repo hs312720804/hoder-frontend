@@ -21,6 +21,9 @@
       </el-date-picker>
           <!-- :picker-options="pickerOptions" -->
     </el-form-item>
+    <el-form-item style="margin-left: 15px;">
+      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">    清除缓存 </el-checkbox>
+    </el-form-item>
     <br/>
     <el-form-item label="业务范围:" prop="sourceNameList" style="max-width: 70%; white-space: nowrap;">
       <!-- <el-checkbox-group v-model="formInline.sourceNameList">
@@ -259,7 +262,8 @@ export default {
         crowdId: '',
         sourceNameList: [],
         // timeRange: ['2022-07-18', '2022-07-19']
-        timeRange: []
+        timeRange: [],
+        isDelCache: 0
       },
       rules: {
         crowdId: [
@@ -322,7 +326,6 @@ export default {
       // policyId: 4323
     }
   },
-
   mounted () {
     // const data = [
     //   { value: 1048, name: '电视剧' },
@@ -493,6 +496,7 @@ export default {
         sourceNameList: this.formInline.sourceNameList.join(','),
         startDate: this.formInline.timeRange[0],
         endDate: this.formInline.timeRange[1],
+        isDelCache: this.formInline.isDelCache,
         sourceName: sourceName || ''
       }
 
@@ -524,10 +528,10 @@ export default {
             this.emptyTxt = '数据正在分析中，请稍后重试'
             this.allChartData = {}
           }
+        }).catch(e => {
+          this.loading = false
         })
-      }).catch(() => {
-        // console.log('err--------------->', err)
-        // this.allChartData = {}
+      }).catch(e => {
         this.loading = false
       })
     },
@@ -763,33 +767,7 @@ export default {
 
       this.allCharts[element] = myChart
     },
-    getAAA (sourceName) {
-      const params = {
-        crowdId: 10013,
-        sourceNameList: '影视VIP,奇异果VIP,4K花园',
-        startDate: '2022-07-18',
-        endDate: '2022-07-19',
-        sourceName
-      }
-
-      // })
-      // const params = {
-      //   crowdId: this.crowdId,
-      //   startDate: this.timeRange[0],
-      //   endDate: this.timeRange[1]
-      // }
-
-      // const params = {
-      //   crowdId: 3219,
-      //   startDate: '2022-05-11',
-      //   endDate: '2022-06-10'
-      // }
-
-      // 获取所有图表数据
-      this.$service.rightsInterestsOutcome(params).then(res => {
-
-      })
-    },
+ 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
       // console.log('setBarEchart======111>>>', this.$refs)

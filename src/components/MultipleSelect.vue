@@ -1048,6 +1048,25 @@ export default {
         })
         return
       }
+
+      // 判断复合人群下人群标签不可超过 30 个
+      const num = this.rulesJson.rules.reduce((num, item, index) => {
+        item.rules.forEach((obj) => {
+          if (obj.dataSource === 12) {
+            num++
+          }
+        })
+        return num
+      }, 0)
+      console.log('复合人群下使用人群标签數量-->', num)
+      if (num >= 30) {
+         this.$message({
+          type: 'error',
+          message: '复合人群下使用人群标签不可超过 30 个'
+        })
+        return
+      }
+
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
@@ -1105,13 +1124,32 @@ export default {
       })
     },
     handleAddChildRule (rule, tag) {
-      if (rule.rules.length > 50) {
+      if (rule.rules.length >= 50) {
         this.$message({
           type: 'error',
           message: '已达最大数量'
         })
         return
       }
+
+      // 判断复合人群下人群标签不可超过 30 个
+      const num = this.rulesJson.rules.reduce((num, item, index) => {
+        item.rules.forEach((obj) => {
+          if (obj.dataSource === 12) {
+            num++
+          }
+        })
+        return num
+      }, 0)
+      console.log('复合人群下使用人群标签數量-->', num)
+      if (num >= 30) {
+         this.$message({
+          type: 'error',
+          message: '复合人群下使用人群标签不可超过 30 个'
+        })
+        return
+      }
+
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) {
           this.fetchTagSuggestions(tag.tagId)
@@ -1154,7 +1192,7 @@ export default {
       })
     },
     handleAddSpecialRule (tag) {
-      if (this.dynamicPolicyJson.rules.length > 50) {
+      if (this.dynamicPolicyJson.rules.length >= 50) {
         this.$message.warning('已达最大数量')
         return
       }

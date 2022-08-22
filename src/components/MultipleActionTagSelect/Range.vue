@@ -243,13 +243,13 @@ export default {
      getPickerOptions (tagCode) {
       if (tagCode === 'BAV0003') { // 【购买行为】
         // return this.pickerOptions720  // 可选两年内的周期
-        return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来1个月】 的周期内，开始和结束不超 【2年】
+        return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来30天】 的周期内，最大跨度 【720天】；
       } else if (tagCode === 'BAV0008') { // 【起播行为】
-        return this.pickerOptionsDayinRange(90, 180)  // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【3个月】
+        return this.pickerOptionsDayinRange(90, 180)  // 可选在 【过去6个月 + 未来30天】 的周期内，最大跨度【90天】；
       } else if (tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015' ) { // 【续费包签约状态】 、【连续包签约-续费-解约次数】、【下单未支付】
-        return this.pickerOptionsDayinRange20211226(30)  // 数据最早时间：【2021-12-26】，连续查询最大跨度：【30天】
+        return this.pickerOptionsDayinRange20211226(30)  // 数据最早时间：【2021-12-26】，数据最晚时间：【未来30天】，最大跨度：【30天】；
       } else { // 其他
-        return this.pickerOptionsDayinRange(30, 180) // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【1个月】
+        return this.pickerOptionsDayinRange(30, 180) // 可选在 【过去6个月 + 未来30天】 的周期内，最大跨度 【30天】；
       }
     },
     pickerOptionsDayinRange20211226 (day) {
@@ -272,7 +272,6 @@ export default {
         disabledDate: (time) => {
           // const day1 = range * 24 * 3600 * 1000 
           // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          // let date = new Date("2021-12-26");
           let maxTime = Date.now() + 30 * 24 * 3600 * 1000
           let minTime = +new Date("2021-12-25");
 
