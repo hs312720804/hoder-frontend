@@ -1848,68 +1848,67 @@ export default {
   methods: {
     //流转链路分析
     handleFlowLinkAnalysis ({row}) {
+      console.log('row------------', row)
       const parmas = {
-        crowdIds: '11679, 11680',
-        dynamicRuleIds: '77',
-        startDate: '2022-07-30',
-        endDate: '2022-08-07'
+        dynamicRuleId: row.id, // 分组 ID
+        // dynamicRuleId: 77, // 分组 ID
       }
-      const data = [{
-        arup: 59.48,
-        payUv: 964,
-        path: 11679,
-        price: 57334.00,
-        payRate: 0.01,
-        dynamicRuleName: '分组1',
-        child: [{
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          nowCrowdName: '方案1',
-          child: [
-              {
-                arup: 0.00,
-                payUv: 0,
-                path: "11679_11680_11679",
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-1',
-              }, {
-                arup: 0.00,
-                payUv: 0,
-                path: '11679_11680_11679',
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-2',
-              }, {
-                arup: 0.00,
-                payUv: 0,
-                path: '11679_11680_11679',
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-3',
-              }
-          ]
-        }, {
-          nowCrowdName: '方案2',
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131
-        }],
+      // const data = [{
+      //   arup: 59.48,
+      //   payUv: 964,
+      //   path: 11679,
+      //   price: 57334.00,
+      //   payRate: 0.01,
+      //   dynamicRuleName: '分组1',
+      //   child: [{
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     nowCrowdName: '方案1',
+      //     child: [
+      //         {
+      //           arup: 0.00,
+      //           payUv: 0,
+      //           path: "11679_11680_11679",
+      //           price: 0.00,
+      //           payRate: 0.00,
+      //           child: [],
+      //           hitUv: 571,
+      //           nowCrowdName: '方案1-1',
+      //         }, {
+      //           arup: 0.00,
+      //           payUv: 0,
+      //           path: '11679_11680_11679',
+      //           price: 0.00,
+      //           payRate: 0.00,
+      //           child: [],
+      //           hitUv: 571,
+      //           nowCrowdName: '方案1-2',
+      //         }, {
+      //           arup: 0.00,
+      //           payUv: 0,
+      //           path: '11679_11680_11679',
+      //           price: 0.00,
+      //           payRate: 0.00,
+      //           child: [],
+      //           hitUv: 571,
+      //           nowCrowdName: '方案1-3',
+      //         }
+      //     ]
+      //   }, {
+      //     nowCrowdName: '方案2',
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131
+      //   }],
         
-      }]
+      // }]
 
       
 
@@ -1920,25 +1919,28 @@ export default {
       
       this.linkPropsName = {
         path: '路径',
-        payUv: '设备量',
+        payUv: '转化设备量',
         arup: '客单价',
         fatherPath: '父路径',
         price: '付费总金额',
         payRate: '付费率',
-        hitUv: '命中量',
+        hitUv: '设备量',
+        totalHitUv: '总命中设备量'
         // dynamicRuleName: '分组名称',
         // nowCrowdName: '人群名称'
-        ratio: '比例',
-        level: '层级'
+        // ratio: '比例',
+        // level: '层级',
       }
-      // this.$service.getCrowdFlowPath(parmas).then(res => {
+      this.$service.getCrowdFlowPath(parmas).then(res => {
         //   this.showFlowLinkAnalysisDialog = true
-        // const data = res
+        const data = [res]
+        console.log('res====>', res)
+
         this.showFlowLinkAnalysisDialog = true
         this.analysisTableData = this.constructLinkData(data, 0)
 
         console.log('this.analysisTableData====', this.analysisTableData)
-      // })
+      })
 
     },
     // 递归处理路径分析
@@ -1955,20 +1957,20 @@ export default {
         if (zLevel === 0) {
           return {
             name: item.dynamicRuleName,
+            totalHitUv: this.cc_format_number(item.hitUv),
             child: this.constructLinkData(item.child, childLevel),
             ratio: 100, // 等分比例
             level: zLevel
           }
         }
         // 往他的 child 插入一条已转化对象
-        else if (item.payUv > 0 && (item.name || item.dynamicRuleName || item.nowCrowdName)) {
+        else if ((item.name || item.dynamicRuleName || item.nowCrowdName) && item.payUv > 0) {
           // len = len + 1
           const zhuanhuaObj = {
-            payUv: item.payUv,
-            payRate: item.payRate,
-            arup: item.arup,
-            price: item.price,
-            ratio: 1 / len * 100 // 等分比例
+            payUv: this.cc_format_number(item.payUv),
+            payRate: this.toPercent(item.payRate),
+            arup: this.cc_format_number(item.arup),
+            price: this.cc_format_number(item.price),
           }
           // obj.child = []
           const child = item.child && item.child.length > 0 ? item.child : []
@@ -1977,19 +1979,20 @@ export default {
           obj = {
             name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
             child: this.constructLinkData(child, childLevel),
-            payUv: item.payUv,
+            hitUv: this.cc_format_number(item.hitUv),
             // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
             ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
             level: zLevel
           }
 
-        } else {   // 没有完全转化的
+        } else {   // 完全转化的块， 或者 payUv 为 0 的块
           obj = {
             name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
             payUv: item.payUv > 0 ? item.payUv : undefined,
             payRate: item.payRate ? item.payRate : undefined,
             arup: item.arup ? item.arup : undefined,
             price: item.price ? item.price : undefined,
+            hitUv: item.hitUv,
             ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
             level: zLevel
           }
@@ -1998,7 +2001,11 @@ export default {
       })
     },
 
-
+    toPercent (point) {
+      var str = Number(point * 100).toFixed(2)
+      str += '%'
+      return str
+    },
     handleEditDynamic2GroupList({row}) {
       // const crowdId = row.crowdId
       // console.log(...arguments)

@@ -91,6 +91,11 @@ export default {
   justify-content: center;
   flex-direction: column;
   // align-items: center;
+  text-align: center;
+  font-size 14px
+  div {
+    margin-bottom 8px
+  }
 }
 .level_children_box{
   

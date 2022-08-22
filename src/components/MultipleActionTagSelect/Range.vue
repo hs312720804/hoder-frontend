@@ -246,8 +246,44 @@ export default {
         return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来1个月】 的周期内，开始和结束不超 【2年】
       } else if (tagCode === 'BAV0008') { // 【起播行为】
         return this.pickerOptionsDayinRange(90, 180)  // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【3个月】
+      } else if (tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015' ) { // 【续费包签约状态】 、【连续包签约-续费-解约次数】、【下单未支付】
+        return this.pickerOptionsDayinRange20211226(30)  // 数据最早时间：【2021-12-26】，连续查询最大跨度：【30天】
       } else { // 其他
         return this.pickerOptionsDayinRange(30, 180) // 可选在 【过去6个月 + 未来1个月】 的周期内，开始和结束不超 【1个月】
+      }
+    },
+    pickerOptionsDayinRange20211226 (day) {
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          // const day1 = range * 24 * 3600 * 1000 
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          // let date = new Date("2021-12-26");
+          let maxTime = Date.now() + 30 * 24 * 3600 * 1000
+          let minTime = +new Date("2021-12-25");
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
+        }
       }
     },
     pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
