@@ -134,7 +134,19 @@ export default {
       this.currentRow = row
     },
     handleRefresh(row) {
-      this.$service.updateModelTag({modelTagId: row.id}, '更新成功')
+      this.$confirm(`是否确认更新模型标签: ${row.tagName}?`, '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.updateModelTag({ modelTagId: row.id }, '更新成功')
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消更新'
+        })      
+      })
+      
     },
     handleDelete (row) {
       this.$emit('delete', row.id)
