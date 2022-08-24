@@ -1458,7 +1458,7 @@
             start-placeholder="开始日期"
             end-placeholder="结束日期"
             value-format="yyyy-MM-dd"
-            :picker-options="pickerShenCeOptionsDayinRange(30, 180)"
+            :picker-options="pickerShenCeOptionsDayinRange(30, currentCrowd.launchTime)"
             >
           </el-date-picker>
         </el-form-item>
@@ -1791,7 +1791,8 @@ export default {
         ],
         data: []
       },
-      showViewEffect: false
+      showViewEffect: false,
+      currentCrowd: {}
 
     }
   },
@@ -1848,7 +1849,7 @@ export default {
     // }
   },
   methods: {
-    pickerShenCeOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
+    pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
       let _minTime = null
       let _maxTime = null
 
@@ -1865,9 +1866,14 @@ export default {
           }
         },
         disabledDate: (time) => {
-          const day1 = range * 24 * 3600 * 1000 
           let maxTime = Date.now()
+          const day1 = 180 * 24 * 3600 * 1000 
           let minTime = Date.now() - day1
+
+          if (startTime) {  
+            minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000 
+          }
+          
 
           // onPick后触发
           // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
@@ -1883,8 +1889,8 @@ export default {
     handleFlowLinkAnalysis ({row}) {
       console.log('row------------', row)
       const parmas = {
-        dynamicRuleId: row.id, // 分组 ID
-        // dynamicRuleId: 77, // 分组 ID
+        // dynamicRuleId: row.id, // 分组 ID
+        dynamicRuleId: 77, // 分组 ID
       }
       // const data = [{
       //   arup: 59.48,
@@ -1957,11 +1963,11 @@ export default {
         fatherPath: '父路径',
         price: '付费总金额',
         payRate: '付费率',
-        hitUv: '设备量',
-        totalHitUv: '总命中设备量'
+        hitUv: '流入设备量',
+        totalHitUv: '总流入设备量',
         // dynamicRuleName: '分组名称',
         // nowCrowdName: '人群名称'
-        // ratio: '比例',
+        ratio: '比例',
         // level: '层级',
       }
       this.$service.getCrowdFlowPath(parmas).then(res => {
@@ -2004,6 +2010,8 @@ export default {
             payRate: this.toPercent(item.payRate),
             arup: this.cc_format_number(item.arup),
             price: this.cc_format_number(item.price),
+            path: item.path,
+            ratio: item.payRate * 100 // 比例
           }
           // obj.child = []
           const child = item.child && item.child.length > 0 ? item.child : []
@@ -2013,8 +2021,9 @@ export default {
             name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
             child: this.constructLinkData(child, childLevel),
             hitUv: this.cc_format_number(item.hitUv),
+            path: item.path,
             // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
-            ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            ratio: item.hitRate * 100, // 比例
             level: zLevel
           }
 
@@ -2026,7 +2035,9 @@ export default {
             arup: item.arup ? item.arup : undefined,
             price: item.price ? item.price : undefined,
             hitUv: item.hitUv,
-            ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            path: item.path,
+            // ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            ratio: item.ratio ? item.ratio : item.hitRate * 100, // 比例
             level: zLevel
           }
         }
@@ -3164,6 +3175,7 @@ export default {
       }
     },
     handleShenCeAnalysis(row) {
+      this.currentCrowd = row
       this.shenCeForm.crowdId = row.crowdId
       this.shenCeDialog = true
     },

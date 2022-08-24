@@ -70,15 +70,21 @@ export default {
 .wrap{
   flex-shrink: 0; 
   height: 100%
+  display: flex;
+  flex-direction: column;
 }
 .level_parent_box{
   display: flex;
+  overflow: hidden
+  flex: 1;
   // flex-wrap: wrap;
   // width: 100%;
+  // position absolute
   // justify-content: space-between;
 }
 .level_parent_title{
   width: 200px;
+  height 100%
   // min-height 70px;
   // display: flex;
   // justify-content: center;

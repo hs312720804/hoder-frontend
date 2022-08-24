@@ -10,7 +10,7 @@
 import tree from './tree.vue'
 import myMinix from './minix';
 export default {
-  mixins: [myMinix], // todo.vue 中声明minix 进行混合
+  mixins: [myMinix], // todo.vue 中声明 minix 进行混合
    components: {
     tree: tree
    },
@@ -304,9 +304,10 @@ export default {
 }
 
 .avatar {
-  width: 600px;
+  display: inline-block;
+  // width: 10px;
   height: 600px;
-  background-color: pink;
+  // background-color: pink;
   left: 50px;
   top: 50px;
   transform: translate(100px, 100px);
