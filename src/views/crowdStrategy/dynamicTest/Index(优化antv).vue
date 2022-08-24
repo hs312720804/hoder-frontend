@@ -4,9 +4,9 @@
         <div class="header">
           <!-- 动态人群 -->
           <el-steps :active="activeStep" finish-status="success" simple>
-              <el-step title="第一步：动态方案配置" icon="el-icon-edit"></el-step>
-              <el-step title="第二步：流转方案配置" icon="el-icon-edit"></el-step>
-              <el-step title="第三步：填写实验有效期" icon="el-icon-edit"></el-step>
+            <el-step title="第一步：动态方案配置" icon="el-icon-edit"></el-step>
+            <el-step title="第二步：流转方案配置" icon="el-icon-edit"></el-step>
+            <el-step title="第三步：填写实验有效期" icon="el-icon-edit"></el-step>
           </el-steps>
 
         </div>
