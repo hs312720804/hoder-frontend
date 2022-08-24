@@ -24,11 +24,18 @@
             </div>
           </div>
 
-          <div>
+          <div style="overflow: auto">
             <div>{{ item1.name }} </div>
             <div v-for="(value, key) in item1">
               <span v-if="(typeof value === 'string' || typeof value === 'number') && linkPropsName[key]" >
                 {{ linkPropsName[key] }} : {{ value }}
+                <el-tooltip class="item" effect="dark" placement="top-start" v-if="linkPropsNameTip[key]">
+                  <div slot="content">
+                   {{ linkPropsNameTip[key] }}
+                  </div>
+                  <i class="el-icon-question" style="width: 20px; height: 20px; z-index: 99; color: gray"></i>
+                  <!-- <el-button type="text">提示</el-button> -->
+                </el-tooltip>
               </span>
             </div>
           </div>
@@ -42,7 +49,7 @@
       <!-- 子级 -->
       <div class="level_children_box" v-if="item1[linkProps['children']]">
       <!-- 1231414 -->
-        <tree :treeData="item1[linkProps['children']]" :linkProps="linkProps" :linkPropsName="linkPropsName"></tree>
+        <tree :treeData="item1[linkProps['children']]" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></tree>
       </div>
     </div>
   </div>
@@ -57,7 +64,7 @@ export default {
     return {
     }
   },
-  props: ['treeData', 'linkProps', 'linkPropsName'],
+  props: ['treeData', 'linkProps', 'linkPropsName', 'linkPropsNameTip'],
   mounted() {
   },
   methods: {

@@ -52,10 +52,10 @@ const customNode = {
   init () {
     G6.registerNode('customNode', {
       draw (cfg, group) {
-        let size = cfg.size
-        if (!size) {
-          size = [170, 34]
-        }
+        // let size = cfg.size
+        // if (!size) {
+        let size = [230, 45]
+        // }
         // 此处必须是NUMBER 不然bbox不正常1
         const width = parseInt(size[0])
         const height = parseInt(size[1])
@@ -73,7 +73,7 @@ const customNode = {
             height: height,
             stroke: '#ced4d9',
             fill: '#fff', // 此处必须有fill 不然不能触发事件
-            radius: 4
+            radius: 20
           }
         })
         // ---------------------------------------------
@@ -184,7 +184,7 @@ const customNode = {
         if (cfg.mainType === 5) { // 选择了【智能】算法
           const innerCircle3 = group.addShape('text', {
             attrs: {
-              x: -130,
+              x: -(width / 2 + 50),
               y: offsetY + height / 2,
               // textAlign: 'center',
               textBaseline: 'middle',
@@ -212,13 +212,24 @@ const customNode = {
           attrs: {
             x: offsetX,
             y: offsetY,
-            width: 4,
+            width: 45,
             height: height,
             fill: color,
             parent: mainId,
-            radius: [4, 0, 0, 4]
+            radius: [20, 0, 0, 20]
           }
         })
+        group.addShape('image', {
+          attrs: {
+            x: offsetX + 8,
+            y: offsetY + 5,
+            width: 30,
+            height: 30,
+            // img:'https://g.alicdn.com/cm-design/arms-trace/1.0.155/styles/armsTrace/images/TAIR.png',
+            // img: require('@/assets/img/people2.png'),
+            img: require('@/assets/img/group-people.png'),
+          }
+        });
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + 16,

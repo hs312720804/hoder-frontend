@@ -321,8 +321,8 @@ export default {
           // const y = obj.event.y - 80 + 'px'
           // const x = selectNode.x - 80 + 'px'
           // const y = selectNode.y + 30 + 'px'
-          const x = obj.event.clientX - 250 + 'px'
-          const y = obj.event.clientY - 350 + 'px'
+          const x = obj.event.clientX - 100 + 'px'
+          const y = obj.event.clientY - 160 + 'px'
           _this.positionStyle = { top: y, left: x }
         })
       })

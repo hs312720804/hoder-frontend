@@ -1,7 +1,7 @@
 <template>
 <div class="box" >
   <div class="avatar">
-    <tree :treeData="tableData" :linkProps="linkProps" :linkPropsName="linkPropsName"></tree>
+    <tree :treeData="tableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></tree>
   </div>
 </div>
 </template>
@@ -24,6 +24,10 @@ export default {
       default: () => {}
     },
     linkPropsName: {
+      type: Object,
+      default: () => {}
+    },
+    linkPropsNameTip: {
       type: Object,
       default: () => {}
     },

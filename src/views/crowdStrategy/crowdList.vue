@@ -1472,7 +1472,7 @@
 
     <!-- 流转链路分析 -->
     <el-dialog title="流转链路分析" :visible.sync="showFlowLinkAnalysisDialog" :fullscreen="true">
-      <LinkAnalysis :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName"></LinkAnalysis>
+      <LinkAnalysis :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></LinkAnalysis>
     </el-dialog>
   </div>
 </template>
@@ -1502,6 +1502,7 @@ export default {
       showFlowLinkAnalysisDialog: false,
       linkProps: {},
       linkPropsName: {},
+      linkPropsNameTip: {},
       shenCeForm: {
         dateRange: [],
         crowdId: ''
@@ -1962,13 +1963,22 @@ export default {
         arup: '客单价',
         fatherPath: '父路径',
         price: '付费总金额',
-        payRate: '付费率',
+        payRate: '转化率',
         hitUv: '流入设备量',
         totalHitUv: '总流入设备量',
+        ratio: '比例',
         // dynamicRuleName: '分组名称',
         // nowCrowdName: '人群名称'
-        ratio: '比例',
         // level: '层级',
+      }
+      this.linkPropsNameTip = {
+        payUv: '当前路径中付费的用户量',
+        arup: '付费总金额/转化设备量',
+        path: '用户在该组动态人群中流转的人群顺序',
+        price: '当前路径中付费的总金额',
+        payRate: '转化设备量/流入设备量',
+        hitUv: '人群命中量',
+        ratio: '当前路径流入设备量/父级路径流入设备量',
       }
       this.$service.getCrowdFlowPath(parmas).then(res => {
         //   this.showFlowLinkAnalysisDialog = true
@@ -2006,11 +2016,11 @@ export default {
         else if ((item.name || item.dynamicRuleName || item.nowCrowdName) && item.payUv > 0) {
           // len = len + 1
           const zhuanhuaObj = {
+            path: item.path,
             payUv: this.cc_format_number(item.payUv),
             payRate: this.toPercent(item.payRate),
             arup: this.cc_format_number(item.arup),
             price: this.cc_format_number(item.price),
-            path: item.path,
             ratio: item.payRate * 100 // 比例
           }
           // obj.child = []
@@ -2018,10 +2028,10 @@ export default {
           child.unshift(zhuanhuaObj)
           
           obj = {
+            path: item.path,
             name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
             child: this.constructLinkData(child, childLevel),
             hitUv: this.cc_format_number(item.hitUv),
-            path: item.path,
             // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
             ratio: item.hitRate * 100, // 比例
             level: zLevel
@@ -2029,13 +2039,13 @@ export default {
 
         } else {   // 完全转化的块， 或者 payUv 为 0 的块
           obj = {
+            path: item.path,
             name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
             payUv: item.payUv > 0 ? item.payUv : undefined,
             payRate: item.payRate ? item.payRate : undefined,
             arup: item.arup ? item.arup : undefined,
             price: item.price ? item.price : undefined,
             hitUv: item.hitUv,
-            path: item.path,
             // ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
             ratio: item.ratio ? item.ratio : item.hitRate * 100, // 比例
             level: zLevel
