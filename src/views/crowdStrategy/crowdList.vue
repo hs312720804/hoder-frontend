@@ -1967,8 +1967,8 @@ export default {
         hitUv: '流入设备量',
         totalHitUv: '总流入设备量',
         ratio: '比例',
-        // dynamicRuleName: '分组名称',
-        // nowCrowdName: '人群名称'
+        dynamicRuleName: '分组名称',
+        nowCrowdName: '方案名称'
         // level: '层级',
       }
       this.linkPropsNameTip = {
@@ -2005,10 +2005,10 @@ export default {
         // 第一级 什么都不变
         if (zLevel === 0) {
           return {
-            name: item.dynamicRuleName,
+            dynamicRuleName: item.dynamicRuleName,
             totalHitUv: this.cc_format_number(item.hitUv),
             child: this.constructLinkData(item.child, childLevel),
-            ratio: 100, // 等分比例
+            ratio: '100%',
             level: zLevel
           }
         }
@@ -2021,33 +2021,33 @@ export default {
             payRate: this.toPercent(item.payRate),
             arup: this.cc_format_number(item.arup),
             price: this.cc_format_number(item.price),
-            ratio: item.payRate * 100 // 比例
           }
           // obj.child = []
           const child = item.child && item.child.length > 0 ? item.child : []
           child.unshift(zhuanhuaObj)
           
           obj = {
+            nowCrowdName: item.nowCrowdName,
             path: item.path,
-            name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
-            child: this.constructLinkData(child, childLevel),
+            ratio: this.toPercent(item.hitRate), // 比例
             hitUv: this.cc_format_number(item.hitUv),
             // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
-            ratio: item.hitRate * 100, // 比例
-            level: zLevel
+            level: zLevel,
+            child: this.constructLinkData(child, childLevel),
           }
 
         } else {   // 完全转化的块， 或者 payUv 为 0 的块
           obj = {
+            nowCrowdName: item.nowCrowdName,
             path: item.path,
-            name: zLevel === 0 ? item.dynamicRuleName : item.nowCrowdName,
+            ratio: item.ratio ? item.ratio : 
+              item.hitRate ? this.toPercent(item.hitRate) : undefined, // 比例
             payUv: item.payUv > 0 ? item.payUv : undefined,
             payRate: item.payRate ? item.payRate : undefined,
             arup: item.arup ? item.arup : undefined,
             price: item.price ? item.price : undefined,
             hitUv: item.hitUv,
             // ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
-            ratio: item.ratio ? item.ratio : item.hitRate * 100, // 比例
             level: zLevel
           }
         }

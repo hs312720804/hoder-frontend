@@ -17,7 +17,7 @@
           :crowdId:: {{ crowdId }}<br/>
         </div> -->
         <!-- 动态人群 -->
-        <div >
+        <div>
 
           <!-- 动态人群设置 -->
           <step1
