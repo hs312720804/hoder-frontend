@@ -3,8 +3,9 @@
     <div 
       class="level_parent_box" 
       v-for="(item1, index1) in treeData" :key="index1" 
-      :style="{ height: item1.ratio + '%' }"
+      :style="{ height: 100/treeData.length + '%' }"
     >
+    <!-- :style="{ height: item1.ratio + '%' }" -->
       <!--  -->
       <!-- 父级 -->
       <!-- <div class="level_parent_title" :class="'bg' + index1">{{ item1[linkProps['name']] }} -- {{ item1[linkProps['name']] }}</div> -->
@@ -24,7 +25,7 @@
             </div>
           </div>
 
-          <div style="overflow: auto">
+          <div>
             <div>{{ item1.name }} </div>
             <div v-for="(value, key) in item1">
               <span v-if="(typeof value === 'string' || typeof value === 'number') && linkPropsName[key]" >
@@ -82,7 +83,7 @@ export default {
 }
 .level_parent_box{
   display: flex;
-  overflow: hidden
+  // overflow: hidden
   flex: 1;
   // flex-wrap: wrap;
   // width: 100%;
@@ -106,6 +107,7 @@ export default {
   // align-items: center;
   text-align: center;
   font-size 14px
+  overflow auto
   div {
     margin-bottom 8px
   }
