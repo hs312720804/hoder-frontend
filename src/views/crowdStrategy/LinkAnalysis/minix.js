@@ -81,23 +81,34 @@ export default {
         let transX
         let transY
         // 放大的图片超出box时 图片最多拖动到与边框对齐
-        if (innerWidth * multiple > outerWidth || innerHeight * multiple > outerHeight) {
-            if (innerWidth * multiple > outerWidth && innerWidth * multiple > outerHeight) {
-                transX = Math.min(Math.max(moveX, outerWidth - innerWidth * (multiple + 1) / 2 - innerLeft), -innerLeft + innerWidth * (multiple - 1) / 2)
-                transY = Math.min(Math.max(moveY, outerHeight - innerHeight * (multiple + 1) / 2 - innerTop), -innerTop + innerHeight * (multiple - 1) / 2)
-            } else if (innerWidth * multiple > outerWidth && !(innerWidth * multiple > outerHeight)) {
-                transX = Math.min(Math.max(moveX, outerWidth - innerWidth * (multiple + 1) / 2 - innerLeft), -innerLeft + innerWidth * (multiple - 1) / 2)
-                transY = Math.max(Math.min(moveY, outerHeight - innerHeight * (multiple + 1) / 2 - innerTop), -innerTop + innerHeight * (multiple - 1) / 2)
-            } else if (!(innerWidth * multiple > outerWidth) && innerWidth * multiple > outerHeight) {
-                transX = Math.max(Math.min(moveX, outerWidth - innerWidth * (multiple + 1) / 2 - innerLeft), -innerLeft + innerWidth * (multiple - 1) / 2)
-                transY = Math.min(Math.max(moveY, outerHeight - innerHeight * (multiple + 1) / 2 - innerTop), -innerTop + innerHeight * (multiple - 1) / 2)
-            }
-        }
+        // if (innerWidth * multiple > outerWidth || innerHeight * multiple > outerHeight) {
+        //     if (innerWidth * multiple > outerWidth && innerWidth * multiple > outerHeight) {
+        //         transX = Math.min(Math.max(moveX, outerWidth - innerWidth * (multiple + 1) / 2 ), innerWidth * (multiple - 1) / 2)
+        //         transY = Math.min(Math.max(moveY, outerHeight - innerHeight * (multiple + 1) / 2), innerHeight * (multiple - 1) / 2)
+        //     } else if (innerWidth * multiple > outerWidth && !(innerWidth * multiple > outerHeight)) {
+        //         transX = Math.min(Math.max(moveX, outerWidth - innerWidth * (multiple + 1) / 2 ), innerWidth * (multiple - 1) / 2)
+        //         transY = Math.max(Math.min(moveY, outerHeight - innerHeight * (multiple + 1) / 2 ), innerHeight * (multiple - 1) / 2)
+        //     } else if (!(innerWidth * multiple > outerWidth) && innerWidth * multiple > outerHeight) {
+        //         transX = Math.max(Math.min(moveX, outerWidth - innerWidth * (multiple + 1) / 2 ), innerWidth * (multiple - 1) / 2)
+        //         transY = Math.min(Math.max(moveY, outerHeight - innerHeight * (multiple + 1) / 2), innerHeight * (multiple - 1) / 2)
+        //     }
+        // }
         // 图片小于box大小时 图片不能拖出边框
-        else {
-            transX = Math.max(Math.min(moveX, outerWidth - innerWidth * (multiple + 1) / 2 - innerLeft), -innerLeft + innerWidth * (multiple - 1) / 2)
-            transY = Math.max(Math.min(moveY, outerHeight - innerHeight * (multiple + 1) / 2 - innerTop), -innerTop + innerHeight * (multiple - 1) / 2)
-        }
+        // else {
+            console.log('bottom=====', outerHeight-50)
+            console.log('top=====', -innerHeight * (multiple)+50)
+            console.log('multiple=====', multiple)
+
+            // transX = Math.max(Math.min(moveX, outerWidth - innerWidth * (multiple + 1) / 2 ), innerWidth * (multiple - 1) / 2)
+            // transY = Math.max(Math.min(moveY, outerHeight - innerHeight * (multiple + 1) / 2 ), innerHeight * (multiple - 1) / 2)
+            // }
+
+        // transX = Math.max(Math.min(moveX, right), left)
+        // transY = Math.max(Math.min(moveY, bottom), top)
+        const limitDistance = 50
+        transX = Math.max(Math.min(moveX, outerWidth + (innerWidth * (multiple - 1) / 2) - limitDistance ), -innerWidth * (multiple + 1) / 2 + limitDistance)
+        transY = Math.max(Math.min(moveY, outerHeight + (innerHeight * (multiple - 1) / 2) - limitDistance ), -innerHeight * (multiple + 1) / 2 + limitDistance)
+
         return { transX, transY }
     }
 
