@@ -142,7 +142,7 @@ import CrowdAdd from './crowdAdd'
 import CrowdList from './crowdList.vue'
 import CrowdABAdd from './crowdAbTest'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
-import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
+// import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 import DynamicCrowdAdd from './dynamicCrowdAdd'
 import DynamicTest from './dynamicTest/Index'
 import LinkCrowd from './linkCrowd.vue'
@@ -292,7 +292,7 @@ export default {
     CrowdList,
     CrowdABAdd,
     DynamicPeopleSetting,
-    DynamicPeopleConditions,
+    // DynamicPeopleConditions,
     DynamicCrowdAdd,
     DynamicTest,
     LinkCrowd

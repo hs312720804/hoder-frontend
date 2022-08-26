@@ -184,7 +184,7 @@ import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
 import createConfigScheme from './createConfigScheme'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
-import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
+// import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
   name: 'index',
   components: {
@@ -194,7 +194,7 @@ export default {
     newCreatePolicy,
     createConfigScheme,
     DynamicPeopleSetting,
-    DynamicPeopleConditions
+    // DynamicPeopleConditions
   },
   props: {
     initPolicyId: {
