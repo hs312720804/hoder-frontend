@@ -98,8 +98,6 @@ export default {
   // justify-content: center;
   // align-items: center;
   background: #a6def5;
-  border-bottom: 1px solid rgb(255, 255, 255);
-  border-right: 5px solid rgb(255, 255, 255); 
   flex-shrink: 0;
   display: flex;
   justify-content: center;
@@ -108,6 +106,7 @@ export default {
   text-align: center;
   font-size 14px
   overflow auto
+  border: 2px solid #FFF;
   div {
     margin-bottom 8px
   }
