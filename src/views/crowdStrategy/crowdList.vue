@@ -1890,8 +1890,8 @@ export default {
     handleFlowLinkAnalysis ({row}) {
       console.log('row------------', row)
       const parmas = {
-        // dynamicRuleId: row.id, // 分组 ID
-        dynamicRuleId: 77, // 分组 ID
+        dynamicRuleId: row.id, // 分组 ID
+        // dynamicRuleId: 77, // 分组 ID
       }
       // const data = [{
       //   arup: 59.48,
