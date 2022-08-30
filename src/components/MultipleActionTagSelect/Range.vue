@@ -320,8 +320,10 @@ export default {
     getMaxDay (tagCode) { // 动态周期
       if (tagCode === 'BAV0003') { // 【购买行为】
         return 720
-      } else if (tagCode === 'BAV0008') { // 【起播行为】
+      } else if (tagCode === 'BAV0008' || tagCode === 'BAV0013') { // 【起播行为】 || 【续费包签约状态】
         return 90
+      } else if (tagCode === 'BAV0014') { // 【连续包签约-续费-解约次数】
+        return 180
       } else { // 其他
         return 30
       }
