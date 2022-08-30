@@ -550,6 +550,8 @@
               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
           </template>
       </el-table-column>
+      <!-- <el-table-column prop="launchTime" label="投放时间" width="200">
+      </el-table-column> -->
       <el-table-column prop="crowdName" label="人群类型" width="100">
         <template slot-scope="scope">
           <!-- 12314 -->
@@ -1868,11 +1870,12 @@ export default {
         },
         disabledDate: (time) => {
           let maxTime = Date.now()
-          const day1 = 180 * 24 * 3600 * 1000 
+          const day1 = 720 * 24 * 3600 * 1000 
           let minTime = Date.now() - day1
 
-          if (startTime) {  
-            minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000 
+          if (startTime) {
+            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000 
+            // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000 
           }
           
 
