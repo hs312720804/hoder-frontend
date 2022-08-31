@@ -79,20 +79,21 @@ export default {
   flex-shrink: 0; 
   height: 100%
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
 }
 .level_parent_box{
   display: flex;
   // overflow: hidden
   flex: 1;
+  flex-direction: column;
   // flex-wrap: wrap;
   // width: 100%;
   // position absolute
   // justify-content: space-between;
 }
 .level_parent_title{
-  width: 200px;
-  height 100%
+  width: 100%;
+  height 140px
   // min-height 70px;
   // display: flex;
   // justify-content: center;

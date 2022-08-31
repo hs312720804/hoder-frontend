@@ -1,6 +1,7 @@
 <!-- https://juejin.cn/post/6938439210453958692 -->
 <template>
 <div class="box" >
+  <div class="arrow-down"></div>
   <div class="avatar">
     <tree :treeData="tableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></tree>
   </div>
@@ -290,16 +291,8 @@ export default {
     }
   }
 .box {
-  // position: relative;
-  // margin: 50px auto;
-  // width: 100%;
-  // height: 100%;
-  // border: 2px solid red;
-  // overflow: hidden;
+  
   position: absolute;
-  /* margin: 50px auto; */
-  /* width: 100%; */
-  /* height: 100%; */
   border: 2px dashed #e4e5e3;
   overflow: hidden;
   top: 60px;
@@ -310,16 +303,38 @@ export default {
 
 .avatar {
   display: inline-block;
-  // width: 10px;
-  height: 1200px;
+  width: 85%;
+  // width: 1200px;
+  // height: 1200px;
   // background-color: pink;
-  left: 50px;
-  top: 50px;
-  transform: translate(100px, 100px);
+  // left: 50px;
+  // top: 50px;
+  transform: translate(100px, 20px);
 }
 
 .avatar img {
   width: 100%;
 }
+.arrow-down{
+  width: 0;
+  height: 0;
+  position: relative;
+  border: 20px solid; 
+  border-color: #979797 transparent transparent transparent;
+  top: calc(85vh);
+  left: 20px;
+  z-index: 1;
+  opacity: 0.5;
+}
+.arrow-down::before{
+  content: '';
+  position: absolute;
+  width: 10px;
+  height: calc(80vh);
+  background: #979797;
+  bottom: 18px;
+  left: -5px;
+}
+
 </style>
 
