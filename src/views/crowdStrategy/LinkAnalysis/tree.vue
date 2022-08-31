@@ -106,10 +106,10 @@ export default {
   // align-items: center;
   text-align: center;
   font-size 12px
-  overflow auto
   border: 2px solid #FFF;
   div {
     margin-bottom 3px
+    overflow auto
   }
 }
 .level_children_box{
