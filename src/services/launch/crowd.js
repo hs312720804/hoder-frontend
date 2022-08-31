@@ -367,3 +367,22 @@ export function fluctuationLaunch (params) {
     params
   })
 }
+// 动态人群命中链路查询接口
+export function dynamicCrowdHitLink (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamicCrowdHitLink/query',
+    data,
+    isJSON: true
+  })
+}
+
+// 动态人群命中链路查询接口
+export function hitDetail (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/policy/hitDetail',
+    data,
+    isJSON: true
+  })
+}

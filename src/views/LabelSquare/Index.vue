@@ -4,7 +4,7 @@
           v-model="activeName"
           @tab-click="handleTabChange"
         >
-            <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
+            <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
                 <el-input
                     v-model="searchVal"
                     placeholder="支持按标签名、Code、描述搜索"
@@ -12,7 +12,7 @@
                 >
                 </el-input>
                 <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-            </div>
+            </div> -->
 
             <el-tab-pane label="设备标签" name="labelZone">
                 <label-zone
@@ -112,6 +112,30 @@
                 </temp-label-index>
             </el-tab-pane>
 
+            <el-tab-pane label="模型标签" name="modelLabel">
+                <ModelLabelIndex
+                    :checkList="checkList"
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    @clear-search="handleClearSearch"
+                    @change-checkList="handleCheckListChange"
+                    @get-table-selected="handleGetTableSelectedData"
+                >
+                </ModelLabelIndex>
+            </el-tab-pane>
+
+            <el-tab-pane label="人群标签" name="crowdLabel">
+                <CrowdLabel
+                    :show-selection="showSelection"
+                    :currentSelectTag="tagList"
+                    :checkList="tempCheckList"
+                    :crowdType=2
+                    @get-table-selected="handleGetTableSelectedData"
+                    @change-checkList="handleTempCheckListChange"
+                >
+                </CrowdLabel>
+            </el-tab-pane>
+
             <el-tab-pane label="我的收藏" name="myCollect">
                 <my-collect
                     :tagName="myCollectTagName"
@@ -149,6 +173,8 @@ import LocalLabelIndex from './localLabel/Index'
 import specialTag from './SpecialTag'
 import CustomTag from './CustomTag'
 import ThirdPartyTag from './ThirdPartyTag'
+import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
+import CrowdLabel from './crowdLabel/Index.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -159,7 +185,9 @@ export default {
     specialTag,
     LocalLabelIndex,
     CustomTag,
-    ThirdPartyTag
+    ThirdPartyTag,
+    ModelLabelIndex,
+    CrowdLabel
   },
   data () {
     return {
@@ -180,6 +208,7 @@ export default {
     }
   },
   methods: {
+
     handleSearch () {
       // 全局搜索
       if (this.activeName === 'labelZone') {
@@ -254,6 +283,18 @@ export default {
           this.fetchTempCheckListData()
           this.$root.$emit('third-tag-list-refresh')
           break
+        case 'modelLabel':
+          // 模型标签
+          // this.fetchListData()
+          this.$root.$emit('model-tag-list-refresh')
+          break
+        case 'crowdLabel':
+          // 人群标签
+          // this.fetchListData()
+          this.$root.$emit('crowd-label-list-refresh')
+          break
+
+          
       }
     },
     handleGetTableSelectedData (val, mode) {
@@ -323,13 +364,13 @@ export default {
     position fixed
     top 118px
     right 35px
-    width 20%
+    width 350px
     z-index 999
     .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
+      position absolute
+      top 8px
+      right 10px
+      transform rotate(-90deg)
 .label-content >>> .el-tabs__header
     position fixed
     width 100%

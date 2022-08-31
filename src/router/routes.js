@@ -6,6 +6,7 @@ import strategyList from '@/views/crowdStrategy/index'
 import crowd from '@/views/launch/crowd'
 import launchTabList from '@/views/launch/LaunchTabList'
 import launchAnalysis from '@/views/launch/launchAnalysis/Index'
+import launchAnalysisTable from '@/views/launch/launchAnalysis/Table'
 import strategy from '@/views/launch/strategy/List'
 import validate from '@/views/launch/CrowdValidate'
 // import dictionaryManage from '@/views/setting/dictionaryManage'
@@ -43,6 +44,7 @@ import notice from '@/views/setting/messageNotice/index'
 import oneTouchDrop from '@/views/OneTouchDrop/Index'
 import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
+import crowdCirculationTrack from '@/views/crowdStrategy/crowdCirculationTrack'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
 import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
@@ -54,6 +56,7 @@ import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
+import hitQuery from '@/views/launch/hitQuery'
 
 const children = [
   // {
@@ -246,10 +249,21 @@ const children = [
     component: launchAnalysis,
     meta: {
       tagId: 'launchTabList',
-      title: '投后分析',
+      title: '投后分析（新）',
       icon: 'el-icon-cc-file'
     }
   },
+  {
+    name: 'launchAnalysisTable',
+    path: 'launch/launchAnalysisTable',
+    component: launchAnalysisTable,
+    meta: {
+      tagId: 'launchAnalysisTable',
+      title: '投后分析（旧）',
+      icon: 'el-icon-cc-file'
+    }
+  },
+
   {
     name: 'myPolicy',
     path: 'launch/myPolicy',
@@ -334,6 +348,16 @@ const children = [
     }
   },
   {
+    name: 'crowdCirculationTrack',
+    path: 'launchHelper/crowdCirculationTrack',
+    component: crowdCirculationTrack,
+    meta: {
+      title: '人群流转轨迹',
+      tagId: 'crowdCirculationTrack'
+    }
+  },
+
+  {
     name: 'DeliveryMonitor',
     path: 'launchHelper/DeliveryMonitor',
     component: DeliveryMonitor,
@@ -363,6 +387,17 @@ const children = [
       icon: 'el-icon-cc-file'
     }
   },
+  {
+    name: 'hitQuery',
+    path: '/hitQuery',
+    component: hitQuery,
+    meta: {
+      title: '命中查询结果',
+      tagId: 'hitQuery',
+      icon: 'el-icon-cc-file'
+    }
+  },
+
   {
     name: 'resendCommand',
     path: 'launchHelper/resendCommand',
@@ -768,6 +803,7 @@ const routes = [
   {
     path: '/',
     component: Main,
+    redirect: '/statisticsHomePage',
     children
   },
   {

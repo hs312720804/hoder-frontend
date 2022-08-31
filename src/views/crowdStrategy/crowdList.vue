@@ -75,19 +75,27 @@
         <!-- 动态人群 - 新增 -->
         <div v-else>
           <el-button
-                  type="primary"
-                  size="small"
-                  @click="handleAdd"
-                  v-permission="'hoder:crowd:add'"
+            type="primary"
+            size="small"
+            @click="handleAdd"
+            v-permission="'hoder:crowd:add'"
           >
             <a class="fa fa-plus" style="color: white"></a>新增人群
+          </el-button>
+          <el-button
+            type="primary"
+            size="small"
+            @click="handleLink"
+            v-permission="'hoder:crowd:add'"
+          >
+            <a class="fa fa-plus" style="color: white"></a>引用人群
           </el-button>
         </div>
         <div>
           <el-popover
-                  placement="top"
-                  trigger="click"
-                  class="popover-button"
+            placement="top"
+            trigger="click"
+            class="popover-button"
           >
             <div>
               <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
@@ -120,16 +128,17 @@
         :row-class-name="tableRowClassName"
         :span-method="smartObjectSpanMethod"
         row-key="crowdId"
+        @sort-change="handleSortChange"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom"></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="110">
+        <el-table-column prop="priority" label="优先级" width="110" sortable="custom">
             <template slot="header">
               优先级
               <el-popover
@@ -154,7 +163,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" >
+        <el-table-column prop="status" label="状态" sortable="custom">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
@@ -257,13 +266,13 @@
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item :command="['step1',scope.row]" v-permission="'hoder:crowd:edit'">
-                    圈出基础人群
+                    编辑基础人群
                   </el-dropdown-item>
                   <el-dropdown-item :command="['step2',scope.row]" v-permission="'hoder:crowd:edit'">
-                    动态人群配置
+                    编辑动态人群
                   </el-dropdown-item>
                   <el-dropdown-item :command="['step3',scope.row]" v-permission="'hoder:crowd:edit'">
-                    设置流转条件
+                    编辑流转条件
                   </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
@@ -286,16 +295,17 @@
         stripe
         border
         row-key="crowdId"
+        @sort-change="handleSortChange"
       >
         <el-table-column type="index" width="30"></el-table-column>
-        <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+        <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
         <el-table-column prop="crowdName" label="人群名称" width="200">
             <template slot-scope="scope">
                 <span v-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
                 <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
             </template>
         </el-table-column>
-        <el-table-column prop="priority" label="优先级" width="110">
+        <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
             <template slot="header">
               优先级
               <el-popover
@@ -320,7 +330,7 @@
             </template>
         </el-table-column>
 
-        <el-table-column prop="status" label="状态" >
+        <el-table-column prop="status" label="状态" sortable="custom">
           <template slot-scope="scope">
             {{ launchStatusEnum[scope.row.status] }}
           </template>
@@ -424,7 +434,9 @@
       row-key="crowdId"
       :expand-row-keys="initExpandCrowd"
       @expand-change="handleExpandChange"
+      @sort-change="handleSortChange"
     >
+      <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
       <el-table-column v-if="showByPassColumn" label="分流占比">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
@@ -524,21 +536,47 @@
           </el-form>
         </template>
       </el-table-column>
-      <el-table-column type="index" width="30"></el-table-column>
-      <el-table-column prop="crowdId" label="人群ID" width="80"></el-table-column>
+      <el-table-column type="index" width="40" align="center"></el-table-column>
+      <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
       <el-table-column prop="crowdName" label="人群名称" width="200">
-           <template slot-scope="scope">
-               <span v-if="scope.row.abMainCrowd === 0">{{scope.row.crowdName}}</span>
-               <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
-           </template>
+          <template slot-scope="scope">
+            <!-- 动态人群 -->
+            <el-button v-if="scope.row.dynamicFlag===1" type="text" @click="showDynamicList(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+
+              <!-- 普通人群 -->
+              <span v-else-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
+
+              <!-- AB实验人群 或者 再分割人群 -->
+              <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+          </template>
       </el-table-column>
-      <el-table-column prop="priority" label="优先级" width="110">
+      <!-- <el-table-column prop="launchTime" label="投放时间" width="200">
+      </el-table-column> -->
+      <el-table-column prop="crowdName" label="人群类型" width="100">
+        <template slot-scope="scope">
+          <!-- 12314 -->
+          <!-- 是否被使用了 -- {{ scope.row.isUsedAsTag }} -->
+          <!-- 动态人群 -->
+          <span v-if="scope.row.dynamicFlag===1">动态人群</span>
+          <!-- 引用人群 -->
+          <span v-else-if="isReferCrowd(scope.row.referCrowdId)">引用人群</span>
+          <!-- AB实验人群 -->
+          <span v-else-if="scope.row.abMainCrowd===1">AB实验人群</span>
+          <!-- 再分割人群 -->
+          <span v-else-if="scope.row.abMainCrowd===3">再分割人群</span>
+          <!-- 复合人群 -->
+          <span v-else-if="scope.row.isCrowdTagCrowd === 1">复合人群</span>
+          <!-- 普通人群 -->
+          <span v-else-if="scope.row.abMainCrowd === 0">普通人群</span>
+        </template>
+      </el-table-column>
+      <el-table-column prop="priority" label="优先级" width="110" sortable="custom" >
           <template slot="header">
             优先级
             <el-popover
-                    placement="top"
-                    trigger="hover"
-                    class="popover-button"
+              placement="top"
+              trigger="hover"
+              class="popover-button"
             >
               <div>数字越大，优先级越高</div>
             <span class="priority-tip" slot="reference">!</span>
@@ -555,10 +593,7 @@
               </priorityEdit>
           </template>
       </el-table-column>
-      <el-table-column v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90">
-        <template slot-scope="scope">
-          {{ scope.row.remark }}
-        </template>
+      <el-table-column prop="remark" v-if="(checkList.indexOf('remark') > -1)" label="备注" width="90" key="remark" >
       </el-table-column>
       <!--<el-table-column v-if="(checkList.indexOf('apiStatus') > -1)" prop="apiStatus" label="是否生效" width="90">-->
         <!--<template slot-scope="scope">-->
@@ -577,29 +612,38 @@
           <!--</span>-->
         <!--</template>-->
       <!--</el-table-column>-->
-      <el-table-column prop="status" label="状态" width="70px">
+      <el-table-column prop="status" label="状态" width="70" sortable="custom">
         <template slot-scope="scope">
-          {{ launchStatusEnum[scope.row.status] }}
-          <!-- <span v-if="scope.row.putway === 1">生效中</span>
-          <span v-if="scope.row.putway === 0">已下架</span> -->
+          <span >{{ launchStatusEnum[scope.row.status] }}</span>
         </template>
       </el-table-column>
       <el-table-column label="AB测试" width="100px">
-          <template slot-scope="scope">
-              {{ abStatusEnum[scope.row.abstatus] }}
-          </template>
+        <template slot-scope="scope">
+          <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+
+          <span v-else>{{ abStatusEnum[scope.row.abstatus] }}</span>
+        </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
           <template slot-scope="scope">
-              <span v-if="scope.row.forcastStatus == 1">未估算</span>
-              <span v-if="scope.row.forcastStatus == 2">估算中</span>
-              <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
-              <span v-if="scope.row.forcastStatus == 4">估算失败</span>
+            <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+
+          <span v-else>
+            <span v-if="scope.row.forcastStatus == 1">未估算</span>
+            <span v-if="scope.row.forcastStatus == 2">估算中</span>
+            <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+            <span v-if="scope.row.forcastStatus == 4">估算失败</span>
+            <span v-if="scope.row.forcastStatus == 6">暂不支持该类标签</span>
+          </span>
           </template>
       </el-table-column>
       <el-table-column prop="limitLaunch" label="是否限制投放数量" width="120">
         <template slot-scope="scope">
-          <el-button type="text" v-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
+           <!-- 引用人群 -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
+          <el-button type="text" v-else-if="scope.row.limitLaunch" @click="handleShowLimitLaunch(scope.row.limitLaunchCount)">是</el-button>
           <span v-else>否</span>
         </template>
       </el-table-column>
@@ -611,14 +655,15 @@
       </el-table-column>
       <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="80"></el-table-column>
       <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="80"></el-table-column>
-      <el-table-column label="操作">
+      <el-table-column label="操作" fixed="right">
         <template slot-scope="scope">
           <div class="el-button-group">
             <el-button
-                    size="small"
-                    type="text"
-                    @click="handleClickEstimate(scope.row)"
-                    :disabled="scope.row.putway === 0"
+              v-if="!isReferCrowd(scope.row.referCrowdId)"
+              size="small"
+              type="text"
+              @click="handleClickEstimate(scope.row)"
+              :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 6"
             >估算</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="text">
@@ -628,10 +673,9 @@
                 <el-dropdown-item v-if="scope.row.forcastStatus == 3"
                   :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
-                <!-- AB 和 运营分析是互斥的 -->
-                <el-dropdown-item v-if="scope.row.behaviorTempCrowdId"
+                <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+                <el-dropdown-item v-if="isShow('Yunying', scope.row)"
                   :command="['operationalAnalysis',scope.row]"
-                  :disabled="scope.row.abMainCrowd === 1"
                 >运营分析</el-dropdown-item>
                 <el-dropdown-item
                   :command="['detail',scope.row]"
@@ -648,18 +692,29 @@
                 <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
+
+            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
             <el-button
-                v-if="scope.row.abMainCrowd === 0 && !scope.row.limitLaunch"
-                size="small"
-                type="text"
-                @click="divideAB(scope.row,'addABTest')"
-            >AB实验
+              v-if="isShow('AB', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
+              size="small"
+              type="text"
+              @click="divideAB(scope.row,'addABTest')">
+              AB实验
+            </el-button>
+
+            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+            <el-button
+              v-if="isShow('Dynamic', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
+              size="small"
+              type="text"
+              @click="handleDynamicTest(scope.row, 'addDynamicTest')">
+              动态实验
             </el-button>
             <!-- <el-button
-                    :disabled="isShowTest(scope.row)"
-                    size="small"
-                    type="text"
-                    @click="handleOpenTestDialog(scope.row)"
+              :disabled="isShowTest(scope.row)"
+              size="small"
+              type="text"
+              @click="handleOpenTestDialog(scope.row)"
             >投前测试
             </el-button> -->
             <el-dropdown @command="handleCommandOpreate">
@@ -668,6 +723,7 @@
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
                   :command="['edit',scope.row]"
                   v-permission="'hoder:crowd:edit'"
                   :disabled="scope.row.putway === 0"
@@ -682,9 +738,10 @@
                         :command="['upDown',scope.row]"
                 >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
                 </el-dropdown-item>
+                  <!-- :disabled="scope.row.putway === 0" -->
                 <el-dropdown-item
-                        :command="['copy',scope.row]"
-                        :disabled="scope.row.putway === 0"
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
+                  :command="['copy',scope.row]"
                 >人群复制
                 </el-dropdown-item>
                 <!--<el-dropdown-item-->
@@ -693,8 +750,13 @@
                 <!--&gt;A/B test划分-->
                 <!--</el-dropdown-item>-->
                 <el-dropdown-item
-                        :command="['commitHistory',scope.row]"
+                  v-if="!isReferCrowd(scope.row.referCrowdId)"
+                  :command="['commitHistory',scope.row]"
                 >提交历史数据
+                </el-dropdown-item>
+                <el-dropdown-item
+                  :command="['shenCeAnalysis',scope.row]"
+                >神策分析
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -1057,7 +1119,8 @@
             <el-table-column label="操作" width="250">
                 <template slot-scope="scope">
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId,scope.row.crowdName)">看主页数据</el-button>
+                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
+                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -1099,9 +1162,10 @@
                 {{cc_format_number(scope.row.history.totalUser)}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="90">
+            <el-table-column label="操作" width="160">
               <template slot-scope="scope">
                 <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
+                <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
               </template>
             </el-table-column>
             <el-table-column label="状态" width="150">
@@ -1148,6 +1212,18 @@
       </div>
 
     </el-dialog>
+
+    <!--动态人群实验组列表-->
+    <el-dialog :visible.sync="showDynamicListDetail" title="划分详情">
+      <span class="detailTitle">动态流转</span>
+      <c-table
+        :props="dynamic2GroupListTable.props"
+        :header="dynamic2GroupListTable.header"
+        :data="dynamic2GroupListTable.data"
+      >
+      </c-table>
+    </el-dialog>
+
     <commit-history-dialog
             :setShowCommitHistoryDialog="setShowCommitHistoryDialog"
             :crowdId="currentCrowdId"
@@ -1287,7 +1363,8 @@
         <el-button @click="testDialogVisible = false">关闭</el-button>
       </span>
     </el-dialog>
-    <!-- 查看配置弹窗-->
+
+    <!-- 预约投后分析-->
     <el-dialog title="预约投后分析" :visible.sync="showAppointment" width="500px">
       <el-form ref="appointmentForm" :model="appointmentForm" label-width="80px" size="mini">
         <el-form-item label="起止时间" prop="value" required>
@@ -1366,6 +1443,39 @@
         <el-button @click="showOperationalAnalysis = false">取 消</el-button>
       </span> -->
     </el-dialog>
+
+    <!-- 动态人群 - 查看效果 -->
+    <el-dialog :visible.sync="showViewEffect" width="80%">
+      <viewEffectDialog :crowdId="currentCid"></viewEffectDialog>
+    </el-dialog>
+
+    <!-- 神策分析-->
+    <el-dialog title="选择命中数据的时间范围" :visible.sync="shenCeDialog" width="500px">
+      <el-form ref="shenCeForm" :model="shenCeForm" label-width="80px" size="mini">
+        <el-form-item label="起止时间" prop="dateRange" required>
+          <el-date-picker
+            v-model="shenCeForm.dateRange"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd"
+            :picker-options="pickerShenCeOptionsDayinRange(30, currentCrowd.launchTime)"
+            >
+          </el-date-picker>
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="ConfirmShenCeAnalysis">确定</el-button>
+        <el-button @click="shenCeDialog = false">取消</el-button>
+      </span>
+    </el-dialog>
+
+    <!-- 流转链路分析 -->
+    <el-dialog title="流转链路分析" :visible.sync="showFlowLinkAnalysisDialog" :fullscreen="true">
+      <LinkAnalysis v-if="showFlowLinkAnalysisDialog" :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></LinkAnalysis>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -1375,16 +1485,31 @@ import priorityEdit from '../../components/PriorityEdit'
 import crowdStatusResource from './CrowdStatusResource'
 import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
+import viewEffectDialog from '../launch/viewEffectDialog'
+import LinkAnalysis from './LinkAnalysis/Index'
+
 export default {
   components: {
     // Table,
     priorityEdit,
     crowdStatusResource,
     CommitHistoryDialog,
-    numOrTextEdit
+    numOrTextEdit,
+    viewEffectDialog,
+    LinkAnalysis
   },
   data () {
     return {
+      analysisTableData: [],
+      showFlowLinkAnalysisDialog: false,
+      linkProps: {},
+      linkPropsName: {},
+      linkPropsNameTip: {},
+      shenCeForm: {
+        dateRange: [],
+        crowdId: ''
+      },
+      shenCeDialog: false,
       showOperationalAnalysis: false,
       operationalAnalysisUrl: '',
       showEditDynamicCrowdName: false,
@@ -1542,7 +1667,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       conditionEnum: {
         'AND': '且',
@@ -1621,7 +1748,55 @@ export default {
           }
         ],
         data: []
-      }
+      },
+      dynamic2GroupList: [], // 动态人群实验分组列表
+      showDynamicListDetail: false,
+      dynamic2GroupListTable: {
+        props: {},
+        header: [
+          {
+            label: '流转ID',
+            prop: 'id'
+          },
+          {
+            label: '流转名称',
+            prop: 'name'
+          },
+          {
+            label: '占比',
+            prop: 'flowNum',
+            render: (h, { row }) => {
+              console.log(row)
+              return h('div', {}, `${row.flowNum}%`)
+            }
+          },
+          {
+            label: '流转方式',
+            prop: 'mainArithmetic',
+            render: (h, { row }) => {
+              const options = ['顺序', '循环', '随机', '自定义', '不流转', '智能']
+              return options[row.mainArithmetic]
+            }
+          },
+          {
+            label: '数量',
+            prop: 'crowdNum'
+          },
+          {
+            label: '操作',
+            // fixed: 'right',
+            width: '150',
+            render: this.$c_utils.component.createOperationRender(this, {
+              handleEditDynamic2GroupList: '编辑',
+              handleFlowLinkAnalysis: '流转链路分析'
+            })
+          }
+        ],
+        data: []
+      },
+      showViewEffect: false,
+      currentCrowd: {}
+
     }
   },
   props: ['selectRow'],
@@ -1677,6 +1852,328 @@ export default {
     // }
   },
   methods: {
+    pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          let maxTime = Date.now()
+          const day1 = 720 * 24 * 3600 * 1000 
+          let minTime = Date.now() - day1
+
+          if (startTime) {
+            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000 
+            // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000 
+          }
+          
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
+        }
+      }
+    },
+    //流转链路分析
+    handleFlowLinkAnalysis ({row}) {
+      console.log('row------------', row)
+      const parmas = {
+        dynamicRuleId: row.id, // 分组 ID
+        // dynamicRuleId: 77, // 分组 ID
+      }
+      const data = [{
+        arup: 59.48,
+        payUv: 964,
+        path: 11679,
+        price: 57334.00,
+        payRate: 0.01,
+        dynamicRuleName: '分组1',
+        child: [{
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          nowCrowdName: '方案1',
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }, {
+          nowCrowdName: '方案2',
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }, {
+          nowCrowdName: '方案2',
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }],
+        
+      }]
+
+      
+
+      this.linkProps = {
+        // name: 'dynamicRuleName',
+        children: 'child'
+      }
+      
+      this.linkPropsName = {
+        path: '路径',
+        payUv: '转化设备量',
+        arup: '客单价',
+        fatherPath: '父路径',
+        price: '付费总金额',
+        payRate: '转化率',
+        hitUv: '流入设备量',
+        totalHitUv: '总流入设备量',
+        ratio: '比例',
+        dynamicRuleName: '分组名称',
+        nowCrowdName: '方案名称'
+        // level: '层级',
+      }
+      this.linkPropsNameTip = {
+        payUv: '当前路径中付费的用户量',
+        arup: '付费总金额/转化设备量',
+        path: '用户在该组动态人群中流转的人群顺序',
+        price: '当前路径中付费的总金额',
+        payRate: '转化设备量/流入设备量',
+        hitUv: '人群命中量',
+        ratio: '当前路径流入设备量/父级路径流入设备量',
+      }
+      this.$service.getCrowdFlowPath(parmas).then(res => {
+        if (typeof res.data === 'string') {
+          return this.$message.info(res.data) // 数据不存在
+        }
+        console.log('res====>', res)
+        const data = [res]
+        
+        this.showFlowLinkAnalysisDialog = true
+        this.analysisTableData = this.constructLinkData(data, 0)
+
+        console.log('this.analysisTableData====', this.analysisTableData)
+      })
+
+    },
+    // 递归处理路径分析
+    constructLinkData(data, zLevel) {
+      const childLevel = zLevel + 1 // child 的层级加1
+      if (!data || data.length === 0) {
+        return []
+      }
+      let len = data ? data.length : 0
+      return data.map(item => {
+        let obj = {}
+
+        // 第一级 什么都不变
+        if (zLevel === 0) {
+          return {
+            dynamicRuleName: item.dynamicRuleName,
+            totalHitUv: this.cc_format_number(item.hitUv),
+            child: this.constructLinkData(item.child, childLevel),
+            ratio: '100%',
+            level: zLevel
+          }
+        }
+        // 往他的 child 插入一条已转化对象
+        else if ((item.name || item.dynamicRuleName || item.nowCrowdName) && item.payUv > 0) {
+          // len = len + 1
+          const zhuanhuaObj = {
+            path: item.path,
+            payUv: this.cc_format_number(item.payUv),
+            payRate: this.toPercent(item.payRate),
+            arup: this.cc_format_number(item.arup),
+            price: this.cc_format_number(item.price),
+          }
+          // obj.child = []
+          const child = item.child && item.child.length > 0 ? item.child : []
+          child.unshift(zhuanhuaObj)
+          
+          obj = {
+            nowCrowdName: item.nowCrowdName,
+            path: item.path,
+            ratio: this.toPercent(item.hitRate), // 比例
+            hitUv: this.cc_format_number(item.hitUv),
+            // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
+            level: zLevel,
+            child: this.constructLinkData(child, childLevel),
+          }
+
+        } else {   // 完全转化的块， 或者 payUv 为 0 的块
+          obj = {
+            nowCrowdName: item.nowCrowdName,
+            path: item.path,
+            ratio: item.ratio ? item.ratio : 
+              item.hitRate ? this.toPercent(item.hitRate) : undefined, // 比例
+            payUv: item.payUv > 0 ? item.payUv : undefined,
+            payRate: item.payRate ? item.payRate : undefined,
+            arup: item.arup ? item.arup : undefined,
+            price: item.price ? item.price : undefined,
+            hitUv: item.hitUv,
+            // ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
+            level: zLevel
+          }
+        }
+        return obj
+      })
+    },
+
+    toPercent (point) {
+      var str = Number(point * 100).toFixed(2)
+      str += '%'
+      return str
+    },
+    handleEditDynamic2GroupList({row}) {
+      // const crowdId = row.crowdId
+      // console.log(...arguments)
+      this.handleDynamicTest(row, 'editDynamicCrowd', { tabSet: 'second', initActiveStep: 1 })
+      this.showDynamicListDetail = false
+    },
+    // 是否为引用人群
+    isReferCrowd (id) {
+      return id
+    },
+    // 互斥
+    isShow (key, row) {
+      // abMainCrowd    0-普通人群  1-ab主   2-ab的小   3-再分割
+
+      // abMainCrowd = 1  代表是AB分割人群
+      // abMainCrowd = 3 代表是再分割人群
+      // dynamicFlag = 1 代表是动态人群
+
+      // 显示的条件：
+
+      // // AB
+      // const showAB = row.abMainCrowd === 0 && !row.limitLaunch
+
+      // // 运营分析
+      // const showYunying = row.behaviorTempCrowdId && row.abMainCrowd !== 1
+
+      // // 动态实验
+      // const showDynamic = row.dynamicFlag === 1
+
+      // AB人群
+      const isAB = row.abMainCrowd === 1
+
+      // 运营分析（再分割人群）
+      const isYunying = row.abMainCrowd === 3
+
+      // 动态实验
+      const isDynamic = row.dynamicFlag === 1
+
+      if (key === 'AB') {
+        // return !isAB && !isYunying && !isDynamic && !row.limitLaunch
+        return !isAB && !isYunying && !isDynamic
+      } else if (key === 'Yunying') {
+        return !isAB && !isDynamic
+      } else if (key === 'Dynamic') {
+        return !isAB && !isYunying && !isDynamic
+      }
+    },
+    handleSortChange (obj) {
+      console.log('column====', obj)
+      console.log('<========================>', this.initExpandCrowd)
+
+      // orderField：  人群ID：crowd_id, 优先级：priority  状态： putway
+      // order：    ASC,DESC 切换
+
+      let sortParams = {
+        orderField: obj.prop
+      }
+      this.currentPage = 1 // 页码重置为 1
+
+      if (obj.order === 'descending') {
+        sortParams.order = 'DESC'
+      } else if (obj.order === 'ascending') {
+        sortParams.order = 'ASC'
+      } else {
+        sortParams.order = null
+      }
+      this.loadData(sortParams, 'sort')
+    },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
       this.monitorOutForm.pageSize = val
@@ -1754,11 +2251,24 @@ export default {
         },
         disabledDate: (time) => {
           // const day1 = range * 24 * 3600 * 1000 // 2年
-          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          // let minTime = Date.now() - day1
+
+          if (this.DivideTableData && this.DivideTableData.length > 0) { // AB人群
+            // AB 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
+            // 如果是AB子人群，则预约的起止时间不超过当前配置的实验有效期，超过的日期则为灰色不可点
+            let abStartTime = new Date(this.DivideTableData[0].abStartTime).getTime()
+            let abEndTime = new Date(this.DivideTableData[0].abEndTime).getTime()
+
+            // 选择了一个时间的时候
+            if (_minTime && _maxTime) {
+              return time.getTime() < _minTime || time.getTime() > _maxTime || time.getTime() < abStartTime || time.getTime() > abEndTime
+            }
+
+            // 没有选择时间, 或者选择了两个时间的时候
+            return time.getTime() < abStartTime || time.getTime() > abEndTime
+          }
 
           // onPick后触发
-          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          // 选择了一个时间的时候
           if (_minTime && _maxTime) {
             return time.getTime() < _minTime || time.getTime() > _maxTime
           }
@@ -1867,8 +2377,16 @@ export default {
     handleAdd () {
       this.$emit('addCrowd')
     },
+    handleLink () {
+      this.$emit('addLinkCrowd')
+    },
     handleAddDynamic () {
       this.$emit('addDynamicCrowd')
+    },
+
+    // 新增/编辑动态实验
+    handleDynamicTest (row, mode, tabSet) {
+      this.$emit('handleDynamicTest', row, mode, tabSet)
     },
     edit (row) {
       this.$emit('addCrowd', row)
@@ -1924,12 +2442,24 @@ export default {
         calIdType
       }
       if (this.estimateType === 'single') {
-        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }, '提交估算成功').then(
-          () => {
-            this.showEstimate = false
-            this.loadData()
+        this.$service.estimatePeople({ crowdId: this.estimateId, calIdType: calIdType }).then((res) => {
+          this.showEstimate = false
+          this.loadData()
+
+          if (res.code === '3000') {
+            this.$notify({
+              title: '提示',
+              type: 'warning',
+              message: res.msg
+            })
+          } else {
+            this.$notify({
+              title: '操作成功',
+              type: 'success',
+              message: '提交估算成功'
+            })
           }
-        )
+        })
       } else {
         this.$service.batchCrowdEstimate(formData, '提交估算成功').then(
           () => {
@@ -1962,7 +2492,7 @@ export default {
       })
     },
     // 从服务器读取数据
-    loadData () {
+    loadData (sortParams, loadType) {
       this.$service.getListDimension({ type: 2 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -1973,6 +2503,13 @@ export default {
       this.criteria['pageNum'] = this.currentPage
       this.criteria['pageSize'] = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
+
+      if (sortParams) {
+        this.criteria = {
+          ...this.criteria,
+          ...sortParams
+        }
+      }
       this.$service.viewCrowd(this.criteria).then(data => {
         if (data.bypass === 1) {
           // 分流的人群
@@ -2017,9 +2554,11 @@ export default {
         this.crowdValidEnum = data.crowdValidEnum
         // this.showByPassColumn = data.bypass === 1
         this.showByPassColumn = data.policy.smart
-        this.initExpandCrowd = []
-        if (this.tableData.length > 0) {
-          this.initExpandCrowd.push(this.tableData[0].crowdId)
+        if (loadType !== 'sort') {
+          this.initExpandCrowd = []
+          if (this.tableData.length > 0) {
+            this.initExpandCrowd.push(this.tableData[0].crowdId)
+          }
         }
         // 再插入一项
         this.tableMerge[0] = this.tableMerge[0] + 1
@@ -2396,11 +2935,16 @@ export default {
     // 策略使用以及各业务使用次数统计
     handleCommandStastic (scope) {
       const type = scope[0]
-      this.currentCid = scope[1].crowdId
+      const row = scope[1]
+      this.currentCid = row.crowdId
       switch (type) {
         // 统计投后效果
         case 'detail':
-          this.showCrowdDetailDialog()
+          if (row.dynamicFlag === 1) { // 动态人群
+            this.showViewEffect = true
+          } else {
+            this.showCrowdDetailDialog()
+          }
           break
           // 人群画像估算
         case 'estimatedDetail':
@@ -2413,7 +2957,7 @@ export default {
           this.getActiveBehavior()
           break
         case 'homepageData':
-          this.handleSeeHomepageData(this.currentCid, scope[1].crowdName)
+          this.handleSeeHomepageData(this.currentCid, row.crowdName)
           break
         case 'redirectCrowd':
           this.handleClickRedirectList(this.currentCid)
@@ -2482,6 +3026,9 @@ export default {
     showAppointmentDialog (crowdId) {
       this.estimateId = crowdId
       this.showAppointment = true
+
+      // 重置
+      this.$refs['appointmentForm'] && this.$refs['appointmentForm'].resetFields()
     },
     HandleAppointment () {
       this.$refs['appointmentForm'].validate((valid) => {
@@ -2604,7 +3151,6 @@ export default {
       this.currentTag = row
     },
     handleUpDown () {
-      // 11111111111111111111111
       const row = this.currentTag
       // 区分动态人群、普通提示语
       const tipMessage = this.smart ? '操作成功' : (row.putway === 1 ? '下架' : '上架') + '人群会影响该策略下人群估算数量，请点击"估算"重新估算其他人群的圈定数据'
@@ -2656,9 +3202,12 @@ export default {
       const params = scope[1]
       switch (type) {
         case 'edit':
-          if (params.abMainCrowd === 1) {
+          if (params.abMainCrowd === 1) { // AB人群
             this.divideAB(params, 'editABTest')
-          } else {
+          } else if (params.dynamicFlag === 1) { // 编辑动态人群
+            this.handleDynamicTest(params, 'editDynamicCrowd')
+          } else { 
+            // 编辑人群规则
             this.edit(params)
           }
           break
@@ -2677,7 +3226,34 @@ export default {
         case 'commitHistory':
           this.handleCommitHistory(params)
           break
+        case 'shenCeAnalysis':
+          this.handleShenCeAnalysis(params)
+          break
       }
+    },
+    handleShenCeAnalysis(row) {
+      this.currentCrowd = row
+      this.shenCeForm.crowdId = row.crowdId
+      this.shenCeDialog = true
+    },
+    ConfirmShenCeAnalysis(row) {
+      const parmas = {
+        crowdId: this.shenCeForm.crowdId,
+        startDate: this.shenCeForm.dateRange[0],
+        endDate: this.shenCeForm.dateRange[1]
+      }
+      this.$service.sensorHitData(parmas).then(res => {
+        console.log('res', res)
+
+        // 人群已经发送到神策平台，请前往神策继续分析
+        if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
+          this.$message.success(res.result)
+        } else {
+          this.$message.info(res.result)
+        }
+        this.shenCeDialog = false
+
+      })
     },
     // 动态人群 - 小人群功能
     handleDynamicCommandOpreate (scope) {
@@ -3042,26 +3618,37 @@ export default {
         this.setBarEchart('activeBehavior', '圈定人群的设备活跃人数/主页活跃人数/起播活跃人数（前一日的值)', names, values)
       })
     },
+
+    // 获取实验组列表
+    showDynamicList (crowdId) {
+      this.$service.getDynamic2PlanList({ crowdId }).then(res => {
+        // this.dynamic2GroupList = res || []
+        this.dynamic2GroupListTable.data = res || []
+        this.showDynamicListDetail = true
+      })
+    },
+
     // 人群画像估算---结束
     // 显示划分详情
     showDivideResult (crowdId) {
-      this.DivideTableData = []
-      this.subdividePeopleList = []
+      // 重置
+      this.DivideTableData = [] // AB人群列表
+      this.subdividePeopleList = [] // 再分割人群列表
+
+      // 查询AB人群
       this.$service.getAbChilds(crowdId).then(data => {
         this.showDivideDetail = true
         this.DivideTableData = data
       })
+
+      // 查询再分割人群
       this.independentParams.crowdId = crowdId
-      // const params = {
-      //   crowdId: this.independentParams.crowdId,
-      //   pageSize: this.independentParams.pageSize,
-      //   pageNum: this.independentParams.pageNum
-      // }
+
       this.$service.searchIndependentAnalysisByCrowdId(this.independentParams).then(data => {
         this.showDivideDetail = true
-        this.subdividePeopleList = data.pageInfo.list || []
-        this.independentTotal = data.pageInfo.total || 0
-        this.independentLaunchStatusEnum = data.launchStatusEnum
+        this.subdividePeopleList = data ? data.pageInfo.list : []
+        this.independentTotal = data ? data.pageInfo.total : 0
+        this.independentLaunchStatusEnum = data ? data.launchStatusEnum : {}
       })
     },
     // 提交历史数据
@@ -3309,6 +3896,11 @@ export default {
       this.showBypassStep = 2
     },
     handleExpandChange (row, expandedRows) {
+      // 获取当前展开行的 crowdId
+      this.initExpandCrowd = expandedRows.map(item => {
+        return item.crowdId
+      })
+
       if (this.showByPassColumn) {
         const currentCrowds = expandedRows.map(item => {
           return item.crowdId
@@ -3709,5 +4301,35 @@ fieldset>div
   color: #000;
 .monitor-time
   margin-bottom: 30px;
+.boldCss
+  font-weight 800
+>>> .el-tag--warningOrange
+  color #512DA8
+  background-color rgba(119, 81, 200, .4)
+  border-color rgba(81, 45, 168, .45)
+  .el-tag__close
+    color #512DA8
+>>> .el-tag--warningOrange2
+  color: #795548;
+  background-color: rgba(167, 130, 117, .5);
+  border-color: #7955488c;
+  .el-tag__close
+    color #512DA8
+>>> .el-tag--warningCyan {
+  color: #00bcd4;
+  background-color: rgba(0, 189, 214, .1);
+  border-color: #00bcd42b
+}
+>>> .el-tag--gray {
+  color: #fff;
+  background-color: rgba(165,155,149, 1);
+  border-color: rgba(165,155,149, 1);
+  .el-tag__close {
+    color #fff
+    &:hover{
+      background-color: #666
+    }
+  }
+}
 
 </style>

@@ -123,11 +123,11 @@
                           v-model="peoplePageCheck">
                           智能分人群模式
                       </el-checkbox> -->
-                      <el-checkbox
+                      <!-- <el-checkbox
                           style="margin-left: 20px"
                           v-model="isDynamicPeople">
                           动态人群
-                      </el-checkbox>
+                      </el-checkbox> -->
                   </template>
               </new-create-policy>
               <!--<create-policy-->
@@ -184,7 +184,7 @@ import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
 import createConfigScheme from './createConfigScheme'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
-import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
+// import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
   name: 'index',
   components: {
@@ -194,7 +194,7 @@ export default {
     newCreatePolicy,
     createConfigScheme,
     DynamicPeopleSetting,
-    DynamicPeopleConditions
+    // DynamicPeopleConditions
   },
   props: {
     initPolicyId: {

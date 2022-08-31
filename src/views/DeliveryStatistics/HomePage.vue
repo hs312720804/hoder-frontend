@@ -1153,6 +1153,9 @@ export default {
 }
 </script>
 
+<style lang="stylus">
+  // @import '~@/assets/chartCss.styl'
+</style>
 <style lang="stylus" scoped>
     .launch-statistics
         overflow hidden

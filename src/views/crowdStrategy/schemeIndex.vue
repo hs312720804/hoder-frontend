@@ -112,7 +112,17 @@ export default {
                 color: #00bcd4;
                 background-color: rgba(0, 189, 214, .1);
                 border-color: #00bcd42b
-
+            >>> .el-tag--gray {
+                color: #fff;
+                background-color: rgba(165,155,149, 1);
+                border-color: rgba(165,155,149, 1);
+                .el-tag__close {
+                    color #fff
+                    &:hover{
+                        background-color: #666
+                    }
+                }
+            }
         .button-margin
             margin-top 10px
 </style>

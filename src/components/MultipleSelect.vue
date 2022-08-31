@@ -79,7 +79,7 @@
                   </template>
 
                   <!-- collect 类型 -->
-                  <template v-if="childItem.tagType === 'collect'">
+                  <template v-if="childItem.tagType === 'collect' || childItem.tagType === 'crowd'">
                     <el-option value="=" label="是"></el-option>
                     <el-option value="!=" label="不是"></el-option>
                   </template>
@@ -137,10 +137,9 @@
                 </template>
               </span>
 
-              <span class="in">
+              <span class="in" v-if="childItem.tagType !== 'crowd'">
                 <!-- time 类型 -->
 
-                <!-- 11111111111111 -->
                 <span v-if="childItem.tagType === 'time'">
                   <template v-if="childItem.dateAreaType !== 0">
                     <!-- 二期之后的版本 -->
@@ -234,7 +233,6 @@
                     </template>
                   </template>
                 </span>
-                <!-- 11111111111111111 end-->
 
                 <!-- string 、 collect 、 mix 类型 -->
                 <template v-else-if="
@@ -414,7 +412,6 @@
                   >
                 </template>
               </span>
-              <!-- 11111111111111111 end -->
               <template v-if="cache[childItem.tagId]">
                 <span
                   v-if="
@@ -445,10 +442,13 @@
               >
                 <!-- 选择动态时间提示 -->
                 <!-- 二期之后的版本 -->
-                <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
+                <div v-if="childItem.version > 0 && childItem.dateAreaType === 1" style="color: gray; font-size: 12px;">
+                  提示：负数表示过去的日期，例如过去一周到未来3天，可以表示成-7天到3天
+                </div>
+                <!-- <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
                   <div slot="content">提示：负数表示过去的日期，比如-1表示昨天，0表示今天，1表示明天</div>
                   <el-button type="text">提示</el-button>
-                </el-tooltip>
+                </el-tooltip> -->
 
                 <!-- 圈人群二期之前版本提示 -->
                 <el-tooltip v-else-if="childItem.version === 0" class="item" effect="dark" placement="top-start" >
@@ -468,8 +468,8 @@
                   :key="tagItem.tagItem"
                   @click.native="handleAddChildRule(item, tagItem)"
                   :type="dataSourceColorEnum[tagItem.dataSource]"
-                  >{{ tagItem.tagName }}</el-tag
-                >
+                  >{{ tagItem.tagName }}
+                </el-tag>
               </div>
             </div>
           </div>
@@ -817,7 +817,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       cityData: [],
       provinceValueList: []
@@ -1046,6 +1048,25 @@ export default {
         })
         return
       }
+
+      // 判断复合人群下人群标签不可超过 30 个
+      const num = this.rulesJson.rules.reduce((num, item, index) => {
+        item.rules.forEach((obj) => {
+          if (obj.dataSource === 12) {
+            num++
+          }
+        })
+        return num
+      }, 0)
+      console.log('复合人群下使用人群标签數量-->', num)
+      if (num >= 30) {
+         this.$message({
+          type: 'error',
+          message: '复合人群下使用人群标签不可超过 30 个'
+        })
+        return
+      }
+
       if (this.crowd && !this.crowd.tagIds.includes(tag.tagId)) {
         this.crowd.tagIds.push(tag.tagId)
       }
@@ -1069,7 +1090,7 @@ export default {
             tagCode: tag.tagKey,
             tagName: tag.tagName,
             dataSource: tag.dataSource,
-            value: tag.tagType === 'time' ? '-' : '',
+            value: tag.tagType === 'time' || tag.tagType === 'crowd' ? '-' : '',
             tagId: tag.tagId,
             tagType: tag.tagType,
             categoryName: tag.tagName,
@@ -1103,13 +1124,32 @@ export default {
       })
     },
     handleAddChildRule (rule, tag) {
-      if (rule.rules.length > 50) {
+      if (rule.rules.length >= 50) {
         this.$message({
           type: 'error',
           message: '已达最大数量'
         })
         return
       }
+
+      // 判断复合人群下人群标签不可超过 30 个
+      const num = this.rulesJson.rules.reduce((num, item, index) => {
+        item.rules.forEach((obj) => {
+          if (obj.dataSource === 12) {
+            num++
+          }
+        })
+        return num
+      }, 0)
+      console.log('复合人群下使用人群标签數量-->', num)
+      if (num >= 30) {
+         this.$message({
+          type: 'error',
+          message: '复合人群下使用人群标签不可超过 30 个'
+        })
+        return
+      }
+
       if (tag.tagType === 'string' || tag.tagType === 'collect') {
         if (this.cache[tag.tagId] === undefined) {
           this.fetchTagSuggestions(tag.tagId)
@@ -1129,7 +1169,7 @@ export default {
         tagCode: tag.tagKey,
         tagName: tag.tagName,
         dataSource: tag.dataSource,
-        value: tag.tagType === 'time' ? '-' : '',
+        value: tag.tagType === 'time' || tag.tagType === 'crowd' ? '-' : '',
         tagId: tag.tagId,
         tagType: tag.tagType,
         categoryName: tag.tagName,
@@ -1152,7 +1192,7 @@ export default {
       })
     },
     handleAddSpecialRule (tag) {
-      if (this.dynamicPolicyJson.rules.length > 50) {
+      if (this.dynamicPolicyJson.rules.length >= 50) {
         this.$message.warning('已达最大数量')
         return
       }
@@ -1256,6 +1296,8 @@ export default {
         item.value = 'nil'
       } else if (item.tagType === 'string') { // string 类型的标签可多选 value值是数组
         item.value = []
+      } else if (item.tagType === 'crowd') { // crowd value值固定为 '-'
+        item.value = '-'
       } else {
         item.value = ''
       }

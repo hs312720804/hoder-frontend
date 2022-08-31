@@ -11,7 +11,7 @@
         </div>
         <div class="search-input">
             <el-input
-                placeholder="支持按人群名、ID搜索"
+                placeholder="支持按标签名、ID搜索"
                 class="header-input"
                 v-model="filter.tagName"
                 @keyup.enter.native="fetchData"
@@ -77,7 +77,7 @@
 </template>
 
 <script>
-import tagList from './TagList'
+import tagList from './TagList.vue'
 import TagCategoryUpsert from '../TagCategory/Upsert.vue'
 export default {
   name: 'MyCollect',
@@ -231,7 +231,7 @@ export default {
     .search-input
         position relative
         display flex
-        width 30%
+        width 350px
     .icon-fixed
         position absolute
         top 8px

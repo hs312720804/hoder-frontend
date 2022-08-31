@@ -59,7 +59,7 @@
                   <el-checkbox label="createTime">创建时间</el-checkbox>
                   <el-checkbox label="creatorName">创建人</el-checkbox>
                   <el-checkbox label="useStatus">投放状态</el-checkbox>
-                  <el-checkbox label="smart">是否动态策略</el-checkbox>
+                  <!-- <el-checkbox label="smart">是否动态策略</el-checkbox> -->
                   <el-checkbox label="department">业务部门</el-checkbox>
                 </el-checkbox-group>
               </div>
@@ -98,7 +98,8 @@
           <span class="checkbox--yellow">黄色</span>为实时标签,
           <span class="checkbox--orange">紫色</span>为动态指标,
           <span class="checkbox--orange2">棕色</span>为组合标签,
-          <span class="checkbox--cyan">青色</span>为行为标签）
+          <span class="checkbox--cyan">青色</span>为行为标签,
+          <span class="checkbox--gray">灰色</span>为人群标签）
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -131,12 +132,12 @@
         </template>
       </el-table-column>
 
-      <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
+      <!-- <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.smart" > 动态策略 </span>
           <span v-else> 普通策略 </span>
         </template>
-      </el-table-column>
+      </el-table-column> -->
 
       <el-table-column prop="past7Active" label="7日是否有命中" width="110">
         <template slot-scope="scope">
@@ -202,9 +203,9 @@
                         :command="['statics',scope.row]"
                 >调用统计</el-dropdown-item>
                 <el-dropdown-item
-                      v-if="scope.row.smart"
-                      :command="['viewEffect',scope.row]"
-                  >查看效果</el-dropdown-item>
+                    v-if="scope.row.smart"
+                    :command="['viewEffect',scope.row]"
+                >查看效果</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-dropdown @command="handleCommandStastic">-->
@@ -254,11 +255,12 @@
 
     <!--新增界面-->
     <el-dialog
-            :title="title"
-            :visible.sync="addFormVisible"
-            v-if="addFormVisible"
-            v-model="addFormVisible"
-            :close-on-click-modal="false"
+      :title="title"
+      :visible.sync="addFormVisible"
+      v-if="addFormVisible"
+      v-model="addFormVisible"
+      :close-on-click-modal="false"
+      width="800px"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
@@ -283,8 +285,18 @@
             <!--</el-tab-pane>-->
           <!--</el-tabs>-->
         <!--</el-form-item>-->
-        <div class="tags-tips">注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签</div>
-        <el-form-item label="策略维度" prop="conditionTagIds" style="margin-top: 30px">
+        <div class="tags-tips">
+          <!-- 1111注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+          <span class="checkbox--red">红色为大数据标签</span>,
+          <span class="checkbox--green">绿色为自定义/本地标签</span>,
+          <span class="checkbox--blue">蓝色为账号标签</span>,
+          <span class="checkbox--yellow">黄色为实时标签</span>,
+          <span class="checkbox--orange">紫色为动态指标</span>,
+          <span class="checkbox--orange2">棕色为组合标签</span>,
+          <span class="checkbox--cyan">青色为行为标签</span>,
+          <span class="checkbox--gray">灰色为人群标签</span>
+        </div>
+        <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
             <!--<el-tab-pane-->
                     <!--v-for="item in conditionTagIdsData"-->
@@ -301,12 +313,13 @@
             <el-button @click="getTags()">查询</el-button>
             <el-button @click="resetSearch">重置</el-button>
             </div>
-              <el-checkbox-group v-model="addForm.conditionTagIds" class="checkList" v-if="conditionTagsFiltered != '' ">
-                <el-checkbox v-for="item in conditionTagsFiltered"
-                             :class="dataSourceColorClassEnum[item.tDataSource]"
-                             :label="item.tagId"
-                             :key="item.tagId"
-                             @change="handleTagChange($event,item)"
+              <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
+                <el-checkbox 
+                  v-for="item in conditionTagsFiltered"
+                  :class="dataSourceColorClassEnum[item.tDataSource]"
+                  :label="item.tagId"
+                  :key="item.tagId"
+                  @change="handleTagChange($event,item)"
                 >
                   {{item.tagName}}
                 </el-checkbox>
@@ -488,7 +501,8 @@ export default {
         policyId: '',
         policyName: '',
         // dataSource: "2",
-        conditionTagIds: []
+        conditionTagIds: [],
+        crowdTagCrowdIds: []
         // 以上为表单提交的参数
       },
       addFormRules: {
@@ -520,7 +534,9 @@ export default {
         5: 'checkbox--yellow',
         6: 'checkbox--orange',
         7: 'checkbox--orange2',
-        8: 'checkbox--cyan'
+        8: 'checkbox--cyan',
+        11: 'success',
+        12: 'gray'
       },
       dataSourceColorEnum: {
         1: 'success',
@@ -529,7 +545,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       showAll: false,
       seeDetailData: {
@@ -629,6 +647,9 @@ export default {
           this.time1 = oldVal
         }
       }
+    },
+    tagList(val) {
+      this.checkedList = val.map(item => item.tagId)
     }
   },
   methods: {
@@ -689,18 +710,43 @@ export default {
     },
     removeTag (tag) {
       const addForm = this.addForm
-      addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      if (tag.tDataSource === 12) {
+        // 人群标签 id 集合
+        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
+      } else {
+        // 其他的标签 id 集合
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      }
+      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
     },
     handleTagChange (flag, item) {
       var arr = []
-      if (flag) { this.tagList.push(item) } else {
+      if (flag) { 
+        this.tagList.push(item) 
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds.push(item.tagId) 
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds.push(item.tagId) 
+        }
+      } else {
         arr = this.tagList
         for (var i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
+
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== item.tagId)
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
+        }
       }
+      
     },
     resetSearch () {
       this.searchValue = ''
@@ -739,6 +785,21 @@ export default {
         .map(function (v) {
           return parseInt(v)
         })
+      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
+        .split(',')
+        .map(function (v) {
+          return parseInt(v)
+        }) || []
+      // this.addForm.conditionTagIds = []
+      // this.addForm.crowdTagCrowdIds = []
+
+      // this.tagList.forEach(function (v) {
+      //   if (v.dataSource === 12) {
+      //     this.addForm.crowdTagCrowdIds.push(parseInt(v.tagId)) // 人群标签
+      //   } else {
+      //     this.addForm.conditionTagIds.push(parseInt(v.tagId))
+      //   }
+      // })
       // row.conditionTagIds.split(",");
     },
     crowdList (row) {
@@ -882,7 +943,10 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm)
           addForm = JSON.parse(addForm)
+          // 人群标签 id 集合
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          // 其他的标签 id 集合
+          addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
           if (this.addForm.policyId != '') {
             this.$service.policyUpate(addForm, '编辑成功').then(() => {
               this.loadData()
@@ -1168,20 +1232,7 @@ export default {
 .checkList
   height: 200px
   overflow: auto
-.checkbox--red
-  color #f56c6c
-.checkbox--green
-  color #67c23a
-.checkbox--blue
-  color #409eff
-.checkbox--yellow
-  color #e6a23c
-.checkbox--orange
-  color #512DA8
-.checkbox--orange2
-  color #795548
-.checkbox--cyan
-  color #00bcd4
+
 .strategy-search
   display flex
   margin-bottom 10px
@@ -1189,10 +1240,9 @@ export default {
   width 70%
   margin-right 20px
 .tags-tips
-  position absolute
-  right 20px
-  color red
   font-size 12px
+  text-align: center;
+  white-space nowrap
 .page-num
   width 30px
   height 30px
@@ -1285,7 +1335,17 @@ ul > li
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
-
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
+  }
 .header-left
   display flex
   align-items center

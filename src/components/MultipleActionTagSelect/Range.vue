@@ -42,21 +42,22 @@
                     >
                     </el-date-picker>
                   </span>
-
-                  <span v-else v-for="(item, index) in childItem.bav.rang.newValue" :key="index" style="display: flex; flex-direction: row">  <!-- 多选 -->
-                    <el-date-picker
-                      style="width: 220px;"
-                      v-model="item.value"
-                      type="daterange"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      value-format="yyyy-MM-dd"
-                      :picker-options="getPickerOptions(childItem.tagCode)"
-                      @change="HandleChange"
-                    >
-                    </el-date-picker>
-                    <el-button v-if="index !== 0" type="text" @click="removeRange(index)" class="remove-btn">删除</el-button>
+                  <span v-else>
+                    <span v-for="(item, index) in childItem.bav.rang.newValue" :key="index" style="display: flex; flex-direction: row">  <!-- 多选 -->
+                      <el-date-picker
+                        style="width: 220px;"
+                        v-model="item.value"
+                        type="daterange"
+                        range-separator="至"
+                        start-placeholder="开始日期"
+                        end-placeholder="结束日期"
+                        value-format="yyyy-MM-dd"
+                        :picker-options="getPickerOptions(childItem.tagCode)"
+                        @change="HandleChange"
+                      >
+                      </el-date-picker>
+                      <el-button v-if="index !== 0" type="text" @click="removeRange(index)" class="remove-btn">删除</el-button>
+                    </span>
                   </span>
                   <el-button type="text" @click="addRange" class="add-btn">添加</el-button>
                 </span>
@@ -138,18 +139,19 @@ export default {
       rangeTypeList: [],
       weekRange: [],
       timeRange: [],
-      pickerOptions0: {
-        disabledDate: (time) => {
-          const day1 = 90 * 24 * 3600 * 1000
-          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          let minTime = Date.now() - day1
-          return time.getTime() > maxTime || time.getTime() < minTime
-        }
-      },
+      // pickerOptions0: {
+      //   disabledDate: (time) => {
+      //     const day1 = 90 * 24 * 3600 * 1000
+      //     let maxTime = Date.now() - 1 * 24 * 3600 * 1000 // 固定周期支持选择未来最多30天
+      //     let minTime = Date.now() - day1
+      //     return time.getTime() > maxTime || time.getTime() < minTime
+      //   }
+      // },
       pickerOptions720: {
         disabledDate: (time) => {
-          const day1 = 720 * 24 * 3600 * 1000
-          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          const day1 = 720 * 24 * 3600 * 1000 // 两年
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let maxTime = Date.now() + 30 * 24 * 3600 * 1000 // 固定周期支持选择未来最多30天
           let minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
         }
@@ -161,13 +163,8 @@ export default {
         'bav.rang.value': [
           { type: 'array', required: true, message: '请输入周期范围', trigger: ['change', 'blur'] }
         ]
-      }
-      // newRangeFlag: false
-    }
-  },
-  computed: {
-    newRangeFlag () {
-      return !!this.childItem.bav.rang.newValue || (this.childItem.bav.rang.newValue && this.childItem.bav.rang.newValue.length > 0)
+      },
+      newRangeFlag: false
     }
   },
   props: {
@@ -195,6 +192,7 @@ export default {
         this.isSelectedDay = false
         // 判断是否选择了【天数】
         this.handelIsSelectedDay(list)
+        this.newRangeFlag = !!(this.childItem.bav.rang.newValue && this.childItem.bav.rang.newValue.length > 0)
       },
       deep: true,
       immediate: true
@@ -242,6 +240,51 @@ export default {
     }
   },
   methods: {
+     getPickerOptions (tagCode) {
+      if (tagCode === 'BAV0003') { // 【购买行为】
+        // return this.pickerOptions720  // 可选两年内的周期
+        return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来30天】 的周期内，最大跨度 【720天】；
+      } else if (tagCode === 'BAV0008') { // 【起播行为】
+        return this.pickerOptionsDayinRange(90, 180)  // 可选在 【过去6个月 + 未来30天】 的周期内，最大跨度【90天】；
+      } else if (tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015' ) { // 【续费包签约状态】 、【连续包签约-续费-解约次数】、【下单未支付】
+        return this.pickerOptionsDayinRange20211226(30)  // 数据最早时间：【2021-12-26】，数据最晚时间：【未来30天】，最大跨度：【30天】；
+      } else { // 其他
+        return this.pickerOptionsDayinRange(30, 180) // 可选在 【过去6个月 + 未来30天】 的周期内，最大跨度 【30天】；
+      }
+    },
+    pickerOptionsDayinRange20211226 (day) {
+      let _minTime = null
+      let _maxTime = null
+
+      return {
+        onPick (time) {
+          // 如果选择了只选择了一个时间
+          if (!time.maxDate) {
+            
+            let timeRange = day * 24 * 60 * 60 * 1000
+            _minTime = time.minDate.getTime() - timeRange // 最小时间
+            _maxTime = time.minDate.getTime() + timeRange // 最大时间
+            // 如果选了两个时间，那就清空本次范围判断数据，以备重选
+          } else {
+            _minTime = _maxTime = null
+          }
+        },
+        disabledDate: (time) => {
+          // const day1 = range * 24 * 3600 * 1000 
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let maxTime = Date.now() + 30 * 24 * 3600 * 1000
+          let minTime = +new Date("2021-12-25");
+
+          // onPick后触发
+          // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
+          if (_minTime && _maxTime) {
+            return time.getTime() > maxTime || time.getTime() < minTime || time.getTime() < _minTime || time.getTime() > _maxTime
+          } else {
+            return time.getTime() > maxTime || time.getTime() < minTime
+          }
+        }
+      }
+    },
     pickerOptionsDayinRange (day, range) { // element日期范围选择 range 天内 开始和结束不超 day天
       let _minTime = null
       let _maxTime = null
@@ -259,8 +302,9 @@ export default {
           }
         },
         disabledDate: (time) => {
-          const day1 = range * 24 * 3600 * 1000 // 2年
-          let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          const day1 = range * 24 * 3600 * 1000 
+          // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
+          let maxTime = Date.now() + 30 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
 
           // onPick后触发
@@ -276,32 +320,30 @@ export default {
     getMaxDay (tagCode) { // 动态周期
       if (tagCode === 'BAV0003') { // 【购买行为】
         return 720
-      } else if (tagCode === 'BAV0008') { // 【起播行为】
+      } else if (tagCode === 'BAV0008' || tagCode === 'BAV0013') { // 【起播行为】 || 【续费包签约状态】
         return 90
+      } else if (tagCode === 'BAV0014') { // 【连续包签约-续费-解约次数】
+        return 180
       } else { // 其他
         return 30
       }
     },
-    getPickerOptions (tagCode) {
-      if (tagCode === 'BAV0003') { // 【购买行为】
-        return this.pickerOptions720
-      } else if (tagCode === 'BAV0008') { // 【起播行为】
-        return this.pickerOptionsDayinRange(90, 180)
-      } else { // 其他
-        return this.pickerOptionsDayinRange(30, 180)
-      }
-    },
+   
     HandleChange (val) {
       this.childItem.bav.rang.value = val // 给一个值，避免出现必选红框
     },
     addRange () {
-      this.newRangeFlag = true
-      const date = this.childItem.bav.rang.value
-      if (!this.childItem.bav.rang.newValue) {
-        this.$set(this.childItem.bav.rang, 'newValue', [{ value: date }, { value: [] }])
-      } else {
-        this.childItem.bav.rang.newValue.push({ value: [] })
-      }
+      // newValue, 多选固定周期的时候，用到这个字段
+        this.newRangeFlag = true
+        // this.$nextTick(() => {
+        const date = this.childItem.bav.rang.value
+        if (!this.childItem.bav.rang.newValue) {
+          this.$delete(this.childItem.bav.rang, 'newValue')
+          this.$set(this.childItem.bav.rang, 'newValue', [{ value: date }, { value: [] }])
+        } else {
+          this.childItem.bav.rang.newValue.push({ value: [] })
+        }
+        // })
     },
 
     removeRange (index) {
@@ -316,6 +358,8 @@ export default {
       item.field = list[0].field
       if (type === 'fixed') {
         this.childItem.bav.rang.value = []
+        this.childItem.bav.rang.newValue = undefined
+        this.newRangeFlag = false
       } else if (type === 'move') {
         this.childItem.bav.rang.value = ''
       }

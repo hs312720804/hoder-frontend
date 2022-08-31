@@ -178,6 +178,7 @@ export default {
         if (valid) {
           let addForm = JSON.stringify(this.addForm)
           addForm = JSON.parse(addForm)
+
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
           if (mode === 1) {
             if (this.addForm.recordId) {
@@ -318,12 +319,4 @@ export default {
     color #000
     font-size 12px
     margin-left 100px
-.checkbox--red
-    color #f56c6c
-.checkbox--green
-    color #67c23a
-.checkbox--blue
-    color #409eff
-.checkbox--yellow
-    color #e6a23c
 </style>

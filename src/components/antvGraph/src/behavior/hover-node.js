@@ -1,3 +1,4 @@
+import eventBus from '@antvGraph/utils/eventBus'
 export default {
   getEvents () {
     return {
@@ -11,6 +12,14 @@ export default {
     const item = e.item
     const graph = self.graph
     const group = item.getContainer()
+    if (e.target.get('className') === 'hoverTitleName') { // 权重
+      // e.target.attr('class', 'tips-demo')
+      // console.log('11111111e==========>', e)
+      // console.log('11111111target==========>', item)
+
+      // handleHoverTitleName
+      eventBus.$emit('handleHoverTitleName', { target: item, select: true, event: e })
+    }
     if (e.target._attrs.isOutPointOut || e.target._attrs.isOutPoint) {
       group.find(g => {
         if (g._attrs.isInPoint || g._attrs.isOutPoint) {
@@ -48,6 +57,10 @@ export default {
     const item = e.item
     const graph = self.graph
     const group = item.getContainer()
+
+    // 节点鼠标离开的时候，隐藏名称悬浮框
+    eventBus.$emit('handleHoverTitleName', { onMouseleave: true })
+
     group.find(g => {
       if (g._attrs.isInPoint || g._attrs.isOutPoint) {
         g.attr('fill', '#fff')

@@ -22,6 +22,7 @@
       :isUpload="false"
       :localCrowdId="localCrowdId"
       :crowdName="crowdName"
+      :uploadTipMessage="uploadTipMessage"
     >
       <!-- 解构插槽 Prop -->
       <template #default="slotData">
@@ -74,7 +75,8 @@ export default {
       crowdName: '',
       addOrEditStatus: '',
       publicPath: process.env.BASE_URL,
-      templTagName: 'static/localtag.xlsx'
+      templTagName: 'static/localtag.xlsx',
+      uploadTipMessage: ''
     }
   },
   created () {},
@@ -92,6 +94,9 @@ export default {
         this.$service.addLocalCrowd(formData, '保存成功').then(() => {
           this.$root.$emit('local-label-list-refresh')
           this.handleCloseAddForm()
+        }).catch(err => {
+          // 不符合要求的Mac在上传框里提示
+          this.uploadTipMessage = err.message
         })
       } else {
         this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
@@ -118,6 +123,7 @@ export default {
     },
     handleCloseAddForm () {
       this.showAdd2 = false
+      this.uploadTipMessage = ''
       this.templTagName = 'static/localtag.xlsx'
     },
     handleTableSelected (val, mode) {

@@ -45,7 +45,7 @@
             </temp-label-index>
         </el-tab-pane>
 
-         <el-tab-pane label="组合标签" name="specialTag">
+        <el-tab-pane label="组合标签" name="specialTag">
             <special-tag
                 :tagName="myCollectTagName"
                 :checkList="checkList"
@@ -118,6 +118,18 @@
             </temp-label-index>
         </el-tab-pane>
 
+        <el-tab-pane label="人群标签" name="crowdLabel">
+            <CrowdLabel
+                :show-selection="showSelection"
+                :currentSelectTag="tagList"
+                :checkList="tempCheckList"
+                :crowdType=2
+                @get-table-selected="handleGetTableSelectedData"
+                @change-checkList="handleTempCheckListChange"
+            >
+            </CrowdLabel>
+        </el-tab-pane>
+
         <el-tab-pane label="我的收藏" name="myCollect">
           <my-collect
             :currentSelectTag="tagList"
@@ -130,6 +142,18 @@
           >
           </my-collect>
         </el-tab-pane>
+
+        <!-- <el-tab-pane label="模型标签" name="modelLabel">
+            <ModelLabelIndex
+                :checkList="checkList"
+                :show-selection="showSelection"
+                :currentSelectTag="tagList"
+                @clear-search="handleClearSearch"
+                @change-checkList="handleCheckListChange"
+                @get-table-selected="handleGetTableSelectedData"
+            >
+            </ModelLabelIndex>
+        </el-tab-pane> -->
 
       </el-tabs>
     </div>
@@ -160,7 +184,8 @@
         <span class="checkbox--yellow">黄色</span>为实时标签,
         <span class="checkbox--orange">紫色</span>为动态指标,
         <span class="checkbox--orange2">棕色</span>为组合标签,
-        <span class="checkbox--cyan">青色</span>为行为标签
+        <span class="checkbox--cyan">青色</span>为行为标签,
+        <span class="checkbox--gray">灰色</span>为人群标签
       </div>
       <!-- <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -201,6 +226,8 @@ import LocalLabelIndex from '../LabelSquare/localLabel/Index'
 import specialTag from '../LabelSquare/SpecialTag'
 import CustomTag from '../LabelSquare/CustomTag'
 import ThirdPartyTag from '../LabelSquare/ThirdPartyTag'
+import ModelLabelIndex from '../LabelSquare/ModelLabel/ModelLabelIndex.vue'
+import CrowdLabel from '../LabelSquare/crowdLabel/Index.vue'
 
 export default {
   name: 'labelSquareAA',
@@ -211,7 +238,9 @@ export default {
     specialTag,
     LocalLabelIndex,
     CustomTag,
-    ThirdPartyTag
+    ThirdPartyTag,
+    ModelLabelIndex,
+    CrowdLabel
   },
   props: ['mode', 'initTagList', 'usedTagList'],
   data () {
@@ -229,7 +258,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       showSelection: true,
       addForm: this.genDefaultForm(),
@@ -393,6 +424,16 @@ export default {
           // 自定义标签
           this.fetchTempCheckListData()
           this.$root.$emit('third-tag-list-refresh')
+          break
+        case 'modelLabel':
+          // 模型标签
+          // this.fetchListData()
+          this.$root.$emit('model-tag-list-refresh')
+          break
+        case 'crowdLabel':
+          // 人群标签
+          // this.fetchListData()
+          this.$root.$emit('crowd-label-list-refresh')
           break
       }
     },
@@ -572,6 +613,17 @@ export default {
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
   }
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
+  }
 }
 
 .search-input {
@@ -604,32 +656,7 @@ export default {
   margin-left: 100px;
 }
 
-.checkbox--red {
-  color: #f56c6c;
-}
 
-.checkbox--green {
-  color: #67c23a;
-}
-
-.checkbox--blue {
-  color: #409eff;
-}
-
-.checkbox--yellow {
-  color: #e6a23c;
-}
-
-.checkbox--orange {
-  color: #512DA8;
-}
-
-.checkbox--orange2 {
-  color: #795548;
-}
-.checkbox--cyan {
-  color #00bcd4;
-}
 .fix-bottom-form {
   position: fixed;
   bottom: 0;

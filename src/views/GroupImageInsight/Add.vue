@@ -15,6 +15,9 @@
                 <div v-if="form.originFileName">{{ form.originFileName }} 上传成功</div>
                 <div v-if="selectedFile !== ''">{{ selectedFile.name }} 上传成功</div>
                 <div class="error-tips">{{ message }}</div>
+
+                <!-- 不符合要求的Mac在上传框里提示 -->
+                <div class="error-tips">{{ uploadTipMessage }}</div>
             </el-form-item>
             <el-form-item>
                 <el-button type="primary" @click="submitForm('addForm')">保存</el-button>
@@ -58,6 +61,10 @@ export default {
       default: undefined
     },
     crowdName: {
+      type: String,
+      default: undefined
+    },
+    uploadTipMessage: {
       type: String,
       default: undefined
     }

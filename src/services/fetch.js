@@ -2,6 +2,21 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
+
+// 响应拦截器, 401 状态码时，跳转至登录页
+axios.interceptors.response.use((response) => {
+  // console.log('response===', response)
+  return response
+}, function (error) {
+  if (error.response && error.response.status === 401) {
+    // window.location = '/login'
+    // window.location.reload()
+    console.log('token 失效啦')
+  } else {
+    return Promise.reject(error)
+  }
+})
+
 export default function fetch ({
   method = 'get',
   url,
@@ -27,8 +42,8 @@ export default function fetch ({
       return qs.stringify(params, { indices: false })
     }
   }
-  // debugger
   if (url !== '/api/login') option.headers = { Authorization: this.state.token }
+  // if (url !== '/api/login') option.headers = { Authorization: 'this.state.token' }
   if (option.contentType) option.headers['Content-Type'] = option.contentType
   return axios(option)
     .then(function ({ data }) {
@@ -37,8 +52,15 @@ export default function fetch ({
       if (isFileStream) {
         return isReturnAllInfor ? data : data.data
       }
-      if (codeFormat === 0 || codeFormat === 1000) {
-        return isReturnAllInfor ? data : data.data
+      if (codeFormat === 0 || codeFormat === 1000 || codeFormat === 3000) {
+        // return isReturnAllInfor ? data : data.data
+        if (isReturnAllInfor) {
+          return data
+        } else if (!data.data && data.result) {
+          return {data: data.result}
+        } else {
+          return data.data
+        }
       } else if (codeFormat === 400001 || codeFormat === 9999) {
         location.href = location.origin + location.pathname + '#/login'
       } else {

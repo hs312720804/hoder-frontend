@@ -22,7 +22,7 @@
             ref="crowdDefineForm"
             label-width="140px"
           >
-            <el-form-item label="人群名称" prop="launchName">
+            <el-form-item label="标签名称" prop="launchName">
               <el-input
                 size="small"
                 v-model="crowdDefineForm.launchName"
@@ -177,7 +177,7 @@
               </el-form-item>
               <div class="basic-line-error">{{ basicLineErrorText }}</div>
             </div>
-            <el-form-item label="该人群所属的视频源">
+            <el-form-item label="该标签所属的视频源">
               <el-radio-group
                 v-model="crowdDefineForm.videoSource"
                 :disabled="
@@ -350,7 +350,7 @@ export default {
     this.getAddList()
     this.handleGetVideoList()
     if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
-      this.title = '编辑临时人群'
+      this.title = '编辑临时标签'
       if (this.crowdType === 3 || this.crowdType === 4) this.title = '查看'
       // this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(data => {
       this.$service
@@ -388,7 +388,7 @@ export default {
             videoSource: row.videoSource === '0' ? '0' : '1',
             videoSourceIds:
               row.videoSource === '0' ? [] : row.videoSource.split(','),
-            checkRecvPercentage: Boolean(row.checkRecvPercentage)  
+            checkRecvPercentage: Boolean(row.checkRecvPercentage)
           }
 
           this.status = this.editStatus
@@ -396,7 +396,7 @@ export default {
           if (this.crowdType === 3 || this.crowdType === 4) this.status = 2
         })
     } else {
-      this.title = '新增临时人群'
+      this.title = '新增临时标签'
     }
   },
   methods: {

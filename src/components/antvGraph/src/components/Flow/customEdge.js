@@ -100,7 +100,7 @@ const customEdge = {
             ]
           ]
         }
-        let lineWidth = 1
+        let lineWidth = 5 // 箭头宽度
         lineWidth = lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE
         const width = lineWidth * 10 / 3
         const halfHeight = lineWidth * 4 / 3

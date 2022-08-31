@@ -1,19 +1,38 @@
 <template>
   <div class="page">
     <div :id="pageId" class="graph-container" style="position: relative;"></div>
+    <!-- 名称悬浮框 -->
+    <div v-show="!!currentNode" class="hover_con" :style="positionStyle">
+      {{currentNode}}
+    </div>
+
+    <!-- v-if 用于每次打开都重新挂载 -->
     <el-dialog
+      v-if="dialogVisible"
       title="设置动态流转条件"
       :visible.sync="dialogVisible"
       width="800px"
     >
-      <DynamicPeopleConditionsCom
+      <SetCirculationConditionsCom
         :crowdId="crowdId"
-        :allCrowdRule="dynamicRuleProvide.allCrowd"
+        :graph="graph"
         @handleCancel="dialogVisible = false"
-        @handleSave="handleSave"
-        >
-      </DynamicPeopleConditionsCom>
+        @handleSave="handleSave">
+      </SetCirculationConditionsCom>
+    </el-dialog>
 
+    <el-dialog
+      v-if="entryDialogVisible"
+      title="设置进入条件"
+      :visible.sync="entryDialogVisible"
+      width="800px"
+    >
+      <SetEntryConditionsCom
+        :crowdId="crowdId"
+        :graph="graph"
+        @handleCancel="entryDialogVisible = false"
+        @handleSave="handleSaveEntryCondition">
+      </SetEntryConditionsCom>
     </el-dialog>
   </div>
 </template>
@@ -24,21 +43,27 @@ import G6 from '@antv/g6/build/g6'
 import { initBehavors } from '@antvGraph/behavior'
 import eventBus from '@antvGraph/utils/eventBus'
 import Grid from '@antv/g6/build/grid'
-// import DynamicPeopleConditionsCom from '@/DynamicPeopleConditions copy'
-import DynamicPeopleConditionsCom from '@/components/dynamicPeople/DynamicPeopleConditionsCom'
+// import SetCirculationConditionsCom from '@/DynamicPeopleConditions copy'
+import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
+import SetEntryConditionsCom from '@/components/dynamicPeople/SetEntryConditionsCom.vue'
 
 export default {
   components: {
-    DynamicPeopleConditionsCom
+    SetCirculationConditionsCom,
+    SetEntryConditionsCom
   },
-  inject: ['dynamicRuleProvide'],
   data () {
     return {
       pageId: 'graph-container',
       graph: null,
       dialogVisible: false,
       crowdId: undefined, // 小人群ID
-      allCrowdRule: []
+      allCrowdRule: [],
+      currentTarget: null,
+      entryDialogVisible: false,
+      currentNode: '',
+      popUpShow: false,
+      positionStyle: { top: '0px', left: '0px' }
     }
   },
   props: {
@@ -65,6 +90,23 @@ export default {
     this.bindEvent()
   },
   methods: {
+    // 保存入口条件
+    handleSaveEntryCondition (paramsObj) {
+      const parmas = {
+        selectModelGroupValue: paramsObj.selectModelGroupValue,
+        enterCondition: JSON.stringify(paramsObj.enterCondition), // 规则
+        tagIds: paramsObj.tagIds // 规则的 tagkey 集合
+      }
+      const model = {
+        selectModelGroupValue: parmas.selectModelGroupValue,
+        enterCondition: parmas.enterCondition,
+        tagIds: parmas.tagIds
+      }
+
+      this.graph.update(this.currentTarget, model) // 更新 入口条件 数据
+      this.entryDialogVisible = false
+    },
+    // 保存流转条件
     handleSave (paramsObj) {
       const parmas = {
         policyId: paramsObj.policyId,
@@ -72,9 +114,37 @@ export default {
         dynamicJson: JSON.stringify(paramsObj.rulesJson),
         applyAll: paramsObj.applyAll ? 1 : 0
       }
-      this.$service.setDynamicRule(parmas, '操作成功').then(res => {
-        this.dialogVisible = false
-      })
+      // this.$service.setDynamicRule(parmas, '操作成功').then(res => {
+
+      if (parmas.applyAll) { // 应用全部人群
+        const graphData = this.graph.save()
+        const nodes = graphData.nodes
+
+        const setApplyAllNodes = nodes.map(item => {
+          return {
+            ...item,
+            dynamicJson: parmas.dynamicJson,
+            applyAll: parmas.applyAll // 保存【应用全部人群】数据
+          }
+        })
+
+        const graphData2 = { // 覆盖nodes属性
+          ...graphData,
+          nodes: setApplyAllNodes
+        }
+        this.graph.read(graphData2)
+      } else { // 修改单个人群
+        const model = {
+          dynamicJson: parmas.dynamicJson,
+          applyAll: parmas.applyAll // 保存【应用全部人群】数据
+        }
+
+        this.graph.update(this.currentTarget, model) // 更新 流转规则 数据
+      }
+
+      this.dialogVisible = false
+
+      // })
     },
     init () {
       const height = this.height - 42
@@ -97,12 +167,29 @@ export default {
             'keyboard',
             'customer-events',
             'add-menu'
+            // {
+            //   type: 'tooltip',
+            //   formatText: function formatText (model) {
+            //     console.log('model------->', model)
+            //     const text = model.crowdName
+
+            //     return text
+            //   }
+            // }
           ],
           mulitSelect: ['mulit-select'],
           addEdge: ['add-edge'],
           moveNode: ['drag-item']
         }
       })
+      // 初始化为线型布局
+      this.graph.updateLayout({
+        type: 'grid',
+        begin: [ 20, 20 ],
+        width: width - 20,
+        height: height - 20
+      })
+
       const { editor, command } = this.$parent
       editor.emit('afterAddPage', { graph: this.graph, command })
       editor.on('changeNodeData')
@@ -137,26 +224,24 @@ export default {
             _this.node = null
           }
         })
-        eventBus.$on('nodeSettingRule', item => {
+        eventBus.$on('nodeSettingRule', item => { // 设置流转条件
           const selectNode = item.target.getModel()
-          // const allCrowd = this.dynamicRuleProvide.allCrowd
-
-          // console.log('1111node====>', selectNode)
 
           _this.crowdId = selectNode.id
-          // _this.crowdRule = allCrowd.find(item => item.crowdId == _this.crowdId)
-          // _this.allCrowdRule = allCrowd.map(item => {
-          //   return {
-          //     ...item,
-          //     dynamicJson: item.dynamicJson ? JSON.parse(item.dynamicJson) : null
-          //   }
-          // })
-          // this.dynamicRuleProvide.allCrowd = _this.allCrowdRule
-          // item.crowdId == _this.crowdId)
+          _this.currentTarget = item.target // 当前操作对象
+          this.$nextTick(() => {
+            _this.dialogVisible = true
+          })
+        })
 
-          _this.dialogVisible = true
+        eventBus.$on('nodeSettingEntry', item => { // 设置入口条件
+          const selectNode = item.target.getModel()
 
-          // console.log('crowdRule=====', _this.allCrowdRule)
+          _this.crowdId = selectNode.id
+          _this.currentTarget = item.target // 当前操作对象
+          this.$nextTick(() => {
+            _this.entryDialogVisible = true
+          })
         })
 
         eventBus.$on('changeArithmeticType', item => { // 修改出口方式
@@ -176,19 +261,20 @@ export default {
 
           console.log('changeArithmeticType=====', selectNode)
 
-          const parmas = {
-            policyId: selectNode.policyId,
-            crowdId: selectNode.crowdId,
+          // const parmas = {
+          //   policyId: selectNode.policyId,
+          //   crowdId: selectNode.crowdId,
+          //   arithmetic: i
+          // }
+          // this.$service.setDynamicRule(parmas).then(res => {
+          const model = {
             arithmetic: i
           }
-          this.$service.setDynamicRule(parmas).then(res => {
-            const model = {
-              arithmetic: i
-            }
 
-            this.graph.update(item.target, model)
-          })
+          this.graph.update(item.target, model) // 更新 出口方式 数据
+          // })
         })
+
         eventBus.$on('changeWeight', item => { // 修改权重
           const selectNode = item.target.getModel()
           _this.$prompt('请输入权重（权重越大，比重越高）', '', {
@@ -199,22 +285,18 @@ export default {
             inputValue: selectNode.weight || 0,
             closeOnClickModal: false
           }).then(({ value }) => {
-            // _this.$message({
-            //   type: 'success',
-            //   message: '你的邮箱是: ' + value
-            // })
-            const parmas = {
-              policyId: selectNode.policyId,
-              crowdId: selectNode.crowdId,
+            // const parmas = {
+            //   policyId: selectNode.policyId,
+            //   crowdId: selectNode.crowdId,
+            //   weight: value
+            // }
+            // this.$service.setDynamicRule(parmas).then(res => {
+            const model = {
               weight: value
             }
-            this.$service.setDynamicRule(parmas).then(res => {
-              const model = {
-                weight: value
-              }
 
-              this.graph.update(item.target, model)
-            })
+            this.graph.update(item.target, model) // 更新 优先级 数据
+            // })
           }).catch(() => {
             _this.$message({
               type: 'info',
@@ -222,16 +304,45 @@ export default {
             })
           })
         })
+
+        eventBus.$on('handleHoverTitleName', obj => { // hover
+          // 鼠标离开时，隐藏悬浮框
+          if (obj.onMouseleave) {
+            _this.currentNode = ''
+            _this.positionStyle = { top: '0px', left: '0px' }
+            return
+          }
+          const selectNode = obj.target.getModel()
+          // console.log('handleHoverTitleName=====', selectNode)
+          _this.currentNode = selectNode.crowdName
+          // console.log('handleHoverTitleName=====', _this.currentNode)
+          // console.log('obj++++++++++>>>', obj)
+          // const x = obj.event.x - 90 + 'px'
+          // const y = obj.event.y - 80 + 'px'
+          // const x = selectNode.x - 80 + 'px'
+          // const y = selectNode.y + 30 + 'px'
+          const x = obj.event.clientX - 300 + 'px'
+          const y = obj.event.clientY - 300 + 'px'
+          _this.positionStyle = { top: y, left: x }
+        })
       })
     }
 
   }
 }
 </script>
+<style lang="stylus">
 
-<style lang="stylus" scoped>
-
-.form-class{
-  width 100%
+.hover_con{
+  background: #303133;
+  color: #FFF;
+  position: absolute;
+  border-radius: 4px;
+  padding: 10px;
+  z-index: 2000;
+  font-size: 12px;
+  line-height: 1.2;
+  min-width: 10px;
+  word-wrap: break-word;
 }
 </style>

@@ -89,7 +89,7 @@ import { mapGetters } from 'vuex'
 import createCrowd from '@/views/OneTouchDrop/CreateCrowd'
 import LaunchToBusiness from '@/views/OneTouchDrop/LaunchToBusinessPlatform'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
-import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
+// import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
   name: 'index',
   components: {
@@ -97,7 +97,7 @@ export default {
     createCrowd,
     LaunchToBusiness,
     DynamicPeopleSetting,
-    DynamicPeopleConditions
+    // DynamicPeopleConditions
   },
   props: {
     initPolicyId: {

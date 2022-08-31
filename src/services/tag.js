@@ -64,7 +64,7 @@ export function getTagDictDatabaseList (params) {
 export function getBavTagList (params) {
   return this.fetch({
     method: 'get',
-    url: `api/auto/getBehaviorTagDict/${params.id}`
+    url: `/api/auto/getBehaviorTagDict/${params.id}`
   })
 }
 
@@ -72,7 +72,7 @@ export function getBavTagList (params) {
 export function moduleMatch (params) {
   return this.fetch({
     method: 'get',
-    url: `api/auto/module/match/${params.type}`,
+    url: `/api/auto/module/match/${params.type}`,
     params
   })
 }
@@ -81,7 +81,7 @@ export function moduleMatch (params) {
 export function tvContentMatch (params) {
   return this.fetch({
     method: 'get',
-    url: `api/auto/play/tvContent/${params.source}`,
+    url: `/api/auto/play/tvContent/${params.source}`,
     params
   })
 }
@@ -90,7 +90,7 @@ export function tvContentMatch (params) {
 export function getTvEpisodes (params) {
   return this.fetch({
     method: 'get',
-    url: `api/auto/play/tvEpisodes/${params.source}/${params.id}`,
+    url: `/api/auto/play/tvEpisodes/${params.source}/${params.id}`,
     params
   })
 }
@@ -99,7 +99,7 @@ export function getTvEpisodes (params) {
 export function getAppointmentInfo (params) {
   return this.fetch({
     method: 'get',
-    url: `api/auto/getAppointmentInfo`,
+    url: `/api/auto/getAppointmentInfo`,
     params
   })
 }
@@ -108,7 +108,7 @@ export function getAppointmentInfo (params) {
 export function manualLaunch (params) {
   return this.fetch({
     method: 'get',
-    url: `api/multiVersionCrowd/manualLaunch`,
+    url: `/api/multiVersionCrowd/manualLaunch`,
     params
   })
 }
@@ -117,7 +117,7 @@ export function manualLaunch (params) {
 export function getManualLaunchList (params) {
   return this.fetch({
     method: 'get',
-    url: `api/multiVersionCrowd/manualLaunchList`,
+    url: `/api/multiVersionCrowd/manualLaunchList`,
     params
   })
 }

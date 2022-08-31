@@ -569,7 +569,6 @@ export default {
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
-      debugger
       let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
       // 改变数据时将所有的checkbox归位false
@@ -585,7 +584,6 @@ export default {
         this.qiBoOptions = []
         this.qiboParams.page = 1 // 页码归1
       }
-      debugger
       childItem.child = this.getQiBoValListByVals({
         vals,
         behaviorValue,

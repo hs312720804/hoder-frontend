@@ -17,8 +17,7 @@
       <el-menu
         :default-active="activeRouteName"
         class="main_menu menu"
-        :collapse="isCollapseMenu"
-      >
+        :collapse="isCollapseMenu">
         <template v-for="(item, index) in $appState.menus">
           <el-menu-item
                   v-if="item.child.length === 0"
@@ -189,7 +188,9 @@ export default {
         '/manager/notice/index': 'notice',
         '/launchAdmin': 'launchTabList',
         '/launchAnalysis': 'launchAnalysis',
+        '/launchAnalysisTable': 'launchAnalysisTable',
         '/anomaly/index': 'anomalyEcharts',
+        '/crowdCirculationTrack': 'crowdCirculationTrack',
         '/myPolicy/index': 'myPolicy',
         '/groupImageInsight/index': 'groupImageInsight',
         '/userTagsSearch/index': 'userTagsSearch',
@@ -197,7 +198,8 @@ export default {
         '/oneTouchDrop/index': 'oneTouchDrop',
         '/specialTag/index': 'specialTag',
         '/launchHelper/status': 'launchStatus',
-        '/launchHelper/resendCommand': 'resendCommand'
+        '/launchHelper/resendCommand': 'resendCommand',
+        '/hitQuery': 'hitQuery'
       },
       activeName: 'first',
       updateMessage: [],

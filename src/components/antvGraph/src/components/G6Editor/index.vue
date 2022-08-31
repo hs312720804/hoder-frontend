@@ -1,13 +1,10 @@
 <template>
   <div id="mountNode" :style="{ width: width +'px' }" ref="mountNode">
-    <div class="editor" >
-
+    <div class="editor">
       <toolbar />
-      <div style="height: 42px;"></div>
       <div class="bottom-container">
         <minimap />
         <!-- <detail-panel /> -->
-
         <page :height="height" :width="width" :data="data" />
       </div>
     </div>
@@ -43,7 +40,7 @@ export default {
     },
     width: {
       type: Number,
-      default: document.documentElement.clientWidth
+      default: document.documentElement.clientWidth - 20
     },
     data: {
       type: Object,

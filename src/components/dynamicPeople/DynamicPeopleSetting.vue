@@ -15,6 +15,7 @@
             占比：
             <el-input
               v-model="menu.flowNum"
+              style="width: 70px"
               placeholder=""
               class="flow-num"
               @blur="numberInt($event)">
@@ -28,13 +29,19 @@
           >
             <!-- v-dragging="{ list: menu.list, item: field, group: 'fieldsTab' }" -->
             <!-- < > -->
+              <!-- <el-tooltip class="item" effect="dark" content="Top Left 提示文字" placement="top-start">
+                <el-button>上左</el-button>
+              </el-tooltip> -->
+
               <el-input
                 v-model="field.priority"
                 placeholder="优先级"
                 clearable
                 style="width: 100px;"
+                @focus="inputFocus($event, key)"
                 @blur="numberInt($event)">
               </el-input>
+              <div v-if="focusIndex === key" class="tip-box">数字越大，优先级越高，顺序流转和循环流转时优先级高的人群优先命中</div>
               <span class="split-line">—</span>
               <el-input
                 v-model="field.crowdName"
@@ -138,8 +145,9 @@ export default {
         controlGroup: [],
         ab: 0,
         // controlGroupName: '',
-        flowNum: 50
-      }
+        flowNum: 100
+      },
+      focusIndex: -1
     }
   },
   created () {
@@ -148,14 +156,14 @@ export default {
         this.menu = res && res.dynamicCrowd ? res : {
           dynamicCrowd: [{
             crowdName: '',
-            priority: 1
+            priority: ''
           }, {
             crowdName: '',
-            priority: 2
+            priority: ''
           }],
           controlGroup: [],
           ab: 0,
-          flowNum: 50
+          flowNum: 100
         }
         this.menu.dynamicCrowd = this.menu.dynamicCrowd || []
         this.menu.controlGroup = this.menu.controlGroup || []
@@ -163,6 +171,10 @@ export default {
     }
   },
   methods: {
+    // v-if 和 v-show 的区别
+    // v-if 是通过动态控制元素显示或者消失。
+    // v-show 是通过display: show 或者 none
+
     // number (e) {
     //   console.log('e===', e)
 
@@ -170,8 +182,11 @@ export default {
 
     //   this.famount = this.famount.replace('.', '')
     // },
+    inputFocus (e, index) {
+      this.focusIndex = index
+    },
     numberInt (e) {
-      console.log(e.target.value)
+      // console.log(e.target.value)
       let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
       console.log(flag)
 
@@ -186,10 +201,10 @@ export default {
     },
     // 添加字段
     handleAddFiled () {
-      const len = this.menu.dynamicCrowd.length + 1 || 1
+      // const len = this.menu.dynamicCrowd.length + 1 || 1
       this.menu.dynamicCrowd.push({
         crowdName: '',
-        priority: len
+        priority: ''
       })
     },
     handleAddControl () {
@@ -331,8 +346,9 @@ export default {
   background-color: rgba(249,249,249,0.85);
   margin-bottom 20px
 }
-.filed-row{
-  margin-bottom 10px
+.filed-row {
+  margin-bottom 15px
+  position relative
 }
 .split-line{
   margin 0 10px
@@ -352,5 +368,15 @@ export default {
 }
 .flow-num{
   width 50px
+}
+.tip-box{
+  position: absolute;
+  z-index: 99;
+  width: 999px;
+  color: #999;
+  font-size: 12px;
+  top: 36px;
+  height: 15px;
+  line-height: 15px;
 }
 </style>

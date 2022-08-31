@@ -39,6 +39,10 @@
 export default {
   name: 'viewEffectDialog',
   props: {
+    crowdId: {
+      type: [Number, String],
+      default: ''
+    },
     policyId: {
       type: [Number, String],
       default: ''
@@ -56,6 +60,64 @@ export default {
         }
       },
       rowObj: [{ // 图表信息，需要和后端约定好名称
+        'crowdGroup_hit_l_1': { type: 'line', title: '人群命中次数对比', span: 15 },
+        'crowdGroup_hit_h_1': { type: 'bar', title: '人群命中次数汇总对比', span: 9 }
+      }, {
+        'crowdGroup_l_2': { type: 'line', title: '产品包曝光设备量对比（个）', span: 15 },
+        'crowdGroup_h_2': { type: 'bar', title: '产品包曝光设备量汇总对比', span: 9 }
+      }, {
+        'crowdGroup_l_3': { type: 'line', title: '付费设备量对比（个）', span: 15 },
+        'crowdGroup_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
+      }, {
+        'crowdGroup_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
+        'crowdGroup_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }
+      }, {
+        'crowdGroup_l_5': { type: 'line', title: '客单价对比（元）', span: 15 },
+        'crowdGroup_h_5': { type: 'bar', title: '平均客单价汇总对比', span: 9 }
+      }, {
+        'crowdGroup_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
+        'crowdGroup_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
+      }, {
+        'crowdGroup_l_8': { type: 'line', title: '付费单量对比（单）', span: 15 },
+        'crowdGroup_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
+      }, {
+        'crowdGroup_hit_h_7': { type: 'bar', title: '各子人群命中次数对比（个）', span: 24 }
+      }
+      ]
+    }
+  },
+  watch: {
+    // timeRange: {
+    //   handler (val) {
+    //     this.initChart()
+    //   }
+    // },
+    crowdId: {
+      handler (val) {
+        this.show = false
+        this.initRange()
+        this.initChart()
+        this.$nextTick(() => {
+          this.show = true
+        })
+      },
+      immediate: true
+    },
+    policyId: {
+      handler (val) {
+        this.show = false
+        this.initRange()
+        this.initChart()
+        this.$nextTick(() => {
+          this.show = true
+        })
+      },
+      immediate: true
+    }
+  },
+  mounted () {
+    if (this.policyId) {
+      this.rowObj = [{ // 图表信息，需要和后端约定好名称
         'sequence_hit_l_1': { type: 'line', title: '人群命中对比', span: 15 },
         'sequence_hit_h_1': { type: 'bar', title: '人群命中量汇总对比', span: 9 }
       }, {
@@ -81,26 +143,6 @@ export default {
       }
       ]
     }
-  },
-  watch: {
-    // timeRange: {
-    //   handler (val) {
-    //     this.initChart()
-    //   }
-    // },
-    policyId: {
-      handler (val) {
-        this.show = false
-        this.initRange()
-        this.initChart()
-        this.$nextTick(() => {
-          this.show = true
-        })
-      },
-      immediate: true
-    }
-  },
-  mounted () {
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
@@ -130,40 +172,68 @@ export default {
       this.allChartData = {}
       // chart1
       // this.getBusinessUseTendency(this.rangeType)
-      // 172.20.148.31:8011/chart/policySixIndexStats?policyId=1890&startDate=2021-11-01&endDate=2021-11-22
-      const params = {
-        policyId: this.policyId,
-        startDate: this.timeRange[0],
-        endDate: this.timeRange[1]
-      }
-      // const params = {
-      //   policyId: 1890,
-      //   startDate: '2021-11-01',
-      //   endDate: '2021-11-22'
-      // }
-      // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?policyId=2906&startDate=2022-03-18&endDate=2022-04-19
-      // const params = {
-      //   policyId: 2906,
-      //   startDate: '2022-03-18',
-      //   endDate: '2022-04-19'
-      // }
-      // 获取所有图表数据
-      this.$service.getPolicySixIndexStats(params).then(res => {
-        this.allChartData = res || {}
+      // 172.20.148.31:8011/chart/policySixIndexStats?crowdId=1890&startDate=2021-11-01&endDate=2021-11-22
+      if (this.policyId) {
+        // const params = {
+        //   policyId: 2906,
+        //   startDate: '2022-03-18',
+        //   endDate: '2022-04-19'
+        // }
+        const params = {
+          policyId: this.policyId,
+          startDate: this.timeRange[0],
+          endDate: this.timeRange[1]
+        }
 
-        this.$nextTick(() => {
-          const rowObj = this.rowObj
-          rowObj.forEach(item => {
-            for (let key in item) {
-              if (item[key].type === 'line') {
-                this.showLine(this.allChartData[key], key)
-              } else {
-                this.showBar(this.allChartData[key], key)
+        // 获取所有图表数据
+        this.$service.getPolicySixIndexStats(params).then(res => {
+          this.allChartData = res || {}
+
+          this.$nextTick(() => {
+            const rowObj = this.rowObj
+            rowObj.forEach(item => {
+              for (let key in item) {
+                if (item[key].type === 'line') {
+                  this.showLine(this.allChartData[key], key)
+                } else {
+                  this.showBar(this.allChartData[key], key)
+                }
               }
-            }
+            })
           })
         })
-      })
+      } else {
+        const params = {
+          crowdId: this.crowdId,
+          startDate: this.timeRange[0],
+          endDate: this.timeRange[1]
+        }
+
+        // beta-mgr-hoder.skysrt.com:8011/chart/policySixIndexStats?crowdId=2906&startDate=2022-03-18&endDate=2022-04-19
+        // const params = {
+        //   crowdId: 3219,
+        //   startDate: '2022-05-11',
+        //   endDate: '2022-06-10'
+        // }
+
+        // 获取所有图表数据
+        this.$service.getPolicySixIndexStats2(params).then(res => {
+          this.allChartData = res || {}
+
+          this.$nextTick(() => {
+            const rowObj = this.rowObj
+            rowObj.forEach(item => {
+              for (let key in item) {
+                if (item[key].type === 'line') {
+                  this.showLine(this.allChartData[key], key)
+                } else {
+                  this.showBar(this.allChartData[key], key)
+                }
+              }
+            })
+          })
+        })
+      }
     },
     aaa (name) {
       let arr = name.split('_')
@@ -189,18 +259,20 @@ export default {
     //  折线图
     showLine (data, chartID) {
       // console.log('showLine======111>>>', ...arguments)
-
       if (data && data.xaxis) {
-      // this.$service.getStatisticStrategyReqAndHit({ rangeType }).then((data) => {
         const series = data.series || []
         const legendData = series.map((key) => {
           return key.name
         })
         const linesData = series.map((key) => {
-          return { name: key.name, data: key.value, type: 'line' }
+          if (data.yunit === '%') {
+            const arr = key.value.map(v => v * 100)
+            return { name: key.name, data: arr, type: 'line' }
+          } else {
+            return { name: key.name, data: key.value, type: 'line' }
+          }
         })
         this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
-      // })
       }
     },
 
@@ -208,10 +280,11 @@ export default {
     showBar (data, chartID) {
       // console.log('showBar======111>>>', ...chartID)
       if (data && data.xaxis) {
+        if (data.yunit === '%') {
+          data.series = data.series.map(v => v * 100)
+        }
         this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit)
       }
-      // this.$service.getStatisticCrowdLife({ rangeType }).then((data) => {
-      // })
     },
 
     // 通用柱状图参数设置
@@ -288,9 +361,9 @@ export default {
 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      console.log('setBarEchart======111>>>', this.$refs)
-      console.log('setBarEchart======111>>>', element)
-      console.log('setBarEchart======111>>>', this.$refs[element])
+      // console.log('setBarEchart======111>>>', this.$refs)
+      // console.log('setBarEchart======111>>>', element)
+      // console.log('setBarEchart======111>>>', this.$refs[element])
       let echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
       let myChart = echarts.init(document.getElementById(element))

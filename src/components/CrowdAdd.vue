@@ -1,9 +1,10 @@
 <template>
-<div>
+<div style="margin-right: 30px">
+  <!-- {{inputValue}} -->
   <!-- 动态人群 -->
   <div v-if="isDynamicPeople" class="el-collapse">
     <el-form-item label="" class="el-collapse_item">
-      <template v-for="(crowd, i) in inputValue">
+      <template v-for="(crowd, i) in inputValue" >
         <div class="items crowd-content" :key="i" >
 
             <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
@@ -29,11 +30,11 @@
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i+'condition'"
-                >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }} 111111111111
                 </el-button>
 
-              <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
-              {{ crowd.dynamicPolicyJson.link }} -->
+              <!-- {{ (crowd.behaviorRulesJson.link || crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
+              {{ crowd.behaviorRulesJson.link }} -->
               </div>
 
               <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
@@ -79,116 +80,152 @@
   <!-- <div> -->
     <el-collapse class="el-collapse" accordion v-model="activeName">
       <el-form-item label="人群条件" class="el-collapse_item">
-        <template v-for="(crowd, i) in inputValue">
+        <div v-for="(crowd, i) in inputValue" :key="i + 'crowd'">
           <div class="items" :key="i">
             <el-collapse-item :name="i" :key="i" class="crowd-content">
               <template slot="title">
                 <div class="collapse-title">
-                  <div>{{crowd.crowdName}}</div>
-                  <div><el-button @click="handleEstimate(crowd)">估算</el-button></div>
+                  <div >
+                    <!-- <i v-if="crowd.isLink" class="el-icon-link" style="font-size: 20px; color: #409EFF"></i>
+                    {{crowd.crowdName}} -->
+                    <el-tooltip placement="top">
+                      <div slot="content">{{ crowd.crowdName }}</div>
+                      <div class="name">
+                        <i v-if="crowd.referCrowdId" class="el-icon-link" style="font-size: 20px; color: #409EFF"></i>
+                        {{crowd.crowdName}}
+                      </div>
+                    </el-tooltip>
+                  </div>
+                  <div v-if="!crowd.referCrowdId"><el-button @click="handleEstimate(crowd)">估算</el-button></div>
                 </div>
                 <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
                   <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
                 </div>
               </template>
               <el-form-item label="人群名称" :prop="formProp(i +'.crowdName')" :rules="rules.crowdName">
-                <el-input v-model="crowd.crowdName" placeholder="投放名称" :maxlength="50"></el-input>
+                <el-input v-model="crowd.crowdName" :disabled="!!crowd.referCrowdId" placeholder="投放名称" :maxlength="50"></el-input>
               </el-form-item>
 
-              <div style="position: relative">
+              <template v-if="!crowd.referCrowdId" >
 
-                <div v-if="tags.length > 0">
-                  <el-form-item label="设置标签" required>
-                    <!-- {{ crowd.rulesJson }} -->
+                <div style="position: relative" >
+
+                  <div v-if="tags.length > 0">
+                    <el-form-item label="设置标签" required>
+                      <!-- {{ crowd.rulesJson }} -->
+                      <MultipleSelect
+                        :tags="tags"
+                        :rulesJson="crowd.rulesJson"
+                        :crowd="crowd"
+                        :i="i">
+                      </MultipleSelect>
+                    </el-form-item>
+                  </div>
+
+                  <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
+                    <el-button
+                      type="danger"
+                      @click="handleConditionChange(crowd)"
+                      round
+                      :key="i+'condition'"
+                    >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
+                    </el-button>
+
+                  <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
+                  {{ crowd.dynamicPolicyJson.link }} -->
+                  </div>
+
+                  <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+                    <MultipleActionTagSelect
+                      :key="i+'bav'"
+                      ref="multipleActionTagSelect"
+                      :actionTags="actionTags"
+                      :behaviorRulesJson="crowd.behaviorRulesJson"
+                      :crowd="crowd"
+                      :i="i"
+                    >
+                    <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
+                    </MultipleActionTagSelect>
+                  </el-form-item>
+
+                  <el-form-item label="动态因子" v-if="specialTags.length > 0">
                     <MultipleSelect
-                      :tags="tags"
-                      :rulesJson="crowd.rulesJson"
+                      :specialTags="specialTags"
+                      :dynamicPolicyJson="crowd.dynamicPolicyJson"
                       :crowd="crowd"
                       :i="i">
                     </MultipleSelect>
                   </el-form-item>
+
+                  <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
+                    <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
+                  </el-form-item> -->
                 </div>
 
-                <div class="outer-and" v-if="(tags.length > 0 && actionTags.length > 0  && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
-                  <el-button
-                    type="danger"
-                    @click="handleConditionChange(crowd)"
-                    round
-                    :key="i+'condition'"
-                  >{{ (crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
-                  </el-button>
-
-                <!-- {{ (crowd.behaviorRulesJson.link || crowd.dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}
-                {{ crowd.dynamicPolicyJson.link }} -->
-                </div>
-
-                <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
-                  <MultipleActionTagSelect
-                    ref="multipleActionTagSelect"
-                    :actionTags="actionTags"
-                    :behaviorRulesJson="crowd.behaviorRulesJson"
-                    :crowd="crowd"
-                    :i="i"
-                  >
-                  <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
-                  </MultipleActionTagSelect>
+                <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion">
+                  <el-radio-group v-model="crowd.autoVersion">
+                    <el-radio :label="false">否</el-radio>
+                    <el-radio :label="true">是</el-radio>
+                  </el-radio-group>
                 </el-form-item>
 
-                <el-form-item label="动态因子" v-if="specialTags.length > 0">
-                  <MultipleSelect
-                    :specialTags="specialTags"
-                    :dynamicPolicyJson="crowd.dynamicPolicyJson"
-                    :crowd="crowd"
-                    :i="i">
-                  </MultipleSelect>
+                <el-form-item label="是否限制投放数量" prop="limitLaunch">
+                  <el-radio-group v-model="crowd.limitLaunch">
+                    <el-radio :label="false">否</el-radio>
+                    <el-radio :label="true">是</el-radio>
+                  </el-radio-group>
                 </el-form-item>
 
-                <!-- <el-form-item label="用户行为满足" v-if="specialTags.length > 0">
-                  <MUserAction :specialTags="specialTags" :dynamicPolicyJson="crowd.dynamicPolicyJson" :crowd="crowd" :i="i"></MUserAction>
-                </el-form-item> -->
-              </div>
-              <!-- {{ crowd.isShowAutoVersion }}
-              {{ crowd.autoVersion }} -->
-              <el-form-item v-if="crowd.isShowAutoVersion" label="是否每日更新" prop="autoVersion">
-                <el-radio-group v-model="crowd.autoVersion">
-                  <el-radio :label="false">否</el-radio>
-                  <el-radio :label="true">是</el-radio>
-                </el-radio-group>
-              </el-form-item>
-              <!-- ---{{ crowd.isShowAutoVersion }}--- -->
-              <el-form-item label="是否限制投放数量" prop="limitLaunch">
-                <el-radio-group v-model="crowd.limitLaunch">
-                  <el-radio :label="false">否</el-radio>
-                  <el-radio :label="true">是</el-radio>
-                </el-radio-group>
-              </el-form-item>
+                <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
+                  <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+                </el-form-item>
 
-              <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-                <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
-              </el-form-item>
+                <el-form-item label="备注" :prop="formProp('remark')">
+                  <el-input v-model="crowd.remark" placeholder="备注"></el-input>
+                </el-form-item>
 
-              <el-form-item label="备注" :prop="formProp('remark')">
-                <el-input v-model="crowd.remark" placeholder="备注"></el-input>
-              </el-form-item>
-
-              <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
-                <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
-              </el-form-item>
+                <el-form-item label="优先级" :prop="formProp(i +'.crowdOrder')" :rules="rules.noEmpty">
+                  <el-input-number v-model="crowd.crowdOrder" @change="changeSeq(i)" :precision="0"></el-input-number>
+                </el-form-item>
+                <el-button type="text" class="copyCrowd" @click="handleCopyCrowd(crowd, i)">复制人群</el-button>
+              </template>
             </el-collapse-item>
 
             <a class="app-params__remove-param" @click="handleRemoveParam(i)">
-              <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i>
+              <!-- <i v-show="i > 0" class="icon iconfont el-icon-cc-delete"></i> -->
+              <i class="icon iconfont el-icon-cc-delete"></i>
             </a>
           </div>
-        </template>
-        <br />
-        <el-button type="primary" plain @click="handleAddParam">
+        </div>
+        <!-- 选择了标签才有【添加】按钮 -->
+        <!-- <el-button v-if="tags.length > 0" type="primary" plain @click="handleAddParam"> -->
+        <el-button v-if="tags.length > 0 || actionTags.length > 0 || specialTags.length > 0" type="primary" plain @click="handleAddParam">
           <i class="el-icon-plus"></i>&nbsp;添加
+        </el-button>
+        <el-button type="primary" plain @click="handleOpenAddLinkCrowd">
+          <i class="el-icon-link"></i>&nbsp;引用其他人群
         </el-button>
       </el-form-item>
 
     </el-collapse>
   </div>
+
+  <el-dialog
+    title="引用人群"
+    :visible.sync="linkDialogVisible"
+    width="800px"
+  >
+    <linkCrowd
+      ref="linkCrowdCom"
+      v-model="multipleSelection"
+    >
+    </linkCrowd>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="handleCancel">取 消</el-button>
+      <el-button @click="handleClear">全部清空</el-button>
+      <el-button type="primary" @click="handleConfirm">确 定</el-button>
+    </span>
+  </el-dialog>
 
 </div>
 </template>
@@ -197,11 +234,13 @@
 import MultipleSelect from './MultipleSelect.vue'
 import MultipleActionTagSelect from './MultipleActionTagSelect/Index.vue'
 // import MUserAction from './MUserAction.vue'
+import LinkCrowd from '@/views/crowdStrategy/linkCrowd.vue'
+
 export default {
   components: {
     MultipleSelect,
-    MultipleActionTagSelect
-    // MUserAction
+    MultipleActionTagSelect,
+    LinkCrowd
   },
   data () {
     // function validateKV (rule, value, cb) {
@@ -245,7 +284,9 @@ export default {
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
       cityData: [],
-      provinceValueList: []
+      provinceValueList: [],
+      linkDialogVisible: false,
+      multipleSelection: []
     }
   },
   props: {
@@ -265,10 +306,20 @@ export default {
     policyId: {
       type: [Number, String]
     }
-
   },
   watch: {
-    value: 'setInputValue'
+    value: { // 父组件传入的参数，数组，人群列表的规则
+      handler (val) {
+        this.setInputValue(val)
+      }
+    },
+    inputValue: {
+      handler () {
+        this.emitInputValue()
+      },
+      deep: true,
+      immediate: true
+    }
   },
   computed: {
     // 没有行为标签，只有大数据标签这一栏时，不展示【行为标签】这一栏。
@@ -277,17 +328,31 @@ export default {
     }
   },
   methods: {
-    handleCurrentChange (index) {
-      this.initCurrentPage = index
-      this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
-        this.tagList = data.pageInfo.list
-      })
+    // 取消
+    handleCancel () {
+      this.linkDialogVisible = false
     },
+    // 全部清空
+    handleClear () {
+      // this.multipleSelection = []
+      this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()
+    },
+
+    handleOpenAddLinkCrowd () {
+      this.$refs.linkCrowdCom && this.$refs.linkCrowdCom.$refs.multipleTable && this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()
+      this.linkDialogVisible = true
+    },
+    // handleCurrentChange (index) {
+    //   this.initCurrentPage = index
+    //   this.$service.getTagAttr({ tagId: this.currentChildItem.tagId, pageSize: this.initPageSize, pageNum: index }).then(data => {
+    //     this.tagList = data.pageInfo.list
+    //   })
+    // },
     changeSeq () {
       this.inputValue.sort(function (x, y) {
         return x.crowdOrder - y.crowdOrder
       })
-      this.setSeq()
+      // this.setSeq()
     },
     formProp (key) {
       return (this.propPrefix || '') + key
@@ -338,11 +403,13 @@ export default {
       if (val !== this.inputValue) {
         if (val.length > 0) {
           this.inputValue = JSON.parse(JSON.stringify(val))
-          this.setSeq()
+          // this.setSeq()
         } else { // 初始化
-          if (this.inputValue.length > 0) {
+          // 如果已有人群规则，或者选择的 tag 数量为 0，就不做任何操作
+          if (this.inputValue.length > 0 || this.tagList.length === 0) {
             return
           }
+          // 人群规则初始值
           this.inputValue.push(
             {
               'recordId': this.getRecordId(),
@@ -373,7 +440,7 @@ export default {
               total0: undefined
             }
           )
-          this.setSeq()
+          // this.setSeq()
         }
       }
       // console.log('122222222222222222------------>', this.inputValue)
@@ -382,47 +449,89 @@ export default {
       this.hasMoveBehaviorTagRule() // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
       this.$emit('input', this.inputValue)
     },
-    handleAddParam () {
+    // 复制人群
+    handleCopyCrowd (crowd, index) {
+      // 深拷贝
+      const crowdData = JSON.parse(JSON.stringify(crowd))
+      this.handleAddParam({ copyCrowdData: crowdData, copyCrowdIndex: index })
+    },
+    // 确定 - 创建引用人群
+    handleConfirm () {
+      this.multipleSelection.forEach(item => {
+        const isExisted = this.inputValue.some(crowd => crowd.referCrowdId === item.crowdId) // 判断是否已添加，若已添加的，就不重复新增
+        if (!isExisted) {
+          this.handleAddParam({ linkCrowd: item })
+        }
+      })
+      this.linkDialogVisible = false
+    },
+    // 获取复制人群的后缀
+    getCopyIndex (index, name) {
+      const cName = `${name || '复制人群'}（${index + 1}）`
+      const obj = this.inputValue.find(item => item.crowdName === cName)
+      if (obj) { // 有同名的人群
+        return this.getCopyIndex(index + 1, name)
+      } else {
+        return cName
+      }
+    },
+    // 添加人群
+    handleAddParam ({ copyCrowdData, copyCrowdIndex, linkCrowd }) {
       const length = this.inputValue.length
       this.activeName = length
-      if (length >= 5) {
+      if (length >= 50) {
         this.$message({
           type: 'error',
-          message: '最多添加5个'
+          message: '最多添加50个'
         })
         return
       }
-      this.inputValue.push(
-        {
-          'recordId': this.getRecordId(),
-          'tempCrowdId': undefined,
-          'crowdName': undefined,
-          'tagIds': [],
-          'purpose': undefined,
-          'remark': undefined,
-          'crowdOrder': length + 1,
-          'rulesJson': {
-            condition: 'OR',
-            rules: []
-          },
-          'behaviorRulesJson': {
-            link: 'AND',
-            condition: 'OR',
-            rules: []
-          },
-          'dynamicPolicyJson': {
-            link: 'AND',
-            condition: 'OR',
-            rules: []
-          },
-          'autoVersion': false,
-          'isShowAutoVersion': false,
-          'limitLaunch': false,
-          'limitLaunchCount': undefined,
-          total0: undefined
-        }
-      )
-      this.setSeq()
+      if (copyCrowdData) { // 复制人群
+        // var date = new Date()
+        // var hour = date.getHours() // 时
+        // var minutes = date.getMinutes() // 分
+        // let time = `${hour}${minutes}`
+        const copyName = this.getCopyIndex(0, copyCrowdData.crowdName)
+        this.inputValue.push({
+          ...copyCrowdData,
+          'crowdName': copyName
+        })
+      } else { // 添加普通人群、引用其他人群
+        const crowdName = linkCrowd ? `${linkCrowd.crowdName}（引用人群）` : undefined
+        this.inputValue.push(
+          {
+            referCrowdId: linkCrowd ? linkCrowd.crowdId : null,
+            isLink: !!linkCrowd,
+            'recordId': this.getRecordId(),
+            'tempCrowdId': undefined,
+            'crowdName': crowdName,
+            'tagIds': [],
+            'purpose': undefined,
+            'remark': undefined,
+            'crowdOrder': length + 1,
+            'rulesJson': {
+              condition: 'OR',
+              rules: []
+            },
+            'behaviorRulesJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
+            'dynamicPolicyJson': {
+              link: 'AND',
+              condition: 'OR',
+              rules: []
+            },
+            'autoVersion': false,
+            'isShowAutoVersion': false,
+            'limitLaunch': false,
+            'limitLaunchCount': undefined,
+            total0: undefined
+          }
+        )
+      }
+      // this.setSeq()
     },
     getRecordId () {
       return this.recordId
@@ -436,7 +545,7 @@ export default {
     },
     handleRemoveParam (index) {
       this.inputValue.splice(index, 1)
-      this.setSeq()
+      // this.setSeq()
     },
     handleEstimate (formData) {
       this.$service.estimateTemp(formData.rulesJson).then((data) => {
@@ -446,10 +555,10 @@ export default {
       })
     },
     handleConditionChange (crowd) {
-      crowd.dynamicPolicyJson.link = crowd.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
-      crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
+      crowd.behaviorRulesJson.link = crowd.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
+      // crowd.rulesJson.link = crowd.behaviorRulesJson.link = crowd.dynamicPolicyJson.link
+      crowd.rulesJson.link = crowd.behaviorRulesJson.link
     }
-
   },
   created () {
     if (this.isDynamicPeople) { // 动态人群
@@ -457,7 +566,7 @@ export default {
         const normalTags = []
         const actionTags = []
         const specialTags = []
-        data.forEach(item => {
+        data && data.forEach(item => {
           if (item.dataSource === 6) { // 效果指标
             specialTags.push(item)
           } else if (item.dataSource === 8) { // 行为标签
@@ -482,7 +591,8 @@ export default {
           const normalTags = []
           const actionTags = []
           const specialTags = []
-          data.forEach(item => {
+          this.tagList = data || []// 所有已选的标签
+          data && data.forEach(item => {
             if (item.dataSource === 6) { // 效果指标
               specialTags.push(item)
             } else if (item.dataSource === 8) { // 行为标签
@@ -501,9 +611,6 @@ export default {
         })
       }
     }
-    this.$watch('inputValue', this.emitInputValue, {
-      deep: true
-    })
   }
 }
 </script>
@@ -535,7 +642,8 @@ export default {
   >>>.el-collapse-item__wrap
     background-color rgba(249, 249, 249, 0.85)
     padding 10px
-    border none
+    // border none
+    border-bottom: 1px dashed #ededed;
 .el-collapse
   border-top none
   border-bottom none
@@ -557,6 +665,12 @@ i
   width 50%
   display flex
   justify-content space-between
+  .name
+    // width: 400px
+    white-space nowrap
+    text-overflow: ellipsis;
+    overflow: hidden;
+
 .items >>> .count-tips
   color red
   font-size 12px
@@ -593,8 +707,21 @@ i
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
   }
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
+  }
 .crowd-content
   width 100%
   display inline-block
   background-color: rgba(249,249,249,0.85);
+.copyCrowd
+  float right
 </style>

@@ -131,7 +131,8 @@ export function estimatePeople (params) {
   return this.fetch({
     method: 'get',
     url: '/api/crowd/crowdForcast',
-    params
+    params,
+    isReturnAllInfor: true
   })
 }
 // 新人群估算
@@ -861,6 +862,7 @@ export function getRuleIndicators (params) {
     params
   })
 }
+
 // 获取流转条件
 export function getDynamicRule (params) {
   return this.fetch({
@@ -904,5 +906,126 @@ export function updateDynamicCrowdName (data) {
     url: '/api/dynamic/updateDynamicCrowdName',
     data,
     isJSON: true
+  })
+}
+
+// 编辑动态人群名称
+export function addDynamic2Crowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/add',
+    data,
+    isJSON: true
+  })
+}
+// 获取小人群列表
+export function getDynamic2CrowdList (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/list',
+    data,
+    isJSON: true
+  })
+}
+// 新建实验分组
+export function addDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/add',
+    data,
+    isJSON: true
+  })
+}
+
+// 获取实验组列表
+export function getDynamic2PlanList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/plan/list',
+    params
+  })
+}
+
+// 删除实验组
+export function deleteDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/del',
+    data,
+    isJSON: true
+  })
+}
+
+// 保存整个实验组
+export function saveDynamic2Plan (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/plan/edit',
+    data,
+    isJSON: true
+  })
+}
+
+// 删除动态人群配置
+export function delDynamic2Crowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/del',
+    data,
+    isJSON: true
+  })
+}
+// 删除动态人群配置
+export function delDynamic2CrowdConfirm (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/crowd/del/confirm',
+    data,
+    isJSON: true
+  })
+}
+
+// 保存实验有效期
+export function setDynamicTime (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/dynamic2/setDynamicTime',
+    data,
+    isJSON: true
+  })
+}
+// 获取实验有效期
+export function getDynamicTime (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/getDynamicTime',
+    params
+  })
+}
+// 引用人群列表
+export function getLinkCrowdList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/refer/getCrowdList',
+    params
+  })
+}
+
+// 人群列表批量引用人群接口
+export function createReferCrowd (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/refer/createReferCrowd',
+    data,
+    isJSON: true
+  })
+}
+
+// 获取指标条件
+export function getSourceSign (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamic2/getSourceSign',
+    params
   })
 }

@@ -9,8 +9,8 @@
 
       <div class="filterFields">
         <el-form :model="formData" ref="formData" :inline="true">
-          <el-form-item prop="versionCode">
-            <el-select
+          <!-- <el-form-item prop="versionCode"> -->
+            <!-- <el-select
               filterable
               remote
               multiple
@@ -29,36 +29,230 @@
               >
                 {{ item.crowdName }}_{{ item.versionCode }} ( {{ item.startPeriod }} - {{ item.endPeriod }} )
               </el-option>
-            </el-select>
-          </el-form-item>
+            </el-select> -->
 
-          <el-form-item prop="resourceIds" v-if="activeName !== 'tv'">
-            <!-- {{ resourceList}} -->
-            <el-select
-              filterable
-              remote
-              multiple
-              clearable
-              v-model="formData.resourceIds"
-              :remote-method="getResourceList"
-              :placeholder="resourceIdsPlaceholder"
-              @clear="getResourceList"
-            >
-              <el-option
-                v-for="(item, index) in resourceList"
-                :label="getLabelByActiveName(item)"
-                :value="getLabelByActiveName(item)"
-                :key="'resource' + index + businessType + activeName"
-              >
-                  <!-- {{ item.blockIdName + ' / ' + item.pageIdName + ' / ' + item.slotIdName }} -->
-                  {{ getLabelByActiveName(item) }}
-              </el-option>
-            </el-select>
-          </el-form-item>
+          <span v-if="activeName === 'ctr'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="pageIdName">
+              <el-input
+                v-model="formData.pageIdName"
+                placeholder="版面ID或版面名称"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="blockIdName">
+              <el-input
+                v-model="formData.blockIdName"
+                placeholder="板块ID或板块名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="slotIdName">
+              <el-input
+                v-model="formData.slotIdName"
+                placeholder="推荐位ID或名称"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
+
+          <span v-else-if="activeName === 'package'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="equityPackageName">
+              <el-input
+                v-model="formData.equityPackageName"
+                placeholder="权益名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="packageType">
+              <el-input
+                v-model="formData.packageType"
+                placeholder="产品包类型"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="dealSource">
+              <el-input
+                v-model="formData.dealSource"
+                placeholder="成单路径"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="packageId">
+              <el-input
+                v-model="formData.packageId"
+                placeholder="产品包ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
+
+          <span v-else-if="activeName === 'active'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="dealSource">
+              <el-input
+                v-model="formData.dealSource"
+                placeholder="成交路径"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
+
+          <span v-else-if="activeName === 'tv'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
+
+          <span v-else-if="activeName === 'top20'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="videoFirstLevelClassification">
+              <el-input
+                v-model="formData.videoFirstLevelClassification"
+                placeholder="业务一级分类"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="videoId">
+              <el-input
+                v-model="formData.videoId"
+                placeholder="影片ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="videoName">
+              <el-input
+                v-model="formData.videoName"
+                placeholder="影片名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
+
+          <span v-else-if="activeName === 'category'">
+            <el-form-item prop="crowdId">
+              <el-input
+                v-model="formData.crowdId"
+                placeholder="人群ID"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="crowdName">
+              <el-input
+                v-model="formData.crowdName"
+                placeholder="人群名"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="classificationName">
+              <el-input
+                v-model="formData.classificationName"
+                placeholder="分类"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+            <el-form-item prop="classificationChannel">
+              <el-input
+                v-model="formData.classificationChannel"
+                placeholder="频道"
+                class="filter-input"
+                clearable>
+              </el-input>
+            </el-form-item>
+          </span>
 
           <el-form-item>
             <el-button type="primary" @click="fetchData">查询</el-button>
             <el-button @click="resetForm('formData')">重置</el-button>
+            <el-button type="text" @click="handelGo()" style="margin-left: 30px">效果数据计算进展</el-button>
           </el-form-item>
         </el-form>
 
@@ -91,23 +285,25 @@
 
       <div class="secondScreening">
         数据展示：
-        <el-radio-group v-model="showDataType" @change="HandleDataTypeChange">
+        <!-- <el-radio-group v-model="showDataType" @change="HandleDataTypeChange">
           <el-radio :label="0">全部数据</el-radio>
           <el-radio :label="1">投前数据</el-radio>
           <el-radio :label="2">投后数据</el-radio>
-        </el-radio-group>
+        </el-radio-group> -->
 
         <a :href="downloadUrl" download ref="download_Url"></a>
+        <i v-if="showLoadingDownload" class="el-icon-loading" style="float: right; color: #5cb6ff;"></i>
         <i class="el-icon-download download"  @click="handleDownload"></i>
 
         <span style="float: right;">
           <el-checkbox v-model="checked1" @change="HandleShowDayChange">按天展示</el-checkbox>
-          <!-- <el-checkbox v-if="activeName === 'tv' || activeName === 'top20'" v-model="checked2">区分top20影片</el-checkbox> -->
         </span>
 
       </div>
 
       <c-table
+        v-if="showTable"
+        ref="tabTable"
         v-loading="tbLoading"
         :props="tableData.props"
         :header="tableData.header"
@@ -202,15 +398,12 @@ export default {
       },
       dialogTitle: '',
       totalCount: 0,
+      // activeName: 'category',
       activeName: 'ctr',
       showTypeTab: true,
       tableData: {},
       formData: {
-        businessType: this.businessType,
-        versionCode: [],
-        resourceIds: []
-        // type: '14',
-        // date: []
+        // businessType: this.businessType
       },
       behaviorCrowdList: [],
       behaviorCrowdListFilter: {
@@ -228,7 +421,9 @@ export default {
       popoverVisible: true,
       chartData: [],
       lineChartData: {},
-      downloadUrl: ''
+      downloadUrl: '',
+      showTable: true,
+      showLoadingDownload: false
     }
   },
   computed: {
@@ -274,385 +469,74 @@ export default {
     },
     businessType: {
       handler () {
-        this.getBehaviorCrowdList() // 行为人群列表
-        this.getResourceList() // 资源位列表
+        // this.getBehaviorCrowdList() // 行为人群列表
+        // this.getResourceList() // 资源位列表
         this.resetForm('formData') // 切换tab的时候重置筛选并查询
         // this.fetchData()
       }
     },
     activeName: {
       handler (val) {
-        switch (val) {
-          case 'ctr':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '日期',
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '人群ID&名称',
-                  // prop: 'crowdIdName'
-                  render: (h, { row }) => {
-                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
-                  }
-                },
-                {
-                  label: '圈定量',
-                  prop: 'crowdAmount'
-                },
-                {
-                  label: '命中量',
-                  prop: 'hitAmount'
-                },
-                {
-                  label: '版面ID&名称',
-                  prop: 'pageIdName'
-                },
-                {
-                  label: '板块（专辑）id&名称',
-                  prop: 'blockIdName'
-                },
-                {
-                  label: '推荐位id&名称',
-                  prop: 'slotIdName'
-                },
-                {
-                  label: '曝光次数',
-                  prop: 'exposureTimes'
-                },
-                {
-                  label: '曝光人数',
-                  prop: 'exposureNum'
-                },
-                {
-                  label: '点击次数',
-                  prop: 'clickTimes'
-                },
-                {
-                  label: '点击人数',
-                  prop: 'clickNum'
-                },
-                {
-                  label: 'PV CTR',
-                  prop: 'clickPv'
-                },
-                {
-                  label: 'UV CTR',
-                  prop: 'clickUv'
-                }
-
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'multiple'
-            }
-            break
-          case 'package':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '人群ID',
-                  prop: 'crowdId',
-                  width: '70'
-                },
-                {
-                  label: '人群名称',
-                  prop: 'crowdName'
-                },
-                {
-                  label: '日期',
-                  // prop: 'statsDate'
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '产品包页面曝光次数',
-                  prop: 'exposeTimes'
-                },
-                {
-                  label: '产品包页面曝光人数',
-                  prop: 'exposeNum'
-                },
-                {
-                  label: '权益名',
-                  prop: 'equityPackageName'
-                },
-                {
-                  label: '产品包类型',
-                  prop: 'packageType'
-                },
-                {
-                  label: '成单路径',
-                  prop: 'dealSource'
-                },
-                {
-                  label: '产品包ID',
-                  prop: 'packageId'
-                },
-                {
-                  label: '单价(元)',
-                  prop: 'unitPrice'
-                },
-                {
-                  label: '成交单量',
-                  prop: 'dealVolume'
-
-                },
-                {
-                  label: '成单人数',
-                  prop: 'dealNum'
-                },
-                {
-                  label: '成交金额(元)',
-                  prop: 'dealAmount'
-                }
-
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'multiple'
-            }
-            break
-          case 'active':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '人群ID',
-                  prop: 'crowdId',
-                  width: '70'
-                },
-                {
-                  label: '人群名称',
-                  prop: 'crowdName'
-                },
-                {
-                  label: '日期',
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '圈定量',
-                  prop: 'crowdNum'
-                },
-                {
-                  label: '主页活跃量',
-                  prop: 'activeUsersNum'
-                },
-                {
-                  label: '起播活跃量',
-                  prop: 'playVideoUsersNum'
-                },
-                {
-                  label: '产品包页面曝光人数',
-                  prop: 'exposeNum'
-                },
-                {
-                  label: '成交路径',
-                  prop: 'dealSource'
-                },
-                {
-                  label: '成单总设备量',
-                  prop: 'dealUsers'
-                },
-                {
-                  label: '成单人数',
-                  prop: 'dealUsers'
-                },
-                {
-                  label: '成交单量',
-                  prop: 'dealContractsNum'
-
-                },
-
-                {
-                  label: '成交金额(元)',
-                  prop: 'dealAmount'
-                }
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'multiple'
-            }
-            break
-          case 'tv':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '日期',
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '人群ID&名称',
-                  // prop: 'crowdIdName'
-                  render: (h, { row }) => {
-                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
-                  }
-                },
-                {
-                  label: '播放次数',
-                  prop: 'watchTimes'
-                },
-                {
-                  label: '播放人数',
-                  prop: 'viewersNum'
-                },
-                {
-                  label: '播放总时长',
-                  prop: 'watchLastingTimes'
-                },
-                {
-                  label: '平均每次时长',
-                  prop: 'averageWatchPeriodByTime'
-                },
-                {
-                  label: '平均每人时长',
-                  prop: 'averageWatchPeriodByNum'
-                }
-
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'none'
-            }
-            break
-          case 'top20':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '日期',
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '人群ID&名称',
-                  // prop: 'crowdIdName'
-                  render: (h, { row }) => {
-                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
-                  }
-                },
-                {
-                  label: '业务一级分类',
-                  prop: 'videoFirstLevelClassification'
-                },
-                {
-                  label: '影片ID&影片名',
-                  render: (h, { row }) => {
-                    return row.videoId + row.videoName
-                  }
-                },
-                {
-                  label: '影片排名',
-                  prop: 'videoRanking'
-                },
-                {
-                  label: '成单人数',
-                  prop: 'dealUsers'
-                },
-                {
-                  label: '成交单量',
-                  prop: 'dealVolume'
-                },
-                {
-                  label: '成交金额',
-                  prop: 'dealAmount'
-                },
-                {
-                  label: '播放次数',
-                  prop: 'watchTimes'
-                },
-                {
-                  label: '播放人数',
-                  prop: 'viewersNum'
-                },
-                {
-                  label: '播放总时长',
-                  prop: 'watchLastingTimes'
-                },
-                {
-                  label: '平均每次时长',
-                  prop: 'averageWatchPeriodByTime'
-                },
-                {
-                  label: '平均每人时长',
-                  prop: 'averageWatchPeriodByNum'
-                }
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'none'
-            }
-            break
-          case 'category':
-            this.tableData = {
-              props: {},
-              header: [
-                {
-                  label: '日期',
-                  render: (h, { row }) => {
-                    return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
-                  }
-                },
-                {
-                  label: '人群ID&名称',
-                  // prop: 'crowdIdName'
-                  render: (h, { row }) => {
-                    return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
-                  }
-                  // render: (h, { row }) => {
-                  //   return row.crowdId + row.crowdName
-                  // }
-                },
-                {
-                  label: '分类（频道）',
-                  // prop: 'classificationChannel'
-                  render: (h, { row }) => {
-                    return `${row.classificationName} - ${row.classificationChannel}`
-                  }
-                },
-                {
-                  label: '播放次数',
-                  prop: 'watchTimes'
-                },
-                {
-                  label: '播放人数',
-                  prop: 'viewersNum'
-                },
-                {
-                  label: '播放总时长',
-                  prop: 'watchLastingTimes'
-                },
-                {
-                  label: '平均每次时长',
-                  prop: 'averageWatchPeriodByTime'
-                },
-                {
-                  label: '平均每人时长',
-                  prop: 'averageWatchPeriodByNum'
-                }
-              ],
-              data: [],
-              selected: [],
-              selectionType: 'none'
-            }
-            break
+        if (val === 'ctr') {
+          this.formData = {
+            crowdId: '',
+            crowdName: '',
+            pageIdName: '',
+            blockIdName: '',
+            slotIdName: ''
+          }
+        } else if (val === 'package') {
+          this.formData = {
+            crowdId: '',
+            crowdName: '',
+            packageType: '',
+            equityPackageName: '',
+            dealSource: '',
+            packageId: ''
+          }
+        } else if (val === 'active') {
+          this.formData = {
+            crowdId: '',
+            crowdName: '',
+            dealSource: ''
+          }
+        } else if (val === 'tv') {
+          this.formData = {
+            crowdId: '',
+            crowdName: ''
+          }
+        } else if (val === 'top20') {
+          this.formData = {
+            crowdId: '',
+            crowdName: '',
+            videoFirstLevelClassification: '',
+            videoId: '',
+            videoName: ''
+          }
+        } else if (val === 'category') {
+          this.formData = {
+            crowdId: '',
+            crowdName: '',
+            classificationName: '',
+            classificationChannel: ''
+          }
         }
-        this.getBehaviorCrowdList() // 行为人群列表
-        this.getResourceList() // 资源位列表
-        this.resetForm('formData') // 切换tab的时候重置筛选并查询
-        // this.fetchData()
+        this.showTable = false
+
+        this.$nextTick(() => {
+          this.showTable = true
+          // 设置表格表头数据
+          this.setTableData(val)
+
+          // 行为人群列表
+          // this.getBehaviorCrowdList()
+
+          // 资源位列表
+          // this.getResourceList()
+
+          // 切换tab的时候重置筛选并查询
+          this.resetForm('formData')
+        })
       },
       immediate: true
     }
@@ -661,42 +545,562 @@ export default {
     this.fetchData()
   },
   methods: {
+    handelGo () {
+      // this.$router.push({ path: 'launch/launchTabList' })
+      this.$router.push({ name: 'launchStatus' })
+      // launchHelper/LaunchStatus
+    },
+    setTableData (val) {
+      switch (val) {
+        case 'ctr':
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '日期',
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '人群ID&名称',
+                // prop: 'crowdIdName'
+                render: (h, { row }) => {
+                  return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                }
+              },
+              {
+
+                label: '圈定量',
+                prop: 'crowdAmount',
+                sortable: true,
+                sortBy: 'crowdAmount'
+              },
+              {
+                label: '命中量',
+                prop: 'hitAmount',
+                sortable: true
+              },
+              {
+                label: '版面ID&名称',
+                prop: 'pageIdName',
+                width: 150,
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'pageIdName')
+              },
+              {
+                label: '板块（专辑）id&名称',
+                prop: 'blockIdName',
+                width: 180,
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'blockIdName')
+              },
+              {
+                label: '推荐位id&名称',
+                prop: 'slotIdName',
+                width: 150,
+                sortable: true,
+                // sortMethod: this.sortDevName
+                sortMethod: (a, b) => this.sortDevName(a, b, 'slotIdName')
+              },
+              {
+                label: '曝光次数',
+                prop: 'exposureTimes',
+                sortable: true
+              },
+              {
+                label: '曝光人数',
+                prop: 'exposureNum',
+                sortable: true
+              },
+              {
+                label: '点击次数',
+                prop: 'clickTimes',
+                sortable: true
+              },
+              {
+                label: '点击人数',
+                prop: 'clickNum',
+                sortable: true
+              },
+              {
+                label: 'PV CTR',
+                // prop: 'clickPv',
+                sortable: true,
+                render: (h, { row }) => {
+                  return row.clickPv ? `${parseFloat((row.clickPv * 100).toPrecision(12))}%` : '-'
+                }
+              },
+              {
+                label: 'UV CTR',
+                prop: 'clickUv',
+                sortable: true,
+                render: (h, { row }) => {
+                  return row.clickUv ? `${parseFloat((row.clickUv * 100).toPrecision(12))}%` : '-'
+                }
+              }
+
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'multiple'
+          }
+          break
+        case 'package':
+
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '人群ID',
+                prop: 'crowdId',
+                width: '70'
+              },
+              {
+                label: '人群名称',
+                prop: 'crowdName'
+              },
+              {
+                label: '日期',
+                // prop: 'statsDate'
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '产品包页面曝光次数',
+                prop: 'exposeTimes',
+                sortable: true
+              },
+              {
+                label: '产品包页面曝光人数',
+                prop: 'exposeNum',
+                sortable: true
+              },
+              {
+                label: '权益名',
+                prop: 'equityPackageName',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'equityPackageName')
+              },
+              {
+                label: '产品包类型',
+                prop: 'packageType',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'packageType')
+              },
+              {
+                label: '成单路径',
+                prop: 'dealSource',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'dealSource')
+              },
+              {
+                label: '产品包ID',
+                prop: 'packageId',
+                sortable: true
+              },
+              {
+                label: '单价(元)',
+                prop: 'unitPrice',
+                sortable: true
+              },
+              {
+                label: '成交单量',
+                prop: 'dealVolume',
+                sortable: true
+              },
+              // {
+              //   label: '成单人数',
+              //   prop: 'dealNum',
+              //   sortable: true
+              // },
+              {
+                label: '成交金额(元)',
+                prop: 'dealAmount',
+                sortable: true
+              }
+
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'multiple'
+          }
+          break
+        case 'active':
+
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '人群ID',
+                prop: 'crowdId',
+                width: '70'
+              },
+              {
+                label: '人群名称',
+                prop: 'crowdName'
+              },
+              {
+                label: '日期',
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '圈定量',
+                prop: 'crowdNum',
+                sortable: true
+              },
+              {
+                label: '主页活跃量',
+                prop: 'activeUsersNum',
+                sortable: true
+              },
+              {
+                label: '起播活跃量',
+                prop: 'playVideoUsersNum',
+                sortable: true
+              },
+              {
+                label: '产品包页面曝光人数',
+                prop: 'exposeNum',
+                sortable: true
+              },
+              {
+                label: '成交路径',
+                prop: 'dealSource',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'dealSource')
+              },
+              {
+                label: '成单总设备量',
+                prop: 'dealUsers',
+                sortable: true
+              },
+              // {
+              //   label: '成单人数',
+              //   prop: 'dealUsers',
+              //   sortable: true
+              // },
+              {
+                label: '成交单量',
+                prop: 'dealContractsNum',
+                sortable: true
+              },
+              {
+                label: '成交金额(元)',
+                prop: 'dealAmount',
+                sortable: true
+              }
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'multiple'
+          }
+          break
+        case 'tv':
+
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '日期',
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '人群ID&名称',
+                // prop: 'crowdIdName'
+                render: (h, { row }) => {
+                  return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                }
+              },
+              {
+                label: '播放次数',
+                prop: 'watchTimes',
+                sortable: true
+              },
+              {
+                label: '播放人数',
+                prop: 'viewersNum',
+                sortable: true
+              },
+              {
+                label: '播放总时长',
+                prop: 'watchLastingTimes',
+                sortable: true
+              },
+              {
+                label: '平均每次时长',
+                prop: 'averageWatchPeriodByTime',
+                sortable: true
+              },
+              {
+                label: '平均每人时长',
+                prop: 'averageWatchPeriodByNum',
+                sortable: true
+              }
+
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'none'
+          }
+          break
+        case 'top20':
+
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '日期',
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '人群ID&名称',
+                // prop: 'crowdIdName'
+                render: (h, { row }) => {
+                  return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                }
+              },
+              {
+                label: '业务一级分类',
+                prop: 'videoFirstLevelClassification',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'videoFirstLevelClassification')
+              },
+              {
+                label: '影片ID&影片名',
+                render: (h, { row }) => {
+                  return row.videoId + row.videoName
+                },
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, ['videoId', 'videoName'])
+              },
+              {
+                label: '影片排名',
+                prop: 'videoRanking',
+                sortable: true
+              },
+              {
+                label: '成单人数',
+                prop: 'dealUsers',
+                sortable: true
+              },
+              {
+                label: '成交单量',
+                prop: 'dealVolume',
+                sortable: true
+              },
+              {
+                label: '成交金额',
+                prop: 'dealAmount',
+                sortable: true
+              },
+              {
+                label: '播放次数',
+                prop: 'watchTimes',
+                sortable: true
+              },
+              {
+                label: '播放人数',
+                prop: 'viewersNum',
+                sortable: true
+              },
+              {
+                label: '播放总时长',
+                prop: 'watchLastingTimes',
+                sortable: true
+              },
+              {
+                label: '平均每次时长',
+                prop: 'averageWatchPeriodByTime',
+                sortable: true
+              },
+              {
+                label: '平均每人时长',
+                prop: 'averageWatchPeriodByNum',
+                sortable: true
+              }
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'none'
+          }
+          break
+        case 'category':
+
+          this.tableData = {
+            props: {},
+            header: [
+              {
+                label: '日期',
+                render: (h, { row }) => {
+                  return this.checked1 ? row.statsDate : `${row.startPeriod} - ${row.endPeriod}`
+                }
+              },
+              {
+                label: '人群ID&名称',
+                // prop: 'crowdIdName'
+                render: (h, { row }) => {
+                  return row.crowdIdName ? row.crowdIdName : `${row.crowdId}_${row.crowdName}`
+                }
+                // render: (h, { row }) => {
+                //   return row.crowdId + row.crowdName
+                // }
+              },
+              {
+                label: '分类',
+                prop: 'classificationName',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'classificationName')
+                // render: (h, { row }) => {
+                //   return `${row.classificationName} - ${row.classificationChannel}`
+                // }
+              },
+              {
+                label: '频道',
+                prop: 'classificationChannel',
+                sortable: true,
+                sortMethod: (a, b) => this.sortDevName(a, b, 'classificationChannel')
+              },
+              {
+                label: '播放次数',
+                prop: 'watchTimes',
+                sortable: true
+              },
+              {
+                label: '播放人数',
+                prop: 'viewersNum',
+                sortable: true
+              },
+              {
+                label: '播放总时长',
+                prop: 'watchLastingTimes',
+                sortable: true
+              },
+              {
+                label: '平均每次时长',
+                prop: 'averageWatchPeriodByTime',
+                sortable: true
+              },
+              {
+                label: '平均每人时长',
+                prop: 'averageWatchPeriodByNum',
+                sortable: true
+              }
+            ],
+            data: [],
+            selected: [],
+            selectionType: 'none'
+          }
+          break
+      }
+    },
+    sortDevName (obj1, obj2, propName) {
+      let str1 = ''
+      let str2 = ''
+      if (Array.isArray(propName)) {
+        str1 = propName.map(prop => {
+          return obj1[prop]
+        }).join()
+        str2 = propName.map(prop => {
+          return obj2[prop]
+        }).join()
+      } else {
+        str1 = obj1[propName]
+        str2 = obj2[propName]
+      }
+      // console.log('str1===', str1)
+      // console.log('str2===', str2)
+      // console.log('=================================')
+      let res = 0
+      for (let i = 0; ;i++) {
+        if (!str1[i] || !str2[i]) {
+          res = str1.length - str2.length
+          break
+        }
+        const char1 = str1[i]
+        const char1Type = this.getChartType(char1)
+        const char2 = str2[i]
+        const char2Type = this.getChartType(char2)
+        // 类型相同的逐个比较字符
+        if (char1Type[0] === char2Type[0]) {
+          if (char1 === char2) {
+            continue
+          } else {
+            if (char1Type[0] === 'zh') {
+              res = char1.localeCompare(char2)
+            } else if (char1Type[0] === 'en') {
+              res = char1.charCodeAt(0) - char2.charCodeAt(0)
+            } else {
+              res = char1 - char2
+            }
+            break
+          }
+        } else {
+          // 类型不同的，直接用返回的数字相减
+          res = char1Type[1] - char2Type[1]
+          break
+        }
+      }
+      return res
+    },
+    getChartType (char) {
+      // 数字可按照排序的要求进行自定义
+      // 数字（0->9）->大写字母（A->Z）->小写字母（a->z）->中文拼音（a->z）
+      if (/^[\u4e00-\u9fa5]$/.test(char)) {
+        return ['zh', 100]
+      }
+      if (/^[A-Z]$/.test(char)) {
+        return ['EN', 300]
+      }
+      if (/^[a-z]$/.test(char)) {
+        return ['en', 200]
+      }
+      if (/^[0-9]$/.test(char)) {
+        return ['number', 400]
+      }
+      return ['others', 999]
+    },
     // 下载
     handleDownload () {
+      if (this.showLoadingDownload) return
+      this.showLoadingDownload = true
       if (this.totalCount > 100000) {
       // if (this.totalCount > 10) {
         return this.$message.error('最多下载10万条数据，请筛选后下载')
       }
-      // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
-      const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
-        return total.concat(item.split(','))
-      }, []) : []
+
+      // let params = {
+      //   businessType: this.businessType,
+      //   effectType: this.activeName,
+      //   versionCode: this.formData.versionCode,
+      //   resourceIds: resourceIdsArr,
+      //   dataType: this.showDataType,
+      //   showDay: this.checked1 ? 1 : 0,
+      //   page: this.filter.page,
+      //   pageSize: this.totalCount
+      // }
 
       let params = {
         businessType: this.businessType,
         effectType: this.activeName,
-        versionCode: this.formData.versionCode,
-        resourceIds: resourceIdsArr,
-        dataType: this.showDataType,
-        showDay: this.checked1 ? 1 : 0,
+        dataType: 2, // 0-全部数据、1-投前数据、2-投后数据
+        showDay: this.checked1 ? 1 : 0, // 是否按天展示
         page: this.filter.page,
-        pageSize: this.totalCount
+        pageSize: this.totalCount,
+        ...this.formData
       }
-      // params = qs.stringify(params, { indices: false })
-      if (params.effectType === 'package') {
-        params.pkgs = this.formData.resourceIds.map((item) => {
-          const arr = item.split(',')
-          return {
-            packageId: arr[0],
-            packageType: arr[1]
-          }
-        })
-      } else {
-        params.pkgs = undefined
-      }
+
       const link = document.createElement('a')
 
-      axios.post('/api/effect/download', params, { responseType: 'arraybuffer' }).then(res => {
+      axios.post('/api/effect/downloadNew', params, { responseType: 'arraybuffer' }).then(res => {
+        this.showLoadingDownload = false
         const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
         const title = decodeURIComponent(name) // 解码
         // 创建Blob对象，设置文件类型
@@ -1062,6 +1466,8 @@ export default {
 
     resetForm (formName) {
       this.$refs[formName] && this.$refs[formName].resetFields()
+      this.$refs.tabTable && this.$refs.tabTable.$refs.table.clearSort()
+
       // console.log('formData===', this.formData)
       // 重置
       this.filter.page = 1
@@ -1134,48 +1540,34 @@ export default {
       this.tableData.selected = []
 
       console.log('formData======', this.formData)
-      // example: ['1,2,3', '4,5,6'] => ['1', '2', '3', '4', '5', '6']
-      const resourceIdsArr = this.formData.resourceIds ? this.formData.resourceIds.reduce((total, item) => {
-        return total.concat(item.split(','))
-      }, []) : []
-      console.log('resourceIdsArr===', resourceIdsArr)
+
       let params = {
         businessType: this.businessType,
         effectType: this.activeName,
-        versionCode: this.formData.versionCode,
-        // versionCode: '1,2',
-        resourceIds: resourceIdsArr,
-        // startPeriod: this.formData.date[0],
-        // endPeriod: this.formData.date[1],
-        dataType: this.showDataType,
-        showDay: this.checked1 ? 1 : 0,
+        dataType: 2, // 0-全部数据、1-投前数据、2-投后数据
+        showDay: this.checked1 ? 1 : 0, // 是否按天展示
         page: this.filter.page,
-        pageSize: this.filter.pageSize
+        pageSize: this.filter.pageSize,
+        ...this.formData
       }
 
-      // 产品包成交需要加一个参数
-      if (params.effectType === 'package') {
-        params.pkgs = this.formData.resourceIds.map((item) => {
-          const arr = item.split(',')
-          return {
-            packageId: arr[0],
-            packageType: arr[1]
-          }
-        })
-      } else if (params.effectType === 'ctr') {
-        params.pkgs = this.formData.resourceIds.map((item) => {
-          const arr = item.split(',')
-          return {
-            blockIdName: arr[0],
-            pageIdName: arr[1],
-            slotIdName: arr[2]
-          }
-        })
-      } else {
-        params.pkgs = undefined
+      let api = ''
+      const val = this.activeName
+      if (val === 'ctr') {
+        api = 'getCtr'
+      } else if (val === 'package') {
+        api = 'getPackage'
+      } else if (val === 'active') {
+        api = 'getActive'
+      } else if (val === 'tv') {
+        api = 'getTv'
+      } else if (val === 'top20') {
+        api = 'getTvTop'
+      } else if (val === 'category') {
+        api = 'getCategory'
       }
-      // params = qs.stringify(params.versionCode)
-      this.$service.getEffectData(params).then(result => {
+
+      this.$service[api](params).then(result => {
         this.tbLoading = false
         this.tableData.data = result.rows
         this.totalCount = result.total
@@ -1218,7 +1610,6 @@ export default {
         if (this.tableData.data.length > 4) {
           return this.$message.error('表格最多能选4项，无法全选')
         }
-        console.log('11111111===', this.tableData.selected)
         this.tableData.data.forEach(this.handleRowSelectionAdd)
       } else {
         this.selected = []
@@ -1269,7 +1660,7 @@ export default {
         // margin 10px 0
     .search-input
         display flex
-        width 30%
+        width 350px
         position: absolute;
         z-index: 9999;
         right: 0;
@@ -1296,5 +1687,6 @@ export default {
   cursor pointer
 .download:hover
   color #409EFF
-
+.filter-input
+  width 150px
 </style>

@@ -20,8 +20,8 @@ export function addLocalCrowd (data) {
 export function updateLocalCrowd (data) {
   return this.fetch({
     method: 'put',
-    url: `api/tempCrowd/localCrowd/${data.id}`,
-    // url: `api/tempCrowd/localCrowd`,
+    url: `/api/tempCrowd/localCrowd/${data.id}`,
+    // url: `/api/tempCrowd/localCrowd`,
     data: data.formData
   })
 }
@@ -29,7 +29,7 @@ export function updateLocalCrowd (data) {
 export function OnOrOffLocalCrowd (data) {
   return this.fetch({
     method: 'post',
-    url: `api/tempCrowd/localCrowd/OnOrOff/${data.localCrowdId}`,
+    url: `/api/tempCrowd/localCrowd/OnOrOff/${data.localCrowdId}`,
     data
   })
 }
@@ -63,6 +63,32 @@ export function getNewTreeList (params) {
   return this.fetch({
     method: 'get',
     url: '/api/labelGroup/tree',
+    params
+  })
+}
+// 标签广场 - 神策分析
+export function sensorCrowdAnalysis (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/sensorCrowdAnalysis',
+    params,
+    isReturnAllInfor: true
+  })
+}
+// 人群列表 - 神策分析
+export function sensorHitData (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/sensorHitData',
+    params,
+    isReturnAllInfor: true
+  })
+}
+// 查询分组内人群流转路径效果接口
+export function getCrowdFlowPath (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/crowdFlowPath',
     params
   })
 }

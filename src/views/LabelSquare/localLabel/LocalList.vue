@@ -30,7 +30,7 @@
             </div>
             <div class="search-input">
                 <el-input
-                        placeholder="支持按人群名、ID搜索"
+                        placeholder="支持按标签名、ID搜索"
                         class="header-input"
                         v-model="launchName"
                         @keyup.enter.native="fetchData"
@@ -53,7 +53,7 @@
                 ></el-table-column>
                 <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
                 <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
-                <el-table-column prop="launchName" label="人群名称"></el-table-column>
+                <el-table-column prop="launchName" label="名称"></el-table-column>
                 <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
                 <el-table-column prop="count" label="使用次数">
                     <!--<template slot-scope="scope">-->
@@ -409,7 +409,7 @@ export default {
     .search-input
         position relative
         display flex
-        width 30%
+        width 350px
     .icon-fixed
         position absolute
         top 8px

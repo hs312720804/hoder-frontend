@@ -19,3 +19,11 @@ export function saveListDimension (data) {
     data
   })
 }
+// 保存页面展示字段
+export function rightsInterestsOutcome (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/rightsInterestsOutcome',
+    params
+  })
+}

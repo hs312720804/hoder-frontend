@@ -20,14 +20,14 @@
     <span class="separator"></span>
     <!-- <i data-command="copy" class="command iconfont icon-copy-o disable" title="复制"></i>
     <i data-command="paste" class="command iconfont icon-paster-o disable" title="粘贴"></i> -->
-    <i
+    <!-- <i
       data-command="delete"
       class="command iconfont icon-delete-o"
       title="删除"
       :class="selectedItem?'':'disable'"
       @click="handleDelete"
     ></i>
-    <span class="separator"></span>
+    <span class="separator"></span> -->
     <i
       data-command="zoomIn"
       class="command iconfont icon-zoom-in-o"
@@ -54,8 +54,8 @@
     ></i>
     <span class="separator"></span>
 
-    <el-button @click="consoleData" type="primary">控制台输出数据</el-button>
-    <div style="float: right; margin: 0 10px 0 0">
+    <!-- <el-button @click="consoleData" type="primary">控制台输出数据</el-button> -->
+    <div style="float: right; margin: 0 20px 0 0; ">
       <el-radio-group v-model="value" @change="handleChangeView">
       <!-- <el-radio :label="3">备选项</el-radio>
       <el-radio :label="6">备选项</el-radio>
@@ -152,7 +152,7 @@ export default {
           clockwise: false
 
         })
-      } else if (value === 1) { // 树形
+      } else if (value === 1) { // 线形
         this.graph.updateLayout({
           type: 'grid',
           begin: [ 20, 20 ],
@@ -456,13 +456,14 @@ export default {
 <style scoped>
 .toolbar {
   box-sizing: border-box;
-  padding: 8px 0px;
+  /* padding: 10px 0px; */
   width: 100%;
-  border: 1px solid #e9e9e9;
-  height: 42px;
+  /* border: 1px solid #e9e9e9;
+  border-top: none;
+  height: 40px;*/
   z-index: 3;
   box-shadow: 0px 8px 12px 0px rgba(0, 52, 107, 0.04);
-  position: absolute;
+  margin-top: -15px
 }
 .toolbar .command:nth-of-type(1) {
   margin-left: 24px;

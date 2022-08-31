@@ -14,7 +14,7 @@
 
       <div class="search-input">
           <el-input
-              placeholder="支持按人群名、ID搜索"
+              placeholder="支持按标签名、ID搜索"
               class="header-input"
               v-model="filter.tagName"
               @keyup.enter.native="fetchData"
@@ -174,7 +174,7 @@ export default {
         tagKey: '',
         remark: ''
       }
-      this.dialogTitle = '新增种类'
+      this.dialogTitle = '新增标签'
       this.dialogVisible = true
     },
     async fetchData () {
@@ -262,7 +262,7 @@ export default {
         // margin 10px 0
     .search-input
         display flex
-        width 30%
+        width 350px
         position: absolute;
         z-index: 9999;
         right: 0;

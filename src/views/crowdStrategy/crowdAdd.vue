@@ -41,16 +41,16 @@
                 @click="handleConditionChange()"
                 round
                 :key="'condition'"
-                >{{ dynamicPolicyJson.link === 'OR' ? '或' : '且' }}
+                >{{ behaviorRulesJson.link === 'OR' ? '或' : '且' }}
               </el-button>
             </div> -->
             <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
               <el-button
                 type="danger"
-                @click="handleConditionChange(crowd)"
+                @click="handleConditionChange()"
                 round
                 :key="'condition'"
-              >{{ (dynamicPolicyJson.link) === 'OR' ? '或' : '且' }}</el-button>
+              >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
             </div>
 
             <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
@@ -251,7 +251,9 @@ export default {
         5: 'warning',
         6: 'warningOrange',
         7: 'warningOrange2',
-        8: 'warningCyan'
+        8: 'warningCyan',
+        11: 'success',
+        12: 'gray'
       },
       cityData: [],
       provinceValueList: [],
@@ -271,7 +273,7 @@ export default {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
-  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople'],
+  props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'],
   methods: {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
@@ -1055,7 +1057,8 @@ export default {
                 rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
               }
 
-              if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
+              // if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
+              if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === "fixed") { // 固定周期 日期多选
                 const newValue = rulesItem.bav.rang.newValue
                 let data = []
                 newValue.forEach(item => {
@@ -1277,8 +1280,8 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     handleConditionChange () {
-      this.dynamicPolicyJson.link =
-        this.dynamicPolicyJson.link === 'AND' ? 'OR' : 'AND'
+      this.behaviorRulesJson.link =
+        this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
     }
   },
   created () {
@@ -1286,7 +1289,7 @@ export default {
     this.$service
       .getTagsByPoliceId({ policyId: this.form.policyId })
       .then(data => {
-        const normalTags = []
+        let normalTags = []
         const actionTags = []
         const specialTags = []
         data.forEach(item => {
@@ -1301,6 +1304,10 @@ export default {
             normalTags.push(item)
           }
         })
+        // 如果当前人群已经当做人群标签被使用了，那么就不能使用人群标签，需要过滤掉
+        if (this.crowd && this.crowd.isUsedAsTag === 1) {
+          normalTags = normalTags.filter(item => item.dataSource !== 12)
+        }
         this.tags = normalTags
         this.actionTags = actionTags
         this.specialTags = specialTags
@@ -1500,6 +1507,17 @@ i {
     color: #00bcd4;
     background-color: rgba(0, 189, 214, .1);
     border-color: #00bcd42b
+  }
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
   }
 }
 

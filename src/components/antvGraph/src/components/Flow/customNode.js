@@ -1,6 +1,37 @@
 import G6 from '@antv/g6/build/g6'
 import { uniqueId } from '@antvGraph/utils'
 // import Shape from '@antv/g6/src/shapes'
+
+/** 参数说明：
+   * 根据长度截取先使用字符串，超长部分追加…
+   * str 对象字符串
+   * len 目标字节长度
+   * 返回值： 处理结果字符串
+   */
+function cutString (str, len) {
+  // length属性读出来的汉字长度为1
+  if (str.length * 2 <= len) {
+    return str
+  }
+  var strlen = 0
+  var s = ''
+  for (var i = 0; i < str.length; i++) {
+    s = s + str.charAt(i)
+    if (str.charCodeAt(i) > 128) {
+      strlen = strlen + 2
+      if (strlen >= len) {
+        return s.substring(0, s.length - 1) + '...'
+      }
+    } else {
+      strlen = strlen + 1
+      if (strlen >= len) {
+        return s.substring(0, s.length - 2) + '...'
+      }
+    }
+  }
+  return s
+}
+
 const EXPAND_ICON = function EXPAND_ICON (x, y, r) {
   return [
     ['M', x - r, y - r],
@@ -21,10 +52,10 @@ const customNode = {
   init () {
     G6.registerNode('customNode', {
       draw (cfg, group) {
-        let size = cfg.size
-        if (!size) {
-          size = [170, 34]
-        }
+        // let size = cfg.size
+        // if (!size) {
+        let size = [230, 45]
+        // }
         // 此处必须是NUMBER 不然bbox不正常1
         const width = parseInt(size[0])
         const height = parseInt(size[1])
@@ -42,7 +73,7 @@ const customNode = {
             height: height,
             stroke: '#ced4d9',
             fill: '#fff', // 此处必须有fill 不然不能触发事件
-            radius: 4
+            radius: 20
           }
         })
         // ---------------------------------------------
@@ -83,7 +114,9 @@ const customNode = {
         // }
 
         // 权重
-        if (cfg.weight !== null) { // 这里不能直接判断 cfg.weight ,因为有值为 0 的情况
+        // if (cfg.weight !== null && cfg.weight !== undefined) { // 这里不能直接判断 cfg.weight ,因为有值为 0 的情况
+        // if ((cfg.weight !== null && cfg.weight !== undefined) || cfg.mainType === 2 || cfg.mainType === 3) { // 选择了【随机】、【自定义】算法, 才显示【权重】
+        if (cfg.mainType === 2 || cfg.mainType === 3) { // 选择了【随机】、【自定义】算法, 才显示【权重】
           const weightText = group.addShape('text', {
             attrs: {
               x: -(width / 2),
@@ -106,6 +139,20 @@ const customNode = {
             fill: color
           }
         })
+        console.log('cfg===', cfg)
+        // // 流转条件 设置className属性
+        // const innerCircle2 = group.addShape('rect', {
+        //   attrs: {
+        //     x: - 56,
+        //     y: offsetY + height / 2 - 10,
+        //     text: '入口条件',
+        //     width: 56,
+        //     height: 20,
+        //     fill: color,
+        //     parent: mainId,
+        //     radius: 4
+        //   }
+        // })
 
         // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
@@ -131,9 +178,24 @@ const customNode = {
             fill: '#fff'
           }
         })
-        innerCircle1.set('className', 'aaaa')
-        innerCircle2.set('className', 'aaaa')
+        innerCircle1.set('className', 'handleCirculationConditions')
+        innerCircle2.set('className', 'handleCirculationConditions')
 
+        if (cfg.mainType === 5) { // 选择了【智能】算法
+          const innerCircle3 = group.addShape('text', {
+            attrs: {
+              x: -(width / 2 + 50),
+              y: offsetY + height / 2,
+              // textAlign: 'center',
+              textBaseline: 'middle',
+              parent: mainId,
+              text: '入口条件',
+              fill: color || '#409EFF'
+            }
+          })
+
+          innerCircle3.set('className', 'handleClickEntryConditions')
+        }
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + width - 32,
@@ -150,13 +212,24 @@ const customNode = {
           attrs: {
             x: offsetX,
             y: offsetY,
-            width: 4,
+            width: 45,
             height: height,
             fill: color,
             parent: mainId,
-            radius: [4, 0, 0, 4]
+            radius: [20, 0, 0, 20]
           }
         })
+        group.addShape('image', {
+          attrs: {
+            x: offsetX + 8,
+            y: offsetY + 5,
+            width: 30,
+            height: 30,
+            // img:'https://g.alicdn.com/cm-design/arms-trace/1.0.155/styles/armsTrace/images/TAIR.png',
+            // img: require('@/assets/img/people2.png'),
+            img: require('@/assets/img/group-people.png'),
+          }
+        });
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + 16,
@@ -191,20 +264,34 @@ const customNode = {
         // })
         // }
         if (cfg.label) {
-          group.addShape('text', {
+          var str = cfg.label
+          // 14个字符，就换行
+          // eslint-disable-next-line no-control-regex
+          str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{14}\x01?/g, '$&\n').replace(/\x01/g, '')
+
+          if (str.length > 14) {
+            str = cutString(str, 28)
+          }
+
+          const titleName = group.addShape('text', {
             attrs: {
               id: 'label' + uniqueId(),
+              // x: offsetX + width / 2 - 70,
+              // y: offsetY + height / 2,
               x: offsetX + width / 2 - 70,
-              y: offsetY + height / 2,
-              textAlign: 'start',
-              textBaseline: 'middle',
-              text: cfg.label,
+              y: offsetY + height / 2 - 12,
+              textAlign: 'middle',
+              textBaseline: 'top',
+              text: str,
               parent: mainId,
               fill: '#333',
-              fontSize: 14,
-              lineWidth: 20
+              fontSize: str.length > 10 ? 12 : 14,
+              lineWidth: 50,
+              width: 50
             }
           })
+          // 添加名称悬浮框
+          titleName.set('className', 'hoverTitleName')
           // group.addShape('rect', {
           //   attrs: {
           //     id: 'label' + uniqueId(),

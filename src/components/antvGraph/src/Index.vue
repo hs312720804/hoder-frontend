@@ -7,7 +7,7 @@
         </div>
       </div>
     </div> -->
-    <G6Editor mode="edit" :data="data" :height="height" :width="width">
+    <G6Editor mode="edit" :data="flowChartData" :height="height" :width="width">
     </G6Editor>
   </div>
 </template>
@@ -16,19 +16,20 @@
 import G6Editor from './components/G6Editor'
 import eventBus from '@antvGraph/utils/eventBus'
 // import { uniqueId } from '@antvGraph/utils'
+import CreateNodesAndEdges from './createNodesAndEdges'
 export default {
   name: 'app',
   components: { G6Editor },
-  provide () {
-    return {
-      dynamicRuleProvide: this.dynamicRule
-    }
-  },
+  // provide () {
+  //   return {
+  //     graphData: () => this.data
+  //   }
+  // },
   data () {
     return {
       width: 0,
       // height: 600,
-      data: {},
+      flowChartData: {},
       Y: -50,
       // X: 600,
       // Y: document.documentElement.clientHeight,
@@ -54,71 +55,40 @@ export default {
       type: Number,
       default: 0
     },
-    dynamicRule: {
+    currentGraphData: {
       type: Object,
       default: () => {}
     }
   },
   watch: {
-    dynamicRule: {
+    currentGraphData: {
       handler () {
-        this.crowdList = this.dynamicRule.allCrowd || {}
+        this.crowdList = this.currentGraphData.allCrowd || {}
 
-        if (this.type === 3) { // 随机 、编辑模式
-          const defaultNodes = this.initDefaultNodes()
-          console.log('this.data.nodes===>1111111', defaultNodes)
+        if (this.crowdList.length === 0) { // 方案（小人群）至少有一个
+          return
+        }
 
-          // this.data.nodes = this.initDefaultNodes()
-          if (this.dynamicRule.flowChart) { // 编辑数据
-            const flowChart = JSON.parse(this.dynamicRule.flowChart)
-            console.log('flowChart===', flowChart)
+        // 编辑 直接使用传入的json
+        if (this.currentGraphData.flowChart) {
+          this.flowChartData = JSON.parse(this.currentGraphData.flowChart)
+        } else {
+          const createNodesAndEdges = new CreateNodesAndEdges(this.type, this.crowdList, this.commonObj, this.height)
+          // 新增（初始化）
+          // 顺序，循环没有权重；随机，自定义有权重；
+          this.flowChartData.nodes = []
+          this.flowChartData.edges = []
 
-            this.data.nodes = defaultNodes.map(defaultObj => {
-              const editObj = flowChart.nodes.find(node => {
-                return node.crowdId === defaultObj.crowdId
-              })
-
-              if (editObj) {
-                return {
-                  ...editObj,
-                  ...defaultObj,
-                  x: editObj.x, // 位置 - 接口传递的
-                  y: editObj.y, // 位置 - 接口传递的
-                  inPoints: defaultObj.inPoints, // 入口点 - 默认的
-                  outPoints: defaultObj.outPoints // 入口点 - 默认的
-                }
-              }
-              return defaultObj
-            })
-
-            this.data.edges = flowChart.edges.map(item => {
-              return {
-                ...item,
-                source: item.source.toString(),
-                target: item.target.toString(),
-                sourceId: item.sourceId.toString(),
-                targetId: item.targetId.toString()
-              }
-            })
-          } else {
-            this.data.edges = []
-            this.data.nodes = defaultNodes
-          }
-          // this.data = flowChart || {}
-        } else if (this.crowdList.length > 0) { // 新增
-          this.data.edges = []
-          if (this.type === 0 || this.type === 1) {
-            // this.init()
+          if (this.type === 3) { // 3-自定义 算法
+            this.flowChartData.nodes = createNodesAndEdges.initDefaultNodes()
+            this.flowChartData.edges = []
+          } else if (this.type === 2) { // 2-随机 算法
+            this.flowChartData.nodes = createNodesAndEdges.initRandomNodes()
+            this.flowChartData.edges = []
+          } else { // 0-顺序、1-循环、4-不流转 、5-算法
             // 初始数据
-            this.data.nodes = this.initDefaultNodes()
-            this.data.edges = this.initEdges(this.type)
-          } else if (this.type === 2) {
-            this.initRandomNodes()
-          } else {
-            // this.init()
-            // 初始数据
-            this.data.nodes = this.initDefaultNodes()
-            this.data.edges = this.initEdges(this.type)
+            this.flowChartData.nodes = createNodesAndEdges.initDefaultNodes()
+            this.flowChartData.edges = createNodesAndEdges.initEdges() // 区分顺序、循环、不流转
           }
         }
         this.readData()
@@ -153,186 +123,185 @@ export default {
 
     // 刷新数据，渲染图表
     readData () {
-      let data = this.data
-      if (data) {
+      let flowChartData = this.flowChartData
+      if (flowChartData) {
         // this.graph.clear()
-        this.graph && this.graph.refresh(data)
+        this.graph && this.graph.refresh(flowChartData)
       }
       if (this.graph) {
         this.graph.refresh()
-        this.graph.read(data)
-      }
-    },
-    // init () {
-    //   // 初始数据
-    //   this.data.nodes = this.initDefaultNodes()
-    //   this.data.edges = this.initEdges(this.type)
-    // },
-    // 初始化连线
-    initEdges (type) {
-      let arr = []
-      const data = this.crowdList
-      const commonObj = {
-        start: {
-          x: 0,
-          y: 17
-        },
-        end: {
-          x: 0,
-          y: -17
-        },
-        shape: 'customEdge',
-        type: 'edge'
-      }
-      // 顺序
-      if (type === 0 || type === 1) {
-        data.reduce((current, item) => {
-          arr.push({
-            ...commonObj,
-            source: current.crowdId.toString(),
-            target: item.crowdId.toString(),
-            sourceId: current.crowdId.toString(),
-            targetId: item.crowdId.toString()
-          })
-          return item
-        }, data[0])
-
-        arr.shift()
-      }
-      if (type === 1) { // 循环
-        arr.push({
-          ...commonObj,
-          label: '权重',
-          source: (data[data.length - 1].crowdId).toString(),
-          target: (data[0].crowdId).toString(),
-          sourceId: (data[data.length - 1].crowdId).toString(),
-          targetId: (data[0].crowdId).toString()
-        })
-      }
-
-      return arr
-    },
-
-    // 初始化节点
-    initDefaultNodes () {
-      const data = this.crowdList
-      const commonObj = this.commonObj
-
-      if (this.type === 3) { // 自定义
-        commonObj.inPoints = [[0, 0.5]]
-        commonObj.outPoints = [[1, 0.5]]
-      } else { // 其他流转算法没有出入口
-        commonObj.inPoints = undefined
-        commonObj.outPoints = undefined
-      }
-      // this.Y = -90
-      // this.X = this.width / 2
-      this.X = -200
-      this.Y = this.height / 2
-      let arr = data.map((item, index) => {
-        const x = this.X += 300
-        const y = this.Y += 1
-
-        // const x = this.X += 1
-        // const y = this.Y += 150
-        const obj = {
-          ...commonObj,
-          ...item,
-          x,
-          y,
-          name: item.crowdName,
-          label: item.crowdName,
-          id: item.crowdId.toString(),
-          arithmetic: null,
-          weight: null,
-          degree: 5
-        }
-
-        if (this.type === 3) { // 自定义
-          obj.arithmetic = item.arithmetic ? item.arithmetic : 2
-          obj.weight = item.weight
-        }
-
-        return obj
-      })
-
-      console.log('arr===>', arr)
-      return arr
-    },
-
-    // 初始化随机节点
-    initRandomNodes () {
-      const data = this.crowdList
-      const commonObj = this.commonObj
-
-      if (this.type === 3) { // 自定义
-        commonObj.inPoints = [[0, 0.5]]
-        commonObj.outPoints = [[1, 0.5]]
-      } else { // 其他流转算法没有出入口
-        commonObj.inPoints = undefined
-        commonObj.outPoints = undefined
-      }
-
-      let arr = data.map((item, index) => {
-        const xy = this.returnStyle(index)
-
-        const x = xy.left
-        const y = xy.top
-
-        return {
-          ...commonObj,
-          ...item,
-          x,
-          y,
-          name: item.crowdName,
-          label: item.crowdName,
-          id: item.crowdId.toString(),
-          arithmetic: null
-        }
-      })
-
-      console.log('arr===>', arr)
-      // 初始数据
-      this.data = {
-        nodes: arr
-      }
-    },
-
-    returnStyle (index) {
-      const obj = {
-
-        radius: 200,
-        // 每一个BOX对应的角度;
-        avd: 0,
-        // 每一个BOX对应的弧度;
-        ahd: 0,
-        dotLeft: 635,
-        // 中心点纵坐标
-        dotTop: 235
-      }
-      const len = this.crowdList.length
-      // // 半径
-      // this.radius = 200
-      // // 每一个BOX对应的角度;
-      obj.avd = 360 / len
-      // 每一个BOX对应的弧度;
-      obj.ahd = obj.avd * Math.PI / 180
-
-      const ahd = obj.ahd
-      const radius = obj.radius
-      const dotLeft = obj.dotLeft
-      const dotTop = obj.dotTop
-
-      const left = Math.sin(ahd * index) * radius + dotLeft
-      const top = Math.cos(ahd * index) * radius + dotTop
-
-      console.log('left===', left)
-      console.log('top===', top)
-      return {
-        left,
-        top
+        this.graph.read(flowChartData)
       }
     }
+    // init () {
+    //   // 初始数据
+    //   this.flowChartData.nodes = this.initDefaultNodes()
+    //   this.flowChartData.edges = this.initEdges(this.type)
+    // },
+    // // 初始化连线
+    // initEdges (type) {
+    //   let arr = []
+    //   const data = this.crowdList
+    //   const commonObj = {
+    //     start: {
+    //       x: 0,
+    //       y: 17
+    //     },
+    //     end: {
+    //       x: 0,
+    //       y: -17
+    //     },
+    //     shape: 'customEdge',
+    //     type: 'edge'
+    //   }
+    //   // 顺序
+    //   if (type === 0 || type === 1) {
+    //     data.reduce((current, item) => {
+    //       arr.push({
+    //         ...commonObj,
+    //         source: current.crowdId.toString(),
+    //         target: item.crowdId.toString(),
+    //         sourceId: current.crowdId.toString(),
+    //         targetId: item.crowdId.toString()
+    //       })
+    //       return item
+    //     }, data[0])
+
+    //     arr.shift()
+    //   }
+    //   if (type === 1) { // 循环
+    //     arr.push({
+    //       ...commonObj,
+    //       label: '权重',
+    //       source: (data[data.length - 1].crowdId).toString(),
+    //       target: (data[0].crowdId).toString(),
+    //       sourceId: (data[data.length - 1].crowdId).toString(),
+    //       targetId: (data[0].crowdId).toString()
+    //     })
+    //   }
+
+    //   return arr
+    // },
+
+    // // 初始化节点
+    // initDefaultNodes () {
+    //   const data = this.crowdList
+    //   const commonObj = this.commonObj
+    //   const height = this.height
+
+    //   if (this.type === 3) { // 自定义
+    //     commonObj.inPoints = [[0, 0.5]]
+    //     commonObj.outPoints = [[1, 0.5]]
+    //   } else { // 其他流转算法没有出入口
+    //     commonObj.inPoints = undefined
+    //     commonObj.outPoints = undefined
+    //   }
+    //   // this.Y = -90
+    //   // this.X = this.width / 2
+    //   this.X = -200
+    //   this.Y = height / 2
+    //   let arr = data.map((item, index) => {
+    //     const x = this.X += 300
+    //     const y = this.Y += 1
+
+    //     // const x = this.X += 1
+    //     // const y = this.Y += 150
+    //     const obj = {
+    //       ...commonObj,
+    //       ...item,
+    //       x,
+    //       y,
+    //       name: item.crowdName,
+    //       label: item.crowdName,
+    //       id: item.crowdId.toString(),
+    //       arithmetic: null,
+    //       weight: null,
+    //       degree: 5
+    //     }
+
+    //     if (this.type === 3) { // 自定义
+    //       obj.arithmetic = item.arithmetic ? item.arithmetic : 2
+    //       obj.weight = item.weight
+    //     }
+
+    //     return obj
+    //   })
+
+    //   return arr
+    // },
+
+    // // 初始化随机节点
+    // initRandomNodes () {
+    //   const data = this.crowdList
+    //   const commonObj = this.commonObj
+
+    //   if (this.type === 3) { // 自定义
+    //     commonObj.inPoints = [[0, 0.5]]
+    //     commonObj.outPoints = [[1, 0.5]]
+    //   } else { // 其他流转算法没有出入口
+    //     commonObj.inPoints = undefined
+    //     commonObj.outPoints = undefined
+    //   }
+
+    //   let arr = data.map((item, index) => {
+    //     const xy = this.returnStyle(index)
+
+    //     const x = xy.left
+    //     const y = xy.top
+
+    //     return {
+    //       ...commonObj,
+    //       ...item,
+    //       x,
+    //       y,
+    //       name: item.crowdName,
+    //       label: item.crowdName,
+    //       id: item.crowdId.toString(),
+    //       arithmetic: null
+    //     }
+    //   })
+
+    //   // 初始数据
+    //   // this.data = {
+    //   //   nodes: arr
+    //   // }
+
+    //   return arr
+    // },
+
+    // returnStyle (index) {
+    //   const obj = {
+
+    //     radius: 200,
+    //     // 每一个BOX对应的角度;
+    //     avd: 0,
+    //     // 每一个BOX对应的弧度;
+    //     ahd: 0,
+    //     dotLeft: 635,
+    //     // 中心点纵坐标
+    //     dotTop: 235
+    //   }
+    //   const len = this.crowdList.length
+    //   // // 半径
+    //   // this.radius = 200
+    //   // // 每一个BOX对应的角度;
+    //   obj.avd = 360 / len
+    //   // 每一个BOX对应的弧度;
+    //   obj.ahd = obj.avd * Math.PI / 180
+
+    //   const ahd = obj.ahd
+    //   const radius = obj.radius
+    //   const dotLeft = obj.dotLeft
+    //   const dotTop = obj.dotTop
+
+    //   const left = Math.sin(ahd * index) * radius + dotLeft
+    //   const top = Math.cos(ahd * index) * radius + dotTop
+
+    //   return {
+    //     left,
+    //     top
+    //   }
+    // }
   }
 }
 </script>

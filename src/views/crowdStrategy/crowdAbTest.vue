@@ -48,14 +48,15 @@
                 <div class="divide-header">第三步：填写实验有效期并保存</div>
                 <el-form-item label="实验有效期：" prop="validityTime">
                     <el-date-picker
-                            v-model="divideForm.validityTime"
-                            type='datetimerange'
-                            range-separator="至"
-                            start-placeholder="开始日期"
-                            end-placeholder="结束日期"
-                            value-format="yyyy-MM-dd HH:mm:ss"
-                            format="yyyy-MM-dd HH:mm:ss"
-                            align="right">
+                      v-model="divideForm.validityTime"
+                      type='datetimerange'
+                      range-separator="至"
+                      start-placeholder="开始日期"
+                      end-placeholder="结束日期"
+                      value-format="yyyy-MM-dd HH:mm:ss"
+                      format="yyyy-MM-dd HH:mm:ss"
+                      align="right"
+                      :default-time="['', '23:59:59']">
                     </el-date-picker>
                 </el-form-item>
                 <el-form-item>

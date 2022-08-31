@@ -45,13 +45,12 @@
                   <Range
                     ref="range"
                     :childItem="childItem"
-                    :type="childItem.tagCode === 'BAV0003' ? ['range'] : ['range', 'week', 'time']"
+                    :type="getRangeType(childItem.tagCode)"
                     :options="bavAttrList[childItem.categoryCode]"
                     :show="showRange"
                     @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule"
                   >
                   </Range>
-
                   <i
                     :class="showRange ? 'el-icon-d-arrow-left' : 'el-icon-d-arrow-right'"
                     class="range animated shake"
@@ -67,6 +66,7 @@
                   ref="bav"
                   :childItem="childItem"
                   :bavAttrList="bavAttrList[childItem.categoryCode]"
+                  :key="index + 'bavRule' + n"
                 >
                 </Bav>
               </div>
@@ -172,7 +172,6 @@
                 <span class="in">
                   <!-- time 类型 -->
 
-                  <!-- 11111111111111 -->
                   <span v-if="childItem.tagType === 'time'">
                     <template v-if="childItem.dateAreaType !== 0">
                       <!-- 二期之后的版本 -->
@@ -265,7 +264,6 @@
                       </template>
                     </template>
                   </span>
-                  <!-- 11111111111111111 end-->
 
                   <!-- string 、 collect 、 mix 类型 -->
                   <template v-else-if="
@@ -422,9 +420,9 @@
                     <el-button
                       v-if="childItem.isDynamicTime !== 3"
                       @click="
-                        childItem.isDynamicTime = 3
-                        childItem.dateAreaType = 0
-                        childItem.operator = 'between'
+                        childItem.isDynamicTime = 3;
+                        childItem.dateAreaType = 0;
+                        childItem.operator = 'between';
                         childItem.value = childItem.startDay + '-' + childItem.endDay
                       "
                       >切换至新方案
@@ -441,7 +439,6 @@
                     </el-button>
                   </template>
                 </span>
-                <!-- 11111111111111111 end -->
                 <template v-if="cache[childItem.tagId]">
                   <span
                     v-if="
@@ -475,10 +472,13 @@
                   </el-tooltip> -->
 
                   <!-- 选择动态时间提示 -->
-                  <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
+                  <div v-if="childItem.version > 0 && childItem.dateAreaType === 1" style="color: gray; font-size: 12px;">
+                    提示：负数表示过去的日期，例如过去一周到未来3天，可以表示成-7天到3天
+                  </div>
+                  <!-- <el-tooltip v-if="childItem.version > 0 && childItem.dateAreaType === 1" class="item" effect="dark" placement="top-start" >
                     <div slot="content">提示：负数表示过去的日期，比如-1表示昨天，0表示今天，1表示明天</div>
                     <el-button type="text">提示</el-button>
-                  </el-tooltip>
+                  </el-tooltip> -->
 
                   <!-- 圈人群二期之前版本提示 -->
                   <el-tooltip v-else-if="childItem.version === 0" class="item" effect="dark" placement="top-start" >
@@ -617,7 +617,10 @@ export default {
         'BAV0009': 9,
         'BAV0010': 10,
         'BAV0011': 11,
-        'BAV0012': 12
+        'BAV0012': 12,
+        'BAV0013': 13,
+        'BAV0014': 14,
+        'BAV0015': 15,
       },
       // ----------------
       cache: {},
@@ -706,6 +709,13 @@ export default {
     }
   },
   methods: {
+    getRangeType(tagCode) {
+      let type = ['range', 'week', 'time']
+      if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') {
+        type = ['range']
+      }
+      return type
+    },
     handelTimeTagTypeSelectChange (childItem) {
       // 如果选择 【空】 则将 value 清空
       if (childItem.dateAreaType === 0) {
