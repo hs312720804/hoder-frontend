@@ -53,7 +53,14 @@ export default function fetch ({
         return isReturnAllInfor ? data : data.data
       }
       if (codeFormat === 0 || codeFormat === 1000 || codeFormat === 3000) {
-        return isReturnAllInfor ? data : data.data
+        // return isReturnAllInfor ? data : data.data
+        if (isReturnAllInfor) {
+          return data
+        } else if (!data.data && data.result) {
+          return {data: data.result}
+        } else {
+          return data.data
+        }
       } else if (codeFormat === 400001 || codeFormat === 9999) {
         location.href = location.origin + location.pathname + '#/login'
       } else {

@@ -104,11 +104,11 @@ export default {
   flex-direction: column;
   // align-items: center;
   text-align: center;
-  font-size 14px
+  font-size 12px
   overflow auto
   border: 2px solid #FFF;
   div {
-    margin-bottom 8px
+    margin-bottom 3px
   }
 }
 .level_children_box{

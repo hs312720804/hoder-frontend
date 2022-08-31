@@ -1896,62 +1896,103 @@ export default {
         dynamicRuleId: row.id, // 分组 ID
         // dynamicRuleId: 77, // 分组 ID
       }
-      // const data = [{
-      //   arup: 59.48,
-      //   payUv: 964,
-      //   path: 11679,
-      //   price: 57334.00,
-      //   payRate: 0.01,
-      //   dynamicRuleName: '分组1',
-      //   child: [{
-      //     arup: 56.86,
-      //     payUv: 42,
-      //     path: '11679_11680',
-      //     price: 2388.00,
-      //     payRate: 0.01,
-      //     hitUv: 151131,
-      //     nowCrowdName: '方案1',
-      //     child: [
-      //         {
-      //           arup: 0.00,
-      //           payUv: 0,
-      //           path: "11679_11680_11679",
-      //           price: 0.00,
-      //           payRate: 0.00,
-      //           child: [],
-      //           hitUv: 571,
-      //           nowCrowdName: '方案1-1',
-      //         }, {
-      //           arup: 0.00,
-      //           payUv: 0,
-      //           path: '11679_11680_11679',
-      //           price: 0.00,
-      //           payRate: 0.00,
-      //           child: [],
-      //           hitUv: 571,
-      //           nowCrowdName: '方案1-2',
-      //         }, {
-      //           arup: 0.00,
-      //           payUv: 0,
-      //           path: '11679_11680_11679',
-      //           price: 0.00,
-      //           payRate: 0.00,
-      //           child: [],
-      //           hitUv: 571,
-      //           nowCrowdName: '方案1-3',
-      //         }
-      //     ]
-      //   }, {
-      //     nowCrowdName: '方案2',
-      //     arup: 56.86,
-      //     payUv: 42,
-      //     path: '11679_11680',
-      //     price: 2388.00,
-      //     payRate: 0.01,
-      //     hitUv: 151131
-      //   }],
+      const data = [{
+        arup: 59.48,
+        payUv: 964,
+        path: 11679,
+        price: 57334.00,
+        payRate: 0.01,
+        dynamicRuleName: '分组1',
+        child: [{
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          nowCrowdName: '方案1',
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }, {
+          nowCrowdName: '方案2',
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }, {
+          nowCrowdName: '方案2',
+          arup: 56.86,
+          payUv: 42,
+          path: '11679_11680',
+          price: 2388.00,
+          payRate: 0.01,
+          hitUv: 151131,
+          child: [
+              {
+                arup: 0.00,
+                payUv: 0,
+                path: "11679_11680_11679",
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-1',
+              }, {
+                arup: 0.00,
+                payUv: 0,
+                path: '11679_11680_11679',
+                price: 0.00,
+                payRate: 0.00,
+                child: [],
+                hitUv: 571,
+                nowCrowdName: '方案1-2',
+              }
+          ]
+        }],
         
-      // }]
+      }]
 
       
 
@@ -1984,10 +2025,12 @@ export default {
         ratio: '当前路径流入设备量/父级路径流入设备量',
       }
       this.$service.getCrowdFlowPath(parmas).then(res => {
-        //   this.showFlowLinkAnalysisDialog = true
-        const data = [res]
+        if (typeof res.data === 'string') {
+          return this.$message.info(res.data) // 数据不存在
+        }
         console.log('res====>', res)
-
+        const data = [res]
+        
         this.showFlowLinkAnalysisDialog = true
         this.analysisTableData = this.constructLinkData(data, 0)
 
@@ -1999,7 +2042,7 @@ export default {
     constructLinkData(data, zLevel) {
       const childLevel = zLevel + 1 // child 的层级加1
       if (!data || data.length === 0) {
-        return [] 
+        return []
       }
       let len = data ? data.length : 0
       return data.map(item => {

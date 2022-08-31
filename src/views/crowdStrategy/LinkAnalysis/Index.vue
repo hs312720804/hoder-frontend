@@ -311,7 +311,7 @@ export default {
 .avatar {
   display: inline-block;
   // width: 10px;
-  height: 600px;
+  height: 1200px;
   // background-color: pink;
   left: 50px;
   top: 50px;
