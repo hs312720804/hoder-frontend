@@ -29,11 +29,11 @@
             <div slot="content">点击将按人群优先级除去交叉部分，批量估算所有上架中的人群</div>
             <span class="uneffective">
               <el-button
-                    type="text"
-                    size="medium"
-                    @click="handleBatchEstimate"
-                    :disabled="canBatchEstimate"
-            >
+                type="text"
+                size="medium"
+                @click="handleBatchEstimate"
+                :disabled="canBatchEstimate"
+              >
               批量估算
               </el-button>
               <!--<span>?</span>-->
@@ -617,12 +617,25 @@
           <span >{{ launchStatusEnum[scope.row.status] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="AB测试" width="100px">
+      <el-table-column label="AB测试" width="130px">
         <template slot-scope="scope">
           <!-- 引用人群 -->
           <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
 
-          <span v-else>{{ abStatusEnum[scope.row.abstatus] }}</span>
+          <span v-else>
+            {{ abStatusEnum[scope.row.abstatus] }}
+            <el-button v-if="scope.row.abstatus !== 0" @click="showDivideResult(scope.row.crowdId)" type="text">查看AB人群</el-button>
+          </span>
+        </template>
+      </el-table-column>
+      <el-table-column label="动态实验" width="130px">
+        <template slot-scope="scope">
+          <!-- 引用人群 -->
+          <!-- <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span> -->
+
+          <!-- <span v-else> -->
+            <el-button v-if="scope.row.dynamicFlag===1" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
+          <!-- </span> -->
         </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
@@ -633,7 +646,7 @@
           <span v-else>
             <span v-if="scope.row.forcastStatus == 1">未估算</span>
             <span v-if="scope.row.forcastStatus == 2">估算中</span>
-            <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">已估算</el-button>
+            <el-button type="text" v-if="scope.row.forcastStatus == 3" @click="showCountResult(scope.row.crowdId)">查看估算数量</el-button>
             <span v-if="scope.row.forcastStatus == 4">估算失败</span>
             <span v-if="scope.row.forcastStatus == 6">暂不支持该类标签</span>
           </span>
@@ -664,7 +677,7 @@
               type="text"
               @click="handleClickEstimate(scope.row)"
               :disabled="scope.row.putway === 0 || scope.row.forcastStatus == 6"
-            >估算</el-button>
+            >估算数量</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="text">
                 统计
@@ -783,13 +796,13 @@
     </div>
   </div>
   <!-- 估算弹窗 -->
-  <el-dialog :visible.sync="showEstimate">
-    <div class="estimate-tips">说明：
-      <!-- <div>1、会自动过滤自定义条件，只估算包含大数据标签的人群数量</div> -->
+  <el-dialog :visible.sync="showEstimate" title="请选择要估算的类型标识">
+    <!-- <div class="estimate-tips">说明：
+      <div>1、会自动过滤自定义条件，只估算包含大数据标签的人群数量</div>
       <div>1、仅支持大数据标签、行为标签或二者混用的估算</div>
       <div>2、依据人群优先级去重估算，重合部分算入优先级高的人群</div>
       <div>3、该策略下上架中的人群将参与去重估算</div>
-    </div>
+    </div> -->
     <el-checkbox-group v-model="estimateValue">
       <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
     </el-checkbox-group>

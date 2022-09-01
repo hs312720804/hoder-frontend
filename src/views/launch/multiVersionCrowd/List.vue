@@ -94,7 +94,7 @@
                     <span v-else :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">{{scope.row.launchName}}</span>
                 </template>
             </el-table-column>
-            <el-table-column prop="dmpCrowdId" label="人群投放Id" width="80"></el-table-column>
+            <el-table-column prop="dmpCrowdId" label="大数据标识" width="90"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
             <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
                 <template slot-scope="scope">

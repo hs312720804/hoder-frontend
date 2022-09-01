@@ -53,6 +53,7 @@
                       style="width: 180px"
                       name="oxve"
                       v-model="childItem.sourceSign"
+                      filterable
                       class="input-inline"
                     >
                       <!-- number 类型 -->
