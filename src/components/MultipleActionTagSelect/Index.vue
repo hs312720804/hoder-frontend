@@ -1596,28 +1596,5 @@ i {
   border-right: 54px solid #e2e2e2;
 }
 
-.animated {
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  -o-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  -moz-animation-fill-mode: both;
-  -o-animation-fill-mode: both;
-  animation-fill-mode: both;
-  animation-iteration-count: 1;
-}
-.animated.shake {
-  -webkit-animation-name: shake;
-  -moz-animation-name: shake;
-  -o-animation-name: shake;
-  animation-name: shake;
-}
-@-webkit-keyframes shake {
-  0%, 100% {transform: translateX(0);}
-  // 10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
-  // 20%, 40%, 60%, 80% {transform: translateX(5px);}
-  10%, 50%, 90% {transform: translateX(-5px);}
-  30%, 60%{transform: translateX(5px);}
-}
+
 </style>

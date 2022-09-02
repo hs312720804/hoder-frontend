@@ -77,7 +77,7 @@
         <div class="user-info">
           <!-- <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')">数据部应用平台</el-button> -->
           
-          <i class="el-icon-question" style="color: #409EFF; font-size: 18px; vertical-align: middle; margin-right: 5px;"></i>
+          <i class="el-icon-question" style="color: #409EFF; font-size: 18px; margin-right: 5px;"></i>
           <el-button 
             type="text" 
             @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')" 

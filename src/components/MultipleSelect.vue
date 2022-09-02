@@ -491,6 +491,12 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
+
+          <span class="animated shake">
+            <i class="el-icon-back" style="font-size: 28px; "></i>
+            <span style="vertical-align: 4px;">点击标签来编辑人群条件</span>
+          </span>
+
         </div>
       </div>
     </div>
@@ -1558,4 +1564,5 @@ i {
   display: flex;
   flex-direction: row;
 }
+
 </style>
