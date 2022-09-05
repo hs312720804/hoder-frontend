@@ -492,11 +492,24 @@
             >{{ item.tagName }}
           </el-tag>
 
-          <span class="animated shake">
-            <i class="el-icon-back" style="font-size: 28px; "></i>
-            <span style="vertical-align: 4px;">点击标签来编辑人群条件</span>
-          </span>
-
+          <!-- 新手指引 - 点击提示 -->
+          <el-popover
+            v-if="showHitTip"
+            placement="bottom"
+            width="230"
+            v-model="tipVisible"
+            style="position: absolute; top: 10px; left: 20px;">
+            <p>Hello! 👋 点击标签来编辑人群条件</p>
+            <div style="text-align: right; margin: 0">
+              <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
+            </div>
+            <!-- <el-button slot="reference">删除</el-button> -->
+            <a class="introjs-hint" slot="reference">
+              <div class="introjs-hint-dot"></div>
+              <div class="introjs-hint-pulse"></div>
+            </a>
+          </el-popover>
+          
         </div>
       </div>
     </div>
@@ -785,6 +798,8 @@
 export default {
   data () {
     return {
+      showHitTip: true,
+      tipVisible: false,
       cache: {},
       tagSelectMoreShow: false,
       showMoreTags: false,
@@ -1047,6 +1062,8 @@ export default {
      * tag 为标签
      */
     handleAddRule (tag) {
+      this.showHitTip = false // 关闭新手指引 - 点击提示
+
       if (this.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1314,6 +1331,9 @@ export default {
     fetchAllTagSuggestions () {
       let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
       if (ruleJsonData.rules.length > 0) {
+        // 编辑
+        this.showHitTip = false // 关闭新手指引 - 点击提示
+
         let cacheIds = []
         let cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {

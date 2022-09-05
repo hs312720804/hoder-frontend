@@ -537,6 +537,25 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
+
+          <!-- 关闭新手指引 - 点击提示 -->
+          <el-popover
+            v-if="showHitTip"
+            placement="bottom"
+            width="230"
+            v-model="tipVisible"
+            style="position: absolute; top: 10px; left: 20px;">
+            <p>Hello! 👋 点击标签来编辑人群条件</p>
+            <div style="text-align: right; margin: 0">
+              <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
+            </div>
+            <!-- <el-button slot="reference">删除</el-button> -->
+            <a class="introjs-hint" slot="reference">
+              <div class="introjs-hint-dot"></div>
+              <div class="introjs-hint-pulse"></div>
+            </a>
+          </el-popover>
+
         </div>
       </div>
     </div>
@@ -604,6 +623,8 @@ import Bav from './Bav/Index.vue'
 export default {
   data () {
     return {
+      showHitTip: true,
+      tipVisible: false,
       bavAttrList: {},
       tagCodeValue: {
         'BAV0001': 1,
@@ -892,6 +913,8 @@ export default {
      * tag 为标签
      */
     handleAddActionRule (tag) {
+      this.showHitTip = false // 关闭新手指引 - 点击提示
+
       // eslint-disable-next-line no-debugger
       if (tag.dataSource === 2) { // 大数据标签
         this.handleAddRule(tag)
@@ -1327,6 +1350,9 @@ export default {
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)
       if (len > 0) {
+        // 编辑
+        this.showHitTip = false // 关闭新手指引 - 点击提示
+
         let cacheIds = []
         let cacheActionIds = []
         ruleJsonData.rules.forEach(itemParent => {
@@ -1587,7 +1613,7 @@ i {
   padding-left: 0px;
   color: dimgray;
   text-indent: 23px;
-  osition: absolute;
+  position: absolute;
   width: 0;
   height: 0;
   border-top: 19px solid transparent;
