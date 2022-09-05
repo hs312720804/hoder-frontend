@@ -538,7 +538,7 @@
             >{{ item.tagName }}
           </el-tag>
 
-          <!-- 关闭新手指引 - 点击提示 -->
+          <!-- 新手指引 - 点击提示 -->
           <el-popover
             v-if="showHitTip"
             placement="bottom"
