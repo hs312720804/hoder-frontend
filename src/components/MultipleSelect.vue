@@ -492,8 +492,19 @@
             >{{ item.tagName }}
           </el-tag>
 
+          <!-- <i class="el-icon-top" style="font-size: 28px;"></i> -->
+          <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
+            <i class="el-icon-thumb" style="font-size: 28px;"></i>
+            <span style="font-size: 12px;">点击标签来编辑人群条件</span>
+          </div>
+
+          <!-- <span class="animated shake" style="font-size: 28px; vertical-align: middle;">
+            <i class="el-icon-back" style="font-size: 28px;"></i>
+            <span style="font-size: 14px;">点击标签来编辑人群条件</span>
+          </span> -->
+          
           <!-- 新手指引 - 点击提示 -->
-          <el-popover
+          <!-- <el-popover
             v-if="showHitTip"
             placement="bottom"
             width="230"
@@ -503,13 +514,12 @@
             <div style="text-align: right; margin: 0">
               <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
             </div>
-            <!-- <el-button slot="reference">删除</el-button> -->
             <a class="introjs-hint" slot="reference">
               <div class="introjs-hint-dot"></div>
               <div class="introjs-hint-pulse"></div>
             </a>
-          </el-popover>
-          
+          </el-popover> -->
+
         </div>
       </div>
     </div>

@@ -11,7 +11,7 @@
       v-if="dialogVisible"
       title="设置动态流转条件"
       :visible.sync="dialogVisible"
-      width="800px"
+      width="900px"
     >
       <SetCirculationConditionsCom
         :crowdId="crowdId"
