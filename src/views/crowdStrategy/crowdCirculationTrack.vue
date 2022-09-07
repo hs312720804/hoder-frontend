@@ -2,7 +2,7 @@
   <div>
     <div class="title">查询指定Mac的流转轨迹</div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
-      <el-form-item label="人群ID：" prop="crowdId">
+      <el-form-item label="主人群ID：" prop="crowdId">
         <el-input v-model="form.crowdId" clearable></el-input>
       </el-form-item>
       <el-form-item label="MAC地址" prop="mac">

@@ -633,9 +633,10 @@
           <!-- 引用人群 -->
           <!-- <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span> -->
 
-          <!-- <span v-else> -->
-            <el-button v-if="scope.row.dynamicFlag===1" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
-          <!-- </span> -->
+          <el-button v-if="scope.row.dynamicFlag===1" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
+          <span v-else>
+            否
+          </span>
         </template>
       </el-table-column>
       <el-table-column prop="forcastStatus" label="估算状态" width="90">
