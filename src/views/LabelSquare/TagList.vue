@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import tagDetailList from './TagDetail'
+import tagDetailList from './TagDetail.vue'
 export default {
   name: 'TagList',
   props: {
@@ -170,6 +170,10 @@ export default {
     showEditBtn: {
       type: Boolean,
       default: false
+    },
+    activeTab: {
+      type: String,
+      default: ''
     }
   },
   components: {
@@ -179,7 +183,8 @@ export default {
     return {
       multipleSelection: [],
       tagId: undefined,
-      checkList: []
+      checkList: [],
+      showDetailDialog: false
     }
   },
   watch: {
@@ -195,6 +200,12 @@ export default {
     },
     handleSeeTagCategoryDetail (row) {
       this.tagId = row.tagId
+      
+      // 选中 tab 的 indedx, 构造 id
+      const id = `tab-content-${this.activeTab}`
+      let target = document.getElementById(id);
+      let parent = document.querySelector('.el-main');
+    	parent.scrollTop = target.offsetTop  // 滚动条滑到可视位置
     },
     handleDelete (row) {
       this.$emit('delete', row.tagId)
