@@ -172,7 +172,7 @@ export default {
       default: false
     },
     activeTab: {
-      type: String,
+      type: [String, Number],
       default: ''
     }
   },
