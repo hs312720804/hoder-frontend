@@ -12,6 +12,11 @@
                   :picker-options="pickerOptions"
                   @change="initChart">
                 </el-date-picker>
+
+                <div class="export-button">
+                    <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
+                    <el-button type="success" @click="handleLaunchedExport">导出数据</el-button>
+                </div>
             </div>
         </div>
         <div v-if="show">
@@ -60,30 +65,31 @@ export default {
         }
       },
       rowObj: [{ // 图表信息，需要和后端约定好名称
-        'crowdGroup_hit_l_1': { type: 'line', title: '人群命中次数对比', span: 15 },
-        'crowdGroup_hit_h_1': { type: 'bar', title: '人群命中次数汇总对比', span: 9 }
+        crowdGroup_hit_l_1: { type: 'line', title: '人群命中次数对比', span: 15 },
+        crowdGroup_hit_h_1: { type: 'bar', title: '人群命中次数汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_2': { type: 'line', title: '产品包曝光设备量对比（个）', span: 15 },
-        'crowdGroup_h_2': { type: 'bar', title: '产品包曝光设备量汇总对比', span: 9 }
+        crowdGroup_l_2: { type: 'line', title: '产品包曝光设备量对比（个）', span: 15 },
+        crowdGroup_h_2: { type: 'bar', title: '产品包曝光设备量汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_3': { type: 'line', title: '付费设备量对比（个）', span: 15 },
-        'crowdGroup_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
+        crowdGroup_l_3: { type: 'line', title: '付费设备量对比（个）', span: 15 },
+        crowdGroup_h_3: { type: 'bar', title: '付费设备量汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
-        'crowdGroup_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }
+        crowdGroup_l_4: { type: 'line', title: '付费率对比（%）', span: 15 },
+        crowdGroup_h_4: { type: 'bar', title: '平均付费率对比', span: 9 }
       }, {
-        'crowdGroup_l_5': { type: 'line', title: '客单价对比（元）', span: 15 },
-        'crowdGroup_h_5': { type: 'bar', title: '平均客单价汇总对比', span: 9 }
+        crowdGroup_l_5: { type: 'line', title: '客单价对比（元）', span: 15 },
+        crowdGroup_h_5: { type: 'bar', title: '平均客单价汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
-        'crowdGroup_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
+        crowdGroup_l_6: { type: 'line', title: '总营收对比（元）', span: 15 },
+        crowdGroup_h_6: { type: 'bar', title: '总营收汇总对比', span: 9 }
       }, {
-        'crowdGroup_l_8': { type: 'line', title: '付费单量对比（单）', span: 15 },
-        'crowdGroup_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
+        crowdGroup_l_8: { type: 'line', title: '付费单量对比（单）', span: 15 },
+        crowdGroup_h_8: { type: 'bar', title: '付费单量汇总对比', span: 9 }
       }, {
-        'crowdGroup_hit_h_7': { type: 'bar', title: '各子人群命中次数对比（个）', span: 24 }
-      }
-      ]
+        crowdGroup_hit_h_7: { type: 'bar', title: '各子人群命中次数对比（个）', span: 24 }
+      }],
+      launchedExportUrl: undefined
+
     }
   },
   watch: {
@@ -118,41 +124,51 @@ export default {
   mounted () {
     if (this.policyId) {
       this.rowObj = [{ // 图表信息，需要和后端约定好名称
-        'sequence_hit_l_1': { type: 'line', title: '人群命中对比', span: 15 },
-        'sequence_hit_h_1': { type: 'bar', title: '人群命中量汇总对比', span: 9 }
+        sequence_hit_l_1: { type: 'line', title: '人群命中对比', span: 15 },
+        sequence_hit_h_1: { type: 'bar', title: '人群命中量汇总对比', span: 9 }
       }, {
-        'sequence_l_2': { type: 'line', title: '产品包曝光量对比', span: 15 },
-        'sequence_h_2': { type: 'bar', title: '产品包曝光量汇总对比', span: 9 }
+        sequence_l_2: { type: 'line', title: '产品包曝光量对比', span: 15 },
+        sequence_h_2: { type: 'bar', title: '产品包曝光量汇总对比', span: 9 }
       }, {
-        'sequence_l_3': { type: 'line', title: '付费设备量对比', span: 15 },
-        'sequence_h_3': { type: 'bar', title: '付费设备量汇总对比', span: 9 }
+        sequence_l_3: { type: 'line', title: '付费设备量对比', span: 15 },
+        sequence_h_3: { type: 'bar', title: '付费设备量汇总对比', span: 9 }
       }, {
-        'sequence_l_4': { type: 'line', title: '付费率对比（%）', span: 15 },
-        'sequence_h_4': { type: 'bar', title: '平均付费率对比', span: 9 }
+        sequence_l_4: { type: 'line', title: '付费率对比（%）', span: 15 },
+        sequence_h_4: { type: 'bar', title: '平均付费率对比', span: 9 }
       }, {
-        'sequence_l_5': { type: 'line', title: '客单价对比（元）', span: 15 },
-        'sequence_h_5': { type: 'bar', title: '平均客单价汇总对比', span: 9 }
+        sequence_l_5: { type: 'line', title: '客单价对比（元）', span: 15 },
+        sequence_h_5: { type: 'bar', title: '平均客单价汇总对比', span: 9 }
       }, {
-        'sequence_l_6': { type: 'line', title: '总营收对比（元）', span: 15 },
-        'sequence_h_6': { type: 'bar', title: '总营收汇总对比', span: 9 }
+        sequence_l_6: { type: 'line', title: '总营收对比（元）', span: 15 },
+        sequence_h_6: { type: 'bar', title: '总营收汇总对比', span: 9 }
       }, {
-        'sequence_l_8': { type: 'line', title: '付费单量对比', span: 15 },
-        'sequence_h_8': { type: 'bar', title: '付费单量汇总对比', span: 9 }
+        sequence_l_8: { type: 'line', title: '付费单量对比', span: 15 },
+        sequence_h_8: { type: 'bar', title: '付费单量汇总对比', span: 9 }
       }, {
-        'sequence_hit_h_7': { type: 'bar', title: '各子人群命中量对比', span: 24 }
+        sequence_hit_h_7: { type: 'bar', title: '各子人群命中量对比', span: 24 }
       }
       ]
     }
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
-      for (var key of Object.keys(this.allCharts)) {
+      for (const key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
         chart.resize()
       }
     })
   },
   methods: {
+    //  导出投后效果数据
+    handleLaunchedExport () {
+      this.launchedExportUrl = `/api/chart/crowdGroupIndexStatistics/download?crowdId=${this.crowdId}&startDate=${this.timeRange[0]}&endDate=${this.timeRange[1]}`
+      console.log('this.launchedExportUrl===', this.launchedExportUrl)
+
+      // this.launchedExportUrl = '/api/chart/crowdGroupIndexStatistics/download?crowdId=12296&startDate=2022-07-04&endDate=2022-08-31&prod=hello'
+      this.$nextTick(() => {
+        this.$refs.launchedDownLoad.click()
+      })
+    },
     initRange () {
       // 设置默认时间为今天的前一周
       const start = new Date()
@@ -163,9 +179,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     initChart () {
@@ -192,7 +208,7 @@ export default {
           this.$nextTick(() => {
             const rowObj = this.rowObj
             rowObj.forEach(item => {
-              for (let key in item) {
+              for (const key in item) {
                 if (item[key].type === 'line') {
                   this.showLine(this.allChartData[key], key)
                 } else {
@@ -223,7 +239,7 @@ export default {
           this.$nextTick(() => {
             const rowObj = this.rowObj
             rowObj.forEach(item => {
-              for (let key in item) {
+              for (const key in item) {
                 if (item[key].type === 'line') {
                   this.showLine(this.allChartData[key], key)
                 } else {
@@ -236,7 +252,7 @@ export default {
       }
     },
     aaa (name) {
-      let arr = name.split('_')
+      const arr = name.split('_')
 
       let result = ''
 
@@ -293,9 +309,9 @@ export default {
       console.log('setBarEchart======111>>>', element)
       console.log('setBarEchart======111>>>', this.$refs[element])
       // const _this = this
-      let echarts = require('echarts')
+      const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      let myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(document.getElementById(element))
       myChart.setOption({
         title: {
           text: title
@@ -364,9 +380,9 @@ export default {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
-      let echarts = require('echarts')
+      const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      let myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(document.getElementById(element))
       myChart.setOption({
         title: {
           text: title
@@ -438,4 +454,6 @@ export default {
   padding-bottom 20px
 .chart-div
   height: 436px
+.export-button
+  float: right
 </style>

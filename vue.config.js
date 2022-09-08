@@ -20,6 +20,7 @@ const path = require('path')
 function resolve (dir) {
   return path.join(__dirname, dir)
 }
+// const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 module.exports = {
   publicPath: baseUrl,
 
@@ -46,7 +47,10 @@ module.exports = {
     }
   },
   chainWebpack: config => {
-    config.resolve.alias
-      .set('@antvGraph', resolve('src/components/antvGraph/src'))
+    config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
+    // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   }
+  // plugins: [
+  //   new BundleAnalyzerPlugin()
+  // ]
 }
