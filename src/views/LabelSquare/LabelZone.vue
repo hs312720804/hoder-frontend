@@ -33,7 +33,7 @@
                 <div class="title">{{item.parentName}}<span v-if="item.newOrUpdateCount" class="small-red">·</span></div>
                 <el-tabs
                   v-model="activeTab"
-                  @tab-click="handleTabClick"
+                  @tab-click="handleTabClick(index)"
                 >
                     <el-tab-pane
                       v-for="childItem in item.children"
@@ -48,7 +48,7 @@
                         <template v-if="activeTab === childItem.groupId">
                             <tag-list
                               v-if="toggleShow"
-                              :activeTab="index"
+                              :tabIndex="index"
                               :data-list="dataList"
                               :data-source-enum="dataSourceEnum"
                               :type-enum="typeEnum"
@@ -220,7 +220,7 @@ export default {
         this.loading = false
       })
     },
-    handleTabClick () {
+    handleTabClick (index) {
       // 当前tab再次点击收缩表格
       if (this.filter.groupId !== this.activeTab) {
         this.toggleShow = true
@@ -237,6 +237,14 @@ export default {
       this.$emit('clear-search')
       this.$emit('fetch-checkList')
       this.fetchTagList()
+      this.scrollToView(index)
+    },
+    scrollToView (index) {
+      // 选中 tab 的 indedx, 构造 id
+      const id = `tab-content-${index}`
+      const target = document.getElementById(id)
+      const parent = document.querySelector('.el-main')
+    	parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
