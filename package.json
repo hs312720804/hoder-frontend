@@ -4,13 +4,12 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
-    "analyzer": "use_analyzer=true npm run serve",
+    "analyzer": "use_analyzer=true",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
   },
   "dependencies": {
-    "@antv/g6": "3.2.10",
     "@antv/x6": "^1.18.1",
     "@ccprivate/admin-toolkit": "^1.1.4",
     "@stateform/element": "^0.1.14",
@@ -36,6 +35,7 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@antv/g6": "^3.2.10",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@intlify/vue-i18n-loader": "^1.0.0",
