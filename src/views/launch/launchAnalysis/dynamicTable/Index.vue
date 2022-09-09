@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <el-table :data="tableData">
     <template v-for="item in tableHeader">
       <table-column
@@ -16,28 +16,28 @@
     </template>
   </el-table>
 </template>
- 
+
 <script>
-import TableColumn from "./TableColumn.vue";
+import TableColumn from './TableColumn.vue'
 export default {
   props: {
     // 表格的数据
     tableData: {
       type: Array,
-      required: true,
+      required: true
     },
     // 多级表头的数据
     tableHeader: {
       type: Array,
-      required: true,
-    },
+      required: true
+    }
   },
   components: {
-    TableColumn,
-  },
-};
+    TableColumn
+  }
+}
 </script>
- 
+
 <style scoped>
 .el-button{
   border: none;

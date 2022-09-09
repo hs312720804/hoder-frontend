@@ -1,4 +1,4 @@
-<template>
+<template functional>
   <el-table-column :label="coloumnHeader.label" :prop="coloumnHeader.label">
     <template v-for="item in coloumnHeader.children">
       <tableColumn v-if="item.children && item.children.length" :key="item.id" :coloumn-header="item"></tableColumn>
@@ -15,15 +15,14 @@
     </template>
   </el-table-column>
 </template>
-    
 
 <script>
 export default {
-  name: "tableColumn",
+  name: 'tableColumn',
   props: {
     coloumnHeader: {
       type: Object,
-      required: true,
+      required: true
     }
   }
 }
