@@ -48,8 +48,8 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
-    config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   }
+  // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   // plugins: [
   //   new BundleAnalyzerPlugin()
   // ]
