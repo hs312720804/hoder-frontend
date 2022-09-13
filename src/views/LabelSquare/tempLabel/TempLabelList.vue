@@ -56,6 +56,9 @@
           <template slot-scope="scope">
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
+              <!-- <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+                {{ scope.row.process }}
+              </div> -->
               <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
               </div>
@@ -153,7 +156,7 @@
                   </el-dropdown-item>
                   <el-dropdown-item :command="['shenCeAnalysis', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">神策分析
                   </el-dropdown-item>
-                 
+
                 </el-dropdown-menu>
               </el-dropdown>
             </el-button-group>
@@ -320,12 +323,12 @@ export default {
     this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
   },
   watch: {
-    'refreshFlag': function (val) {
+    refreshFlag: function (val) {
       if (val) {
         this.fetchData()
       }
     },
-    'currentSelectTag': 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected',
     checkListParent: function (val) {
       this.checkList = val
     }
@@ -416,10 +419,10 @@ export default {
           break
       }
     },
-    handleShenCeAnalysis(row) {
+    handleShenCeAnalysis (row) {
       const launchCrowdId = row.launchCrowdId
       console.log('launchCrowdId', launchCrowdId)
-      this.$service.sensorCrowdAnalysis({launchCrowdId}).then(res => {
+      this.$service.sensorCrowdAnalysis({ launchCrowdId }).then(res => {
         console.log('res', res)
         // 人群已经发送到神策平台，请前往神策继续分析
         if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
@@ -497,11 +500,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.tableData
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }

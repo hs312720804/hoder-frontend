@@ -1,4 +1,4 @@
-<template functional>
+<template>
   <el-table-column :label="coloumnHeader.label" :prop="coloumnHeader.label">
     <template v-for="item in coloumnHeader.children">
       <tableColumn v-if="item.children && item.children.length" :key="item.id" :coloumn-header="item"></tableColumn>

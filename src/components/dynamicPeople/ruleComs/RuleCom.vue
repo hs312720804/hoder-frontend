@@ -3,14 +3,13 @@
     <template v-if="childItem.tagId === 1 || childItem.tagId === 2 || childItem.tagId === 4">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
-      
+
       <!-- 选择 operator -->
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
-  
+
       <!-- 输入 value -->
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
-
 
     <!-- 模块活跃 -->
     <template v-if="childItem.tagId === 6">
@@ -31,12 +30,12 @@
           </template>
         </el-select>
       </span>
-      
+
       <span>
         <el-input style="width: 100px" v-model="childItem.locationId" placeholder="请输入ID" >
         </el-input>
       </span>
-      
+
       <span>
         <el-select style="width: 100px" name="oxve" v-model="childItem.count" class="input-inline">
           <template>
@@ -48,11 +47,11 @@
 
       <!-- 选择 operator -->
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
-  
+
       <!-- 输入 value -->
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
-    
+
     <!-- 优惠券活跃 -->
     <template v-if="childItem.tagId === 7">
 
@@ -68,42 +67,42 @@
 
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
-      
+
       <!-- 选择 operator -->
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
-  
+
       <!-- 输入 value -->
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
-    
+
     <!-- 产品包下单 -->
     <template v-if="childItem.tagId === 8">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
-      
+
       <span>
         <el-select style="width: 100px" name="oxve" v-model="childItem.count" class="input-inline">
           <template>
-            <el-option value="xiadanNum" label="下单次数"></el-option>
-            <el-option value="xiadanDays " label="下单天数"></el-option>
+            <el-option value="orderNum" label="下单次数"></el-option>
+            <el-option value="orderDays " label="下单天数"></el-option>
           </template>
         </el-select>
       </span>
 
       <!-- 选择 operator -->
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
-  
+
       <!-- 输入 value -->
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
-    
+
   </div>
 </template>
 
 <script>
-import SourceSign from './elements/SourceSign.vue';
-import Operator from './elements/Operator.vue';
-import Value from './elements/Value.vue';
+import SourceSign from './elements/SourceSign.vue'
+import Operator from './elements/Operator.vue'
+import Value from './elements/Value.vue'
 export default {
   components: { SourceSign, Operator, Value },
   inject: ['_this'],
@@ -112,7 +111,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    
+
     index: {
       type: Number,
       default: 0
@@ -120,13 +119,13 @@ export default {
     n: {
       type: Number,
       default: 0
-    },
+    }
   },
-  data() {
+  data () {
     return {
     }
   },
-  created() {
+  created () {
   },
   methods: {
 
@@ -138,5 +137,5 @@ export default {
 .label-item span {
   margin-right: 10px;
 }
- 
+
 </style>
