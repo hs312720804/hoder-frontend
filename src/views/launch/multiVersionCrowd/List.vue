@@ -96,22 +96,48 @@
             </el-table-column>
             <el-table-column prop="dmpCrowdId" label="大数据标识" width="90"></el-table-column>
             <el-table-column prop="biName" label="投放平台" width="120"></el-table-column>
-            <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="100">
+            <el-table-column v-if="(checkList.indexOf('status') > -1)" prop="status" label="人群状态" width="150">
                 <template slot-scope="scope">
-                    <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
+                  <div v-if="scope.row.history.status">
+                    <!-- 状态为计算中，显示进度 -->
+                    <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+                      {{ scope.row.history.process }}
+                    </div>
+                    <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+                      计算完成
+                    </div>
+                    <!-- 新增计算中时是否是人群派对中 -->
+                    <div
+                      v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                      {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
+                    </div>
+                    <div
+                      v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
+                      <span v-if="crowdType === 4">计算</span>
+                      <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
+                    </div>
+                    <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
+                      计算失败
+                      <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
+                    </div>
+                    <div v-else>
+                      {{ (launchStatusEnum[scope.row.history.status]).name }}
+                    </div>
+                  </div>
+                    <!-- <span v-if="scope.row.isFxFullSql === 1 && scope.row.tempCrowdId > 0">
                         <span v-if="scope.row.launchTempCrowdStatus">投放中</span>
                         <span v-else>待投放</span>
                     </span>
-                    <span v-else>
-                         <!-- 当投放中，人群波动，要显示红色-->
-                        <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
+                    <span v-else> -->
+                         <!-- 当投放中，人群波动，要显示红色 -->
+                        <!-- <span v-if="!(launchStatusEnum[scope.row.history.status].childrenName)"
                               :class="(launchStatusEnum[scope.row.history.status]).code === 91 ? 'red-text': ''"
                         >
                             {{(launchStatusEnum[scope.row.history.status]).name}}
                         </span>
                         <span v-else>
                             {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-                            <!-- <el-tooltip placement="right-start">
+                            <el-tooltip placement="right-start">
                                 <div slot="content">{{(launchStatusEnum[scope.row.history.status]).childrenName}}</div>
                                 <span class="uneffective">
                                     <span :class="(launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 ? 'red-text' : ''">
@@ -119,9 +145,9 @@
                                     </span>
                                     <span class="circle">?</span>
                                 </span>
-                            </el-tooltip> -->
-                        </span>
-                    </span>
+                            </el-tooltip>
+                        </span> -->
+                    <!-- </span> -->
                     <!--<el-button type="text" v-if="scope.row.history.status == 5" @click="handleCountFail">{{launchStatusEnum[scope.row.history.status]}}</el-button>-->
                     <!--<span v-else  style="margin-left: 10px">{{launchStatusEnum[scope.row.history.status].name}}</span>-->
                 </template>
@@ -828,7 +854,7 @@ export default {
         })
     },
     del (row) {
-      var id = row.launchCrowdId
+      const id = row.launchCrowdId
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -851,8 +877,8 @@ export default {
           }
         }
       })
-      this.criteria['pageNum'] = this.currentPage
-      this.criteria['pageSize'] = this.pageSize
+      this.criteria.pageNum = this.currentPage
+      this.criteria.pageSize = this.pageSize
       if (this.showAllParent) {
         this.$service.getMyMultiVersionCrowd(this.criteria).then(data => {
           this.launchStatusEnum = data.launchStatusEnum
@@ -987,7 +1013,7 @@ export default {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
-      let calIdType = calTypes.map((item) => item).join(',')
+      const calIdType = calTypes.map((item) => item).join(',')
       this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
         // 行为人群需要 lua 一下
         // if (this.currentLaunchRow.isFxFullSql === 3) {
@@ -1003,7 +1029,7 @@ export default {
     },
 
     cancelLanuch (row) {
-      var id = row.launchCrowdId
+      const id = row.launchCrowdId
       this.$confirm('确定要取消投放吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -1019,8 +1045,8 @@ export default {
     },
     // 对象转成数组
     objectToArray (obj) {
-      let arr = []
-      for (let i in obj) {
+      const arr = []
+      for (const i in obj) {
         arr.push({ value: i, label: obj[i] })
       }
       return arr
@@ -1066,10 +1092,10 @@ export default {
              * 千分位格式化
             */
     format_number (n) {
-      var b = parseInt(n).toString()
-      var len = b.length
+      const b = parseInt(n).toString()
+      const len = b.length
       if (len <= 3) { return b }
-      var r = len % 3
+      const r = len % 3
       return r > 0 ? b.slice(0, r) + ',' + b.slice(r, len).match(/\d{3}/g).join(',') : b.slice(r, len).match(/\d{3}/g).join(',')
     },
     handleAdjust (row) {
@@ -1090,9 +1116,9 @@ export default {
         }
         const rows = data.data.reduce((r, c) => {
           r.push({
-            '日期': c.date,
-            'mac数量波动': c.macTrendPer,
-            '微信数量波动': c.wxTrendPer
+            日期: c.date,
+            mac数量波动: c.macTrendPer,
+            微信数量波动: c.wxTrendPer
           })
           return r
         }, [])
@@ -1111,9 +1137,9 @@ export default {
       const columns = ['日期', 'SQL圈定的人群数量', 'DMP收到的人群数量']
       const rows = data.reduce((r, c) => {
         r.push({
-          'DMP收到的人群数量': c.rec_num,
-          'SQL圈定的人群数量': c.cul_num,
-          '日期': c.date
+          DMP收到的人群数量: c.rec_num,
+          SQL圈定的人群数量: c.cul_num,
+          日期: c.date
         })
         return r
       }, [])
@@ -1187,13 +1213,13 @@ export default {
     firstStep () {
       this.step = 2
       const copies = this.copies
-      let arr = []
-      let percentArray = []
+      const arr = []
+      const percentArray = []
       for (let i = 0; i < copies; i++) {
         arr.push(i)
         percentArray.push(parseInt(100 / copies))
       }
-      let total = percentArray.reduce((prev, cur) => {
+      const total = percentArray.reduce((prev, cur) => {
         return prev + cur
       })
       // 默认百分比设置，总和必须为100%，不能被整除的，都加在最后一个上
@@ -1223,7 +1249,7 @@ export default {
         this.$message.error('请至少勾选一个计算的类型进行投放')
         return
       }
-      let formData = {
+      const formData = {
         pct: divideForm.pct,
         calType: divideForm.calType
       }
@@ -1252,7 +1278,7 @@ export default {
       this.currentCrowdId = row.launchCrowdId
     },
     handleSubmitHistory (formData) {
-      let submitForm = {
+      const submitForm = {
         isSubmit: formData.isSubmit,
         launchCrowdId: formData.id,
         dateNum: formData.dateNum

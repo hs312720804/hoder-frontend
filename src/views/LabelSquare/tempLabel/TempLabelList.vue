@@ -45,21 +45,22 @@
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
         <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
         <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
-        <el-table-column prop="launchName" label="名称" width="230"></el-table-column>
+        <el-table-column prop="launchName" label="名称" width="180"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
         <el-table-column prop="count" label="使用次数">
           <!--<template slot-scope="scope">-->
           <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
           <!--</template>-->
         </el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="状态" width="150">
           <template slot-scope="scope">
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
-              <!-- <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
-                {{ scope.row.process }}
-              </div> -->
-              <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+              <!-- 状态为计算中，显示进度 -->
+              <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+                {{ scope.row.history.process }}
+              </div>
+              <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
               </div>
               <!-- 新增计算中时是否是人群派对中 -->
@@ -108,12 +109,12 @@
             {{ scope.row.dmpCrowdId }}
           </template>
         </el-table-column>
-        <el-table-column label="版本">
+        <el-table-column label="版本" width="100">
           <template slot-scope="scope">
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" v-if="!showSelection">
+        <el-table-column label="操作" width="120" v-if="!showSelection">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
