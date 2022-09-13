@@ -291,30 +291,30 @@ export default {
       activeName: 'one',
       rowObj: [
         {
-          'vipPkgShow': { type: 'bar', title: '各权益曝光人数及占比', span: 8 },
-          'vipPkgXiadan': { type: 'bar', title: '各权益下单人数及占比', span: 8 },
-          'vipPkgPay': { type: 'bar', title: '各权益付费人数及占比', span: 8 }
+          vipPkgShow: { type: 'bar', title: '各权益曝光人数及占比', span: 8 },
+          vipPkgXiadan: { type: 'bar', title: '各权益下单人数及占比', span: 8 },
+          vipPkgPay: { type: 'bar', title: '各权益付费人数及占比', span: 8 }
         }, {
-          'vipPkgShowTrend': { type: 'line', title: '影视VIP曝光趋势', span: 8 },
-          'vipPkgXiadanTrend': { type: 'line', title: '影视VIP下单趋势', span: 8 },
-          'vipPkgPayTrend': { type: 'line', title: '影视VIP付费趋势', span: 8 }
+          vipPkgShowTrend: { type: 'line', title: '影视VIP曝光趋势', span: 8 },
+          vipPkgXiadanTrend: { type: 'line', title: '影视VIP下单趋势', span: 8 },
+          vipPkgPayTrend: { type: 'line', title: '影视VIP付费趋势', span: 8 }
         }, {
-          'pathPkgShow': { type: 'bar', title: '影视VIP曝光路径人数及占比', span: 8 },
-          'productTypePkgXiadan': { type: 'bar', title: '影视VIP下单产品包分类人数及占比', span: 8 },
-          'pathPkgPay': { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
+          pathPkgShow: { type: 'bar', title: '影视VIP曝光路径人数及占比', span: 8 },
+          productTypePkgXiadan: { type: 'bar', title: '影视VIP下单产品包分类人数及占比', span: 8 },
+          pathPkgPay: { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
         },
         {
-          'empty1': { span: 8 },
-          'empty2': { span: 8 },
-          'productTypePkgPay': { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
+          empty1: { span: 8 },
+          empty2: { span: 8 },
+          productTypePkgPay: { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
         }
       ],
       rowObj2: [
         {
-          'vipPlay': { type: 'bar', title: '各权益起播人数及占比', span: 12 },
-          'vipPlayTrend': { type: 'line', title: '影视VIP起播趋势', span: 12 }
+          vipPlay: { type: 'bar', title: '各权益起播人数及占比', span: 12 },
+          vipPlayTrend: { type: 'line', title: '影视VIP起播趋势', span: 12 }
         }, {
-          'viewingCategoryRank': { type: 'pie', title: '各权益观影分类TOP5及占比', span: 12 }
+          viewingCategoryRank: { type: 'pie', title: '各权益观影分类TOP5及占比', span: 12 }
         }
       ],
       crowdId: 11882,
@@ -341,7 +341,7 @@ export default {
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
-      for (var key of Object.keys(this.allCharts)) {
+      for (const key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
         chart.resize()
       }
@@ -353,13 +353,13 @@ export default {
       this.isIndeterminate = false
     },
     handleCheckedCitiesChange (value) {
-      let checkedCount = value.length
+      const checkedCount = value.length
       this.checkAll = checkedCount === this.cities.length
       this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
     },
     handleClick (tab, event) {
       this.$nextTick(() => {
-        for (var key of Object.keys(this.allCharts)) {
+        for (const key of Object.keys(this.allCharts)) {
           const chart = this.allCharts[key]
           chart.resize()
         }
@@ -441,8 +441,8 @@ export default {
           }
         ]
       }
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs['chart1'])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs.chart1)
 
       myChart.setOption(option)
     },
@@ -462,14 +462,14 @@ export default {
     //   return `${y}-${m}-${r}`
     // },
     toPercent (point) {
-      var str = Number(point * 100).toFixed(2)
+      let str = Number(point * 100).toFixed(2)
       str += '%'
       return str
     },
     // 分析
     onSubmit (sourceName) {
       // console.log('submit!')
-      this.$refs['ruleForm'].validate((valid) => {
+      this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.loading = true
           this.show = false
@@ -541,7 +541,7 @@ export default {
       const rowObj2 = this.rowObj2
       rowObj.forEach(item => {
         // key 是代表 ref 值
-        for (let key in item) {
+        for (const key in item) {
           if (item[key].type === 'line') {
             this.showLine(this.allChartData[key], key)
           } else if (item[key].type === 'bar') {
@@ -553,7 +553,7 @@ export default {
       })
       rowObj2.forEach(item => {
         // key 是代表 ref 值
-        for (let key in item) {
+        for (const key in item) {
           if (item[key].type === 'line') {
             this.showLine(this.allChartData[key], key)
           } else if (item[key].type === 'bar') {
@@ -584,10 +584,10 @@ export default {
         if (data.series2) {
           hasY2 = true
           const series2 = data.series2 || []
-          let legendData2 = series2.map((key) => {
+          const legendData2 = series2.map((key) => {
             return key.name
           })
-          let linesData2 = series2.map((key) => {
+          const linesData2 = series2.map((key) => {
             if (data.yunit === '%') {
               const arr = key.value.map(v => v * 100)
               return { name: key.name, data: arr, type: 'line', yAxisIndex: 1 }
@@ -653,9 +653,9 @@ export default {
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
       const _this = this
-      let echarts = require('echarts')
+      const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      let myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(document.getElementById(element))
       myChart.setOption({
         title: {
           text: title
@@ -668,7 +668,7 @@ export default {
 
             let str = parmas[0].marker + parmas[0].name + '<br/>'
             // let str = ''
-            for (let item of parmas) {
+            for (const item of parmas) {
               str = str + item.name + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>' + '占比: ' + dataaxis[item.dataIndex]
             }
             // return _this.cc_format_number(a.data)
@@ -752,9 +752,9 @@ export default {
       if (element === 'vipPkgShow' || element === 'vipPkgXiadan' || element === 'vipPkgPay' || element === 'vipPlay') {
         myChart.getZr().off('click')
         myChart.getZr().on('click', params => {
-          let pointInPixel = [params.offsetX, params.offsetY]
+          const pointInPixel = [params.offsetX, params.offsetY]
           if (myChart.containPixel('grid', pointInPixel)) {
-            let xIndex = myChart.convertFromPixel({ seriesIndex: 0 }, [params.offsetX, params.offsetY])[0]
+            const xIndex = myChart.convertFromPixel({ seriesIndex: 0 }, [params.offsetX, params.offsetY])[0]
             // console.log(xIndex)
             // console.log(xData)
             const sourceName = xData[xIndex]
@@ -767,13 +767,13 @@ export default {
 
       this.allCharts[element] = myChart
     },
- 
+
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
-      let echarts = require('echarts')
+      const echarts = require('echarts')
       const _this = this
       const yAxisObj = {
         type: 'value',
@@ -834,7 +834,7 @@ export default {
       if (hasY2) {
         option.yAxis.push({ ...yAxisObj, name: yAxisObjName2 })
       }
-      let myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(document.getElementById(element))
       myChart.setOption(option, true)
       this.allCharts[element] = myChart
     },
@@ -976,9 +976,9 @@ export default {
           }
         ]
       }
-      let echarts = require('echarts')
+      const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      let myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(document.getElementById(element))
 
       myChart.setOption(option)
       this.allCharts[element] = myChart

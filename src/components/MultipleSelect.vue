@@ -502,7 +502,7 @@
             <i class="el-icon-back" style="font-size: 28px;"></i>
             <span style="font-size: 14px;">点击标签来编辑人群条件</span>
           </span> -->
-          
+
           <!-- 新手指引 - 点击提示 -->
           <!-- <el-popover
             v-if="showHitTip"
@@ -938,7 +938,8 @@ export default {
         childRule.specialTagId = matchCity.attrId
         childRule.specialCondition = matchCity.rulesJson
         childRule.errorMsg = matchCity.rulesJson
-          ? '' : '标签未配置，请先配置再使用'
+          ? ''
+          : '标签未配置，请先配置再使用'
         // console.log('inputValue=====', this.inputValue)
       }
     },
@@ -1093,7 +1094,7 @@ export default {
       }, 0)
       console.log('复合人群下使用人群标签數量-->', num)
       if (num >= 30) {
-         this.$message({
+        this.$message({
           type: 'error',
           message: '复合人群下使用人群标签不可超过 30 个'
         })
@@ -1176,7 +1177,7 @@ export default {
       }, 0)
       console.log('复合人群下使用人群标签數量-->', num)
       if (num >= 30) {
-         this.$message({
+        this.$message({
           type: 'error',
           message: '复合人群下使用人群标签不可超过 30 个'
         })
@@ -1278,10 +1279,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1339,13 +1340,13 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     fetchAllTagSuggestions () {
-      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
+      const ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
       if (ruleJsonData.rules.length > 0) {
         // 编辑
         this.showHitTip = false // 关闭新手指引 - 点击提示
 
         let cacheIds = []
-        let cacheSpecialIds = []
+        const cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
             if (item.tagType === 'string' || item.tagType === 'collect') {
