@@ -1,20 +1,25 @@
-<template functional>
-  <el-table :data="tableData">
-    <template v-for="item in tableHeader">
-      <table-column
-        v-if="item.children && item.children.length"
-        :key="item.id"
-        :coloumn-header="item"
-      ></table-column>
-      <el-table-column
-        v-else
-        :key="item.id"
-        :label="item.label"
-        :prop="item.prop"
-      >
-     </el-table-column>
-    </template>
-  </el-table>
+<template>
+  <div>
+    tableData==={{ tableData }}
+    <hr/>
+    tableHeader==={{ tableHeader }}
+    <el-table :data="tableData">
+      <template v-for="item in tableHeader">
+        <table-column
+          v-if="item.children && item.children.length"
+          :key="item.id"
+          :coloumn-header="item"
+        ></table-column>
+        <el-table-column
+          v-else
+          :key="item.id"
+          :label="item.label"
+          :prop="item.prop"
+        >
+       </el-table-column>
+      </template>
+    </el-table>
+  </div>
 </template>
 
 <script>

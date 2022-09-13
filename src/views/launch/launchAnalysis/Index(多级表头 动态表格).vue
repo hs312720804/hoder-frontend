@@ -1,5 +1,20 @@
 <template>
   <div>
+    <!-- {{data}}
+    <br/>
+    tableData: {{tableData}} -->
+    <div class="title">基础人群 - 动态实验报告</div>
+    <div class="table-wrap">
+      <div class="titleLayout">
+        <div class="per-index-title">实验分组概览</div>
+
+      </div>
+      <c-table
+        :props="table1.props"
+        :header="table1.header"
+        :data="table1.data"
+      ></c-table>
+    </div>
     <dynamic-table
       :table-data="tableData"
       :table-header="tableConfig"
@@ -14,14 +29,48 @@ export default {
   components: {
     DynamicTable
   },
-  mounted () {
+  created () {
     this.initData()
   },
   data () {
     return {
+      table1: {
+        props: {
+
+        },
+        header: [{
+          label: '流转ID',
+          prop: 'id'
+        }, {
+          label: '流转分组名',
+          prop: 'name'
+        }, {
+          label: '流转方式',
+          prop: 'way'
+        }, {
+          label: '命中流量占比',
+          prop: 'id'
+        }, {
+          label: '命中设备量',
+          prop: 'id'
+        }, {
+          label: '包含人群-ID',
+          prop: 'id'
+        }],
+        data: [{
+          id: 1,
+          name: '实验组1',
+          way: '顺序'
+        }, {
+          id: 1,
+          name: '实验组1',
+          way: '顺序'
+        }]
+      },
       tableConfig: [],
       // 表数据
       tableData: [],
+      // 模拟接口数据
       data: [
         {
           date: '2021-09-06',
@@ -122,6 +171,7 @@ export default {
           ]
         }
       ]
+      // 表头配置项
       this.tableData = this.data.map((item, index) => {
       // const keys = Object.keys(item)
         const reObj = {
@@ -156,5 +206,21 @@ export default {
 }
 </script>
 
-<style scoped>
+<style scoped lang="stylus">
+  .title{
+    font-weight: 500;
+    font-size: 24px;
+    line-height: 36px;
+    color: #1f2d3d;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+  .table-title {
+    font-size: 18px;
+    font-weight: 600;
+    color: #1f2d3d;
+    line-height: 28px;
+    margin: 0;
+    margin: 24px 0 16px;
+  }
 </style>
