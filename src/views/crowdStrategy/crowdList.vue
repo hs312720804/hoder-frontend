@@ -538,16 +538,18 @@
       </el-table-column>
       <el-table-column type="index" width="40" align="center"></el-table-column>
       <el-table-column prop="crowdId" label="人群ID" width="90" sortable="custom" ></el-table-column>
-      <el-table-column prop="crowdName" label="人群名称" width="200">
+      <el-table-column prop="crowdName" label="人群名称" width="180">
           <template slot-scope="scope">
-            <!-- 动态人群 -->
+            {{ scope.row.crowdName }}
+
+            <!-- 动态人群
             <el-button v-if="scope.row.dynamicFlag===1" type="text" @click="showDynamicList(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
 
-              <!-- 普通人群 -->
-              <span v-else-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
+            普通人群
+            <span v-else-if="scope.row.abMainCrowd === 0">{{ scope.row.crowdName }}</span>
 
-              <!-- AB实验人群 或者 再分割人群 -->
-              <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button>
+            AB实验人群 或者 再分割人群
+            <el-button type="text" v-else @click="showDivideResult(scope.row.crowdId)">{{scope.row.crowdName}}</el-button> -->
           </template>
       </el-table-column>
       <!-- <el-table-column prop="launchTime" label="投放时间" width="200">
@@ -617,7 +619,7 @@
           <span >{{ launchStatusEnum[scope.row.status] }}</span>
         </template>
       </el-table-column>
-      <el-table-column label="AB测试" width="130px">
+      <el-table-column label="AB测试" width="140px">
         <template slot-scope="scope">
           <!-- 引用人群 -->
           <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
@@ -628,14 +630,18 @@
           </span>
         </template>
       </el-table-column>
-      <el-table-column label="动态实验" width="130px">
+      <el-table-column label="动态实验" width="140px">
         <template slot-scope="scope">
           <!-- 引用人群 -->
-          <!-- <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span> -->
+          <span v-if="isReferCrowd(scope.row.referCrowdId)" class="boldCss">不支持</span>
 
-          <el-button v-if="scope.row.dynamicFlag===1" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
           <span v-else>
-            否
+            <!-- <el-button v-if="scope.row.dynamicFlag===1" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
+            <span v-else>
+              否
+            </span> -->
+            {{ abStatusEnum[scope.row.dynamicStatus] }}
+            <el-button v-if="scope.row.dynamicStatus !== 0" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
           </span>
         </template>
       </el-table-column>
@@ -1630,8 +1636,8 @@ export default {
       memberListType: '',
       memberListByPay: '',
       expirationDayList: {
-        '7': '近7日',
-        '30': '近30日'
+        7: '近7日',
+        30: '近30日'
       },
       expirationDay: '7',
       fillEmptyData: {
@@ -1686,8 +1692,8 @@ export default {
         12: 'gray'
       },
       conditionEnum: {
-        'AND': '且',
-        'OR': '或'
+        AND: '且',
+        OR: '或'
       },
       showBypassDialog: false,
       showBypassStep: 1,
@@ -1874,7 +1880,7 @@ export default {
         onPick (time) {
           // 如果选择了只选择了一个时间
           if (!time.maxDate) {
-            let timeRange = day * 24 * 60 * 60 * 1000
+            const timeRange = day * 24 * 60 * 60 * 1000
             _minTime = time.minDate.getTime() - timeRange // 最小时间
             _maxTime = time.minDate.getTime() + timeRange // 最大时间
             // 如果选了两个时间，那就清空本次范围判断数据，以备重选
@@ -1883,15 +1889,14 @@ export default {
           }
         },
         disabledDate: (time) => {
-          let maxTime = Date.now()
-          const day1 = 720 * 24 * 3600 * 1000 
+          const maxTime = Date.now()
+          const day1 = 720 * 24 * 3600 * 1000
           let minTime = Date.now() - day1
 
           if (startTime) {
-            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000 
-            // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000 
+            minTime = new Date(startTime) - 1 * 24 * 3600 * 1000
+            // minTime = Date.now(startTime) - 1 * 24 * 3600 * 1000
           }
-          
 
           // onPick后触发
           // 该方法会轮询当3个月内的每一个日期，返回false表示该日期禁选
@@ -1903,11 +1908,11 @@ export default {
         }
       }
     },
-    //流转链路分析
-    handleFlowLinkAnalysis ({row}) {
+    // 流转链路分析
+    handleFlowLinkAnalysis ({ row }) {
       console.log('row------------', row)
       const parmas = {
-        dynamicRuleId: row.id, // 分组 ID
+        dynamicRuleId: row.id // 分组 ID
         // dynamicRuleId: 77, // 分组 ID
       }
       const data = [{
@@ -1926,25 +1931,25 @@ export default {
           hitUv: 151131,
           nowCrowdName: '方案1',
           child: [
-              {
-                arup: 0.00,
-                payUv: 0,
-                path: "11679_11680_11679",
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-1',
-              }, {
-                arup: 0.00,
-                payUv: 0,
-                path: '11679_11680_11679',
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-2',
-              }
+            {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-1'
+            }, {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-2'
+            }
           ]
         }, {
           nowCrowdName: '方案2',
@@ -1955,25 +1960,25 @@ export default {
           payRate: 0.01,
           hitUv: 151131,
           child: [
-              {
-                arup: 0.00,
-                payUv: 0,
-                path: "11679_11680_11679",
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-1',
-              }, {
-                arup: 0.00,
-                payUv: 0,
-                path: '11679_11680_11679',
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-2',
-              }
+            {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-1'
+            }, {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-2'
+            }
           ]
         }, {
           nowCrowdName: '方案2',
@@ -1984,37 +1989,35 @@ export default {
           payRate: 0.01,
           hitUv: 151131,
           child: [
-              {
-                arup: 0.00,
-                payUv: 0,
-                path: "11679_11680_11679",
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-1',
-              }, {
-                arup: 0.00,
-                payUv: 0,
-                path: '11679_11680_11679',
-                price: 0.00,
-                payRate: 0.00,
-                child: [],
-                hitUv: 571,
-                nowCrowdName: '方案1-2',
-              }
+            {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-1'
+            }, {
+              arup: 0.00,
+              payUv: 0,
+              path: '11679_11680_11679',
+              price: 0.00,
+              payRate: 0.00,
+              child: [],
+              hitUv: 571,
+              nowCrowdName: '方案1-2'
+            }
           ]
-        }],
-        
-      }]
+        }]
 
-      
+      }]
 
       this.linkProps = {
         // name: 'dynamicRuleName',
         children: 'child'
       }
-      
+
       this.linkPropsName = {
         path: '路径',
         payUv: '转化设备量',
@@ -2036,7 +2039,7 @@ export default {
         price: '当前路径中付费的总金额',
         payRate: '转化设备量/流入设备量',
         hitUv: '人群命中量',
-        ratio: '当前路径流入设备量/父级路径流入设备量',
+        ratio: '当前路径流入设备量/父级路径流入设备量'
       }
       this.$service.getCrowdFlowPath(parmas).then(res => {
         if (typeof res.data === 'string') {
@@ -2044,21 +2047,20 @@ export default {
         }
         console.log('res====>', res)
         const data = [res]
-        
+
         this.showFlowLinkAnalysisDialog = true
         this.analysisTableData = this.constructLinkData(data, 0)
 
         console.log('this.analysisTableData====', this.analysisTableData)
       })
-
     },
     // 递归处理路径分析
-    constructLinkData(data, zLevel) {
+    constructLinkData (data, zLevel) {
       const childLevel = zLevel + 1 // child 的层级加1
       if (!data || data.length === 0) {
         return []
       }
-      let len = data ? data.length : 0
+      const len = data ? data.length : 0
       return data.map(item => {
         let obj = {}
 
@@ -2080,12 +2082,12 @@ export default {
             payUv: this.cc_format_number(item.payUv),
             payRate: this.toPercent(item.payRate),
             arup: this.cc_format_number(item.arup),
-            price: this.cc_format_number(item.price),
+            price: this.cc_format_number(item.price)
           }
           // obj.child = []
           const child = item.child && item.child.length > 0 ? item.child : []
           child.unshift(zhuanhuaObj)
-          
+
           obj = {
             nowCrowdName: item.nowCrowdName,
             path: item.path,
@@ -2093,15 +2095,15 @@ export default {
             hitUv: this.cc_format_number(item.hitUv),
             // ratio: zLevel === 0 ? (1 / len * 100) : (1 / (len+1) * 100) // 等分比例
             level: zLevel,
-            child: this.constructLinkData(child, childLevel),
+            child: this.constructLinkData(child, childLevel)
           }
-
-        } else {   // 完全转化的块， 或者 payUv 为 0 的块
+        } else { // 完全转化的块， 或者 payUv 为 0 的块
           obj = {
             nowCrowdName: item.nowCrowdName,
             path: item.path,
-            ratio: item.ratio ? item.ratio : 
-              item.hitRate ? this.toPercent(item.hitRate) : undefined, // 比例
+            ratio: item.ratio
+              ? item.ratio
+              : item.hitRate ? this.toPercent(item.hitRate) : undefined, // 比例
             payUv: item.payUv > 0 ? item.payUv : undefined,
             payRate: item.payRate ? item.payRate : undefined,
             arup: item.arup ? item.arup : undefined,
@@ -2116,11 +2118,11 @@ export default {
     },
 
     toPercent (point) {
-      var str = Number(point * 100).toFixed(2)
+      let str = Number(point * 100).toFixed(2)
       str += '%'
       return str
     },
-    handleEditDynamic2GroupList({row}) {
+    handleEditDynamic2GroupList ({ row }) {
       // const crowdId = row.crowdId
       // console.log(...arguments)
       this.handleDynamicTest(row, 'editDynamicCrowd', { tabSet: 'second', initActiveStep: 1 })
@@ -2174,7 +2176,7 @@ export default {
       // orderField：  人群ID：crowd_id, 优先级：priority  状态： putway
       // order：    ASC,DESC 切换
 
-      let sortParams = {
+      const sortParams = {
         orderField: obj.prop
       }
       this.currentPage = 1 // 页码重置为 1
@@ -2255,7 +2257,7 @@ export default {
         onPick (time) {
           // 如果选择了只选择了一个时间
           if (!time.maxDate) {
-            let timeRange = day * 24 * 60 * 60 * 1000
+            const timeRange = day * 24 * 60 * 60 * 1000
             _minTime = time.minDate.getTime() - timeRange // 最小时间
             _maxTime = time.minDate.getTime() + timeRange // 最大时间
             // 如果选了两个时间，那就清空本次范围判断数据，以备重选
@@ -2269,8 +2271,8 @@ export default {
           if (this.DivideTableData && this.DivideTableData.length > 0) { // AB人群
             // AB 实验有效期：{{ DivideTableData[0].abStartTime  }} - {{ DivideTableData[0].abEndTime }}
             // 如果是AB子人群，则预约的起止时间不超过当前配置的实验有效期，超过的日期则为灰色不可点
-            let abStartTime = new Date(this.DivideTableData[0].abStartTime).getTime()
-            let abEndTime = new Date(this.DivideTableData[0].abEndTime).getTime()
+            const abStartTime = new Date(this.DivideTableData[0].abStartTime).getTime()
+            const abEndTime = new Date(this.DivideTableData[0].abEndTime).getTime()
 
             // 选择了一个时间的时候
             if (_minTime && _maxTime) {
@@ -2410,7 +2412,7 @@ export default {
       this.$emit('editABCrowd', row, mode)
     },
     del (row) {
-      var id = row.crowdId
+      const id = row.crowdId
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -2447,7 +2449,7 @@ export default {
     },
     // 提交估算
     handleEstimate () {
-      let calIdType = this.estimateValue.map((item) => item).join(',')
+      const calIdType = this.estimateValue.map((item) => item).join(',')
       const formData = {
         policyId: this.selectRow.policyId,
         crowdId: this.estimateType === 'single' ? this.estimateId : undefined,
@@ -2514,8 +2516,8 @@ export default {
           }
         }
       })
-      this.criteria['pageNum'] = this.currentPage
-      this.criteria['pageSize'] = this.pageSize
+      this.criteria.pageNum = this.currentPage
+      this.criteria.pageSize = this.pageSize
       this.criteria.policyId = this.selectRow.policyId
 
       if (sortParams) {
@@ -2600,8 +2602,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -2649,8 +2651,8 @@ export default {
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -2699,8 +2701,8 @@ export default {
     // 圆饼图
     setCircleEcharts (element, title, legend, data, showDetail) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title,
@@ -2729,11 +2731,13 @@ export default {
             // center: ['50%', '60%'],
             avoidLabelOverlap: false,
             itemStyle: {
-              normal: { label: {
-                show: showDetail,
-                formatter: '{b} : {c} ({d}%)'
+              normal: {
+                label: {
+                  show: showDetail,
+                  formatter: '{b} : {c} ({d}%)'
+                },
+                labelLine: { show: showDetail }
               },
-              labelLine: { show: showDetail } },
               emphasis: {
                 label: {
                   show: showDetail,
@@ -2841,8 +2845,8 @@ export default {
     // 中国地图
     setMapEcharts (element, title, data, minValue, maxValue) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       // 中国地图
       myChart.setOption({
         title: {
@@ -2891,8 +2895,8 @@ export default {
     },
     // 漏斗图
     setFunnelEcharts (element, title, legend, data) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -3020,7 +3024,7 @@ export default {
     //   return 'eyJhbGciOiJIUzUxMiJ9.eyJ1c2VyX2lkIjoxLCJ1c2VyX2tleSI6ImEyNjU1OWUzLTM4NzMtNDlkOS04M2JhLTZmMzZhY2I5NTdhZCIsInVzZXJuYW1lIjoiYWRtaW4ifQ.pn8TCTTvXymw5YG9EzBpXaNSfMYZoEfCJH48bpKPriCzxFa8UtI6G7DqBoyn6bs7I3U4WZYzuoNvC6g_R7cZqA'
     // },
     populateIframe (iframe, headers, url) {
-      var xhr = new XMLHttpRequest()
+      const xhr = new XMLHttpRequest()
       xhr.open('POST', 'http://192.168.2.177/prod-api/auth/login')
       xhr.responseType = 'blob'
       headers.forEach((header) => {
@@ -3042,10 +3046,10 @@ export default {
       this.showAppointment = true
 
       // 重置
-      this.$refs['appointmentForm'] && this.$refs['appointmentForm'].resetFields()
+      this.$refs.appointmentForm && this.$refs.appointmentForm.resetFields()
     },
     HandleAppointment () {
-      this.$refs['appointmentForm'].validate((valid) => {
+      this.$refs.appointmentForm.validate((valid) => {
         if (valid) {
           const params = {
             startPeriod: this.appointmentForm.value[0],
@@ -3148,9 +3152,9 @@ export default {
     // 统计投后效果---结束
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     setDataInMonth (startDate, endDate) {
@@ -3191,7 +3195,7 @@ export default {
     },
     handleCopy (formName) {
       const row = this.currentTag
-      let policyIds = this.policyCopyForm.policyIds.join(',')
+      const policyIds = this.policyCopyForm.policyIds.join(',')
       this.$refs[formName].validate((valid) => {
         if (valid) {
           this.$service.crowdCopy({ crowdId: row.crowdId, policyIds }, '复制成功')
@@ -3220,7 +3224,7 @@ export default {
             this.divideAB(params, 'editABTest')
           } else if (params.dynamicFlag === 1) { // 编辑动态人群
             this.handleDynamicTest(params, 'editDynamicCrowd')
-          } else { 
+          } else {
             // 编辑人群规则
             this.edit(params)
           }
@@ -3245,12 +3249,12 @@ export default {
           break
       }
     },
-    handleShenCeAnalysis(row) {
+    handleShenCeAnalysis (row) {
       this.currentCrowd = row
       this.shenCeForm.crowdId = row.crowdId
       this.shenCeDialog = true
     },
-    ConfirmShenCeAnalysis(row) {
+    ConfirmShenCeAnalysis (row) {
       const parmas = {
         crowdId: this.shenCeForm.crowdId,
         startDate: this.shenCeForm.dateRange[0],
@@ -3266,7 +3270,6 @@ export default {
           this.$message.info(res.result)
         }
         this.shenCeDialog = false
-
       })
     },
     // 动态人群 - 小人群功能
@@ -3430,7 +3433,7 @@ export default {
       const typeEnum = ['portrait.top50.active.city']
       this.$service.getCrowdCountMap({ params: { type: typeEnum[0], orderBy: 'value', sortOrder: 'desc' }, crowdId: this.currentCid }).then(data => {
         const arr = data.dataList
-        var sum = 0
+        let sum = 0
         arr.forEach(item => {
           sum += parseInt(item.value)
         })
@@ -3452,8 +3455,8 @@ export default {
     },
     // 对象转成数组
     objectToArray (obj) {
-      let arr = []
-      for (let i in obj) {
+      const arr = []
+      for (const i in obj) {
         arr.push({ value: i, label: obj[i] })
       }
       return arr
@@ -3461,55 +3464,55 @@ export default {
     getUserType () {
       // 正常用户类型
       const typeWithSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.member',
-        'djPlatform': 'portrait.user.category.premier.theater.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.member',
-        'aqy': 'portrait.user.category.iqiyi.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.member',
-        'fkGarden': 'portrait.user.category.4k.garden.member',
-        'phyVIP': 'portrait.user.category.sports.vip.member',
-        'tencent': 'portrait.user.category.tencent.movie.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.member'
+        jyVIP: 'portrait.user.category.education.vip.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.member',
+        djPlatform: 'portrait.user.category.premier.theater.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.member',
+        aqy: 'portrait.user.category.iqiyi.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.member',
+        fkGarden: 'portrait.user.category.4k.garden.member',
+        phyVIP: 'portrait.user.category.sports.vip.member',
+        tencent: 'portrait.user.category.tencent.movie.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.member'
       }
       // 非会员
       const typeWithNoVipSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.nonmember',
-        'sjyVIP': 'portrait.user.category.education.super.vip.nonmember',
-        'djPlatform': 'portrait.user.category.premier.theater.nonmember',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.nonmember',
-        'aqy': 'portrait.user.category.iqiyi.nonmember',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.nonmember',
-        'fkGarden': 'portrait.user.category.4k.garden.nonmember',
-        'phyVIP': 'portrait.user.category.sports.vip.nonmember',
-        'tencent': 'portrait.user.category.tencent.movie.nonmember',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.nonmember'
+        jyVIP: 'portrait.user.category.education.vip.nonmember',
+        sjyVIP: 'portrait.user.category.education.super.vip.nonmember',
+        djPlatform: 'portrait.user.category.premier.theater.nonmember',
+        cjyVIP: 'portrait.user.category.education.kids.vip.nonmember',
+        aqy: 'portrait.user.category.iqiyi.nonmember',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.nonmember',
+        fkGarden: 'portrait.user.category.4k.garden.nonmember',
+        phyVIP: 'portrait.user.category.sports.vip.nonmember',
+        tencent: 'portrait.user.category.tencent.movie.nonmember',
+        kmVIP: 'portrait.user.category.cool.meow.vip.nonmember'
       }
       // 有效期会员
       const typeWithVipSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.validdate.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.validdate.member',
-        'djPlatform': 'portrait.user.category.premier.theater.validdate.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.validdate.member',
-        'aqy': 'portrait.user.category.iqiyi.validdate.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.validdate.member',
-        'fkGarden': 'portrait.user.category.4k.garden.validdate.member',
-        'phyVIP': 'portrait.user.category.sports.vip.validdate.member',
-        'tencent': 'portrait.user.category.tencent.movie.validdate.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.validdate.member'
+        jyVIP: 'portrait.user.category.education.vip.validdate.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.validdate.member',
+        djPlatform: 'portrait.user.category.premier.theater.validdate.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.validdate.member',
+        aqy: 'portrait.user.category.iqiyi.validdate.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.validdate.member',
+        fkGarden: 'portrait.user.category.4k.garden.validdate.member',
+        phyVIP: 'portrait.user.category.sports.vip.validdate.member',
+        tencent: 'portrait.user.category.tencent.movie.validdate.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.validdate.member'
       }
       // 已过期会员
       const typeWithVipNoValidSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.expireddate.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.expireddate.member',
-        'djPlatform': 'portrait.user.category.premier.theater.expireddate.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.expireddate.member',
-        'aqy': 'portrait.user.category.iqiyi.expireddate.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.expireddate.member',
-        'fkGarden': 'portrait.user.category.4k.garden.expireddate.member',
-        'phyVIP': 'portrait.user.category.sports.vip.expireddate.member',
-        'tencent': 'portrait.user.category.tencent.movie.expireddate.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.expireddate.member'
+        jyVIP: 'portrait.user.category.education.vip.expireddate.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.expireddate.member',
+        djPlatform: 'portrait.user.category.premier.theater.expireddate.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.expireddate.member',
+        aqy: 'portrait.user.category.iqiyi.expireddate.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.expireddate.member',
+        fkGarden: 'portrait.user.category.4k.garden.expireddate.member',
+        phyVIP: 'portrait.user.category.sports.vip.expireddate.member',
+        tencent: 'portrait.user.category.tencent.movie.expireddate.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.expireddate.member'
       }
       this.$service.getCrowdCountMap({ params: { type: typeWithSelectEnum[this.memberListType] }, crowdId: this.currentCid }).then(data => {
         const [names, values] = [[], []]
@@ -3571,16 +3574,16 @@ export default {
     },
     getPayDetail () {
       const typeWithSelectEnum = {
-        'jyVIP': 'portrait.last.payment.education.vip',
-        'sjyVIP': 'portrait.last.payment.education.super.vip',
-        'djPlatform': 'portrait.last.payment.premier.theater',
-        'cjyVIP': 'portrait.last.payment.education.kids.vip',
-        'aqy': 'portrait.last.payment.iqiyi',
-        'multAqy': 'portrait.last.payment.mixed.source.iqiyi',
-        'fkGarden': 'portrait.last.payment.4k.garden',
-        'phyVIP': 'portrait.last.payment.sports.vip',
-        'tencent': 'portrait.last.payment.tencent.movie',
-        'kmVIP': 'portrait.last.payment.cool.meow.vip'
+        jyVIP: 'portrait.last.payment.education.vip',
+        sjyVIP: 'portrait.last.payment.education.super.vip',
+        djPlatform: 'portrait.last.payment.premier.theater',
+        cjyVIP: 'portrait.last.payment.education.kids.vip',
+        aqy: 'portrait.last.payment.iqiyi',
+        multAqy: 'portrait.last.payment.mixed.source.iqiyi',
+        fkGarden: 'portrait.last.payment.4k.garden',
+        phyVIP: 'portrait.last.payment.sports.vip',
+        tencent: 'portrait.last.payment.tencent.movie',
+        kmVIP: 'portrait.last.payment.cool.meow.vip'
       }
       this.$service.getCrowdCountMap({ params: { type: typeWithSelectEnum[this.memberListByPay] }, crowdId: this.currentCid }).then(data => {
         const [names, values] = [[], []]
@@ -3671,7 +3674,7 @@ export default {
       this.currentCrowdId = row.crowdId
     },
     handleSubmitHistory (formData) {
-      let submitForm = {
+      const submitForm = {
         isSubmit: formData.isSubmit,
         crowdId: formData.id,
         dateNum: formData.dateNum
@@ -3745,10 +3748,10 @@ export default {
     bubbleSort (arr) {
       // 冒泡排序
       const len = arr.length
-      for (var i = 0; i < len; i++) {
-        for (var j = 0; j < len - 1 - i; j++) {
+      for (let i = 0; i < len; i++) {
+        for (let j = 0; j < len - 1 - i; j++) {
           if (arr[j] > arr[j + 1]) {
-            var temp = arr[j + 1]
+            const temp = arr[j + 1]
             arr[j + 1] = arr[j]
             arr[j] = temp
           }
@@ -3789,13 +3792,15 @@ export default {
           this.bypassSaveFlag = 'edit'
           this.byPassForm.apart = data.size
           this.byPassForm.bypass = data.bypassList.map(item => {
-            return { name: item.bypassName,
+            return {
+              name: item.bypassName,
               ratio: item.ratio,
               id: item.id,
               bypassId: item.bypassId,
               crowds: item.crowdsList,
               policyId: item.policyId,
-              crowdSelect: '' }
+              crowdSelect: ''
+            }
           })
           // 分组只能选择比当前分组大的
           this.ratioEnum = this.ratioEnum.filter(item => {
