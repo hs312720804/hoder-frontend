@@ -1,8 +1,8 @@
 <template>
   <div>
-    tableData==={{ tableData }}
+    <!-- tableData==={{ tableData }}
     <hr/>
-    tableHeader==={{ tableHeader }}
+    tableHeader==={{ tableHeader }} -->
     <el-table :data="tableData">
       <template v-for="item in tableHeader">
         <table-column
