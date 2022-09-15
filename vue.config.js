@@ -25,7 +25,6 @@ function resolve (dir) {
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin
 module.exports = {
   publicPath: baseUrl,
-
   devServer: {
     public: '127.0.0.1:8083',
     port: '8083',
@@ -37,7 +36,8 @@ module.exports = {
         target: 'http://' + BACKEND,
         pathRewrite: { '^/api': '/' }
       }
-    }
+    },
+    historyApiFallback: true
   },
 
   pluginOptions: {
@@ -50,6 +50,12 @@ module.exports = {
   },
   chainWebpack: config => {
     config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
+  },
+  configureWebpack: {
+    devtool:
+      process.env.NODE_ENV === 'development'
+        ? 'eval-cheap-module-source-map'
+        : 'none'
   }
   // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   // plugins: [
