@@ -51,12 +51,7 @@ module.exports = {
   chainWebpack: config => {
     config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
   },
-  configureWebpack: {
-    devtool:
-      process.env.NODE_ENV === 'development'
-        ? 'eval-cheap-module-source-map'
-        : 'none'
-  }
+  productionSourceMap: false // 关闭生产环境的sourceMap 文件
   // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   // plugins: [
   //   new BundleAnalyzerPlugin()
