@@ -96,28 +96,31 @@
     </DynamicTest>
     <!-- 编辑动态实验 -->
     <div v-if="!isShowCrowdList && mode === 'editDynamicCrowd'">
+      <!-- style="width: 252px; position: absolute;" -->
       <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
-          <crowd-add
-            :crowd="crowd"
-            :crowdId="crowdId"
-            :policyId="selectRow.policyId"
-            :limitLaunchDisabled="effectCrowd"
-            @goBackCrowdListPage="goBackCrowdListPage"
-          >
-          </crowd-add>
         </el-tab-pane>
         <el-tab-pane label="编辑动态人群" name="second">
-          <DynamicTest
-            :initPolicyId="selectRow.policyId"
-            :initPolicyName="selectRow.policyName"
-            :initCrowdId="bigCrowdId"
-            :initActiveStep="initActiveStep"
-            @goBackCrowdListPage="goBackCrowdListPage"
-          >
-          </DynamicTest>
         </el-tab-pane>
       </el-tabs>
+      <crowd-add
+        v-if="tabSet === 'first'"
+        :crowd="crowd"
+        :crowdId="crowdId"
+        :policyId="selectRow.policyId"
+        :limitLaunchDisabled="effectCrowd"
+        @goBackCrowdListPage="goBackCrowdListPage"
+        >
+      </crowd-add>
+      <DynamicTest
+        v-if="tabSet === 'second'"
+        :initPolicyId="selectRow.policyId"
+        :initPolicyName="selectRow.policyName"
+        :initCrowdId="bigCrowdId"
+        :initActiveStep="initActiveStep"
+        @goBackCrowdListPage="goBackCrowdListPage"
+      >
+      </DynamicTest>
     </div>
     <el-dialog
       title="引用人群"
@@ -165,7 +168,7 @@ export default {
     }
   },
   props: ['selectRow'],
-  provide() {
+  provide () {
     return {
       crowdIndexThis: this
     }
@@ -229,7 +232,7 @@ export default {
         this.effectCrowd = false
       }
     },
-   
+
     // 编辑 abtest 人群
     editABCrowd (row, mode) {
       this.crowd = row
@@ -257,7 +260,7 @@ export default {
     goBackCrowdListPage (isLoadData) {
       this.isShowCrowdList = true
       if (isLoadData) this.$refs.list.loadData()
-    },
+    }
     // 编辑动态人群
     // editDynamicCrowd (row) {
     //   this.isShowCrowdList = false

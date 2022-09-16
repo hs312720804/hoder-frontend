@@ -1,67 +1,70 @@
 <template>
-  <div>
-    <div v-if="reloadFlag" style="height: calc(100vh - 200px); overflow: auto;">
-        <div class="header">
+  <div style="position: relative">
+    <template v-if="reloadFlag">
+      <div style="height: calc(100vh - 200px); overflow: auto;">
+          <div class="header">
+            <!-- 动态人群 -->
+            <!-- style="width: calc(100% - 455px); margin-left: 252px;" -->
+            <el-steps :active="activeStep" finish-status="success" simple >
+                <el-step title="第一步：动态方案配置" icon="el-icon-edit"></el-step>
+                <el-step title="第二步：流转方案配置" icon="el-icon-edit"></el-step>
+                <el-step title="第三步：填写实验有效期" icon="el-icon-edit"></el-step>
+            </el-steps>
+
+          </div>
+          <!-- <div style="color: blue">
+            isDynamicPeople: {{isDynamicPeople}} <br/>
+            :policyId:: {{policyId}}<br/>
+            :policyName:: {{ policyName }}<br/>
+            :crowdId:: {{ crowdId }}<br/>
+          </div> -->
           <!-- 动态人群 -->
-          <el-steps :active="activeStep" finish-status="success" simple>
-              <el-step title="第一步：动态方案配置" icon="el-icon-edit"></el-step>
-              <el-step title="第二步：流转方案配置" icon="el-icon-edit"></el-step>
-              <el-step title="第三步：填写实验有效期" icon="el-icon-edit"></el-step>
-          </el-steps>
+          <div >
 
-        </div>
-        <!-- <div style="color: blue">
-          isDynamicPeople: {{isDynamicPeople}} <br/>
-          :policyId:: {{policyId}}<br/>
-          :policyName:: {{ policyName }}<br/>
-          :crowdId:: {{ crowdId }}<br/>
-        </div> -->
-        <!-- 动态人群 -->
-        <div >
+            <!-- 动态人群设置 -->
+            <step1
+              v-if="activeStep === 0"
+              :policyId="policyId"
+              :crowdId="crowdId"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
+              @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
+            >
+            </step1>
 
-          <!-- 动态人群设置 -->
-          <step1
-            v-if="activeStep === 0"
-            :policyId="policyId"
-            :crowdId="crowdId"
-            @crowdNextStep="handleCrowdNextStep"
-            @crowdPrevStep="handleCrowdPrevStep"
-            @resetFormData="resetFormData"
-            @handleDirectStrategyList="handleDirectStrategyList"
-            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
-          >
-          </step1>
+            <!-- 设置流转条件 -->
+            <step2
+              ref="step2"
+              v-if="activeStep === 1"
+              :policyId="policyId"
+              :crowdId="crowdId"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
+              @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
+            >
+            </step2>
 
-          <!-- 设置流转条件 -->
-          <step2
-            ref="step2"
-            v-if="activeStep === 1"
-            :policyId="policyId"
-            :crowdId="crowdId"
-            @crowdNextStep="handleCrowdNextStep"
-            @crowdPrevStep="handleCrowdPrevStep"
-            @resetFormData="resetFormData"
-            @handleDirectStrategyList="handleDirectStrategyList"
-            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
-          >
-          </step2>
+            <!-- 第三步：填写实验有效期 -->
+            <step3
+              v-if="activeStep === 2"
+              :policyId="policyId"
+              :crowdId="crowdId"
+              @crowdNextStep="handleCrowdNextStep"
+              @crowdPrevStep="handleCrowdPrevStep"
+              @resetFormData="resetFormData"
+              @handleDirectStrategyList="handleDirectStrategyList"
+              @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
+            >
+            </step3>
 
-          <!-- 第三步：填写实验有效期 -->
-          <step3
-            v-if="activeStep === 2"
-            :policyId="policyId"
-            :crowdId="crowdId"
-            @crowdNextStep="handleCrowdNextStep"
-            @crowdPrevStep="handleCrowdPrevStep"
-            @resetFormData="resetFormData"
-            @handleDirectStrategyList="handleDirectStrategyList"
-            @goBackCrowdListPage="$emit('goBackCrowdListPage', true)"
-          >
-          </step3>
+          </div>
 
-        </div>
-
-    </div>
+      </div>
+    </template>
 
     <div v-if="activeStep === 1" class="bottomBtn">
       <el-button type="primary" @click="handleSave" class="btn">下一步</el-button>
@@ -186,7 +189,7 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  padding: 10px 20px 10px 10px;
+  // padding: 10px 20px 10px 10px;
   box-sizing: border-box;
   .btn {
     float right
