@@ -2098,6 +2098,7 @@ export default {
             child: this.constructLinkData(child, childLevel)
           }
         } else { // 完全转化的块， 或者 payUv 为 0 的块
+          const child = item.child && item.child.length > 0 ? item.child : []
           obj = {
             nowCrowdName: item.nowCrowdName,
             path: item.path,
@@ -2110,7 +2111,8 @@ export default {
             price: item.price ? item.price : undefined,
             hitUv: item.hitUv,
             // ratio: zLevel === 0 ? 100 : 1 / len * 100, // 等分比例
-            level: zLevel
+            level: zLevel,
+            child: child.length > 0 ? this.constructLinkData(child, childLevel) : undefined
           }
         }
         return obj
