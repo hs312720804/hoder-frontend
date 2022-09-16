@@ -67,7 +67,6 @@
       <el-button type="primary" @click="handleSave" class="btn">下一步</el-button>
       <el-button type="info" @click="handleBackPrevStep" class="btn">上一步</el-button>
       <el-button type="info" @click="$emit('goBackCrowdListPage')" class="btn">返 回</el-button>
-
     </div>
   </div>
 </template>
@@ -187,8 +186,8 @@ export default {
   bottom: 0;
   left: 0;
   right: 0;
-  padding 10px 10px 0 0
-  margin-right 10px
+  padding: 10px 20px 10px 10px;
+  box-sizing: border-box;
   .btn {
     float right
   }

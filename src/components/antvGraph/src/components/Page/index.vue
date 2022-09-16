@@ -88,8 +88,45 @@ export default {
       this.init()
     })
     this.bindEvent()
+
+    // window.resize 防抖
+    window.addEventListener('resize', this.debounce(() => {
+      // const container = document.getElementById(this.pageId)
+      // const height = container.offsetHeight
+      // const width = container.offsetWidth
+      const width = document.getElementsByClassName('el-main')[0].offsetWidth - 50
+      const height = document.documentElement.clientHeight - 225
+      this.graph.changeSize(width, height)
+      // 接受两个参数（改变的宽度，高度）
+      // this.readData()
+      this.graph.render()
+    }, 300)
+    )
   },
   methods: {
+    // 防抖
+    debounce (fn, delay) {
+      let time = null
+      let timer = null
+      let newTime = null
+      function task () {
+        newTime = +new Date()
+        if (newTime - time < delay) {
+          timer = setTimeout(task, delay)
+        } else {
+          fn()
+          timer = null
+        }
+        time = newTime
+      }
+      return function () {
+        // 更新时间戳
+        time = +new Date()
+        if (!timer) {
+          timer = setTimeout(task, delay)
+        }
+      }
+    },
     // 保存入口条件
     handleSaveEntryCondition (paramsObj) {
       const parmas = {
@@ -155,7 +192,7 @@ export default {
         height: height,
         width: width,
         fitCenter: true, // 图是否自适应画布
-        fitViewPadding: [ 20, 40, 50, 20 ],
+        fitViewPadding: [20, 40, 50, 20],
         modes: {
           // 支持的 behavior
           default: [
@@ -185,7 +222,7 @@ export default {
       // 初始化为线型布局
       this.graph.updateLayout({
         type: 'grid',
-        begin: [ 20, 20 ],
+        begin: [20, 20],
         width: width - 20,
         height: height - 20
       })
@@ -196,14 +233,14 @@ export default {
       this.readData()
     },
     readData () {
-      let data = this.data
+      const data = this.data
       if (data) {
         // read 方法的功能相当于 data 和 render 方法的结合。
         this.graph.read(data)
       }
     },
     bindEvent () {
-      let _this = this
+      const _this = this
       eventBus.$on('afterAddPage', page => {
         _this.page = page
         _this.graph = _this.page.graph

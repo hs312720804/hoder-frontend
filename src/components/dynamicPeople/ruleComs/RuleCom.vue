@@ -59,8 +59,8 @@
         <el-select style="width: 100px" name="oxve" v-model="childItem.coupon" class="input-inline">
           <template>
             <el-option value="couponShowPv" label="曝光"></el-option>
-            <el-option value="couponCreatePv " label="领用"></el-option>
-            <el-option value="couponUsePv " label="使用"></el-option>
+            <el-option value="couponCreatePv" label="领用"></el-option>
+            <el-option value="couponUsePv" label="使用"></el-option>
           </template>
         </el-select>
       </span>

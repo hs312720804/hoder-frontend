@@ -13,9 +13,9 @@ function cutString (str, len) {
   if (str.length * 2 <= len) {
     return str
   }
-  var strlen = 0
-  var s = ''
-  for (var i = 0; i < str.length; i++) {
+  let strlen = 0
+  let s = ''
+  for (let i = 0; i < str.length; i++) {
     s = s + str.charAt(i)
     if (str.charCodeAt(i) > 128) {
       strlen = strlen + 2
@@ -54,7 +54,7 @@ const customNode = {
       draw (cfg, group) {
         // let size = cfg.size
         // if (!size) {
-        let size = [230, 45]
+        const size = [230, 45]
         // }
         // 此处必须是NUMBER 不然bbox不正常1
         const width = parseInt(size[0])
@@ -139,7 +139,7 @@ const customNode = {
             fill: color
           }
         })
-        console.log('cfg===', cfg)
+        // console.log('cfg===', cfg)
         // // 流转条件 设置className属性
         // const innerCircle2 = group.addShape('rect', {
         //   attrs: {
@@ -227,9 +227,9 @@ const customNode = {
             height: 30,
             // img:'https://g.alicdn.com/cm-design/arms-trace/1.0.155/styles/armsTrace/images/TAIR.png',
             // img: require('@/assets/img/people2.png'),
-            img: require('@/assets/img/group-people.png'),
+            img: require('@/assets/img/group-people.png')
           }
-        });
+        })
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + 16,
@@ -264,7 +264,7 @@ const customNode = {
         // })
         // }
         if (cfg.label) {
-          var str = cfg.label
+          let str = cfg.label
           // 14个字符，就换行
           // eslint-disable-next-line no-control-regex
           str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{14}\x01?/g, '$&\n').replace(/\x01/g, '')

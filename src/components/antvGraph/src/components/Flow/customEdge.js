@@ -2,7 +2,6 @@
 import G6 from '@antv/g6/build/g6'
 import { uniqueId } from '@antvGraph/utils'
 const MIN_ARROW_SIZE = 3
-
 const customEdge = {
   init () {
     const dashArray = [
@@ -20,23 +19,24 @@ const customEdge = {
     const lineDash = [4, 2, 1, 2]
     const interval = 9
     G6.registerEdge('customEdge', {
+      labelAutoRotate: true,
       draw (cfg, group) {
         let sourceNode, targetNode, start, end
         if (typeof (cfg.source) === 'string') {
           cfg.source = cfg.sourceNode
         }
-        if (!cfg.start) {
-          cfg.start = {
-            x: 0,
-            y: 17
-          }
+        // if (!cfg.start) {
+        cfg.start = {
+          x: 0,
+          y: 22
         }
-        if (!cfg.end) {
-          cfg.end = {
-            x: 0,
-            y: -17
-          }
+        // }
+        // if (!cfg.end) {
+        cfg.end = {
+          x: 0,
+          y: -22
         }
+        // }
         if (!cfg.source.x) {
           sourceNode = cfg.source.getModel()
           start = { x: sourceNode.x + cfg.start.x, y: sourceNode.y + cfg.start.y }
@@ -54,7 +54,7 @@ const customEdge = {
         }
 
         let path = []
-        let hgap = Math.abs(end.x - start.x)
+        const hgap = Math.abs(end.x - start.x)
         if (end.x > start.x) {
           path = [
             ['M', start.x, start.y],
@@ -100,16 +100,17 @@ const customEdge = {
             ]
           ]
         }
-        let lineWidth = 5 // 箭头宽度
+        let lineWidth = 6 // 箭头宽度
         lineWidth = lineWidth > MIN_ARROW_SIZE ? lineWidth : MIN_ARROW_SIZE
-        const width = lineWidth * 10 / 3
-        const halfHeight = lineWidth * 4 / 3
-        const radius = lineWidth * 4
+        const width = lineWidth * 8 / 3
+        const halfHeight = lineWidth * 5 / 3
+        const radius = lineWidth * 2
         const endArrowPath = [
           ['M', -width, halfHeight],
           ['L', 0, 0],
           ['L', -width, -halfHeight],
-          ['A', radius, radius, 0, 0, 1, -width, halfHeight],
+          ['L', -8, 0],
+          // ['A', radius, radius, 0, 0, 1, -width, halfHeight],
           ['Z']
         ]
         // ------------------------------
@@ -137,8 +138,18 @@ const customEdge = {
             stroke: '#b8c3ce',
             lineAppendWidth: 20,
             lineWidth: 2,
+            // endArrow: true
             endArrow: {
               path: endArrowPath
+              // stroke: 'red'
+              // path: 'M 20,0 L -20,-20 L -20,20 Z', // 自定义箭头为中心点在(0, 0)，指向 x 轴正方向的 path
+              // d: 10
+              // path: G6.Arrow.triangle(5, 5, 0)
+              // path: 'M 0,0 L 12,6 L 9,0 L 12,-6 Z',
+              // fill: '#F6BD16'
+              // path: 'M 0,0 L 10,5 Q 7,0,10,-5 Z',
+              // d: -25
+
             }
           }
 
@@ -155,7 +166,7 @@ const customEdge = {
           const shape = group.get('children')[0]
           const length = shape.getTotalLength() // G 增加了 totalLength 的接口
           let totalArray = []
-          for (var i = 0; i < length; i += interval) {
+          for (let i = 0; i < length; i += interval) {
             totalArray = totalArray.concat(lineDash)
           }
           let index = 0
