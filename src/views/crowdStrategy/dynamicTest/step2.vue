@@ -60,7 +60,8 @@
 
       <div v-if="allGroupList.length > 0">
         <div style="position: absolute; top: 102px; z-index: 999;">
-          <span class="inputArrow"></span>
+          <!-- radioType 1-循环  4-不流转 不显示入口箭头 -->
+          <span v-if="radioType !== 1 && radioType !== 4" class="inputArrow"></span>
           <!-- <el-button type="text">文字按钮</el-button> -->
           <!-- {{radioType === 3}} -->
           <template v-if="radioType === 3">
@@ -916,7 +917,7 @@ i {
   // flex-direction: row-reverse;
 }
 .inputArrow{
-  background: url('../../../assets/icons/arrow.svg')
+  background: url('../../../assets/img/arrow_right.png')
   background-size: cover;
   width: 63px;
   height: 60px;
