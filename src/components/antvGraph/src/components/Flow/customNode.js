@@ -208,6 +208,19 @@ const customNode = {
         // })
 
         // ------------------------------------------------
+        // 循环流转，第一个人群需要加上起始箭头
+        if (cfg.crowdIndex === 0 && cfg.mainType === 1) {
+          group.addShape('image', {
+            attrs: {
+              x: -25,
+              y: offsetY - 63,
+              img: require('@/assets/img/arrow_down.png'),
+              width: 50,
+              height: 70
+            }
+          })
+        }
+
         group.addShape('rect', {
           attrs: {
             x: offsetX,

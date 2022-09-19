@@ -93,7 +93,8 @@ class CreateNodesAndEdges {
         arithmetic: null,
         weight: null,
         // degree: 5,
-        mainType: this.type // 分组算法
+        mainType: this.type, // 分组算法
+        crowdIndex: index // 人群索引
       }
 
       if (this.type === 3) { // 自定义

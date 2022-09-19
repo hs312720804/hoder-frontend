@@ -1,5 +1,10 @@
 <template>
-  <div class="form-class">
+  <div class="form-class" id="step2">
+    <!-- <div class="column_diagram">
+      <button class="column_fell_screen" @click="fullScreen()">全屏显示</button>
+      <button class="column_fell_screen1" @click="fullExit()">退出全屏</button>
+    </div> -->
+
       <!-- <div style="color: red"> -->
         <!-- 第4步
         :policyId:: {{ policyId }}<br/>
@@ -99,6 +104,7 @@
         </div>
         <div style="position: relative">
           <!-- 拓扑图 -->
+          <!-- --------{{currentGraphData}} -->
           <!-- currentGraphData: 当前图表的数据 -->
           <antv-graph v-if="currentGraphData.allCrowd && currentGraphData.allCrowd.length > 0" :type="radioType" :currentGraphData="currentGraphData"></antv-graph>
         </div>
@@ -244,7 +250,8 @@ export default {
         ],
         flowNum: [
           { required: true, message: '请输入分组占比', trigger: 'blur' }
-        ] },
+        ]
+      },
       formLabelWidth: '120px',
       options: [{
         value: 0,
@@ -341,6 +348,51 @@ export default {
     eventBus.$off()
   },
   methods: {
+    fullScreen () {
+      // const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
+      const element = document.getElementById('step2') // 若要全屏页面中div，var element= document.getElementById("divID");
+
+      // IE 10及以下ActiveXObject
+      if (window.ActiveXObject) {
+        const WsShell = new ActiveXObject('WScript.Shell')
+        WsShell.SendKeys('{F11}')
+      } else if (element.requestFullScreen) {
+        // HTML W3C 提议
+        element.requestFullScreen()
+      } else if (element.msRequestFullscreen) {
+        // IE11
+        element.msRequestFullscreen()
+      } else if (element.webkitRequestFullScreen) {
+        // Webkit (works in Safari5.1 and Chrome 15)
+        element.webkitRequestFullScreen()
+      } else if (element.mozRequestFullScreen) {
+        // Firefox (works in nightly)
+        element.mozRequestFullScreen()
+      }
+    },
+
+    // 退出全屏
+    fullExit () {
+      const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
+      // IE ActiveXObject
+      if (window.ActiveXObject) {
+        const WsShell = new ActiveXObject('WScript.Shell')
+        WsShell.SendKeys('{F11}')
+      } else if (element.requestFullScreen) {
+        // HTML5 W3C 提议
+        document.exitFullscreen()
+      } else if (element.msRequestFullscreen) {
+        // IE 11
+        document.msExitFullscreen()
+      } else if (element.webkitRequestFullScreen) {
+        // Webkit (works in Safari5.1 and Chrome 15)
+        document.webkitCancelFullScreen()
+      } else if (element.mozRequestFullScreen) {
+        // Firefox (works in nightly)
+        document.mozCancelFullScreen()
+      }
+    },
+
     getCirculationMode (type) {
       const obj = this.options.find(item => item.value === type)
       return obj.label
@@ -409,7 +461,7 @@ export default {
         crowdId: bigCrowdId, // 大人群ID    不能为空
         child: cid
       }
-      let crowdList = await this.$service.getDynamic2CrowdList(params).then(res => {
+      const crowdList = await this.$service.getDynamic2CrowdList(params).then(res => {
         return res
       })
 
@@ -418,7 +470,7 @@ export default {
       // 新增（初始化）
       // 顺序，循环没有权重；随机，自定义有权重；
 
-      let flowChartData = {
+      const flowChartData = {
         nodes: [],
         edges: []
       }
@@ -437,7 +489,7 @@ export default {
     },
     // 新建实验分组
     handleSaveGroup () {
-      this.$refs['groupForm'].validate(async (valid) => {
+      this.$refs.groupForm.validate(async (valid) => {
         if (valid) {
           const params = {
             ...this.form,
@@ -492,12 +544,12 @@ export default {
         //   this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
         // }
         // 设置分组中小人群数据、图表数据
-//         if (this.allGroupList.length) {
-//           this.setGroupData(0)
-//         }
+        // if (this.allGroupList.length) {
+        //   this.setGroupData(0)
+        // }
 
         // 直接跳转到对应的tab
-        if (this.initDynamicGroupId) { 
+        if (this.initDynamicGroupId) {
           const index = this.allGroupList.findIndex(item => item.id === this.initDynamicGroupId)
           // console.log('2---------------------->', index)
           // this.setGroupData(index)
@@ -642,7 +694,7 @@ export default {
 <style scoped  lang="stylus">
 .form-class{
   margin: 0 auto 20px;
-  position: relative
+  position: relative;
 }
 .div-class{
   padding: 20px;

@@ -626,7 +626,7 @@
 
           <span v-else>
             {{ abStatusEnum[scope.row.abstatus] }}
-            <el-button v-if="scope.row.abstatus !== 0" @click="showDivideResult(scope.row.crowdId)" type="text">查看AB人群</el-button>
+            <el-button v-if="scope.row.abstatus !== 0" :disabled="scope.row.putway === 0" @click="showDivideResult(scope.row.crowdId)" type="text">查看AB人群</el-button>
           </span>
         </template>
       </el-table-column>
@@ -641,7 +641,7 @@
               否
             </span> -->
             {{ abStatusEnum[scope.row.dynamicStatus] }}
-            <el-button v-if="scope.row.dynamicStatus !== 0" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
+            <el-button v-if="scope.row.dynamicStatus !== 0" :disabled="scope.row.putway === 0" @click="showDynamicList(scope.row.crowdId)" type="text">查看动态分组</el-button>
           </span>
         </template>
       </el-table-column>
