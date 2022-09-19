@@ -1,25 +1,25 @@
 <template>
  <!-- 选择产品包 -->
- <span style="margin-top: 4px;">
-  <el-form-item 
-    label="" 
-    :prop="'rules.' + index + '.rules.' + n + '.sourceSign'" 
+  <el-form-item
+    label=""
+    :prop="'rules.' + index + '.rules.' + n + '.sourceSign'"
     :rules="{
       required: true, message: '产品包不能为空', trigger: 'change'
     }"
+    class="form-item-styl"
   >
-    <el-select 
+    <el-select
       placeholder="请选择产品包"
-      clearable 
+      clearable
       style="width: 180px"
-      name="oxve" 
+      name="oxve"
       v-model="childItem.sourceSign"
-      filterable 
+      filterable
       class="input-inline">
       <template>
-        <el-option 
-          v-for="item in soureceSignList" 
-          :value="item.sourceSign" 
+        <el-option
+          v-for="item in soureceSignList"
+          :value="item.sourceSign"
           :key="item.sourceSign"
           :label="item.sourceName">
         </el-option>
@@ -27,7 +27,6 @@
 
     </el-select>
   </el-form-item>
-  </span>
 </template>
 
 <script>
@@ -38,7 +37,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    
+
     index: {
       type: Number,
       default: 0
@@ -46,7 +45,7 @@ export default {
     n: {
       type: Number,
       default: 0
-    },
+    }
   },
   data () {
     return {
@@ -54,20 +53,21 @@ export default {
     }
   },
   computed: {
-    soureceSignList() {
+    soureceSignList () {
       return this._this.soureceSignList
     }
   },
-  created() {
-    console.log('_this==',this._this)
+  created () {
+    console.log('_this==', this._this)
   },
   methods: {
 
   }
- }
+}
 </script>
 
 <style lang='stylus' scoped>
-
- 
+.form-item-styl {
+  margin-top: 4px
+}
 </style>
