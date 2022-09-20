@@ -97,7 +97,8 @@
     <!-- 编辑动态实验 -->
     <div v-if="!isShowCrowdList && mode === 'editDynamicCrowd'">
       <!-- style="width: 252px; position: absolute;" -->
-      <el-tabs v-model="tabSet" type="card" v-if="tabSet === 'first' || (tabSet === 'second' && dynamicTestActiveStep !== 1)">
+      <!-- <el-tabs v-model="tabSet" type="card" v-if="tabSet === 'first' || (tabSet === 'second' && dynamicTestActiveStep !== 1)"> -->
+      <el-tabs v-model="tabSet" type="card">
         <el-tab-pane label="编辑人群条件" name="first">
         </el-tab-pane>
         <el-tab-pane label="编辑动态人群" name="second">

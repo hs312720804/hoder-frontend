@@ -157,15 +157,27 @@ const customNode = {
         // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
           attrs: {
-            x: width / 2 - 56,
-            y: offsetY + height / 2 - 10,
+            x: width / 2 - 58,
+            y: height / 2 - 43,
             text: '流转条件',
             width: 56,
-            height: 20,
-            fill: color,
+            height: 40,
+            // fill: '#409EFF',
+            fill: '#FFF',
+            // stroke: '#ccc',
             parent: mainId,
+            // radius: [0, 20, 20, 0],
             cursor: 'pointer',
-            radius: 4
+            radius: 20
+          }
+        })
+        group.addShape('image', {
+          attrs: {
+            x: width / 2 - 72,
+            y: -12,
+            img: require('@/assets/img/exit.png'),
+            width: 20,
+            height: 20
           }
         })
         const innerCircle2 = group.addShape('text', {
@@ -177,11 +189,21 @@ const customNode = {
             parent: mainId,
             text: '流转条件',
             cursor: 'pointer',
-            fill: '#fff'
+            fill: '#409EFF'
+          }
+        })
+        const innerCircle3 = group.addShape('image', {
+          attrs: {
+            x: width / 2 - 72,
+            y: -12,
+            img: require('@/assets/img/exit.png'),
+            width: 20,
+            height: 20
           }
         })
         innerCircle1.set('className', 'handleCirculationConditions')
         innerCircle2.set('className', 'handleCirculationConditions')
+        innerCircle3.set('className', 'handleCirculationConditions')
 
         if (cfg.mainType === 5) { // 选择了【智能】算法
           const innerCircle3 = group.addShape('text', {
