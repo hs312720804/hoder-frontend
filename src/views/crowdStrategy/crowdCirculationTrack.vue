@@ -8,8 +8,7 @@
       <el-form-item label="MAC地址" prop="mac">
         <el-input v-model="form.mac" clearable></el-input>
       </el-form-item>
-      <el-form-item label="产品包" prop="sourceSign">
-        <!-- <el-input v-model="form.sourceSign" clearable></el-input> -->
+      <!-- <el-form-item label="产品包" prop="sourceSign">
         <el-select
           placeholder="请选择产品包"
           clearable
@@ -18,14 +17,13 @@
           v-model="form.sourceSign"
           class="input-inline"
         >
-          <!-- number 类型 -->
           <template>
             <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
           </template>
 
         </el-select>
 
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="日期：" prop="date">
         <el-date-picker
           v-model="dateRange"
