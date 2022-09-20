@@ -1,7 +1,7 @@
 <template>
   <div style="position: relative">
     <template v-if="reloadFlag">
-      <div style="height: calc(100vh - 200px); overflow: auto;">
+      <div style="height: calc(100vh - 146px); overflow: auto;">
           <div class="header">
             <!-- 动态人群 -->
             <!-- style="width: calc(100% - 455px); margin-left: 252px;" -->
@@ -81,7 +81,7 @@ import step1 from './step1.vue'
 import step2 from './step2.vue'
 import step3 from './step3.vue'
 export default {
-  name: 'index',
+  name: 'dynamicTest',
   components: {
     // createPolicy,
     step1,
@@ -109,6 +109,14 @@ export default {
 
   computed: {
     ...mapGetters(['policyName'])
+  },
+  watch: {
+    activeStep: {
+      handler (val) {
+        this.$emit('handleActiveStepChange', val)
+      },
+      immediate: true
+    }
   },
   data () {
     return {

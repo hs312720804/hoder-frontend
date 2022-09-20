@@ -60,21 +60,23 @@
 
       <div v-if="allGroupList.length > 0">
         <div style="position: absolute; top: 102px; z-index: 999;">
-          <!-- radioType 1-循环  4-不流转 不显示入口箭头 -->
-          <span v-if="radioType !== 1 && radioType !== 4" class="inputArrow"></span>
+          <!-- radioType 1-循环 不显示入口箭头 -->
+          <span v-if="radioType !== 1" class="inputArrow"></span>
           <!-- <el-button type="text">文字按钮</el-button> -->
           <!-- {{radioType === 3}} -->
+          <!-- radioType 3-自定义 选择定向或随机 -->
           <template v-if="radioType === 3">
             <el-button type="text" @click="handleChangeBigArithmetic" style="display: inline-block; vertical-align: 23px;">
               {{ condition[this.bigArithmetic] }}
               <!-- {{ this.bigArithmetic }} -->
             </el-button>
-            <!-- <div>1定向 2随机 3 终止</div> -->
+
+            <!-- bigArithmetic - 1定向 2随机 3 终止 -->
             <el-select
               v-if="Number(this.bigArithmetic) == 1"
               v-model="currentGroup.exitCrowd"
               placeholder="请选择"
-              style="width: 100px; display: inline-block; vertical-align: 23px;"
+              style="width: 100px; display: inline-block; vertical-align: 23px; margin-left: 10px;"
             >
               <el-option
                 v-for="item in crowdOptions"
@@ -83,10 +85,45 @@
                 :value="item.crowdId">
               </el-option>
             </el-select>
+            <!-- <el-dropdown
+              v-if="Number(this.bigArithmetic) == 1"
+              @command="handleCommand"
+              style="width: 100px; display: inline-block; vertical-align: 23px;">
+              <span class="el-dropdown-link">
+                请选择<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="item in crowdOptions"
+                  :command="item.crowdId"
+                  :key="item.crowdId"
+                  >
+                  {{item.crowdName}}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown> -->
           </template>
 
         </div>
-
+        <!-- options: [{
+          value: 0,
+          label: '顺序'
+        }, {
+          value: 1,
+          label: '循环'
+        }, {
+          value: 2,
+          label: '随机'
+        }, {
+          value: 3,
+          label: '自定义'
+        }, {
+          value: 4,
+          label: '不流转'
+        }, {
+          value: 5,
+          label: '智能'
+        }], -->
         <div class="circulationModeName">
           <span v-if="radioType === 4">不流转</span>
           <span v-else>{{ getCirculationMode(radioType) }}流转</span>
@@ -607,9 +644,6 @@ export default {
           _this.handleExitCrowdVisibleChange(flowChart)
         }) // 子项数据变化后
       })
-    },
-    handleCommand (command) {
-      this.$message('click on item ' + command)
     },
     handleExitCrowdVisibleChange (flowChart) {
       // 流程图数据

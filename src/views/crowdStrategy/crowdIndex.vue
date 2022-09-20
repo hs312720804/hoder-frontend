@@ -97,7 +97,7 @@
     <!-- 编辑动态实验 -->
     <div v-if="!isShowCrowdList && mode === 'editDynamicCrowd'">
       <!-- style="width: 252px; position: absolute;" -->
-      <el-tabs v-model="tabSet" type="card">
+      <el-tabs v-model="tabSet" type="card" v-if="tabSet === 'first' || (tabSet === 'second' && dynamicTestActiveStep !== 1)">
         <el-tab-pane label="编辑人群条件" name="first">
         </el-tab-pane>
         <el-tab-pane label="编辑动态人群" name="second">
@@ -119,6 +119,7 @@
         :initCrowdId="bigCrowdId"
         :initActiveStep="initActiveStep"
         @goBackCrowdListPage="goBackCrowdListPage"
+        @handleActiveStepChange="handleActiveStepChange"
       >
       </DynamicTest>
     </div>
@@ -164,7 +165,8 @@ export default {
       isDynamicPeople: false,
       linkDialogVisible: false,
       multipleSelection: [],
-      dynamicGroupId: undefined
+      dynamicGroupId: undefined,
+      dynamicTestActiveStep: 0
     }
   },
   props: ['selectRow'],
@@ -174,6 +176,9 @@ export default {
     }
   },
   methods: {
+    handleActiveStepChange (val) {
+      this.dynamicTestActiveStep = val
+    },
     // 添加引用人群
     openAddLinkCrowd (row) {
       this.$refs.linkCrowdCom && this.$refs.linkCrowdCom.$refs.multipleTable && this.$refs.linkCrowdCom.$refs.multipleTable.clearSelection()

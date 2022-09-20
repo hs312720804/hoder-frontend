@@ -99,7 +99,7 @@ export default {
       this.graph.changeSize(width, height)
       // 接受两个参数（改变的宽度，高度）
       // this.readData()
-      this.graph.render()
+      // this.graph.render()
     }, 300)
     )
   },

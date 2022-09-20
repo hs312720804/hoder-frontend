@@ -131,7 +131,7 @@ const customNode = {
         }
         group.addShape('text', {
           attrs: {
-            x: -(width / 2) + 90,
+            x: width / 2 - 60,
             y: offsetY + height + 20,
             cursor: 'pointer',
             label: 'aaaaa',
@@ -164,6 +164,7 @@ const customNode = {
             height: 20,
             fill: color,
             parent: mainId,
+            cursor: 'pointer',
             radius: 4
           }
         })
@@ -175,6 +176,7 @@ const customNode = {
             textBaseline: 'middle',
             parent: mainId,
             text: '流转条件',
+            cursor: 'pointer',
             fill: '#fff'
           }
         })
