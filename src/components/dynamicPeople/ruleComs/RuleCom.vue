@@ -1,6 +1,6 @@
 <template>
   <div  class="label-item">
-    <template v-if="childItem.tagId === 1 || childItem.tagId === 2 || childItem.tagId === 4">
+    <template v-if="childItem.tagKey === 'exposeDays' || childItem.tagKey === 'exposeTimes' || childItem.tagKey === 'payAmount'">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
 
@@ -12,7 +12,7 @@
     </template>
 
     <!-- 模块活跃 -->
-    <template v-if="childItem.tagId === 6">
+    <template v-if="childItem.tagKey === 'moduleActive'">
       <el-form-item
         label=""
         :prop="'rules.' + index + '.rules.' + n + '.action'"
@@ -81,7 +81,7 @@
     </template>
 
     <!-- 优惠券活跃 -->
-    <template v-if="childItem.tagId === 7">
+    <template v-if="childItem.tagKey === 'couponsActive'">
 
       <el-form-item
         label=""
@@ -111,7 +111,7 @@
     </template>
 
     <!-- 产品包下单 -->
-    <template v-if="childItem.tagId === 8">
+    <template v-if="childItem.tagKey === 'productOrder'">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
 
