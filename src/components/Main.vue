@@ -76,7 +76,14 @@
         <c-breadcrumb class="breadcrumb" :items="breadcrumb"/>
         <div class="user-info">
           <!-- <el-button type="text" @click="handelGo('http://192.168.2.127:8888/index')">数据部应用平台</el-button> -->
-          <el-button type="text" @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')">帮助文档</el-button>
+          <i class="el-icon-question" style="color: #409EFF; font-size: 18px; margin-right: 5px;"></i>
+          <el-button
+            type="text"
+            @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')"
+            style="font-size: 16px;font-weight: 600;"
+          >
+            使用文档
+          </el-button>
           <el-dropdown trigger="hover">
             <el-badge :value="unReadMessage" class="item">
               <i class="el-icon-bell"></i>
@@ -205,8 +212,8 @@ export default {
       updateMessage: [],
       systemMessage: [],
       messageTypeEnum: {
-        'first': 1,
-        'second': 2
+        first: 1,
+        second: 2
       },
       unReadMessage: undefined,
       showMoreUpdate: false,
@@ -374,13 +381,13 @@ export default {
     getNoticeMessages (type) {
       const noticeType = type
       this.$service.getNoticeHeaderList({ noticeType }).then((data) => {
-        let interfaceData = data['消息列表']
-        let statusData = data['消息状态']
+        const interfaceData = data['消息列表']
+        const statusData = data['消息状态']
         this.unReadMessage = data['未读数量'] > 0 ? data['未读数量'] : undefined
         interfaceData.forEach((item, index) => {
           item.noticeStatus = statusData[index]
         })
-        let dataList = interfaceData
+        const dataList = interfaceData
         if (type === 1) {
           if (dataList.length > 5) {
             this.showMoreUpdate = true

@@ -144,8 +144,12 @@
             </div>
             <el-form-item>
                 <el-button type="info" @click="handleBackPrevStep">上一步</el-button>
-                <el-button type="warning" @click="submitForm('crowdForm', false)">存稿不投放</el-button>
-                <el-button type="primary" @click="submitForm('crowdForm', true)">投放</el-button>
+                <el-button type="warning" @click="submitForm('crowdForm', false)">
+                  存稿不投放
+                </el-button>
+                <el-button type="primary" @click="submitForm('crowdForm', true)">
+                  投放
+                </el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -153,11 +157,13 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import { Loading } from 'element-ui';
 export default {
   name: 'LaunchToBusinessPlatform',
   props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
   data () {
     return {
+      // fullscreenLoading: false,
       crowdForm: {
         biIdsPull: [],
         policyIdsPull: '',
@@ -383,11 +389,21 @@ export default {
               }
             }
           } else {
-            this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }, '投放成功').then((data) => {
+            let loadingInstance = Loading.service({ 
+              fullscreen: true,
+              text: launch ? '投放中，请稍候' : "保存中，请稍候",
+              background: "rgba(0, 0, 0, 0.5)",
+            });
+            // this.fullscreenLoading = true
+            this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }).then((data) => {
               if (data.policyId) {
                 // 一键投放成功之后，调'未同步'的接口，手动进行同步
-                this.jumpToRouter(launch, data.policyId)
+                this.jumpToRouter(launch, data.policyId, loadingInstance)
               } else {
+                // this.fullscreenLoading = false
+                loadingInstance.close();
+                this.$message.success('投放成功')
+
                 if (this.routeSource) {
                   this.$router.push({
                     name: 'myPolicy',
@@ -401,6 +417,8 @@ export default {
                 this.$emit('resetFormData')
               }
             }).catch((err) => {
+              // this.fullscreenLoading = false
+              loadingInstance.close();
               if (err.message.indexOf('已存在') === -1) {
                 if (this.routeSource) {
                   this.$router.push({
@@ -421,22 +439,29 @@ export default {
         }
       })
     },
-    jumpToRouter (launch, policyId) {
-      if (launch) {
-        this.$service.freshCache({ policyId: policyId }).then(() => {
+    jumpToRouter (launch, policyId, loadingInstance) {
+      if (launch) { // 投放
+        this.$service.freshCache({ policyId: policyId },'投放成功').then(() => {
           if (this.routeSource) {
+            // this.fullscreenLoading = false
+            loadingInstance.close();
             this.$router.push({
               name: 'myPolicy',
               params: { changeTab: 'ToMyLaunch' }
             })
           } else {
+            // this.fullscreenLoading = false
+            loadingInstance.close();
             this.$router.push({ path: 'launch/launchTabList' })
           }
           // this.$router.push({ path: 'launch/launchTabList' })
           this.$root.$emit('stratege-list-refresh')
           this.$emit('resetFormData')
         })
-      } else {
+      } else {  // 存稿不投放
+        // this.fullscreenLoading = false
+        loadingInstance.close();
+        this.$message.success('保存成功')
         this.$emit('handleDirectStrategyList')
         // this.$root.$emit('stratege-list-refresh')
         // this.$router.push({ path: 'launch/strategyList' })

@@ -41,7 +41,7 @@
 <script>
 import list from './LocalList'
 // import tempLabelAdd from './TempLabelAdd'
-import groupImageAdd from '../../GroupImageInsight/Add'
+import groupImageAdd from '../../GroupImageInsight/Add.vue'
 import deviceEcharts from '../../GroupImageInsight/deviceEcharts'
 export default {
   name: 'TempLabel',

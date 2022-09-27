@@ -4,12 +4,13 @@
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",
+    "build:test": "cross-env NODE_ENV=test vue-cli-service build",
     "build": "vue-cli-service build",
     "lint": "vue-cli-service lint",
-    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'"
+    "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
+    "analyzer": "use_analyzer=true"
   },
   "dependencies": {
-    "@antv/g6": "3.2.10",
     "@antv/x6": "^1.18.1",
     "@ccprivate/admin-toolkit": "^1.1.4",
     "@stateform/element": "^0.1.14",
@@ -35,6 +36,7 @@
     "vuex": "^3.6.2"
   },
   "devDependencies": {
+    "@antv/g6": "^3.2.10",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
     "@intlify/vue-i18n-loader": "^1.0.0",
@@ -43,6 +45,7 @@
     "@vue/cli-service": "^3.12.1",
     "@vue/eslint-config-standard": "^6.1.0",
     "babel-plugin-component": "^1.1.1",
+    "cross-env": "^7.0.3",
     "eslint": "^7.32.0",
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
@@ -54,7 +57,8 @@
     "stylus": "^0.54.8",
     "stylus-loader": "^3.0.2",
     "vue-cli-plugin-i18n": "~1.0.1",
-    "vue-template-compiler": "~2.6.14"
+    "vue-template-compiler": "~2.6.14",
+    "webpack-bundle-analyzer": "^4.6.1"
   },
   "postcss": {
     "plugins": {

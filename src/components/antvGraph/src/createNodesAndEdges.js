@@ -10,19 +10,25 @@ class CreateNodesAndEdges {
   // 初始化连线
   initEdges () {
     const type = this.type
-    let arr = []
+    const arr = []
     const data = this.crowdList
     const commonObj = {
-      start: {
-        x: 0,
-        y: 17
-      },
-      end: {
-        x: 0,
-        y: -17
-      },
       shape: 'customEdge',
       type: 'edge'
+      // start: {
+      //   x: 0,
+      //   y: 17
+      // },
+      // end: {
+      //   x: 0,
+      //   y: -17
+      // },
+      // shape: 'polyline',
+      // style: {
+      //   endArrow: true,
+      //   lineWidth: 2,
+      //   stroke: '#ccc'
+      // }
     }
     // 顺序
     if (type === 0 || type === 1) {
@@ -70,7 +76,7 @@ class CreateNodesAndEdges {
     // this.X = this.width / 2
     this.X = -200
     this.Y = height / 2
-    let arr = data.map((item, index) => {
+    const arr = data.map((item, index) => {
       const x = this.X += 300
       const y = this.Y += 1
 
@@ -87,7 +93,8 @@ class CreateNodesAndEdges {
         arithmetic: null,
         weight: null,
         // degree: 5,
-        mainType: this.type // 分组算法
+        mainType: this.type, // 分组算法
+        crowdIndex: index // 人群索引
       }
 
       if (this.type === 3) { // 自定义
@@ -114,7 +121,7 @@ class CreateNodesAndEdges {
       commonObj.outPoints = undefined
     }
 
-    let arr = data.map((item, index) => {
+    const arr = data.map((item, index) => {
       const xy = this.returnStyle(index)
 
       const x = xy.left

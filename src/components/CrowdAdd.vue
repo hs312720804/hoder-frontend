@@ -418,7 +418,7 @@ export default {
               'tagIds': [],
               'purpose': undefined,
               'remark': undefined,
-              'crowdOrder': length + 1,
+              'crowdOrder': 1,
               'rulesJson': {
                 condition: 'OR',
                 rules: []

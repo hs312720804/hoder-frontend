@@ -138,7 +138,7 @@
 </template>
 
 <script>
-import tagDetailList from './TagDetail'
+import tagDetailList from './TagDetail.vue'
 export default {
   name: 'TagList',
   props: {
@@ -170,6 +170,10 @@ export default {
     showEditBtn: {
       type: Boolean,
       default: false
+    },
+    tabIndex: {
+      type: [String, Number],
+      default: ''
     }
   },
   components: {
@@ -179,15 +183,16 @@ export default {
     return {
       multipleSelection: [],
       tagId: undefined,
-      checkList: []
+      checkList: [],
+      showDetailDialog: false
     }
   },
   watch: {
     checkListParent: function (val) {
       this.checkList = val
     },
-    'dataList': 'updateTableSelected',
-    'currentSelectedTags': 'updateTableSelected'
+    dataList: 'updateTableSelected',
+    currentSelectedTags: 'updateTableSelected'
   },
   methods: {
     handleCheckListChange (val) {
@@ -195,6 +200,12 @@ export default {
     },
     handleSeeTagCategoryDetail (row) {
       this.tagId = row.tagId
+
+      // 选中 tab 的 indedx, 构造 id
+      const id = `tab-content-${this.tabIndex}`
+      const target = document.getElementById(id)
+      const parent = document.querySelector('.el-main')
+    	parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
     },
     handleDelete (row) {
       this.$emit('delete', row.tagId)
@@ -257,11 +268,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.dataList
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }

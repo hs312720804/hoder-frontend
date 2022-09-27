@@ -491,6 +491,35 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
+
+          <!-- <i class="el-icon-top" style="font-size: 28px;"></i> -->
+          <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
+            <i class="el-icon-thumb" style="font-size: 28px;"></i>
+            <span style="font-size: 12px;">点击标签来编辑人群条件</span>
+          </div>
+
+          <!-- <span class="animated shake" style="font-size: 28px; vertical-align: middle;">
+            <i class="el-icon-back" style="font-size: 28px;"></i>
+            <span style="font-size: 14px;">点击标签来编辑人群条件</span>
+          </span> -->
+
+          <!-- 新手指引 - 点击提示 -->
+          <!-- <el-popover
+            v-if="showHitTip"
+            placement="bottom"
+            width="230"
+            v-model="tipVisible"
+            style="position: absolute; top: 10px; left: 20px;">
+            <p>Hello! 👋 点击标签来编辑人群条件</p>
+            <div style="text-align: right; margin: 0">
+              <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
+            </div>
+            <a class="introjs-hint" slot="reference">
+              <div class="introjs-hint-dot"></div>
+              <div class="introjs-hint-pulse"></div>
+            </a>
+          </el-popover> -->
+
         </div>
       </div>
     </div>
@@ -779,6 +808,8 @@
 export default {
   data () {
     return {
+      showHitTip: true,
+      tipVisible: false,
       cache: {},
       tagSelectMoreShow: false,
       showMoreTags: false,
@@ -907,7 +938,8 @@ export default {
         childRule.specialTagId = matchCity.attrId
         childRule.specialCondition = matchCity.rulesJson
         childRule.errorMsg = matchCity.rulesJson
-          ? '' : '标签未配置，请先配置再使用'
+          ? ''
+          : '标签未配置，请先配置再使用'
         // console.log('inputValue=====', this.inputValue)
       }
     },
@@ -1041,6 +1073,8 @@ export default {
      * tag 为标签
      */
     handleAddRule (tag) {
+      this.showHitTip = false // 关闭新手指引 - 点击提示
+
       if (this.rulesJson.rules.length > 50) {
         this.$message({
           type: 'error',
@@ -1060,7 +1094,7 @@ export default {
       }, 0)
       console.log('复合人群下使用人群标签數量-->', num)
       if (num >= 30) {
-         this.$message({
+        this.$message({
           type: 'error',
           message: '复合人群下使用人群标签不可超过 30 个'
         })
@@ -1143,7 +1177,7 @@ export default {
       }, 0)
       console.log('复合人群下使用人群标签數量-->', num)
       if (num >= 30) {
-         this.$message({
+        this.$message({
           type: 'error',
           message: '复合人群下使用人群标签不可超过 30 个'
         })
@@ -1245,10 +1279,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1306,10 +1340,13 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     fetchAllTagSuggestions () {
-      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
+      const ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
       if (ruleJsonData.rules.length > 0) {
+        // 编辑
+        this.showHitTip = false // 关闭新手指引 - 点击提示
+
         let cacheIds = []
-        let cacheSpecialIds = []
+        const cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
             if (item.tagType === 'string' || item.tagType === 'collect') {
@@ -1558,4 +1595,5 @@ i {
   display: flex;
   flex-direction: row;
 }
+
 </style>

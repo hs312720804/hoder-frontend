@@ -61,7 +61,15 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="step = 2">上一步</el-button>
-                    <el-button type="primary" @click="finish('divideForm')">完成</el-button>
+                    <el-button 
+                      type="primary"
+                      @click="finish('divideForm')"
+                      v-loading.fullscreen.lock="fullscreenLoading"
+                      element-loading-text="保存中，请稍候"
+                      element-loading-background="rgba(0, 0, 0, 0.5)"
+                    >
+                    完成
+                    </el-button>
                 </el-form-item>
             </div>
         </el-form>
@@ -74,6 +82,7 @@ export default {
   props: ['crowd', 'mode'],
   data () {
     return {
+      fullscreenLoading: false,
       divideForm: this.genDefaultDivideForm(),
       divideFormRules: {
         validityTime: [
@@ -189,6 +198,7 @@ export default {
       // AB TEST 新增保存时
       this.$refs[formName].validate((valid) => {
         if (valid) {
+          this.fullscreenLoading = true
           if (!this.showDivideEdit) {
             for (let i = 0; i < crowdLength; i++) {
               item = {
@@ -203,6 +213,7 @@ export default {
               endTime: form.validityTime[1]
             }
             this.$service.crowdABTestAdd({ model: form.crowdId, data: formData }, '新增A/B test划分成功').then(() => {
+              this.fullscreenLoading = false
               this.$emit('goBackCrowdListPage', true)
             })
           } else {
@@ -222,6 +233,7 @@ export default {
               endTime: form.validityTime[1]
             }
             this.$service.crowdABTestEditSave({ model: getFormData.currentCrowdId, data: formData }, '编辑保存A/B test划分成功').then(() => {
+              this.fullscreenLoading = false
               this.$emit('goBackCrowdListPage', true)
             })
           }

@@ -1,8 +1,8 @@
 <template>
   <div class="wrap">
-    <div 
-      class="level_parent_box" 
-      v-for="(item1, index1) in treeData" :key="index1" 
+    <div
+      class="level_parent_box"
+      v-for="(item1, index1) in treeData" :key="index1"
       :style="{ height: 100/treeData.length + '%' }"
     >
     <!-- :style="{ height: item1.ratio + '%' }" -->
@@ -10,8 +10,8 @@
       <!-- 父级 -->
       <!-- <div class="level_parent_title" :class="'bg' + index1">{{ item1[linkProps['name']] }} -- {{ item1[linkProps['name']] }}</div> -->
       <!-- <div class="level_parent_title" :class="'bg' + index1">{{ item1.payUv }}</div> -->
-      <div  class="level_parent_title" :class="item1.level === 0 || item1.level === 1 ? 'bgzIndex'+ item1.level +'-'+ index1 :'bg-' + index1">
-        
+      <div  class="level_parent_title" :class="getClass(item1, index1)">
+
         <el-tooltip placement="top" effect="light">
           <!-- 提示框 -->
           <div slot="content">
@@ -27,8 +27,8 @@
 
           <div>
             <div>{{ item1.name }} </div>
-            <div v-for="(value, key) in item1">
-              <span v-if="(typeof value === 'string' || typeof value === 'number') && linkPropsName[key]" >
+            <template v-for="(value, key) in item1">
+              <div v-if="(typeof value === 'string' || typeof value === 'number') && linkPropsName[key]" >
                 {{ linkPropsName[key] }} : {{ value }}
                 <el-tooltip class="item" effect="dark" placement="top-start" v-if="linkPropsNameTip[key]">
                   <div slot="content">
@@ -37,14 +37,13 @@
                   <i class="el-icon-question" style="width: 20px; height: 20px; z-index: 99; color: gray"></i>
                   <!-- <el-button type="text">提示</el-button> -->
                 </el-tooltip>
-              </span>
-            </div>
+              </div>
+            </template>
           </div>
 
         </el-tooltip>
-        
-      </div>
 
+      </div>
 
       <!-- 111==={{item1[linkProps['children']]}} -->
       <!-- 子级 -->
@@ -61,14 +60,24 @@
 export default {
   name: 'tree',
   components: {},
-  data() {
+  data () {
     return {
     }
   },
   props: ['treeData', 'linkProps', 'linkPropsName', 'linkPropsNameTip'],
-  mounted() {
+  mounted () {
   },
   methods: {
+    getClass (item1, index1) {
+      // item1.level === 0 || item1.level === 1 ? 'bgzIndex' + item1.level + '-' + index1 : 'bg-' + index1
+      if (item1.level === 0 || item1.level === 1) {
+        return 'bgzIndex' + item1.level + '-' + index1
+      } if (item1.payUv > 0) {
+        return 'bg-payUv'
+      } else {
+        return 'bg-' + index1
+      }
+    }
 
   }
 }
@@ -76,7 +85,7 @@ export default {
 
 <style lang='stylus' scoped>
 .wrap{
-  flex-shrink: 0; 
+  flex-shrink: 0;
   height: 100%
   display: flex;
   flex-direction: row;
@@ -110,27 +119,34 @@ export default {
   div {
     margin-bottom 3px
     overflow auto
+    line-height: 22px;
   }
 }
 .level_children_box{
-  
+
 }
 .level_2_item{
   width: 100%;
   // display: flex!important;;
   // align-items: stretch;
-  // border-bottom: 1px solid rgb(255, 255, 255); 
+  // border-bottom: 1px solid rgb(255, 255, 255);
 }
 .level_2_title{
   width: 150px
-  border-right: 5px solid rgb(255, 255, 255);  
+  border-right: 5px solid rgb(255, 255, 255);
   // padding: 5px 20px;
   // display: flex;
   // justify-content: flex-end;
   // align-items: center;
   // background: #fdedcc;
 }
-colors = rgba(202,218,189, 1), rgba(154,161,147, 1), rgba(241,223,222, 1), rgba(197,189,183, 1), rgba(150,150,152, 1), rgba(154,161,147, 1), rgba(202,218,189, 1)
+.bg-payUv {
+  background: rgba(202,218,189, 1)
+  &:hover {
+    background: mix(rgba(202,218,189, 1), white, 60%)
+  }
+}
+colors = rgba(154,161,147, 0.8), rgba(154,161,147, 1), rgba(241,223,222, 1), rgba(197,189,183, 1), rgba(150,150,152, 1), rgba(154,161,147, 1), rgba(202,218,189, 1)
 
 for color,i in colors
   .bg-{i}

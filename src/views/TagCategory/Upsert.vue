@@ -86,7 +86,6 @@
     </div>
 </template>
 <script>
-import { cloneDeep } from 'lodash'
 import _ from '@/gateschema'
 export default {
   data () {

@@ -24,20 +24,21 @@
         <div v-if="filter.tagName === undefined || filter.tagName === ''">
 
             <div
-                    v-for="item in treeData"
-                    :key="item.parentId"
-                    class="tab-content"
+              v-for="(item, index) in treeData"
+              :key="item.parentId"
+              :id="'tab-content-'+ index"
+              class="tab-content"
             >
 
                 <div class="title">{{item.parentName}}<span v-if="item.newOrUpdateCount" class="small-red">·</span></div>
                 <el-tabs
-                        v-model="activeTab"
-                        @tab-click="handleTabClick"
+                  v-model="activeTab"
+                  @tab-click="handleTabClick(index)"
                 >
                     <el-tab-pane
-                            v-for="childItem in item.children"
-                            :key="childItem.groupId"
-                            :name="childItem.groupId"
+                      v-for="childItem in item.children"
+                      :key="childItem.groupId"
+                      :name="childItem.groupId"
                     >
                         <span slot="label">{{childItem.groupName}}<span v-if="childItem.newOrUpdateCount" class="small-red">·</span></span>
                         <div class="button-add" v-if="childItem.groupName === '自定义标签'">
@@ -46,17 +47,18 @@
                         <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
                         <template v-if="activeTab === childItem.groupId">
                             <tag-list
-                                    v-if="toggleShow"
-                                    :data-list="dataList"
-                                    :data-source-enum="dataSourceEnum"
-                                    :type-enum="typeEnum"
-                                    :loading="loading"
-                                    :check-list-parent="checkList"
-                                    :show-selection="showSelection"
-                                    @fetch-data="fetchTagList"
-                                    @change-checkList="handleCheckListChange"
-                                    @table-selected="handleTableSelected"
-                                    :current-selected-tags="currentSelectTag"
+                              v-if="toggleShow"
+                              :tabIndex="index"
+                              :data-list="dataList"
+                              :data-source-enum="dataSourceEnum"
+                              :type-enum="typeEnum"
+                              :loading="loading"
+                              :check-list-parent="checkList"
+                              :show-selection="showSelection"
+                              @fetch-data="fetchTagList"
+                              @change-checkList="handleCheckListChange"
+                              @table-selected="handleTableSelected"
+                              :current-selected-tags="currentSelectTag"
                             >
                             </tag-list>
                         </template>
@@ -66,26 +68,26 @@
         </div>
         <div class="other-form" v-else>
             <tag-list
-                :data-list="dataList"
-                :data-source-enum="dataSourceEnum"
-                :type-enum="typeEnum"
-                :loading="loading"
-                :check-list-parent="checkList"
-                :show-selection="showSelection"
-                @fetch-data="fetchTagAllList"
-                @change-checkList="handleCheckListChange"
-                @table-selected="handleTableSelected"
-                :current-selected-tags="currentSelectTag"
+              :data-list="dataList"
+              :data-source-enum="dataSourceEnum"
+              :type-enum="typeEnum"
+              :loading="loading"
+              :check-list-parent="checkList"
+              :show-selection="showSelection"
+              @fetch-data="fetchTagAllList"
+              @change-checkList="handleCheckListChange"
+              @table-selected="handleTableSelected"
+              :current-selected-tags="currentSelectTag"
             >
             </tag-list>
         </div>
         <TagCategoryUpsert
-            ref="tagCategoryUpsert"
-            :current-tag-category="tagCategory"
-            :type-enum="typeEnum"
-            :data-source-enum="dataSourceEnum"
-            @upsert-end="fetchTagList"
-            :definedTagId="definedTagId"
+          ref="tagCategoryUpsert"
+          :current-tag-category="tagCategory"
+          :type-enum="typeEnum"
+          :data-source-enum="dataSourceEnum"
+          @upsert-end="fetchTagList"
+          :definedTagId="definedTagId"
         />
     </div>
 </template>
@@ -218,7 +220,7 @@ export default {
         this.loading = false
       })
     },
-    handleTabClick () {
+    handleTabClick (index) {
       // 当前tab再次点击收缩表格
       if (this.filter.groupId !== this.activeTab) {
         this.toggleShow = true
@@ -235,6 +237,14 @@ export default {
       this.$emit('clear-search')
       this.$emit('fetch-checkList')
       this.fetchTagList()
+      this.scrollToView(index)
+    },
+    scrollToView (index) {
+      // 选中 tab 的 indedx, 构造 id
+      const id = `tab-content-${index}`
+      const target = document.getElementById(id)
+      const parent = document.querySelector('.el-main')
+    	parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
     },
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)

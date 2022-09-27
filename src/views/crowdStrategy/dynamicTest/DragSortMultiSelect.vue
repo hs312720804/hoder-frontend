@@ -28,7 +28,7 @@
         </el-tooltip>
       </span>
     </el-transfer>
-    <div class="tip">提示：已选方案的顺序决定了顺序流转、随机流转的顺序</div>
+    <div class="tip">提示：已选方案的顺序决定了顺序流转、循环流转的顺序</div>
   </div>
 </template>
 <script>
@@ -67,8 +67,8 @@ export default {
     return {
       selectValue: [],
       filterMethod (query, item) {
-        let regStr = query.replace('/*/g', '.*')
-        let reg = new RegExp(regStr)
+        const regStr = query.replace('/*/g', '.*')
+        const reg = new RegExp(regStr)
         return reg.test(item.label)
       },
       // data: generateData(),
@@ -91,7 +91,7 @@ export default {
     window.addEventListener('keyup', e => {
       this.shiftKey = false
     })
-    let el = document
+    const el = document
       .querySelector('.el-transfer')
       .querySelectorAll('.el-checkbox-group')[1]
 
@@ -99,27 +99,27 @@ export default {
     new Sortable(el, {
       forceFallback: false,
       onUpdate: event => {
-        let box = this.$el
+        const box = this.$el
           .querySelector('.el-transfer')
           .querySelectorAll('.el-checkbox-group')[1]
-        let nums = this.$el
+        const nums = this.$el
           .querySelector('.el-transfer')
           .querySelectorAll('.el-checkbox-group')[1].childNodes.length
         console.log(nums, event.newIndex)
         if (event.newIndex >= nums) {
           return
         }
-        let newIndex = event.newIndex
-        let oldIndex = event.oldIndex
-        let $label = box.children[newIndex]
-        let $oldLabel = box.children[oldIndex]
+        const newIndex = event.newIndex
+        const oldIndex = event.oldIndex
+        const $label = box.children[newIndex]
+        const $oldLabel = box.children[oldIndex]
         box.removeChild($label)
         if (newIndex < oldIndex) {
           box.insertBefore($label, $oldLabel)
         } else {
           box.insertBefore($label, $oldLabel.nextSibling)
         }
-        let item = this.value.splice(oldIndex, 1)
+        const item = this.value.splice(oldIndex, 1)
         this.value.splice(newIndex, 0, item[0])
       }
     })
@@ -131,7 +131,7 @@ export default {
     },
     // 数据左侧列表元素被用户选中 / 取消选中时触发
     handleWHLeftChange (key, key1) {
-      var _this = this
+      const _this = this
       console.log(_this.hasCheckedWHLeftData)
       _this.hasCheckedWHLeftData = _this.commonChangeFuc(
         key,
@@ -146,7 +146,7 @@ export default {
     },
     // 数据右侧列表元素被用户选中 / 取消选中时触发
     handleWHRightChange (key, key1) {
-      var _this = this
+      const _this = this
       console.log(_this.hasCheckedWHRightData)
       _this.hasCheckedWHRightData = _this.commonChangeFuc(
         key,
@@ -169,8 +169,8 @@ export default {
       arrList,
       value
     ) {
-      var _this = this
-      var cFlag = false // 取消勾选
+      const _this = this
+      let cFlag = false // 取消勾选
       // debugger
       for (var i = 0; i < key.length; i++) {
         if (key[i] == key1[0]) {
@@ -182,12 +182,12 @@ export default {
           firstLocation = 0
           hasCheckedData.push(key[0])
         } else if (key.length > 1) {
-          let arr = []
+          const arr = []
           // 当前有选中数据 并且 按住shift
           if (_this.shiftKey) {
             // if (isRight) {
             for (let i = 0; i < arrList.length; i++) {
-              let item = value ? arrList[i][value] : arrList[i]
+              const item = value ? arrList[i][value] : arrList[i]
               if (item == key[key.length - 2]) {
                 firstLocation = i
               }
@@ -198,7 +198,7 @@ export default {
             if (firstLocation != -1 && lastLocation != -1) {
               if (firstLocation < lastLocation) {
                 for (var k = 0; k < arrList.length; k++) {
-                  let item = value ? arrList[k][value] : arrList[k]
+                  const item = value ? arrList[k][value] : arrList[k]
 
                   if (k >= firstLocation && k <= lastLocation) {
                     hasCheckedData.push(item)

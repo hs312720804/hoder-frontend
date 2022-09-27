@@ -45,18 +45,22 @@
         <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
         <el-table-column prop="launchCrowdId" label="投放ID"></el-table-column>
         <el-table-column prop="dmpCrowdId" label="dmp人群投放ID" width="120"></el-table-column>
-        <el-table-column prop="launchName" label="名称" width="230"></el-table-column>
+        <el-table-column prop="launchName" label="名称" width="180"></el-table-column>
         <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
         <el-table-column prop="count" label="使用次数">
           <!--<template slot-scope="scope">-->
           <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
           <!--</template>-->
         </el-table-column>
-        <el-table-column label="状态">
+        <el-table-column label="状态" width="150">
           <template slot-scope="scope">
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
-              <div v-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+              <!-- 状态为计算中，显示进度 -->
+              <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+                {{ scope.row.history.process }}
+              </div>
+              <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
               </div>
               <!-- 新增计算中时是否是人群派对中 -->
@@ -105,12 +109,12 @@
             {{ scope.row.dmpCrowdId }}
           </template>
         </el-table-column>
-        <el-table-column label="版本">
+        <el-table-column label="版本" width="100">
           <template slot-scope="scope">
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" v-if="!showSelection">
+        <el-table-column label="操作" width="120" v-if="!showSelection">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -153,7 +157,7 @@
                   </el-dropdown-item>
                   <el-dropdown-item :command="['shenCeAnalysis', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">神策分析
                   </el-dropdown-item>
-                 
+
                 </el-dropdown-menu>
               </el-dropdown>
             </el-button-group>
@@ -320,12 +324,12 @@ export default {
     this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
   },
   watch: {
-    'refreshFlag': function (val) {
+    refreshFlag: function (val) {
       if (val) {
         this.fetchData()
       }
     },
-    'currentSelectTag': 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected',
     checkListParent: function (val) {
       this.checkList = val
     }
@@ -416,10 +420,10 @@ export default {
           break
       }
     },
-    handleShenCeAnalysis(row) {
+    handleShenCeAnalysis (row) {
       const launchCrowdId = row.launchCrowdId
       console.log('launchCrowdId', launchCrowdId)
-      this.$service.sensorCrowdAnalysis({launchCrowdId}).then(res => {
+      this.$service.sensorCrowdAnalysis({ launchCrowdId }).then(res => {
         console.log('res', res)
         // 人群已经发送到神策平台，请前往神策继续分析
         if (res.result.indexOf('成功') > 0 || res.result.indexOf('已经发送') > 0) {
@@ -497,11 +501,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.tableData
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }

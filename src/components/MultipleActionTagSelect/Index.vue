@@ -537,6 +537,29 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
+
+          <!-- 新手指引 - 点击提示 -->
+          <!-- <el-popover
+            v-if="showHitTip"
+            placement="bottom"
+            width="230"
+            v-model="tipVisible"
+            style="position: absolute; top: 10px; left: 20px;">
+            <p>Hello! 👋 点击标签来编辑人群条件</p>
+            <div style="text-align: right; margin: 0">
+              <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
+            </div>
+            <a class="introjs-hint" slot="reference">
+              <div class="introjs-hint-dot"></div>
+              <div class="introjs-hint-pulse"></div>
+            </a>
+          </el-popover> -->
+
+          <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
+            <i class="el-icon-thumb" style="font-size: 28px;"></i>
+            <span style="font-size: 12px;">点击标签来编辑人群条件</span>
+          </div>
+          
         </div>
       </div>
     </div>
@@ -604,6 +627,8 @@ import Bav from './Bav/Index.vue'
 export default {
   data () {
     return {
+      showHitTip: true,
+      tipVisible: false,
       bavAttrList: {},
       tagCodeValue: {
         'BAV0001': 1,
@@ -892,6 +917,8 @@ export default {
      * tag 为标签
      */
     handleAddActionRule (tag) {
+      this.showHitTip = false // 关闭新手指引 - 点击提示
+
       // eslint-disable-next-line no-debugger
       if (tag.dataSource === 2) { // 大数据标签
         this.handleAddRule(tag)
@@ -1327,6 +1354,9 @@ export default {
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)
       if (len > 0) {
+        // 编辑
+        this.showHitTip = false // 关闭新手指引 - 点击提示
+
         let cacheIds = []
         let cacheActionIds = []
         ruleJsonData.rules.forEach(itemParent => {
@@ -1587,7 +1617,7 @@ i {
   padding-left: 0px;
   color: dimgray;
   text-indent: 23px;
-  osition: absolute;
+  position: absolute;
   width: 0;
   height: 0;
   border-top: 19px solid transparent;
@@ -1596,28 +1626,5 @@ i {
   border-right: 54px solid #e2e2e2;
 }
 
-.animated {
-  -webkit-animation-duration: 1s;
-  -moz-animation-duration: 1s;
-  -o-animation-duration: 1s;
-  animation-duration: 1s;
-  -webkit-animation-fill-mode: both;
-  -moz-animation-fill-mode: both;
-  -o-animation-fill-mode: both;
-  animation-fill-mode: both;
-  animation-iteration-count: 1;
-}
-.animated.shake {
-  -webkit-animation-name: shake;
-  -moz-animation-name: shake;
-  -o-animation-name: shake;
-  animation-name: shake;
-}
-@-webkit-keyframes shake {
-  0%, 100% {transform: translateX(0);}
-  // 10%, 30%, 50%, 70%, 90% {transform: translateX(-5px);}
-  // 20%, 40%, 60%, 80% {transform: translateX(5px);}
-  10%, 50%, 90% {transform: translateX(-5px);}
-  30%, 60%{transform: translateX(5px);}
-}
+
 </style>

@@ -155,7 +155,7 @@ export default {
       } else if (value === 1) { // 线形
         this.graph.updateLayout({
           type: 'grid',
-          begin: [ 20, 20 ],
+          begin: [20, 20],
           width: width - 20,
           height: height - 20
         })
@@ -271,7 +271,7 @@ export default {
       this.command = command
     },
     bindEvent () {
-      let self = this
+      const self = this
       eventBus.$on('afterAddPage', page => {
         self.page = page
         self.graph = self.page.graph
@@ -424,11 +424,11 @@ export default {
           MaxY2 = box.y2
         }
       })
-      const width = MaxX2 - minX1,
-        height = MaxY2 - minY1,
-        x = minX1 + width / 2,
-        y = minY1 + height / 2,
-        id = 'team' + uniqueId()
+      const width = MaxX2 - minX1
+      const height = MaxY2 - minY1
+      const x = minX1 + width / 2
+      const y = minY1 + height / 2
+      const id = 'team' + uniqueId()
       const model = {
         id: id,
         width,

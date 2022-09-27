@@ -1,5 +1,10 @@
 <template>
-  <div class="form-class">
+  <div class="form-class" id="step2">
+    <!-- <div class="column_diagram">
+      <button class="column_fell_screen" @click="fullScreen()">全屏显示</button>
+      <button class="column_fell_screen1" @click="fullExit()">退出全屏</button>
+    </div> -->
+
       <!-- <div style="color: red"> -->
         <!-- 第4步
         :policyId:: {{ policyId }}<br/>
@@ -55,20 +60,23 @@
 
       <div v-if="allGroupList.length > 0">
         <div style="position: absolute; top: 102px; z-index: 999;">
-          <span class="inputArrow"></span>
+          <!-- radioType 1-循环 不显示入口箭头 -->
+          <span v-if="radioType !== 1" class="inputArrow"></span>
           <!-- <el-button type="text">文字按钮</el-button> -->
           <!-- {{radioType === 3}} -->
+          <!-- radioType 3-自定义 选择定向或随机 -->
           <template v-if="radioType === 3">
             <el-button type="text" @click="handleChangeBigArithmetic" style="display: inline-block; vertical-align: 23px;">
               {{ condition[this.bigArithmetic] }}
               <!-- {{ this.bigArithmetic }} -->
             </el-button>
-            <!-- <div>1定向 2随机 3 终止</div> -->
+
+            <!-- bigArithmetic - 1定向 2随机 3 终止 -->
             <el-select
               v-if="Number(this.bigArithmetic) == 1"
               v-model="currentGroup.exitCrowd"
               placeholder="请选择"
-              style="width: 100px; display: inline-block; vertical-align: 23px;"
+              style="width: 100px; display: inline-block; vertical-align: 23px; margin-left: 10px;"
             >
               <el-option
                 v-for="item in crowdOptions"
@@ -77,10 +85,45 @@
                 :value="item.crowdId">
               </el-option>
             </el-select>
+            <!-- <el-dropdown
+              v-if="Number(this.bigArithmetic) == 1"
+              @command="handleCommand"
+              style="width: 100px; display: inline-block; vertical-align: 23px;">
+              <span class="el-dropdown-link">
+                请选择<i class="el-icon-arrow-down el-icon--right"></i>
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                  v-for="item in crowdOptions"
+                  :command="item.crowdId"
+                  :key="item.crowdId"
+                  >
+                  {{item.crowdName}}
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown> -->
           </template>
 
         </div>
-
+        <!-- options: [{
+          value: 0,
+          label: '顺序'
+        }, {
+          value: 1,
+          label: '循环'
+        }, {
+          value: 2,
+          label: '随机'
+        }, {
+          value: 3,
+          label: '自定义'
+        }, {
+          value: 4,
+          label: '不流转'
+        }, {
+          value: 5,
+          label: '智能'
+        }], -->
         <div class="circulationModeName">
           <span v-if="radioType === 4">不流转</span>
           <span v-else>{{ getCirculationMode(radioType) }}流转</span>
@@ -99,6 +142,7 @@
         </div>
         <div style="position: relative">
           <!-- 拓扑图 -->
+          <!-- --------{{currentGraphData}} -->
           <!-- currentGraphData: 当前图表的数据 -->
           <antv-graph v-if="currentGraphData.allCrowd && currentGraphData.allCrowd.length > 0" :type="radioType" :currentGraphData="currentGraphData"></antv-graph>
         </div>
@@ -244,7 +288,8 @@ export default {
         ],
         flowNum: [
           { required: true, message: '请输入分组占比', trigger: 'blur' }
-        ] },
+        ]
+      },
       formLabelWidth: '120px',
       options: [{
         value: 0,
@@ -341,6 +386,51 @@ export default {
     eventBus.$off()
   },
   methods: {
+    fullScreen () {
+      // const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
+      const element = document.getElementById('step2') // 若要全屏页面中div，var element= document.getElementById("divID");
+
+      // IE 10及以下ActiveXObject
+      if (window.ActiveXObject) {
+        const WsShell = new ActiveXObject('WScript.Shell')
+        WsShell.SendKeys('{F11}')
+      } else if (element.requestFullScreen) {
+        // HTML W3C 提议
+        element.requestFullScreen()
+      } else if (element.msRequestFullscreen) {
+        // IE11
+        element.msRequestFullscreen()
+      } else if (element.webkitRequestFullScreen) {
+        // Webkit (works in Safari5.1 and Chrome 15)
+        element.webkitRequestFullScreen()
+      } else if (element.mozRequestFullScreen) {
+        // Firefox (works in nightly)
+        element.mozRequestFullScreen()
+      }
+    },
+
+    // 退出全屏
+    fullExit () {
+      const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
+      // IE ActiveXObject
+      if (window.ActiveXObject) {
+        const WsShell = new ActiveXObject('WScript.Shell')
+        WsShell.SendKeys('{F11}')
+      } else if (element.requestFullScreen) {
+        // HTML5 W3C 提议
+        document.exitFullscreen()
+      } else if (element.msRequestFullscreen) {
+        // IE 11
+        document.msExitFullscreen()
+      } else if (element.webkitRequestFullScreen) {
+        // Webkit (works in Safari5.1 and Chrome 15)
+        document.webkitCancelFullScreen()
+      } else if (element.mozRequestFullScreen) {
+        // Firefox (works in nightly)
+        document.mozCancelFullScreen()
+      }
+    },
+
     getCirculationMode (type) {
       const obj = this.options.find(item => item.value === type)
       return obj.label
@@ -409,7 +499,7 @@ export default {
         crowdId: bigCrowdId, // 大人群ID    不能为空
         child: cid
       }
-      let crowdList = await this.$service.getDynamic2CrowdList(params).then(res => {
+      const crowdList = await this.$service.getDynamic2CrowdList(params).then(res => {
         return res
       })
 
@@ -418,7 +508,7 @@ export default {
       // 新增（初始化）
       // 顺序，循环没有权重；随机，自定义有权重；
 
-      let flowChartData = {
+      const flowChartData = {
         nodes: [],
         edges: []
       }
@@ -437,7 +527,7 @@ export default {
     },
     // 新建实验分组
     handleSaveGroup () {
-      this.$refs['groupForm'].validate(async (valid) => {
+      this.$refs.groupForm.validate(async (valid) => {
         if (valid) {
           const params = {
             ...this.form,
@@ -492,12 +582,12 @@ export default {
         //   this.groupCheckIndex = '0' // 获取到分组列表后，默认选择第一个
         // }
         // 设置分组中小人群数据、图表数据
-//         if (this.allGroupList.length) {
-//           this.setGroupData(0)
-//         }
+        // if (this.allGroupList.length) {
+        //   this.setGroupData(0)
+        // }
 
         // 直接跳转到对应的tab
-        if (this.initDynamicGroupId) { 
+        if (this.initDynamicGroupId) {
           const index = this.allGroupList.findIndex(item => item.id === this.initDynamicGroupId)
           // console.log('2---------------------->', index)
           // this.setGroupData(index)
@@ -554,9 +644,6 @@ export default {
           _this.handleExitCrowdVisibleChange(flowChart)
         }) // 子项数据变化后
       })
-    },
-    handleCommand (command) {
-      this.$message('click on item ' + command)
     },
     handleExitCrowdVisibleChange (flowChart) {
       // 流程图数据
@@ -642,7 +729,7 @@ export default {
 <style scoped  lang="stylus">
 .form-class{
   margin: 0 auto 20px;
-  position: relative
+  position: relative;
 }
 .div-class{
   padding: 20px;
@@ -864,7 +951,7 @@ i {
   // flex-direction: row-reverse;
 }
 .inputArrow{
-  background: url('../../../assets/icons/arrow.svg')
+  background: url('../../../assets/img/arrow_right.png')
   background-size: cover;
   width: 63px;
   height: 60px;

@@ -2,14 +2,13 @@
   <div>
     <div class="title">查询指定Mac的流转轨迹</div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
-      <el-form-item label="人群ID：" prop="crowdId">
+      <el-form-item label="主人群ID：" prop="crowdId">
         <el-input v-model="form.crowdId" clearable></el-input>
       </el-form-item>
       <el-form-item label="MAC地址" prop="mac">
         <el-input v-model="form.mac" clearable></el-input>
       </el-form-item>
-      <el-form-item label="产品包" prop="sourceSign">
-        <!-- <el-input v-model="form.sourceSign" clearable></el-input> -->
+      <!-- <el-form-item label="产品包" prop="sourceSign">
         <el-select
           placeholder="请选择产品包"
           clearable
@@ -18,14 +17,13 @@
           v-model="form.sourceSign"
           class="input-inline"
         >
-          <!-- number 类型 -->
           <template>
             <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
           </template>
 
         </el-select>
 
-      </el-form-item>
+      </el-form-item> -->
       <el-form-item label="日期：" prop="date">
         <el-date-picker
           v-model="dateRange"
@@ -72,13 +70,13 @@ export default {
       dateList: [],
       rules: {
         crowdId: { required: true, message: '请输入策略id', trigger: 'blur' },
-        mac: { required: true, message: '请输入mac', trigger: 'blur' },
-        sourceSign: { required: true, message: '请输入sourceSign', trigger: 'blur' }
+        mac: { required: true, message: '请输入mac', trigger: 'blur' }
+        // sourceSign: { required: true, message: '请输入sourceSign', trigger: 'blur' }
       },
       pickerOptions: { // 策略投放后到今天的日期都可以选
         disabledDate: (time) => {
           // const day1 = 30 * 24 * 3600 * 1000
-          let maxTime = Date.now()
+          const maxTime = Date.now()
           // let minTime = Date.now() - day1
           return time.getTime() > maxTime
         }
@@ -157,7 +155,7 @@ export default {
         height,
         layout: {
           type: 'grid',
-          begin: [ 20, 20 ],
+          begin: [20, 20],
           width: width - 20,
           height: height - 20,
           sortBy: 'cluster'
@@ -199,7 +197,7 @@ export default {
         },
         modes: {
           // 支持的 behavior
-          default: [ 'drag-node' ]
+          default: ['drag-node']
         },
         nodeStateStyles: {
           // 鼠标hover状态下的配置
@@ -288,7 +286,7 @@ export default {
         return
       }
       // 渲染图表
-      let data = this.reconstructData(this.list)
+      const data = this.reconstructData(this.list)
       if (data && data.nodes.length > 0) {
         // read 方法的功能相当于 data 和 render 方法的结合。
         this.graph.read(data)

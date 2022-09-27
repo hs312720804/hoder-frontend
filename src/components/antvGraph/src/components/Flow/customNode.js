@@ -13,9 +13,9 @@ function cutString (str, len) {
   if (str.length * 2 <= len) {
     return str
   }
-  var strlen = 0
-  var s = ''
-  for (var i = 0; i < str.length; i++) {
+  let strlen = 0
+  let s = ''
+  for (let i = 0; i < str.length; i++) {
     s = s + str.charAt(i)
     if (str.charCodeAt(i) > 128) {
       strlen = strlen + 2
@@ -54,7 +54,7 @@ const customNode = {
       draw (cfg, group) {
         // let size = cfg.size
         // if (!size) {
-        let size = [230, 45]
+        const size = [230, 45]
         // }
         // 此处必须是NUMBER 不然bbox不正常1
         const width = parseInt(size[0])
@@ -131,7 +131,7 @@ const customNode = {
         }
         group.addShape('text', {
           attrs: {
-            x: -(width / 2) + 90,
+            x: width / 2 - 60,
             y: offsetY + height + 20,
             cursor: 'pointer',
             label: 'aaaaa',
@@ -139,7 +139,7 @@ const customNode = {
             fill: color
           }
         })
-        console.log('cfg===', cfg)
+        // console.log('cfg===', cfg)
         // // 流转条件 设置className属性
         // const innerCircle2 = group.addShape('rect', {
         //   attrs: {
@@ -157,14 +157,27 @@ const customNode = {
         // 流转条件 设置className属性
         const innerCircle1 = group.addShape('rect', {
           attrs: {
-            x: width / 2 - 56,
-            y: offsetY + height / 2 - 10,
+            x: width / 2 - 58,
+            y: height / 2 - 43,
             text: '流转条件',
             width: 56,
-            height: 20,
-            fill: color,
+            height: 40,
+            // fill: '#409EFF',
+            fill: '#FFF',
+            // stroke: '#ccc',
             parent: mainId,
-            radius: 4
+            // radius: [0, 20, 20, 0],
+            cursor: 'pointer',
+            radius: 20
+          }
+        })
+        group.addShape('image', {
+          attrs: {
+            x: width / 2 - 72,
+            y: -12,
+            img: require('@/assets/img/exit.png'),
+            width: 20,
+            height: 20
           }
         })
         const innerCircle2 = group.addShape('text', {
@@ -175,11 +188,22 @@ const customNode = {
             textBaseline: 'middle',
             parent: mainId,
             text: '流转条件',
-            fill: '#fff'
+            cursor: 'pointer',
+            fill: '#409EFF'
+          }
+        })
+        const innerCircle3 = group.addShape('image', {
+          attrs: {
+            x: width / 2 - 72,
+            y: -12,
+            img: require('@/assets/img/exit.png'),
+            width: 20,
+            height: 20
           }
         })
         innerCircle1.set('className', 'handleCirculationConditions')
         innerCircle2.set('className', 'handleCirculationConditions')
+        innerCircle3.set('className', 'handleCirculationConditions')
 
         if (cfg.mainType === 5) { // 选择了【智能】算法
           const innerCircle3 = group.addShape('text', {
@@ -208,6 +232,28 @@ const customNode = {
         // })
 
         // ------------------------------------------------
+        // 循环流转，第一个人群需要加上起始箭头
+        if (cfg.crowdIndex === 0 && cfg.mainType === 1) {
+          // group.addShape('image', {
+          //   attrs: {
+          //     x: -25,
+          //     y: offsetY - 63,
+          //     img: require('@/assets/img/arrow_down.png'),
+          //     width: 50,
+          //     height: 70
+          //   }
+          // })
+          group.addShape('image', {
+            attrs: {
+              x: offsetX - 60,
+              y: -30,
+              img: require('@/assets/img/arrow_right.png'),
+              width: 63,
+              height: 60
+            }
+          })
+        }
+
         group.addShape('rect', {
           attrs: {
             x: offsetX,
@@ -227,9 +273,9 @@ const customNode = {
             height: 30,
             // img:'https://g.alicdn.com/cm-design/arms-trace/1.0.155/styles/armsTrace/images/TAIR.png',
             // img: require('@/assets/img/people2.png'),
-            img: require('@/assets/img/group-people.png'),
+            img: require('@/assets/img/group-people.png')
           }
-        });
+        })
         // group.addShape('image', {
         //   attrs: {
         //     x: offsetX + 16,
@@ -264,7 +310,7 @@ const customNode = {
         // })
         // }
         if (cfg.label) {
-          var str = cfg.label
+          let str = cfg.label
           // 14个字符，就换行
           // eslint-disable-next-line no-control-regex
           str = str.replace(/[^\x00-\xff]/g, '$&\x01').replace(/.{14}\x01?/g, '$&\n').replace(/\x01/g, '')

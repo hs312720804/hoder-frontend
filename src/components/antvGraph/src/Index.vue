@@ -123,7 +123,7 @@ export default {
 
     // 刷新数据，渲染图表
     readData () {
-      let flowChartData = this.flowChartData
+      const flowChartData = this.flowChartData
       if (flowChartData) {
         // this.graph.clear()
         this.graph && this.graph.refresh(flowChartData)
