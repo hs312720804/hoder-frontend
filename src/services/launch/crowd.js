@@ -386,3 +386,20 @@ export function hitDetail (data) {
     isJSON: true
   })
 }
+
+// 动态实验报告接口A
+export function getDynamicCrowdReportA (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getDynamicCrowdReportA',
+    params
+  })
+}
+// 动态实验报告接口B
+export function getDynamicCrowdReportB (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getDynamicCrowdReportB',
+    params
+  })
+}

@@ -5,11 +5,12 @@
       <el-table-column v-else :key="item.name" :label="item.label" :prop="item.prop">
         //悬浮展示详情
         <template slot-scope="scope">
-          <el-popover placement="top-start" width="200" trigger="click" content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。">
+          {{ scope.row[scope.column.property] }}
+
+          <!-- <el-popover placement="top-start" width="200" trigger="click" content="这是一段内容,这是一段内容,这是一段内容,这是一段内容。">
             <el-button type="text" slot="reference">
-              {{ scope.row[scope.column.property] }}
             </el-button>
-          </el-popover>
+          </el-popover> -->
         </template>
       </el-table-column>
     </template>

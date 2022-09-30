@@ -147,7 +147,7 @@
                 class="popover-button"
               >
                 <div>数字越大，优先级越高</div>
-              <span class="priority-tip" slot="reference">!</span>
+                <span class="priority-tip" slot="reference">!</span>
               </el-popover>
             </template>
             <template slot-scope="scope">
@@ -4214,17 +4214,7 @@ fieldset>div
   top 8px
   right 20px
   transform rotate(-90deg)
-.priority-tip
-  display inline-block
-  cursor pointer
-  width 14px
-  height 14px
-  line-height 14px
-  background #ccc
-  color #fff
-  border-radius 50%
-  text-align center
-  font-size 12px
+
 .crowd-top
   display flex
   justify-content flex-start
