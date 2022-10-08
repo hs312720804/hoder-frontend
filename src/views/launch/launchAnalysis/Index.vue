@@ -238,7 +238,7 @@
   </div>
 
   <!-- 初始页面 或者 查询为空 时 -->
-  <div v-else style="height: calc(100vh - 321px);">
+  <div style="height: calc(100vh - 321px);">
     <el-empty v-if="emptyTxt" :description="emptyTxt" ></el-empty>
   </div>
 
@@ -321,7 +321,7 @@ export default {
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
       crowdName: '',
-      emptyTxt: ''
+      emptyTxt: '投后效果，一键分析'
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }

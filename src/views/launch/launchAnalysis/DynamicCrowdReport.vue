@@ -7,9 +7,10 @@
 
     <div id="ul111">
       <div class="icon-open-close" @click="changeView">
-        <i v-if="showNav" class="el-icon-d-arrow-left"></i>
-        <i v-else class="el-icon-d-arrow-right"></i>
+        <i v-if="showNav" class="el-icon-d-arrow-right"></i>
+        <i v-else class="el-icon-d-arrow-left"></i>
       </div>
+
       <div class="list-wrap" :class="{aaa: !showNav}">
         <div><a href="javascript:void(0)" to="a1" @click="goAnchor('#a1')">实验分组概览</a></div>
         <div><a href="javascript:void(0)" to="a2" @click="goAnchor('#a2')">实验效果汇总</a></div>
@@ -29,11 +30,18 @@
     </div>
     <div>
       <div class="title">基础人群 - 动态实验报告</div>
+
+      <div class="export-button">
+        <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
+        <a :href="downloadUrl" download ref="download_Url"></a>
+        <el-button type="success" @click="handleDownload">导出数据</el-button>
+      </div>
+
       <div id='a1' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
             实验分组概览 （reportPlans）
-            <span>共 0 个</span>
+            <!-- <span>共 0 个</span> -->
           </div>
         </div>
         <c-table
@@ -102,7 +110,7 @@
         <div class="title-layout">
           <div class="per-index-title">
             每日收益明细（reportDayDetail）
-            <span>共 0 个</span>
+            <!-- <span>共 0 个</span> -->
           </div>
         </div>
         <dynamic-table
@@ -182,6 +190,11 @@ export default {
   created () {
     this.initData()
   },
+  watch: {
+    $route (val) {
+      console.log('val--->', val)
+    }
+  },
   mounted () {
     this.high()
 
@@ -195,6 +208,22 @@ export default {
     })
   },
   methods: {
+    handleBackToCrowdList () {
+      // 根据GlobalStrategySource判断是从哪里跳来的
+      const source = this.$appState.$get('GlobalStrategySource')
+      if (source) {
+        this.$router.push({ name: 'myPolicy' })
+      } else {
+        this.$router.push({ name: 'strategyList' })
+      }
+    },
+    //  导出估算画像数据
+    handleDownload () {
+      this.downloadUrl = '/api/chart/dynamicCrowdReportDownload?crowdId=' + 12461
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
     changeView () {
       this.showNav = !this.showNav
     },
@@ -610,6 +639,7 @@ export default {
   },
   data () {
     return {
+      downloadUrl: undefined,
       options: [{
         value: 0,
         label: '顺序'
@@ -706,19 +736,7 @@ export default {
               return this.cc_format_number(row.priceTotalHitRate)
             }
           }, {
-            label: '差异对比',
-            prop: 'priceDifference',
-            render: (h, { row }) => {
-              return this.toPercent(row.priceDifference)
-            }
-          }, {
-            label: '付费率',
-            prop: 'payRate',
-            render: (h, { row }) => {
-              return this.toPercent(row.payRate)
-            }
-          }, {
-            width: 100,
+            // label: '差异对比',
             renderHeader: (h, params) => {
               return h('span', {
               },
@@ -735,6 +753,35 @@ export default {
                 }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
               ])
             },
+            prop: 'priceDifference',
+            render: (h, { row }) => {
+              return this.toPercent(row.priceDifference)
+            }
+          }, {
+            label: '付费率',
+            prop: 'payRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.payRate)
+            }
+          },
+          {
+            width: 100,
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '差异对比',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '该处的差异对比公式为：动态人群_A的付费率差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
             prop: 'payRateDifference',
             render: (h, { row }) => {
               return this.toPercent(row.payRateDifference)
@@ -746,7 +793,23 @@ export default {
               return this.cc_format_number(row.arup)
             }
           }, {
-            label: '差异对比',
+            // label: '差异对比',
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '差异对比',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '该处的差异对比公式为：动态人群_A的客单价差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
             prop: 'arupDifference',
             render: (h, { row }) => {
               return this.toPercent(row.arupDifference)
@@ -1206,8 +1269,8 @@ export default {
     align-items: baseline;
   }
   .table-wrap {
-    padding: 10px;
-    border: 1px dashed #ebe9e9;
+    padding: 10px 0;
+    // border: 1px dashed #ebe9e9;
     margin-bottom: 10px;
   }
   .title-layout {
@@ -1231,7 +1294,7 @@ export default {
     // flex-direction: column;
     // list-style: none;
     position: fixed;
-    top: 35%;
+    top: 55%;
     right: 0;
     z-index: 99;
     // background: #ffffffa3;
@@ -1262,7 +1325,7 @@ export default {
     background: #ffffffa3;
     cursor: pointer;
   }
-  .list-wrap{
+  .list-wrap {
     background: #ffffffa3;
     transition: all 0.5s
     box-sizing: border-box;
@@ -1278,4 +1341,7 @@ export default {
     width: 20px;
     // height: 201px;
   }
+  .export-button
+    display flex
+    justify-content flex-end
 </style>

@@ -690,7 +690,8 @@
                 统计
               </el-button>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item v-if="scope.row.forcastStatus == 3"
+                <el-dropdown-item
+                  v-if="scope.row.forcastStatus == 3"
                   :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
                 <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
@@ -707,6 +708,11 @@
                   :command="['appointment',scope.row]"
                 >预约投后分析</el-dropdown-item>
 
+                <!-- 动态人群才展示 -->
+                <el-dropdown-item
+                  v-if="scope.row.dynamicFlag === 1"
+                  :command="['dynamicCrowdReport',scope.row]"
+                >动态实验报告</el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -2572,12 +2578,12 @@ export default {
         this.crowdValidEnum = data.crowdValidEnum
         // this.showByPassColumn = data.bypass === 1
         this.showByPassColumn = data.policy.smart
-        if (loadType !== 'sort') {
-          this.initExpandCrowd = []
-          if (this.tableData.length > 0) {
-            this.initExpandCrowd.push(this.tableData[0].crowdId)
-          }
-        }
+        // if (loadType !== 'sort') {
+        //   this.initExpandCrowd = []
+        //   if (this.tableData.length > 0) {
+        //     this.initExpandCrowd.push(this.tableData[0].crowdId)
+        //   }
+        // }
         // 再插入一项
         this.tableMerge[0] = this.tableMerge[0] + 1
       })
@@ -2988,7 +2994,14 @@ export default {
         case 'operationalAnalysis':
           this.goToOperationalAnalysis(this.currentCid)
           break
+        case 'dynamicCrowdReport':
+          // 动态实验报告
+          this.goToDynamicCrowdReport(this.currentCid)
+          break
       }
+    },
+    goToDynamicCrowdReport (crowdId) {
+      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId } })
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {

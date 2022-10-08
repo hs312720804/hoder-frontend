@@ -46,6 +46,7 @@ import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
 import crowdCirculationTrack from '@/views/crowdStrategy/crowdCirculationTrack'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
+import DynamicCrowdReport from '@/views/launch/launchAnalysis/DynamicCrowdReport'
 import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
 import redirectAdd from '@/views/crowdStrategy/redirect/Add'
@@ -795,6 +796,16 @@ const children = [
       tagId: 'specialTag',
       hideInMenu: true,
       isCache: false
+    }
+  },
+  {
+    name: 'dynamicCrowdReport',
+    path: 'dynamicCrowdReport',
+    component: DynamicCrowdReport,
+    meta: {
+      title: '动态实验报告',
+      tagId: 'dynamicCrowdReport',
+      hideInMenu: true
     }
   }
 ]

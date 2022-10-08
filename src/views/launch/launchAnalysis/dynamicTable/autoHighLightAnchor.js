@@ -5,7 +5,6 @@ class AutoHighLightAnchor {
   // throttleFn;
   // strategy;
   constructor (anchorsContainer, ScrollContrainer, strategy = 'type1') {
-    debugger
     console.log('anchorsContainer------->', anchorsContainer)
     this.anchors = anchorsContainer.querySelectorAll('a')
     console.log('anchors------->', this.anchors)
@@ -15,7 +14,6 @@ class AutoHighLightAnchor {
   }
 
   init (strategy = this.strategy) {
-    debugger
     if (this.throttleFn) {
       this.remove()
     }
