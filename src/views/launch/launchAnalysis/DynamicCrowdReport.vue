@@ -29,7 +29,7 @@
 
     </div>
     <div>
-      <div class="title">基础人群 - 动态实验报告</div>
+      <div class="title">crowdId: 12461 【亲子】亲子全量-同步01 - 动态实验报告</div>
 
       <div class="export-button">
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
@@ -269,7 +269,7 @@ export default {
       // }
       console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
       console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type4')
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type1')
     },
     initData () {
       this.$service.getDynamicCrowdReportA({ crowdId: 12461 }).then(res => {
@@ -704,7 +704,10 @@ export default {
             prop: 'dynamicType'
           }, {
             label: '命中流量占比',
-            prop: 'dynamicHitRate'
+            // prop: 'dynamicHitRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.dynamicHitRate)
+            }
           }, {
             label: '命中设备量',
             prop: 'hitAmount',
@@ -1092,7 +1095,23 @@ export default {
             label: '动态流转分组',
             prop: 'planName'
           }, {
-            label: '路径',
+            // label: '路径',
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '路径',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '流转路径为 0 代表该分组流入设备量的去重汇总'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
             prop: 'path'
           }, {
             label: '流入设备量（命中设备量）',

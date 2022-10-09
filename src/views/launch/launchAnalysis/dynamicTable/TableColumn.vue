@@ -1,5 +1,5 @@
 <template>
-  <el-table-column :label="coloumnHeader.label" :prop="coloumnHeader.label">
+  <el-table-column :label="coloumnHeader.label" :prop="coloumnHeader.label" align="center">
     <template v-for="item in coloumnHeader.children">
       <tableColumn v-if="item.children && item.children.length" :key="item.id" :coloumn-header="item"></tableColumn>
       <el-table-column v-else :key="item.name" :label="item.label" :prop="item.prop">
