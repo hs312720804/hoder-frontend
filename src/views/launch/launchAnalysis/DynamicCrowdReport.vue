@@ -680,13 +680,15 @@ export default {
             render: (h, { row }) => {
               return (row.flowNum) + '%'
             }
-          }, {
-            label: '命中设备量',
-            prop: 'crowdNum',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.crowdNum)
-            }
-          }, {
+          },
+          // {
+          //   label: '命中设备量',
+          //   prop: 'crowdNum',
+          //   render: (h, { row }) => {
+          //     return this.cc_format_number(row.crowdNum)
+          //   }
+          // },
+          {
             label: '包含人群-ID',
             prop: 'cname'
           }],
