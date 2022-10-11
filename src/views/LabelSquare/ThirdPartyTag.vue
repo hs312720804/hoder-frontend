@@ -254,7 +254,7 @@ export default {
       margin-top: 0 !important
       padding-top: 0 !important
     .my-collect
-        margin-top 50px
+        // margin-top 50px
         position relative
     .header
         display flex

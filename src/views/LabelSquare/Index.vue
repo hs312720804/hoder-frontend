@@ -3,6 +3,7 @@
         <el-tabs
           v-model="activeName"
           @tab-click="handleTabChange"
+          class="label-content-wrap"
         >
             <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
                 <el-input
@@ -293,8 +294,6 @@ export default {
           // this.fetchListData()
           this.$root.$emit('crowd-label-list-refresh')
           break
-
-          
       }
     },
     handleGetTableSelectedData (val, mode) {
@@ -303,7 +302,7 @@ export default {
       if (mode === 'add') {
         // 如果有匹配的，就直接return
         let firstIndex = -1
-        for (var i = 0; i < tagList.length; i++) {
+        for (let i = 0; i < tagList.length; i++) {
           if (tagList[i].tagId === val.tagId) {
             firstIndex = i
             return
@@ -372,7 +371,7 @@ export default {
       right 10px
       transform rotate(-90deg)
 .label-content >>> .el-tabs__header
-    position fixed
+    // position fixed
     width 100%
     z-index 999
 .label-content >>> .el-tabs__nav-wrap
@@ -380,4 +379,7 @@ export default {
     z-index 999
     margin-top: -20px;
     padding-top: 20px;
+.label-content-wrap> >>> .el-tabs__content
+  height calc(100vh - 200px);
+  overflow: auto
 </style>

@@ -18,6 +18,7 @@
           <el-radio :label="1">我的</el-radio>
         </el-radio-group>
       </div>
+      <div v-else></div>
       <div style="display: flex; justify-content: space-between; ">
         <div class="search-input">
           <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="launchName" @keyup.enter.native="fetchData">
@@ -540,8 +541,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .temp-label-list
-        margin-top 50px
+    // .temp-label-list
+    //     margin-top 50px
     .temp-label-list >>> .el-button-group
         display flex
         align-items center

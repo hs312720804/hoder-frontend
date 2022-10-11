@@ -1087,7 +1087,7 @@ export default {
       //   pageSize: this.totalCount
       // }
 
-      let params = {
+      const params = {
         businessType: this.businessType,
         effectType: this.activeName,
         dataType: 2, // 0-全部数据、1-投前数据、2-投后数据
@@ -1104,12 +1104,12 @@ export default {
         const name = res.headers['content-disposition'].split(';')[1].split('filename=')[1]
         const title = decodeURIComponent(name) // 解码
         // 创建Blob对象，设置文件类型
-        let blob = new Blob([res.data],
+        const blob = new Blob([res.data],
           { type: 'application/vnd.ms-excel' }
           // { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' }
         )
 
-        let objectUrl = URL.createObjectURL(blob) // 创建URL
+        const objectUrl = URL.createObjectURL(blob) // 创建URL
         link.href = objectUrl
         link.download = title // 自定义文件名
         link.click() // 下载文件
@@ -1125,7 +1125,7 @@ export default {
     // 滚动到底部
     setBottom () {
       this.$nextTick(() => {
-        var container = document.querySelector('.el-main')
+        const container = document.querySelector('.el-main')
         // container.scrollTop = container.scrollHeight
         container.scrollTo(0, container.scrollHeight)
       })
@@ -1246,7 +1246,7 @@ export default {
       // var ins = '{s|转换率}\n' + toPercent(d.data.percent)
 
       function toPercent (point) {
-        var str = Number(point * 100).toFixed(1)
+        let str = Number(point * 100).toFixed(1)
         str += '%'
         return str
       }
@@ -1305,7 +1305,8 @@ export default {
         ],
         color: ['#1481E2', '#1F88E5', '#3594E8', '#4CA0EA', '#62ABED', '#79B8EF', '#8FC3F2'],
         xAxis: { show: false },
-        yAxis: { show: false,
+        yAxis: {
+          show: false,
           type: 'category',
           inverse: true,
           min: 0,
@@ -1349,10 +1350,10 @@ export default {
             fontStyle: 'Microsoft YaHei',
             formatter: function (d) {
               // console.log('d====', d)
-              var ins = '{s|转换率}\n' + toPercent(d.data.percent)
+              const ins = '{s|转换率}\n' + toPercent(d.data.percent)
 
               function toPercent (point) {
-                var str = Number(point * 100).toFixed(1)
+                let str = Number(point * 100).toFixed(1)
                 str += '%'
                 return str
               }
@@ -1376,8 +1377,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
       // const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title,
@@ -1541,7 +1542,7 @@ export default {
 
       console.log('formData======', this.formData)
 
-      let params = {
+      const params = {
         businessType: this.businessType,
         effectType: this.activeName,
         dataType: 2, // 0-全部数据、1-投前数据、2-投后数据
@@ -1652,7 +1653,7 @@ export default {
       margin-top: 0 !important
       padding-top: 0 !important
     .my-collect
-        margin-top 50px
+        // margin-top 50px
         position relative
     .header
         display flex

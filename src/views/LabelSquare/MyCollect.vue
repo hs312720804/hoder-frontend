@@ -4,6 +4,7 @@
       <div class="header">
 
         <div v-if="!showSelection"></div>
+        <div v-else></div>
         <div class="search-input">
           <el-input
             v-model="searchVal"
@@ -52,7 +53,7 @@ export default {
     }
   },
   watch: {
-    'tagName': function (val) {
+    tagName: function (val) {
       if (val !== undefined) {
         this.filter.tagName = val
         this.fetchData()
@@ -117,8 +118,8 @@ export default {
     align-items center
     .el-button
         margin 0 5px
-.my-collect
-    margin-top 50px
+// .my-collect
+//     margin-top 50px
 .header
     display flex
     justify-content space-between

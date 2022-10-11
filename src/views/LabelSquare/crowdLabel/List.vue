@@ -45,7 +45,7 @@
         ></el-table-column>
         <el-table-column prop="crowdId" label="人群ID" width="120"></el-table-column>
         <el-table-column prop="crowdName" label="人群名" width="230"></el-table-column>
-     
+
         <el-table-column label="状态">
           <template slot-scope="scope">
             <div v-if="scope.row.status">
@@ -71,8 +71,7 @@
             </div>
           </template>
         </el-table-column>
-       
-     
+
         <el-table-column label="所属策略ID" prop="policyId">
           <!-- <template slot-scope="scope">
             {{ scope.row.dmpCrowdId }}
@@ -83,7 +82,7 @@
             {{ scope.row.history.version }}
           </template> -->
         </el-table-column>
-       
+
       </el-table>
       <div align="right">
         <pagination :currentpage="currentPage" :pagesize="pageSize" :totalcount="totalCount"
@@ -128,32 +127,32 @@ export default {
       // launchType: undefined,
       launchTitle: '',
       selectStrategy: null, // 人群条件的选择策略
-      checkList: [],
-      
+      checkList: []
+
     }
   },
   created () {
-    this.$root.$on(`crowd-label-list-refresh`, this.fetchData)
+    this.$root.$on('crowd-label-list-refresh', this.fetchData)
     this.fetchData()
     // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
   },
   beforeDestroy () {
-    this.$root.$off(`crowd-label-list-refresh`)
+    this.$root.$off('crowd-label-list-refresh')
   },
   watch: {
-    'refreshFlag': function (val) {
+    refreshFlag: function (val) {
       if (val) {
         this.fetchData()
       }
     },
-    'currentSelectTag': 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected',
     checkListParent: function (val) {
       this.checkList = val
     }
   },
   methods: {
     // 判断表格的复选框是否置灰、禁止选择
-    checkSelectable(row, index) {
+    checkSelectable (row, index) {
       return row.status === 1 // 只有状态为 生效中的才能选
     },
     handleMonitor (row) {
@@ -315,11 +314,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.tableData
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           if (data[j].status === 1) { // 只有状态为生效中的才能被勾选
             this.$emit('table-selected', data[j], 'add')
           }
@@ -356,8 +355,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .temp-label-list
-        margin-top 50px
+    // .temp-label-list
+    //     margin-top 50px
     .temp-label-list >>> .el-button-group
         display flex
         align-items center

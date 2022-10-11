@@ -152,7 +152,7 @@ export default {
     },
     // 新增或编辑组合标签种类
     handleAddOrEdit () {
-      this.$refs['formRef'].validate(async (valid) => {
+      this.$refs.formRef.validate(async (valid) => {
         if (valid) {
           if (this.form.id) { // 编辑
             await this.$service.editModelTag(this.form)
@@ -232,8 +232,8 @@ export default {
         align-items center
         .el-button
             margin 0 5px
-    .my-collect
-        margin-top 50px
+    // .my-collect
+    //     margin-top 50px
     .header
         display flex
         justify-content space-between

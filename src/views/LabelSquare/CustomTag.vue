@@ -9,6 +9,7 @@
                 新建
             </el-button>
         </div>
+        <div v-else></div>
         <div class="search-input">
             <el-input
                 placeholder="支持按标签名、ID搜索"
@@ -222,8 +223,8 @@ export default {
         align-items center
         .el-button
             margin 0 5px
-    .my-collect
-        margin-top 50px
+    // .my-collect
+    //     margin-top 50px
     .header
         display flex
         justify-content space-between

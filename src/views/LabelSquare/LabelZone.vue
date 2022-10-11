@@ -1,8 +1,8 @@
 <template>
     <div class="label-zone">
       <!-- <div class="header" v-if="!showSelection"> -->
-          <div class="header" >
-          <div v-if="!showSelection"></div>
+        <div class="header" >
+          <div></div>
 
           <div class="search-input">
             <!-- <el-input
@@ -303,8 +303,8 @@ export default {
     align-items center
     .el-button
         margin 0 5px
-.label-zone
-  margin-top 50px
+// .label-zone
+//   margin-top 50px
 .title
     font-weight bold
 .popover-button

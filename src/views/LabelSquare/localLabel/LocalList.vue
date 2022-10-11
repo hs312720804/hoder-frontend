@@ -8,34 +8,37 @@
                 >
                     新建
                 </el-button>
-                    <el-popover
-                            placement="top"
-                            trigger="click"
-                            class="popover-button"
-                    >
-                        <div>
-                            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                                <el-checkbox label="creatorName">创建人</el-checkbox>
-                                <el-checkbox label="createTime">创建时间</el-checkbox>
-                                <!--<el-checkbox label="status">投放状态</el-checkbox>-->
-                                <el-checkbox label="department">业务部门</el-checkbox>
-                            </el-checkbox-group>
-                        </div>
-                        <i
-                                class="el-icon-cc-setting operate"
-                                slot="reference"
-                        >
-                        </i>
-                    </el-popover>
+
             </div>
-            <div class="search-input">
-                <el-input
-                        placeholder="支持按标签名、ID搜索"
-                        class="header-input"
-                        v-model="launchName"
-                        @keyup.enter.native="fetchData"
-                ></el-input>
-                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+            <div v-else></div>
+            <div style="display: flex; justify-content: space-between; ">
+              <div class="search-input">
+                  <el-input
+                          placeholder="支持按标签名、ID搜索"
+                          class="header-input"
+                          v-model="launchName"
+                          @keyup.enter.native="fetchData"
+                  ></el-input>
+                  <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+              </div>
+              <el-popover
+                placement="top"
+                trigger="click"
+                class="popover-button"
+              >
+                <div>
+                  <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                      <el-checkbox label="creatorName">创建人</el-checkbox>
+                      <el-checkbox label="createTime">创建时间</el-checkbox>
+                      <!--<el-checkbox label="status">投放状态</el-checkbox>-->
+                      <el-checkbox label="department">业务部门</el-checkbox>
+                  </el-checkbox-group>
+                </div>
+                <i
+                  class="el-icon-cc-setting operate"
+                  slot="reference">
+                </i>
+              </el-popover>
             </div>
         </div>
         <div>
@@ -229,12 +232,12 @@ export default {
     this.fetchData()
   },
   watch: {
-    'refreshFlag': function (val) {
+    refreshFlag: function (val) {
       if (val) {
         this.fetchData()
       }
     },
-    'currentSelectTag': 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected',
     checkListParent: function (val) {
       this.checkList = val
     }
@@ -299,7 +302,7 @@ export default {
       // const crowdName = row.launchName
       const launchCrowdId = row.launchCrowdId
       // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
-      this.$confirm(`确定要删除吗?`, '提示', {
+      this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
@@ -356,11 +359,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.tableData
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }
@@ -395,8 +398,8 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .temp-label-list
-        margin-top 50px
+    // .temp-label-list
+    //     margin-top 50px
     .temp-label-list >>> .el-button-group
         display flex
         align-items center
