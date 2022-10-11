@@ -145,6 +145,7 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
+
       <el-table-column prop="past7Active" label="7日是否有请求" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
@@ -314,7 +315,7 @@
             <el-button @click="resetSearch">重置</el-button>
             </div>
               <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
-                <el-checkbox 
+                <el-checkbox
                   v-for="item in conditionTagsFiltered"
                   :class="dataSourceColorClassEnum[item.tDataSource]"
                   :label="item.tagId"
@@ -514,12 +515,12 @@ export default {
       searchValue: '',
       reloadHistory: true,
       placeHolderInputObject: {
-        'POLICY_NAME': '请输入策略名称',
-        'POLICY_ID': '请输入策略id',
-        'TAG_NAME': '请输入策略维度',
-        'CREATOR_NAME': '请输入创建人名称',
-        'OFFICE_NAME': '请输入创建人部门名称',
-        'CROWD_ID': '请输入人群ID'
+        POLICY_NAME: '请输入策略名称',
+        POLICY_ID: '请输入策略id',
+        TAG_NAME: '请输入策略维度',
+        CREATOR_NAME: '请输入创建人名称',
+        OFFICE_NAME: '请输入创建人部门名称',
+        CROWD_ID: '请输入人群ID'
       },
       recordId: undefined,
       tempPolicyAndCrowd: {},
@@ -648,7 +649,7 @@ export default {
         }
       }
     },
-    tagList(val) {
+    tagList (val) {
       this.checkedList = val.map(item => item.tagId)
     }
   },
@@ -722,19 +723,19 @@ export default {
       // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
     },
     handleTagChange (flag, item) {
-      var arr = []
-      if (flag) { 
-        this.tagList.push(item) 
+      let arr = []
+      if (flag) {
+        this.tagList.push(item)
         if (item.tDataSource === 12) {
           // 人群标签 id 集合
-          this.addForm.crowdTagCrowdIds.push(item.tagId) 
+          this.addForm.crowdTagCrowdIds.push(item.tagId)
         } else {
           // 其他的标签 id 集合
-          this.addForm.conditionTagIds.push(item.tagId) 
+          this.addForm.conditionTagIds.push(item.tagId)
         }
       } else {
         arr = this.tagList
-        for (var i = arr.length - 1; i >= 0; i--) {
+        for (let i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
 
@@ -746,11 +747,10 @@ export default {
           this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
         }
       }
-      
     },
     resetSearch () {
       this.searchValue = ''
-      let currentTagsId = this.addForm.conditionTagIds
+      const currentTagsId = this.addForm.conditionTagIds
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
@@ -809,7 +809,7 @@ export default {
       this.$emit('openSchemePage', row)
     },
     del (row) {
-      var id = row.policyId
+      const id = row.policyId
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -857,8 +857,8 @@ export default {
         this.reloadHistory = false
       }
       // this.checkList = this.checkListFilter
-      this.criteria['pageNum'] = this.currentPage
-      this.criteria['pageSize'] = this.pageSize
+      this.criteria.pageNum = this.currentPage
+      this.criteria.pageSize = this.pageSize
 
       // 如果是【我的人群】模块进入
       if (!this.showAll) {
@@ -973,7 +973,7 @@ export default {
       this.loadDetailList()
     },
     loadDetailList () {
-      let params = {
+      const params = {
         policyId: this.detailPagination.currentId,
         pageNum: this.detailPagination.pagination.currentPage,
         pageSize: this.detailPagination.pagination.pageSize
@@ -1026,8 +1026,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -1074,8 +1074,8 @@ export default {
     },
     setCircleEcharts (element, title, legend, data) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -1102,11 +1102,13 @@ export default {
             radius: ['50%', '70%'],
             avoidLabelOverlap: false,
             itemStyle: {
-              normal: { label: {
-                show: true,
-                formatter: '{b} : {c} ({d}%)'
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c} ({d}%)'
+                },
+                labelLine: { show: true }
               },
-              labelLine: { show: true } },
               emphasis: {
                 label: {
                   show: true,
@@ -1175,9 +1177,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     launchDetail (pid) {

@@ -13,7 +13,7 @@
           <span v-show="!isCollapseMenu" class="logo-text-img"></span>
         </div>
 
-        <div v-if="isCollapseMenu" style="color: #fff; font-size: 14px">
+        <div v-if="isCollapseMenu" style="color: #fff; font-size: 15px; font-weight: 600">
           <div>极光</div>
           <div>引擎</div>
           <div class="version">{{ $appState.user.version.split(':')[1] }}</div>
