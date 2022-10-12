@@ -735,7 +735,23 @@ export default {
               return this.cc_format_number(row.priceTotal)
             }
           }, {
-            label: '总营收（按比例转化后）',
+            // label: '总营收（按比例转化后）',
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '总营收（按比例转化后）',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '总营收（按比例转化后）= 总营收 / 命中流量占比'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
             prop: 'priceTotalHitRate',
             render: (h, { row }) => {
               return this.cc_format_number(row.priceTotalHitRate)
@@ -1034,7 +1050,7 @@ export default {
 
             }, {
               label: '包年',
-              prop: 'bannianPayMacRate'
+              prop: 'baonianPayMacRate'
 
             }]
 
@@ -1056,7 +1072,7 @@ export default {
                 prop: 'aiqiyiMac'
               }, {
                 label: '影视VIP',
-                prop: 'yingshiMacRate'
+                prop: 'yingshiMac'
               }, {
                 label: '亲子VIP',
                 prop: 'qinziMac'
@@ -1076,7 +1092,7 @@ export default {
                 prop: 'aiqiyiMacRate'
               }, {
                 label: '影视VIP',
-                prop: 'yingshiMac'
+                prop: 'yingshiMacRate'
               }, {
                 label: '亲子VIP',
                 prop: 'qinziMacRate'
