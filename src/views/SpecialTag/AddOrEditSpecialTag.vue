@@ -443,7 +443,7 @@ export default {
       if (mode === 'add') {
         // 如果有匹配的，就直接return
         let firstIndex = -1
-        for (var i = 0; i < tagList.length; i++) {
+        for (let i = 0; i < tagList.length; i++) {
           if (tagList[i].tagId === val.tagId) {
             firstIndex = i
             return
@@ -473,7 +473,7 @@ export default {
       } else {
         // 取消选中的则删除这一项
         let index = -1
-        for (var j = 0; j < tagList.length; j++) {
+        for (let j = 0; j < tagList.length; j++) {
           if (tagList[j].tagId === val.tagId) {
             index = j
             this.tagList.splice(index, 1)
@@ -517,7 +517,7 @@ export default {
       this.addForm = {
         conditionTagIds
       }
-      let addForm = JSON.parse(JSON.stringify(this.addForm))
+      const addForm = JSON.parse(JSON.stringify(this.addForm))
       if (addForm.conditionTagIds.length === 0) {
         this.$message.error('请选择策略维度！')
         return
@@ -655,7 +655,6 @@ export default {
   font-size: 12px;
   margin-left: 100px;
 }
-
 
 .fix-bottom-form {
   position: fixed;

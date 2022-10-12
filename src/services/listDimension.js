@@ -19,11 +19,29 @@ export function saveListDimension (data) {
     data
   })
 }
-// 保存页面展示字段
+
+// 投后分析
 export function rightsInterestsOutcome (params) {
   return this.fetch({
     method: 'get',
     url: '/api/rightsInterestsOutcome',
+    params
+  })
+}
+
+// 投后分析历史记录
+export function getRightsInterestsSearchRecord (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/getRightsInterestsSearchRecord',
+    params
+  })
+}
+// 投后分析导出数据
+export function exportRightsInterests (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/exportRightsInterests',
     params
   })
 }
