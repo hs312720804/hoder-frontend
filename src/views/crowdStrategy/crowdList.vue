@@ -1142,11 +1142,12 @@
                 {{cc_format_number(scope.row.count)}}
               </template>
             </el-table-column>
-            <el-table-column label="操作" width="250">
+            <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
                     <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
                     <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
+                    <el-button type="text" @click="handleShenCeAnalysis(scope.row, 'AB')">神策分析</el-button>
                 </template>
             </el-table-column>
         </el-table>
@@ -1476,9 +1477,41 @@
     </el-dialog>
 
     <!-- 神策分析-->
-    <el-dialog title="选择命中数据的时间范围" :visible.sync="shenCeDialog" width="500px">
+    <el-dialog title="选择命中数据的时间范围" :visible.sync="shenCeDialog" width="530px">
       <el-form ref="shenCeForm" :model="shenCeForm" label-width="80px" size="mini">
-        <el-form-item label="起止时间" prop="dateRange" required>
+
+        <!-- <el-alert
+          title="成功提示的文案"
+          type="success">
+        </el-alert> -->
+        <!-- AB 子人群进行神策分析才显示 -->
+        <el-alert
+          v-if="currentCrowd.abStartTime"
+          style="margin-bottom: 10px"
+          :title="'可选范围为实验有效期内：' + currentCrowd.abStartTime + ' ~ ' + currentCrowd.abEndTime + '       ,开始时间和结束时间不超过30天'"
+          type="info">
+        </el-alert>
+
+        <el-alert
+          style="margin-bottom: 10px"
+          title="结束时间必须大于投放时间"
+          type="info">
+        </el-alert>
+
+        <el-alert
+          style="margin-bottom: 20px"
+          title="结束时间不能大于今天"
+          type="info">
+        </el-alert>
+
+        <el-form-item
+          label="起止时间"
+          prop="dateRange"
+          :rules="[
+            { required: true, message: '起止时间不能为空'},
+          ]"
+        >
+          <!-- 神策时间范围限制：  人群的 launchTime < dateRange < 当前时间  、并且范围在30天内 -->
           <el-date-picker
             v-model="shenCeForm.dateRange"
             type="daterange"
@@ -3264,8 +3297,17 @@ export default {
           break
       }
     },
-    handleShenCeAnalysis (row) {
+    handleShenCeAnalysis (row, type) {
       this.currentCrowd = row
+
+      // 发送 AB 子人群的神策分析
+      if (type === 'AB') {
+        const date = this.$moment(row.abStartTime).add(1, 'days') // 加一天
+        this.currentCrowd.launchTime = date
+      }
+
+      this.shenCeForm.dateRange = [] // 清空
+
       this.shenCeForm.crowdId = row.crowdId
       this.shenCeDialog = true
     },

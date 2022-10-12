@@ -330,6 +330,7 @@ export default {
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
       crowdName: '',
+      pageStatus: 2, // 暂无数据
       emptyTxt: '投后效果，一键分析',
       downloadUrl: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
@@ -562,12 +563,11 @@ export default {
         // this.allData = res || {}
           this.loading = false
 
-          const status = res.status || 2
-
-          if (status === 0) { // 分析中
+          this.pageStatus = res.status
+          if (this.pageStatus === 0) { // 分析中
             this.emptyTxt = '数据正在分析中，请稍后重试'
             this.allChartData = {}
-          } else if (status === 1) { // 有数据
+          } else if (this.pageStatus === 1) { // 有数据
             // 真实数据
             const tableData = res.data || {}
 
