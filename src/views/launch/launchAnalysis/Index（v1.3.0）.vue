@@ -46,7 +46,16 @@
   <!-- 总览 -->
   <div v-if="!!allChartData.overview && allChartData.overview.data">
     <div >
-      <div class="big-title">总览</div>
+      <div style="display: flex; justify-content: space-between;">
+        <div class="big-title">总览</div>
+
+        <div class="export-button">
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleGxportRightsInterests">导出数据</el-button>
+        </div>
+      </div>
+      <!-- 多级多层的表单填写项 -->
+
       <div class="wrap-div">
         <div class="overview-table">
           <el-row :gutter="20">
@@ -321,7 +330,9 @@ export default {
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
       crowdName: '',
-      emptyTxt: '投后效果，一键分析'
+      pageStatus: 2, // 暂无数据
+      emptyTxt: '投后效果，一键分析',
+      downloadUrl: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -346,8 +357,39 @@ export default {
         chart.resize()
       }
     })
+
+    // 历史搜索记录
+    this.handleGetRightsInterestsSearchRecord()
   },
   methods: {
+    //  投后分析导出
+    handleGxportRightsInterests () {
+      // const params = {
+    //   //   crowdId: this.formInline.crowdId,
+    //   //   sourceNameList: this.formInline.sourceNameList.join(','),
+    //   //   startDate: this.formInline.timeRange[0],
+    //   //   endDate: this.formInline.timeRange[1]
+    //   // }
+
+      const params = {
+        crowdId: 11731,
+        sourceNameList: '酷喵VIP',
+        startDate: '2022-08-01',
+        endDate: '2022-08-15'
+      }
+      const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
+      this.downloadUrl = '/api/exportRightsInterests?' + urlParams
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+
+    // 历史记录查询
+    handleGetRightsInterestsSearchRecord () {
+      this.$service.getRightsInterestsSearchRecord().then(res => {
+
+      })
+    },
     handleCheckAllChange (val) {
       this.formInline.sourceNameList = val ? cityOptions : []
       this.isIndeterminate = false
@@ -469,6 +511,10 @@ export default {
     // 分析
     onSubmit (sourceName) {
       // console.log('submit!')
+      // this.formInline.crowdId = 10013
+      // this.formInline.sourceNameList = ['影视VIP', '奇异果VIP', '4K花园']
+      // this.formInline.timeRange = ['2022-07-18', '2022-07-19']
+
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.loading = true
@@ -490,6 +536,14 @@ export default {
       //   endDate: '2022-07-19',
       //   sourceName: sourceName || ''
       // }
+      // const params = {
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15',
+      //   isDelCache: this.formInline.isDelCache,
+      //   sourceName: sourceName || ''
+      // }
 
       const params = {
         crowdId: this.formInline.crowdId,
@@ -500,11 +554,6 @@ export default {
         sourceName: sourceName || ''
       }
 
-      // const params = {
-      //   crowdId: 3219,
-      //   startDate: '2022-05-11',
-      //   endDate: '2022-06-10'
-      // }
       // 先查询人群是否存在，若存在，再去分析
       this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
         this.crowdName = res.policyCrowds.crowdName
@@ -514,9 +563,16 @@ export default {
         // this.allData = res || {}
           this.loading = false
 
-          if (!!res.overview && res.overview.data) {
-            this.overview = res.overview.data || {}
-            this.allChartData = res || {}
+          this.pageStatus = res.status
+          if (this.pageStatus === 0) { // 分析中
+            this.emptyTxt = '数据正在分析中，请稍后重试'
+            this.allChartData = {}
+          } else if (this.pageStatus === 1) { // 有数据
+            // 真实数据
+            const tableData = res.data || {}
+
+            this.overview = tableData.overview.data || {}
+            this.allChartData = tableData || {}
             // 概览 - 漏斗图
             this.show = true
             this.$nextTick(() => {
@@ -524,8 +580,8 @@ export default {
               // 详情图表
               this.drawChart()
             })
-          } else {
-            this.emptyTxt = '数据正在分析中，请稍后重试'
+          } else { // 无数据
+            this.emptyTxt = '暂无数据'
             this.allChartData = {}
           }
         }).catch(e => {
