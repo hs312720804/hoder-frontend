@@ -805,7 +805,8 @@ const children = [
     meta: {
       title: '动态实验报告',
       tagId: 'dynamicCrowdReport',
-      hideInMenu: true
+      hideInMenu: true,
+      isCache: false
     }
   }
 ]

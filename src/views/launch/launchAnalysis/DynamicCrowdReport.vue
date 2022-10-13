@@ -29,7 +29,8 @@
 
     </div>
     <div>
-      <div class="title">crowdId: 12461 【亲子】亲子全量-同步01 - 动态实验报告</div>
+      <!-- <div class="title">crowdId: 12461 【亲子】亲子全量-同步01 - 动态实验报告</div> -->
+      <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
@@ -188,11 +189,24 @@ export default {
     DynamicTable
   },
   created () {
-    this.initData()
+    console.log('val ---> created', this.$route.query.crowdId)
+
+    // this.initData()
   },
   watch: {
-    $route (val) {
-      console.log('val--->', val)
+    $route: {
+      handler () {
+        this.crowdId = this.$route.query.crowdId || ''
+        this.crowdName = this.$route.query.crowdName || ''
+        if (this.crowdId !== '') {
+          this.initData()
+          this.$nextTick(() => {
+            console.log('val--->', document.querySelector('.el-main'))
+            document.querySelector('.el-main').scrollTop = 0
+          })
+        }
+      },
+      immediate: true
     }
   },
   mounted () {
@@ -219,7 +233,7 @@ export default {
     },
     //  导出估算画像数据
     handleDownload () {
-      this.downloadUrl = '/api/chart/dynamicCrowdReportDownload?crowdId=' + 12461
+      this.downloadUrl = '/api/chart/dynamicCrowdReportDownload?crowdId=' + this.crowdId
       this.$nextTick(() => {
         this.$refs.download_Url.click()
       })
@@ -267,12 +281,12 @@ export default {
       //   // 调用高亮方法
       //   this.highLightAnchor(highligthId)
       // }
-      console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
-      console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type1')
+      // console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
+      // console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
     },
     initData () {
-      this.$service.getDynamicCrowdReportA({ crowdId: 12461 }).then(res => {
+      this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -293,7 +307,7 @@ export default {
         })
       })
 
-      this.$service.getDynamicCrowdReportB({ crowdId: 12461 }).then(res => {
+      this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
         // this.getAllData = res
 
         this.setTableData(res)
@@ -514,7 +528,7 @@ export default {
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
-      console.log('yData--------->', yData)
+      // console.log('yData--------->', yData)
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
@@ -558,7 +572,7 @@ export default {
             }
           },
           formatter: function (parmas) {
-            console.log('parmas------------->', parmas)
+            // console.log('parmas------------->', parmas)
 
             // let str = parmas[0].marker + parmas[0].name + '<br/>'
             let str = parmas[0].name + '<br/>'
@@ -839,15 +853,7 @@ export default {
             label: '上架天数',
             prop: 'onlineDay'
           }],
-          data: [{
-            id: 1,
-            name: '实验组1',
-            way: '顺序'
-          }, {
-            id: 1,
-            name: '实验组1',
-            way: '顺序'
-          }]
+          data: []
         },
         reportDayDetail: { // 每日收益明细
           tableConfig: [ // 表头配置项
@@ -1281,7 +1287,9 @@ export default {
       ],
       allCharts: {},
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
-      showNav: true
+      showNav: true,
+      crowdName: '',
+      crowdId: ''
     }
   }
 }
@@ -1361,6 +1369,7 @@ export default {
     border-right: 0px
     background: #ffffffa3;
     cursor: pointer;
+    border-right: 1px solid #fff;
   }
   .list-wrap {
     background: #ffffffa3;

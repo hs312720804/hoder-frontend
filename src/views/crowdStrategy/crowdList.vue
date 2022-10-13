@@ -3029,12 +3029,12 @@ export default {
           break
         case 'dynamicCrowdReport':
           // 动态实验报告
-          this.goToDynamicCrowdReport(this.currentCid)
+          this.goToDynamicCrowdReport(this.currentCid, row.crowdName)
           break
       }
     },
-    goToDynamicCrowdReport (crowdId) {
-      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId } })
+    goToDynamicCrowdReport (crowdId, crowdName) {
+      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId, crowdName } })
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {
