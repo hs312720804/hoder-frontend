@@ -238,8 +238,8 @@
   </div>
 
   <!-- 初始页面 或者 查询为空 时 -->
-  <div style="height: calc(100vh - 321px);">
-    <el-empty v-if="emptyTxt" :description="emptyTxt" ></el-empty>
+  <div v-else style="height: calc(100vh - 321px);">
+    <el-empty v-if="emptyTxt" :description="emptyTxt"></el-empty>
   </div>
 
  </div>
