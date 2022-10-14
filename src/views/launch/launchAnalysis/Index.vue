@@ -40,13 +40,25 @@
     </el-form-item>
     <el-form-item style="margin-left: 136px">
       <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
+      <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">
+        历史记录
+      </el-button>
     </el-form-item>
   </el-form>
 
   <!-- 总览 -->
-  <div v-if="!!allChartData.overview && allChartData.overview.data">
+  <div v-if="pageStatus === 1">
     <div >
-      <div class="big-title">总览</div>
+      <div style="display: flex; justify-content: space-between;">
+        <div class="big-title">总览</div>
+
+        <div class="export-button">
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleGxportRightsInterests">导出数据</el-button>
+        </div>
+      </div>
+      <!-- 多级多层的表单填写项 -->
+
       <div class="wrap-div">
         <div class="overview-table">
           <el-row :gutter="20">
@@ -219,7 +231,7 @@
 
                     </div>
 
-                    <div class="unit-content" v-if="show && chart.title" >
+                    <div class="unit-content" v-if="show && chart.title">
                       <!-- {{ allChartData[key] && allChartData[key].series }} -->
                       <div v-if="allChartData[key] && allChartData[key].series && allChartData[key].series.length > 0" :ref="key" :id="key" class="chart-div"></div>
                       <div v-else class="chart-div">
@@ -238,9 +250,45 @@
   </div>
 
   <!-- 初始页面 或者 查询为空 时 -->
-  <div v-else style="height: calc(100vh - 321px);">
-    <el-empty v-if="emptyTxt" :description="emptyTxt"></el-empty>
+  <div
+    v-else
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    style="height: calc(100vh - 321px);"
+    element-loading-background="rgb(243, 244, 250)"
+  >
+    <el-empty v-if="emptyTxt" :description="emptyTxt" ></el-empty>
   </div>
+
+  <el-drawer
+    title="历史记录"
+    :visible.sync="drawer"
+    size="45%"
+  >
+    <div style="position: relative; height: 50px">
+      <el-input
+        placeholder="请输入内容"
+        prefix-icon="el-icon-search"
+        v-model="input2"
+        class="search-input"
+        clearable>
+      </el-input>
+    </div>
+    <div style="position: absolute; top: 50px; bottom: 0; overflow: auto;">
+      <div
+        v-for="(item) in historys"
+        :key="item.id"
+        class="search-text"
+      >
+        <span>{{ item.crowdId }}</span>
+        <span>{{ item.crowdName }}</span>
+        <span>{{ item.startDate }} ~ {{ item.endDate }}</span>
+        <span>{{ item.sourceNameStr }}</span>
+        <span>{{ item.createTime }}</span>
+        <!-- {{item.crowdId + '' + item.startDate + '-' + item.endDate + item.sourceNameStr"}} -->
+      </div>
+    </div>
+  </el-drawer>
 
  </div>
 </template>
@@ -251,6 +299,9 @@ export default {
   components: {},
   data () {
     return {
+      historys: [],
+      input2: '',
+      drawer: false,
       checkAll: false,
       checkedCities: [],
       cities: cityOptions,
@@ -321,7 +372,9 @@ export default {
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
       crowdName: '',
-      emptyTxt: '投后效果，一键分析'
+      pageStatus: 2, // 暂无数据
+      emptyTxt: '投后效果，一键分析',
+      downloadUrl: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -346,8 +399,39 @@ export default {
         chart.resize()
       }
     })
+
+    // 历史搜索记录
+    this.handleGetRightsInterestsSearchRecord()
   },
   methods: {
+    //  投后分析导出
+    handleGxportRightsInterests () {
+      // const params = {
+    //   //   crowdId: this.formInline.crowdId,
+    //   //   sourceNameList: this.formInline.sourceNameList.join(','),
+    //   //   startDate: this.formInline.timeRange[0],
+    //   //   endDate: this.formInline.timeRange[1]
+    //   // }
+
+      const params = {
+        crowdId: 11731,
+        sourceNameList: '酷喵VIP',
+        startDate: '2022-08-01',
+        endDate: '2022-08-15'
+      }
+      const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
+      this.downloadUrl = '/api/exportRightsInterests?' + urlParams
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+
+    // 历史记录查询
+    handleGetRightsInterestsSearchRecord () {
+      this.$service.getRightsInterestsSearchRecord().then(res => {
+        this.historys = res || []
+      })
+    },
     handleCheckAllChange (val) {
       this.formInline.sourceNameList = val ? cityOptions : []
       this.isIndeterminate = false
@@ -440,6 +524,7 @@ export default {
             // ]
           }
         ]
+
       }
       const echarts = require('echarts')
       const myChart = echarts.init(this.$refs.chart1)
@@ -469,6 +554,10 @@ export default {
     // 分析
     onSubmit (sourceName) {
       // console.log('submit!')
+      // this.formInline.crowdId = 10013
+      // this.formInline.sourceNameList = ['影视VIP', '奇异果VIP', '4K花园']
+      // this.formInline.timeRange = ['2022-07-18', '2022-07-19']
+
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.loading = true
@@ -490,6 +579,14 @@ export default {
       //   endDate: '2022-07-19',
       //   sourceName: sourceName || ''
       // }
+      // const params = {
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15',
+      //   isDelCache: this.formInline.isDelCache,
+      //   sourceName: sourceName || ''
+      // }
 
       const params = {
         crowdId: this.formInline.crowdId,
@@ -500,11 +597,6 @@ export default {
         sourceName: sourceName || ''
       }
 
-      // const params = {
-      //   crowdId: 3219,
-      //   startDate: '2022-05-11',
-      //   endDate: '2022-06-10'
-      // }
       // 先查询人群是否存在，若存在，再去分析
       this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
         this.crowdName = res.policyCrowds.crowdName
@@ -514,9 +606,16 @@ export default {
         // this.allData = res || {}
           this.loading = false
 
-          if (!!res.overview && res.overview.data) {
-            this.overview = res.overview.data || {}
-            this.allChartData = res || {}
+          this.pageStatus = res.status
+          if (this.pageStatus === 0) { // 分析中
+            this.emptyTxt = '数据正在分析中，请稍后重试'
+            this.allChartData = {}
+          } else if (this.pageStatus === 1) { // 有数据
+            // 真实数据
+            const tableData = res.data || {}
+
+            this.overview = tableData.overview.data || {}
+            this.allChartData = tableData || {}
             // 概览 - 漏斗图
             this.show = true
             this.$nextTick(() => {
@@ -524,8 +623,8 @@ export default {
               // 详情图表
               this.drawChart()
             })
-          } else {
-            this.emptyTxt = '数据正在分析中，请稍后重试'
+          } else { // 无数据
+            this.emptyTxt = '暂无数据'
             this.allChartData = {}
           }
         }).catch(e => {
@@ -1089,5 +1188,32 @@ export default {
   line-height: 56px;
   padding: 0 15px;
   font-size: 14px;
+}
+.search-text {
+  font-size: 12px;
+  border-radius: 10px;
+  padding: 10px;
+  margin: 0 6px 15px 6px;
+  display: inline-block;
+  background-color: #f4f4f4;
+  span {
+    margin-right: 15px;
+    display: inline-block;
+    margin-bottom: 4px;
+  }
+}
+.search-input {
+  height: 36px;
+  border-radius: 36px;
+  // background: #f4f4f4;
+  color: #999;
+  position: absolute;
+  margin-bottom: 39px;
+  right: 20px;
+  left: 20px;
+  width: auto;
+}
+>>>.el-drawer__body {
+  position: relative;
 }
 </style>
