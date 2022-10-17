@@ -40,7 +40,7 @@
     </el-form-item>
     <el-form-item style="margin-left: 136px">
       <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
-      <el-button @click="drawer = true" type="primary" style="margin-left: 16px;">
+      <el-button type="text" @click="drawer = true" style="margin-left: 16px;">
         历史记录
       </el-button>
     </el-form-item>
@@ -168,7 +168,7 @@
 
         <!-- 漏斗图 -->
         <div class="chart-wrap">
-          <div ref="chart1" class="chart-1" >chart1</div>
+          <div id="chart1" ref="chart1" class="chart-1" >chart1</div>
         </div>
       </div>
     </div>
@@ -267,26 +267,50 @@
   >
     <div style="position: relative; height: 50px">
       <el-input
-        placeholder="请输入内容"
+        placeholder="搜索历史记录"
         prefix-icon="el-icon-search"
-        v-model="input2"
+        v-model="historysCondition"
         class="search-input"
-        clearable>
+        clearable
+        @keyup.enter.native="handleGetRightsInterestsSearchRecord">
       </el-input>
     </div>
-    <div style="position: absolute; top: 50px; bottom: 0; overflow: auto;">
+    <div class="history-content">
       <div
         v-for="(item) in historys"
         :key="item.id"
         class="search-text"
+        @click="hitHistory(item)"
       >
-        <span>{{ item.crowdId }}</span>
+
+      <i @click.stop="deleteHistory(item.id)" class="delete-icon el-icon-close"></i>
+      <!-- <span><i class="el-icon-search" style="color: #1ab394; font-size: 16px"></i></span> -->
+      <span>{{ item.crowdId }}</span>
         <span>{{ item.crowdName }}</span>
-        <span>{{ item.startDate }} ~ {{ item.endDate }}</span>
+        <span>{{ item.startDate }} 至 {{ item.endDate }}</span>
         <span>{{ item.sourceNameStr }}</span>
-        <span>{{ item.createTime }}</span>
+
         <!-- {{item.crowdId + '' + item.startDate + '-' + item.endDate + item.sourceNameStr"}} -->
+        <span class="foot">
+          <span :class="{'bold': item.status === 1}">
+            {{ statusMap[item.status] }}
+          </span>
+          <span>{{ item.createTime }}</span>
+        </span>
       </div>
+    </div>
+    <div class="bottom-delete-all">
+      <el-popover
+        placement="top"
+        width="160"
+        v-model="visible">
+        <p>确认清空历史记录吗？</p>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click.stop="deleteHistory(-1)">确定</el-button>
+        </div>
+        <el-button slot="reference" type="text">清空历史记录</el-button>
+      </el-popover>
     </div>
   </el-drawer>
 
@@ -299,8 +323,15 @@ export default {
   components: {},
   data () {
     return {
+      visible: false,
+      statusMap: {
+        0: '分析中',
+        1: '已查出数据',
+        2: '暂无数据'
+      },
+      setTimeOutVal: undefined,
       historys: [],
-      input2: '',
+      historysCondition: '',
       drawer: false,
       checkAll: false,
       checkedCities: [],
@@ -403,7 +434,30 @@ export default {
     // 历史搜索记录
     this.handleGetRightsInterestsSearchRecord()
   },
+  beforeDestroy () {
+    // 销毁定时器
+    this.destoryTimeInterval()
+  },
+  activated () {
+    console.log('activated - setTimeOutVal------->', this.setTimeOutVal)
+    if (this.setTimeOutVal) {
+      this.fetchAllData()
+      // 搜索历史记录，更新数据
+      this.handleGetRightsInterestsSearchRecord()
+    }
+  },
+  deactivated () {
+    console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
+  },
   methods: {
+    // 删除历史
+    deleteHistory (id) {
+      this.$service.delRightsInterestsSearchRecord({ id }, '删除成功').then(res => {
+        // 刷新、
+        // 历史搜索记录
+        this.handleGetRightsInterestsSearchRecord()
+      })
+    },
     //  投后分析导出
     handleGxportRightsInterests () {
       // const params = {
@@ -428,7 +482,10 @@ export default {
 
     // 历史记录查询
     handleGetRightsInterestsSearchRecord () {
-      this.$service.getRightsInterestsSearchRecord().then(res => {
+      const params = {
+        condition: this.historysCondition
+      }
+      this.$service.getRightsInterestsSearchRecord(params).then(res => {
         this.historys = res || []
       })
     },
@@ -452,6 +509,9 @@ export default {
 
     // 漏斗图
     showFunnel (element, data) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
       const chartData = [
         { value: data.homepageActiveUv, name: '主页活跃' },
         { value: data.totalPlayUv, name: '起播' },
@@ -527,7 +587,9 @@ export default {
 
       }
       const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs.chart1)
+      const myChart = echarts.init(chartElement)
+      console.log('echarts--------->', echarts)
+      console.log('myChart--------->', myChart)
 
       myChart.setOption(option)
     },
@@ -569,9 +631,21 @@ export default {
         }
       })
     },
+    // 历史记录查询数据
+    hitHistory (item) {
+      this.formInline = {
+        crowdId: item.crowdId,
+        sourceNameList: item.sourceNameStr.split(','),
+        timeRange: [item.startDate, item.endDate],
+        isDelCache: 0
+      }
+      this.initChart()
+    },
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
+      // 销毁定时器
+      this.destoryTimeInterval()
       // const params = {
       //   crowdId: 10013,
       //   sourceNameList: '影视VIP,奇异果VIP,4K花园',
@@ -588,53 +662,81 @@ export default {
       //   sourceName: sourceName || ''
       // }
 
-      const params = {
-        crowdId: this.formInline.crowdId,
-        sourceNameList: this.formInline.sourceNameList.join(','),
-        startDate: this.formInline.timeRange[0],
-        endDate: this.formInline.timeRange[1],
-        isDelCache: this.formInline.isDelCache,
-        sourceName: sourceName || ''
-      }
-
       // 先查询人群是否存在，若存在，再去分析
-      this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
+      this.$service.crowdEdit({ crowdId: this.formInline.crowdId }).then(res => {
         this.crowdName = res.policyCrowds.crowdName
 
-        // 获取所有图表数据
-        this.$service.rightsInterestsOutcome(params).then(res => {
-        // this.allData = res || {}
-          this.loading = false
+        this.fetchAllData(sourceName)
 
-          this.pageStatus = res.status
-          if (this.pageStatus === 0) { // 分析中
-            this.emptyTxt = '数据正在分析中，请稍后重试'
-            this.allChartData = {}
-          } else if (this.pageStatus === 1) { // 有数据
-            // 真实数据
-            const tableData = res.data || {}
-
-            this.overview = tableData.overview.data || {}
-            this.allChartData = tableData || {}
-            // 概览 - 漏斗图
-            this.show = true
-            this.$nextTick(() => {
-              this.showFunnel('chart1', this.overview)
-              // 详情图表
-              this.drawChart()
-            })
-          } else { // 无数据
-            this.emptyTxt = '暂无数据'
-            this.allChartData = {}
-          }
-        }).catch(e => {
-          this.loading = false
-        })
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
         this.loading = false
       })
     },
+    fetchAllData (sourceName) {
+      this.loading = true
+      const originParams = this.formInline
+      const params = {
+        crowdId: originParams.crowdId,
+        sourceNameList: originParams.sourceNameList.join(','),
+        startDate: originParams.timeRange[0],
+        endDate: originParams.timeRange[1],
+        isDelCache: originParams.isDelCache,
+        sourceName: sourceName || '' // 点击柱状图查询单个业务数据
+      }
+      // 获取所有图表数据
+      this.$service.rightsInterestsOutcome(params).then(res => {
+        // this.allData = res || {}
+        this.loading = false
 
+        this.pageStatus = res.status
+        console.log('this.setTimeOutVal===', this.setTimeOutVal)
+        if (this.setTimeOutVal) {
+          // 销毁定时器
+          this.destoryTimeInterval()
+        }
+        if (this.pageStatus === 0) { // 分析中
+          this.emptyTxt = '数据正在分析中，请稍后重试'
+          this.allChartData = {}
+
+          // 开启定时器
+          this.openTimeInterval()
+        } else if (this.pageStatus === 1) { // 有数据
+          // 真实数据
+          const tableData = res.data || {}
+
+          this.overview = tableData.overview.data || {}
+          this.allChartData = tableData || {}
+          // 概览 - 漏斗图
+          this.show = true
+          this.$nextTick(() => {
+            this.showFunnel('chart1', this.overview)
+            // 详情图表
+            this.drawChart()
+          })
+        } else { // 无数据
+          this.emptyTxt = '暂无数据'
+          this.allChartData = {}
+        }
+      }).catch(e => {
+        this.loading = false
+        // 销毁定时器
+        this.destoryTimeInterval()
+      })
+    },
+    // 开启定时器
+    openTimeInterval () {
+      console.log('我执行了定时器-----')
+      this.setTimeOutVal = setInterval(() => {
+        this.fetchAllData()
+      }, 8000)
+    },
+    // 销毁定时器
+    destoryTimeInterval () {
+      console.log('=========我清除了定时器-----')
+      clearInterval(this.setTimeOutVal)
+    },
     drawChart () {
       const rowObj = this.rowObj
       const rowObj2 = this.rowObj2
@@ -748,13 +850,15 @@ export default {
 
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData, xunit = '', yunit = '', dataaxis = []) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
+      // let myChart = echarts.init(this.$refs[element])
       const _this = this
       const echarts = require('echarts')
-      // let myChart = echarts.init(this.$refs[element])
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
       myChart.setOption({
         title: {
           text: title
@@ -872,6 +976,9 @@ export default {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
       const echarts = require('echarts')
       const _this = this
       const yAxisObj = {
@@ -933,13 +1040,15 @@ export default {
       if (hasY2) {
         option.yAxis.push({ ...yAxisObj, name: yAxisObjName2 })
       }
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
       myChart.setOption(option, true)
       this.allCharts[element] = myChart
     },
 
     // 环形图
     setPie (element, data) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
       // console.log('aaaaaaaaaaa--------------->', element)
       // console.log('aaaaaaaaaaa--------------->', data)
       // const name = '登录量'
@@ -1077,7 +1186,7 @@ export default {
       }
       const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
 
       myChart.setOption(option)
       this.allCharts[element] = myChart
@@ -1193,9 +1302,11 @@ export default {
   font-size: 12px;
   border-radius: 10px;
   padding: 10px;
-  margin: 0 6px 15px 6px;
+  margin: 0 6px 35px 6px;
   display: inline-block;
   background-color: #f4f4f4;
+  cursor pointer
+  position: relative;
   span {
     margin-right: 15px;
     display: inline-block;
@@ -1215,5 +1326,46 @@ export default {
 }
 >>>.el-drawer__body {
   position: relative;
+}
+.foot {
+  color: #5d5d76
+  position: absolute;
+  bottom: -27px;
+  right: -23px;
+}
+.bold {
+  color: #349344
+}
+
+.delete-icon {
+  position: absolute;
+  right: -3px;
+  top: 0px;
+  color: #999;
+  padding: 2px;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 16px;
+}
+.delete-icon:hover {
+  background gray;
+  color: #fff
+}
+.history-content {
+  position: absolute;
+  top: 50px;
+  bottom: 40px;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+.bottom-delete-all {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40px
+  border-top: 1px dashed #e7e7e7;
 }
 </style>

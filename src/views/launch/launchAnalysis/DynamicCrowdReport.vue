@@ -12,14 +12,14 @@
       </div>
 
       <div class="list-wrap" :class="{aaa: !showNav}">
-        <div><a href="javascript:void(0)" to="a1" @click="goAnchor('#a1')">实验分组概览</a></div>
-        <div><a href="javascript:void(0)" to="a2" @click="goAnchor('#a2')">实验效果汇总</a></div>
-        <div><a href="javascript:void(0)" to="a3" @click="goAnchor('#a3')">每日收益趋势</a></div>
-        <div><a href="javascript:void(0)" to="a4" @click="goAnchor('#a4')">每日收益明细</a></div>
-        <div><a href="javascript:void(0)" to="a5" @click="goAnchor('#a5')">累计收益明细</a></div>
-        <div><a href="javascript:void(0)" to="a6" @click="goAnchor('#a6')">分组内各子人群收益明细</a></div>
-        <div><a href="javascript:void(0)" to="a7" @click="goAnchor('#a7')">分组内各流转链路收益</a></div>
-        <div><a href="javascript:void(0)" to="a8" @click="goAnchor('#a8')">各权益收益情况</a></div>
+        <div><a href="javascript:void(0)" to="a1" @click="goAnchor('#a1')" title="实验分组概览">实验分组概览</a></div>
+        <div><a href="javascript:void(0)" to="a2" @click="goAnchor('#a2')" title="实验效果汇总">实验效果汇总</a></div>
+        <div><a href="javascript:void(0)" to="a3" @click="goAnchor('#a3')" title="每日收益趋势">每日收益趋势</a></div>
+        <div><a href="javascript:void(0)" to="a4" @click="goAnchor('#a4')" title="每日收益明细">每日收益明细</a></div>
+        <div><a href="javascript:void(0)" to="a5" @click="goAnchor('#a5')" title="累计收益明细">累计收益明细</a></div>
+        <div><a href="javascript:void(0)" to="a6" @click="goAnchor('#a6')" title="分组内各子人群收益明细">分组内各子人群收益明细</a></div>
+        <div><a href="javascript:void(0)" to="a7" @click="goAnchor('#a7')" title="分组内各流转链路收益">分组内各流转链路收益</a></div>
+        <div><a href="javascript:void(0)" to="a8" @click="goAnchor('#a8')" title="各权益收益情况">各权益收益情况</a></div>
       </div>
       <!-- <li><a href="#a1">a1</a></li>
       <li><a href="#a2">a2</a></li>

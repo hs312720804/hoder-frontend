@@ -45,3 +45,11 @@ export function exportRightsInterests (params) {
     params
   })
 }
+// 投后分析 - 删除历史记录
+export function delRightsInterestsSearchRecord (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/delRightsInterestsSearchRecord',
+    params
+  })
+}
