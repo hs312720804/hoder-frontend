@@ -1,199 +1,180 @@
 <template>
-    <!-- 投放分析（旧） -->
-    <div class="label-content">
-        <el-tabs
-          v-model="activeName"
-          @tab-click="handleTabChange"
-        >
-            <el-tab-pane label="影视" name="影视"></el-tab-pane>
-            <!-- <el-tab-pane label="教育" name="教育"></el-tab-pane>
-            <el-tab-pane label="少儿" name="少儿"></el-tab-pane> -->
-            <el-tab-pane label="亲子" name="亲子"></el-tab-pane>
-        </el-tabs>
-        <tab-page
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          :typeTabsList="typeTabsList"
-          :businessType="activeName"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
-        </tab-page>
+ <div class='row-wrap'>
+    <div class="box">
+      <div class="content">
+        <div class="title">场景</div>
+        <div class="sceneList-wrap">
+          <div v-for="item in sceneList" :key="item.id">
+            <i class="icon el-icon-video-camera-solid"></i>
+            <span class="item-content">
+              {{ item.name }}
+              {{ item.id }}
+            </span>
+
+            <el-dropdown trigger="hover" class="el-dropdown">
+              <span class="el-dropdown-link">
+                . . .
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item class="clearfix">
+                  重命名
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  投放
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  下架
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+
+          </div>
+        </div>
+      </div>
     </div>
+
+    <div class="box">
+      <div class="content">
+        <div class="title">接待员</div>
+        <div class="sceneList-wrap">
+          <div v-for="item in sceneList" :key="item.id">
+            <i class="icon el-icon-user"></i>
+            <span class="item-content">
+              {{ item.name }}
+              {{ item.id }}
+            </span>
+            <el-dropdown trigger="hover" class="el-dropdown">
+              <span class="el-dropdown-link">
+                . . .
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item class="clearfix">
+                  重命名
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  投放
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  下架
+                </el-dropdown-item>
+                <el-dropdown-item class="clearfix">
+                  删除
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="box">
+      <div class="content">
+        <div>接待员详情</div>
+      </div>
+    </div>
+ </div>
 </template>
 
 <script>
-import TabPage from './TabPage'
-
 export default {
-  name: 'labelSquareAA',
-  components: {
-    TabPage
-  },
+  components: {},
   data () {
     return {
-      activeName: '影视',
-      searchVal: '',
-      labelZoneTagName: undefined,
-      myCollectTagName: undefined,
-      checkList: [],
-      tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
-      showSelection: false,
-      tempCheckList: [],
-      typeTabsList: [
-        {
-          groupName: '流量CTR',
-          value: 'ctr'
-        },
-        {
-          groupName: '产品包成交',
-          value: 'package'
-        },
-        {
-          groupName: '活跃成交',
-          value: 'active'
-        },
-        {
-          groupName: '起播数据',
-          value: 'tv'
-        },
-        {
-          groupName: '观影TOP20影片',
-          value: 'top20'
-        },
-        {
-          groupName: '观影分类',
-          value: 'category'
-        }
-      ]
-    }
-  },
-  methods: {
-    handleSearch () {
-      // 全局搜索
-      // if (this.activeName === 'labelZone') {
-      //   this.labelZoneTagName = this.searchVal
-      // } else {
-      //   this.myCollectTagName = this.searchVal
-      // }
-    },
-    handleClearSearch () {
-      this.searchVal = undefined
-      this.labelZoneTagName = undefined
-      this.myCollectTagName = undefined
-    },
-    fetchCheckListData () {
-      this.$service.getListDimension({ type: 4 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.checkList = data.behaviorShow.split(',')
-          } else {
-            this.checkList = ['defineRemark']
-          }
-        } else {
-          this.checkList = ['defineRemark']
-        }
-      })
-    },
-
-    handleTabChange () {
-      switch (this.activeName) {
-        case 'labelZone':
-          // 刷新标签广场页
-          this.fetchCheckListData()
-          this.$root.$emit('label-zone-list-refresh')
-          break
-      }
-    },
-    handleGetTableSelectedData (val, mode) {
-      // 只支持单数组，多数组要多次调用这个
-      const tagList = this.tagList
-      if (mode === 'add') {
-        // 如果有匹配的，就直接return
-        let firstIndex = -1
-        for (var i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
-            firstIndex = i
-            return
-          }
-        }
-        // 如果没有匹配的，就执行新增
-        if (firstIndex === -1) {
-          this.tagList.push(val)
-        }
-      } else {
-        // 取消选中的则删除这一项
-        let index = -1
-        for (let i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
-            index = i
-            this.tagList.splice(index, 1)
-            return
-          }
-        }
-      }
-    },
-    removeTag (tag) {
-      // const addForm = this.addForm
-      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-    },
-    // fetchTempCheckListData () {
-    //   this.$service.getListDimension({ type: 5 }).then(data => {
-    //     if (data) {
-    //       if (data.behaviorShow) {
-    //         this.tempCheckList = data.behaviorShow.split(',')
-    //       } else {
-    //         this.tempCheckList = ['defineRemark']
-    //       }
-    //     } else {
-    //       this.tempCheckList = ['defineRemark']
-    //     }
-    //   })
-    // },
-    handleCheckListChange (val) {
-      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
-    },
-    handleTempCheckListChange (val) {
-      this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
+      sceneList: [{
+        id: '001',
+        name: '新激活用户下单场景'
+      }, {
+        id: '002',
+        name: '老用户下单场景'
+      }, {
+        id: '003',
+        name: '新激活用户下单场景'
+      }]
     }
   },
   created () {
-    // this.fetchCheckListData()
-    // this.fetchTempCheckListData()
+
+  },
+  methods: {
+
   }
 }
 </script>
 
-<style lang="stylus" scoped>
-.label-content
-    position relative
-.search-input
-    position fixed
-    top 118px
-    right 35px
-    width 350px
-    z-index 999
-    .icon-fixed
-      position absolute
-      top 8px
-      right 10px
-      transform rotate(-90deg)
-.label-content >>> .el-tabs__header
-    position fixed
-    width 100%
-    z-index 999
-.label-content >>> .el-tabs__nav-wrap
-    background #fff
-    z-index 999
-    margin-top: -20px;
-    padding-top: 20px;
+<style lang='stylus' scoped>
+.row-wrap {
+  display: grid;
+  grid-template-columns: 250px 250px auto;
+  grid-template-rows: 100%;
+  grid-gap: 20px;
+  height 100%
+
+}
+.box {
+  // width: 150px;
+  border: 1px solid #000;
+  // background: linear-gradient(to bottom, #34538b, #cd0000);
+  // background-origin: border-box;
+}
+.content {
+  height 100%
+  background-color: #fff;
+}
+
+.icon
+  font-size 20px
+  width 30px
+
+.title
+  font-size: 18px;
+  padding: 10px;
+  border-bottom: 1px dashed;
+  margin-bottom: 1px;
+.sceneList-wrap > div
+  background rgb(237, 239, 255)
+  margin-bottom 10px
+  // height: 36px;
+  // line-height: 36px;
+  font-size 14px
+  color #666666
+  padding 10px
+  display flex
+.item-content
+  flex 1
+.el-dropdown
+  display: inline-flex;
+  position: relative;
+  color: var(--el-text-color-regular);
+  font-size: var(--el-font-size-base);
+  line-height: 1;
+  vertical-align: top;
+
+// @supports (-webkit-mask: none) or (mask: none) {
+//   .box {
+//     // border: none;
+//     // background: linear-gradient(to bottom, #34538b, #cd0000) no-repeat;
+//     // -webkit-mask-image: linear-gradient(to right, #000 6px, transparent 6px), linear-gradient(to bottom, #000 6px, transparent 6px),  linear-gradient(to right, #000 6px, transparent 6px), linear-gradient(to bottom, #000 6px, transparent 6px);
+//     // -webkit-mask-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+//     // -webkit-mask-position: 0 0, 0 0, 0 100%, 100% 0;
+//     // -webkit-mask-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+//     // /* 合并写法 */
+//     // mask: linear-gradient(to right, #000 6px, transparent 6px) repeat-x,
+//     // linear-gradient(to bottom, #000 6px, transparent 6px) repeat-y,
+//     // linear-gradient(to right, #000 6px, transparent 6px) repeat-x 0 100%,
+//     // linear-gradient(to bottom, #000 6px, transparent 6px) repeat-y 100% 0;
+//     // mask-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+
+//     border: none;
+//     background: linear-gradient(to bottom, #34538b, #cd0000) no-repeat;
+//     -webkit-mask-image: linear-gradient(to right, #000 6px, transparent 6px), linear-gradient(to bottom, #000 6px, transparent 6px), linear-gradient(to right, #000 6px, transparent 6px), linear-gradient(to bottom, #000 6px, transparent 6px);
+//     -webkit-mask-repeat: repeat-x, repeat-y, repeat-x, repeat-y;
+//     -webkit-mask-position: 0 0, 0 0, 0 100%, 100% 0;
+//     -webkit-mask-size: 8px 2px, 2px 8px, 8px 2px, 2px 8px;
+//   }
+// }
+
 </style>
