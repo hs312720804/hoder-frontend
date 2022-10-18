@@ -243,7 +243,7 @@ export default {
       // 选中 tab 的 indedx, 构造 id
       const id = `tab-content-${index}`
       const target = document.getElementById(id)
-      const parent = document.querySelector('.el-main')
+      const parent = document.querySelector('.label-content-wrap').getElementsByClassName('el-tabs__content')[0]
     	parent.scrollTop = target.offsetTop // 滚动条滑到可视位置
     },
     handleCheckListChange (val) {
