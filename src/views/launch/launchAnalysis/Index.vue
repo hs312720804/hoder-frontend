@@ -288,6 +288,7 @@
       <span>{{ item.crowdId }}</span>
         <span>{{ item.crowdName }}</span>
         <span>{{ item.startDate }} 至 {{ item.endDate }}</span>
+        <br/>
         <span>{{ item.sourceNameStr }}</span>
 
         <!-- {{item.crowdId + '' + item.startDate + '-' + item.endDate + item.sourceNameStr"}} -->
@@ -1302,11 +1303,14 @@ export default {
   font-size: 12px;
   border-radius: 10px;
   padding: 10px;
-  margin: 0 6px 35px 6px;
+  // margin: 0 6px 35px 6px;
   display: inline-block;
   background-color: #f4f4f4;
   cursor pointer
   position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 35px;
   span {
     margin-right: 15px;
     display: inline-block;
@@ -1339,8 +1343,8 @@ export default {
 
 .delete-icon {
   position: absolute;
-  right: -3px;
-  top: 0px;
+  right: 6px;
+  top: 5px;
   color: #999;
   padding: 2px;
   border-radius: 50%;
@@ -1357,6 +1361,7 @@ export default {
   bottom: 40px;
   overflow-y: auto;
   overflow-x: hidden;
+  padding: 0 6px 6px 6px
 }
 .bottom-delete-all {
   position: absolute;
