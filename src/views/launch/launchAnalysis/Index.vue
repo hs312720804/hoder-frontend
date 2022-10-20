@@ -1339,8 +1339,8 @@ export default {
 
 .delete-icon {
   position: absolute;
-  right: -3px;
-  top: 0px;
+  right: 6px;
+  top: 5px;
   color: #999;
   padding: 2px;
   border-radius: 50%;
