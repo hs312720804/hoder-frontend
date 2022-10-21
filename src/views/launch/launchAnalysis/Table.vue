@@ -18,13 +18,48 @@
               {{ item.id }}
             </span>
 
-            <el-dropdown trigger="hover" class="el-dropdown">
+            <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
               <span class="el-dropdown-link">
                 . . .
               </span>
               <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item class="clearfix">
-                  重命名
+                <el-dropdown-item class="clearfix" :key="item.id">
+                  <!-- <el-popover
+                    placement="top"
+                    width="160"
+                    v-model="renameVisible"
+                    trigger="manual"
+                  > -->
+                    <!-- <div slot="reference">重命名</div> -->
+                    <!-- <template #reference>
+                      <span @click="renameVisible = true">重命名</span>
+                    </template>
+                    <p>这是一段内容这是一段内容确定删除吗？</p> -->
+                    <!-- <div style="text-align: right; margin: 0">
+                      <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
+                      <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
+                    </div> -->
+
+                  <!-- </el-popover> -->
+                  <el-popover placement="top" trigger="click" ref="pop">
+                    <div slot="reference">重命名</div>
+                    <div style="display: flex">
+                      <el-input
+                        type="text"
+                        placeholder="请输入内容"
+                        v-model="item.name"
+                        maxlength="20"
+                        show-word-limit
+                        clearable
+                        style="width: 250px"
+                      >
+                      </el-input>
+
+                      <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                      <el-button type="primary" size="mini" @click="handelRename()">确定</el-button>
+                    </div>
+                  </el-popover>
+
                 </el-dropdown-item>
                 <el-dropdown-item class="clearfix">
                   投放
@@ -37,13 +72,12 @@
                 </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-
           </div>
 
-          <div class="box-fotter">
-            <!-- <el-button>添加</el-button> -->
-            <el-button type="primary" icon="el-icon-plus">添加</el-button>
-          </div>
+        </div>
+        <div class="box-fotter">
+          <!-- <el-button>添加</el-button> -->
+          <el-button type="primary" icon="el-icon-plus" @click="addScene">添加</el-button>
         </div>
 
       </div>
@@ -66,13 +100,33 @@
               {{ item.name }}
               <!-- {{ item.id }} -->
             </span>
-            <el-dropdown trigger="hover" class="el-dropdown">
+            <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
               <span class="el-dropdown-link">
                 . . .
               </span>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item class="clearfix">
-                  重命名
+
+                  <el-popover placement="top" trigger="click" ref="pop">
+                    <div slot="reference">重命名</div>
+                    <div style="display: flex">
+                      <el-input
+
+                        type="text"
+                        placeholder="请输入内容"
+                        v-model="item.name"
+                        maxlength="20"
+                        show-word-limit
+                        clearable
+                        style="width: 250px"
+                      >
+                      </el-input>
+
+                      <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                      <el-button type="primary" size="mini" @click="handelRename()">确定</el-button>
+                    </div>
+                  </el-popover>
+
                 </el-dropdown-item>
                 <el-dropdown-item class="clearfix">
                   投放
@@ -87,10 +141,10 @@
             </el-dropdown>
 
           </div>
-          <div class="box-fotter">
-            <!-- <el-button>添加</el-button> -->
-            <el-button type="primary" icon="el-icon-plus">添加</el-button>
-          </div>
+        </div>
+        <div class="box-fotter">
+          <!-- <el-button>添加</el-button> -->
+          <el-button type="primary" icon="el-icon-plus" @click="addServicer">添加</el-button>
         </div>
       </div>
     </div>
@@ -110,10 +164,9 @@
               </div>
               <div style="text-align: center;">业务范围</div>
               <div class="detail-business-type">
-                <div class="box-fotter">
-                  <!-- <el-button>添加</el-button> -->
+                <!-- <div class="box-fotter">
                   <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
-                </div>
+                </div> -->
               </div>
             </div>
             <div class="detail-header-column">
@@ -194,6 +247,39 @@
         </div>
       </div>
     </div>
+    <el-dialog
+      title="添加场景"
+      :visible.sync="dialogVisible"
+      width="30%"
+      >
+      <el-form :model="formScene">
+        <el-form-item label="场景名：" label-width="70px">
+          <el-input v-model="formScene.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="confirmAddScene">确 定</el-button>
+      </span>
+    </el-dialog>
+    <el-dialog
+      title="添加接待员"
+      :visible.sync="dialogVisible2"
+      width="30%"
+      >
+      <el-form :model="formServicer">
+        <el-form-item label="接待员名：" label-width="90px">
+          <el-input v-model="formServicer.name" autocomplete="off"></el-input>
+        </el-form-item>
+      </el-form>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible2 = false">取 消</el-button>
+        <el-button type="primary" @click="dialogVisible2 = false">确 定</el-button>
+      </span>
+    </el-dialog>
+
  </div>
 </template>
 
@@ -202,19 +288,32 @@ export default {
   components: {},
   data () {
     return {
+      input3: '',
+      renameVisible: false,
+      formScene: {
+        name: ''
+      },
+      formServicer: {
+        name: ''
+      },
+      dialogVisible: false,
+      dialogVisible2: false,
       target: '请输入接待员的目标',
       priority: '',
       isEdit: false,
       activeIndex: 0,
       activeIndex2: 0,
       sceneList: [{
-        id: '001',
+        id: 4,
         name: '新激活用户下单场景'
       }, {
-        id: '002',
+        id: 1,
         name: '老用户下单场景'
       }, {
-        id: '003',
+        id: 2,
+        name: '新激活用户下单场景'
+      }, {
+        id: 4,
         name: '新激活用户下单场景'
       }],
       servicer: [{
@@ -233,6 +332,31 @@ export default {
 
   },
   methods: {
+    handelRename () {
+      this.handelClosePop()
+    },
+    handelClosePop () {
+      const pops = this.$refs.pop
+      pops.forEach(item => {
+        console.log('item-----', item)
+        item.doClose()
+      })
+    },
+    addScene () {
+      this.dialogVisible = true
+    },
+    confirmAddScene () {
+      console.log('this.formScene.length--------', this.sceneList.length)
+      const item = {
+        name: this.formScene.name,
+        id: this.sceneList.length + 1
+      }
+      this.sceneList.push(item)
+      this.dialogVisible = false
+    },
+    addServicer () {
+      this.dialogVisible2 = true
+    },
     editTarget () {
       this.isEdit = true
       this.$nextTick(() => {
@@ -462,4 +586,13 @@ export default {
   color: rgba(0,0,0,0.85);
   font-weight: 500;
 }
+>>>.el-input--suffix .el-input__inner {
+  padding-right: 77px;
+}
+.sceneList-wrap
+  position: absolute;
+  width: 100%;
+  bottom: 53px;
+  top: 83px;
+  overflow: auto;
 </style>
