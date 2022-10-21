@@ -110,16 +110,63 @@
               </div>
               <div style="text-align: center;">业务范围</div>
               <div class="detail-business-type">
-
+                <div class="box-fotter">
+                  <!-- <el-button>添加</el-button> -->
+                  <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
+                </div>
               </div>
             </div>
             <div class="detail-header-column">
               <div class="target">我的目标</div>
-              <div>请输入接待员的目标<i class="el-icon-edit"></i></div>
+              <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
+
+              <div class="flex-content">
+                <div class="target-img"></div>
+                <div v-if="!isEdit" @click="editTarget" class="target-text">
+                  <span>{{ target }}</span>
+                  <span class="text-over"></span>
+                </div>
+                <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                <el-input
+                  v-else
+                  ref="inputPriority"
+                  :autosize="{ minRows: 2, maxRows: 4}"
+                  type="textarea"
+                  placeholder="请输入内容"
+                  @blur="editStatuChange"
+                  v-model="target">
+                </el-input>
+              </div>
+
               <div class="kpi-wrap">
                 <div>绩效</div>
                 <div class="detail-kpi">
+                  <!-- <el-descriptions title="" column="2">
+                    <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
+                    <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
+                    <el-descriptions-item label="目标">苏州市</el-descriptions-item>
+                    <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
+                  </el-descriptions> -->
+                  <div class="detail-kpi-table">
+                    <div>
+                      <span class="kpi-label">当前服务满意率：</span>
+                      <span class="kpi-value">NAN</span>
+                    </div>
+                    <div>
+                      <span class="kpi-label">接待用户数：</span>
+                      <span class="kpi-value">NAN</span>
+                    </div>
+                    <div>
+                      <span class="kpi-label">目标：</span>
+                      <span class="kpi-value">NAN</span>
+                    </div>
+                    <div>
+                      <span class="kpi-label">满意用户数：</span>
+                      <span class="kpi-value">NAN</span>
+                    </div>
+                  </div>
 
+                  <div class="chart-empty"></div>
                 </div>
               </div>
             </div>
@@ -127,12 +174,22 @@
           </div>
 
           <div>
-            <div>服务对象选择</div>
-            <div class="set-start"></div>
+            <div class="title2">服务对象选择</div>
+            <div class="set-start">
+              <div class="box-fotter">
+                <!-- <el-button>添加</el-button> -->
+                <el-button type="text" icon="el-icon-plus">新建服务对象筛选</el-button>
+              </div>
+            </div>
           </div>
           <div>
-            <div>服务对象选择</div>
-            <div class="set-end"></div>
+            <div class="title2">服务终止条件</div>
+            <div class="set-end">
+              <div class="box-fotter">
+                <!-- <el-button>添加</el-button> -->
+                <el-button type="text" icon="el-icon-plus">新建服务终止条件</el-button>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -145,6 +202,9 @@ export default {
   components: {},
   data () {
     return {
+      target: '请输入接待员的目标',
+      priority: '',
+      isEdit: false,
       activeIndex: 0,
       activeIndex2: 0,
       sceneList: [{
@@ -173,7 +233,16 @@ export default {
 
   },
   methods: {
-
+    editTarget () {
+      this.isEdit = true
+      this.$nextTick(() => {
+        this.$refs.inputPriority.focus()
+      })
+    },
+    editStatuChange () {
+      this.isEdit = false
+      // this.className = 'text'
+    }
   }
 }
 </script>
@@ -231,7 +300,7 @@ export default {
 
 .lists-item
   // background rgb(237, 239, 255)
-  margin-bottom 10px
+  // margin-bottom 10px
   // height: 36px;
   // line-height: 36px;
   font-size 14px
@@ -280,6 +349,9 @@ export default {
 }
 .detail-name {
   font-size 24px
+  color: #676a6c;
+  font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
+  font-weight: 100;
 }
 .detail-header {
   display: grid
@@ -297,25 +369,37 @@ export default {
   font-size 18px
 }
 .detail-business-type {
-  height: 100px;
+  height: 166px;
   width: 100%;
-  background: #fafafa;
+  background: #f4f4f5;
+  margin-top: 15px;
+  position: relative
 }
 .kpi-wrap {
   display grid;
   grid-template-columns: 45px auto
-  grid-column-gap: 20px
 }
 .detail-kpi {
   height: 200px;
   width: 100%;
   // border 1px solid #ccc
-  background: #fafafa;
+  background: #f4f4f5;
+  font-size 14px
+  padding: 15px;
+  box-sizing: border-box;
+}
+.detail-kpi-table {
+  width: 100%;
+  display grid
+  grid-template-columns: 50% 50%
+  grid-template-rows: 35px 35px
+  grid-column-gap: 20px
 }
 .set-start, .set-end {
   height 200px
   // border 1px solid #ccc
-  background: #fafafa;
+  background: #f4f4f5;
+  position: relative
 
 }
 .box-fotter {
@@ -343,5 +427,39 @@ export default {
 
 .search {
   padding 0 10px 10px 10px
+}
+
+.flex-content
+  display flex
+  margin 10px 0
+  align-items: center;
+.text-over
+  display inline-block
+  background url(../../../assets/pencil.png) no-repeat right center
+  width 16px
+  height 16px
+  margin-left 10px
+.target-img
+  background: url(/img/target.52cab19f.png) right center;
+  width: 60px;
+  height: 60px;
+  background-size: 100%;
+  flex: 0 0 auto;
+  margin-right: 15px;
+.target-text
+  font-size: 14px
+.chart-empty {
+  background: url(../../../assets/img/chart.png) center center no-repeat;
+  width: 100%;
+  height: 95px;
+  background-size: contain;
+  text-align: center;
+}
+.title2 {
+  font-size: 16px;
+  padding: 16px 0 10px 0;
+  text-align: center;
+  color: rgba(0,0,0,0.85);
+  font-weight: 500;
 }
 </style>

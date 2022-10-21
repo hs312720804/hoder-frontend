@@ -1369,7 +1369,7 @@ ul > li
       background: antiquewhite;
     }
 </style>
-<style lang="stylus">
+<!-- <style lang="stylus">
 .el-textarea__inner
   min-height 400px !important
-</style>
+</style> -->
