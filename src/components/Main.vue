@@ -213,7 +213,8 @@ export default {
         '/specialTag/index': 'specialTag',
         '/launchHelper/status': 'launchStatus',
         '/launchHelper/resendCommand': 'resendCommand',
-        '/hitQuery': 'hitQuery'
+        '/hitQuery': 'hitQuery',
+        '/storyLine': 'storyLine'
       },
       activeName: 'first',
       updateMessage: [],

@@ -319,7 +319,7 @@
 </template>
 
 <script>
-const cityOptions = ['影视VIP', '奇异果VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '埋堆堆VIP', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '1905', '欢喜', '广电直播', '亲子VIP', '音乐K歌会员', '电竞VIP']
+const cityOptions = ['影视VIP', '酷奇异果VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '埋堆堆VIP', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '1905', '欢喜', '广电直播', '亲子VIP', '音乐K歌会员', '电竞VIP', '家庭影院VIP']
 export default {
   components: {},
   data () {
