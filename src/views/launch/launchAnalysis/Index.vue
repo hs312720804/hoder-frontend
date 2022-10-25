@@ -461,19 +461,19 @@ export default {
     },
     //  投后分析导出
     handleGxportRightsInterests () {
-      // const params = {
-    //   //   crowdId: this.formInline.crowdId,
-    //   //   sourceNameList: this.formInline.sourceNameList.join(','),
-    //   //   startDate: this.formInline.timeRange[0],
-    //   //   endDate: this.formInline.timeRange[1]
-    //   // }
-
       const params = {
-        crowdId: 11731,
-        sourceNameList: '酷喵VIP',
-        startDate: '2022-08-01',
-        endDate: '2022-08-15'
+        crowdId: this.formInline.crowdId,
+        sourceNameList: this.formInline.sourceNameList.join(','),
+        startDate: this.formInline.timeRange[0],
+        endDate: this.formInline.timeRange[1]
       }
+
+      // const params = {
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15'
+      // }
       const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
       this.downloadUrl = '/api/exportRightsInterests?' + urlParams
       this.$nextTick(() => {
@@ -642,6 +642,7 @@ export default {
       }
       this.initChart()
     },
+    // 手动点击分析 或者 点击历史记录分析 执行函数
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
@@ -668,9 +669,6 @@ export default {
         this.crowdName = res.policyCrowds.crowdName
 
         this.fetchAllData(sourceName)
-
-        // 重新搜索历史记录，更新数据
-        this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
         this.loading = false
       })
@@ -720,10 +718,15 @@ export default {
           this.emptyTxt = '暂无数据'
           this.allChartData = {}
         }
+
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
         this.loading = false
         // 销毁定时器
         this.destoryTimeInterval()
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
       })
     },
     // 开启定时器
@@ -1359,6 +1362,8 @@ export default {
   position: absolute;
   top: 50px;
   bottom: 40px;
+  right: 0;
+  left: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 6px 6px 6px
