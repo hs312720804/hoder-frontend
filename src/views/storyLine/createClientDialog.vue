@@ -1,6 +1,64 @@
 <template>
   <div class="add">
 
+    <!-- 新增标签 -->
+    <el-form ref="addForm" label-width="100px">
+      <el-form-item label="策略维度" prop="conditionTagIds" >
+        <el-tabs tab-position="top" style="height: 200px;">
+          <!--<el-tab-pane-->
+                  <!--v-for="item in conditionTagIdsData"-->
+                  <!--:label="item.groupName"-->
+                  <!--:key="item.groupId"-->
+          <!--&gt;-->
+          <div class="strategy-search">
+          <el-input aria-placeholder="请输入标签关键字进行搜索"
+                    v-model="searchValue"
+                    class="strategy-search--input"
+                    @keyup.enter.native="getTags()"
+          >
+          </el-input>
+          <el-button @click="getTags()">查询</el-button>
+          <el-button @click="resetSearch">重置</el-button>
+          </div>
+            <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
+              <el-checkbox
+                v-for="item in conditionTagsFiltered"
+                :class="dataSourceColorClassEnum[item.tDataSource]"
+                :label="item.tagId"
+                :key="item.tagId"
+                @change="handleTagChange($event,item)"
+              >
+                {{item.tagName}}
+              </el-checkbox>
+            </el-checkbox-group>
+          <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+          <el-pagination
+                  small
+                  class="pagination"
+                  layout="prev,pager,next"
+                  :total="tagsListTotal"
+                  :page-size="initPageSize"
+                  :current-page="initCurrentPage"
+                  @current-change="handleTagCurrentChange"
+                  @prev-click="handleTagCurrentChange"
+                  @next-click="handleTagCurrentChange"
+          >
+          </el-pagination>
+          <!--</el-tab-pane>-->
+        </el-tabs>
+      </el-form-item>
+      <el-form-item label="已选12314标签" style="margin-top: 90px">
+        <el-tag v-for="item in tagList"
+          :key="item.tagId"
+          :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
+          closable
+          @close="removeTag(item)"
+        >
+          {{item.tagName}}
+        </el-tag>
+      </el-form-item>
+    </el-form>
+
     <!--新增编辑界面-->
     <el-row :gutter="40">
       <el-col :span="24">
@@ -22,7 +80,7 @@
           <!-- <br/> -->
           <!-- <br/> -->
           <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
-          <!-- rulesJson --- {{ rulesJson }} -->
+          rulesJson --- {{ rulesJson }}
 
           <div style="position: relative">
             <div v-if="tags.length > 0">
@@ -210,12 +268,12 @@ export default {
     }
   },
   watch: {
-    behaviorRulesJson: {
-      handler () {
-        this.hasMoveBehaviorTagRule()
-      },
-      deep: true
-    }
+    // behaviorRulesJson: {
+    //   handler () {
+    //     this.hasMoveBehaviorTagRule()
+    //   },
+    //   deep: true
+    // }
   },
   computed: {
     hasBehaviorTag () {
@@ -226,44 +284,44 @@ export default {
   methods: {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
-    hasMoveBehaviorTagRule () {
-      const crowd = this.form
-      const behaviorRules = this.behaviorRulesJson.rules
+    // hasMoveBehaviorTagRule () {
+    //   const crowd = this.form
+    //   const behaviorRules = this.behaviorRulesJson.rules
 
-      let hasBehaviorRule = false // 是否有行为标签
-      let hasMoveRule = false // 是否有动态周期
-      let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
-      const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
+    //   let hasBehaviorRule = false // 是否有行为标签
+    //   let hasMoveRule = false // 是否有动态周期
+    //   let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
+    //   const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
 
-      if (behaviorRules.length > 0) {
-        hasBehaviorRule = true
-        for (let x = 0; x < behaviorRules.length; x++) {
-          const rule = behaviorRules[x]
-          for (let y = 0; y < rule.rules.length; y++) {
-            const item = rule.rules[y]
-            if (item.bav && item.bav.rangeType === 'move') {
-              hasMoveRule = true
-              break
-            }
-            if (fullTagList.includes(item.tagCode)) {
-              hasFullTag = true
-              break
-            }
-          }
-        }
-      }
+    //   if (behaviorRules.length > 0) {
+    //     hasBehaviorRule = true
+    //     for (let x = 0; x < behaviorRules.length; x++) {
+    //       const rule = behaviorRules[x]
+    //       for (let y = 0; y < rule.rules.length; y++) {
+    //         const item = rule.rules[y]
+    //         if (item.bav && item.bav.rangeType === 'move') {
+    //           hasMoveRule = true
+    //           break
+    //         }
+    //         if (fullTagList.includes(item.tagCode)) {
+    //           hasFullTag = true
+    //           break
+    //         }
+    //       }
+    //     }
+    //   }
 
-      if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
-        // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
-        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
-          crowd.autoVersion = true
-        }
-        crowd.isShowAutoVersion = true
-      } else {
-        crowd.isShowAutoVersion = false
-        crowd.autoVersion = false
-      }
-    },
+    //   if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
+    //     // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
+    //     if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+    //       crowd.autoVersion = true
+    //     }
+    //     crowd.isShowAutoVersion = true
+    //   } else {
+    //     crowd.isShowAutoVersion = false
+    //     crowd.autoVersion = false
+    //   }
+    // },
 
     // citySelectChange (val, childRule, cityList) {
     //   if (childRule.tagType === 'mix') {
@@ -278,205 +336,55 @@ export default {
     //   }
     // },
     // 根据省id获取市列表
-    areaSelectChange (val, tagCode, childItem) {
-      // this.provinceValueList[index] = val
-      // console.log(this.provinceValueList==='', this.provinceValueList)
-      if (childItem) childItem.value = ''
-      if (tagCode === 'mix_area') {
-        const params = {
-          id: val
-        }
-        return this.$service.specialTagChild(params).then(data => {
-          const cityData = data.slice().map(item => {
-            return {
-              attrValue: item.specialTagName,
-              attrName: item.specialTagName,
-              attrId: item.specialTagId,
-              rulesJson: item.rulesJson
-            }
-          })
-          this.$set(this.cityData, val, cityData)
-          // console.log('this.cityData===', this.cityData)
-        })
-      }
-    },
-    changeTimeWays (childItem) {
-      childItem.value = ''
-      if (childItem.isDynamicTime) {
-        childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
-      } else {
-        this.$set(childItem, 'isDynamicTime', 2)
-      }
-    },
-    handleRemoveRule (rule, childRule) {
-      const rulesJson = this.rulesJson
-      rule.rules.splice(rule.rules.indexOf(childRule), 1)
-      if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function (item) {
-          return item !== rule
-        })
-      }
-    },
-    handleRemoveSpecialRule (rule, childRule) {
-      const rulesJson = this.dynamicPolicyJson
-      rule.rules.splice(rule.rules.indexOf(childRule), 1)
-      if (rule.rules.length === 0) {
-        rulesJson.rules = rulesJson.rules.filter(function (item) {
-          return item !== rule
-        })
-      }
-    },
+    // areaSelectChange (val, tagCode, childItem) {
+    //   // this.provinceValueList[index] = val
+    //   // console.log(this.provinceValueList==='', this.provinceValueList)
+    //   if (childItem) childItem.value = ''
+    //   if (tagCode === 'mix_area') {
+    //     const params = {
+    //       id: val
+    //     }
+    //     return this.$service.specialTagChild(params).then(data => {
+    //       const cityData = data.slice().map(item => {
+    //         return {
+    //           attrValue: item.specialTagName,
+    //           attrName: item.specialTagName,
+    //           attrId: item.specialTagId,
+    //           rulesJson: item.rulesJson
+    //         }
+    //       })
+    //       this.$set(this.cityData, val, cityData)
+    //       // console.log('this.cityData===', this.cityData)
+    //     })
+    //   }
+    // },
+    // changeTimeWays (childItem) {
+    //   childItem.value = ''
+    //   if (childItem.isDynamicTime) {
+    //     childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
+    //   } else {
+    //     this.$set(childItem, 'isDynamicTime', 2)
+    //   }
+    // },
+    // handleRemoveRule (rule, childRule) {
+    //   const rulesJson = this.rulesJson
+    //   rule.rules.splice(rule.rules.indexOf(childRule), 1)
+    //   if (rule.rules.length === 0) {
+    //     rulesJson.rules = rulesJson.rules.filter(function (item) {
+    //       return item !== rule
+    //     })
+    //   }
+    // },
+    // handleRemoveSpecialRule (rule, childRule) {
+    //   const rulesJson = this.dynamicPolicyJson
+    //   rule.rules.splice(rule.rules.indexOf(childRule), 1)
+    //   if (rule.rules.length === 0) {
+    //     rulesJson.rules = rulesJson.rules.filter(function (item) {
+    //       return item !== rule
+    //     })
+    //   }
+    // },
 
-    handleAddChildRule (rule, tag) {
-      if (rule.rules.length > 50) {
-        this.$message.warning('已达最大数量')
-        return
-      }
-      if (tag.tagType === 'string' || tag.tagType === 'collect') {
-        if (this.cache[tag.tagId] === undefined) {
-          this.fetchTagSuggestions(tag.tagId)
-        }
-      } else if (tag.tagType === 'mix') {
-        if (this.cache[tag.tagId] === undefined) {
-          this.fetchSpecialTagSuggestions(tag.tagId, tag.tagKey)
-        }
-      }
-      rule.rules.push({
-        operator:
-          tag.tagType === 'time' ? 'between' : this.getDefaultOperator('='),
-        tagCode: tag.tagKey,
-        tagName: tag.tagName,
-        dataSource: tag.dataSource,
-        value: '',
-        tagId: tag.tagId,
-        tagType: tag.tagType,
-        categoryName: tag.tagName,
-        categoryCode: tag.tagKey,
-        dynamicTimeType: tag.dynamicTimeType ? tag.dynamicTimeType : 1,
-        isDynamicTime: tag.isDynamicTime ? tag.isDynamicTime : 3,
-        thirdPartyCode: tag.thirdPartyCode,
-        thirdPartyField: tag.thirdPartyField,
-        dateAreaType: tag.dateAreaType ? tag.dateAreaType : 0,
-        startDay:
-          tag.tagType === 'time'
-            ? tag.startDay
-              ? tag.startDay
-              : ''
-            : undefined,
-        endDay:
-          tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
-        initValue: tag.initValue,
-        specialCondition: ''
-      })
-    },
-    handleAddSpecialRule (tag) {
-      if (this.dynamicPolicyJson.rules.length > 50) {
-        this.$message.warning('已达最大数量')
-        return
-      }
-      // if(tag.tagType==='string' || tag.tagType === 'collect'){
-      //     if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
-      // }
-      this.dynamicPolicyJson.rules.push({
-        condition: 'AND',
-        rules: [
-          {
-            operator: '=',
-            tagCode: tag.tagKey,
-            tagName: tag.tagName,
-            dataSource: tag.dataSource,
-            value: '',
-            tagId: tag.tagId,
-            tagType: tag.tagType,
-            categoryName: tag.tagName,
-            categoryCode: tag.tagKey,
-            dynamic: {
-              type: 1,
-              version: ''
-            },
-            initValue: tag.initValue
-          }
-        ]
-      })
-    },
-    handleAddSpecialChildRule (rule, tag) {
-      if (rule.rules.length > 50) {
-        this.$message.warning('已达最大数量')
-        return
-      }
-      // if(tag.tagType==='string' || tag.tagType === 'collect'){
-      //     if(this.cache[tag.tagId] === undefined) {this.fetchTagSuggestions(tag.tagId)}
-      // }
-      rule.rules.push({
-        operator: '=',
-        tagCode: tag.tagKey,
-        tagName: tag.tagName,
-        dataSource: tag.dataSource,
-        value: '',
-        tagId: tag.tagId,
-        tagType: tag.tagType,
-        categoryName: tag.tagName,
-        categoryCode: tag.tagKey,
-        dynamic: {
-          type: 1,
-          version: ''
-        },
-        initValue: tag.initValue
-      })
-    },
-    // 获取组合标签列表
-    fetchSpecialTagSuggestions (tagId, tagKey) {
-      const filter = {
-        tagId,
-        pageSize: 200,
-        isSelect: 1
-      }
-      this.$service.specialTagDetailList(filter).then(data => {
-        //     // this.itemList = data.list
-        //     // this.total = data.total
-        //     // console.log('data===>', data)
-        const list = data.list.map(item => {
-          return {
-            attrId: item.specialTagId,
-            attrName: item.specialTagName,
-            attrValue:
-              tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
-            // attrValue: item.specialTagName,
-            dataSource: 7,
-            rulesJson: item.rulesJson
-          }
-        })
-        this.$set(this.cache, tagId, {
-          select: false,
-          list
-        })
-        // console.log('123cache===', this.cache)
-      })
-    },
-
-    // 获取行为标签下拉选项
-    fetchActionTagSuggestions (tagCode) {
-      if (this.bavAttrList[tagCode]) return
-      this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
-        this.bavAttrList[tagCode] = res || {}
-        this.$set(this.bavAttrList, tagCode, res)
-        this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
-        console.log('this.bavAttrList==>', this.bavAttrList)
-        // })
-      })
-    },
-
-    fetchTagSuggestions (tagId) {
-      this.$service
-        // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
-        .getTagAttr({ tagId: tagId, pageNum: 1 })
-        .then(data => {
-          this.$set(this.cache, tagId, {
-            select: data.select,
-            list: data.pageInfo.list
-          })
-        })
-    },
     handleCheckboxOk () {
       this.currentChildItem.value = this.checkboxValue
       this.showMoreTags = false

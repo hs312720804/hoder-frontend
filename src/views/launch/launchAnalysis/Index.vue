@@ -642,6 +642,7 @@ export default {
       }
       this.initChart()
     },
+    // 手动点击分析 或者 点击历史记录分析 执行函数
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
@@ -668,9 +669,6 @@ export default {
         this.crowdName = res.policyCrowds.crowdName
 
         this.fetchAllData(sourceName)
-
-        // 重新搜索历史记录，更新数据
-        this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
         this.loading = false
       })
@@ -720,10 +718,15 @@ export default {
           this.emptyTxt = '暂无数据'
           this.allChartData = {}
         }
+
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
       }).catch(e => {
         this.loading = false
         // 销毁定时器
         this.destoryTimeInterval()
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
       })
     },
     // 开启定时器
@@ -1359,6 +1362,8 @@ export default {
   position: absolute;
   top: 50px;
   bottom: 40px;
+  right: 0;
+  left: 0;
   overflow-y: auto;
   overflow-x: hidden;
   padding: 0 6px 6px 6px

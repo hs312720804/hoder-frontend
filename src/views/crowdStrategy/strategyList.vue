@@ -287,7 +287,7 @@
           <!--</el-tabs>-->
         <!--</el-form-item>-->
         <div class="tags-tips">
-          <!-- 1111注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+          <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
           <span class="checkbox--red">红色为大数据标签</span>,
           <span class="checkbox--green">绿色为自定义/本地标签</span>,
           <span class="checkbox--blue">蓝色为账号标签</span>,
@@ -341,7 +341,7 @@
             <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
-        <el-form-item label="已选标签" style="margin-top: 90px">
+        <el-form-item label="已选12314标签" style="margin-top: 90px">
           <!--<span v-for="tag in addForm.conditionTagIds" :key="tag">-->
             <!--<el-tag v-for="item in conditionTagIdsData"-->
                     <!--v-if="item.tagId === tag"-->

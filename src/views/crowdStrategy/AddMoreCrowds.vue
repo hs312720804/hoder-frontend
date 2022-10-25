@@ -7,6 +7,7 @@
       :crowdId:: {{ crowdId }}<br/>
     </div> -->
     <!-- {{form.rulesJson}} -->
+    {{ form }}
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"
@@ -126,12 +127,6 @@ export default {
       return this.recordId
     },
     validateForm (rulesJson) {
-      // if (rulesJson.length === 0) {
-      //   this.$message.error(
-      //     '请至少填写一个标签块内容或者一个动态因子完整的内容！'
-      //   )
-      //   return
-      // }
       this.timeTagKongList = []
       let flag = true
       for (let index = 0; index < rulesJson.length; index++) {
@@ -168,7 +163,7 @@ export default {
 
         for (i = 0; i < ruleLength; i++) {
           for (j = 0; j < rules[i].rules.length; j++) {
-            let rulesItem = rules[i].rules[j]
+            const rulesItem = rules[i].rules[j]
 
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
@@ -240,7 +235,7 @@ export default {
 
         for (x = 0; x < behaviorRulesLength; x++) {
           for (y = 0; y < behaviorRules[x].rules.length; y++) {
-            let rulesItem = behaviorRules[x].rules[y]
+            const rulesItem = behaviorRules[x].rules[y]
 
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
@@ -289,7 +284,7 @@ export default {
         let m = 0
         for (n = 0; n < dynamicPolicyJsonRulesLength; n++) {
           for (m = 0; m < dynamicPolicyJsonRules[n].rules.length; m++) {
-            let rulesItem = dynamicPolicyJsonRules[n].rules[m]
+            const rulesItem = dynamicPolicyJsonRules[n].rules[m]
             if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
               this.$message.error(
                 '请正确填写第' +
@@ -315,9 +310,9 @@ export default {
     putBehaviorRulesJsonTableIndex (val) {
       if (val) {
         let tableIndex = 0
-        let ruleList = val.rules
+        const ruleList = val.rules
         ruleList.forEach(rule => {
-          let ruleGroup = rule.rules
+          const ruleGroup = rule.rules
           ruleGroup.forEach(item => {
             tableIndex = tableIndex + 1
             item.table = item.table.split('$')[0] + '$' + tableIndex
@@ -340,13 +335,13 @@ export default {
     },
 
     handleSave (mode) {
-      let form = JSON.parse(JSON.stringify(this.form))
+      const form = JSON.parse(JSON.stringify(this.form))
       // if (form.purpose === undefined || form.purpose === '') {
       //     this.$message.error('人群用途不能为空')
       //     return
       // }
 
-      this.$refs['form'].validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
           if (!this.validateForm(form.rulesJson)) {
             return
@@ -373,10 +368,10 @@ export default {
             // })
 
             // value值 ref
-            let rangeFormList = []
-            let bavFormList = []
+            const rangeFormList = []
+            const bavFormList = []
             let typeRefList = []
-            let typeFormList = []
+            const typeFormList = []
 
             // const typeRefList = this.$refs.CrowdAdd && this.$refs.CrowdAdd.$refs.multipleActionTagSelect && this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs ? this.$refs.CrowdAdd.$refs.multipleActionTagSelect[0].$refs.bav : []
             allBavRule.forEach(item => {
@@ -427,7 +422,7 @@ export default {
               title: '配置提醒',
               message: h('p', null, [
                 h('span', null, `${tip}`),
-                h('span', null, `标签的属性为空，请确认是否继续?`),
+                h('span', null, '标签的属性为空，请确认是否继续?'),
                 h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
               ]),
               showCancelButton: true,
@@ -508,10 +503,10 @@ export default {
     // },
     ReorganizationData (data) { // 将数组变成层级关系
       let rData = []
-      let len = data.length
+      const len = data.length
 
       if (len > 1) {
-        for (var i = len - 1; i > -1; i--) {
+        for (let i = len - 1; i > -1; i--) {
           rData = data[i]
           if (data[i - 1]) {
             rData = this.checkIfChildrenExist(data[i - 1], rData)
@@ -555,9 +550,9 @@ export default {
               rulesItem.value = rulesItem.value.join(',')
             }
 
-            if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === "fixed") { // 固定周期 日期多选
+            if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === 'fixed') { // 固定周期 日期多选
               const newValue = rulesItem.bav.rang.newValue
-              let data = []
+              const data = []
               newValue.forEach(item => {
                 if (item.value && item.value.length > 0) data.push({ value: item.value })
               })
@@ -568,7 +563,7 @@ export default {
             }
 
             if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
-              let rData = []
+              const rData = []
               const showBehaviorValue = rulesItem.bav.showBehaviorValue
               const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
 
