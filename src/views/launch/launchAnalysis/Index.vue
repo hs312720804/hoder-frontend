@@ -461,19 +461,19 @@ export default {
     },
     //  投后分析导出
     handleGxportRightsInterests () {
-      // const params = {
-    //   //   crowdId: this.formInline.crowdId,
-    //   //   sourceNameList: this.formInline.sourceNameList.join(','),
-    //   //   startDate: this.formInline.timeRange[0],
-    //   //   endDate: this.formInline.timeRange[1]
-    //   // }
-
       const params = {
-        crowdId: 11731,
-        sourceNameList: '酷喵VIP',
-        startDate: '2022-08-01',
-        endDate: '2022-08-15'
+        crowdId: this.formInline.crowdId,
+        sourceNameList: this.formInline.sourceNameList.join(','),
+        startDate: this.formInline.timeRange[0],
+        endDate: this.formInline.timeRange[1]
       }
+
+      // const params = {
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15'
+      // }
       const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
       this.downloadUrl = '/api/exportRightsInterests?' + urlParams
       this.$nextTick(() => {
