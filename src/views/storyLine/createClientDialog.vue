@@ -1,53 +1,45 @@
 <template>
-  <div class="add">
-
-    <!-- 新增标签 -->
-    <el-form ref="addForm" label-width="100px">
-      <el-form-item label="策略维度" prop="conditionTagIds" >
-        <el-tabs tab-position="top" style="height: 200px;">
-          <!--<el-tab-pane-->
-                  <!--v-for="item in conditionTagIdsData"-->
-                  <!--:label="item.groupName"-->
-                  <!--:key="item.groupId"-->
-          <!--&gt;-->
-          <div class="strategy-search">
+  <div>
+    <!-- {{tagList}} -->
+    <el-form :model="addForm" ref="addForm" label-width="100px">
+      <el-form-item label="添加标签：" prop="conditionTagIds" class="add-tag-form-item" :style="{ height: collapseAddTagsFlag ? '270px' : '0px' }">
+        <div class="strategy-search">
           <el-input aria-placeholder="请输入标签关键字进行搜索"
-                    v-model="searchValue"
-                    class="strategy-search--input"
-                    @keyup.enter.native="getTags()"
+            v-model="searchValue"
+            class="strategy-search--input"
+            @keyup.enter.native="getTags()"
           >
           </el-input>
-          <el-button @click="getTags()">查询</el-button>
+          <el-button type="primary" @click="getTags()">查询</el-button>
           <el-button @click="resetSearch">重置</el-button>
-          </div>
-            <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
-              <el-checkbox
-                v-for="item in conditionTagsFiltered"
-                :class="dataSourceColorClassEnum[item.tDataSource]"
-                :label="item.tagId"
-                :key="item.tagId"
-                @change="handleTagChange($event,item)"
-              >
-                {{item.tagName}}
-              </el-checkbox>
-            </el-checkbox-group>
-          <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
-          <el-pagination
-                  small
-                  class="pagination"
-                  layout="prev,pager,next"
-                  :total="tagsListTotal"
-                  :page-size="initPageSize"
-                  :current-page="initCurrentPage"
-                  @current-change="handleTagCurrentChange"
-                  @prev-click="handleTagCurrentChange"
-                  @next-click="handleTagCurrentChange"
+        </div>
+
+        <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
+          <el-checkbox
+            v-for="item in conditionTagsFiltered"
+            :class="dataSourceColorClassEnum[item.dataSource]"
+            :label="item.tagId"
+            :key="item.tagId"
+            @change="handleTagChange($event,item)"
           >
-          </el-pagination>
-          <!--</el-tab-pane>-->
-        </el-tabs>
+            {{item.tagName}}
+          </el-checkbox>
+        </el-checkbox-group>
+        <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+        <el-pagination
+          small
+          class="pagination"
+          layout="prev,pager,next"
+          :total="selectTagTagsListTotal"
+          :page-size="selectTagInitPageSize"
+          :current-page="selectTagInitCurrentPage"
+          @current-change="handleTagCurrentChange"
+          @prev-click="handleTagCurrentChange"
+          @next-click="handleTagCurrentChange"
+        >
+        </el-pagination>
       </el-form-item>
-      <el-form-item label="已选12314标签" style="margin-top: 90px">
+      <el-form-item label="已选标签：" class="selected-tags">
         <el-tag v-for="item in tagList"
           :key="item.tagId"
           :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
@@ -56,127 +48,112 @@
         >
           {{item.tagName}}
         </el-tag>
+
+        <!-- <i
+          class="add-tag-icon el-icon-circle-plus-outline el-icon-circle-plus"
+          @click="collapseAddTags()">
+        </i> -->
+        <el-button
+          class="add-tag-icon"
+          icon="el-icon-search"
+          @click="collapseAddTags()">
+          添加标签
+      </el-button>
+
       </el-form-item>
     </el-form>
+    <div class="add">
 
-    <!--新增编辑界面-->
-    <el-row :gutter="40">
-      <el-col :span="24">
-        <el-form
-          :model="form"
-          :rules="formRules"
-          ref="form"
-          label-width="130px"
-        >
-          <!-- <el-form-item label="人群名称" prop="name">
-            <el-input
-              size="small"
-              v-model="form.name"
-              placeholder="投放名称"
-              :maxlength="50"
-            ></el-input>
-          </el-form-item> -->
-          <!-- tags---{{tags}} -->
-          <!-- <br/> -->
-          <!-- <br/> -->
-          <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
-          rulesJson --- {{ rulesJson }}
+      <!-- 新增标签 -->
 
-          <div style="position: relative">
-            <div v-if="tags.length > 0">
-              <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+      <!-- {{ tagList }}
+
+      <br/>
+      {{checkedList}} -->
+
+      <!--新增编辑界面-->
+      <el-row :gutter="40">
+        <el-col :span="24">
+          <el-form
+            :model="form"
+            :rules="formRules"
+            ref="form"
+            label-width="130px"
+          >
+            <!-- <el-form-item label="人群名称" prop="name">
+              <el-input
+                size="small"
+                v-model="form.name"
+                placeholder="投放名称"
+                :maxlength="50"
+              ></el-input>
+            </el-form-item> -->
+            <!-- tags---{{tags}} -->
+            <!-- <br/> -->
+            <!-- <br/> -->
+            <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
+            <!-- rulesJson --- {{ rulesJson }} -->
+
+            <div style="position: relative">
+              <div v-if="tags.length > 0">
+                <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+                  <MultipleSelect
+                    :tags="tags"
+                    :rulesJson="rulesJson"
+                  ></MultipleSelect>
+                </el-form-item>
+              </div>
+
+              <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
+                <el-button
+                  type="danger"
+                  @click="handleConditionChange()"
+                  round
+                  :key="'condition'"
+                >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
+              </div>
+
+              <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
+                <!-- {{behaviorRulesJson}} -->
+                <MultipleActionTagSelect
+                  ref="multipleActionTagSelect"
+                  :actionTags="actionTags"
+                  :behaviorRulesJson="behaviorRulesJson"
+                ></MultipleActionTagSelect>
+                  <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
+              </el-form-item>
+
+              <!-- <el-form-item label="动态因子" v-if="specialTags.length > 0">
                 <MultipleSelect
-                  :tags="tags"
-                  :rulesJson="rulesJson"
+                  :specialTags="specialTags"
+                  :dynamicPolicyJson="dynamicPolicyJson"
                 ></MultipleSelect>
+              </el-form-item> -->
+              <el-form-item label="流转条件" v-if="type === 'entry'">
+                <SetCirculationConditionsCom
+                  ref="setCirculationRef"
+                  :storyLineCirculationRulesJson.sync="flowCondition">
+                </SetCirculationConditionsCom>
               </el-form-item>
             </div>
 
-            <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
-              <el-button
-                type="danger"
-                @click="handleConditionChange()"
-                round
-                :key="'condition'"
-              >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
-            </div>
+          </el-form>
+        </el-col>
+      </el-row>
 
-            <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
-              <!-- {{behaviorRulesJson}} -->
-              <MultipleActionTagSelect
-                ref="multipleActionTagSelect"
-                :actionTags="actionTags"
-                :behaviorRulesJson="behaviorRulesJson"
-              ></MultipleActionTagSelect>
-                <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
-            </el-form-item>
-
-            <el-form-item label="动态因子" v-if="specialTags.length > 0">
-              <MultipleSelect
-                :specialTags="specialTags"
-                :dynamicPolicyJson="dynamicPolicyJson"
-              ></MultipleSelect>
-            </el-form-item>
-          </div>
-
-        </el-form>
-      </el-col>
-    </el-row>
-
-    <el-dialog
-      title="显示更多标签"
-      :append-to-body="true"
-      :visible.sync="showMoreTags"
-      class="showMoreTags"
-    >
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="标签名称">
-          <el-input
-            v-model="formInline.attrName"
-            placeholder="标签名称"
-            @keyup.enter.native="onSubmit"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
-        </el-form-item>
-      </el-form>
-      <div>
-        <el-radio-group v-model="checkboxValue">
-          <el-radio
-            v-for="(tag, index) in tagList"
-            :label="tag.attrValue"
-            :key="tag.attrId + index"
-            >{{ tag.attrName }}</el-radio
-          >
-        </el-radio-group>
-      </div>
-      <el-pagination
-        small
-        class="pagination"
-        layout="prev,pager,next"
-        :total="tagsListTotal"
-        :page-size="initPageSize"
-        :current-page="initCurrentPage"
-        @current-change="handleCurrentChange"
-        @prev-click="handleCurrentChange"
-        @next-click="handleCurrentChange"
-      >
-      </el-pagination>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showMoreTags = false">取 消</el-button>
-        <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
-      </span>
-    </el-dialog>
+    </div>
   </div>
 </template>
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
+import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
+
 export default {
   components: {
     MultipleSelect,
-    MultipleActionTagSelect
+    MultipleActionTagSelect,
+    SetCirculationConditionsCom
   },
   data () {
     const checkIntNumber = (rule, value, callback) => {
@@ -190,6 +167,29 @@ export default {
       }
     }
     return {
+      tagList: [],
+      addForm: {
+        conditionTagIds: [],
+        crowdTagCrowdIds: []
+        // 以上为表单提交的参数
+      },
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      dataSourceColorClassEnum: {
+        1: 'checkbox--green',
+        2: 'checkbox--red',
+        3: 'checkbox--blue',
+        5: 'checkbox--yellow',
+        6: 'checkbox--orange',
+        7: 'checkbox--orange2',
+        8: 'checkbox--cyan',
+        11: 'success',
+        12: 'gray'
+      },
+      checkedList: [],
+      searchValue: '',
+      selectTagInitPageSize: 500,
+      selectTagTagsListTotal: 0,
+      selectTagInitCurrentPage: 1,
       // attrs: [[${attrs}]] || {},
       versionNum: 2,
       cache: {},
@@ -199,14 +199,14 @@ export default {
       tagInitSize: 200,
       tagCurrentPage: 1,
       tagSelectMoreShow: false,
-      showMoreTags: false,
-      tagList: [],
+      // showMoreTags: false,
+      // tagList: [],
       checkboxValue: '',
       currentChildItem: '',
       // 选择更多标签分页
-      initPageSize: 200,
-      initCurrentPage: 1,
-      tagsListTotal: 0,
+      // initPageSize: 200,
+      // initCurrentPage: 1,
+      // tagsListTotal: 0,
       // tag 查询模块
       formInline: {
         attrName: ''
@@ -215,6 +215,7 @@ export default {
       rulesJson: { condition: 'OR', rules: [] },
       behaviorRulesJson: { link: 'AND', condition: 'OR', rules: [] },
       dynamicPolicyJson: { link: 'AND', condition: 'OR', rules: [] },
+      flowCondition: { condition: 'OR', rules: [] },
       suggestions: {},
       suggestionsNew: [],
       priority: '',
@@ -264,7 +265,9 @@ export default {
       },
       cityData: [],
       provinceValueList: [],
-      timeTagKongList: []
+      timeTagKongList: [],
+      conditionTagsFiltered: [],
+      collapseAddTagsFlag: false
     }
   },
   watch: {
@@ -274,15 +277,100 @@ export default {
     //   },
     //   deep: true
     // }
+    tagList (val) {
+      this.checkedList = val.map(item => item.tagId)
+      this.sortTag()
+    }
   },
   computed: {
     hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
     }
   },
-  // props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople'],
+  props: {
+    editRow: {
+      type: Object,
+      default: () => {}
+    },
+    type: {
+      type: String,
+      default: 'entry'
+    }
+  },
   methods: {
+    collapseAddTags () {
+      this.collapseAddTagsFlag = !this.collapseAddTagsFlag
+    },
+    getTags () {
+      // this.addForm.conditionTagIds = [];
+      this.$service
+        .policyTagSeach({ pageNum: this.selectTagInitCurrentPage, pageSize: this.selectTagInitPageSize, s: this.searchValue })
+        .then(data => {
+          //  let checkboxData = []
+          // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})
+          //  this.conditionTagIdsData = checkboxData
+          //  this.conditionTagsFiltered = checkboxData
+          this.conditionTagsFiltered = data.pageInfo.list.map(item => {
+            return {
+              ...item,
+              dataSource: item.tDataSource
+            }
+          })
+          console.log('1111111111------------->', this.conditionTagsFiltered)
+          this.selectTagTagsListTotal = data.pageInfo.total
+        })
+    },
+    removeTag (tag) {
+      const addForm = this.addForm
+      if (tag.tDataSource === 12) {
+        // 人群标签 id 集合
+        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
+      } else {
+        // 其他的标签 id 集合
+        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      }
+      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      this.tagList.splice(this.tagList.indexOf(tag), 1)
+      // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
+    },
+    handleTagCurrentChange (pages) {
+      this.selectTagInitCurrentPage = pages
+      this.getTags()
+    },
+    handleTagChange (flag, item) {
+      console.log('flag--------->', flag)
+      let arr = []
+      // flag - true: 选中  false: 取消选中
+      if (flag) {
+        this.tagList.push(item)
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds.push(item.tagId)
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds.push(item.tagId)
+        }
+      } else {
+        arr = this.tagList
+        for (let i = arr.length - 1; i >= 0; i--) {
+          if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
+        }
 
+        if (item.tDataSource === 12) {
+          // 人群标签 id 集合
+          this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== item.tagId)
+        } else {
+          // 其他的标签 id 集合
+          this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
+        }
+      }
+    },
+    resetSearch () {
+      this.searchValue = ''
+      const currentTagsId = this.addForm.conditionTagIds
+      this.getTags()
+      this.addForm.conditionTagIds = currentTagsId
+    },
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
     // hasMoveBehaviorTagRule () {
     //   const crowd = this.form
@@ -385,55 +473,55 @@ export default {
     //   }
     // },
 
-    handleCheckboxOk () {
-      this.currentChildItem.value = this.checkboxValue
-      this.showMoreTags = false
-    },
-    handleSelectMore (child) {
-      this.checkboxValue = ''
-      this.formInline.attrName = ''
-      this.currentChildItem = child
-      // this.showMoreTags = true
-      this.$service
-        .getTagAttr({
-          tagId: child.tagId,
-          pageSize: this.initPageSize,
-          pageNum: this.initCurrentPage
-        })
-        .then(data => {
-          this.showMoreTags = true
-          this.tagList = data.pageInfo.list
-          this.tagsListTotal = data.pageInfo.total
-        })
-    },
-    handleCurrentChange (index) {
-      this.initCurrentPage = index
-      this.$service
-        .getTagAttr({
-          tagId: this.currentChildItem.tagId,
-          pageSize: this.initPageSize,
-          pageNum: index
-        })
-        .then(data => {
-          this.tagList = data.pageInfo.list
-        })
-    },
-    onSubmit () {
-      this.$service
-        .getTagAttr({
-          tagId: this.currentChildItem.tagId,
-          pageSize: this.initPageSize,
-          pageNum: 1,
-          attrName: this.formInline.attrName
-        })
-        .then(data => {
-          this.tagList = data.pageInfo.list
-          this.tagsListTotal = data.pageInfo.total
-        })
-    },
-    getDefaultOperator () {
-      return '='
-    },
+    // handleCheckboxOk () {
+    //   this.currentChildItem.value = this.checkboxValue
+    //   this.showMoreTags = false
+    // },
+    // handleSelectMore (child) {
+    //   this.checkboxValue = ''
+    //   this.formInline.attrName = ''
+    //   this.currentChildItem = child
+    //   // this.showMoreTags = true
+    //   this.$service
+    //     .getTagAttr({
+    //       tagId: child.tagId,
+    //       pageSize: this.initPageSize,
+    //       pageNum: this.initCurrentPage
+    //     })
+    //     .then(data => {
+    //       this.showMoreTags = true
+    //       this.tagList = data.pageInfo.list
+    //       this.tagsListTotal = data.pageInfo.total
+    //     })
+    // },
+    // handleCurrentChange (index) {
+    //   this.initCurrentPage = index
+    //   this.$service
+    //     .getTagAttr({
+    //       tagId: this.currentChildItem.tagId,
+    //       pageSize: this.initPageSize,
+    //       pageNum: index
+    //     })
+    //     .then(data => {
+    //       this.tagList = data.pageInfo.list
+    //     })
+    // },
+    // onSubmit () {
+    //   this.$service
+    //     .getTagAttr({
+    //       tagId: this.currentChildItem.tagId,
+    //       pageSize: this.initPageSize,
+    //       pageNum: 1,
+    //       attrName: this.formInline.attrName
+    //     })
+    //     .then(data => {
+    //       this.tagList = data.pageInfo.list
+    //       this.tagsListTotal = data.pageInfo.total
+    //     })
+    // },
+    // getDefaultOperator () {
+    //   return '='
+    // },
 
     // 给 behaviorRulesJson 中的table 添加序号
     putBehaviorRulesJsonTableIndex (val) {
@@ -674,196 +762,6 @@ export default {
       return rData
     },
 
-    handleSave () {
-      const _this = this
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          const form = JSON.parse(JSON.stringify(this.form))
-          const tagIds = []
-          const ruleJson = JSON.parse(JSON.stringify(this.rulesJson))
-          const behaviorRulesJson = this.putBehaviorRulesJsonTableIndex(JSON.parse(JSON.stringify(this.behaviorRulesJson)))
-          const dynamicPolicyJson = JSON.parse(
-            JSON.stringify(this.dynamicPolicyJson)
-          )
-          const rules = ruleJson.rules
-          const dynamicPolicyRules = dynamicPolicyJson.rules
-
-          const behaviorRules = behaviorRulesJson.rules
-
-          if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
-            if (this.currentLaunchLimitCount > form.limitLaunchCount) {
-              this.$message.error('投放数量不能小于上一次设置的限制数量')
-              return
-            }
-          }
-
-          if (!this.validateForm(rules, dynamicPolicyRules, behaviorRules)) {
-            return
-          }
-
-          // 添加tagIds
-          rules.forEach(function (item) {
-            item.rules.forEach(function (childItem) {
-              if (tagIds.indexOf(childItem.tagId) === -1) {
-                tagIds.push(childItem.tagId)
-              }
-              // delete childItem.startDay
-              // delete childItem.endDay
-            })
-          })
-          dynamicPolicyRules.forEach(function (item) {
-            item.rules.forEach(function (childItem) {
-              if (tagIds.indexOf(childItem.tagId) === -1) {
-                tagIds.push(childItem.tagId)
-              }
-            })
-          })
-          behaviorRules.forEach(function (item) {
-            item.rules.forEach(function (rulesItem) {
-              if (tagIds.indexOf(rulesItem.tagId) === -1) {
-                tagIds.push(rulesItem.tagId)
-              }
-              // 多选的值，保存的时候需要转成字符串 2222
-              // if (childItem.tagType === 'string') {
-              if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
-                rulesItem.value = Array.isArray(rulesItem.value) ? rulesItem.value.join(',') : rulesItem.value
-              }
-
-              // if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
-              if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === 'fixed') { // 固定周期 日期多选
-                const newValue = rulesItem.bav.rang.newValue
-                const data = []
-                newValue.forEach(item => {
-                  if (item.value && item.value.length > 0) data.push({ value: item.value })
-                })
-                rulesItem.bav.rang.newValue = data
-                rulesItem.bav.rang.value = newValue.map(item => {
-                  if (item.value) return item.value
-                }).flat()
-              }
-
-              if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
-                const rData = []
-                const showBehaviorValue = rulesItem.bav.showBehaviorValue
-                showBehaviorValue.forEach(item => {
-                  const itemCopy = JSON.parse(JSON.stringify(item))
-                  const childArray = _this.ReorganizationData(itemCopy.child)
-                  const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
-                  countValue.child = childArray
-                  itemCopy.child = [countValue]
-                  rData.push(itemCopy)
-                })
-                rulesItem.bav.behaviorValue = rData
-              }
-            })
-          })
-
-          const data = {
-            crowdName: form.name,
-            tagIds: tagIds.join(','),
-            rulesJson: JSON.stringify(ruleJson),
-            behaviorRulesJson: JSON.stringify(behaviorRulesJson),
-            dynamicPolicyJson: JSON.stringify(dynamicPolicyJson),
-            remark: form.remark,
-            policyId: form.policyId,
-            // crowdValidFrom: form.crowdExp[0],
-            // crowdValidTo: form.crowdExp[1],
-            autoVersion: form.autoVersion,
-            isShowAutoVersion: form.isShowAutoVersion,
-            limitLaunch: form.limitLaunch,
-            limitLaunchCount: form.limitLaunch
-              ? form.limitLaunchCount
-              : undefined,
-            versionNum: 2
-          }
-
-          // 获取到组件中的form  校验必填项
-          // 周期范围
-          const rangeFormList = []
-          const rangeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.range ? this.$refs.multipleActionTagSelect.$refs.range : []
-
-          rangeRefList.forEach(item => {
-            rangeFormList.push(item.$refs.rangeForm)
-          })
-
-          // value值
-          const typeFormList = []
-          const typeRefList = this.$refs.multipleActionTagSelect && this.$refs.multipleActionTagSelect.$refs.bav ? this.$refs.multipleActionTagSelect.$refs.bav : []
-
-          const bavFormList = []
-
-          // vue的特性,自动把v-for里面的ref展开成数组的形式，哪怕你的ref名字是唯一的
-          typeRefList && typeRefList.forEach(item => {
-            if (item.$refs.bav) bavFormList.push(item.$refs.bav)
-            if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
-              item.$refs.typeRef.forEach(obj => {
-                typeFormList.push(obj.$refs.typeForm)
-              })
-            } else if (item.$refs.typeRef && typeof (item.$refs.typeRef) === 'object') { // 【设备活跃】tab只有一个 type 组件，因此 typeRef 不为数组
-              typeFormList.push(item.$refs.typeRef.$refs.typeForm)
-            }
-          })
-
-          const allList = rangeFormList.concat(typeFormList, bavFormList)
-
-          // 选择了属性为空的 time 类型的标签, 需要提示
-          if (this.timeTagKongList.length > 0) {
-            const tip = this.timeTagKongList.join(',')
-            const h = this.$createElement
-            this.$msgbox({
-              title: '配置提醒',
-              message: h('p', null, [
-                h('span', null, `${tip}`),
-                h('span', null, '标签的属性为空，请确认是否继续?'),
-                h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
-              ]),
-              showCancelButton: true,
-              confirmButtonText: '继续',
-              cancelButtonText: '取消'
-            }).then(() => {
-              if (allList.length > 0) { // 有行为标签的
-                // 使用Promise.all去校验结果
-                Promise.all(allList.map(this.getFormPromise)).then(res => {
-                  const validateResult = res.every(item => !!item)
-                  if (validateResult) {
-                    // 新增或编辑
-                    this.fetchAddOrEdit(data)
-                  } else {
-                    this.$message.error('请输入必填项')
-                  }
-                }).catch(() => {
-                  this.$message.error('请至少设置一个行为标签规则')
-                })
-              } else { // 没有行为标签的
-                // 新增或编辑
-                this.fetchAddOrEdit(data)
-              }
-            })
-          } else {
-            if (allList.length > 0) { // 有行为标签的
-              // 使用Promise.all去校验结果
-              Promise.all(allList.map(this.getFormPromise)).then(res => {
-                const validateResult = res.every(item => !!item)
-                if (validateResult) {
-                  // 新增或编辑
-                  this.fetchAddOrEdit(data)
-                } else {
-                  this.$message.error('请输入必填项')
-                }
-              }).catch(() => {
-                this.$message.error('请至少设置一个行为标签规则')
-              })
-            } else { // 没有行为标签的
-              // 新增或编辑
-              this.fetchAddOrEdit(data)
-            }
-          }
-        } else {
-          return false
-        }
-      })
-    },
-
     // 请求新增或编辑接口
     fetchAddOrEdit (data) {
       const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
@@ -940,14 +838,227 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     handleConditionChange () {
-      this.behaviorRulesJson.link =
-        this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
+      this.behaviorRulesJson.link = this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
+    },
+    // 获取不同种类的标签
+    sortTag () {
+      const normalTags = []
+      const actionTags = []
+      const specialTags = []
+      const allTags = this.tagList
+
+      allTags.forEach(item => {
+        if (item.dataSource === 6) { // 效果指标
+          specialTags.push(item)
+        } else if (item.dataSource === 8) { // 行为标签
+          actionTags.push(item)
+        } else if (item.dataSource === 2) { // 大数据标签
+          actionTags.push(item)
+          normalTags.push(item)
+        } else {
+          normalTags.push(item)
+        }
+      })
+      // 如果当前人群已经当做人群标签被使用了，那么就不能使用人群标签，需要过滤掉
+      // if (this.crowd && this.crowd.isUsedAsTag === 1) {
+      //   normalTags = normalTags.filter(item => item.dataSource !== 12)
+      // }
+      this.tags = normalTags
+      this.actionTags = actionTags
+      this.specialTags = specialTags
+      console.log('this.tags------------->', this.tags)
+      console.log('this.actionTags------------->', this.actionTags)
+      console.log('this.specialTags------------->', this.specialTags)
+    },
+    // 回显编辑数据
+    reviewEditData () {
+      // 编辑
+      const policyData = this.editRow
+
+      this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+        this.tagList = data || []
+        this.sortTag()
+      })
+
+      const ruleJsonData = JSON.parse(policyData.rulesJson)
+      let cacheIds = []
+      const cacheActionIds = []
+      const cacheSpecialIds = []
+      ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
+        itemParent.rules.forEach(item => {
+          // 行为标签
+          if (item.dataSource === 8) {
+            cacheActionIds.push(item.tagCode)
+          } else if (item.tagType === 'string' || item.tagType === 'collect') {
+            cacheIds.push(item.tagId)
+          }
+          if (item.tagType === 'mix') {
+            cacheSpecialIds.push({
+              tagId: item.tagId,
+              tagCode: item.tagCode,
+              provinceValue: item.provinceValue
+            })
+          }
+          if (item.tagType === 'string' && item.value === 'nil') {
+            item.operator = 'null'
+          }
+          // 多选的值，回显的时候需要转成数组 2222
+          if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
+            item.value = item.value === '' ? [] : item.value.split(',')
+          }
+          if (item.version === 0) {
+            if (item.tagType === 'time' && item.isDynamicTime === 3) {
+              const value = item.value.split('-')
+              this.$set(item, 'startDay', value[0])
+              this.$set(item, 'endDay', value[1])
+            } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+              this.$set(item, 'dateAreaType', '')
+              this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
+            }
+          }
+        })
+        return itemParent
+      })
+
+      this.rulesJson = ruleJsonData
+
+      this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+
+      this.flowCondition = JSON.parse(policyData.flowCondition)
+
+      const defaultChild = [
+        { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }
+      ]
+
+      this.behaviorRulesJson.rules.forEach(ruleItem => {
+        ruleItem.rules.forEach(rulesEachItem => {
+          // 多选的值，回显的时候需要转成数组 2222
+          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+            rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+          }
+          // 手动构建数据 一期数据格式兼容二期
+          if (this.versionNum === 0) {
+            if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
+              const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
+              rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
+              rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
+              rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
+            } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
+              rulesEachItem.bav.behaviorValue.forEach(rule => {
+                const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
+                rule.child = JSON.parse(JSON.stringify(defaultChild))
+                rule.child[0].child = ruleCopy.child
+                rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
+              })
+            } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
+              const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
+              if (matchIndex > -1) {
+                rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
+                rulesEachItem.bav.behaviorValue.forEach(rule => {
+                  if (rule.value === '产品页') {
+                    rule.value = '影视收银台'
+                    rule.name = '影视收银台'
+                  }
+                })
+              }
+            }
+          }
+
+          if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
+            if (rulesEachItem.tagCode === 'BAV0011') {
+              rulesEachItem.isOldversion = true // 是否是旧版本
+            }
+          }
+        })
+      })
+
+      if (policyData.dynamicPolicyJson) {
+        this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)
+      }
+
+      cacheIds = this.distinct(cacheIds, [])
+      if (cacheIds.length !== 0) {
+        cacheIds.forEach(this.fetchTagSuggestions)
+      }
+
+      // 行为标签的 id 集合
+      if (cacheActionIds.length !== 0) {
+        cacheActionIds.forEach(tagCode => {
+          this.fetchActionTagSuggestions(tagCode)
+        })
+      }
+
+      // 组合标签的 id 集合
+      if (cacheSpecialIds.length !== 0) {
+        cacheSpecialIds.forEach(item => {
+          this.fetchSpecialTagSuggestions(item.tagId, item.tagCode)
+          this.areaSelectChange(item.provinceValue, item.tagCode) // 根据省id获取市列表
+        })
+      }
+    },
+    fetchTagSuggestions (tagId) {
+      this.$service
+        // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
+        .getTagAttr({ tagId: tagId, pageNum: 1 })
+        .then(data => {
+          this.$set(this.cache, tagId, {
+            select: data.select,
+            list: data.pageInfo.list
+          })
+        })
+    },
+    // 获取组合标签列表
+    fetchSpecialTagSuggestions (tagId, tagKey) {
+      const filter = {
+        tagId,
+        pageSize: 200,
+        isSelect: 1
+      }
+      this.$service.specialTagDetailList(filter).then(data => {
+        //     // this.itemList = data.list
+        //     // this.total = data.total
+        //     // console.log('data===>', data)
+        const list = data.list.map(item => {
+          return {
+            attrId: item.specialTagId,
+            attrName: item.specialTagName,
+            attrValue:
+              tagKey === 'mix_area' ? item.specialTagId : item.specialTagName,
+            // attrValue: item.specialTagName,
+            dataSource: 7,
+            rulesJson: item.rulesJson
+          }
+        })
+        this.$set(this.cache, tagId, {
+          select: false,
+          list
+        })
+        // console.log('123cache===', this.cache)
+      })
+    },
+    // 获取行为标签下拉选项
+    fetchActionTagSuggestions (tagCode) {
+      if (this.bavAttrList[tagCode]) return
+      this.$service.getBavTagList({ id: this.tagCodeValue[tagCode] }).then(res => {
+        this.bavAttrList[tagCode] = res || {}
+        this.$set(this.bavAttrList, tagCode, res)
+        this.bavAttrList = Object.assign({}, this.bavAttrList, this.bavAttrList)
+        console.log('this.bavAttrList==>', this.bavAttrList)
+        // })
+      })
     }
   },
   created () {
-    this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]
-    this.actionTags = [{ thirdPartyApiId: '', tagId: '4946', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0008', tagName: '起播行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [{ thirdPartyApiId: 0, tagId: 4946, groupId: 8966, tagName: '起播行为', attrType: 'collect', attrId: 4041, attrStatus: 1, tagType: 'collect', mapThirdPartyApiField: '0', attrValue: 4041, tagKey: 'BAV0008', dataSource: 8, initValue: '0', attrName: '1', status: 1 }, { thirdPartyApiId: 0, tagId: 4946, groupId: 8966, tagName: '起播行为', attrType: 'collect', attrId: 5819, attrStatus: 1, tagType: 'collect', mapThirdPartyApiField: '0', attrValue: 5819, tagKey: 'BAV0008', dataSource: 8, initValue: '0', attrName: '1', status: 1 }] }, { thirdPartyApiId: '', tagId: '4939', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0001', tagName: '会员状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4940', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0002', tagName: '应用活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4941', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0003', tagName: '购买行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4942', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0004', tagName: '模块活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4943', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0005', tagName: '页面活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4944', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0006', tagName: '功能点击', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4945', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0007', tagName: '设备活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7341', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0009', tagName: '应用状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7342', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0010', tagName: '用户活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7377', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0011', tagName: '起播活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7380', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0012', tagName: '综合起播行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10067', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0013', tagName: '续费包签约状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10068', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0014', tagName: '连续包签约-续费-解约次数', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10069', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0015', tagName: '下单未支付', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }]
-    this.specialTags = [{ thirdPartyApiId: '', tagId: '4466', tagType: 'number', thirdPartyCode: '', inputType: null, tagKey: 'exposeDays', tagName: '产品包曝光天数', dataSource: 6, initValue: '0.00', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4467', tagType: 'number', thirdPartyCode: '', inputType: null, tagKey: 'exposeTimes', tagName: '产品包曝光次数', dataSource: 6, initValue: '0', thirdPartyField: '', child: [] }]
+    this.getTags() // 获取所有的标签列表
+
+    // 编辑 回显
+    if (this.editRow != null) {
+      this.reviewEditData()
+    }
+
+    // this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]
+    // this.actionTags = [{ thirdPartyApiId: '', tagId: '4946', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0008', tagName: '起播行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [{ thirdPartyApiId: 0, tagId: 4946, groupId: 8966, tagName: '起播行为', attrType: 'collect', attrId: 4041, attrStatus: 1, tagType: 'collect', mapThirdPartyApiField: '0', attrValue: 4041, tagKey: 'BAV0008', dataSource: 8, initValue: '0', attrName: '1', status: 1 }, { thirdPartyApiId: 0, tagId: 4946, groupId: 8966, tagName: '起播行为', attrType: 'collect', attrId: 5819, attrStatus: 1, tagType: 'collect', mapThirdPartyApiField: '0', attrValue: 5819, tagKey: 'BAV0008', dataSource: 8, initValue: '0', attrName: '1', status: 1 }] }, { thirdPartyApiId: '', tagId: '4939', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0001', tagName: '会员状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4940', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0002', tagName: '应用活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4941', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0003', tagName: '购买行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4942', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0004', tagName: '模块活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4943', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0005', tagName: '页面活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4944', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0006', tagName: '功能点击', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4945', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0007', tagName: '设备活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7341', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0009', tagName: '应用状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7342', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0010', tagName: '用户活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7377', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0011', tagName: '起播活跃', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '7380', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0012', tagName: '综合起播行为', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10067', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0013', tagName: '续费包签约状态', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10068', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0014', tagName: '连续包签约-续费-解约次数', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '10069', tagType: 'collect', thirdPartyCode: '', inputType: null, tagKey: 'BAV0015', tagName: '下单未支付', dataSource: 8, initValue: '0', thirdPartyField: '', child: [] }]
+    // this.specialTags = [{ thirdPartyApiId: '', tagId: '4466', tagType: 'number', thirdPartyCode: '', inputType: null, tagKey: 'exposeDays', tagName: '产品包曝光天数', dataSource: 6, initValue: '0.00', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '4467', tagType: 'number', thirdPartyCode: '', inputType: null, tagKey: 'exposeTimes', tagName: '产品包曝光次数', dataSource: 6, initValue: '0', thirdPartyField: '', child: [] }]
   }
 
 }
@@ -957,6 +1068,7 @@ export default {
   border: 1px solid #ebeef5;
   padding: 20px;
   border-radius: 4px;
+  background: #ebebeb47;
 }
 
 .title {
@@ -1045,4 +1157,65 @@ i {
   align-items: center;
   justify-content: center;
 }
+.checkList
+  height: 200px
+  overflow: auto
+  margin-top: 10px
+.strategy-search
+  display flex
+  justify-self center
+.strategy-search--input
+  width 50%
+  margin-right 20px
+.add-tag-icon
+  // font-size 28px
+  vertical-align: middle
+  margin-left: 20px;
+.add-tag-icon:hover
+  color: #409EFF
+.add-tag-form-item
+  overflow hidden
+  transition all 0.5s
+.el-icon-arrow-up
+  font-size: 26px;
+  float right
+.selected-tags {
+  >>> .el-tag--warningOrange {
+    color: #512DA8;
+    background-color: rgba(119, 81, 200, 0.4);
+    border-color: rgba(81, 45, 168, 0.45);
+
+    .el-tag__close {
+      color: #512DA8;
+    }
+  }
+
+  >>> .el-tag--warningOrange2 {
+    color: #795548;
+    background-color: rgba(167, 130, 117, 0.5);
+    border-color: #7955488c;
+
+    .el-tag__close {
+      color: #512DA8;
+    }
+  }
+
+  >>> .el-tag--warningCyan {
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  }
+  >>> .el-tag--gray {
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close {
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+    }
+  }
+}
+
 </style>

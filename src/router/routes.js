@@ -815,7 +815,7 @@ const children = [
     path: 'storyLine',
     component: StoryLine,
     meta: {
-      title: '动态实验报告',
+      title: '故事运营',
       tagId: 'storyLine',
       hideInMenu: true,
       isCache: false

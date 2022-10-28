@@ -30,6 +30,7 @@ import * as userTagsSearch from './launch/useTagsSearch'
 import * as listDimension from './listDimension'
 import * as tempCrowd from './crowdStrategy/tempCrowd'
 import * as localCrowd from './crowdStrategy/localCrowd'
+import * as storyLine from './crowdStrategy/storyLine'
 const service = {
   state: {},
   fetch,
@@ -62,7 +63,8 @@ const service = {
   ...userTagsSearch,
   ...listDimension,
   ...tempCrowd,
-  ...localCrowd
+  ...localCrowd,
+  ...storyLine
 }
 Vue.prototype.$service = utils.wrapService(service)
 

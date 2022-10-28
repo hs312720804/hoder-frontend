@@ -559,7 +559,7 @@
             <i class="el-icon-thumb" style="font-size: 28px;"></i>
             <span style="font-size: 12px;">点击标签来编辑人群条件</span>
           </div>
-          
+
         </div>
       </div>
     </div>
@@ -631,21 +631,21 @@ export default {
       tipVisible: false,
       bavAttrList: {},
       tagCodeValue: {
-        'BAV0001': 1,
-        'BAV0002': 2,
-        'BAV0003': 3,
-        'BAV0004': 4,
-        'BAV0005': 5,
-        'BAV0006': 6,
-        'BAV0007': 7,
-        'BAV0008': 8,
-        'BAV0009': 9,
-        'BAV0010': 10,
-        'BAV0011': 11,
-        'BAV0012': 12,
-        'BAV0013': 13,
-        'BAV0014': 14,
-        'BAV0015': 15,
+        BAV0001: 1,
+        BAV0002: 2,
+        BAV0003: 3,
+        BAV0004: 4,
+        BAV0005: 5,
+        BAV0006: 6,
+        BAV0007: 7,
+        BAV0008: 8,
+        BAV0009: 9,
+        BAV0010: 10,
+        BAV0011: 11,
+        BAV0012: 12,
+        BAV0013: 13,
+        BAV0014: 14,
+        BAV0015: 15
       },
       // ----------------
       cache: {},
@@ -734,7 +734,7 @@ export default {
     }
   },
   methods: {
-    getRangeType(tagCode) {
+    getRangeType (tagCode) {
       let type = ['range', 'week', 'time']
       if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') {
         type = ['range']
@@ -1287,10 +1287,10 @@ export default {
 
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1349,7 +1349,7 @@ export default {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
 
-      let ruleJsonData = this.behaviorRulesJson || {}
+      const ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)
@@ -1358,7 +1358,7 @@ export default {
         this.showHitTip = false // 关闭新手指引 - 点击提示
 
         let cacheIds = []
-        let cacheActionIds = []
+        const cacheActionIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
             // 行为标签
@@ -1625,6 +1625,5 @@ i {
   border-left: 6px solid transparent;
   border-right: 54px solid #e2e2e2;
 }
-
 
 </style>

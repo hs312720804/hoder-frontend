@@ -1,7 +1,6 @@
 <template>
   <el-form :model="rulesJson" ref="ruleForm" >
     <div v-if="tags && tags.length > 0" class="label-container">
-      <div v-if="tags && tags.length > 0" >
         <div
           v-show="rulesJson.rules.length > 1"
           class="label-or-space"
@@ -41,7 +40,7 @@
                 <span class="txt">{{ childItem.tagName }}</span>
 
                 <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n"></RuleCom>
-                
+
                 <span class="i" @click="handleRemoveRule(item, childItem)">
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
@@ -80,192 +79,204 @@
             </el-tag>
           </div>
         </div>
+    </div>
+
+    <template v-if="crowdId">
+      <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
+      <div style="float: right">
+        <el-button type="warning" @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleSave">保存</el-button>
       </div>
-    </div>
-    <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
-    <div style="float: right">
-      <el-button type="warning" @click="handleCancel">取消</el-button>
-      <el-button type="primary" @click="handleSave">保存</el-button>
-    </div>
+    </template>
   </el-form>
 </template>
 
 <script>
-import RuleCom from './ruleComs/RuleCom.vue';
+import RuleCom from './ruleComs/RuleCom.vue'
 export default {
-    // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-    props: ["isDynamicPeople", "crowdId", "graph", "dynamicMode", "allCrowdRule"],
-    // inject: ['graphData'],
-    // computed: {
-    //   computedGraphData () {
-    //     return this.graphData()
-    //   }
-    // },
-    provide () {
-      return {
-        _this: this
+  // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
+  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule', 'storyLineCirculationRulesJson'],
+  // inject: ['graphData'],
+  // computed: {
+  //   computedGraphData () {
+  //     return this.graphData()
+  //   }
+  // },
+  provide () {
+    return {
+      _this: this
+    }
+  },
+  data () {
+    return {
+      dataSourceColorEnum: {
+        0: '',
+        1: 'success'
+        // 3: "",
+        // 5: "warning",
+        // 6: "warningOrange",
+        // 7: "warningOrange2",
+        // 8: "warningCyan"
+      },
+      tags: [],
+      rulesJson: {
+        condition: 'OR',
+        rules: []
+      },
+      i: 0,
+      crowdRule: {},
+      policyId: '',
+      applyAll: false,
+      initRulesJson: {},
+      soureceSignList: []
+    }
+  },
+  watch: {
+    crowdId: {
+      handler (val) {
+        this.init()
       }
     },
-    data() {
-        return {
-            dataSourceColorEnum: {
-              0: "",
-              1: "success",
-              // 3: "",
-              // 5: "warning",
-              // 6: "warningOrange",
-              // 7: "warningOrange2",
-              // 8: "warningCyan"
-            },
-            tags: [],
-            rulesJson: {
-              condition: "OR",
-              rules: []
-            },
-            i: 0,
-            crowdRule: {},
-            policyId: "",
-            applyAll: false,
-            initRulesJson: {},
-            soureceSignList: []
-        };
+    storyLineCirculationRulesJson: {
+      handler (val) {
+        this.rulesJson = val
+      },
+      immediate: true
     },
-    watch: {
-        crowdId: {
-            handler(val) {
-                this.init();
-            }
+    rulesJson: {
+      handler (val) {
+        this.$emit('update:storyLineCirculationRulesJson', val)
+      },
+      deep: true
+    }
+  },
+  created () {
+    // 获取标签
+    this.$service.getRuleIndicators().then(res => {
+      this.tags = res
+    })
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    handleSave () {
+      // 必填校验
+      // this.$refs["ruleForm"].forEach(res => {
+      //   res.$children[0].validate((valid) => {
+      //       if (valid) {
+      //           // 保存时，重置初始数据
+      //           this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson));
+      //           this.$emit("handleSave", { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll });
+      //       }
+      //   });
+      // })
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          // 保存时，重置初始数据
+          this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
+          this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
         }
+      })
     },
-    created() {
-        // 获取标签
-        this.$service.getRuleIndicators().then(res => {
-            this.tags = res;
-        });
-        this.$service.getSourceSign().then(res => {
-            this.soureceSignList = res;
-        });
+    handleCancel () {
+      this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
+      this.$emit('handleCancel')
     },
-    mounted() {
-        this.init();
-    },
-    methods: {
-        handleSave() {
-          // 必填校验
-          debugger
-          // this.$refs["ruleForm"].forEach(res => {
-          //   res.$children[0].validate((valid) => {
-          //       if (valid) {
-          //           // 保存时，重置初始数据
-          //           this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson));
-          //           this.$emit("handleSave", { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll });
-          //       }
-          //   });
-          // })
-        this.$refs['ruleForm'].validate((valid) => {
-          if (valid) {
-            // 保存时，重置初始数据
-            this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-            this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
-          }
+    init () {
+      if (this.crowdId) {
+        // const graphData = this.computedGraphData // 当前图表的数据
+        const graphData = this.graph.save() // 当前图表的数据
+        const res = graphData.nodes.find(item => {
+          return Number(item.crowdId) === Number(this.crowdId)
         })
-        },
-        handleCancel() {
-          this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson));
-          this.$emit("handleCancel");
-        },
-        init() {
-            if (this.crowdId) {
-                // const graphData = this.computedGraphData // 当前图表的数据
-                const graphData = this.graph.save(); // 当前图表的数据
-                const res = graphData.nodes.find(item => {
-                    return Number(item.crowdId) === Number(this.crowdId);
-                })
-                // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-                this.policyId = res.policyId || "";
-                // this.applyAll = !!(res.applyAll && res.applyAll === 1)
-                this.applyAll = res.applyAll === 1;
-                if (res.dynamicJson) {
-                  this.initRulesJson = JSON.parse(res.dynamicJson);
-                  this.rulesJson = JSON.parse(res.dynamicJson);
-                  console.log("res===", this.rulesJson);
-                }
-                else {
-                  // 初始化
-                  this.rulesJson = {
-                      condition: 'OR',
-                      rules: []
-                  }
-                }
-                // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
-                //   console.log('res===', res)
-                //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-                //   this.policyId = res.policyId || ''
-                //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
-                //   if (res.dynamicJson) {
-                //     this.rulesJson = JSON.parse(res.dynamicJson)
-                //     // this.rulesJson = (res)
-                //     console.log('res===', this.rulesJson)
-                //   } else {
-                //   // 重置
-                //     this.rulesJson = {
-                //       condition: 'OR',
-                //       rules: []
-                //     }
-                //   }
-                // })
-            }
-        },
-        handleAddRule(tag) {
-            this.rulesJson.rules.push({
-                condition: "AND",
-                rules: [{
-                        ...tag,
-                        operator: ">",
-                        sourceSign: "",
-                        value: ""
-                    }]
-            });
-        },
-        handleAddChildRule(rule, tag) {
-            rule.rules.push({
-                ...tag,
-                operator: ">",
-                sourceSign: "",
-                value: ""
-            });
-        },
-        handleRulesConditionChange(item) {
-            item.condition = item.condition === "AND" ? "OR" : "AND";
-        },
-        handleRemoveRule(rule, childRule) {
-            const rulesJson = this.rulesJson;
-            rule.rules.splice(rule.rules.indexOf(childRule), 1);
-            if (rule.rules.length === 0) {
-                rulesJson.rules = rulesJson.rules.filter(function (item) {
-                    return item !== rule;
-                });
-            }
-        },
-        handleBackPrevStep() {
-            this.$emit("crowdPrevStep", 3, this.recordId);
-        },
-        resetFormData() {
-            this.$emit("resetFormData");
-        },
-        handleDirectStrategyListBrother() {
-            this.$emit("handleDirectStrategyList");
+        // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        this.policyId = res.policyId || ''
+        // this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        this.applyAll = res.applyAll === 1
+        if (res.dynamicJson) {
+          this.initRulesJson = JSON.parse(res.dynamicJson)
+          this.rulesJson = JSON.parse(res.dynamicJson)
+          console.log('res===', this.rulesJson)
+        } else {
+          // 初始化
+          this.rulesJson = {
+            condition: 'OR',
+            rules: []
+          }
         }
+        // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
+        //   console.log('res===', res)
+        //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        //   this.policyId = res.policyId || ''
+        //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        //   if (res.dynamicJson) {
+        //     this.rulesJson = JSON.parse(res.dynamicJson)
+        //     // this.rulesJson = (res)
+        //     console.log('res===', this.rulesJson)
+        //   } else {
+        //   // 重置
+        //     this.rulesJson = {
+        //       condition: 'OR',
+        //       rules: []
+        //     }
+        //   }
+        // })
+      }
     },
-    components: { RuleCom }
+    handleAddRule (tag) {
+      this.rulesJson.rules.push({
+        condition: 'AND',
+        rules: [{
+          ...tag,
+          operator: '>',
+          sourceSign: '',
+          value: ''
+        }]
+      })
+    },
+    handleAddChildRule (rule, tag) {
+      rule.rules.push({
+        ...tag,
+        operator: '>',
+        sourceSign: '',
+        value: ''
+      })
+    },
+    handleRulesConditionChange (item) {
+      item.condition = item.condition === 'AND' ? 'OR' : 'AND'
+    },
+    handleRemoveRule (rule, childRule) {
+      const rulesJson = this.rulesJson
+      rule.rules.splice(rule.rules.indexOf(childRule), 1)
+      if (rule.rules.length === 0) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
+          return item !== rule
+        })
+      }
+    },
+    handleBackPrevStep () {
+      this.$emit('crowdPrevStep', 3, this.recordId)
+    },
+    resetFormData () {
+      this.$emit('resetFormData')
+    },
+    handleDirectStrategyListBrother () {
+      this.$emit('handleDirectStrategyList')
+    }
+  },
+  components: { RuleCom }
 }
 </script>
 
 <style scoped  lang="stylus">
-.label-container {
-  margin: 0 0 20px;
-  padding: 0 0 0 40px;
-}
+// .label-container {
+//   margin: 0 0 20px;
+//   padding: 0 0 0 40px;
+// }
 .div-class {
   padding: 20px;
   background-color: rgba(249,249,249,0.85);
@@ -374,7 +385,6 @@ i {
   margin: 5px;
 }
 
-
 .outer-and {
   position: absolute;
   top: 10px;
@@ -433,7 +443,7 @@ i {
   top: 10px;
   right: 0;
   bottom: 5px;
-  left: 0;
+  left: -40px;
   width: 3px;
   height: auto;
   margin: auto 0;

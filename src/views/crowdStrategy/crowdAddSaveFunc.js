@@ -33,7 +33,7 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
         }
       }
 
-      if (!validateForm(rules, dynamicPolicyRules, behaviorRules)) {
+      if (!validateForm(rules, dynamicPolicyRules, behaviorRules, _this)) {
         return
       }
 
@@ -200,7 +200,7 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
   })
 }
 
-function validateForm (rules, dynamicPolicyRules, behaviorRules = []) {
+function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
   timeTagKongList = []
   // 判断设置标签里是否有未填写的项
   let i
@@ -456,4 +456,4 @@ function checkNumMostFour (num) {
     return false
   }
 }
-export { handleSave }
+export { handleSave, validateForm, ReorganizationData, checkIfChildrenExist, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour }
