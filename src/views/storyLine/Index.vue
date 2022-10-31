@@ -264,89 +264,112 @@
             <div class="title2">服务对象选择</div>
             <div class="set-start">
               <div v-for="entry in entryList" :key="entry.id" class="info-class">
-                <div class="border-line" v-if="entry.rulesJson && JSON.parse(entry.rulesJson)">
+                <div class="border-line"  style="position: relative;">
+                  <div class="outer-and">
+                    <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
+                    {{ entry.link === 'OR' ? '或' : '且' }}
+                    </span>
+                  </div>
                   <!-- {{entry.rulesJson}} -->
                   <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
                   <span class="border-title">普通标签</span>
                   <div class="rule-string" >
-                    <div
-                      v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
-                      :key="index"
-                      class="rule-detail"
-                    >
-                      <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
-                      <div class="label-ground">(
-                        <div
-                          v-for="(childItem,childItemIndex) in item.rules"
-                          :key="childItem.tagId+childItemIndex"
-                          class="label-item"
-                        >
-                        <!-- {{childItem}} -->
-                          <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                          <span class="txt">{{ childItem.categoryName }}</span>
-                          <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                          <span class="in">
-                            <span >{{ childItem.value }}</span>
-                          </span>
-                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                        </div>)
+                    <div v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
+                      <div
+                        v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
+                        :key="index"
+                        class="rule-detail"
+                      >
+                        <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
+                        <div class="label-ground">(
+                          <div
+                            v-for="(childItem,childItemIndex) in item.rules"
+                            :key="childItem.tagId+childItemIndex"
+                            class="label-item"
+                          >
+                          <!-- {{childItem}} -->
+                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                            <span class="txt">{{ childItem.categoryName }}</span>
+                            <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                            <span class="in">
+                              <span >{{ childItem.value }}</span>
+                            </span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                          </div>)
+                        </div>
                       </div>
                     </div>
+                    <div v-else>暂无</div>
                   </div>
 
                   <span class="border-title">流转指标</span>
-                  <div class="rule-string" v-if="entry.flowCondition">
-                    <!-- {{entry.flowCondition}} -->
-                    <div
-                      v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
-                      :key="index"
-                      class="rule-detail"
-                    >
-                      <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
-                      <!-- {{ item }} -->
-                      <div class="label-ground">
-                        (
-                        <div
-                          v-for="(childItem, childItemIndex) in item.rules"
-                          :key="childItem.tagId+childItemIndex"
-                          class="label-item"
-                        >
-                          <!-- {{ childItem }} -->
-                          <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                          <span class="txt">{{ childItem.tagName }}</span>，
+                  <div class="rule-string">
+                    <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
+                      <!-- {{entry.flowCondition}} -->
+                      <div
+                        v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
+                        :key="index"
+                        class="rule-detail"
+                      >
+                        <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
+                        <!-- {{ item }} -->
+                        <div class="label-ground">
+                          (
+                          <div
+                            v-for="(childItem, childItemIndex) in item.rules"
+                            :key="childItem.tagId+childItemIndex"
+                            class="label-item"
+                          >
+                            <!-- {{ childItem }} -->
+                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                            <span class="txt">{{ childItem.tagName }}</span>，
 
-                          <!-- 模块活跃 -->
-                          <template v-if="childItem.tagKey=== 'moduleActive'" >
-                            <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                            <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                            <span class="txt">{{ childItem.locationId || '' }}</span>，
-                            <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                          </template>
+                            <!-- 模块活跃 -->
+                            <template v-if="childItem.tagKey=== 'moduleActive'" >
+                              <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
+                              <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
+                              <span class="txt">{{ childItem.locationId || '' }}</span>，
+                              <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
+                            </template>
 
-                          <!-- 优惠券活跃 -->
-                          <template v-if="childItem.tagKey=== 'couponsActive'">
-                            <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                          </template>
+                            <!-- 优惠券活跃 -->
+                            <template v-if="childItem.tagKey=== 'couponsActive'">
+                              <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
+                            </template>
 
-                          <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
+                            <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
 
-                          <!-- 产品包下单 -->
-                          <template v-if="childItem.tagKey=== 'productOrder'">
-                            ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>，
-                          </template>
+                            <!-- 产品包下单 -->
+                            <template v-if="childItem.tagKey=== 'productOrder'">
+                              ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
+                            </template>
 
-                          <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                          <span class="in">
-                            <span >{{ childItem.value }}</span>
-                          </span>
+                            <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
+                            <span class="in">
+                              <span >{{ childItem.value }}</span>
+                            </span>
+                          </div>
+                          )
                         </div>
-                        )
                       </div>
                     </div>
+                    <div v-else>暂无</div>
                   </div>
-                  <br/>
+
+                  <span class="border-title">行为标签</span>
+                  <!-- {{entry.behaviorRulesJson}} -->
+                  <div class="rule-string"  style="overflow: auto">
+                    <div v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                      <MultipleActionTagSelect
+                        ref="multipleActionTagSelect"
+                        :isView="true"
+                        :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
+                      ></MultipleActionTagSelect>
+                    </div>
+                    <div v-else>暂无</div>
+                  </div>
                   <!-- <div>{{item.behaviorRulesJson}}</div> -->
                 </div>
 
@@ -378,12 +401,65 @@
           <div>
             <div class="title2">服务终止条件</div>
             <div class="set-end">
-              <div v-for="item in exportList" :key="item.id" class="info-class">
-                <div class="border-line">
-                  <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+              <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
+                <!-- <div class="border-line">
                   <div>{{ item.rulesJson }}</div>
                   <br/>
                   <div>{{ item.behaviorRulesJson }}</div>
+                </div> -->
+                <div class="border-line"  style="position: relative;">
+                  <div class="outer-and">
+                    <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
+                    {{ exportItem.link === 'OR' ? '或' : '且' }}
+                    </span>
+                  </div>
+                  <!-- {{exportItem.rulesJson}} -->
+                  <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                  <span class="border-title">普通标签</span>
+                  <div class="rule-string" >
+                    <div v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
+                      <div
+                        v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
+                        :key="index"
+                        class="rule-detail"
+                      >
+                        <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
+                        <div class="label-ground">(
+                          <div
+                            v-for="(childItem,childItemIndex) in item.rules"
+                            :key="childItem.tagId+childItemIndex"
+                            class="label-item"
+                          >
+                          <!-- {{childItem}} -->
+                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                            <span class="txt">{{ childItem.categoryName }}</span>
+                            <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                            <span class="in">
+                              <span >{{ childItem.value }}</span>
+                            </span>
+                            <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                          </div>)
+                        </div>
+                      </div>
+                    </div>
+                    <div v-else>暂无</div>
+                  </div>
+
+                  <span class="border-title">行为标签</span>
+                  <!-- {{exportItem.behaviorRulesJson}} -->
+                  <div class="rule-string"  style="overflow: auto">
+                    <div v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+                      <MultipleActionTagSelect
+                        ref="multipleActionTagSelect"
+                        :isView="true"
+                        :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
+                      ></MultipleActionTagSelect>
+                    </div>
+                    <div v-else>暂无</div>
+                  </div>
+                  <!-- <div>{{item.behaviorRulesJson}}</div> -->
                 </div>
 
                 <div class="drop-class">
@@ -394,10 +470,10 @@
                       <span>.</span>
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item class="clearfix" :command="['editExport', item]">
+                      <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
                         编辑
                       </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['deleteExport', item]">
+                      <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
                         删除
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -479,10 +555,12 @@
 <script>
 import createClientDialog from './createClientDialog.vue'
 import { handleSave as saveFunc } from './saveEntryFunc.js'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index copy.vue'
 
 export default {
   components: {
-    createClientDialog
+    createClientDialog,
+    MultipleActionTagSelect
   },
   data () {
     return {
@@ -839,7 +917,8 @@ export default {
           rulesJson,
           behaviorRulesJson,
           flowCondition, // 流转指标
-          delFlag: 1
+          delFlag: 1,
+          link: dialogRef.totalLink
         }
       } else {
         params = {
@@ -850,7 +929,8 @@ export default {
           rulesJson,
           behaviorRulesJson,
           flowCondition, // 流转指标
-          delFlag: 1
+          delFlag: 1,
+          link: dialogRef.totalLink
         }
       }
       this.$service.addEntry(params, '添加成功').then(res => {
@@ -883,7 +963,8 @@ export default {
           tagIds,
           rulesJson,
           behaviorRulesJson,
-          delFlag: 1
+          delFlag: 1,
+          link: dialogRef.totalLink
         }
       } else {
         params = {
@@ -893,7 +974,8 @@ export default {
           tagIds,
           rulesJson,
           behaviorRulesJson,
-          delFlag: 1
+          delFlag: 1,
+          link: dialogRef.totalLink
         }
       }
       this.$service.addExport(params, '添加成功').then(res => {
@@ -1352,7 +1434,7 @@ export default {
   align-items: top
 }
 .border-line{
-  padding: 8px 16px;
+  padding: 8px 16px 8px 26px
   border-radius: 4px;
   border: 1px solid #67c23a;
   display: grid;
@@ -1386,4 +1468,34 @@ export default {
   color: #67c23a;
   font-size: 12px;
   line-height: 20px;
+
+.outer-and {
+  margin-left: 70px;
+  position: absolute;
+  top: 10px;
+  right: 0;
+  bottom: 3px;
+  left: 0;
+  width: 3px;
+  height: auto;
+  margin: auto 10px;
+  border: 1px dashed #adb1f4
+  border-right: 0;
+  z-index: 999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.and-or {
+  padding: 4px 6px
+  color: #FFF;
+  background-color: #67c23a;
+  border-color: #67c23a;
+  border-radius 20px
+  font-size 12px
+}
+
+.OR {
+  background-color: #8f8383;
+}
 </style>

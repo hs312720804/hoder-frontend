@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true">
+  <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true" :disabled="isView">
     <el-form-item prop="type">
       <el-select
         v-model="item3.type"
@@ -52,6 +52,7 @@
 
 <script>
 export default {
+  inject: ['_this'],
   data () {
     return {
       attrList: [],
@@ -77,6 +78,10 @@ export default {
       type: Boolean,
       default: true
     }
+    // isView: { // 查看模式
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   watch: {
     isRequired: { // 是否必填
@@ -121,6 +126,11 @@ export default {
         })
       },
       immediate: true
+    }
+  },
+  computed: {
+    isView () {
+      return this._this && this._this.isView ? this._this.isView : false
     }
   },
   methods: {

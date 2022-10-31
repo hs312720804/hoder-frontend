@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- <transition name="el-zoom-in-left"> -->
-    <el-form :model="childItem" ref="rangeForm" :rules="rangeFormRules">
+    <el-form :model="childItem" ref="rangeForm" :rules="rangeFormRules" :disabled="isView">
       <div v-show="show3">
         <div style="display: flex; flex-direction: row">
           <div class="range-wrap" v-if="type.indexOf('range') > -1">
@@ -134,6 +134,7 @@
 <script>
 // import types from '../types'
 export default {
+  inject: ['_this'],
   data () {
     return {
       rangeTypeList: [],
@@ -184,6 +185,7 @@ export default {
       type: Boolean,
       default: true
     }
+
   },
   watch: {
     childItem: {
@@ -237,6 +239,11 @@ export default {
       },
       // deep: true,
       immediate: true
+    }
+  },
+  computed: {
+    isView () {
+      return this._this && this._this.isView ? this._this.isView : false
     }
   },
   methods: {

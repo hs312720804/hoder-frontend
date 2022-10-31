@@ -100,6 +100,14 @@ export function getTagsByEntryId (params) {
     params
   })
 }
+// 根据出口条件ID查询标签属性
+export function getTagsByExportId (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/policy/getTagsByExportId',
+    params
+  })
+}
 
 // 新增出口条件
 export function addExport (data) {

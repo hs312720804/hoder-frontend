@@ -93,8 +93,18 @@
             <!-- <br/> -->
             <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
             <!-- rulesJson --- {{ rulesJson }} -->
-
             <div style="position: relative">
+              <!-- 且、或 切换 -->
+              <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
+              <div class="outer-and">
+                <el-button
+                  type="danger"
+                  @click="handleConditionChange()"
+                  round
+                  :key="'condition'"
+                >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
+              </div>
+
               <div v-if="tags.length > 0">
                 <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
                   <MultipleSelect
@@ -102,15 +112,6 @@
                     :rulesJson="rulesJson"
                   ></MultipleSelect>
                 </el-form-item>
-              </div>
-
-              <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)">
-                <el-button
-                  type="danger"
-                  @click="handleConditionChange()"
-                  round
-                  :key="'condition'"
-                >{{ (behaviorRulesJson.link) === 'OR' ? '或' : '且' }} </el-button>
               </div>
 
               <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
@@ -167,6 +168,7 @@ export default {
       }
     }
     return {
+      totalLink: 'OR',
       tagList: [],
       addForm: {
         conditionTagIds: [],
@@ -838,7 +840,7 @@ export default {
       item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
     handleConditionChange () {
-      this.behaviorRulesJson.link = this.behaviorRulesJson.link === 'AND' ? 'OR' : 'AND'
+      this.totalLink = this.totalLink === 'AND' ? 'OR' : 'AND'
     },
     // 获取不同种类的标签
     sortTag () {
@@ -874,11 +876,17 @@ export default {
     reviewEditData () {
       // 编辑
       const policyData = this.editRow
-
-      this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
-        this.tagList = data || []
-        this.sortTag()
-      })
+      if (this.type === 'entry') {
+        this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      } else {
+        this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
+          this.tagList = data || []
+          this.sortTag()
+        })
+      }
 
       const ruleJsonData = JSON.parse(policyData.rulesJson)
       let cacheIds = []
@@ -924,7 +932,7 @@ export default {
 
       this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
 
-      this.flowCondition = JSON.parse(policyData.flowCondition)
+      this.flowCondition = policyData.flowCondition ? JSON.parse(policyData.flowCondition) : { condition: 'OR', rules: [] }
 
       const defaultChild = [
         { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }

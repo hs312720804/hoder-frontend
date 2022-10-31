@@ -2,7 +2,7 @@
   <div class="label-container multipleSelect">
     <!-- 行为标签 -->
     <!-- {{ actionTags}} -->
-    <div v-if="actionTags && actionTags.length > 0">
+    <!-- <div v-if="actionTags && actionTags.length > 0"> -->
       <!-- {{ behaviorRulesJson }} -->
       <div
         v-show="behaviorRulesJson && behaviorRulesJson.rules.length > 1"
@@ -42,7 +42,6 @@
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
                 <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
-                  <!-- 查看模式 -->
                   <Range
                     ref="range"
                     :childItem="childItem"
@@ -493,20 +492,20 @@
                 </span>
               </div>
 
-              <span>
+              <!-- <span>
                 <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
-              </span>
+              </span> -->
 
-              <span class="i" @click="handleRemoveSpecialRule(item, childItem)" style="display:inline-block; height: 30px">
+              <!-- <span class="i" @click="handleRemoveSpecialRule(item, childItem)" style="display:inline-block; height: 30px">
                 <i class="icon iconfont el-icon-cc-delete"></i>
-              </span>
+              </span> -->
               <!-- 行为标签专属日期选项 end-->
 
-              <div v-if="childItem.isOldversion" style="color: red; font-size: 10px">业务组件升级，若要编辑请删除后重新创建</div>
+              <!-- <div v-if="childItem.isOldversion" style="color: red; font-size: 10px">业务组件升级，若要编辑请删除后重新创建</div> -->
 
             </div>
 
-            <div class="label-add">
+            <!-- <div class="label-add">
               <div class="optional-condition">
                 <el-tag
                   class="oc-item"
@@ -518,7 +517,7 @@
                 >
               </div>
 
-            </div>
+            </div> -->
           </div>
         </div>
       </template>
@@ -539,23 +538,6 @@
             >{{ item.tagName }}
           </el-tag>
 
-          <!-- 新手指引 - 点击提示 -->
-          <!-- <el-popover
-            v-if="showHitTip"
-            placement="bottom"
-            width="230"
-            v-model="tipVisible"
-            style="position: absolute; top: 10px; left: 20px;">
-            <p>Hello! 👋 点击标签来编辑人群条件</p>
-            <div style="text-align: right; margin: 0">
-              <el-button type="primary" size="mini" @click="showHitTip = false">知道了</el-button>
-            </div>
-            <a class="introjs-hint" slot="reference">
-              <div class="introjs-hint-dot"></div>
-              <div class="introjs-hint-pulse"></div>
-            </a>
-          </el-popover> -->
-
           <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
             <i class="el-icon-thumb" style="font-size: 28px;"></i>
             <span style="font-size: 12px;">点击标签来编辑人群条件</span>
@@ -563,62 +545,8 @@
 
         </div>
       </div>
-    </div>
+    <!-- </div> -->
 
-    <el-dialog
-      title="显示更多标签"
-      :visible.sync="showMoreTags"
-      :append-to-body="true"
-      class="showMoreTags"
-    >
-      <el-form :inline="true" :model="formInline" class="demo-form-inline">
-        <el-form-item label="标签名称">
-          <el-input
-            v-model="formInline.attrName"
-            placeholder="标签名称"
-            @keyup.enter.native="onSubmit"
-          ></el-input>
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">查询</el-button>
-        </el-form-item>
-      </el-form>
-      <div>
-        <!-- 类型为 string 的 可以多选 -->
-        <el-checkbox-group v-if="currentChildItem.tagType === 'string' && currentChildItem.operator !== 'null'" v-model="checkboxValue">
-          <el-checkbox
-            v-for="(tag, index) in tagList"
-            :label="tag.attrValue"
-            :key="tag.attrId + index"
-            >{{ tag.attrName }}
-          </el-checkbox>
-        </el-checkbox-group>
-
-        <el-radio-group v-else v-model="checkboxValue">
-          <el-radio
-            v-for="(tag, index) in tagList"
-            :label="tag.attrValue"
-            :key="tag.attrId + index"
-            >{{ tag.attrName }}</el-radio
-          >
-        </el-radio-group>
-      </div>
-      <el-pagination
-        small
-        class="pagination"
-        layout="prev,pager,next"
-        :total="tagsListTotal"
-        :page-size="initPageSize"
-        :current-page="initCurrentPage"
-        @current-change="handleCurrentChange"
-        @prev-click="handleCurrentChange"
-        @next-click="handleCurrentChange"
-      ></el-pagination>
-      <span slot="footer" class="dialog-footer">
-        <el-button @click="showMoreTags = false">取 消</el-button>
-        <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
-      </span>
-    </el-dialog>
   </div>
 </template>
 
@@ -626,6 +554,14 @@
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
 export default {
+  // provide: {
+  //   _this: () => this
+  // },
+  provide () {
+    return {
+      _this: this
+    }
+  },
   data () {
     return {
       showHitTip: true,
@@ -728,7 +664,6 @@ export default {
       type: Boolean,
       default: false
     }
-
   },
   watch: {
     behaviorRulesJson: {
