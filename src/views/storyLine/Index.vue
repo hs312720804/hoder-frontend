@@ -325,14 +325,14 @@
 
                   <span class="border-title">行为标签</span>
                   <!-- {{entry.behaviorRulesJson}} -->
-                  <div class="rule-string"  style="overflow: auto">
-                    <div v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                  <div class="rule-string bav-wrap" >
+                    <template v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
                       <MultipleActionTagSelect
                         ref="multipleActionTagSelect"
                         :isView="true"
                         :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
                       ></MultipleActionTagSelect>
-                    </div>
+                    </template>
                     <div v-else>暂无</div>
                   </div>
 
@@ -473,14 +473,14 @@
 
                   <span class="border-title">行为标签</span>
                   <!-- {{exportItem.behaviorRulesJson}} -->
-                  <div class="rule-string"  style="overflow: auto">
-                    <div v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+                  <div class="rule-string bav-wrap"  style="">
+                    <template v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
                       <MultipleActionTagSelect
                         ref="multipleActionTagSelect"
                         :isView="true"
                         :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
                       ></MultipleActionTagSelect>
-                    </div>
+                    </template>
                     <div v-else>暂无</div>
                   </div>
 
@@ -1677,5 +1677,9 @@ export default {
 .no-data-wrap {
   color: #999;
   font-size 12px
+}
+.bav-wrap {
+  overflow: auto;
+  padding-left: 27px;
 }
 </style>
