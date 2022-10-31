@@ -96,7 +96,7 @@
             <div style="position: relative">
               <!-- 且、或 切换 -->
               <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
-              <div class="outer-and">
+              <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)">
                 <el-button
                   type="danger"
                   @click="handleConditionChange()"
@@ -130,7 +130,7 @@
                   :dynamicPolicyJson="dynamicPolicyJson"
                 ></MultipleSelect>
               </el-form-item> -->
-              <el-form-item label="流转条件" v-if="type === 'entry'">
+              <el-form-item label="流转条件">
                 <SetCirculationConditionsCom
                   ref="setCirculationRef"
                   :storyLineCirculationRulesJson.sync="flowCondition">

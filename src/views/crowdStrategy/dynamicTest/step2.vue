@@ -140,9 +140,12 @@
             </el-switch>
           </span>
         </div>
-        <div style="position: relative">
+        <!-- --------{{currentGroup}} -->
+        <div v-if="radioType === 6" class="aaa">
+          <el-button type="primary" size="large" @click="$router.push({ name: 'storyLine', params: { sceneId: currentGroup.sceneId } })">配置故事运营</el-button>
+        </div>
+        <div style="position: relative" v-else>
           <!-- 拓扑图 -->
-          <!-- --------{{currentGraphData}} -->
           <!-- currentGraphData: 当前图表的数据 -->
           <antv-graph v-if="currentGraphData.allCrowd && currentGraphData.allCrowd.length > 0" :type="radioType" :currentGraphData="currentGraphData"></antv-graph>
         </div>
@@ -155,13 +158,8 @@
         <!-- {{form}} -->
         <el-form ref="groupForm" :model="form" :rules="rules" :label-width="formLabelWidth" class="addGroupForm">
 
-          <el-form-item label="分组名称：" required>
-            <el-col :span="13" style="margin-right: 13px;">
-              <el-form-item prop="name">
-                <el-input v-model="form.name" clearable autocomplete="off" ></el-input>
-              </el-form-item>
-            </el-col>
-            <el-col :span="5">
+          <el-form-item label="流转方式：" required>
+            <el-col :span="14">
               <el-form-item prop="mainArithmetic">
                 <el-tooltip class="item" effect="dark" content="分组算法" placement="top-start">
                   <el-select v-model="form.mainArithmetic" clearable placeholder="请选择" style="width: 200px;">
@@ -173,6 +171,14 @@
                     </el-option>
                   </el-select>
                 </el-tooltip>
+              </el-form-item>
+            </el-col>
+          </el-form-item>
+
+          <el-form-item label="分组名称：" required>
+            <el-col :span="5" >
+              <el-form-item prop="name">
+                <el-input v-model="form.name" clearable autocomplete="off" ></el-input>
               </el-form-item>
             </el-col>
 
@@ -291,25 +297,29 @@ export default {
         ]
       },
       formLabelWidth: '120px',
-      options: [{
-        value: 0,
-        label: '顺序'
-      }, {
-        value: 1,
-        label: '循环'
-      }, {
-        value: 2,
-        label: '随机'
-      }, {
-        value: 3,
-        label: '自定义'
-      }, {
-        value: 4,
-        label: '不流转'
-      }, {
-        value: 5,
-        label: '智能'
-      }],
+      options: [
+        {
+          value: 6,
+          label: '故事线'
+        }, {
+          value: 0,
+          label: '顺序'
+        }, {
+          value: 1,
+          label: '循环'
+        }, {
+          value: 2,
+          label: '随机'
+        }, {
+          value: 3,
+          label: '自定义'
+        }, {
+          value: 4,
+          label: '不流转'
+        }, {
+          value: 5,
+          label: '智能'
+        }],
       smallCrowdList: [], // 小人群列表
       allGroupList: [], // 所有分组的全部数据
       currentGroup: {}, // 当前选中的分组数据
@@ -541,6 +551,24 @@ export default {
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
             this.allGroupList.push(res)
             this.groupCheckIndex = (this.allGroupList.length - 1).toString()
+
+            if (this.form.mainArithmetic === 6) { // 创建故事线
+              console.log('form', this.form)
+              const crowdNames = this.form.cid.map(id => {
+                const obj = this.smallCrowdList.find(item => item.id === id)
+                return obj.label
+              })
+              const params = {
+                planId: res.id,
+                policyId: this.form.policyId,
+                sceneName: this.form.name, // 方案组名称
+                crowdNames: crowdNames.join(',') // 创建方案组选择的小人群名称
+              }
+              this.$service.addScenedynamic(params).then(res => {
+                console.log('id===========', res)
+                this.$router.push({ name: 'storyLine', params: { sceneId: res } })
+              })
+            }
             this.dialogFormVisible = false
             // this.getDynamic2PlanList('add')
           })
@@ -990,5 +1018,14 @@ i {
   top: 50px;
   font-size: 16px;
   right: 0px;
+}
+.aaa {
+  width: 100%;
+  height: 395px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #f3f4fa;
+  margin-top: 10px;
 }
 </style>

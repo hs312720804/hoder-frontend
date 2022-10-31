@@ -655,6 +655,9 @@ export default {
     return {
       downloadUrl: undefined,
       options: [{
+        value: 6,
+        label: '故事线'
+      }, {
         value: 0,
         label: '顺序'
       }, {

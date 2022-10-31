@@ -1833,7 +1833,7 @@ export default {
             label: '流转方式',
             prop: 'mainArithmetic',
             render: (h, { row }) => {
-              const options = ['顺序', '循环', '随机', '自定义', '不流转', '智能']
+              const options = ['顺序', '循环', '随机', '自定义', '不流转', '智能', '故事线']
               return options[row.mainArithmetic]
             }
           },

@@ -124,7 +124,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   if (timeTagKongList.length > 0) {
     const tip = timeTagKongList.join(',')
     const h = _this.$createElement
-    this.$msgbox({
+    _this.$msgbox({
       title: '配置提醒',
       message: h('p', null, [
         h('span', null, `${tip}`),

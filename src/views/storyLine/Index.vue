@@ -17,10 +17,8 @@
             <i class="icon el-icon-video-camera-solid"></i>
             <span class="item-content">
               {{ item.sceneName }}
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              {{ item.id }}
             </span>
-
+            <span class="item-index">{{ item.id }}</span>
             <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
               <span class="el-dropdown-link">
                 . . .
@@ -101,9 +99,8 @@
             <i class="icon el-icon-user"></i>
             <span class="item-content">
               {{ item.receptionist }}
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              {{ item.id }}
             </span>
+            <span class="item-index">{{ item.id }}</span>
             <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
               <span class="el-dropdown-link">
                 . . .
@@ -161,7 +158,7 @@
               <div class="detail-name">{{ selectedServicer.receptionist }}</div>
               <div class="d-info">
                 <div>创建人：</div>
-                <div>李彪</div>
+                <div>{{ selectedServicer.userName }}</div>
                 <div>创建时间：</div>
                 <div>{{ selectedServicer.createTime }}</div>
                 <div>擅长：</div>
@@ -187,6 +184,8 @@
               </div>
               <div style="text-align: center;">业务范围</div>
               <div class="detail-business-type">
+                  方案：
+                  {{selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
                 <!-- <div class="box-fotter">
                   <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
                 </div> -->
@@ -233,7 +232,7 @@
                             {{ targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
                           </span>
                           <el-dropdown-menu slot="dropdown">
-                            <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index" :command="item">{{ item }}</el-dropdown-item>
+                            <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
                           </el-dropdown-menu>
                         </el-dropdown>
                       </span>
@@ -245,7 +244,23 @@
                     </div>
                     <div>
                       <span class="kpi-label">目标：</span>
-                      <span class="kpi-value">10000</span>
+                      <span class="kpi-value">
+                        <!-- {{ targetValue }} -->
+
+                          <span v-if="!isEditValue" @click="editTargetValue" class="target-text">
+                            <span>{{ targetValue }}</span>
+                            <span class="text-over"></span>
+                          </span>
+                          <el-input
+                            v-else
+                            ref="inputValue"
+                            placeholder="请输入"
+                            @blur="editTargetValueChange"
+                            v-model="targetValue"
+                            style="width: 100px">
+                          </el-input>
+
+                      </span>
                     </div>
                     <div>
                       <span class="kpi-label">满意用户数：</span>
@@ -263,6 +278,10 @@
           <div>
             <div class="title2">服务对象选择</div>
             <div class="set-start">
+              <div v-if="entryList.length === 0" class="no-data-wrap">
+                <div class="noData"></div>
+                <!-- 暂时木有内容呀～～ -->
+              </div>
               <div v-for="entry in entryList" :key="entry.id" class="info-class">
                 <div class="border-line"  style="position: relative;">
                   <div class="outer-and">
@@ -300,6 +319,19 @@
                           </div>)
                         </div>
                       </div>
+                    </div>
+                    <div v-else>暂无</div>
+                  </div>
+
+                  <span class="border-title">行为标签</span>
+                  <!-- {{entry.behaviorRulesJson}} -->
+                  <div class="rule-string"  style="overflow: auto">
+                    <div v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                      <MultipleActionTagSelect
+                        ref="multipleActionTagSelect"
+                        :isView="true"
+                        :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
+                      ></MultipleActionTagSelect>
                     </div>
                     <div v-else>暂无</div>
                   </div>
@@ -357,19 +389,6 @@
                     </div>
                     <div v-else>暂无</div>
                   </div>
-
-                  <span class="border-title">行为标签</span>
-                  <!-- {{entry.behaviorRulesJson}} -->
-                  <div class="rule-string"  style="overflow: auto">
-                    <div v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
-                      <MultipleActionTagSelect
-                        ref="multipleActionTagSelect"
-                        :isView="true"
-                        :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
-                      ></MultipleActionTagSelect>
-                    </div>
-                    <div v-else>暂无</div>
-                  </div>
                   <!-- <div>{{item.behaviorRulesJson}}</div> -->
                 </div>
 
@@ -392,6 +411,7 @@
                 </div>
 
               </div>
+
               <div class="box-fotter">
                 <!-- <el-button>添加</el-button> -->
                 <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
@@ -401,6 +421,10 @@
           <div>
             <div class="title2">服务终止条件</div>
             <div class="set-end">
+              <div v-if="exportList.length === 0" class="no-data-wrap">
+                <div class="noData"></div>
+                <!-- 暂时木有内容呀～～ -->
+              </div>
               <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
                 <!-- <div class="border-line">
                   <div>{{ item.rulesJson }}</div>
@@ -456,6 +480,60 @@
                         :isView="true"
                         :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
                       ></MultipleActionTagSelect>
+                    </div>
+                    <div v-else>暂无</div>
+                  </div>
+
+                  <span class="border-title">流转指标</span>
+                  <div class="rule-string">
+                    <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
+                      <!-- {{exportItem.flowCondition}} -->
+                      <div
+                        v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
+                        :key="index"
+                        class="rule-detail"
+                      >
+                        <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
+                        <!-- {{ item }} -->
+                        <div class="label-ground">
+                          (
+                          <div
+                            v-for="(childItem, childItemIndex) in item.rules"
+                            :key="childItem.tagId+childItemIndex"
+                            class="label-item"
+                          >
+                            <!-- {{ childItem }} -->
+                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                            <span class="txt">{{ childItem.tagName }}</span>，
+
+                            <!-- 模块活跃 -->
+                            <template v-if="childItem.tagKey=== 'moduleActive'" >
+                              <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
+                              <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
+                              <span class="txt">{{ childItem.locationId || '' }}</span>，
+                              <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
+                            </template>
+
+                            <!-- 优惠券活跃 -->
+                            <template v-if="childItem.tagKey=== 'couponsActive'">
+                              <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
+                            </template>
+
+                            <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
+
+                            <!-- 产品包下单 -->
+                            <template v-if="childItem.tagKey=== 'productOrder'">
+                              ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
+                            </template>
+
+                            <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
+                            <span class="in">
+                              <span >{{ childItem.value }}</span>
+                            </span>
+                          </div>
+                          )
+                        </div>
+                      </div>
                     </div>
                     <div v-else>暂无</div>
                   </div>
@@ -549,6 +627,14 @@
       </span>
     </el-dialog>
 
+    <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
+      <LaunchToBusiness
+        :recordId="tempPolicyAndCrowd.policyId"
+        :tempPolicyAndCrowd="tempPolicyAndCrowd"
+        @closeDialog="handleCloseDialog"
+      ></LaunchToBusiness>
+    </el-dialog>
+
  </div>
 </template>
 
@@ -556,14 +642,18 @@
 import createClientDialog from './createClientDialog.vue'
 import { handleSave as saveFunc } from './saveEntryFunc.js'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index copy.vue'
+import LaunchToBusiness from '../launch/StrategyPutIn'
 
 export default {
   components: {
     createClientDialog,
-    MultipleActionTagSelect
+    MultipleActionTagSelect,
+    LaunchToBusiness
   },
   data () {
     return {
+      tempPolicyAndCrowd: {},
+      showLaunchToBusiness: false,
       couponOptions: [{
         label: '曝光',
         value: 'couponShowPv'
@@ -609,7 +699,20 @@ export default {
       },
       editExportRow: {},
       exportDialogVisible: false,
-      targetKeyList: ['付费率（%）', '付费单数', '付费金额（元）', '客单价（元）'],
+      targetKeyList: [{
+        // 1 付费率，2 成交单数 3 成交金额 4 客单价
+        id: 1,
+        lable: '付费率（%）'
+      }, {
+        id: 2,
+        lable: '付费单数'
+      }, {
+        id: 3,
+        lable: '付费金额（元）'
+      }, {
+        id: 4,
+        lable: '客单价（元）'
+      }],
       targetKey: '付费率（%）',
       editClientRow: {},
       skillOptions: [],
@@ -629,8 +732,10 @@ export default {
       dialogVisible: false,
       dialogVisible2: false,
       target: '请输入接待员的目标',
+      targetValue: '',
       priority: '',
       isEdit: false,
+      isEditValue: false,
       activeIndex: 0,
       activeIndex2: 0,
       sceneList: [{
@@ -668,8 +773,15 @@ export default {
     selectedServicer: {
       handler (val) {
         console.log('val------>', val)
-        this.skillValue = val.skillId
-        this.target = val.myTask
+        this.skillValue = val.skillId // 技能
+        this.target = val.myTask || '我的任务是...'// 任务
+        this.targetValue = val.indicators || ''// 绩效指标
+
+        const obj = this.targetKeyList.find(item => {
+          return this.selectedServicer.indicatorsType === item.id
+        })
+
+        this.targetKey = obj ? obj.lable : '' // 目标指标
       }
     }
   },
@@ -680,6 +792,9 @@ export default {
     })
   },
   methods: {
+    handleCloseDialog () {
+      this.showLaunchToBusiness = false
+    },
     getName (list, key) {
       const obj = list.find(item => {
         return key === item.value
@@ -722,7 +837,16 @@ export default {
       })
     },
     handleCommandTargetKey (val) {
-      this.targetKey = val
+      const obj = this.targetKeyList.find(item => {
+        return val === item.id
+      })
+      this.editReceptionist({
+        id: this.selectedServicer.id,
+        indicatorsType: obj.id
+      }, 'no-refresh-list')
+
+      this.targetKey = obj ? obj.lable : ''
+      this.selectedServicer.indicatorsType = obj ? obj.id : ''
     },
     // 服务员选择技能
     selectSkill (e) {
@@ -784,6 +908,12 @@ export default {
     },
     // 投放
     putInScene (item) {
+      this.tempPolicyAndCrowd = {
+        ...item,
+        policyName: item.sceneName,
+        smart: true
+      }
+      this.showLaunchToBusiness = true
       // this.editScene({
       //   ...item,
       //   putway: 1
@@ -944,8 +1074,9 @@ export default {
       const dialogRef = this.$refs.exportClientDialog
       const rulesJson = dialogRef.rulesJson
       const behaviorRulesJson = dialogRef.behaviorRulesJson
+      const flowCondition = dialogRef.flowCondition
 
-      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2)
+      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
     },
     fetchAddOrEdit2 () {
       const dialogRef = this.$refs.exportClientDialog
@@ -953,6 +1084,8 @@ export default {
       const tagIds = dialogRef.checkedList.join(',')
       const rulesJson = JSON.stringify(dialogRef.rulesJson)
       const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
+      const flowCondition = JSON.stringify(dialogRef.flowCondition)
+
       let params = {}
       if (this.editExportRow) {
         params = {
@@ -963,6 +1096,7 @@ export default {
           tagIds,
           rulesJson,
           behaviorRulesJson,
+          flowCondition, // 流转指标
           delFlag: 1,
           link: dialogRef.totalLink
         }
@@ -974,6 +1108,7 @@ export default {
           tagIds,
           rulesJson,
           behaviorRulesJson,
+          flowCondition, // 流转指标
           delFlag: 1,
           link: dialogRef.totalLink
         }
@@ -1034,6 +1169,7 @@ export default {
     selectServicer (index) {
       this.activeIndex2 = index
       this.selectedServicer = this.servicer[index] || {}
+
       // 入口列表
       this.getEntryListByReceptionistId()
       // 出口列表
@@ -1050,6 +1186,9 @@ export default {
       this.servicer = []
       this.$service.getReceptionistList(parmas).then(res => {
         this.servicer = res.data || []
+        this.selectedServicer = {}
+        this.entryList = []
+        this.exportList = []
         if (this.servicer.length > 0) {
           this.selectServicer(0)
         }
@@ -1068,7 +1207,10 @@ export default {
       this.$service.getSceneList(parmas).then(res => {
         this.sceneList = res.data || []
         if (this.sceneList.length > 0) {
-          this.selectScene(0)
+          const id = this.$route.params.sceneId || ''
+          const aIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
+          this.activeIndex = aIndex > 0 ? aIndex : 0
+          this.selectScene(this.activeIndex)
         }
         // this.activeIndex = 0
         // this.selectedScene = this.sceneList[0] || {}
@@ -1160,12 +1302,30 @@ export default {
         this.$refs.inputPriority.focus()
       })
     },
+    editTargetValue () {
+      this.isEditValue = true
+      this.$nextTick(() => {
+        this.$refs.inputValue.focus()
+      })
+    },
     editStatuChange () {
       this.editReceptionist({
         id: this.selectedServicer.id,
         myTask: this.target
       }, 'no-refresh-list')
+
+      this.selectedServicer.myTask = this.target
       this.isEdit = false
+    },
+    editTargetValueChange () {
+      this.editReceptionist({
+        id: this.selectedServicer.id,
+        indicators: this.targetValue
+      }, 'no-refresh-list')
+
+      this.selectedServicer.indicators = this.targetValue
+
+      this.isEditValue = false
     }
   }
 }
@@ -1203,8 +1363,8 @@ export default {
 }
 
 .icon
-  font-size 20px
-  width 30px
+  font-size 16px
+  width 20px
 
 .title
   // font-size: 18px;
@@ -1237,6 +1397,10 @@ export default {
 
 .item-content
   flex 1
+.item-index
+  color: #999
+  font-size 12px
+  margin-right 10px
 .el-dropdown
   display: inline-flex;
   position: relative;
@@ -1244,6 +1408,7 @@ export default {
   font-size: var(--el-font-size-base);
   line-height: 1;
   vertical-align: top;
+  // margin-left: 10px;
 
 // @supports (-webkit-mask: none) or (mask: none) {
 //   .box {
@@ -1298,6 +1463,10 @@ export default {
   background: #f4f4f5;
   margin-top: 15px;
   position: relative
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #000;
 }
 .kpi-wrap {
   display grid;
@@ -1321,7 +1490,7 @@ export default {
   grid-column-gap: 20px
 }
 .set-start, .set-end {
-  min-height 150px
+  min-height 115px
   // border 1px solid #ccc
   background: #f4f4f5;
   position: relative
@@ -1497,5 +1666,16 @@ export default {
 
 .OR {
   background-color: #8f8383;
+}
+.noData {
+  background: url(/img/noData.d47371e2.svg) center center no-repeat;
+  width: 100%;
+  height: 82px;
+  background-size: contain;
+  margin: 20px 0
+}
+.no-data-wrap {
+  color: #999;
+  font-size 12px
 }
 </style>

@@ -127,3 +127,13 @@ export function getExportList (params) {
     params
   })
 }
+
+// 动态人群创建场景，接待员
+export function addScenedynamic (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/scene/dynamic',
+    isJSON: true,
+    data
+  })
+}
