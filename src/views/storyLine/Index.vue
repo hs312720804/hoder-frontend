@@ -1511,7 +1511,7 @@ export default {
 }
 
 .d-info {
-  background-color: #f4f4f5;
+  // background-color: #f4f4f5;
   color: #909399;
   padding: 8px 16px;
   font-size: 12px;
