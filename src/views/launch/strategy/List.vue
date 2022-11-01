@@ -169,12 +169,12 @@ export default {
         // selected: [],
         // selectionType: 'multiple'
       },
-      launchStatusEnum: { '1': '投放中' }
+      launchStatusEnum: { 1: '投放中' }
     }
   },
   props: ['parentSource', 'showAllParent'],
   watch: {
-    'showAllParent': function () {
+    showAllParent: function () {
       this.fetchData(this.biId)
     }
   },

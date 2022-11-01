@@ -44,7 +44,7 @@ export default {
   props: ['setShowCommitHistoryDialog', 'crowdId'],
   methods: {
     handleSetExpiryDateArray (maxDay) {
-      let array = []
+      const array = []
       for (let i = 0; i < maxDay; i++) {
         array.push({ label: (i + 1) + '天', value: i + 1 })
       }
@@ -55,7 +55,7 @@ export default {
     },
     handleSubmit () {
       const form = this.form
-      let submitForm = {
+      const submitForm = {
         isSubmit: form.isSubmit,
         id: this.crowdId,
         dateNum: form.isSubmit === 1 ? form.expiryDate : undefined

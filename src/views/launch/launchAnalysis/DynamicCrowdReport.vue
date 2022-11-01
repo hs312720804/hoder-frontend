@@ -182,7 +182,7 @@
 
 <script>
 import DynamicTable from './dynamicTable/Index.vue'
-import AutoHighLightAnchor from './dynamicTable/autoHighLightAnchor.js'
+// import AutoHighLightAnchor from './dynamicTable/autoHighLightAnchor.js'
 
 export default {
   components: {
@@ -283,7 +283,7 @@ export default {
       // }
       // console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
       // console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
+      // const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
     },
     initData () {
       this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {
@@ -685,7 +685,7 @@ export default {
             label: '流转方式',
             prop: 'mainArithmetic',
             render: (h, { row }) => {
-              const obj = this.options.find(item => item.value == row.mainArithmetic)
+              const obj = this.options.find(item => item.value === row.mainArithmetic)
               return obj.label
             }
           }, {

@@ -41,7 +41,7 @@
                 <span class="txt">{{ childItem.tagName }}</span>
 
                 <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n"></RuleCom>
-                
+
                 <span class="i" @click="handleRemoveRule(item, childItem)">
                   <i class="icon iconfont el-icon-cc-delete"></i>
                 </span>
@@ -91,173 +91,172 @@
 </template>
 
 <script>
-import RuleCom from './ruleComs/RuleCom.vue';
+import RuleCom from './ruleComs/RuleCom.vue'
 export default {
-    // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-    props: ["isDynamicPeople", "crowdId", "graph", "dynamicMode", "allCrowdRule"],
-    // inject: ['graphData'],
-    // computed: {
-    //   computedGraphData () {
-    //     return this.graphData()
-    //   }
-    // },
-    provide () {
-      return {
-        _this: this
+  // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
+  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
+  // inject: ['graphData'],
+  // computed: {
+  //   computedGraphData () {
+  //     return this.graphData()
+  //   }
+  // },
+  provide () {
+    return {
+      _this: this
+    }
+  },
+  data () {
+    return {
+      dataSourceColorEnum: {
+        0: '',
+        1: 'success'
+        // 3: "",
+        // 5: "warning",
+        // 6: "warningOrange",
+        // 7: "warningOrange2",
+        // 8: "warningCyan"
+      },
+      tags: [],
+      rulesJson: {
+        condition: 'OR',
+        rules: []
+      },
+      i: 0,
+      crowdRule: {},
+      policyId: '',
+      applyAll: false,
+      initRulesJson: {},
+      soureceSignList: []
+    }
+  },
+  watch: {
+    crowdId: {
+      handler (val) {
+        this.init()
+      }
+    }
+  },
+  created () {
+    // 获取标签
+    this.$service.getRuleIndicators().then(res => {
+      this.tags = res
+    })
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    handleSave () {
+      // 必填校验
+      debugger
+      // this.$refs["ruleForm"].forEach(res => {
+      //   res.$children[0].validate((valid) => {
+      //       if (valid) {
+      //           // 保存时，重置初始数据
+      //           this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson));
+      //           this.$emit("handleSave", { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll });
+      //       }
+      //   });
+      // })
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          // 保存时，重置初始数据
+          this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
+          this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+        }
+      })
+    },
+    handleCancel () {
+      this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson))
+      this.$emit('handleCancel')
+    },
+    init () {
+      if (this.crowdId) {
+        // const graphData = this.computedGraphData // 当前图表的数据
+        const graphData = this.graph.save() // 当前图表的数据
+        const res = graphData.nodes.find(item => {
+          return Number(item.crowdId) === Number(this.crowdId)
+        })
+        // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        this.policyId = res.policyId || ''
+        // this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        this.applyAll = res.applyAll === 1
+        if (res.dynamicJson) {
+          this.initRulesJson = JSON.parse(res.dynamicJson)
+          this.rulesJson = JSON.parse(res.dynamicJson)
+          console.log('res===', this.rulesJson)
+        } else {
+          // 初始化
+          this.rulesJson = {
+            condition: 'OR',
+            rules: []
+          }
+        }
+        // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
+        //   console.log('res===', res)
+        //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
+        //   this.policyId = res.policyId || ''
+        //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
+        //   if (res.dynamicJson) {
+        //     this.rulesJson = JSON.parse(res.dynamicJson)
+        //     // this.rulesJson = (res)
+        //     console.log('res===', this.rulesJson)
+        //   } else {
+        //   // 重置
+        //     this.rulesJson = {
+        //       condition: 'OR',
+        //       rules: []
+        //     }
+        //   }
+        // })
       }
     },
-    data() {
-        return {
-            dataSourceColorEnum: {
-              0: "",
-              1: "success",
-              // 3: "",
-              // 5: "warning",
-              // 6: "warningOrange",
-              // 7: "warningOrange2",
-              // 8: "warningCyan"
-            },
-            tags: [],
-            rulesJson: {
-              condition: "OR",
-              rules: []
-            },
-            i: 0,
-            crowdRule: {},
-            policyId: "",
-            applyAll: false,
-            initRulesJson: {},
-            soureceSignList: []
-        };
+    handleAddRule (tag) {
+      this.rulesJson.rules.push({
+        condition: 'AND',
+        rules: [{
+          ...tag,
+          operator: '>',
+          sourceSign: '',
+          value: ''
+        }]
+      })
     },
-    watch: {
-        crowdId: {
-            handler(val) {
-                this.init();
-            }
-        }
+    handleAddChildRule (rule, tag) {
+      rule.rules.push({
+        ...tag,
+        operator: '>',
+        sourceSign: '',
+        value: ''
+      })
     },
-    created() {
-        // 获取标签
-        this.$service.getRuleIndicators().then(res => {
-            this.tags = res;
-        });
-        this.$service.getSourceSign().then(res => {
-            this.soureceSignList = res;
-        });
+    handleRulesConditionChange (item) {
+      item.condition = item.condition === 'AND' ? 'OR' : 'AND'
     },
-    mounted() {
-        this.init();
-    },
-    methods: {
-        handleSave() {
-          // 必填校验
-          debugger
-          // this.$refs["ruleForm"].forEach(res => {
-          //   res.$children[0].validate((valid) => {
-          //       if (valid) {
-          //           // 保存时，重置初始数据
-          //           this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson));
-          //           this.$emit("handleSave", { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll });
-          //       }
-          //   });
-          // })
-        this.$refs['ruleForm'].validate((valid) => {
-          if (valid) {
-            // 保存时，重置初始数据
-            this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
-            this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
-          }
+    handleRemoveRule (rule, childRule) {
+      const rulesJson = this.rulesJson
+      rule.rules.splice(rule.rules.indexOf(childRule), 1)
+      if (rule.rules.length === 0) {
+        rulesJson.rules = rulesJson.rules.filter(function (item) {
+          return item !== rule
         })
-        },
-        handleCancel() {
-          this.rulesJson = JSON.parse(JSON.stringify(this.initRulesJson));
-          this.$emit("handleCancel");
-        },
-        init() {
-            if (this.crowdId) {
-                // const graphData = this.computedGraphData // 当前图表的数据
-                const graphData = this.graph.save(); // 当前图表的数据
-                const res = graphData.nodes.find(item => {
-                    return Number(item.crowdId) === Number(this.crowdId);
-                })
-                // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-                this.policyId = res.policyId || "";
-                // this.applyAll = !!(res.applyAll && res.applyAll === 1)
-                this.applyAll = res.applyAll === 1;
-                if (res.dynamicJson) {
-                  this.initRulesJson = JSON.parse(res.dynamicJson);
-                  this.rulesJson = JSON.parse(res.dynamicJson);
-                  console.log("res===", this.rulesJson);
-                }
-                else {
-                  // 初始化
-                  this.rulesJson = {
-                      condition: 'OR',
-                      rules: []
-                  }
-                }
-                // this.$service.getCrowdRuleById({ crowdId: this.crowdId }).then(res => {
-                //   console.log('res===', res)
-                //   // this.crowdRule = this.allCrowdRule.find(item => item.crowdId == this.crowdId)
-                //   this.policyId = res.policyId || ''
-                //   this.applyAll = !!(res.applyAll && res.applyAll === 1)
-                //   if (res.dynamicJson) {
-                //     this.rulesJson = JSON.parse(res.dynamicJson)
-                //     // this.rulesJson = (res)
-                //     console.log('res===', this.rulesJson)
-                //   } else {
-                //   // 重置
-                //     this.rulesJson = {
-                //       condition: 'OR',
-                //       rules: []
-                //     }
-                //   }
-                // })
-            }
-        },
-        handleAddRule(tag) {
-            this.rulesJson.rules.push({
-                condition: "AND",
-                rules: [{
-                        ...tag,
-                        operator: ">",
-                        sourceSign: "",
-                        value: ""
-                    }]
-            });
-        },
-        handleAddChildRule(rule, tag) {
-            rule.rules.push({
-                ...tag,
-                operator: ">",
-                sourceSign: "",
-                value: ""
-            });
-        },
-        handleRulesConditionChange(item) {
-            item.condition = item.condition === "AND" ? "OR" : "AND";
-        },
-        handleRemoveRule(rule, childRule) {
-            const rulesJson = this.rulesJson;
-            rule.rules.splice(rule.rules.indexOf(childRule), 1);
-            if (rule.rules.length === 0) {
-                rulesJson.rules = rulesJson.rules.filter(function (item) {
-                    return item !== rule;
-                });
-            }
-        },
-        handleBackPrevStep() {
-            this.$emit("crowdPrevStep", 3, this.recordId);
-        },
-        resetFormData() {
-            this.$emit("resetFormData");
-        },
-        handleDirectStrategyListBrother() {
-            this.$emit("handleDirectStrategyList");
-        }
+      }
     },
-    components: { RuleCom }
+    handleBackPrevStep () {
+      this.$emit('crowdPrevStep', 3, this.recordId)
+    },
+    resetFormData () {
+      this.$emit('resetFormData')
+    },
+    handleDirectStrategyListBrother () {
+      this.$emit('handleDirectStrategyList')
+    }
+  },
+  components: { RuleCom }
 }
 </script>
 
@@ -373,7 +372,6 @@ i {
 .showMoreTags >>> .el-radio {
   margin: 5px;
 }
-
 
 .outer-and {
   position: absolute;

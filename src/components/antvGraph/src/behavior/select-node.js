@@ -15,7 +15,7 @@ export default {
       'canvas:mouseover': 'onCanvasMouseover',
       keyup: 'onKeyUp',
       keydown: 'onKeyDown',
-      'click': 'onGraphClick'
+      click: 'onGraphClick'
     }
   },
   onGraphClick (e) {

@@ -215,7 +215,7 @@ export default {
     },
     getDataSourceList () {
       this.$service.getDatasource().then((data) => {
-        let arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
+        const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
         this.dataSourceList = arr
       })
     },

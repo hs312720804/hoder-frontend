@@ -59,7 +59,7 @@ export default {
             width: '300',
             render: (h, params) => {
               return h('el-button', {
-                class: params.row.noticeStatus == 0 ? 'red-dot-title' : 'normal-title',
+                class: params.row.noticeStatus === 0 ? 'red-dot-title' : 'normal-title',
                 props: {
                   type: 'text'
                 },
@@ -218,7 +218,7 @@ export default {
       const filter = this.parseFilter()
       filter.showType = type
       this.$service.noticeList(filter).then((data) => {
-        let interfaceData = data.pageInfo.list
+        const interfaceData = data.pageInfo.list
         const statusData = data.noticeUserStatus
         interfaceData.forEach((item, index) => {
           item.noticeStatus = statusData[index]

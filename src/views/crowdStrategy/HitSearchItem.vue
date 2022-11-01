@@ -170,9 +170,9 @@ export default {
     formatYesterdayDate () {
       const yesterday = new Date().getTime() - 1 * 24 * 60 * 60 * 1000
       const time = new Date(yesterday)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     }
   }

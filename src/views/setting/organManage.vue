@@ -225,8 +225,8 @@ export default {
 
     // 修改状态
     handleChangetStatus: function (index, row) {
-      var id = row.id
-      var useable = row.useable == 1 ? 0 : 1
+      const id = row.id
+      const useable = row.useable === 1 ? 0 : 1
       this.$confirm('确定修改该条记录的状态?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -279,7 +279,7 @@ export default {
     },
     // 新增
     addSubmit: function () {
-      var _this = this
+      const _this = this
       this.$refs.officeForm.validate(valid => {
         if (valid) {
           this.$service.addOrgan(_this.officeForm, '添加成功').then(() => {
@@ -309,7 +309,7 @@ export default {
     },
     // editSubmit
     editSubmit: function () {
-      var _this = this
+      const _this = this
       this.$refs.officeForm.validate(valid => {
         if (valid) {
           this.$service.updateOrgan(_this.officeForm, '编辑成功').then(() => {
@@ -338,7 +338,7 @@ export default {
     },
     // 单行删除
     handleDelete: function (index, row) {
-      var id = row.id
+      const id = row.id
       this.$confirm('确定要删除该条记录?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

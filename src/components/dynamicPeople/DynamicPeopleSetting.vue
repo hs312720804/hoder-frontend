@@ -153,18 +153,20 @@ export default {
   created () {
     if (this.crowdId) {
       this.$service.getDynamicCrowd({ crowdId: this.crowdId }).then(res => {
-        this.menu = res && res.dynamicCrowd ? res : {
-          dynamicCrowd: [{
-            crowdName: '',
-            priority: ''
-          }, {
-            crowdName: '',
-            priority: ''
-          }],
-          controlGroup: [],
-          ab: 0,
-          flowNum: 100
-        }
+        this.menu = res && res.dynamicCrowd
+          ? res
+          : {
+              dynamicCrowd: [{
+                crowdName: '',
+                priority: ''
+              }, {
+                crowdName: '',
+                priority: ''
+              }],
+              controlGroup: [],
+              ab: 0,
+              flowNum: 100
+            }
         this.menu.dynamicCrowd = this.menu.dynamicCrowd || []
         this.menu.controlGroup = this.menu.controlGroup || []
       })
@@ -187,7 +189,7 @@ export default {
     },
     numberInt (e) {
       // console.log(e.target.value)
-      let flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
+      const flag = new RegExp('^[1-9]([0-9])*$').test(e.target.value)
       console.log(flag)
 
       if (!flag) {
@@ -235,7 +237,7 @@ export default {
 
     // 判断表单是否通过校验
     isValidate () {
-      let reg = new RegExp('^[1-9]([0-9])*$')
+      const reg = new RegExp('^[1-9]([0-9])*$')
       const flag1 = this.menu.dynamicCrowd.every(item => {
         // 优先级是否为正整数
         const flag1 = item.priority && reg.test(item.priority)

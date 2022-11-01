@@ -172,7 +172,7 @@ export default {
     MultipleActionTagSelect
   },
   data () {
-    var checkIntNumber = (rule, value, callback) => {
+    const checkIntNumber = (rule, value, callback) => {
       if (!value) {
         return callback(new Error('限制投放数量不能为空'))
       }
@@ -278,7 +278,7 @@ export default {
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
     hasMoveBehaviorTagRule () {
-      let crowd = this.form
+      const crowd = this.form
       const behaviorRules = this.behaviorRulesJson.rules
 
       let hasBehaviorRule = false // 是否有行为标签
@@ -289,9 +289,9 @@ export default {
       if (behaviorRules.length > 0) {
         hasBehaviorRule = true
         for (let x = 0; x < behaviorRules.length; x++) {
-          let rule = behaviorRules[x]
+          const rule = behaviorRules[x]
           for (let y = 0; y < rule.rules.length; y++) {
-            let item = rule.rules[y]
+            const item = rule.rules[y]
             if (item.bav && item.bav.rangeType === 'move') {
               hasMoveRule = true
               break
@@ -641,9 +641,9 @@ export default {
     putBehaviorRulesJsonTableIndex (val) {
       if (val) {
         let tableIndex = 0
-        let ruleList = val.rules
+        const ruleList = val.rules
         ruleList.forEach(rule => {
-          let ruleGroup = rule.rules
+          const ruleGroup = rule.rules
           ruleGroup.forEach(item => {
             tableIndex = tableIndex + 1
             item.table = item.table.split('$')[0] + '$' + tableIndex
@@ -668,8 +668,8 @@ export default {
     validateForm (rules, dynamicPolicyRules, behaviorRules = []) {
       this.timeTagKongList = []
       // 判断设置标签里是否有未填写的项
-      let i,
-        j = 0
+      let i
+      let j = 0
       const ruleLength = rules.length
       const dynamicPolicyRulesLength = dynamicPolicyRules.length
       let rulesFlag = true
@@ -677,7 +677,7 @@ export default {
       // ------------------- 普通标签规则校验 --------------------------
       for (i = 0; i < ruleLength; i++) {
         for (j = 0; j < rules[i].rules.length; j++) {
-          let rulesItem = rules[i].rules[j]
+          const rulesItem = rules[i].rules[j]
 
           // 多选的值，保存的时候需要转成字符串 2222
           if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
@@ -751,13 +751,13 @@ export default {
       // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
       // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
       const behaviorRulesLength = behaviorRules.length
-      let x,
-        y = 0
+      let x
+      let y = 0
       // 判断是否有未填写的项
 
       for (x = 0; x < behaviorRulesLength; x++) {
         for (y = 0; y < behaviorRules[x].rules.length; y++) {
-          let rulesItem = behaviorRules[x].rules[y]
+          const rulesItem = behaviorRules[x].rules[y]
 
           if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
             this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
@@ -827,7 +827,7 @@ export default {
       // ------------------- 动态因子规则校验 --------------------------
       for (i = 0; i < dynamicPolicyRulesLength; i++) {
         for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-          let rulesItem = dynamicPolicyRules[i].rules[j]
+          const rulesItem = dynamicPolicyRules[i].rules[j]
           if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
             this.$message.error(
               '请正确填写第' +
@@ -858,7 +858,7 @@ export default {
 
     ReorganizationData (data) { // 将数组变成层级关系
       let rData = []
-      let len = data.length
+      const len = data.length
       // for (var i = len - 1; i > -1; i--) {
       //   debugger
       //   rData = data[i]
@@ -867,7 +867,7 @@ export default {
       //   }
       // }
       if (len > 1) {
-        for (var i = len - 1; i > -1; i--) {
+        for (let i = len - 1; i > -1; i--) {
           rData = data[i]
           if (data[i - 1]) {
             rData = this.checkIfChildrenExist(data[i - 1], rData)
@@ -884,7 +884,7 @@ export default {
 
     handleSave () {
       const _this = this
-      this.$refs['form'].validate(valid => {
+      this.$refs.form.validate(valid => {
         if (valid) {
           const form = JSON.parse(JSON.stringify(this.form))
           const tagIds = []
@@ -1058,9 +1058,9 @@ export default {
               }
 
               // if (rulesItem.bav && rulesItem.bav.rang.newValue) { // 日期多选
-              if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === "fixed") { // 固定周期 日期多选
+              if (rulesItem.bav && rulesItem.bav.rang.newValue && rulesItem.bav.rangeType === 'fixed') { // 固定周期 日期多选
                 const newValue = rulesItem.bav.rang.newValue
-                let data = []
+                const data = []
                 newValue.forEach(item => {
                   if (item.value && item.value.length > 0) data.push({ value: item.value })
                 })
@@ -1071,7 +1071,7 @@ export default {
               }
 
               if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
-                let rData = []
+                const rData = []
                 const showBehaviorValue = rulesItem.bav.showBehaviorValue
                 showBehaviorValue.forEach(item => {
                   const itemCopy = JSON.parse(JSON.stringify(item))
@@ -1132,7 +1132,7 @@ export default {
             }
           })
 
-          let allList = rangeFormList.concat(typeFormList, bavFormList)
+          const allList = rangeFormList.concat(typeFormList, bavFormList)
 
           // 选择了属性为空的 time 类型的标签, 需要提示
           if (this.timeTagKongList.length > 0) {
@@ -1142,7 +1142,7 @@ export default {
               title: '配置提醒',
               message: h('p', null, [
                 h('span', null, `${tip}`),
-                h('span', null, `标签的属性为空，请确认是否继续?`),
+                h('span', null, '标签的属性为空，请确认是否继续?'),
                 h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
               ]),
               showCancelButton: true,
@@ -1226,10 +1226,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1315,7 +1315,7 @@ export default {
       // 编辑
     if (this.crowdId != null) {
       this.$service.crowdEdit({ crowdId: this.crowdId }).then(data => {
-        let policyData = data.policyCrowds
+        const policyData = data.policyCrowds
         this.form.name = policyData.crowdName
         this.form.remark = policyData.remark
         this.priority = policyData.priority
@@ -1331,10 +1331,10 @@ export default {
         this.currentLaunchLimitCount = policyData.limitLaunch
           ? policyData.limitLaunchCount
           : undefined
-        let ruleJsonData = JSON.parse(policyData.rulesJson)
+        const ruleJsonData = JSON.parse(policyData.rulesJson)
         let cacheIds = []
-        let cacheActionIds = []
-        let cacheSpecialIds = []
+        const cacheActionIds = []
+        const cacheSpecialIds = []
         ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
           itemParent.rules.forEach(item => {
             // 行为标签

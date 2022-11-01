@@ -22,8 +22,8 @@ export default {
   getEvents () {
     return {
       'node:mousedown': 'onMousedown',
-      'mousemove': 'onMousemove',
-      'mouseup': 'onMouseup',
+      mousemove: 'onMousemove',
+      mouseup: 'onMouseup',
       // 'node:dragstart': 'onDragStart',
       // 'node:drag': 'onDrag',
       // 'node:dragend': 'onDragEnd',

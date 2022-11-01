@@ -16,10 +16,10 @@ const configScheme = {
     setPolicyName (state, name) {
       state.policyName = name
     },
-    'SET_POLICY_INFO': (state, data) => {
+    SET_POLICY_INFO: (state, data) => {
       state.policyInfo = data
     },
-    'SET_SMART_DETAIL': (state, data) => {
+    SET_SMART_DETAIL: (state, data) => {
       state.smartDetail = data
     },
     setEditSchemeConfig (state, status) {

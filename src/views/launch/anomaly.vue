@@ -69,12 +69,12 @@ export default {
     }
   },
   watch: {
-    'time': function (val, oldVal) {
+    time: function (val, oldVal) {
       if (oldVal.length !== 0 && (val !== oldVal)) {
         this.fetchData()
       }
     },
-    'day': function (val, oldVal) {
+    day: function (val, oldVal) {
       if (oldVal !== undefined && (val !== oldVal)) {
         this.getLongTimeNoUse()
       }
@@ -83,8 +83,8 @@ export default {
   methods: {
     // 通用单线性参数设置
     setLineEchart (element, title, xData, yData) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -127,8 +127,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -178,8 +178,8 @@ export default {
     // 通用圆饼图
     setCircleEcharts (element, title, legend, data, circleType) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -231,9 +231,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     validateEmptyData (data, ele) {

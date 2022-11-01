@@ -96,7 +96,7 @@ export default {
     // createPolicy,
     createCrowd,
     LaunchToBusiness,
-    DynamicPeopleSetting,
+    DynamicPeopleSetting
     // DynamicPeopleConditions
   },
   props: {
@@ -154,7 +154,7 @@ export default {
       deep: true
     },
     '$route.params.source': function (val, oldVal) {
-      if (val != oldVal) {
+      if (val !== oldVal) {
         this.routeSource = val || undefined
       }
     }

@@ -47,7 +47,7 @@ export default {
       this.$service.launchPolicyIndex().then(data => {
         this.launchPlatformData = data.biLists
         this.biId = parseInt(tab.name.replace('name', ''))
-        let selectData = this.launchPlatformData.find((val, index) => {
+        const selectData = this.launchPlatformData.find((val, index) => {
           if (val.biId == this.biId) return val
         })
         this.selectedValue = selectData.launchPolicyIds.split(',').map(val => {
@@ -62,7 +62,7 @@ export default {
       if (this.launchPlatformData.length > 0) {
         this.biId = this.launchPlatformData[0].biId
         this.activeName = 'name' + this.biId
-        let selectData = this.launchPlatformData.find((val, index) => {
+        const selectData = this.launchPlatformData.find((val, index) => {
           if (val.biId == this.biId) return val
         })
         this.selectedValue = selectData.launchPolicyIds.split(',').map(val => {

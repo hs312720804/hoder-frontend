@@ -2504,18 +2504,18 @@ export default {
       } else {
         if (this.childItem.tagCode === 'BAV0012') {
           if (val) {
-            let showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
+            const showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
             if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
               // 一维数组循环找到存在值得项
-              let firstChild = showBehaviorValue.child
+              const firstChild = showBehaviorValue.child
               for (let i = firstChild.length; i--; i > 0) {
-                let curChild = firstChild[i]
+                const curChild = firstChild[i]
                 // 没有子集且存在值
                 if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
                   curChild.operator = '!='
                   break
                 } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
-                  let list = this.getNodesLastItem([curChild])
+                  const list = this.getNodesLastItem([curChild])
                   // 递归去设置
                   this.iteratorNodes({
                     nodes: this.childItem.bav.showBehaviorValue,
@@ -2576,8 +2576,8 @@ export default {
     iteratorNodes ({ nodes, currentNodes, val, seclectVal, clearVal, isCurrentNodeId } = params) {
       currentNodes.forEach(nodeItem => {
         // 递归去查找父级是否存在值
-        let operator = val ? '!=' : '='
-        let currentId = !isCurrentNodeId && nodeItem.child && nodeItem.child.length > 0 ? nodeItem.parentId : nodeItem.id
+        const operator = val ? '!=' : '='
+        const currentId = !isCurrentNodeId && nodeItem.child && nodeItem.child.length > 0 ? nodeItem.parentId : nodeItem.id
         this.getParentVal(nodes, currentId, operator)
 
         if (clearVal && clearVal === nodeItem.value) { // 需要清空的 value 值
@@ -2595,7 +2595,7 @@ export default {
         return
       }
       for (let i = 0; i < nodes.length; i++) {
-        let item = nodes[i]
+        const item = nodes[i]
         console.log(item.id === id)
         if (item.id === id) {
           if (item.value && item.filed !== 'mac') {
@@ -2843,7 +2843,7 @@ export default {
     remoteMethod (query, field, businessType) {
       if (query !== '') {
         this.loading = true
-        let params = {
+        const params = {
           type: field === 'forum_id' ? 'forum' : 'album', // 'album_id', 'forum_id'
           keywords: query,
           page: 1,
@@ -2876,7 +2876,7 @@ export default {
     handelBehavirSelectChange (params = {}) {
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
-      let { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
+      const { hasChild = false, level = 1, defaultChild = [], selectPropKeyValue = 'value', isValueClear = false, reverseSelectAttr } = params
       const childItem = this.childItem
 
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
@@ -2942,7 +2942,7 @@ export default {
         this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
       }
       // 每次切换重置数据
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
+      const { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild, reverseSelectAttr } = params
       const vals = typeof (childItem.childCheckedVal) === 'string' ? childItem.childCheckedVal.split(',') : childItem.childCheckedVal
       const behaviorValue = childItem.child || []
       // const behaviorAttrList = this.getChildBehaviorAttrList()
@@ -3114,7 +3114,7 @@ export default {
           obj.childCheckedVal = []
         }
 
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        const obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
 
@@ -3160,7 +3160,7 @@ export default {
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
 
       if (vals.length === 0 && level === 6) { // 清空集数
-        let obj = behaviorValue[0] // 不改变子级的数据
+        const obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
         obj.value = ''
         obj.field = ''
@@ -3210,7 +3210,7 @@ export default {
         }
 
         // 模块活跃，默认 child 值特殊处理
-        let defaultchild = JSON.parse(JSON.stringify(defaultChild))
+        const defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild)
 
@@ -3301,7 +3301,7 @@ export default {
           }]
         }
 
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        const obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
 
@@ -3341,7 +3341,7 @@ export default {
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
+      const { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)

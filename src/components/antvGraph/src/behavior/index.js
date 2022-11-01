@@ -14,13 +14,13 @@ const behavors = {
   'drag-item': dragItem,
   'select-node': selectNode,
   'hover-edge': hoverEdge,
-  'keyboard': keyboard,
+  keyboard: keyboard,
   'mulit-select': mulitSelect,
   'add-menu': addMenu
 }
 
 export function initBehavors () {
-  for (let key in behavors) {
+  for (const key in behavors) {
     G6.registerBehavior(key, behavors[key])
   }
 }

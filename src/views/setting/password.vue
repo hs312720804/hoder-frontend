@@ -26,26 +26,26 @@
 export default {
   name: 'passwordAA',
   data () {
-    var validateOldPass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入原始密码'))
-      } else {
-        callback()
-      }
-    }
-    var validatePass = (rule, value, callback) => {
-      if (value === '') {
-        callback(new Error('请输入密码'))
-      } else {
-        // if (this.passwordModify.reNewPwd !== "") {
-        //   this.$refs.passwordModify.validateField("reNewPwd");
-        // }
-      }
-    }
-    var validatePass2 = (rule, value, callback) => {
+    // const validateOldPass = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入原始密码'))
+    //   } else {
+    //     callback()
+    //   }
+    // }
+    // const validatePass = (rule, value, callback) => {
+    //   if (value === '') {
+    //     callback(new Error('请输入密码'))
+    //   } else {
+    //     // if (this.passwordModify.reNewPwd !== "") {
+    //     //   this.$refs.passwordModify.validateField("reNewPwd");
+    //     // }
+    //   }
+    // }
+    const validatePass2 = (rule, value, callback) => {
       if (value === '') {
         callback(new Error('请再次输入密码'))
-      } else if (value != this.passwordModify.newPwd) {
+      } else if (value !== this.passwordModify.newPwd) {
         callback(new Error('两次输入密码不一致！'))
       } else {
         callback()

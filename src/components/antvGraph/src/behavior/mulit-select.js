@@ -24,7 +24,7 @@ export default {
 
   onCanvasMousedown (e) {
     const attrs = config.delegateStyle
-    const width = 0, height = 0, x = e.x, y = e.y
+    const width = 0; const height = 0; const x = e.x; const y = e.y
     const parent = this.graph.get('group')
     this.shape = parent.addShape('rect', {
       attrs: {

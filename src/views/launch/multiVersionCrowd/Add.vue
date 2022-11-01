@@ -573,7 +573,7 @@ export default {
   data () {
     // 正整数数字校验
     const reg = /^[1-9][0-9]{0,7}$/
-    var checkMaxMac = (rule, value, callback) => {
+    const checkMaxMac = (rule, value, callback) => {
       if (value) {
         const testFlag = reg.test(value)
         if (!testFlag) {
@@ -588,7 +588,7 @@ export default {
         return true
       }
     }
-    var checkMinMac = (rule, value, callback) => {
+    const checkMinMac = (rule, value, callback) => {
       if (value) {
         const testFlag = reg.test(value)
         if (!testFlag) {
@@ -603,7 +603,7 @@ export default {
         return true
       }
     }
-    var checkMaxWx = (rule, value, callback) => {
+    const checkMaxWx = (rule, value, callback) => {
       if (value) {
         const testFlag = reg.test(value)
         if (!testFlag) {
@@ -618,7 +618,7 @@ export default {
         return true
       }
     }
-    var checkMinWx = (rule, value, callback) => {
+    const checkMinWx = (rule, value, callback) => {
       if (value) {
         const testFlag = reg.test(value)
         if (!testFlag) {
@@ -839,8 +839,8 @@ export default {
       this.crowdForm.tempCrowdId = list.find(item => {
         // console.log(this.crowdForm.policyIds  +  '===' + item.policyIds)
         // console.log(policyCrowdIds  +  '===' + item.policyCrowdIds)
-        let a = item.policyIds == this.crowdForm.policyIds
-        let b = item.policyCrowdIds == policyCrowdIds
+        const a = item.policyIds === this.crowdForm.policyIds
+        const b = item.policyCrowdIds === policyCrowdIds
         return a && b
       }).launchCrowdId
     },
@@ -849,7 +849,7 @@ export default {
     },
     removeTag (policyId) {
       this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
-        if (v.split('_')[0] != policyId) { return v }
+        return v.split('_')[0] !== policyId
       })
     },
     // 普通人群 - 获取选择的策略下的人群
@@ -867,7 +867,7 @@ export default {
             this.crowdForm.policyCrowdIds = [] // 选择人群
             this.crowdForm.crowdId = '' // 大人群ID
 
-            let newDataForm = []
+            const newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
@@ -896,7 +896,7 @@ export default {
             this.crowdForm.policyCrowdIds = [] // 选择人群
             this.crowdForm.crowdId = '' // 大人群ID
 
-            let newDataForm = []
+            const newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
@@ -919,7 +919,7 @@ export default {
     },
     // 根据接口需要，重构参数结构
     reParamsData () {
-      let crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
+      const crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
       crowdForm.biIds = crowdForm.biIds.join(',')
       if (crowdForm.crowdType === 1) { // 临时人群
         crowdForm.abTest = false
@@ -927,8 +927,6 @@ export default {
         crowdForm.policyCrowdIds = undefined
       } else if (crowdForm.crowdType === 3) { // 行为人群
         // crowdForm.tempCrowdId = undefined
-        crowdForm.policyIds = crowdForm.policyIds
-
         // 投放子人群
         if (crowdForm.abTest) {
           crowdForm.crowdType = 9
@@ -988,7 +986,7 @@ export default {
       })
     },
     handleRule () {
-      let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+      const crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
       let macInitialValue = crowdForm.macInitialValue
       const macBelowPer = crowdForm.macBelowPer
       let wxInitialValue = crowdForm.wxInitialValue
@@ -1039,12 +1037,12 @@ export default {
             }
           }
           // ab划分对保存的数据进行处理
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined && crowdForm.abTest) {
+          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined && crowdForm.abTest) {
             if (this.percentTotal !== 100) {
               this.$message.error('划分的所有比例总和必须等于100%，请调整比例再保存！')
               return
             }
-            let oldRatio = crowdForm.ratios
+            const oldRatio = crowdForm.ratios
             Object.keys(oldRatio).forEach((key, index) => {
               oldRatio[key] = this.percent[index]
             })
@@ -1119,7 +1117,7 @@ export default {
           //     }
           // }
 
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: this.model, data: crowdForm }, '编辑成功').then(() => {
               this.callback()
             })
@@ -1179,10 +1177,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1334,14 +1332,14 @@ export default {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
-      let calIdType = calTypes.map((item) => item).join(',')
+      const calIdType = calTypes.map((item) => item).join(',')
 
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
           // 获取接口所需参数
           const crowdForm = this.reParamsData(this.crowdForm)
 
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
             this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
               this.currentLaunchId = this.editLaunchCrowdId
               this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
@@ -1381,11 +1379,11 @@ export default {
     },
     async setEdit () {
       // 编辑
-      if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+      if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
         this.title = '编辑'
         this.$service.editMultiVersionCrowd(this.editLaunchCrowdId).then(async data => {
-          let row = data.launchCrowd
-          let abTestRatio = data.ratio || {}
+          const row = data.launchCrowd
+          const abTestRatio = data.ratio || {}
           // 当 row.tempCrowdId=0，就是普通人群
           this.isTempCrowd = !row.tempCrowdId
           // row.crowdType不为null，则 row.crowdType == 1 是临时人群
@@ -1394,7 +1392,7 @@ export default {
           if (Number(this.model) === 1 && !row.tempCrowdId) { // 自定义人群
           // const biIds = this.distinct(data.launchCrowdBiIds,[])
             const biIds = data.launchCrowdBiIds
-            let { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
+            const { macInitialValue, macAbovePer, macBelowPer, wxInitialValue, wxAbovePer, wxBelowPer } = row
             this.crowdDefineForm = {
               launchCrowdId: row.launchCrowdId,
               launchName: row.launchName,
@@ -1423,11 +1421,11 @@ export default {
             }
             if (row.abTest) {
               this.abTestApart = Object.keys(abTestRatio).length
-              let a = []
+              const a = []
               Object.keys(abTestRatio).forEach(item => {
                 a.push(abTestRatio[item])
               })
-              let arr = []
+              const arr = []
               for (let i = 0; i < this.abTestApart; i++) {
                 arr.push(i)
               }

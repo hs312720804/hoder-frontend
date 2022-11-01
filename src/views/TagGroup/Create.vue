@@ -133,16 +133,16 @@ export default {
     },
     resetForm () {
       this.$nextTick(() => {
-        this.$refs['form'].resetFields()
+        this.$refs.form.resetFields()
       })
       this.parentGroupName = null
     }
   },
   watch: {
-    'showSelectDialog': function (val) {
+    showSelectDialog: function (val) {
       if (val) { this.getPidList() }
     },
-    'showCreateDialog': function (val) {
+    showCreateDialog: function (val) {
       if (val) { this.resetForm() }
     }
   },

@@ -79,10 +79,10 @@ export default {
   },
   methods: {
     savePeople () {
-      this.$refs['peopleFormRef'].validate(valid => {
+      this.$refs.peopleFormRef.validate(valid => {
         if (valid) {
-          let { name, time, type, frequency } = this.peopleForm
-          let data = {
+          const { name, time, type, frequency } = this.peopleForm
+          const data = {
             strategyNodeName: name,
             condition: {
               times: {
@@ -126,7 +126,7 @@ export default {
                 frequency: ''
               }
             }
-            this.$refs['peopleFormRef'].resetFields()
+            this.$refs.peopleFormRef.resetFields()
           })
         }
       },

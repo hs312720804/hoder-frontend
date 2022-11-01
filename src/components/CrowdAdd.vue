@@ -370,9 +370,9 @@ export default {
         if (behaviorRules.length > 0) {
           hasBehaviorRule = true
           for (let x = 0; x < behaviorRules.length; x++) {
-            let rule = behaviorRules[x]
+            const rule = behaviorRules[x]
             for (let y = 0; y < rule.rules.length; y++) {
-              let item = rule.rules[y]
+              const item = rule.rules[y]
               if (item.bav && item.bav.rangeType === 'move') {
                 hasMoveRule = true
                 break
@@ -412,23 +412,23 @@ export default {
           // 人群规则初始值
           this.inputValue.push(
             {
-              'recordId': this.getRecordId(),
-              'tempCrowdId': undefined,
-              'crowdName': undefined,
-              'tagIds': [],
-              'purpose': undefined,
-              'remark': undefined,
-              'crowdOrder': 1,
-              'rulesJson': {
+              recordId: this.getRecordId(),
+              tempCrowdId: undefined,
+              crowdName: undefined,
+              tagIds: [],
+              purpose: undefined,
+              remark: undefined,
+              crowdOrder: 1,
+              rulesJson: {
                 condition: 'OR',
                 rules: []
               },
-              'behaviorRulesJson': {
+              behaviorRulesJson: {
                 link: 'AND',
                 condition: 'OR',
                 rules: []
               },
-              'dynamicPolicyJson': {
+              dynamicPolicyJson: {
                 link: 'AND',
                 condition: 'AND',
                 rules: []
@@ -494,7 +494,7 @@ export default {
         const copyName = this.getCopyIndex(0, copyCrowdData.crowdName)
         this.inputValue.push({
           ...copyCrowdData,
-          'crowdName': copyName
+          crowdName: copyName
         })
       } else { // 添加普通人群、引用其他人群
         const crowdName = linkCrowd ? `${linkCrowd.crowdName}（引用人群）` : undefined
@@ -502,31 +502,31 @@ export default {
           {
             referCrowdId: linkCrowd ? linkCrowd.crowdId : null,
             isLink: !!linkCrowd,
-            'recordId': this.getRecordId(),
-            'tempCrowdId': undefined,
-            'crowdName': crowdName,
-            'tagIds': [],
-            'purpose': undefined,
-            'remark': undefined,
-            'crowdOrder': length + 1,
-            'rulesJson': {
+            recordId: this.getRecordId(),
+            tempCrowdId: undefined,
+            crowdName: crowdName,
+            tagIds: [],
+            purpose: undefined,
+            remark: undefined,
+            crowdOrder: length + 1,
+            rulesJson: {
               condition: 'OR',
               rules: []
             },
-            'behaviorRulesJson': {
+            behaviorRulesJson: {
               link: 'AND',
               condition: 'OR',
               rules: []
             },
-            'dynamicPolicyJson': {
+            dynamicPolicyJson: {
               link: 'AND',
               condition: 'OR',
               rules: []
             },
-            'autoVersion': false,
-            'isShowAutoVersion': false,
-            'limitLaunch': false,
-            'limitLaunchCount': undefined,
+            autoVersion: false,
+            isShowAutoVersion: false,
+            limitLaunch: false,
+            limitLaunchCount: undefined,
             total0: undefined
           }
         )
@@ -537,7 +537,7 @@ export default {
       return this.recordId
     },
     setSeq () {
-      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         return e

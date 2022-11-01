@@ -66,7 +66,7 @@ export default {
   methods: {
     init () {},
     bindEvent () {
-      let self = this
+      const self = this
       eventBus.$on('afterAddPage', page => {
         self.page = page
         self.graph = self.page.graph

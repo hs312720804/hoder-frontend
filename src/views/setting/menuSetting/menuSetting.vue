@@ -213,8 +213,8 @@ export default {
     },
     // 修改状态
     handleChangetStatus (index, row) {
-      var id = row.id
-      var isShow = row.isShow == 1 ? 0 : 1
+      const id = row.id
+      const isShow = row.isShow === 1 ? 0 : 1
       this.$confirm('确定修改该条记录的状态?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -276,7 +276,7 @@ export default {
       if (formData.parentId === '') { formData.parentId = 0 }
       this.$refs.menuForm.validate(valid => {
         if (valid) {
-          if (formData.id != '') {
+          if (formData.id !== '') {
             this.$service.MenuUpdate(formData, '更新成功').then(() => {
               this.loadData()
               this.addFormVisible = false
@@ -317,7 +317,7 @@ export default {
     },
     // 单行删除
     handleDelete (index, row) {
-      var id = row.id
+      const id = row.id
       this.$confirm('确定要删除该条记录?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

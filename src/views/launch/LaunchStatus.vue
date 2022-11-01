@@ -193,7 +193,7 @@ export default {
       this.handleGetManualLaunchList()
     },
     resetForm () {
-      this.$refs['outForm'].resetFields()
+      this.$refs.outForm.resetFields()
       // 重置时，都把页面数重置为1
       this.currentPage = 1
       this.handleGetManualLaunchList()

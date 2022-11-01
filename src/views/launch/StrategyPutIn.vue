@@ -305,7 +305,7 @@ export default {
       const policyId = crowdData[index].policyId
 
       // 选中的对象list
-      let checkedList = crowdList.filter(item => {
+      const checkedList = crowdList.filter(item => {
         const flag = val.includes(policyId + '_' + item.crowdId)
         return flag
       }) || []
@@ -317,9 +317,9 @@ export default {
         })
         this.$set(this.crowdData, index, this.crowdData[index])
       }
-
+      /* eslint-disable */
       for (let i = 0; i < checkedList.length; i++) {
-        let obj = checkedList[i]
+        const obj = checkedList[i]
         if (obj.isBehaviorCrowd) { // 选了行为人群
           this.crowdData[index].childs.forEach(item => {
             if (obj.crowdId === item.crowdId) {
@@ -342,6 +342,7 @@ export default {
           break
         }
       }
+      /* eslint-enable */
 
       console.log('this.crowdData==', this.crowdData)
     },
@@ -391,7 +392,7 @@ export default {
         .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
         .then(data => {
           if (this.crowdForm.abTest) {
-            let newDataForm = []
+            const newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
@@ -403,7 +404,7 @@ export default {
           this.crowdData = this.crowdData.map(policy => {
             policy.childs = policy.childs.map(item => {
               let isBehaviorCrowd = false
-              let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+              const behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
               if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
                 isBehaviorCrowd = true
               }
@@ -444,7 +445,7 @@ export default {
             this.crowdForm.policyCrowdIds = [] // 选择人群
             this.crowdForm.crowdId = '' // 大人群ID
 
-            let newDataForm = []
+            const newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
@@ -479,7 +480,7 @@ export default {
       //   return this.crowdForm.policyCrowdIds[0] === this.crowdData[0].policyId + '_' + item.crowdId
       // })
 
-      let crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
+      const crowdForm = JSON.parse(JSON.stringify(this.crowdForm))
 
       const formData = {
         crowdType: crowdForm.crowdType,
@@ -542,7 +543,7 @@ export default {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
-      let calIdType = calTypes.map((item) => item).join(',')
+      const calIdType = calTypes.map((item) => item).join(',')
       this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id, calIdType: calIdType }, 'push投放成功').then(() => {
         if (this.crowdForm.launchMode.pull) {
           this.savePushDataSuccess = true
@@ -604,8 +605,8 @@ export default {
     }
   },
   watch: {
-    'recordId': function (val, oldVal) {
-      if (val === oldVal) {} else {
+    recordId: function (val, oldVal) {
+      if (val !== oldVal) {
         this.handleGetCurrentPolicy()
       }
     },
@@ -621,12 +622,12 @@ export default {
         this.getCrowd()
       }
     },
-    'savePullDataSuccess': function (val) {
+    savePullDataSuccess: function (val) {
       if (this.savePushDataSuccess && val) {
         this.handleEnd()
       }
     },
-    'savePushDataSuccess': function (val) {
+    savePushDataSuccess: function (val) {
       if (this.savePullDataSuccess && val) {
         this.handleEnd()
       }

@@ -307,8 +307,8 @@ export default {
     },
     // 通用单线性参数设置
     setLineEchart (element, title, xData, yData) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -349,8 +349,8 @@ export default {
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -391,8 +391,8 @@ export default {
     },
     // 通用圆饼图
     setCircleEcharts (element, title, legend, data) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -516,8 +516,8 @@ export default {
       })
     },
     setMapEcharts (element, title, data) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       // 中国地图
       myChart.setOption({
         title: {
@@ -644,9 +644,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     setDataInMonth (startDate, endDate) {

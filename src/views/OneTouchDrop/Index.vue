@@ -193,7 +193,7 @@ export default {
     LaunchToBusiness,
     newCreatePolicy,
     createConfigScheme,
-    DynamicPeopleSetting,
+    DynamicPeopleSetting
     // DynamicPeopleConditions
   },
   props: {

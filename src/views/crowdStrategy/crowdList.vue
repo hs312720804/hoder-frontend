@@ -1,3 +1,4 @@
+<!-- eslint-disable -->
 <template>
   <div>
   <div class="crowd-list">
@@ -1066,11 +1067,8 @@
               <div class="member-select--text">按会员权益</div>
               <el-select v-model="memberListType">
                   <template v-for="(item,index) in memberList">
-                      <el-option
-                              :key="index"
-                              :label="item.label"
-                              :value="item.value"
-                      ></el-option>
+                    <!-- eslint-disable-next-line -->
+                      <el-option :key="index" :label="item.label" :value="item.value"></el-option>
                   </template>
               </el-select>
           </div>
@@ -1087,11 +1085,8 @@
               <div class="member-select--text">按会员权益</div>
               <el-select v-model="memberListByPay">
                   <template v-for="(item,index) in memberList">
-                      <el-option
-                              :key="index"
-                              :label="item.label"
-                              :value="item.value"
-                      ></el-option>
+                    <!-- eslint-disable-next-line -->
+                      <el-option :key="index" :label="item.label" :value="item.value"></el-option>
                   </template>
               </el-select>
           </div>

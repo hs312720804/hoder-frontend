@@ -8,18 +8,21 @@ export default class MyPromise {
     this._value = undefined
     this.func(this.resolve.bind(this), this.reject.bind(this))
   }
+
   resolve (value) {
     if (this.status === MyPromise.PENDING) {
       this.status = MyPromise.FULFILL
       this._value = value
     }
   }
+
   reject (value) {
     if (this.status === MyPromise.PENDING) {
       this.status = MyPromise.REJECTED
       this._value = value
     }
   }
+
   then (res, rej) {
     if (this.status === MyPromise.FULFILL) {
       setTimeout(() => {
@@ -35,7 +38,7 @@ export default class MyPromise {
   }
 }
 console.log(1)
-let a = new MyPromise((resolve, reject) => {
+const a = new MyPromise((resolve, reject) => {
   console.log(2)
   resolve('success')
   reject('error')

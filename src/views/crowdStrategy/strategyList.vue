@@ -87,10 +87,8 @@
         <!--</template>-->
       <!--</el-table-column>-->
       <el-table-column prop="tagsList" width="400px">
-        <template
-                slot="header"
-                slot-scope="{ column, $index }"
-        >
+        <!-- eslint-disable-next-line -->
+        <template slot="header" slot-scope="{ column, $index }">
           策略维度（
           <span class="checkbox--red">红色</span>为大数据标签,
           <span class="checkbox--green">绿色</span>为自定义/本地标签,
@@ -736,7 +734,7 @@ export default {
       } else {
         arr = this.tagList
         for (let i = arr.length - 1; i >= 0; i--) {
-          if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
+          if (arr[i].tagId === item.tagId) { arr.splice(i, 1) }
         }
 
         if (item.tDataSource === 12) {
@@ -785,11 +783,9 @@ export default {
         .map(function (v) {
           return parseInt(v)
         })
-      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        }) || []
+      this.addForm.crowdTagCrowdIds = (Row.crowdTagCrowdIds && Row.crowdTagCrowdIds.split(',').map(function (v) {
+        return parseInt(v)
+      })) || []
       // this.addForm.conditionTagIds = []
       // this.addForm.crowdTagCrowdIds = []
 
@@ -947,7 +943,7 @@ export default {
           addForm.conditionTagIds = addForm.conditionTagIds.join(',')
           // 其他的标签 id 集合
           addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
-          if (this.addForm.policyId != '') {
+          if (this.addForm.policyId !== '') {
             this.$service.policyUpate(addForm, '编辑成功').then(() => {
               this.loadData()
               this.addFormVisible = false

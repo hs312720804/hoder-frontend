@@ -33,7 +33,7 @@ export default {
     }
   },
   watch: {
-    'inputValue': function (newV, oldV) {
+    inputValue: function (newV, oldV) {
       newV = _.trim(newV).replace(/,/g, '')
       if (newV !== null && newV !== undefined) {
         if (parseInt(newV) > this.max && newV.length <= this.maxlength) {
@@ -67,9 +67,9 @@ export default {
       if (typeof n !== String) {
         n = n.toString()
       }
-      var len = n.length
+      const len = n.length
       if (len <= 3) { return n }
-      var r = len % 3
+      const r = len % 3
       const start = n.slice(0, r)
       const end = n.slice(r).match(/\d{3}/g).join(',')
       return r > 0 ? start + ',' + end : end

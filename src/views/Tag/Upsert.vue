@@ -30,8 +30,8 @@ export default {
               {
                 case: _.value('bool'),
                 schema: _.string.enum({
-                  'true': 'true',
-                  'false': 'false'
+                  true: 'true',
+                  false: 'false'
                 }).other('form', { label: '值', placeholder: '100位以内字符串' })
               },
               {

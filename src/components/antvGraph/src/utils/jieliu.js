@@ -3,7 +3,7 @@ export function jieliu (cb, delay) {
   // console.log('cb==', cb)
   // console.log('delay==', delay)
   return function () {
-    let context = this
+    const context = this
     if (timer) {
       return
     }

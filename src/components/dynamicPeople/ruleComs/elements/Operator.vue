@@ -22,7 +22,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    
+
     index: {
       type: Number,
       default: 0
@@ -30,8 +30,7 @@ export default {
     n: {
       type: Number,
       default: 0
-    },
-  },
- }
+    }
+  }
+}
 </script>
-

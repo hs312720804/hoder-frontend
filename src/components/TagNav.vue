@@ -46,10 +46,12 @@ class TagHistory {
     this.isGoing = false
     this.isNavigating = false
   }
+
   clear () {
     this.cursor = -1
     this.stack = []
   }
+
   push (route) {
     if (!this.isGoing && !this.isNavigating) {
       let { cursor, stack } = this
@@ -67,6 +69,7 @@ class TagHistory {
       this.isNavigating = false
     }
   }
+
   active () {
     const path = this.stack[this.cursor].fullPath
     this.isNavigating = true
@@ -74,6 +77,7 @@ class TagHistory {
       this.isNavigating = false
     })
   }
+
   go (position) {
     const { cursor, stack, router } = this
     const nextCursor = cursor + position

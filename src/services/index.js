@@ -1,6 +1,6 @@
-import Vue from 'vue'
-import { utils } from '@ccprivate/admin-toolkit'
-import fetch from './fetch'
+// import Vue from 'vue'
+// import { utils } from '@ccprivate/admin-toolkit'
+import fetch from 'cseed-frame/services/_fetch'
 import login from './login'
 import getConstants from './getConstants'
 import * as email from './systemSetting/email'
@@ -64,6 +64,38 @@ const service = {
   ...tempCrowd,
   ...localCrowd
 }
-Vue.prototype.$service = utils.wrapService(service)
-
-export default utils.wrapService(service)
+export default function install (Vue) {
+  const $service = {}
+  Object.keys(service).forEach((key) => {
+    if (typeof service[key] === 'function') {
+      $service[key] = async (args, message) => {
+        return service[key](args)
+          .then((result) => {
+            if (message) {
+              Vue.prototype.$notify({
+                title: '操作成功',
+                type: 'success',
+                message
+              })
+            }
+            return result
+          })
+          .catch(() => {
+            // if (error.request && error.request.status === 401) {
+            //   location.href = location.origin + location.pathname + '#/login'
+            // } else {
+            //   Vue.prototype.$notify({
+            //     title: '操作失败',
+            //     type: 'error',
+            //     message: error.message
+            //   })
+            //   return Promise.reject(error)
+            // }
+          })
+      }
+    } else {
+      $service[key] = service[key]
+    }
+  })
+  Vue.prototype.$service = $service
+}

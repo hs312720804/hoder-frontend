@@ -173,7 +173,7 @@ export default {
     }
   },
   props: ['selectRow'],
-  provide() {
+  provide () {
     return {
       crowdIndexThis: this
     }
@@ -237,7 +237,7 @@ export default {
         this.effectCrowd = false
       }
     },
-   
+
     // 编辑 abtest 人群
     editABCrowd (row, mode) {
       this.crowd = row
@@ -265,7 +265,7 @@ export default {
     goBackCrowdListPage (isLoadData) {
       this.isShowCrowdList = true
       if (isLoadData) this.$refs.list.loadData()
-    },
+    }
     // 编辑动态人群
     // editDynamicCrowd (row) {
     //   this.isShowCrowdList = false

@@ -3,7 +3,7 @@ export default {
   getEvents () {
     return {
       'node:contextmenu': 'onContextmenu',
-      'mousedown': 'onMousedown',
+      mousedown: 'onMousedown',
       'canvas:click': 'onCanvasClick'
     }
   },

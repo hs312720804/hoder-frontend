@@ -569,7 +569,7 @@ export default {
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
+      const { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
@@ -618,7 +618,7 @@ export default {
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
       debugger
       if (vals.length === 0 && level === 6) { // 清空集数
-        let obj = behaviorValue[0] // 不改变子级的数据
+        const obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
         obj.value = ''
         obj.field = ''
@@ -709,7 +709,7 @@ export default {
         }
 
         // 模块活跃，默认 child 值特殊处理
-        let defaultchild = JSON.parse(JSON.stringify(defaultChild))
+        const defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild)
 
@@ -779,7 +779,7 @@ export default {
           // }
         }
 
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        const obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
 

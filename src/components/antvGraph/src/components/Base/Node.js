@@ -3,7 +3,7 @@ class Node extends Object {
     super()
     this.id = params.id
 
-    for (let key in params) {
+    for (const key in params) {
       this[key] = params[key] || 0
     }
     this.size = params.size.split('*')

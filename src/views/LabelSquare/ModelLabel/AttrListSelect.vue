@@ -88,8 +88,8 @@ export default {
     checkListParent: function (val) {
       this.checkList = val
     },
-    'dataList': 'updateTableSelected',
-    'currentSelectTag': 'updateTableSelected'
+    dataList: 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected'
   },
   methods: {
     handleCheckListChange (val) {
@@ -133,11 +133,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.dataList
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }

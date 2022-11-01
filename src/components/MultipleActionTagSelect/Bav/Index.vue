@@ -3232,7 +3232,7 @@
                       >
                       </el-option>
                     </template>
-                  </el-select> 
+                  </el-select>
                   -->
                   <!-- {{ item2 }} -->
                   <template v-if="childItem.tagCode === 'BAV0013'">
@@ -3246,7 +3246,7 @@
                   </template>
 
                 </div>
-                
+
               </span>
               <!-- <el-checkbox
                 class="reverse-check"
@@ -3279,7 +3279,7 @@ import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
 import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 import Bav0012 from './Bav0012.vue'
-import myMinix from './minix';
+import myMinix from './minix'
 export default {
   mixins: [myMinix], // todo.vue 中声明minix 进行混合
   components: {

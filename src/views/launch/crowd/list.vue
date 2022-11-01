@@ -145,7 +145,7 @@ export default {
     return {
       // 表格当前页数据
       tableData: [],
-      launchStatusEnum: { '1': '待投放', '2': '计算中', '3': '投放中' },
+      launchStatusEnum: { 1: '待投放', 2: '计算中', 3: '投放中' },
       // 搜索条件
       criteria: {},
       // 列表页
@@ -195,7 +195,7 @@ export default {
         })
     },
     del (row) {
-      var id = row.launchCrowdId
+      const id = row.launchCrowdId
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -211,8 +211,8 @@ export default {
     },
     // 从服务器读取数据
     loadData: function () {
-      this.criteria['pageNum'] = this.currentPage
-      this.criteria['pageSize'] = this.pageSize
+      this.criteria.pageNum = this.currentPage
+      this.criteria.pageSize = this.pageSize
       this.$service.crowdList(this.criteria).then(data => {
         this.tableData = data.list
         this.totalCount = data.total
@@ -280,14 +280,14 @@ export default {
         this.showError = true
         return
       } else { this.showError = false }
-      let calIdType = this.estimateValue.map((item) => item).join(',')
+      const calIdType = this.estimateValue.map((item) => item).join(',')
       this.$service.launchCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
         this.showEstimate = false
         this.callback()
       })
     },
     cancelLanuch (row) {
-      var id = row.launchCrowdId
+      const id = row.launchCrowdId
       this.$confirm('确定要取消投放吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',

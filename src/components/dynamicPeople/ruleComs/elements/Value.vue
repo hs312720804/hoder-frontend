@@ -14,7 +14,7 @@ export default {
       type: Object,
       default: () => {}
     },
-    
+
     index: {
       type: Number,
       default: 0
@@ -22,22 +22,21 @@ export default {
     n: {
       type: Number,
       default: 0
-    },
+    }
   },
   data () {
     return {
-    
+
     }
   },
-  created() {
+  created () {
   },
   methods: {
 
   }
- }
+}
 </script>
 
 <style lang='stylus' scoped>
 
- 
 </style>

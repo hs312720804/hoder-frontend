@@ -135,7 +135,7 @@ export default {
       this.offsetY = e.offsetY
     },
     handleDragEnd (e, item) {
-      let data = {}
+      const data = {}
       Object.assign(data, item)
       data.offsetX = this.offsetX
       data.offsetY = this.offsetY

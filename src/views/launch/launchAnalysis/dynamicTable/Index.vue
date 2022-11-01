@@ -4,15 +4,15 @@
     <hr/>
     tableHeader==={{ tableHeader }} -->
     <el-table :data="tableData">
-      <template v-for="item in tableHeader">
+      <template v-for="(item, index) in tableHeader">
         <table-column
           v-if="item.children && item.children.length"
-          :key="item.id"
+          :key="`${item.id}_${index}`"
           :coloumn-header="item"
         ></table-column>
         <el-table-column
           v-else
-          :key="item.id"
+          :key="`${index}_${item.id}`"
           :label="item.label"
           :prop="item.prop"
         >

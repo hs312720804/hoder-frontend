@@ -5,7 +5,7 @@ import { cloneDeep } from 'lodash'
 export default {
   methods: {
     initGraph () {
-      let _this = this
+      const _this = this
       const graph = new Graph({
         container: document.getElementById('flowContainer'),
         width: window.innerWidth - 440,
@@ -113,7 +113,7 @@ export default {
       // 编辑流程
       if (this.policyId) {
         this.$service.smartProgrammeDetail(this.policyId).then(res => {
-          let data = res.data
+          const data = res.data
           this.$set(this.schemeConfig, 'programmeId', data.programmeId)
           // 将JSON.stringify数据parse
           this.handleParseData(data)
@@ -121,13 +121,13 @@ export default {
             this.entryData = data.inputCondition[0] ? data.inputCondition[0] : []
             this.splitRadio = data.inputCondition[1] ? data.inputCondition[1] : ''
           }
-          let groupNameColl = this.findGroupName(data.smartStrategies)
-          let crowdNameColl = this.findGroupCrowdName(data.smartStrategies)
+          const groupNameColl = this.findGroupName(data.smartStrategies)
+          const crowdNameColl = this.findGroupCrowdName(data.smartStrategies)
           // 设置策略索引当前最大值
           this.groupIdx = this.getMaxNum(groupNameColl.toString())
           this.peopleIdx = this.getMaxNum(crowdNameColl.toString(), 'crowd')
           // 设置入口数据
-          let nodes = [], edges = []
+          const nodes = []; const edges = []
           data.smartStrategies && data.smartStrategies.forEach(item => {
             switch (item.mapGrid && item.mapGrid.identify) {
               case 'start':
@@ -241,8 +241,8 @@ export default {
              */
       // 添加一个节点时
       this.graph.on('node:added', (cell) => {
-        let { node } = cell
-        let name = node.store.data.name
+        const { node } = cell
+        const name = node.store.data.name
         switch (name) {
           case 'group':
             this.addGroupNode(node)
@@ -282,7 +282,7 @@ export default {
             edge.remove()
             return false
           }
-          let name = sourceEdge.mapGrid.identify
+          const name = sourceEdge.mapGrid.identify
           sourceEdge.mapGrid.source = source.id
           sourceEdge.mapGrid.target = target.id
           targetEdge.mapGrid.prevSourceId = source.id
@@ -307,15 +307,15 @@ export default {
       })
       // 移动节点时更新x,y
       this.graph.on('node:moved', ({ e, x, y, node, view }) => {
-        let pos = node.position()
-        let result = this.findNodesById(node.getParentId(), node.id)
+        const pos = node.position()
+        const result = this.findNodesById(node.getParentId(), node.id)
         result.mapGrid.x = pos.x
         result.mapGrid.y = pos.y
       })
       // 点击节点
       this.graph.on('node:click', ({ e, x, y, node, view }) => {
-        let newNode = this.findNodesById(node.getParentId(), node.id)
-        let identify = newNode.mapGrid.identify
+        const newNode = this.findNodesById(node.getParentId(), node.id)
+        const identify = newNode.mapGrid.identify
         if (identify === 'start') {
           this.schemeStart.is = true
         } else if (identify === 'crowd') {
@@ -341,7 +341,7 @@ export default {
       })
       // 鼠标移入展示删除按钮
       this.graph.on('node:mouseenter', ({ node }) => {
-        let newNode = this.findNodesById(node.getParentId(), node.id)
+        const newNode = this.findNodesById(node.getParentId(), node.id)
         if (newNode.mapGrid.identify !== 'start') {
           node.addTools({
             name: 'button-remove',
@@ -366,7 +366,7 @@ export default {
                   // });
                   view.cell.remove()
                 } else if (newNode.mapGrid.identify === 'crowd') {
-                  let parentId = node.getParentId()
+                  const parentId = node.getParentId()
                   _this.schemeData.forEach(item => {
                     if (item.mapGrid.id === parentId) {
                       item.smartStrategyNodes.forEach(v => {
@@ -387,9 +387,9 @@ export default {
         node.removeTool('button-remove')
       })
       this.graph.on('node:change:size', ({ cell, node }) => {
-        let result = this.findNodesById(node.getParent(), node.id)
-        let nodeSize = node.size()
-        let pos = node.position()
+        const result = this.findNodesById(node.getParent(), node.id)
+        const nodeSize = node.size()
+        const pos = node.position()
         result.mapGrid.w = nodeSize.width
         result.mapGrid.h = nodeSize.height
         result.mapGrid.x = pos.x
@@ -398,7 +398,7 @@ export default {
     },
     // 编辑数据保存
     handleEditSave () {
-      let schemeConfig = this.handleSaveData(cloneDeep(this.schemeConfig))
+      const schemeConfig = this.handleSaveData(cloneDeep(this.schemeConfig))
       return new Promise(resolve => {
         this.$service.smartProframPolicyUpdate({
           data: schemeConfig,
