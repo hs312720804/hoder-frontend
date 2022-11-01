@@ -87,7 +87,10 @@
 
     <div class="box">
       <div class="content">
-        <div class="title">接待员 </div>
+        <div class="title">
+          接待员
+          <el-button v-if="servicer.length > 0" type="text" style="float: right;" icon="el-icon-plus" size="mini" @click="addGroup">分组</el-button>
+        </div>
 
         <div class="search">
           <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select">
@@ -634,6 +637,18 @@
         @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
+    <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
+      {{ groupData }}
+      <drag
+        :list="servicer"
+        :groupData.sync="groupData"
+        :launchPlatformData="launchPlatformData"
+      ></drag>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showDragVisible = false">取 消</el-button>
+        <el-button type="primary" @click="addServicerGroup">确 定</el-button>
+      </span>
+    </el-dialog>
 
  </div>
 </template>
@@ -643,15 +658,21 @@ import createClientDialog from './createClientDialog.vue'
 import { handleSave as saveFunc } from './saveEntryFunc.js'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index copy.vue'
 import LaunchToBusiness from '../launch/StrategyPutIn'
+import drag from './drag.vue'
 
 export default {
   components: {
     createClientDialog,
     MultipleActionTagSelect,
-    LaunchToBusiness
+    LaunchToBusiness,
+    drag
   },
   data () {
     return {
+      groupData: [{
+        list: []
+      }],
+      showDragVisible: false,
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
       couponOptions: [{
@@ -766,7 +787,8 @@ export default {
       exportList: [],
       rename: '',
       rename2: '',
-      soureceSignList: []
+      soureceSignList: [],
+      launchPlatformData: []
     }
   },
   watch: {
@@ -790,8 +812,41 @@ export default {
     this.$service.getSourceSign().then(res => {
       this.soureceSignList = res
     })
+    this.getPolicyList()
   },
   methods: {
+    getPolicyList () {
+      this.$service.launchPolicyIndex().then(data => {
+        this.launchPlatformData = data.biLists
+      })
+    },
+    // 添加接待员分组
+    addServicerGroup () {
+      const parmas = this.groupData.map(item => {
+        return {
+          ...item,
+          sceneId: this.selectedScene.id
+        }
+      })
+
+      console.log('parmas---------', parmas)
+      this.$service.addGroup(parmas).then(res => {
+
+      })
+    },
+    // 添加分组
+    addGroup () {
+      // 初始化
+      this.groupData = [{
+        list: []
+      }]
+      const parmas = {
+        sceneId: this.selectedScene.id
+      }
+      this.$service.getListGroup(parmas).then(() => {
+        this.showDragVisible = true
+      })
+    },
     handleCloseDialog () {
       this.showLaunchToBusiness = false
     },
@@ -807,35 +862,34 @@ export default {
       })
       return obj ? obj.sourceName : ''
     },
-    getRulesJsonToString (rulesJson) {
-      const rules = JSON.parse(rulesJson).rules
-      const aaa = ''
-      rules.forEach((item, index) => {
-        if (index > 0) {
-          const a = `<div class="label-or-space">${this.conditionEnum[JSON.parse(rulesJson).condition]}</div>`
-          // const b = `<div class="label-ground">(
-          //         <div
-          //           v-for="(childItem,childItemIndex) in item.rules"
-          //           :key="childItem.tagId+childItemIndex"
-          //           class="label-item"
-          //         >
-          //           <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-          //           <span class="txt">{{ childItem.categoryName }}</span>
-          //           <span class="sel">{{ childItem.operator }}</span>
-          //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-          //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-          //           <span class="in">
-          //             <span >{{ childItem.value }}</span>
-          //           </span>
-          //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-          //         </div>)
-          //       </div>`
-          item.rules.forEach((valObj, index2) => {
+    // getRulesJsonToString (rulesJson) {
+    //   const rules = JSON.parse(rulesJson).rules
+    //   rules.forEach((item, index) => {
+    //     if (index > 0) {
+    //       const a = `<div class="label-or-space">${this.conditionEnum[JSON.parse(rulesJson).condition]}</div>`
+    //       // const b = `<div class="label-ground">(
+    //       //         <div
+    //       //           v-for="(childItem,childItemIndex) in item.rules"
+    //       //           :key="childItem.tagId+childItemIndex"
+    //       //           class="label-item"
+    //       //         >
+    //       //           <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+    //       //           <span class="txt">{{ childItem.categoryName }}</span>
+    //       //           <span class="sel">{{ childItem.operator }}</span>
+    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+    //       //           <span class="in">
+    //       //             <span >{{ childItem.value }}</span>
+    //       //           </span>
+    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+    //       //         </div>)
+    //       //       </div>`
+    //       item.rules.forEach((valObj, index2) => {
 
-          })
-        }
-      })
-    },
+    //       })
+    //     }
+    //   })
+    // },
     handleCommandTargetKey (val) {
       const obj = this.targetKeyList.find(item => {
         return val === item.id
@@ -1668,7 +1722,7 @@ export default {
   background-color: #8f8383;
 }
 .noData {
-  background: url(/img/noData.d47371e2.svg) center center no-repeat;
+  background: url(../../assets/img/noData.svg) center center no-repeat;
   width: 100%;
   height: 82px;
   background-size: contain;

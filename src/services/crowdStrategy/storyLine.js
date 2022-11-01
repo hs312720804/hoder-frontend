@@ -137,3 +137,29 @@ export function addScenedynamic (data) {
     data
   })
 }
+// 新建分组
+export function addGroup (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/scene/addGroup',
+    isJSON: true,
+    data
+  })
+}
+
+// 删除分组
+export function delGroup (data) {
+  return this.fetch({
+    method: 'post',
+    url: `/api/scene/delGroup/${data.groupId}`
+  })
+}
+
+// 根据场景 ID 获取分组列表
+export function getListGroup (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/scene/listGroup',
+    params
+  })
+}
