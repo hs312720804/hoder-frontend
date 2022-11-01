@@ -22,7 +22,7 @@
           <br/>
           <br/>
             <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
-            rulesJson --- {{ rulesJson }}
+            <!-- rulesJson --- {{ rulesJson }} -->
 
           <div style="position: relative">
             <div v-if="tags.length > 0">

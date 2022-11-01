@@ -30,7 +30,7 @@
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i+'condition'"
-                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }} 111111111111
+                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
                 </el-button>
 
               <!-- {{ (crowd.behaviorRulesJson.link || crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}

@@ -15,7 +15,7 @@
           ref="form"
           label-width="130px"
         >
-        rulesJson----------{{ rulesJson }}
+        <!-- rulesJson----------{{ rulesJson }} -->
           <el-form-item label="人群名称" prop="name">
             <el-input
               size="small"

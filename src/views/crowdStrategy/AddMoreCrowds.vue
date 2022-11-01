@@ -7,7 +7,7 @@
       :crowdId:: {{ crowdId }}<br/>
     </div> -->
     <!-- {{form.rulesJson}} -->
-    {{ form }}
+    <!-- {{ form }} -->
     <el-form :model="form" :rules="formRules" ref="form" label-width="130px">
       <CrowdAdd
         ref="CrowdAdd"
