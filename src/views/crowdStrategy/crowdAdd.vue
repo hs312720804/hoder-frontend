@@ -101,6 +101,7 @@
                 :max="1000000"
                 :min="1"
                 v-model="form.limitLaunchCount"
+                style="width: 220px;"
               ></el-input-number>
             </el-form-item>
             <el-form-item label="备注" prop="remark">

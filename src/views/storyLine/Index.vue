@@ -638,7 +638,7 @@
       ></LaunchToBusiness>
     </el-dialog>
     <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
-      {{ groupData }}
+      <!-- {{ groupData }} -->
       <drag
         :list="servicer"
         :groupData.sync="groupData"
