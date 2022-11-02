@@ -4,7 +4,7 @@
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
       <div class="box">
         <div class="content">
-          <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+
             <div class="title">场景</div>
 
             <div class="search">
@@ -15,78 +15,78 @@
 
             <div class="sceneList-wrap">
               <!-- {{sceneList}} -->
-              <div v-if="sceneList.length === 0" class="no-data-wrap">
-                暂时木有内容呀～～
-              </div>
-              <div class="lists-item" v-for="(item,index) in sceneList" :key="item.id" @click="selectScene(index)" :class="{active: activeIndex === index}">
-                <i class="icon el-icon-video-camera-solid"></i>
-                <span class="item-content">
-                  {{ item.sceneName }}
-                </span>
-                <span class="item-index">{{ item.id }}</span>
-                <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
-                  <span class="el-dropdown-link">
-                    . . .
+              <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+                <div v-if="sceneList.length === 0" class="no-data-wrap">
+                  暂时木有内容呀～～
+                </div>
+                <div class="lists-item" v-for="(item,index) in sceneList" :key="item.id" @click="selectScene(index)" :class="{active: activeIndex === index}">
+                  <i class="icon el-icon-video-camera-solid"></i>
+                  <span class="item-content">
+                    {{ item.sceneName }}
                   </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]">
-                      <!-- <el-popover
-                        placement="top"
-                        width="160"
-                        v-model="renameVisible"
-                        trigger="manual"
-                      > -->
-                        <!-- <div slot="reference">重命名</div> -->
-                        <!-- <template #reference>
-                          <span @click="renameVisible = true">重命名</span>
-                        </template>
-                        <p>这是一段内容这是一段内容确定删除吗？</p> -->
-                        <!-- <div style="text-align: right; margin: 0">
-                          <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
-                          <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
-                        </div> -->
+                  <span class="item-index">{{ item.id }}</span>
+                  <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
+                    <span class="el-dropdown-link">
+                      . . .
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]">
+                        <!-- <el-popover
+                          placement="top"
+                          width="160"
+                          v-model="renameVisible"
+                          trigger="manual"
+                        > -->
+                          <!-- <div slot="reference">重命名</div> -->
+                          <!-- <template #reference>
+                            <span @click="renameVisible = true">重命名</span>
+                          </template>
+                          <p>这是一段内容这是一段内容确定删除吗？</p> -->
+                          <!-- <div style="text-align: right; margin: 0">
+                            <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
+                            <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
+                          </div> -->
 
-                      <!-- </el-popover> -->
-                      <el-popover placement="top" trigger="click" ref="pop" >
-                        <div slot="reference">重命名</div>
-                        <div style="display: flex">
-                          <el-input
-                            class="re-name-input"
-                            type="text"
-                            placeholder="请输入内容"
-                            v-model="rename"
-                            maxlength="20"
-                            show-word-limit
-                            clearable
-                            style="width: 250px"
-                          >
-                          </el-input>
+                        <!-- </el-popover> -->
+                        <el-popover placement="top" trigger="click" ref="pop" >
+                          <div slot="reference">重命名</div>
+                          <div style="display: flex">
+                            <el-input
+                              class="re-name-input"
+                              type="text"
+                              placeholder="请输入内容"
+                              v-model="rename"
+                              maxlength="20"
+                              show-word-limit
+                              clearable
+                              style="width: 250px"
+                            >
+                            </el-input>
 
-                          <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                          <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
-                        </div>
-                      </el-popover>
+                            <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                            <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                          </div>
+                        </el-popover>
 
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['putIn', item]">
-                      投放
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                      {{ item.putway === 1 ? '下架' : '上架' }}
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['deleteScene', item]">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-
+                      </el-dropdown-item>
+                      <el-dropdown-item class="clearfix" :command="['putIn', item]">
+                        投放
+                      </el-dropdown-item>
+                      <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                        {{ item.putway === 1 ? '下架' : '上架' }}
+                      </el-dropdown-item>
+                      <el-dropdown-item class="clearfix" :command="['deleteScene', item]">
+                        删除
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
+                </div>
+              </el-scrollbar>
             </div>
             <div class="box-fotter">
               <!-- <el-button>添加</el-button> -->
               <el-button type="primary" icon="el-icon-plus" @click="addScene">添加</el-button>
             </div>
-          </el-scrollbar>
         </div>
       </div>
 
@@ -104,53 +104,55 @@
               </el-input>
             </div>
             <div class="sceneList-wrap" >
-              <div v-if="servicer.length === 0" class="no-data-wrap">
-                暂时木有内容呀～～
-              </div>
-              <div class="lists-item" v-for="(item, index) in servicer" :key="item.id" @click="selectServicer(index)" :class="{active: activeIndex2 === index}">
-                <i class="icon el-icon-user"></i>
-                <span class="item-content">
-                  {{ item.receptionist }}
-                </span>
-                <span class="item-index">{{ item.id }}</span>
-                <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
-                  <span class="el-dropdown-link">
-                    . . .
+              <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+                <div v-if="servicer.length === 0" class="no-data-wrap">
+                  暂时木有内容呀～～
+                </div>
+                <div class="lists-item" v-for="(item, index) in servicer" :key="item.id" @click="selectServicer(index)" :class="{active: activeIndex2 === index}">
+                  <i class="icon el-icon-user"></i>
+                  <span class="item-content">
+                    {{ item.receptionist }}
                   </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item class="clearfix" :command="['rename', item]">
+                  <span class="item-index">{{ item.id }}</span>
+                  <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
+                    <span class="el-dropdown-link">
+                      . . .
+                    </span>
+                    <el-dropdown-menu slot="dropdown">
+                      <el-dropdown-item class="clearfix" :command="['rename', item]">
 
-                      <el-popover placement="top" trigger="click" ref="pop">
-                        <div slot="reference">重命名</div>
-                        <div style="display: flex">
-                          <el-input
+                        <el-popover placement="top" trigger="click" ref="pop">
+                          <div slot="reference">重命名</div>
+                          <div style="display: flex">
+                            <el-input
 
-                            type="text"
-                            placeholder="请输入内容"
-                            v-model="rename2"
-                            maxlength="20"
-                            show-word-limit
-                            clearable
-                            style="width: 250px"
-                          >
-                          </el-input>
+                              type="text"
+                              placeholder="请输入内容"
+                              v-model="rename2"
+                              maxlength="20"
+                              show-word-limit
+                              clearable
+                              style="width: 250px"
+                            >
+                            </el-input>
 
-                          <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                          <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
-                        </div>
-                      </el-popover>
+                            <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                            <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
+                          </div>
+                        </el-popover>
 
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                      {{ item.putway === 1 ? '下架' : '上架' }}
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['deleteService', item]">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
+                      </el-dropdown-item>
+                      <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                        {{ item.putway === 1 ? '下架' : '上架' }}
+                      </el-dropdown-item>
+                      <el-dropdown-item class="clearfix" :command="['deleteService', item]">
+                        删除
+                      </el-dropdown-item>
+                    </el-dropdown-menu>
+                  </el-dropdown>
 
-              </div>
+                </div>
+              </el-scrollbar>
             </div>
             <div class="box-fotter">
               <!-- <el-button>添加</el-button> -->
@@ -1293,7 +1295,7 @@ export default {
         this.entryList = []
         this.exportList = []
         if (this.servicer.length > 0) {
-          if (this.servicer.length < this.activeIndex2) {
+          if (this.servicer.length <= this.activeIndex2) {
             this.activeIndex2 = 0
           }
           this.selectServicer(this.activeIndex2)
@@ -1303,7 +1305,7 @@ export default {
       })
     },
     // 场景列表
-    getSceneList () {
+    getSceneList (callBack) {
       const parmas = {
         keywords: this.searchScene,
         pageNum: 1,
@@ -1312,10 +1314,19 @@ export default {
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
         this.sceneList = res.data || []
+        callBack && callBack()
+        console.log('this.activeIndex---》', this.activeIndex)
         if (this.sceneList.length > 0) {
+          // 获取从动态人群跳转过来的场景ID，并选中
           const id = this.$route.params.sceneId || ''
-          const aIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
-          this.activeIndex = aIndex > 0 ? aIndex : 0
+          const redirctIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
+          debugger
+          if (redirctIndex > 0) {
+            this.activeIndex = redirctIndex
+          } else if (this.sceneList.length <= this.activeIndex) {
+            this.activeIndex = 0
+          }
+          // this.activeIndex = redirctIndex > 0 ? redirctIndex : this.activeIndex
           this.selectScene(this.activeIndex)
         }
         // this.activeIndex = 0
@@ -1382,7 +1393,10 @@ export default {
 
       this.$service.addScene(parmas).then(res => {
         // this.sceneList.push(item)
-        this.getSceneList()
+        const _this = this
+        this.getSceneList(function () {
+          _this.activeIndex = Number(_this.sceneList.length - 1)
+        })
         this.dialogVisible = false
       })
     },
