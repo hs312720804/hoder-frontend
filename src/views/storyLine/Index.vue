@@ -160,6 +160,9 @@
       <div class="box">
         <div class="content detail">
           <div class="title">接待员详情</div>
+
+          <!-- <div id="octagon"></div> -->
+
           <div style="padding: 0 10px 10px 10px" >
 
             <div class="detail-header">
@@ -1405,4 +1408,30 @@ export default {
 @import './sty/dark.styl'
 @import './sty/light.styl'
 
+#octagon {
+  width: 100px;
+  height: 100px;
+  background: red;
+  position: relative;
+}
+#octagon:before {
+  content: "";
+  width: 100px;
+  position: absolute;
+  top: 0; left: 0;
+  border-bottom: 29px solid red;
+  border-left: 29px solid #fff;
+  border-right: 29px solid #fff;
+  box-sizing: border-box;
+}
+#octagon:after {
+  content: "";
+  width: 100px;
+  position: absolute;
+  bottom: 0; left: 0;
+  border-top: 29px solid red;
+  border-left: 29px solid #fff;
+  border-right: 29px solid #fff;
+  box-sizing: border-box;
+}
 </style>
