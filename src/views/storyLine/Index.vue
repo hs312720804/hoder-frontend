@@ -4,585 +4,592 @@
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
       <div class="box">
         <div class="content">
-          <div class="title">场景</div>
+          <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+            <div class="title">场景</div>
 
-          <div class="search">
-            <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select">
-              <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
-            </el-input>
-          </div>
-
-          <div class="sceneList-wrap">
-            <!-- {{sceneList}} -->
-            <div v-if="sceneList.length === 0" class="no-data-wrap">
-              暂时木有内容呀～～
+            <div class="search">
+              <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
+              </el-input>
             </div>
-            <div class="lists-item" v-for="(item,index) in sceneList" :key="item.id" @click="selectScene(index)" :class="{active: activeIndex === index}">
-              <i class="icon el-icon-video-camera-solid"></i>
-              <span class="item-content">
-                {{ item.sceneName }}
-              </span>
-              <span class="item-index">{{ item.id }}</span>
-              <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
-                <span class="el-dropdown-link">
-                  . . .
+
+            <div class="sceneList-wrap">
+              <!-- {{sceneList}} -->
+              <div v-if="sceneList.length === 0" class="no-data-wrap">
+                暂时木有内容呀～～
+              </div>
+              <div class="lists-item" v-for="(item,index) in sceneList" :key="item.id" @click="selectScene(index)" :class="{active: activeIndex === index}">
+                <i class="icon el-icon-video-camera-solid"></i>
+                <span class="item-content">
+                  {{ item.sceneName }}
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]">
-                    <!-- <el-popover
-                      placement="top"
-                      width="160"
-                      v-model="renameVisible"
-                      trigger="manual"
-                    > -->
-                      <!-- <div slot="reference">重命名</div> -->
-                      <!-- <template #reference>
-                        <span @click="renameVisible = true">重命名</span>
-                      </template>
-                      <p>这是一段内容这是一段内容确定删除吗？</p> -->
-                      <!-- <div style="text-align: right; margin: 0">
-                        <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
-                        <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
-                      </div> -->
+                <span class="item-index">{{ item.id }}</span>
+                <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
+                  <span class="el-dropdown-link">
+                    . . .
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]">
+                      <!-- <el-popover
+                        placement="top"
+                        width="160"
+                        v-model="renameVisible"
+                        trigger="manual"
+                      > -->
+                        <!-- <div slot="reference">重命名</div> -->
+                        <!-- <template #reference>
+                          <span @click="renameVisible = true">重命名</span>
+                        </template>
+                        <p>这是一段内容这是一段内容确定删除吗？</p> -->
+                        <!-- <div style="text-align: right; margin: 0">
+                          <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
+                          <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
+                        </div> -->
 
-                    <!-- </el-popover> -->
-                    <el-popover placement="top" trigger="click" ref="pop" >
-                      <div slot="reference">重命名</div>
-                      <div style="display: flex">
-                        <el-input
-                          class="re-name-input"
-                          type="text"
-                          placeholder="请输入内容"
-                          v-model="rename"
-                          maxlength="20"
-                          show-word-limit
-                          clearable
-                          style="width: 250px"
-                        >
-                        </el-input>
+                      <!-- </el-popover> -->
+                      <el-popover placement="top" trigger="click" ref="pop" >
+                        <div slot="reference">重命名</div>
+                        <div style="display: flex">
+                          <el-input
+                            class="re-name-input"
+                            type="text"
+                            placeholder="请输入内容"
+                            v-model="rename"
+                            maxlength="20"
+                            show-word-limit
+                            clearable
+                            style="width: 250px"
+                          >
+                          </el-input>
 
-                        <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                        <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
-                      </div>
-                    </el-popover>
+                          <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                          <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                        </div>
+                      </el-popover>
 
-                  </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['putIn', item]">
-                    投放
-                  </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                    {{ item.putway === 1 ? '下架' : '上架' }}
-                  </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['deleteScene', item]">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+                    </el-dropdown-item>
+                    <el-dropdown-item class="clearfix" :command="['putIn', item]">
+                      投放
+                    </el-dropdown-item>
+                    <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                      {{ item.putway === 1 ? '下架' : '上架' }}
+                    </el-dropdown-item>
+                    <el-dropdown-item class="clearfix" :command="['deleteScene', item]">
+                      删除
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
+              </div>
+
             </div>
-
-          </div>
-          <div class="box-fotter">
-            <!-- <el-button>添加</el-button> -->
-            <el-button type="primary" icon="el-icon-plus" @click="addScene">添加</el-button>
-          </div>
-
+            <div class="box-fotter">
+              <!-- <el-button>添加</el-button> -->
+              <el-button type="primary" icon="el-icon-plus" @click="addScene">添加</el-button>
+            </div>
+          </el-scrollbar>
         </div>
       </div>
 
       <div class="box">
         <div class="content">
-          <div class="title">
-            接待员
-            <el-button v-if="servicer.length > 0" type="text" style="position: absolute;right: 14px;top: 6px;" icon="el-icon-plus" size="mini" @click="addGroup">分组</el-button>
-          </div>
-
-          <div class="search">
-            <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select">
-              <el-button slot="append" icon="el-icon-search" @click="getServiceList"></el-button>
-            </el-input>
-          </div>
-          <div class="sceneList-wrap" >
-            <div v-if="servicer.length === 0" class="no-data-wrap">
-              暂时木有内容呀～～
+          <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+            <div class="title">
+              接待员
+              <el-button v-if="servicer.length > 0" type="text" style="position: absolute;right: 14px;top: 6px;" icon="el-icon-plus" size="mini" @click="addGroup">分组</el-button>
             </div>
-            <div class="lists-item" v-for="(item, index) in servicer" :key="item.id" @click="selectServicer(index)" :class="{active: activeIndex2 === index}">
-              <i class="icon el-icon-user"></i>
-              <span class="item-content">
-                {{ item.receptionist }}
-              </span>
-              <span class="item-index">{{ item.id }}</span>
-              <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
-                <span class="el-dropdown-link">
-                  . . .
+
+            <div class="search">
+              <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select">
+                <el-button slot="append" icon="el-icon-search" @click="getServiceList"></el-button>
+              </el-input>
+            </div>
+            <div class="sceneList-wrap" >
+              <div v-if="servicer.length === 0" class="no-data-wrap">
+                暂时木有内容呀～～
+              </div>
+              <div class="lists-item" v-for="(item, index) in servicer" :key="item.id" @click="selectServicer(index)" :class="{active: activeIndex2 === index}">
+                <i class="icon el-icon-user"></i>
+                <span class="item-content">
+                  {{ item.receptionist }}
                 </span>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item class="clearfix" :command="['rename', item]">
+                <span class="item-index">{{ item.id }}</span>
+                <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
+                  <span class="el-dropdown-link">
+                    . . .
+                  </span>
+                  <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item class="clearfix" :command="['rename', item]">
 
-                    <el-popover placement="top" trigger="click" ref="pop">
-                      <div slot="reference">重命名</div>
-                      <div style="display: flex">
-                        <el-input
+                      <el-popover placement="top" trigger="click" ref="pop">
+                        <div slot="reference">重命名</div>
+                        <div style="display: flex">
+                          <el-input
 
-                          type="text"
-                          placeholder="请输入内容"
-                          v-model="rename2"
-                          maxlength="20"
-                          show-word-limit
-                          clearable
-                          style="width: 250px"
-                        >
-                        </el-input>
+                            type="text"
+                            placeholder="请输入内容"
+                            v-model="rename2"
+                            maxlength="20"
+                            show-word-limit
+                            clearable
+                            style="width: 250px"
+                          >
+                          </el-input>
 
-                        <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                        <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
-                      </div>
-                    </el-popover>
+                          <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                          <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
+                        </div>
+                      </el-popover>
 
-                  </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                    {{ item.putway === 1 ? '下架' : '上架' }}
-                  </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['deleteService', item]">
-                    删除
-                  </el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
+                    </el-dropdown-item>
+                    <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                      {{ item.putway === 1 ? '下架' : '上架' }}
+                    </el-dropdown-item>
+                    <el-dropdown-item class="clearfix" :command="['deleteService', item]">
+                      删除
+                    </el-dropdown-item>
+                  </el-dropdown-menu>
+                </el-dropdown>
 
+              </div>
             </div>
-          </div>
-          <div class="box-fotter">
-            <!-- <el-button>添加</el-button> -->
-            <el-button type="primary" icon="el-icon-plus" @click="addServicer">添加</el-button>
-          </div>
+            <div class="box-fotter">
+              <!-- <el-button>添加</el-button> -->
+              <el-button type="primary" icon="el-icon-plus" @click="addServicer">添加</el-button>
+            </div>
+          </el-scrollbar>
         </div>
       </div>
 
       <div class="box">
         <div class="content detail">
-          <div class="title">接待员详情</div>
+          <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+            <div class="title">接待员详情</div>
 
-          <!-- <div id="octagon"></div> -->
+            <div style="padding: 0 10px 10px 10px" >
 
-          <div style="padding: 0 10px 10px 10px" >
+              <div class="detail-header">
 
-            <div class="detail-header">
-
-              <div class="detail-header-column">
-                <span class="detail-name">
-                  <span>{{ selectedServicer.receptionist }}</span>
-                  <div class="detail-name-border"></div>
-                </span>
-                <div class="d-info">
-                  <div>创建人：</div>
-                  <div>{{ selectedServicer.userName }}</div>
-                  <div>创建时间：</div>
-                  <div>{{ selectedServicer.createTime }}</div>
-                  <div>擅长：</div>
-                  <div>
-                    <el-select
-                      ref="selectObj"
-                      v-model="skillValue"
-                      filterable
-                      allow-create
-                      default-first-option
-                      placeholder="输入或选择技能"
-                      clearable
-                      @blur="addOption"
-                      @change="selectSkill">
-                      <el-option
-                        v-for="item in skillOptions"
-                        :key="item.id"
-                        :label="item.name"
-                        :value="item.id">
-                      </el-option>
-                    </el-select>
+                <div class="detail-header-column">
+                  <span class="detail-name">
+                    <span>{{ selectedServicer.receptionist }}</span>
+                    <div class="detail-name-border"></div>
+                  </span>
+                  <div class="d-info" >
+                    <template>
+                      <div>创建人：</div>
+                      <div>{{ selectedServicer.userName || '-'}}</div>
+                      <div>创建时间：</div>
+                      <div>{{ selectedServicer.createTime || '-'}}</div>
+                      <div>擅长：</div>
+                      <div v-if="selectedServicer.userName">
+                        <el-select
+                          ref="selectObj"
+                          v-model="skillValue"
+                          filterable
+                          allow-create
+                          default-first-option
+                          placeholder="输入或选择技能"
+                          clearable
+                          @blur="addOption"
+                          @change="selectSkill">
+                          <el-option
+                            v-for="item in skillOptions"
+                            :key="item.id"
+                            :label="item.name"
+                            :value="item.id">
+                          </el-option>
+                        </el-select>
+                      </div>
+                      <div v-else>-</div>
+                    </template>
+                  </div>
+                  <div style="text-align: center;">业务范围</div>
+                  <div class="detail-business-type">
+                      方案：
+                      {{selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
+                    <!-- <div class="box-fotter">
+                      <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
+                    </div> -->
                   </div>
                 </div>
-                <div style="text-align: center;">业务范围</div>
-                <div class="detail-business-type">
-                    方案：
-                    {{selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
-                  <!-- <div class="box-fotter">
-                    <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
-                  </div> -->
+                <div class="aaa"></div>
+                <div class="detail-header-column">
+                  <div class="target">我的任务</div>
+                  <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
+
+                  <div class="flex-content">
+                    <div class="target-img"></div>
+                    <div v-if="!isEdit" @click="editTarget" class="target-text">
+                      <span>{{ target }}</span>
+                      <span class="text-over"></span>
+                    </div>
+                    <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                    <el-input
+                      v-else
+                      ref="inputPriority"
+                      :autosize="{ minRows: 2, maxRows: 4}"
+                      type="textarea"
+                      placeholder="请输入内容"
+                      @blur="editStatuChange"
+                      v-model="target">
+                    </el-input>
+                  </div>
+
+                  <div class="kpi-wrap">
+                    <div>绩效目标</div>
+                    <div class="detail-kpi">
+                      <!-- <el-descriptions title="" column="2">
+                        <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
+                        <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
+                        <el-descriptions-item label="目标">苏州市</el-descriptions-item>
+                        <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
+                      </el-descriptions> -->
+                      <div class="detail-kpi-table">
+                        <div>
+                          <span class="kpi-label">
+
+                            <el-dropdown @command="handleCommandTargetKey">
+                              <span class="el-dropdown-link">
+                                {{ targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
+                              </span>
+                              <el-dropdown-menu slot="dropdown">
+                                <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
+                              </el-dropdown-menu>
+                            </el-dropdown>
+                          </span>
+                          <span class="kpi-value">100%</span>
+                        </div>
+                        <div>
+                          <span class="kpi-label">接待用户数：</span>
+                          <span class="kpi-value">10000</span>
+                        </div>
+                        <div>
+                          <span class="kpi-label">目标：</span>
+                          <span class="kpi-value">
+                            <!-- {{ targetValue }} -->
+
+                              <span v-if="!isEditValue" @click="editTargetValue" class="target-text">
+                                <span>{{ targetValue }}</span>
+                                <span class="text-over"></span>
+                              </span>
+                              <el-input
+                                v-else
+                                ref="inputValue"
+                                placeholder="请输入"
+                                @blur="editTargetValueChange"
+                                v-model="targetValue"
+                                style="width: 100px">
+                              </el-input>
+
+                          </span>
+                        </div>
+                        <div>
+                          <span class="kpi-label">满意用户数：</span>
+                          <span class="kpi-value">10000</span>
+                        </div>
+                      </div>
+
+                      <div class="chart-empty"></div>
+                    </div>
+                  </div>
                 </div>
+
               </div>
-              <div class="aaa"></div>
-              <div class="detail-header-column">
-                <div class="target">我的任务</div>
-                <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
-                <div class="flex-content">
-                  <div class="target-img"></div>
-                  <div v-if="!isEdit" @click="editTarget" class="target-text">
-                    <span>{{ target }}</span>
-                    <span class="text-over"></span>
+              <div>
+                <div class="title2">服务对象选择</div>
+                <div class="set-start">
+                  <div v-if="entryList.length === 0" class="no-data-wrap">
+                    <div class="noData"></div>
+                    <!-- 暂时木有内容呀～～ -->
                   </div>
-                  <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-                  <el-input
-                    v-else
-                    ref="inputPriority"
-                    :autosize="{ minRows: 2, maxRows: 4}"
-                    type="textarea"
-                    placeholder="请输入内容"
-                    @blur="editStatuChange"
-                    v-model="target">
-                  </el-input>
-                </div>
-
-                <div class="kpi-wrap">
-                  <div>绩效目标</div>
-                  <div class="detail-kpi">
-                    <!-- <el-descriptions title="" column="2">
-                      <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
-                      <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
-                      <el-descriptions-item label="目标">苏州市</el-descriptions-item>
-                      <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
-                    </el-descriptions> -->
-                    <div class="detail-kpi-table">
-                      <div>
-                        <span class="kpi-label">
-
-                          <el-dropdown @command="handleCommandTargetKey">
-                            <span class="el-dropdown-link">
-                              {{ targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
-                            </span>
-                            <el-dropdown-menu slot="dropdown">
-                              <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
-                            </el-dropdown-menu>
-                          </el-dropdown>
+                  <div v-for="entry in entryList" :key="entry.id" class="info-class">
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and">
+                        <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
+                        {{ entry.link === 'OR' ? '或' : '且' }}
                         </span>
-                        <span class="kpi-value">100%</span>
                       </div>
-                      <div>
-                        <span class="kpi-label">接待用户数：</span>
-                        <span class="kpi-value">10000</span>
+                      <!-- {{entry.rulesJson}} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <span class="border-title">普通标签</span>
+                      <div class="rule-string" >
+                        <div v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
+                          <div
+                            v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
+                            :key="index"
+                            class="rule-detail"
+                          >
+                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
+                            <div class="label-ground">(
+                              <div
+                                v-for="(childItem,childItemIndex) in item.rules"
+                                :key="childItem.tagId+childItemIndex"
+                                class="label-item"
+                              >
+                              <!-- {{childItem}} -->
+                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                <span class="txt">{{ childItem.categoryName }}</span>
+                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                <span class="in">
+                                  <span >{{ childItem.value }}</span>
+                                </span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                              </div>)
+                            </div>
+                          </div>
+                        </div>
+                        <div v-else>暂无</div>
                       </div>
-                      <div>
-                        <span class="kpi-label">目标：</span>
-                        <span class="kpi-value">
-                          <!-- {{ targetValue }} -->
 
-                            <span v-if="!isEditValue" @click="editTargetValue" class="target-text">
-                              <span>{{ targetValue }}</span>
-                              <span class="text-over"></span>
-                            </span>
-                            <el-input
-                              v-else
-                              ref="inputValue"
-                              placeholder="请输入"
-                              @blur="editTargetValueChange"
-                              v-model="targetValue"
-                              style="width: 100px">
-                            </el-input>
+                      <span class="border-title">行为标签</span>
+                      <!-- {{entry.behaviorRulesJson}} -->
+                      <div class="rule-string bav-wrap" >
+                        <template v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                          <MultipleActionTagSelect
+                            ref="multipleActionTagSelect"
+                            :isView="true"
+                            :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
+                          ></MultipleActionTagSelect>
+                        </template>
+                        <div v-else>暂无</div>
+                      </div>
 
+                      <span class="border-title">流转指标</span>
+                      <div class="rule-string">
+                        <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
+                          <!-- {{entry.flowCondition}} -->
+                          <div
+                            v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
+                            :key="index"
+                            class="rule-detail"
+                          >
+                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
+                            <!-- {{ item }} -->
+                            <div class="label-ground">
+                              (
+                              <div
+                                v-for="(childItem, childItemIndex) in item.rules"
+                                :key="childItem.tagId+childItemIndex"
+                                class="label-item"
+                              >
+                                <!-- {{ childItem }} -->
+                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                <span class="txt">{{ childItem.tagName }}</span>，
+
+                                <!-- 模块活跃 -->
+                                <template v-if="childItem.tagKey=== 'moduleActive'" >
+                                  <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
+                                  <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
+                                  <span class="txt">{{ childItem.locationId || '' }}</span>，
+                                  <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
+                                </template>
+
+                                <!-- 优惠券活跃 -->
+                                <template v-if="childItem.tagKey=== 'couponsActive'">
+                                  <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
+                                </template>
+
+                                <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
+
+                                <!-- 产品包下单 -->
+                                <template v-if="childItem.tagKey=== 'productOrder'">
+                                  ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
+                                </template>
+
+                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
+                                <span class="in">
+                                  <span >{{ childItem.value }}</span>
+                                </span>
+                              </div>
+                              )
+                            </div>
+                          </div>
+                        </div>
+                        <div v-else>暂无</div>
+                      </div>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                    </div>
+
+                    <div class="drop-class">
+                      <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
+                        <span class="el-dropdown-link" >
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
+                            编辑
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
+                            删除
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                    </div>
+
+                  </div>
+
+                  <div class="box-fotter">
+                    <!-- <el-button>添加</el-button> -->
+                    <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
+                  </div>
+                </div>
+              </div>
+              <div>
+                <div class="title2">服务终止条件</div>
+                <div class="set-end">
+                  <div v-if="exportList.length === 0" class="no-data-wrap">
+                    <div class="noData"></div>
+                    <!-- 暂时木有内容呀～～ -->
+                  </div>
+                  <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
+                    <!-- <div class="border-line">
+                      <div>{{ item.rulesJson }}</div>
+                      <br/>
+                      <div>{{ item.behaviorRulesJson }}</div>
+                    </div> -->
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and">
+                        <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
+                        {{ exportItem.link === 'OR' ? '或' : '且' }}
                         </span>
                       </div>
-                      <div>
-                        <span class="kpi-label">满意用户数：</span>
-                        <span class="kpi-value">10000</span>
-                      </div>
-                    </div>
-
-                    <div class="chart-empty"></div>
-                  </div>
-                </div>
-              </div>
-
-            </div>
-
-            <div>
-              <div class="title2">服务对象选择</div>
-              <div class="set-start">
-                <div v-if="entryList.length === 0" class="no-data-wrap">
-                  <div class="noData"></div>
-                  <!-- 暂时木有内容呀～～ -->
-                </div>
-                <div v-for="entry in entryList" :key="entry.id" class="info-class">
-                  <div class="border-line"  style="position: relative;">
-                    <div class="outer-and">
-                      <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
-                      {{ entry.link === 'OR' ? '或' : '且' }}
-                      </span>
-                    </div>
-                    <!-- {{entry.rulesJson}} -->
-                    <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                    <span class="border-title">普通标签</span>
-                    <div class="rule-string" >
-                      <div v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
-                        <div
-                          v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
-                          :key="index"
-                          class="rule-detail"
-                        >
-                          <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
-                          <div class="label-ground">(
-                            <div
-                              v-for="(childItem,childItemIndex) in item.rules"
-                              :key="childItem.tagId+childItemIndex"
-                              class="label-item"
-                            >
-                            <!-- {{childItem}} -->
-                              <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                              <span class="txt">{{ childItem.categoryName }}</span>
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                            </div>)
-                          </div>
-                        </div>
-                      </div>
-                      <div v-else>暂无</div>
-                    </div>
-
-                    <span class="border-title">行为标签</span>
-                    <!-- {{entry.behaviorRulesJson}} -->
-                    <div class="rule-string bav-wrap" >
-                      <template v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
-                        <MultipleActionTagSelect
-                          ref="multipleActionTagSelect"
-                          :isView="true"
-                          :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
-                        ></MultipleActionTagSelect>
-                      </template>
-                      <div v-else>暂无</div>
-                    </div>
-
-                    <span class="border-title">流转指标</span>
-                    <div class="rule-string">
-                      <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
-                        <!-- {{entry.flowCondition}} -->
-                        <div
-                          v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
-                          :key="index"
-                          class="rule-detail"
-                        >
-                          <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
-                          <!-- {{ item }} -->
-                          <div class="label-ground">
-                            (
-                            <div
-                              v-for="(childItem, childItemIndex) in item.rules"
-                              :key="childItem.tagId+childItemIndex"
-                              class="label-item"
-                            >
-                              <!-- {{ childItem }} -->
-                              <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                              <span class="txt">{{ childItem.tagName }}</span>，
-
-                              <!-- 模块活跃 -->
-                              <template v-if="childItem.tagKey=== 'moduleActive'" >
-                                <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                                <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                                <span class="txt">{{ childItem.locationId || '' }}</span>，
-                                <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                              </template>
-
-                              <!-- 优惠券活跃 -->
-                              <template v-if="childItem.tagKey=== 'couponsActive'">
-                                <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                              </template>
-
-                              <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                              <!-- 产品包下单 -->
-                              <template v-if="childItem.tagKey=== 'productOrder'">
-                                ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                              </template>
-
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
+                      <!-- {{exportItem.rulesJson}} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <span class="border-title">普通标签</span>
+                      <div class="rule-string" >
+                        <div v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
+                          <div
+                            v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
+                            :key="index"
+                            class="rule-detail"
+                          >
+                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
+                            <div class="label-ground">(
+                              <div
+                                v-for="(childItem,childItemIndex) in item.rules"
+                                :key="childItem.tagId+childItemIndex"
+                                class="label-item"
+                              >
+                              <!-- {{childItem}} -->
+                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                <span class="txt">{{ childItem.categoryName }}</span>
+                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                <span class="in">
+                                  <span >{{ childItem.value }}</span>
+                                </span>
+                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                              </div>)
                             </div>
-                            )
                           </div>
                         </div>
+                        <div v-else>暂无</div>
                       </div>
-                      <div v-else>暂无</div>
-                    </div>
-                    <!-- <div>{{item.behaviorRulesJson}}</div> -->
-                  </div>
 
-                  <div class="drop-class">
-                    <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                      <span class="el-dropdown-link" >
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
-                          编辑
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
-                          删除
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
-
-                </div>
-
-                <div class="box-fotter">
-                  <!-- <el-button>添加</el-button> -->
-                  <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
-                </div>
-              </div>
-            </div>
-            <div>
-              <div class="title2">服务终止条件</div>
-              <div class="set-end">
-                <div v-if="exportList.length === 0" class="no-data-wrap">
-                  <div class="noData"></div>
-                  <!-- 暂时木有内容呀～～ -->
-                </div>
-                <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
-                  <!-- <div class="border-line">
-                    <div>{{ item.rulesJson }}</div>
-                    <br/>
-                    <div>{{ item.behaviorRulesJson }}</div>
-                  </div> -->
-                  <div class="border-line"  style="position: relative;">
-                    <div class="outer-and">
-                      <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
-                      {{ exportItem.link === 'OR' ? '或' : '且' }}
-                      </span>
-                    </div>
-                    <!-- {{exportItem.rulesJson}} -->
-                    <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                    <span class="border-title">普通标签</span>
-                    <div class="rule-string" >
-                      <div v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
-                        <div
-                          v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
-                          :key="index"
-                          class="rule-detail"
-                        >
-                          <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
-                          <div class="label-ground">(
-                            <div
-                              v-for="(childItem,childItemIndex) in item.rules"
-                              :key="childItem.tagId+childItemIndex"
-                              class="label-item"
-                            >
-                            <!-- {{childItem}} -->
-                              <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                              <span class="txt">{{ childItem.categoryName }}</span>
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                            </div>)
-                          </div>
-                        </div>
+                      <span class="border-title">行为标签</span>
+                      <!-- {{exportItem.behaviorRulesJson}} -->
+                      <div class="rule-string bav-wrap"  style="">
+                        <template v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+                          <MultipleActionTagSelect
+                            ref="multipleActionTagSelect"
+                            :isView="true"
+                            :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
+                          ></MultipleActionTagSelect>
+                        </template>
+                        <div v-else>暂无</div>
                       </div>
-                      <div v-else>暂无</div>
-                    </div>
 
-                    <span class="border-title">行为标签</span>
-                    <!-- {{exportItem.behaviorRulesJson}} -->
-                    <div class="rule-string bav-wrap"  style="">
-                      <template v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
-                        <MultipleActionTagSelect
-                          ref="multipleActionTagSelect"
-                          :isView="true"
-                          :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
-                        ></MultipleActionTagSelect>
-                      </template>
-                      <div v-else>暂无</div>
-                    </div>
+                      <span class="border-title">流转指标</span>
+                      <div class="rule-string">
+                        <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
+                          <!-- {{exportItem.flowCondition}} -->
+                          <div
+                            v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
+                            :key="index"
+                            class="rule-detail"
+                          >
+                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
+                            <!-- {{ item }} -->
+                            <div class="label-ground">
+                              (
+                              <div
+                                v-for="(childItem, childItemIndex) in item.rules"
+                                :key="childItem.tagId+childItemIndex"
+                                class="label-item"
+                              >
+                                <!-- {{ childItem }} -->
+                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                <span class="txt">{{ childItem.tagName }}</span>，
 
-                    <span class="border-title">流转指标</span>
-                    <div class="rule-string">
-                      <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
-                        <!-- {{exportItem.flowCondition}} -->
-                        <div
-                          v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
-                          :key="index"
-                          class="rule-detail"
-                        >
-                          <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
-                          <!-- {{ item }} -->
-                          <div class="label-ground">
-                            (
-                            <div
-                              v-for="(childItem, childItemIndex) in item.rules"
-                              :key="childItem.tagId+childItemIndex"
-                              class="label-item"
-                            >
-                              <!-- {{ childItem }} -->
-                              <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                              <span class="txt">{{ childItem.tagName }}</span>，
+                                <!-- 模块活跃 -->
+                                <template v-if="childItem.tagKey=== 'moduleActive'" >
+                                  <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
+                                  <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
+                                  <span class="txt">{{ childItem.locationId || '' }}</span>，
+                                  <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
+                                </template>
 
-                              <!-- 模块活跃 -->
-                              <template v-if="childItem.tagKey=== 'moduleActive'" >
-                                <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                                <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                                <span class="txt">{{ childItem.locationId || '' }}</span>，
-                                <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                              </template>
+                                <!-- 优惠券活跃 -->
+                                <template v-if="childItem.tagKey=== 'couponsActive'">
+                                  <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
+                                </template>
 
-                              <!-- 优惠券活跃 -->
-                              <template v-if="childItem.tagKey=== 'couponsActive'">
-                                <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                              </template>
+                                <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
 
-                              <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
+                                <!-- 产品包下单 -->
+                                <template v-if="childItem.tagKey=== 'productOrder'">
+                                  ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
+                                </template>
 
-                              <!-- 产品包下单 -->
-                              <template v-if="childItem.tagKey=== 'productOrder'">
-                                ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                              </template>
-
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
+                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
+                                <span class="in">
+                                  <span >{{ childItem.value }}</span>
+                                </span>
+                              </div>
+                              )
                             </div>
-                            )
                           </div>
                         </div>
+                        <div v-else>暂无</div>
                       </div>
-                      <div v-else>暂无</div>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
                     </div>
-                    <!-- <div>{{item.behaviorRulesJson}}</div> -->
-                  </div>
 
-                  <div class="drop-class">
-                    <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                      <span class="el-dropdown-link" >
-                        <span>.</span>
-                        <span>.</span>
-                        <span>.</span>
-                      </span>
-                      <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
-                          编辑
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
-                          删除
-                        </el-dropdown-item>
-                      </el-dropdown-menu>
-                    </el-dropdown>
-                  </div>
+                    <div class="drop-class">
+                      <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
+                        <span class="el-dropdown-link" >
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
+                            编辑
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
+                            删除
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                    </div>
 
-                </div>
-                <div class="box-fotter">
-                  <!-- <el-button>添加</el-button> -->
-                  <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
+                  </div>
+                  <div class="box-fotter">
+                    <!-- <el-button>添加</el-button> -->
+                    <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
+                  </div>
                 </div>
               </div>
             </div>
-          </div>
+          </el-scrollbar>
         </div>
+
       </div>
       <el-dialog
         title="添加场景"
@@ -653,7 +660,7 @@
       <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
         <!-- {{ groupData }} -->
         <drag
-          :list="servicer"
+          :list="noGroupService"
           :groupData.sync="groupData"
           :launchPlatformData="launchPlatformData"
         ></drag>
@@ -683,6 +690,7 @@ export default {
   },
   data () {
     return {
+      noGroupService: [],
       styleType: true,
       groupData: [{
         list: []
@@ -753,8 +761,8 @@ export default {
       editClientRow: {},
       skillOptions: [],
       skillValue: '',
-      selectedScene: '', // 选择的场景
-      selectedServicer: '', // 选择的服务员
+      selectedScene: {}, // 选择的场景
+      selectedServicer: {}, // 选择的服务员
       clientDialogVisible: false,
       searchScene: '',
       searchServicer: '',
@@ -774,29 +782,8 @@ export default {
       isEditValue: false,
       activeIndex: 0,
       activeIndex2: 0,
-      sceneList: [{
-        id: 0,
-        name: '新激活用户下单场景'
-      }, {
-        id: 1,
-        name: '老用户下单场景'
-      }, {
-        id: 2,
-        name: '新激活用户下单场景'
-      }, {
-        id: 3,
-        name: '新激活用户下单场景'
-      }],
-      servicer: [{
-        id: '001',
-        name: '接待员1'
-      }, {
-        id: '002',
-        name: '接待员2'
-      }, {
-        id: '003',
-        name: '接待员3'
-      }],
+      sceneList: [],
+      servicer: [],
       skillList: [],
       entryList: [],
       exportList: [],
@@ -830,6 +817,44 @@ export default {
     this.getPolicyList()
   },
   methods: {
+    getListGroupBySceneId () {
+      const params = {
+        sceneId: this.selectedScene.id
+      }
+      this.noGroupService = JSON.parse(JSON.stringify(this.servicer))
+      this.$service.getListGroup(params).then(res => {
+        console.log('res--------->', res)
+
+        if (res && res.length > 0) {
+          this.groupData = res.map(item => {
+            const list = item.list.map(obj => {
+              const receptionist = this.servicer.find(s => obj.receptionistId === s.id).receptionist
+
+              const aIndex = this.noGroupService.findIndex(s => obj.receptionistId === s.id) // 过滤没有分组的接待员
+              this.noGroupService.splice(aIndex, 1)
+
+              return {
+                ...obj,
+                receptionist
+              }
+            })
+            return {
+              id: item.id,
+              sceneId: item.sceneId,
+              list
+            }
+          })
+        } else {
+          // 初始化
+          this.groupData = [{
+            list: []
+          }]
+        }
+      })
+      console.log('this.groupData--->', this.groupData)
+      console.log('this.noGroupService--->', this.noGroupService)
+    },
+
     changeStyle () {
       this.styleType = !this.styleType
     },
@@ -849,15 +874,17 @@ export default {
 
       console.log('parmas---------', parmas)
       this.$service.addGroup(parmas).then(res => {
-
-      })
+        // 刷新列表
+        this.getServiceList()
+        this.showDragVisible = false
+      }, '成功')
     },
     // 添加分组
     addGroup () {
       // 初始化
-      this.groupData = [{
-        list: []
-      }]
+      // this.groupData = [{
+      //   list: []
+      // }]
       const parmas = {
         sceneId: this.selectedScene.id
       }
@@ -1246,7 +1273,11 @@ export default {
       this.getEntryListByReceptionistId()
       // 出口列表
       this.getExportListByReceptionistId()
+
+      // 接待员分组
+      this.getListGroupBySceneId()
     },
+
     // 服务员列表
     getServiceList () {
       const parmas = {
@@ -1262,7 +1293,10 @@ export default {
         this.entryList = []
         this.exportList = []
         if (this.servicer.length > 0) {
-          this.selectServicer(0)
+          if (this.servicer.length < this.activeIndex2) {
+            this.activeIndex2 = 0
+          }
+          this.selectServicer(this.activeIndex2)
         }
         // this.activeIndex2 = 0
         // this.selectedServicer = this.servicer[0] || {}

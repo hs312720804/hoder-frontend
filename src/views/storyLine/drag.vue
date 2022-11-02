@@ -129,12 +129,23 @@ export default {
     }
   },
   methods: {
+    // 删除分组
     cutGroup (index) {
       const currentGroup = this.groupList[index]
       if (currentGroup.list.length > 0) {
         this.totallArr = this.totallArr.concat(currentGroup.list)
       }
-      this.groupList.splice(index, 1)
+
+      if (currentGroup.id) {
+        const params = {
+          groupId: currentGroup.id
+        }
+        this.$service.delGroup(params).then(res => {
+          this.groupList.splice(index, 1)
+        })
+      } else {
+        this.groupList.splice(index, 1)
+      }
 
       console.log('this.totallArr========', this.totallArr)
       console.log('this.totallArr========', this.groupList)
@@ -227,5 +238,6 @@ export default {
   position: absolute;
   right: -22px;
   top: 47%;
+  cursor pointer
 }
 </style>
