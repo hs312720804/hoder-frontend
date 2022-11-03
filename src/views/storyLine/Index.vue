@@ -881,7 +881,8 @@ export default {
           if (res && res.length > 0) {
             this.groupData = res.map(item => {
               const list = item.list.map(obj => {
-                const receptionist = this.servicer.find(s => obj.receptionistId === s.id).receptionist
+                const ser = this.servicer.find(s => obj.receptionistId === s.id)
+                const receptionist = ser ? ser.receptionist : ''
 
                 const aIndex = this.noGroupService.findIndex(s => obj.receptionistId === s.id) // 过滤没有分组的接待员
                 this.noGroupService.splice(aIndex, 1)
