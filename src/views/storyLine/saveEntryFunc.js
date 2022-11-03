@@ -3,6 +3,7 @@ import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, che
 let timeTagKongList = []
 
 async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAddOrEdit, flowCondition) {
+  // 校验form 表单： 普通标签规则、行为标签规则
   const valid1 = await new Promise((resolve, reject) => {
     return _this.$refs.form.validate(async valid => {
       resolve(valid)

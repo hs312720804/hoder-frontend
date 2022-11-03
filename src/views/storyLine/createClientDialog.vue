@@ -80,6 +80,29 @@
             ref="form"
             label-width="130px"
           >
+          <!-- 只有出口条件选择 -->
+            <el-form-item label="处理操作" v-if="type !== 'entry'" prop="stopType" >
+              <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value"
+                  :key="item.value">
+                  {{ item.label }}
+                </el-option>
+              </el-select>
+              <!-- 正确，下一步  选择同一场景下其他接待员 -->
+              <el-select v-model="form.nextId" v-if="form.stopType === 1" prop="nextId">
+
+                <el-option
+                  v-for="item in servicerListFilterSelect"
+                  :label="item.receptionist"
+                  :value="item.crowdId"
+                  :key="item.crowdId">
+                  {{ item.receptionist }}
+                </el-option>
+              </el-select>
+            </el-form-item>
             <!-- <el-form-item label="人群名称" prop="name">
               <el-input
                 size="small"
@@ -157,17 +180,21 @@ export default {
     SetCirculationConditionsCom
   },
   data () {
-    const checkIntNumber = (rule, value, callback) => {
-      if (!value) {
-        return callback(new Error('限制投放数量不能为空'))
-      }
-      if (!Number.isInteger(value)) {
-        callback(new Error('请输入大于0小于1,000,000的整数'))
-      } else {
-        callback()
-      }
-    }
     return {
+      options: [{
+        value: 1,
+        label: '正确，继续种草，下一步'
+      }, {
+        value: 2,
+        label: '正确，直接转化'
+      }, {
+        value: 3,
+        label: '不正确，继续观察'
+      }, {
+        value: 4,
+        label: '不喜欢切换方案'
+      }],
+      // options2: [],
       totalLink: 'OR',
       tagList: [],
       addForm: {
@@ -222,19 +249,14 @@ export default {
       suggestionsNew: [],
       priority: '',
       form: {
-        name: '',
-        policyId: null,
-        remark: '',
-        // crowdExp: [],
-        autoVersion: false,
-        isShowAutoVersion: false,
-        limitLaunch: false,
-        limitLaunchCount: undefined
+        stopType: '',
+        nextId: ''
       },
       formRules: {
-        name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
-        // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
-        limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
+        stopType: [{ required: true, message: '请选择', trigger: 'change' }],
+        nextId: [{ required: true, message: '请选择', trigger: 'change' }]
+        // // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
+        // limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
       pickerOptions: {
         disabledDate (time) {
@@ -297,9 +319,17 @@ export default {
     type: {
       type: String,
       default: 'entry'
+    },
+    servicerListFilterSelect: {
+      type: Array,
+      default: () => []
     }
   },
   methods: {
+    handleStopTypeChange () {
+      // 切换处理操作时，清空选择的流转接待员 ID
+      this.form.nextId = ''
+    },
     collapseAddTags () {
       this.collapseAddTagsFlag = !this.collapseAddTagsFlag
     },
@@ -876,12 +906,15 @@ export default {
     reviewEditData () {
       // 编辑
       const policyData = this.editRow
-      if (this.type === 'entry') {
+      if (this.type === 'entry') { // 入口
         this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
           this.tagList = data || []
           this.sortTag()
         })
-      } else {
+      } else { // 出口
+        this.form.stopType = policyData.stopType
+        this.form.nextId = policyData.nextId
+
         this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
           this.tagList = data || []
           this.sortTag()

@@ -347,7 +347,7 @@
                             </div>
                           </div>
                         </div>
-                        <div v-else>暂无</div>
+                        <div v-else class="no-data-text">暂无</div>
                       </div>
 
                       <span class="border-title">行为标签</span>
@@ -360,7 +360,7 @@
                             :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
                           ></MultipleActionTagSelect>
                         </template>
-                        <div v-else>暂无</div>
+                        <div v-else style="margin-left: -58px;" class="no-data-text">暂无</div>
                       </div>
 
                       <span class="border-title">流转指标</span>
@@ -414,7 +414,7 @@
                             </div>
                           </div>
                         </div>
-                        <div v-else>暂无</div>
+                        <div v-else class="no-data-text">暂无</div>
                       </div>
                       <!-- <div>{{item.behaviorRulesJson}}</div> -->
                     </div>
@@ -496,12 +496,12 @@
                             </div>
                           </div>
                         </div>
-                        <div v-else>暂无</div>
+                        <div v-else class="no-data-text">暂无</div>
                       </div>
 
                       <span class="border-title">行为标签</span>
                       <!-- {{exportItem.behaviorRulesJson}} -->
-                      <div class="rule-string bav-wrap"  style="">
+                      <div class="rule-string bav-wrap">
                         <template v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
                           <MultipleActionTagSelect
                             ref="multipleActionTagSelect"
@@ -509,7 +509,7 @@
                             :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
                           ></MultipleActionTagSelect>
                         </template>
-                        <div v-else>暂无</div>
+                        <div v-else style="margin-left: -58px;" class="no-data-text">暂无</div>
                       </div>
 
                       <span class="border-title">流转指标</span>
@@ -563,11 +563,16 @@
                             </div>
                           </div>
                         </div>
-                        <div v-else>暂无</div>
+                        <div v-else class="no-data-text">暂无</div>
                       </div>
                       <!-- <div>{{item.behaviorRulesJson}}</div> -->
                     </div>
 
+                    <!-- 选择了转接待员 -->
+                    <div class="turn-servicer" v-if="exportItem.stopType === 1">
+                      转
+                      <el-button type="text">{{ getNameBynextId(exportItem.nextId) }}</el-button>
+                    </div>
                     <div class="drop-class">
                       <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
                         <span class="el-dropdown-link" >
@@ -650,13 +655,17 @@
         width="1200px"
         v-if="exportDialogVisible"
       >
-        <createClientDialog ref="exportClientDialog" :editRow="editExportRow" type="export"></createClientDialog>
+        <createClientDialog
+          ref="exportClientDialog"
+          :editRow="editExportRow"
+          type="export"
+          :servicerListFilterSelect="servicerListFilterSelect"
+        ></createClientDialog>
         <span slot="footer" class="dialog-footer">
           <el-button @click="exportDialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="addOrEditExportRule">确 定</el-button>
         </span>
       </el-dialog>
-
       <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
         <LaunchToBusiness
           :recordId="tempPolicyAndCrowd.policyId"
@@ -817,10 +826,15 @@ export default {
     }
   },
   computed: {
+    // 接待员分组数据
     groupServicer () {
-      const a = this.aaa(this.servicer)
-      console.log('a--------->', a)
-      return a
+      const arr = this.mergeSameAttribute(this.servicer)
+      return arr
+    },
+    // 过滤掉除了自己的其他接待员 （同一场景）
+    servicerListFilterSelect () {
+      const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
+      return data
     }
   },
   created () {
@@ -831,7 +845,12 @@ export default {
     this.getPolicyList()
   },
   methods: {
-    aaa (arr) {
+    // 根据crowdId 获取名称
+    getNameBynextId (id) {
+      const obj = this.servicer.find(item => item.crowdId === id)
+      return obj ? obj.receptionist : ''
+    },
+    mergeSameAttribute  (arr) {
       const dataInfo = {}
       arr.forEach((item, index) => {
         const { groupId } = item
@@ -1220,36 +1239,31 @@ export default {
       // const rulesJson = JSON.stringify(dialogRef.rulesJson)
       // const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
       const { rulesJson, behaviorRulesJson } = data
+      const stopType = dialogRef.form.stopType // 处理操作
+      const nextId = dialogRef.form.nextId // 流转接待员
 
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
-      let params = {}
-      if (this.editExportRow) {
-        params = {
-          ...this.editExportRow,
-          sceneId: this.selectedScene.id,
-          policyId: this.selectedScene.policyId,
-          receptionistId: this.selectedServicer.id,
-          tagIds,
-          rulesJson,
-          behaviorRulesJson,
-          flowCondition, // 流转指标
-          delFlag: 1,
-          link: dialogRef.totalLink
-        }
-      } else {
-        params = {
-          sceneId: this.selectedScene.id,
-          policyId: this.selectedScene.policyId,
-          receptionistId: this.selectedServicer.id,
-          tagIds,
-          rulesJson,
-          behaviorRulesJson,
-          flowCondition, // 流转指标
-          delFlag: 1,
-          link: dialogRef.totalLink
-        }
+      // let params = {}
+
+      let params = {
+        sceneId: this.selectedScene.id,
+        policyId: this.selectedScene.policyId,
+        receptionistId: this.selectedServicer.id,
+        tagIds,
+        rulesJson,
+        behaviorRulesJson,
+        flowCondition, // 流转指标
+        delFlag: 1,
+        link: dialogRef.totalLink,
+        stopType,
+        nextId
       }
+      if (this.editExportRow) { // 编辑
+        const defaultData = { ...this.editExportRow }
+        params = Object.assign(defaultData, params)
+      }
+
       this.$service.addExport(params, '添加成功').then(res => {
         // 刷新列表
         this.getExportListByReceptionistId()
