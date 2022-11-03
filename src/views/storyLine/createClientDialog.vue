@@ -904,8 +904,10 @@ export default {
     },
     // 回显编辑数据
     reviewEditData () {
-      // 编辑
+      // 编辑数据
       const policyData = this.editRow
+
+      this.totalLink = policyData.link // 总运算符
       if (this.type === 'entry') { // 入口
         this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
           this.tagList = data || []

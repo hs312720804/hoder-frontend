@@ -571,7 +571,7 @@
                     <!-- 选择了转接待员 -->
                     <div class="turn-servicer" v-if="exportItem.stopType === 1">
                       转
-                      <el-button type="text">{{ getNameBynextId(exportItem.nextId) }}</el-button>
+                      <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
                     </div>
                     <div class="drop-class">
                       <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
@@ -693,7 +693,7 @@
 <script>
 import createClientDialog from './createClientDialog.vue'
 import { handleSave as saveFunc } from './saveEntryFunc.js'
-import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index copy.vue'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import drag from './drag.vue'
 
@@ -845,10 +845,14 @@ export default {
     this.getPolicyList()
   },
   methods: {
+    redirctByNextId (id) {
+      const servicer = this.getServicerBynextId(id)
+      this.selectServicer(servicer.id)
+    },
     // 根据crowdId 获取名称
-    getNameBynextId (id) {
+    getServicerBynextId (id) {
       const obj = this.servicer.find(item => item.crowdId === id)
-      return obj ? obj.receptionist : ''
+      return obj || {}
     },
     mergeSameAttribute  (arr) {
       const dataInfo = {}

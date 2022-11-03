@@ -249,7 +249,7 @@ function validateForm (rules, behaviorRules = [], _this) {
         }
         // ------ 处理数据格式 end  -----
 
-        if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
+        if ('value' in rulesItem && (rulesItem.value === '' || rulesItem.value.length === 0)) {
           _this.$message.error(
             '请正确填写第' +
               (i + 1) +

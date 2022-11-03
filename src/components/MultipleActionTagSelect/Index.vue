@@ -626,6 +626,11 @@
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
 export default {
+  provide () {
+    return {
+      _this: this
+    }
+  },
   data () {
     return {
       showHitTip: true,
