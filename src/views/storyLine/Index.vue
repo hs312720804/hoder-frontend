@@ -1,5 +1,6 @@
 <template>
   <div :class="styleType ? 'dark' : 'light'">
+    <!-- {{groupServicer}} -->
     <div class='row-wrap' >
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
       <div class="box">
@@ -108,50 +109,53 @@
                 <div v-if="servicer.length === 0" class="no-data-wrap">
                   暂时木有内容呀～～
                 </div>
-                <div class="lists-item" v-for="(item, index) in servicer" :key="item.id" @click="selectServicer(index)" :class="{active: activeIndex2 === index}">
-                  <i class="icon el-icon-user"></i>
-                  <span class="item-content">
-                    {{ item.receptionist }}
-                  </span>
-                  <span class="item-index">{{ item.id }}</span>
-                  <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
-                    <span class="el-dropdown-link">
-                      . . .
+                <div v-for="(group) in groupServicer" :key="group.groupId" :class="{'group-sty': group.groupId !== 0}">
+                  <!-- {{group.groupId}} -->
+                  <div class="lists-item" v-for="item in group.child" :key="item.id"  @click="selectServicer(item.id)" :class="{active: activeIndex2Id === item.id}">
+                    <i class="icon el-icon-user"></i>
+                    <span class="item-content">
+                      {{ item.receptionist }}
                     </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item class="clearfix" :command="['rename', item]">
+                    <span class="item-index">{{ item.id }}</span>
+                    <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
+                      <span class="el-dropdown-link">
+                        . . .
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <el-dropdown-item class="clearfix" :command="['rename', item]">
 
-                        <el-popover placement="top" trigger="click" ref="pop">
-                          <div slot="reference">重命名</div>
-                          <div style="display: flex">
-                            <el-input
+                          <el-popover placement="top" trigger="click" ref="pop">
+                            <div slot="reference">重命名</div>
+                            <div style="display: flex">
+                              <el-input
 
-                              type="text"
-                              placeholder="请输入内容"
-                              v-model="rename2"
-                              maxlength="20"
-                              show-word-limit
-                              clearable
-                              style="width: 250px"
-                            >
-                            </el-input>
+                                type="text"
+                                placeholder="请输入内容"
+                                v-model="rename2"
+                                maxlength="20"
+                                show-word-limit
+                                clearable
+                                style="width: 250px"
+                              >
+                              </el-input>
 
-                            <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                            <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
-                          </div>
-                        </el-popover>
+                              <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                              <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
+                            </div>
+                          </el-popover>
 
-                      </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                        {{ item.putway === 1 ? '下架' : '上架' }}
-                      </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['deleteService', item]">
-                        删除
-                      </el-dropdown-item>
-                    </el-dropdown-menu>
-                  </el-dropdown>
-
+                        </el-dropdown-item>
+                        <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                          {{ item.putway === 1 ? '下架' : '上架' }}
+                        </el-dropdown-item>
+                        <el-dropdown-item class="clearfix" :command="['deleteService', item]">
+                          删除
+                        </el-dropdown-item>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
                 </div>
+
               </el-scrollbar>
             </div>
             <div class="box-fotter">
@@ -223,7 +227,7 @@
                     <div class="target-img"></div>
                     <div v-if="!isEdit" @click="editTarget" class="target-text">
                       <span>{{ target }}</span>
-                      <span class="text-over"></span>
+                      <span v-if="selectedServicer.id" class="text-over"></span>
                     </div>
                     <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
                     <el-input
@@ -272,7 +276,7 @@
 
                               <span v-if="!isEditValue" @click="editTargetValue" class="target-text">
                                 <span>{{ targetValue }}</span>
-                                <span class="text-over"></span>
+                                <span v-if="selectedServicer.id" class="text-over"></span>
                               </span>
                               <el-input
                                 v-else
@@ -435,7 +439,8 @@
 
                   </div>
 
-                  <div class="box-fotter">
+                  <!-- 没有选择接待员时隐藏 -->
+                  <div class="box-fotter" v-if="selectedServicer.id">
                     <!-- <el-button>添加</el-button> -->
                     <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
                   </div>
@@ -582,7 +587,7 @@
                     </div>
 
                   </div>
-                  <div class="box-fotter">
+                  <div class="box-fotter" v-if="selectedServicer.id">
                     <!-- <el-button>添加</el-button> -->
                     <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
                   </div>
@@ -783,7 +788,7 @@ export default {
       isEdit: false,
       isEditValue: false,
       activeIndex: 0,
-      activeIndex2: 0,
+      activeIndex2Id: '',
       sceneList: [],
       servicer: [],
       skillList: [],
@@ -811,6 +816,13 @@ export default {
       }
     }
   },
+  computed: {
+    groupServicer () {
+      const a = this.aaa(this.servicer)
+      console.log('a--------->', a)
+      return a
+    }
+  },
   created () {
     this.getSceneList()
     this.$service.getSourceSign().then(res => {
@@ -819,42 +831,60 @@ export default {
     this.getPolicyList()
   },
   methods: {
+    aaa (arr) {
+      const dataInfo = {}
+      arr.forEach((item, index) => {
+        const { groupId } = item
+        if (!dataInfo[groupId]) {
+          dataInfo[groupId] = {
+            groupId: item.groupId,
+            child: []
+          }
+        }
+        dataInfo[groupId].child.push(item)
+      })
+      const list = Object.values(dataInfo) // list 转换成功的数据
+      return list
+    },
     getListGroupBySceneId () {
-      const params = {
-        sceneId: this.selectedScene.id
-      }
-      this.noGroupService = JSON.parse(JSON.stringify(this.servicer))
-      this.$service.getListGroup(params).then(res => {
-        console.log('res--------->', res)
+      return new Promise((resolve, reject) => {
+        const params = {
+          sceneId: this.selectedScene.id
+        }
+        this.noGroupService = JSON.parse(JSON.stringify(this.servicer))
+        this.$service.getListGroup(params).then(res => {
+          console.log('res--------->', res)
 
-        if (res && res.length > 0) {
-          this.groupData = res.map(item => {
-            const list = item.list.map(obj => {
-              const receptionist = this.servicer.find(s => obj.receptionistId === s.id).receptionist
+          if (res && res.length > 0) {
+            this.groupData = res.map(item => {
+              const list = item.list.map(obj => {
+                const receptionist = this.servicer.find(s => obj.receptionistId === s.id).receptionist
 
-              const aIndex = this.noGroupService.findIndex(s => obj.receptionistId === s.id) // 过滤没有分组的接待员
-              this.noGroupService.splice(aIndex, 1)
+                const aIndex = this.noGroupService.findIndex(s => obj.receptionistId === s.id) // 过滤没有分组的接待员
+                this.noGroupService.splice(aIndex, 1)
 
+                return {
+                  ...obj,
+                  receptionist
+                }
+              })
               return {
-                ...obj,
-                receptionist
+                id: item.id,
+                sceneId: item.sceneId,
+                list
               }
             })
-            return {
-              id: item.id,
-              sceneId: item.sceneId,
-              list
-            }
-          })
-        } else {
-          // 初始化
-          this.groupData = [{
-            list: []
-          }]
-        }
+          } else {
+            // 初始化
+            this.groupData = [{
+              list: []
+            }]
+          }
+        })
+        resolve(this.groupData)
+        console.log('this.groupData--->', this.groupData)
+        console.log('this.noGroupService--->', this.noGroupService)
       })
-      console.log('this.groupData--->', this.groupData)
-      console.log('this.noGroupService--->', this.noGroupService)
     },
 
     changeStyle () {
@@ -882,17 +912,21 @@ export default {
       }, '成功')
     },
     // 添加分组
-    addGroup () {
+    async addGroup () {
       // 初始化
       // this.groupData = [{
       //   list: []
       // }]
-      const parmas = {
-        sceneId: this.selectedScene.id
-      }
-      this.$service.getListGroup(parmas).then(() => {
-        this.showDragVisible = true
-      })
+      // const parmas = {
+      //   sceneId: this.selectedScene.id
+      // }
+      // this.$service.getListGroup(parmas).then(() => {
+
+      // })
+
+      // 接待员分组
+      await this.getListGroupBySceneId()
+      this.showDragVisible = true
     },
     handleCloseDialog () {
       this.showLaunchToBusiness = false
@@ -1129,12 +1163,12 @@ export default {
       //   this.clientDialogVisible = false
       // })
     },
-    fetchAddOrEdit () {
+    fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
 
       const tagIds = dialogRef.checkedList.join(',')
-      const rulesJson = JSON.stringify(dialogRef.rulesJson)
-      const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
+      const { rulesJson, behaviorRulesJson } = data
+
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
       let params = {}
@@ -1179,12 +1213,14 @@ export default {
 
       saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
     },
-    fetchAddOrEdit2 () {
+    fetchAddOrEdit2 (data) {
       const dialogRef = this.$refs.exportClientDialog
 
       const tagIds = dialogRef.checkedList.join(',')
-      const rulesJson = JSON.stringify(dialogRef.rulesJson)
-      const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
+      // const rulesJson = JSON.stringify(dialogRef.rulesJson)
+      // const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
+      const { rulesJson, behaviorRulesJson } = data
+
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
       let params = {}
@@ -1267,17 +1303,15 @@ export default {
       this.getSkillListBySceneId()
     },
     // 选择服务员
-    selectServicer (index) {
-      this.activeIndex2 = index
-      this.selectedServicer = this.servicer[index] || {}
+    selectServicer (id) {
+      this.activeIndex2Id = id
+      const obj = this.servicer.find(item => item.id === id)
+      this.selectedServicer = obj || {}
 
       // 入口列表
       this.getEntryListByReceptionistId()
       // 出口列表
       this.getExportListByReceptionistId()
-
-      // 接待员分组
-      this.getListGroupBySceneId()
     },
 
     // 服务员列表
@@ -1295,10 +1329,10 @@ export default {
         this.entryList = []
         this.exportList = []
         if (this.servicer.length > 0) {
-          if (this.servicer.length <= this.activeIndex2) {
-            this.activeIndex2 = 0
-          }
-          this.selectServicer(this.activeIndex2)
+          const obj = this.servicer.find(item => item.id === this.activeIndex2Id)
+
+          this.activeIndex2Id = obj ? obj.id : this.servicer[0].id
+          this.selectServicer(this.activeIndex2Id)
         }
         // this.activeIndex2 = 0
         // this.selectedServicer = this.servicer[0] || {}
@@ -1320,7 +1354,6 @@ export default {
           // 获取从动态人群跳转过来的场景ID，并选中
           const id = this.$route.params.sceneId || ''
           const redirctIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
-          debugger
           if (redirctIndex > 0) {
             this.activeIndex = redirctIndex
           } else if (this.sceneList.length <= this.activeIndex) {

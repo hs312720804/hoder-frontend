@@ -91,11 +91,6 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
     })
   })
 
-  const data = {
-    rulesJson: JSON.stringify(ruleJson),
-    behaviorRulesJson: JSON.stringify(behaviorRulesJson)
-  }
-
   // 获取到组件中的form  校验必填项
   // 周期范围
   const rangeFormList = []
@@ -146,7 +141,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
           const validateResult = res.every(item => !!item)
           if (validateResult) {
             // 新增或编辑
-            fetchAddOrEdit(data)
+            fetchAddOrEdit()
           } else {
             _this.$message.error('请输入必填项')
           }
@@ -155,7 +150,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
         })
       } else { // 没有行为标签的
         // 新增或编辑
-        fetchAddOrEdit(data)
+        fetchAddOrEdit()
       }
     })
   } else {
@@ -165,7 +160,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
         const validateResult = res.every(item => !!item)
         if (validateResult) {
           // 新增或编辑
-          fetchAddOrEdit(data)
+          fetchAddOrEdit()
         } else {
           _this.$message.error('请输入必填项')
         }
@@ -174,12 +169,13 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
       })
     } else { // 没有行为标签的
       // 新增或编辑
-      fetchAddOrEdit(data)
+      fetchAddOrEdit()
     }
   }
 }
 
 function validateForm (rules, behaviorRules = [], _this) {
+  debugger
   timeTagKongList = []
   // 判断设置标签里是否有未填写的项
   let i
@@ -199,66 +195,61 @@ function validateForm (rules, behaviorRules = [], _this) {
       }
       // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
       const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
+      debugger
       if (isTimeTagKong) {
         if (!timeTagKongList.includes(rulesItem.tagName)) {
           timeTagKongList.push(rulesItem.tagName)
         }
-      } else {
-        // ------ 处理数据格式 start  -----
-        if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-          // 二期之后的
-          if (rulesItem.version > 0) {
-            const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
-            const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
-            rulesItem.value = startDay + '~' + endDay
-          } else { // 一期
+      } else if (Object.prototype.hasOwnProperty.call(rulesItem, 'value') && (rulesItem.value === '' || rulesItem.value.length === 0)) {
+        _this.$message.error(
+          '请正确填写第' +
+            (i + 1) +
+            '设置标签块里面的第' +
+            (j + 1) +
+            '行的值！'
+        )
+        rulesFlag = false
+        break
+      } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
+        // 二期之后的
+        if (rulesItem.version > 0) {
+          const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
+          const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
+          rulesItem.value = startDay + '~' + endDay
+        } else { // 一期
+          if (
+            checkNumMostFour(rulesItem.startDay) &&
+            checkNumMostFour(rulesItem.endDay)
+          ) {
             if (
-              checkNumMostFour(rulesItem.startDay) &&
-              checkNumMostFour(rulesItem.endDay)
+              parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
             ) {
-              if (
-                parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
-              ) {
-                rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-              } else {
-                _this.$message.error(
-                  '第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的天数值后面的值必须大于前面的'
-                )
-                rulesFlag = false
-                break
-              }
+              rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
             } else {
               _this.$message.error(
                 '第' +
                   (i + 1) +
                   '设置标签块里面的第' +
                   (j + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
+                  '行的天数值后面的值必须大于前面的'
               )
               rulesFlag = false
               break
             }
+          } else {
+            _this.$message.error(
+              '第' +
+                (i + 1) +
+                '设置标签块里面的第' +
+                (j + 1) +
+                '行的值是大于等于0的整数且不能超过4位数'
+            )
+            rulesFlag = false
+            break
           }
-        } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-          rulesItem.operator = '='
         }
-        // ------ 处理数据格式 end  -----
-
-        if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-          _this.$message.error(
-            '请正确填写第' +
-              (i + 1) +
-              '设置标签块里面的第' +
-              (j + 1) +
-              '行的值！'
-          )
-          rulesFlag = false
-          break
-        }
+      } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
+        rulesItem.operator = '='
       }
 
       if (!rulesFlag) break

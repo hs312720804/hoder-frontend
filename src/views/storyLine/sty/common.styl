@@ -24,6 +24,7 @@
 .icon
   font-size 16px
   width 20px
+  line-height: 20px;
 
 
 .lists-item
@@ -247,3 +248,23 @@
 .lists-item >>> .el-dropdown, .drop-class >>> .el-dropdown
   position: relative;
   line-height: 10px
+
+.group-sty
+  margin: 10px 0;
+  width: 100%;
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+  // box-shadow: 0 0 30px 0 #4852ff;
+  // background: rgba(7,19,60,0.702);
+  // border-left: 2px solid #0de7e8;
+  position relative
+.group-sty::before {
+  content: "";
+  position absolute
+  top: 0;
+  left: 0;
+  width: 5px;
+  height: 100%;
+  background: #0de7e8;
+  border-radius: 125px 0 0 125px;
+}
