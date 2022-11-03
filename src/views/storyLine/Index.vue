@@ -884,8 +884,8 @@ export default {
                 const ser = this.servicer.find(s => obj.receptionistId === s.id)
                 const receptionist = ser ? ser.receptionist : ''
 
-                const aIndex = this.noGroupService.findIndex(s => obj.receptionistId === s.id) // 过滤没有分组的接待员
-                this.noGroupService.splice(aIndex, 1)
+                this.noGroupService = this.noGroupService.filter(s => obj.receptionistId !== s.id) // 过滤没有分组的接待员
+                // if (aIndex > -1) this.noGroupService.splice(aIndex, 1)
 
                 return {
                   ...obj,
@@ -905,9 +905,8 @@ export default {
             }]
           }
         })
-        resolve(this.groupData)
         console.log('this.groupData--->', this.groupData)
-        console.log('this.noGroupService--->', this.noGroupService)
+        resolve(this.groupData)
       })
     },
 
