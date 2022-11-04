@@ -975,7 +975,7 @@ export default {
 
       this.behaviorRulesJson.rules.forEach(ruleItem => {
         ruleItem.rules.forEach(rulesEachItem => {
-          // 多选的值，回显的时候需要转成数组 2222
+          // 多选的值，回显的时候需要转成数组
           if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
             rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
           }

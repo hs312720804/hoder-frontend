@@ -1,4 +1,5 @@
 <template>
+  <!-- 故事线 - 回显规则 -->
   <div class="label-container multipleSelect">
     <!-- 行为标签 -->
     <!-- {{ actionTags}} -->
@@ -71,7 +72,7 @@
                 </Bav>
               </div>
               <!-- 大数据标签 -->
-              <div v-else class="behavior-label">
+              <el-form :disabled="true" v-else class="behavior-label">
                 <span class="txt">{{ childItem.categoryName }}</span>
 
                 <span class="sel">
@@ -490,7 +491,7 @@
                   </el-tooltip>
 
                 </span>
-              </div>
+              </el-form>
 
               <!-- <span>
                 <el-button type="text" @click="handelCopyRule(item, childItem, n)">复制</el-button>
@@ -668,7 +669,16 @@ export default {
   watch: {
     behaviorRulesJson: {
       handler () {
-        // console.log('behaviorRulesJson==>', val)
+        // 编辑时回显，处理数据格式
+        this.behaviorRulesJson.rules.forEach(ruleItem => {
+          ruleItem.rules.forEach(rulesEachItem => {
+            // 多选的值，回显的时候需要转成数组
+            if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+              rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+            }
+          })
+        })
+
         this.fetchAllTagSuggestions()
       },
       immediate: true
@@ -1514,6 +1524,7 @@ i {
 .label-container {
   position: relative;
   z-index: 1;
+  padding-left: 30px;
 }
 
 .label-or-space {

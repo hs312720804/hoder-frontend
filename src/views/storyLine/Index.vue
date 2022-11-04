@@ -70,13 +70,14 @@
                         </el-popover>
 
                       </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['putIn', item]">
+                      <!-- 场景的 planId 为 null, 才展示按钮 -->
+                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]">
                         投放
                       </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['offSet', item]">
+                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]">
                         {{ item.putway === 1 ? '下架' : '上架' }}
                       </el-dropdown-item>
-                      <el-dropdown-item class="clearfix" :command="['deleteScene', item]">
+                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
                         删除
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -165,443 +166,21 @@
           </el-scrollbar>
         </div>
       </div>
-
       <div class="box">
-        <div class="content detail">
-          <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
-            <div class="title">接待员详情</div>
-
-            <div style="padding: 0 10px 10px 10px" >
-
-              <div class="detail-header">
-
-                <div class="detail-header-column">
-                  <span class="detail-name">
-                    <span>{{ selectedServicer.receptionist }}</span>
-                    <div class="detail-name-border"></div>
-                  </span>
-                  <div class="d-info" >
-                    <template>
-                      <div>创建人：</div>
-                      <div>{{ selectedServicer.userName || '-'}}</div>
-                      <div>创建时间：</div>
-                      <div>{{ selectedServicer.createTime || '-'}}</div>
-                      <div>擅长：</div>
-                      <div v-if="selectedServicer.userName">
-                        <el-select
-                          ref="selectObj"
-                          v-model="skillValue"
-                          filterable
-                          allow-create
-                          default-first-option
-                          placeholder="输入或选择技能"
-                          clearable
-                          @blur="addOption"
-                          @change="selectSkill">
-                          <el-option
-                            v-for="item in skillOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                          </el-option>
-                        </el-select>
-                      </div>
-                      <div v-else>-</div>
-                    </template>
-                  </div>
-                  <div style="text-align: center;">业务范围</div>
-                  <div class="detail-business-type">
-                      方案：
-                      {{selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
-                    <!-- <div class="box-fotter">
-                      <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
-                    </div> -->
-                  </div>
-                </div>
-                <div class="aaa"></div>
-                <div class="detail-header-column">
-                  <div class="target">我的任务</div>
-                  <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
-
-                  <div class="flex-content">
-                    <div class="target-img"></div>
-                    <div v-if="!isEdit" @click="editTarget" class="target-text">
-                      <span>{{ target }}</span>
-                      <span v-if="selectedServicer.id" class="text-over"></span>
-                    </div>
-                    <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-                    <el-input
-                      v-else
-                      ref="inputPriority"
-                      :autosize="{ minRows: 2, maxRows: 4}"
-                      type="textarea"
-                      placeholder="请输入内容"
-                      @blur="editStatuChange"
-                      v-model="target">
-                    </el-input>
-                  </div>
-
-                  <div class="kpi-wrap">
-                    <div>绩效目标</div>
-                    <div class="detail-kpi">
-                      <!-- <el-descriptions title="" column="2">
-                        <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
-                        <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
-                        <el-descriptions-item label="目标">苏州市</el-descriptions-item>
-                        <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
-                      </el-descriptions> -->
-                      <div class="detail-kpi-table">
-                        <div>
-                          <span class="kpi-label">
-
-                            <el-dropdown @command="handleCommandTargetKey">
-                              <span class="el-dropdown-link">
-                                {{ targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
-                              </span>
-                              <el-dropdown-menu slot="dropdown">
-                                <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
-                              </el-dropdown-menu>
-                            </el-dropdown>
-                          </span>
-                          <span class="kpi-value">100%</span>
-                        </div>
-                        <div>
-                          <span class="kpi-label">接待用户数：</span>
-                          <span class="kpi-value">10000</span>
-                        </div>
-                        <div>
-                          <span class="kpi-label">目标：</span>
-                          <span class="kpi-value">
-                            <!-- {{ targetValue }} -->
-
-                              <span v-if="!isEditValue" @click="editTargetValue" class="target-text">
-                                <span>{{ targetValue }}</span>
-                                <span v-if="selectedServicer.id" class="text-over"></span>
-                              </span>
-                              <el-input
-                                v-else
-                                ref="inputValue"
-                                placeholder="请输入"
-                                @blur="editTargetValueChange"
-                                v-model="targetValue"
-                                style="width: 100px">
-                              </el-input>
-
-                          </span>
-                        </div>
-                        <div>
-                          <span class="kpi-label">满意用户数：</span>
-                          <span class="kpi-value">10000</span>
-                        </div>
-                      </div>
-
-                      <div class="chart-empty"></div>
-                    </div>
-                  </div>
-                </div>
-
-              </div>
-
-              <div>
-                <div class="title2">服务对象选择</div>
-                <div class="set-start">
-                  <div v-if="entryList.length === 0" class="no-data-wrap">
-                    <div class="noData"></div>
-                    <!-- 暂时木有内容呀～～ -->
-                  </div>
-                  <div v-for="entry in entryList" :key="entry.id" class="info-class">
-                    <div class="border-line"  style="position: relative;">
-                      <div class="outer-and">
-                        <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
-                        {{ entry.link === 'OR' ? '或' : '且' }}
-                        </span>
-                      </div>
-                      <!-- {{entry.rulesJson}} -->
-                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                      <span class="border-title">普通标签</span>
-                      <div class="rule-string" >
-                        <div v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
-                          <div
-                            v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
-                            :key="index"
-                            class="rule-detail"
-                          >
-                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
-                            <div class="label-ground">(
-                              <div
-                                v-for="(childItem,childItemIndex) in item.rules"
-                                :key="childItem.tagId+childItemIndex"
-                                class="label-item"
-                              >
-                              <!-- {{childItem}} -->
-                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                                <span class="txt">{{ childItem.categoryName }}</span>
-                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                                <span class="in">
-                                  <span >{{ childItem.value }}</span>
-                                </span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                              </div>)
-                            </div>
-                          </div>
-                        </div>
-                        <div v-else class="no-data-text">暂无</div>
-                      </div>
-
-                      <span class="border-title">行为标签</span>
-                      <!-- {{entry.behaviorRulesJson}} -->
-                      <div class="rule-string bav-wrap" >
-                        <template v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
-                          <MultipleActionTagSelect
-                            ref="multipleActionTagSelect"
-                            :isView="true"
-                            :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
-                          ></MultipleActionTagSelect>
-                        </template>
-                        <div v-else style="margin-left: -58px;" class="no-data-text">暂无</div>
-                      </div>
-
-                      <span class="border-title">流转指标</span>
-                      <div class="rule-string">
-                        <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
-                          <!-- {{entry.flowCondition}} -->
-                          <div
-                            v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
-                            :key="index"
-                            class="rule-detail"
-                          >
-                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
-                            <!-- {{ item }} -->
-                            <div class="label-ground">
-                              (
-                              <div
-                                v-for="(childItem, childItemIndex) in item.rules"
-                                :key="childItem.tagId+childItemIndex"
-                                class="label-item"
-                              >
-                                <!-- {{ childItem }} -->
-                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                                <span class="txt">{{ childItem.tagName }}</span>，
-
-                                <!-- 模块活跃 -->
-                                <template v-if="childItem.tagKey=== 'moduleActive'" >
-                                  <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                                  <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                                  <span class="txt">{{ childItem.locationId || '' }}</span>，
-                                  <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                                </template>
-
-                                <!-- 优惠券活跃 -->
-                                <template v-if="childItem.tagKey=== 'couponsActive'">
-                                  <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                                </template>
-
-                                <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                                <!-- 产品包下单 -->
-                                <template v-if="childItem.tagKey=== 'productOrder'">
-                                  ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                                </template>
-
-                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                                <span class="in">
-                                  <span >{{ childItem.value }}</span>
-                                </span>
-                              </div>
-                              )
-                            </div>
-                          </div>
-                        </div>
-                        <div v-else class="no-data-text">暂无</div>
-                      </div>
-                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
-                    </div>
-
-                    <div class="drop-class">
-                      <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                        <span class="el-dropdown-link" >
-                          <span>.</span>
-                          <span>.</span>
-                          <span>.</span>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
-                            编辑
-                          </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
-                            删除
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </div>
-
-                  </div>
-
-                  <!-- 没有选择接待员时隐藏 -->
-                  <div class="box-fotter" v-if="selectedServicer.id">
-                    <!-- <el-button>添加</el-button> -->
-                    <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
-                  </div>
-                </div>
-              </div>
-              <div>
-                <div class="title2">服务终止条件</div>
-                <div class="set-end">
-                  <div v-if="exportList.length === 0" class="no-data-wrap">
-                    <div class="noData"></div>
-                    <!-- 暂时木有内容呀～～ -->
-                  </div>
-                  <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
-                    <!-- <div class="border-line">
-                      <div>{{ item.rulesJson }}</div>
-                      <br/>
-                      <div>{{ item.behaviorRulesJson }}</div>
-                    </div> -->
-                    <div class="border-line"  style="position: relative;">
-                      <div class="outer-and">
-                        <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
-                        {{ exportItem.link === 'OR' ? '或' : '且' }}
-                        </span>
-                      </div>
-                      <!-- {{exportItem.rulesJson}} -->
-                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                      <span class="border-title">普通标签</span>
-                      <div class="rule-string" >
-                        <div v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
-                          <div
-                            v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
-                            :key="index"
-                            class="rule-detail"
-                          >
-                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
-                            <div class="label-ground">(
-                              <div
-                                v-for="(childItem,childItemIndex) in item.rules"
-                                :key="childItem.tagId+childItemIndex"
-                                class="label-item"
-                              >
-                              <!-- {{childItem}} -->
-                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                                <span class="txt">{{ childItem.categoryName }}</span>
-                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                                <span class="in">
-                                  <span >{{ childItem.value }}</span>
-                                </span>
-                                <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                              </div>)
-                            </div>
-                          </div>
-                        </div>
-                        <div v-else class="no-data-text">暂无</div>
-                      </div>
-
-                      <span class="border-title">行为标签</span>
-                      <!-- {{exportItem.behaviorRulesJson}} -->
-                      <div class="rule-string bav-wrap">
-                        <template v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
-                          <MultipleActionTagSelect
-                            ref="multipleActionTagSelect"
-                            :isView="true"
-                            :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
-                          ></MultipleActionTagSelect>
-                        </template>
-                        <div v-else style="margin-left: -58px;" class="no-data-text">暂无</div>
-                      </div>
-
-                      <span class="border-title">流转指标</span>
-                      <div class="rule-string">
-                        <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
-                          <!-- {{exportItem.flowCondition}} -->
-                          <div
-                            v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
-                            :key="index"
-                            class="rule-detail"
-                          >
-                            <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
-                            <!-- {{ item }} -->
-                            <div class="label-ground">
-                              (
-                              <div
-                                v-for="(childItem, childItemIndex) in item.rules"
-                                :key="childItem.tagId+childItemIndex"
-                                class="label-item"
-                              >
-                                <!-- {{ childItem }} -->
-                                <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                                <span class="txt">{{ childItem.tagName }}</span>，
-
-                                <!-- 模块活跃 -->
-                                <template v-if="childItem.tagKey=== 'moduleActive'" >
-                                  <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                                  <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                                  <span class="txt">{{ childItem.locationId || '' }}</span>，
-                                  <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                                </template>
-
-                                <!-- 优惠券活跃 -->
-                                <template v-if="childItem.tagKey=== 'couponsActive'">
-                                  <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                                </template>
-
-                                <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                                <!-- 产品包下单 -->
-                                <template v-if="childItem.tagKey=== 'productOrder'">
-                                  ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                                </template>
-
-                                <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                                <span class="in">
-                                  <span >{{ childItem.value }}</span>
-                                </span>
-                              </div>
-                              )
-                            </div>
-                          </div>
-                        </div>
-                        <div v-else class="no-data-text">暂无</div>
-                      </div>
-                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
-                    </div>
-
-                    <!-- 选择了转接待员 -->
-                    <div class="turn-servicer" v-if="exportItem.stopType === 1">
-                      转
-                      <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
-                    </div>
-                    <div class="drop-class">
-                      <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                        <span class="el-dropdown-link" >
-                          <span>.</span>
-                          <span>.</span>
-                          <span>.</span>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
-                            编辑
-                          </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
-                            删除
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </div>
-
-                  </div>
-                  <div class="box-fotter" v-if="selectedServicer.id">
-                    <!-- <el-button>添加</el-button> -->
-                    <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </el-scrollbar>
-        </div>
-
+        <!-- 接待员详情 -->
+        <servicerDetail
+          :servicer="servicer"
+          :selectedScene="selectedScene"
+          :selectedServicer="selectedServicer"
+          :skillOptions="skillOptions"
+          :entryList="entryList"
+          :exportList="exportList"
+          :activeIndex2Id="activeIndex2Id"
+          @updataEntryList="getEntryListByReceptionistId"
+          @updataExportList="getExportListByReceptionistId"
+          @selectServicer="selectServicer"
+          @editReceptionist="editReceptionist"
+        ></servicerDetail>
       </div>
       <el-dialog
         title="添加场景"
@@ -636,36 +215,6 @@
         </span>
       </el-dialog>
 
-      <el-dialog
-        :title="(editClientRow ? '编辑' : '新建')+ '服务对象选择'"
-        :visible.sync="clientDialogVisible"
-        width="1200px"
-        v-if="clientDialogVisible"
-      >
-        <createClientDialog ref="createClientDialog" :editRow="editClientRow"></createClientDialog>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="clientDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addOrEditEntryRule">确 定</el-button>
-        </span>
-      </el-dialog>
-
-      <el-dialog
-        :title="(editExportRow ? '编辑' : '新建')+ '服务终止条件'"
-        :visible.sync="exportDialogVisible"
-        width="1200px"
-        v-if="exportDialogVisible"
-      >
-        <createClientDialog
-          ref="exportClientDialog"
-          :editRow="editExportRow"
-          type="export"
-          :servicerListFilterSelect="servicerListFilterSelect"
-        ></createClientDialog>
-        <span slot="footer" class="dialog-footer">
-          <el-button @click="exportDialogVisible = false">取 消</el-button>
-          <el-button type="primary" @click="addOrEditExportRule">确 定</el-button>
-        </span>
-      </el-dialog>
       <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
         <LaunchToBusiness
           :recordId="tempPolicyAndCrowd.policyId"
@@ -691,18 +240,15 @@
 </template>
 
 <script>
-import createClientDialog from './createClientDialog.vue'
-import { handleSave as saveFunc } from './saveEntryFunc.js'
-import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import drag from './drag.vue'
+import servicerDetail from './servicerDetail.vue'
 
 export default {
   components: {
-    createClientDialog,
-    MultipleActionTagSelect,
     LaunchToBusiness,
-    drag
+    drag,
+    servicerDetail
   },
   data () {
     return {
@@ -714,72 +260,10 @@ export default {
       showDragVisible: false,
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
-      couponOptions: [{
-        label: '曝光',
-        value: 'couponShowPv'
-      }, {
-        label: '领用',
-        value: 'couponCreatePv'
-      }, {
-        label: '使用',
-        value: 'couponUsePv'
-      }],
-      actionOptions: [{
-        label: '曝光',
-        value: 'show'
-      },
-      {
-        label: '点击',
-        value: 'click'
-      }],
-      locationTypeOptions: [{
-        label: '板块位',
-        value: 1
-      }, {
-        label: '推荐位',
-        value: 2
-      }],
-      countOptions: [{
-        label: '次数',
-        value: 'pv'
-      }, {
-        label: '天数',
-        value: 'days'
-      }],
-      productCountOptions: [{
-        label: '下单次数',
-        value: 'orderNum'
-      }, {
-        label: '下单天数',
-        value: 'orderDays'
-      }],
-      conditionEnum: {
-        AND: '且',
-        OR: '或'
-      },
-      editExportRow: {},
-      exportDialogVisible: false,
-      targetKeyList: [{
-        // 1 付费率，2 成交单数 3 成交金额 4 客单价
-        id: 1,
-        lable: '付费率（%）'
-      }, {
-        id: 2,
-        lable: '付费单数'
-      }, {
-        id: 3,
-        lable: '付费金额（元）'
-      }, {
-        id: 4,
-        lable: '客单价（元）'
-      }],
-      targetKey: '付费率（%）',
       editClientRow: {},
       skillOptions: [],
-      skillValue: '',
       selectedScene: {}, // 选择的场景
       selectedServicer: {}, // 选择的服务员
-      clientDialogVisible: false,
       searchScene: '',
       searchServicer: '',
       renameVisible: false,
@@ -791,11 +275,6 @@ export default {
       },
       dialogVisible: false,
       dialogVisible2: false,
-      target: '请输入接待员的目标',
-      targetValue: '',
-      priority: '',
-      isEdit: false,
-      isEditValue: false,
       activeIndex: 0,
       activeIndex2Id: '',
       sceneList: [],
@@ -805,26 +284,10 @@ export default {
       exportList: [],
       rename: '',
       rename2: '',
-      soureceSignList: [],
       launchPlatformData: []
     }
   },
-  watch: {
-    selectedServicer: {
-      handler (val) {
-        console.log('val------>', val)
-        this.skillValue = val.skillId // 技能
-        this.target = val.myTask || '我的任务是...'// 任务
-        this.targetValue = val.indicators || ''// 绩效指标
 
-        const obj = this.targetKeyList.find(item => {
-          return this.selectedServicer.indicatorsType === item.id
-        })
-
-        this.targetKey = obj ? obj.lable : '' // 目标指标
-      }
-    }
-  },
   computed: {
     // 接待员分组数据
     groupServicer () {
@@ -839,21 +302,11 @@ export default {
   },
   created () {
     this.getSceneList()
-    this.$service.getSourceSign().then(res => {
-      this.soureceSignList = res
-    })
+
     this.getPolicyList()
   },
   methods: {
-    redirctByNextId (id) {
-      const servicer = this.getServicerBynextId(id)
-      this.selectServicer(servicer.id)
-    },
-    // 根据crowdId 获取名称
-    getServicerBynextId (id) {
-      const obj = this.servicer.find(item => item.crowdId === id)
-      return obj || {}
-    },
+
     mergeSameAttribute  (arr) {
       const dataInfo = {}
       arr.forEach((item, index) => {
@@ -920,14 +373,19 @@ export default {
     },
     // 添加接待员分组
     addServicerGroup () {
-      const parmas = this.groupData.map(item => {
-        return {
-          ...item,
-          sceneId: this.selectedScene.id
+      const parmas = []
+      this.groupData.forEach(group => {
+        console.log('group---->', group)
+        if (group.list.length > 0) {
+          parmas.push(
+            {
+              ...group,
+              sceneId: this.selectedScene.id
+            }
+          )
         }
       })
 
-      console.log('parmas---------', parmas)
       this.$service.addGroup(parmas).then(res => {
         // 刷新列表
         this.getServiceList()
@@ -936,17 +394,6 @@ export default {
     },
     // 添加分组
     async addGroup () {
-      // 初始化
-      // this.groupData = [{
-      //   list: []
-      // }]
-      // const parmas = {
-      //   sceneId: this.selectedScene.id
-      // }
-      // this.$service.getListGroup(parmas).then(() => {
-
-      // })
-
       // 接待员分组
       await this.getListGroupBySceneId()
       this.showDragVisible = true
@@ -954,65 +401,7 @@ export default {
     handleCloseDialog () {
       this.showLaunchToBusiness = false
     },
-    getName (list, key) {
-      const obj = list.find(item => {
-        return key === item.value
-      })
-      return obj ? obj.label : ''
-    },
-    getsourceSignName (key) {
-      const obj = this.soureceSignList.find(item => {
-        return key === item.sourceSign
-      })
-      return obj ? obj.sourceName : ''
-    },
-    // getRulesJsonToString (rulesJson) {
-    //   const rules = JSON.parse(rulesJson).rules
-    //   rules.forEach((item, index) => {
-    //     if (index > 0) {
-    //       const a = `<div class="label-or-space">${this.conditionEnum[JSON.parse(rulesJson).condition]}</div>`
-    //       // const b = `<div class="label-ground">(
-    //       //         <div
-    //       //           v-for="(childItem,childItemIndex) in item.rules"
-    //       //           :key="childItem.tagId+childItemIndex"
-    //       //           class="label-item"
-    //       //         >
-    //       //           <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-    //       //           <span class="txt">{{ childItem.categoryName }}</span>
-    //       //           <span class="sel">{{ childItem.operator }}</span>
-    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-    //       //           <span class="in">
-    //       //             <span >{{ childItem.value }}</span>
-    //       //           </span>
-    //       //           <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-    //       //         </div>)
-    //       //       </div>`
-    //       item.rules.forEach((valObj, index2) => {
 
-    //       })
-    //     }
-    //   })
-    // },
-    handleCommandTargetKey (val) {
-      const obj = this.targetKeyList.find(item => {
-        return val === item.id
-      })
-      this.editReceptionist({
-        id: this.selectedServicer.id,
-        indicatorsType: obj.id
-      }, 'no-refresh-list')
-
-      this.targetKey = obj ? obj.lable : ''
-      this.selectedServicer.indicatorsType = obj ? obj.id : ''
-    },
-    // 服务员选择技能
-    selectSkill (e) {
-      this.editReceptionist({
-        id: this.selectedServicer.id,
-        skillId: e
-      }, 'no-refresh-list')
-    },
     handelRename2 (item) {
       this.editReceptionist({
         id: item.id,
@@ -1091,68 +480,7 @@ export default {
         delFlag: 2
       })
     },
-    handleCommand (scope) {
-      const type = scope[0]
-      const row = scope[1]
-      if (type === 'editEntry') {
-        this.editEntry(row)
-      } else if (type === 'deleteEntry') {
-        this.deleteEntry(row)
-      }
-    },
-    editEntry (row) {
-      console.log('editClientRow---->', row)
-      this.editClientRow = row
-      this.clientDialogVisible = true
-    },
-    deleteEntry (row) {
-      this.$confirm('此操作将永久删除该服务对象, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$service.addEntry({ ...row, delFlag: 2 }, '删除成功').then(res => {
-          // 刷新列表
-          this.getEntryListByReceptionistId()
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
-    handleCommandExport (scope) {
-      const type = scope[0]
-      const row = scope[1]
-      if (type === 'editExport') {
-        this.editExport(row)
-      } else if (type === 'deleteExport') {
-        this.deleteExport(row)
-      }
-    },
-    editExport (row) {
-      console.log('editClientRow---->', row)
-      this.editExportRow = row
-      this.exportDialogVisible = true
-    },
-    deleteExport (row) {
-      this.$confirm('此操作将永久删除该终止条件, 是否继续?', '提示', {
-        confirmButtonText: '确定',
-        cancelButtonText: '取消',
-        type: 'warning'
-      }).then(() => {
-        this.$service.addExport({ ...row, delFlag: 2 }, '删除成功').then(res => {
-          // 刷新列表
-          this.getExportListByReceptionistId()
-        })
-      }).catch(() => {
-        this.$message({
-          type: 'info',
-          message: '已取消删除'
-        })
-      })
-    },
+
     // 根据接待员ID获取入口列表
     getEntryListByReceptionistId () {
       const parmas = {
@@ -1169,136 +497,6 @@ export default {
       }
       this.$service.getExportList(parmas).then(res => {
         this.exportList = res || []
-      })
-    },
-    // 新增/编辑入口条件
-    addOrEditEntryRule () {
-      const dialogRef = this.$refs.createClientDialog
-      const rulesJson = dialogRef.rulesJson
-      const behaviorRulesJson = dialogRef.behaviorRulesJson
-      const flowCondition = dialogRef.flowCondition
-
-      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit, flowCondition)
-
-      // this.$service.addEntry(params, '添加成功').then(res => {
-      //   // 刷新列表
-      //   this.getEntryListByReceptionistId()
-      //   this.clientDialogVisible = false
-      // })
-    },
-    fetchAddOrEdit (data) {
-      const dialogRef = this.$refs.createClientDialog
-
-      const tagIds = dialogRef.checkedList.join(',')
-      const { rulesJson, behaviorRulesJson } = data
-
-      const flowCondition = JSON.stringify(dialogRef.flowCondition)
-
-      let params = {}
-      if (this.editClientRow) {
-        params = {
-          ...this.editClientRow,
-          sceneId: this.selectedScene.id,
-          policyId: this.selectedScene.policyId,
-          receptionistId: this.selectedServicer.id,
-          tagIds,
-          rulesJson,
-          behaviorRulesJson,
-          flowCondition, // 流转指标
-          delFlag: 1,
-          link: dialogRef.totalLink
-        }
-      } else {
-        params = {
-          sceneId: this.selectedScene.id,
-          policyId: this.selectedScene.policyId,
-          receptionistId: this.selectedServicer.id,
-          tagIds,
-          rulesJson,
-          behaviorRulesJson,
-          flowCondition, // 流转指标
-          delFlag: 1,
-          link: dialogRef.totalLink
-        }
-      }
-      this.$service.addEntry(params, '添加成功').then(res => {
-        // 刷新列表
-        this.getEntryListByReceptionistId()
-        this.clientDialogVisible = false
-      })
-    },
-    // 新增、编辑出口条件
-    addOrEditExportRule () {
-      const dialogRef = this.$refs.exportClientDialog
-      const rulesJson = dialogRef.rulesJson
-      const behaviorRulesJson = dialogRef.behaviorRulesJson
-      const flowCondition = dialogRef.flowCondition
-
-      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
-    },
-    fetchAddOrEdit2 (data) {
-      const dialogRef = this.$refs.exportClientDialog
-
-      const tagIds = dialogRef.checkedList.join(',')
-      // const rulesJson = JSON.stringify(dialogRef.rulesJson)
-      // const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
-      const { rulesJson, behaviorRulesJson } = data
-      const stopType = dialogRef.form.stopType // 处理操作
-      const nextId = dialogRef.form.nextId // 流转接待员
-
-      const flowCondition = JSON.stringify(dialogRef.flowCondition)
-
-      // let params = {}
-
-      let params = {
-        sceneId: this.selectedScene.id,
-        policyId: this.selectedScene.policyId,
-        receptionistId: this.selectedServicer.id,
-        tagIds,
-        rulesJson,
-        behaviorRulesJson,
-        flowCondition, // 流转指标
-        delFlag: 1,
-        link: dialogRef.totalLink,
-        stopType,
-        nextId
-      }
-      if (this.editExportRow) { // 编辑
-        const defaultData = { ...this.editExportRow }
-        params = Object.assign(defaultData, params)
-      }
-
-      this.$service.addExport(params, '添加成功').then(res => {
-        // 刷新列表
-        this.getExportListByReceptionistId()
-        this.exportDialogVisible = false
-      })
-    },
-    addOption () {
-      const { query } = this.$refs.selectObj
-      if (!query) return
-
-      // this.value = query
-      // 选择原有的
-      const existArr = this.skillOptions.filter(item => item.name === query)
-      if (existArr.length > 0) {
-        this.skillValue = existArr[0].id
-        return
-      }
-
-      // 创建新技能，并选中
-      const parmas = {
-        sceneId: this.selectedScene.id,
-        name: query
-      }
-      this.$service.addSceneSkill(parmas).then(async res => {
-        const aaa = await this.getSkillListBySceneId()
-        console.log('aaa--->', aaa)
-
-        const existArr = this.skillOptions.filter(item => item.name === query)
-        if (existArr.length > 0) {
-          this.skillValue = existArr[0].id
-        }
       })
     },
 
@@ -1386,15 +584,7 @@ export default {
         // this.getSkillListBySceneId()
       })
     },
-    // 新建服务对象筛选
-    createClient () {
-      this.editClientRow = undefined
-      this.clientDialogVisible = true
-    },
-    createExport  () {
-      this.editExportRow = undefined
-      this.exportDialogVisible = true
-    },
+
     handelRename (item) {
       this.editScene({
         // id: item.id,
@@ -1414,7 +604,7 @@ export default {
     },
     // 编辑接待员
     editReceptionist (params, type) {
-      const list = this.servicer
+      // const list = this.servicer
       this.$service.editReceptionist(params).then(res => {
         // const index = list.findIndex(item => item.id === params.id)
         // list.splice(index, 1, params)
@@ -1465,39 +655,8 @@ export default {
         this.getServiceList()
         this.dialogVisible2 = false
       })
-    },
-
-    editTarget () {
-      this.isEdit = true
-      this.$nextTick(() => {
-        this.$refs.inputPriority.focus()
-      })
-    },
-    editTargetValue () {
-      this.isEditValue = true
-      this.$nextTick(() => {
-        this.$refs.inputValue.focus()
-      })
-    },
-    editStatuChange () {
-      this.editReceptionist({
-        id: this.selectedServicer.id,
-        myTask: this.target
-      }, 'no-refresh-list')
-
-      this.selectedServicer.myTask = this.target
-      this.isEdit = false
-    },
-    editTargetValueChange () {
-      this.editReceptionist({
-        id: this.selectedServicer.id,
-        indicators: this.targetValue
-      }, 'no-refresh-list')
-
-      this.selectedServicer.indicators = this.targetValue
-
-      this.isEditValue = false
     }
+
   }
 }
 </script>

@@ -734,7 +734,7 @@ export default {
               return this.cc_format_number(row.hitAmount)
             }
           }, {
-            label: '产品页页面曝光设备量',
+            label: '产品包页面曝光设备量',
             prop: 'showMac',
             render: (h, { row }) => {
               return this.cc_format_number(row.showMac)
