@@ -100,8 +100,8 @@ export default {
   },
   methods: {
     loadData: function () {
-      this.criteria.pageNum = this.currentPage
-      this.criteria.pageSize = this.pageSize
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.get_operateLogs_json(this.criteria).then(data => {
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
@@ -109,7 +109,7 @@ export default {
     },
     // 查询,提交表单
     submitForm: function () {
-      const _this = this
+      var _this = this
       this.$refs.queryForm.validate(function (result) {
         if (result) {
           _this.criteria = _this.queryForm
@@ -121,7 +121,7 @@ export default {
     },
     // 显示新增界面
     pageRefresh: function () {
-      const _this = this
+      var _this = this
       if (this.tableData[0].loginName) {
         this.$refs.queryForm.validate(function (result) {
           if (result) {

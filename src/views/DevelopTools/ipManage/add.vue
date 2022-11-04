@@ -53,7 +53,7 @@ export default {
     mode: ''
   },
   data () {
-    const checkNoSpace = (rule, value, callback) => {
+    var checkNoSpace = (rule, value, callback) => {
       if (!value) {
         callback(new Error('该字段不能为空'))
       } else if (!value.trim()) {

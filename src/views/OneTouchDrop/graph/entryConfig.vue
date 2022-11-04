@@ -81,24 +81,24 @@ export default {
           }
           this.inputValue.push(
             {
-              recordId: this.getRecordId(),
-              tempCrowdId: undefined,
-              crowdName: undefined,
-              tagIds: [],
-              purpose: undefined,
-              remark: undefined,
-              crowdOrder: length + 1,
-              rulesJson: {
+              'recordId': this.getRecordId(),
+              'tempCrowdId': undefined,
+              'crowdName': undefined,
+              'tagIds': [],
+              'purpose': undefined,
+              'remark': undefined,
+              'crowdOrder': length + 1,
+              'rulesJson': {
                 condition: 'OR',
                 rules: []
               },
-              dynamicPolicyJson: {
+              'dynamicPolicyJson': {
                 link: 'AND',
                 condition: 'AND',
                 rules: []
               },
-              limitLaunch: false,
-              limitLaunchCount: undefined,
+              'limitLaunch': false,
+              'limitLaunchCount': undefined,
               total0: undefined
             }
           )
@@ -107,7 +107,7 @@ export default {
       }
     },
     setSeq () {
-      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         return e

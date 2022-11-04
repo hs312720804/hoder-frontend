@@ -114,13 +114,13 @@ export default {
   },
   props: ['editLaunchCrowdId'],
   created () {
-    if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
+    if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
       this.title = '编辑'
       this.$service.modifyCrowdLanuch({ launchCrowdId: this.editLaunchCrowdId }).then(data => {
         this.launchPlatform = data.biLists
         this.strategyPlatform = data.policies
         if (data.launchCrowd) {
-          const row = data.launchCrowd
+          let row = data.launchCrowd
           this.crowdForm.launchCrowdId = row.launchCrowdId
           this.crowdForm.dmpCrowdId = row.dmpCrowdId
           this.crowdForm.launchName = row.launchName
@@ -150,8 +150,8 @@ export default {
       this.$emit('changeStatus', true)
     },
     removeTag (policyId) {
-      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((item) => {
-        return item.split('_')[0] !== policyId
+      this.crowdForm.policyCrowdIds = this.crowdForm.policyCrowdIds.filter((v) => {
+        if (v.split('_')[0] != policyId) { return v }
       })
     },
     getCrowd () {
@@ -174,7 +174,8 @@ export default {
             return v.split('_')[1]
           }).join(',')
           if (
-            this.editLaunchCrowdId !== null && this.editLaunchCrowdId !== undefined
+            this.editLaunchCrowdId != null &&
+            this.editLaunchCrowdId != undefined
           ) {
             this.$service.CrowdLanuchEditBtn(crowdForm, '编辑成功').then(() => {
               this.callback()

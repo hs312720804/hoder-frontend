@@ -53,7 +53,7 @@ export default {
       const dynamicPolicyJson = JSON.parse(JSON.stringify(this.inputValue[0].dynamicPolicyJson))
       const dynamicPolicyRules = dynamicPolicyJson.rules
       const dynamicPolicyRulesLength = dynamicPolicyRules.length
-      let i; let j = 0
+      let i, j = 0
       // 如果设置标签和动态因子都没有选rules则报错
       if (dynamicPolicyRulesLength === 0) {
         this.$message.error('请至少填写一个动态因子完整的内容！')
@@ -63,7 +63,7 @@ export default {
       let dynamicPolicyFlag = true
       for (i = 0; i < dynamicPolicyRulesLength; i++) {
         for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-          const rulesItem = dynamicPolicyRules[i].rules[j]
+          let rulesItem = dynamicPolicyRules[i].rules[j]
           if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
             this.$message.error(
               '请正确填写第' +
@@ -97,24 +97,24 @@ export default {
           }
           this.inputValue.push(
             {
-              recordId: this.getRecordId(),
-              tempCrowdId: undefined,
-              crowdName: undefined,
-              tagIds: [],
-              purpose: undefined,
-              remark: undefined,
-              crowdOrder: length + 1,
-              rulesJson: {
+              'recordId': this.getRecordId(),
+              'tempCrowdId': undefined,
+              'crowdName': undefined,
+              'tagIds': [],
+              'purpose': undefined,
+              'remark': undefined,
+              'crowdOrder': length + 1,
+              'rulesJson': {
                 condition: 'OR',
                 rules: []
               },
-              dynamicPolicyJson: {
+              'dynamicPolicyJson': {
                 link: 'AND',
                 condition: 'AND',
                 rules: []
               },
-              limitLaunch: false,
-              limitLaunchCount: undefined,
+              'limitLaunch': false,
+              'limitLaunchCount': undefined,
               total0: undefined
             }
           )
@@ -123,7 +123,7 @@ export default {
       }
     },
     setSeq () {
-      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         return e

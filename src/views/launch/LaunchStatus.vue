@@ -120,7 +120,7 @@ export default {
             label: '操作',
             fixed: 'right',
             width: '100',
-            render: this.$c_utils.component.createOperationRender(this, {
+            render: this.$createOperationRender(this, {
               handleView: '查看详情'
             })
           }
@@ -157,7 +157,6 @@ export default {
   },
   methods: {
     handleView ({ row }) {
-      console.log('eee===', row)
       this.showDialog = true
       this.detailTable.data = row.statusList
     },
@@ -193,7 +192,7 @@ export default {
       this.handleGetManualLaunchList()
     },
     resetForm () {
-      this.$refs.outForm.resetFields()
+      this.$refs['outForm'].resetFields()
       // 重置时，都把页面数重置为1
       this.currentPage = 1
       this.handleGetManualLaunchList()
@@ -201,9 +200,9 @@ export default {
 
   },
   mounted () {
+    // console.log(this.outForm, '=============>>>>>>>>>>>')
     this.handleGetManualLaunchList()
   }
-
 }
 </script>
 

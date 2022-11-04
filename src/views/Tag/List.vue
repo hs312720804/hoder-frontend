@@ -102,8 +102,8 @@ export default {
         name: undefined
       },
       statusList: {
-        1: '启用',
-        2: '禁用'
+        '1': '启用',
+        '2': '禁用'
       }
     }
   },

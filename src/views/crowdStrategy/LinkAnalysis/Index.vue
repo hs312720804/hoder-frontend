@@ -10,13 +10,13 @@
 
 <script>
 import tree from './tree.vue'
-import myMinix from './minix'
+import myMinix from './minix';
 export default {
   mixins: [myMinix], // todo.vue 中声明 minix 进行混合
-  components: {
+   components: {
     tree: tree
-  },
-  props: {
+   },
+   props: {
     tableData: {
       type: Array,
       default: () => []
@@ -32,9 +32,9 @@ export default {
     linkPropsNameTip: {
       type: Object,
       default: () => {}
-    }
-  },
-  computed: {
+    },
+   },
+   computed: {
     // zoomStye () {
     //   const INIT_WIDTH = this.INIT_WIDTH
     //   const INIT_HEIGHT = this.INIT_HEIGHT
@@ -52,17 +52,17 @@ export default {
     // }
   },
 
-  data () {
-    return {
+   data () {
+     return {
       INIT_WIDTH: 3000,
       INIT_HEIGHT: 600,
-      scale: 100
+      scale: 100,
       // tableData: [{
       //   name: 'nodeA',
       //   value: 10,
       //   ratio: 100,
       //   children: [
-
+           
       //     {
       //       name: 'nodeAa',
       //       value: 4,
@@ -138,13 +138,13 @@ export default {
       //     }
       //   ]
       // },]
-    }
-  },
-  mounted () {
+     }
+   },
+   mounted() {
     // this.aaa()
-  },
-  methods: {
-
+   },
+   methods: {
+     
     //  aaa () {
     //   const _this = this
     //   //给页面绑定滑轮滚动事件
@@ -208,9 +208,10 @@ export default {
     //   document.body.addEventListener('mousewheel', scrollFn, false);
 
     // }
-  }
-}
+   }
+ }
 </script>
+
 
 <style scoped lang="scss">
 .alignment-wrapper{
@@ -290,7 +291,7 @@ export default {
     }
   }
 .box {
-
+  
   position: absolute;
   border: 2px dashed #e4e5e3;
   overflow: hidden;
@@ -318,7 +319,7 @@ export default {
   width: 0;
   height: 0;
   position: relative;
-  border: 20px solid;
+  border: 20px solid; 
   border-color: #979797 transparent transparent transparent;
   top: calc(85vh);
   left: 20px;
@@ -336,3 +337,4 @@ export default {
 }
 
 </style>
+

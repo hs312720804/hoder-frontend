@@ -7,7 +7,6 @@ export default class FlowGraph {
     this.initShape()
     this.initEvent()
   }
-
   // 左边导航
   static initStencil () {
     this.stencil = new Addon.Stencil({
@@ -42,7 +41,6 @@ export default class FlowGraph {
     const stencilContainer = document.querySelector('#flowStencil')
     stencilContainer.appendChild(this.stencil.container)
   }
-
   // 图形
   static initShape () {
     const { graph } = this
@@ -92,14 +90,12 @@ export default class FlowGraph {
     this.stencil.load([r2, g1], 'basicComponents')
     // this.stencil.load([g1], 'basicComponents')
   }
-
   // 展示链接点
   static showPorts (ports, show) {
     for (let i = 0, len = ports.length; i < len; i = i + 1) {
       ports[i].style.visibility = show ? 'visible' : 'hidden'
     }
   }
-
   // 初始化事件
   static initEvent () {
     const { graph } = this
@@ -198,7 +194,6 @@ export default class FlowGraph {
       }
     })
   }
-
   // 销毁
   static destroy () {
     this.graph.dispose()

@@ -547,7 +547,7 @@ export default {
   methods: {
     handelGo () {
       // this.$router.push({ path: 'launch/launchTabList' })
-      this.$router.push({ name: 'launchStatus' })
+      this.$router.push({ name: 'effectDataStatus' })
       // launchHelper/LaunchStatus
     },
     setTableData (val) {

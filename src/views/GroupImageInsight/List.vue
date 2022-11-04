@@ -76,7 +76,7 @@ export default {
     }
   },
   watch: {
-    refreshList: function (val) {
+    'refreshList': function (val) {
       if (val) {
         this.fetchData()
       }

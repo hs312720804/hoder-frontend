@@ -392,7 +392,6 @@ export default {
 
       // IE 10及以下ActiveXObject
       if (window.ActiveXObject) {
-        // eslint-disable-next-line
         const WsShell = new ActiveXObject('WScript.Shell')
         WsShell.SendKeys('{F11}')
       } else if (element.requestFullScreen) {
@@ -415,7 +414,6 @@ export default {
       const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
       // IE ActiveXObject
       if (window.ActiveXObject) {
-        // eslint-disable-next-line
         const WsShell = new ActiveXObject('WScript.Shell')
         WsShell.SendKeys('{F11}')
       } else if (element.requestFullScreen) {

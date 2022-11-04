@@ -299,8 +299,8 @@ export default {
     },
     // 从服务器读取数据
     loadData () {
-      this.criteria.pageNum = this.currentPage
-      this.criteria.pageSize = this.pageSize
+      this.criteria['pageNum'] = this.currentPage
+      this.criteria['pageSize'] = this.pageSize
       this.$service.get_roles_json(this.criteria).then(data => {
         this.tableData = data.pageInfo.list
         this.totalCount = data.pageInfo.total
@@ -322,28 +322,28 @@ export default {
     // json :最初的权限列表
     // keys :用户点击获取Vue获取到的最底层权限id数组
     getKeys (json, keys) {
-      let final = []
-      for (let i = 0; i < keys.length; i++) {
+      var final = []
+      for (var i = 0; i < keys.length; i++) {
         final = this.searchTree(json, keys[i]).concat(final)
       }
-      if (json.length === 0 || keys.length === 0) {
+      if (json.length == 0 || keys.length == 0) {
         return []
       } else {
-        const c = _.uniq(final.concat(keys).sort())
+        var c = _.uniq(final.concat(keys).sort())
         return c
       }
     },
     // 搜索当前权限，获得所有父级权限id
     searchTree (json, id) {
-      const newJson = json.concat([])
-      const len = newJson.length // 长度
-      let parentNode = []
+      var newJson = json.concat([])
+      var len = newJson.length // 长度
+      var parentNode = []
       // 查找id
-      for (let s = 0; s < len; s++) {
-        if (newJson[s].id === id) {
+      for (var s = 0; s < len; s++) {
+        if (newJson[s].id == id) {
           if (
             newJson[s].parentNode == null ||
-            newJson[s].parentNode.length === 0
+            newJson[s].parentNode.length == 0
           ) {
             parentNode = []
           } else {
@@ -356,14 +356,14 @@ export default {
       return parentNode
     },
     searchInit (json) {
-      const newJson = json.concat([])
-      let len = newJson.length // 长度
+      var newJson = json.concat([])
+      var len = newJson.length // 长度
       // var parentNode = [];
-      for (let i = 0; i < len; i++) {
-        const item = newJson[i]
-        if (item.children && item.children.length !== 0) {
-          const child = item.children
-          for (let j = 0; j < child.length; j++) {
+      for (var i = 0; i < len; i++) {
+        var item = newJson[i]
+        if (item.children && item.children.length != 0) {
+          var child = item.children
+          for (var j = 0; j < child.length; j++) {
             if (item.parentNode) {
               child[j].parentNode = item.parentNode.concat([item.id])
             } else {
@@ -378,7 +378,7 @@ export default {
     },
     // 搜索,提交表单
     submitForm () {
-      const _this = this
+      var _this = this
       this.$refs.searchForm.validate(function (result) {
         if (result) {
           _this.criteria = _this.searchForm
@@ -398,8 +398,8 @@ export default {
     },
     // 修改状态
     handleChangetStatus (index, row) {
-      const id = row.id
-      const useable = row.useable === 1 ? 0 : 1
+      var id = row.id
+      var useable = row.useable == 1 ? 0 : 1
       this.$confirm('确定修改该条记录的状态?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -457,7 +457,7 @@ export default {
     },
 
     resetAdd () {
-      this.$refs.roleForm.resetFields()
+      this.$refs['roleForm'].resetFields()
       this.$refs.tree.setCheckedKeys([])
     },
 
@@ -469,7 +469,7 @@ export default {
       this.roleForm.remarks = row.remarks
       this.roleForm.useable = row.useable
       this.roleForm.menuIds = row.menuIds
-      const _this = this
+      var _this = this
       this.$nextTick(function () {
         _this.$refs.editTree.setCheckedKeys(_this.roleForm.menuIds)
       })
@@ -502,7 +502,7 @@ export default {
         message: '已取消新增'
       })
       this.$refs.tree.setCheckedKeys([])
-      this.$refs.roleForm.resetFields()
+      this.$refs['roleForm'].resetFields()
     },
     cancelEdit () {
       this.editFormVisible = false
@@ -514,7 +514,7 @@ export default {
 
     // 单行删除
     handleDelete (index, row) {
-      const id = row.id
+      var id = row.id
       this.$confirm('确定要删除该条记录?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -532,15 +532,15 @@ export default {
     // 多选响应
     handleSelectionChange (val) {
       // 循环该数组,取出id放到(push)multipleSelection
-      const ids = []
-      for (let i = 0; i < val.length; i++) {
+      var ids = []
+      for (var i = 0; i < val.length; i++) {
         ids.push(val[i].id)
       }
       this.multipleSelection = ids
     },
     // 批量删除
     handleBatchDel () {
-      const ids = this.multipleSelection
+      var ids = this.multipleSelection
       if (ids.length > 0) {
         this.$confirm('确定要删除这批记录?', '提示', {
           confirmButtonText: '确定',

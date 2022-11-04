@@ -2,7 +2,7 @@ import './shapeInfo'
 
 export default {
   getStartNode (options) {
-    const node = {
+    let node = {
       shape: 'flow-chart-start',
       label: '方案入口',
       attrs: {
@@ -18,7 +18,7 @@ export default {
     return node
   },
   getRectNode (options) {
-    const node = {
+    let node = {
       shape: 'flow-chart-rect',
       width: 40,
       height: 40,
@@ -52,7 +52,7 @@ export default {
   },
 
   getGroupNode (options) {
-    const node = {
+    let node = {
       shape: 'flowGroupNode',
       label: '策略',
       attrs: {

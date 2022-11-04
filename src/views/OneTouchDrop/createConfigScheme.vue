@@ -125,7 +125,7 @@ export default {
       const sourceId = node.mapGrid.source
       const targetId = node.mapGrid.target
       if (identify === 'schemeGroup') {
-        const nextNode = this.findNodesById(null, targetId)
+        let nextNode = this.findNodesById(null, targetId)
         if (!nextNode) {
         } else {
           if (deleteNode) {
@@ -139,7 +139,7 @@ export default {
           this.setNodeIdx(nextNode.mapGrid.identify, nextNode)
         }
       } else {
-        const nextNode = this.findNodesById(sourceId, targetId)
+        let nextNode = this.findNodesById(sourceId, targetId)
         if (!nextNode) {
 
         } else {
@@ -175,8 +175,8 @@ export default {
       this.schemeData.push(this.currentNode)
     },
     addGroupNode (node) {
-      const groupNameColl = this.findGroupName(this.schemeData)
-      const pos = node.position()
+      let groupNameColl = this.findGroupName(this.schemeData)
+      let pos = node.position()
       this.groupIdx = this.getMaxNum(groupNameColl.toString())
       this.currentNode = {
         strategyName: `策略${this.groupIdx}`,
@@ -205,7 +205,7 @@ export default {
     },
     addPeopleNode (node) {
       this.$nextTick(() => {
-        const parent = node.parent
+        let parent = node.parent
         if (!parent) {
           this.$message({
             message: '人群只能放置在策略组中!',
@@ -214,8 +214,8 @@ export default {
           node.remove()
           return false
         }
-        const crowdNameColl = this.findGroupCrowdName(this.schemeData)
-        const pos = node.position()
+        let crowdNameColl = this.findGroupCrowdName(this.schemeData)
+        let pos = node.position()
         this.peopleIdx = this.getMaxNum(crowdNameColl.toString(), 'child')
         this.currentNode = {
           nodeCondition: {}, // 存储人群用户信息
@@ -282,7 +282,7 @@ export default {
       return result
     },
     findChildId (arr) {
-      const result = []
+      let result = []
       arr && arr.forEach(item => {
         result.push(item.mapGrid.id)
       })
@@ -294,7 +294,7 @@ export default {
     },
     // 处理保存数据
     handleSaveData (config) {
-      const schemeData = cloneDeep(this.schemeData)
+      let schemeData = cloneDeep(this.schemeData)
       // 将节点数组mapGuid存储为JSON字符串
       schemeData.forEach(item => {
         item.mapGrid = JSON.stringify(item.mapGrid)
@@ -311,11 +311,11 @@ export default {
     },
     // 跳过直接保存
     handleSave (idx) {
-      const schemeConfig = this.handleSaveData(this.schemeConfig)
+      let schemeConfig = this.handleSaveData(this.schemeConfig)
       if (!this.policyId) {
         this.schemeConfig.recordId = this.recordId
         // 如果还没有创建策略流程图 则走创建逻辑
-        const data = {
+        let data = {
           recordId: this.recordId,
           data: schemeConfig
         }
@@ -327,7 +327,7 @@ export default {
             // 下一步操作
             this.$store.commit('setPolicyId', rs.policyId)
             this.$store.dispatch('getPolicyInfo', rs.policyId).then(rs => {
-              const obj = {
+              let obj = {
                 tempPolicy: {
                   recordId: this.recordId,
                   policyName: rs.policyName
@@ -338,7 +338,7 @@ export default {
           }
         })
       } else {
-        const data = {
+        let data = {
           data: schemeConfig,
           params: { programmeId: schemeConfig.programmeId }
         }
@@ -348,7 +348,7 @@ export default {
             this.$emit('resetFormData')
           } else {
             this.$store.dispatch('getPolicyInfo', this.policyId).then(rs => {
-              const obj = {
+              let obj = {
                 tempPolicy: {
                   recordId: this.recordId,
                   policyName: rs.policyName
@@ -364,7 +364,7 @@ export default {
     saveEntryData (data, data1) {
       this.entryData = data
       this.splitRadio = data1
-      const tempArr = [data, data1]
+      let tempArr = [data, data1]
       this.schemeConfig.inputCondition = JSON.stringify(tempArr)
       this.schemeStart.is = false
     },
@@ -376,7 +376,7 @@ export default {
     },
     // 查找人群名字索引
     findGroupCrowdName (arr) {
-      const result = []
+      let result = []
       arr.forEach(item => {
         item.smartStrategyNodes && item.smartStrategyNodes.forEach(v => {
           result.push(v.strategyNodeName)
@@ -392,7 +392,7 @@ export default {
       } else {
         reg = /人群(\d+)/g
       }
-      let m = 0; let v = 0
+      let m = 0, v = 0
       while (m != null) {
         m = reg.exec(str)
         if (m != null) {
@@ -404,19 +404,19 @@ export default {
     // 出口规则配置
     addGroupOutCondition (node) {
       this.groupId = node.id
-      const result = this.findNodesById(null, node.id)
+      let result = this.findNodesById(null, node.id)
       this.outputData = result.outCondition.length > 0 ? result.outCondition : []
       this.outConditionStatus.is = true
     },
     saveOutputCondition (data) {
-      const result = this.findNodesById(null, this.groupId)
+      let result = this.findNodesById(null, this.groupId)
       this.outputData = data
       result.outCondition = cloneDeep(data)
       this.outConditionStatus.is = false
     },
     // 设置出口规则节点
     setTools () {
-      const _this = this
+      let _this = this
       return [{
         name: 'button',
         args: {

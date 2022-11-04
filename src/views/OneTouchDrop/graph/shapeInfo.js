@@ -1,5 +1,5 @@
 import { Graph, Dom, Node } from '@antv/x6'
-const groupImg = require('@/assets/img/scheme_group.png')
+let groupImg = require('@/assets/img/scheme_group.png')
 
 // 定制的开始节点
 Graph.registerNode('flow-chart-start', {

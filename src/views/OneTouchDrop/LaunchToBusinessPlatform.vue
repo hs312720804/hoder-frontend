@@ -157,7 +157,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import { Loading } from 'element-ui'
+import { Loading } from 'element-ui';
 export default {
   name: 'LaunchToBusinessPlatform',
   props: ['recordId', 'tempPolicyAndCrowd', 'routeSource', 'isDynamicPeople', 'policyId', 'crowdId', 'dynamicMode'],
@@ -234,7 +234,7 @@ export default {
       const crowdList = crowdData[index].childs
       const policyId = crowdData[index].policyId
       // 选中的对象list
-      const checkedList = crowdList.filter(item => {
+      let checkedList = crowdList.filter(item => {
         const flag = val.includes(policyId + '_' + item.tempCrowdId)
         return flag
       }) || []
@@ -250,7 +250,7 @@ export default {
       for (let i = 0; i < checkedList.length; i++) {
         // eslint-disable-next-line no-debugger
         debugger
-        const obj = checkedList[i]
+        let obj = checkedList[i]
         if (obj.isBehaviorCrowd) { // 选了行为人群
           this.crowdData[index].childs.forEach(item => {
             // eslint-disable-next-line no-debugger
@@ -293,14 +293,14 @@ export default {
         policyName: tempPolicyAndCrowdData.tempPolicy.policyName
       }
       this.strategyData = currentPolicy
-      const crowdTempArr = []
-      const crowdArr = crowdTempArr.concat(currentPolicy)
+      let crowdTempArr = []
+      let crowdArr = crowdTempArr.concat(currentPolicy)
       this.strategyPlatform = crowdArr
       this.crowdForm.policyIdsPull = currentPolicy.policyId
       this.crowdForm.policyIds = currentPolicy.policyId
       tempPolicyAndCrowdData.tempCrowds = tempPolicyAndCrowdData.tempCrowds.map(item => {
         let isBehaviorCrowd = false
-        const behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+        let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
         if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
           isBehaviorCrowd = true
         }
@@ -310,8 +310,8 @@ export default {
           isDisabledCrowd: false // 是否禁用
         }
       })
-      const arr = []
-      const currentCrowd = {
+      let arr = []
+      let currentCrowd = {
         policyId: tempPolicyAndCrowdData.tempPolicy.recordId,
         policyName: tempPolicyAndCrowdData.tempPolicy.policyName,
         childs: tempPolicyAndCrowdData.tempCrowds
@@ -335,7 +335,7 @@ export default {
               return v.split('_')[1]
             }).join(',')
           }
-          const formData = {
+          let formData = {
             launch: launch,
             pullBiIds: crowdForm.biIdsPull,
             pull: crowdForm.launchMode.pull,
@@ -353,7 +353,7 @@ export default {
           }
           // 动态人群的保存 只能pull
           if (this.policyId) {
-            const data = {
+            let data = {
               biIds: crowdForm.biIdsPull,
               policyIds: [this.policyId]
             }
@@ -389,11 +389,11 @@ export default {
               }
             }
           } else {
-            const loadingInstance = Loading.service({
+            let loadingInstance = Loading.service({ 
               fullscreen: true,
-              text: launch ? '投放中，请稍候' : '保存中，请稍候',
-              background: 'rgba(0, 0, 0, 0.5)'
-            })
+              text: launch ? '投放中，请稍候' : "保存中，请稍候",
+              background: "rgba(0, 0, 0, 0.5)",
+            });
             // this.fullscreenLoading = true
             this.$service.oneDropCrowdSaveAndLaunch({ recordId: this.recordId, data: formData }).then((data) => {
               if (data.policyId) {
@@ -401,7 +401,7 @@ export default {
                 this.jumpToRouter(launch, data.policyId, loadingInstance)
               } else {
                 // this.fullscreenLoading = false
-                loadingInstance.close()
+                loadingInstance.close();
                 this.$message.success('投放成功')
 
                 if (this.routeSource) {
@@ -418,7 +418,7 @@ export default {
               }
             }).catch((err) => {
               // this.fullscreenLoading = false
-              loadingInstance.close()
+              loadingInstance.close();
               if (err.message.indexOf('已存在') === -1) {
                 if (this.routeSource) {
                   this.$router.push({
@@ -441,26 +441,26 @@ export default {
     },
     jumpToRouter (launch, policyId, loadingInstance) {
       if (launch) { // 投放
-        this.$service.freshCache({ policyId: policyId }, '投放成功').then(() => {
+        this.$service.freshCache({ policyId: policyId },'投放成功').then(() => {
           if (this.routeSource) {
             // this.fullscreenLoading = false
-            loadingInstance.close()
+            loadingInstance.close();
             this.$router.push({
               name: 'myPolicy',
               params: { changeTab: 'ToMyLaunch' }
             })
           } else {
             // this.fullscreenLoading = false
-            loadingInstance.close()
+            loadingInstance.close();
             this.$router.push({ path: 'launch/launchTabList' })
           }
           // this.$router.push({ path: 'launch/launchTabList' })
           this.$root.$emit('stratege-list-refresh')
           this.$emit('resetFormData')
         })
-      } else { // 存稿不投放
+      } else {  // 存稿不投放
         // this.fullscreenLoading = false
-        loadingInstance.close()
+        loadingInstance.close();
         this.$message.success('保存成功')
         this.$emit('handleDirectStrategyList')
         // this.$root.$emit('stratege-list-refresh')
@@ -478,7 +478,7 @@ export default {
       })
     },
     getCrowd () {
-      const policyId = this.crowdForm.policyIds
+      let policyId = this.crowdForm.policyIds
       // if (this.crowdForm.abTest) {
       //     policyId = this.crowdForm.policyIds
       // } else {
@@ -488,7 +488,7 @@ export default {
         .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
         .then(data => {
           if (this.crowdForm.abTest) {
-            const newDataForm = []
+            let newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })

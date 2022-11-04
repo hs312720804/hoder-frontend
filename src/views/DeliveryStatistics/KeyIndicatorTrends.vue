@@ -381,8 +381,8 @@ export default {
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData, xunit = '', yunit = '') {
       // const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -446,8 +446,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -565,7 +565,7 @@ export default {
 
     // 图表自适应
     window.addEventListener('resize', () => {
-      for (const key of Object.keys(this.allCharts)) {
+      for (var key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
         chart.resize()
       }

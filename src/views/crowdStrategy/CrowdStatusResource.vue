@@ -174,12 +174,12 @@ export default {
   methods: {
     formatDate (d) {
       const time = new Date(d)
-      const y = time.getFullYear() // 年份
-      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      const r = time.getDate().toString().padStart(2, '0') // 日子
-      const h = time.getHours().toString().padStart(2, '0')
-      const mins = time.getMinutes().toString().padStart(2, '0')
-      const s = time.getSeconds().toString().padStart(2, '0')
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
+      let h = time.getHours().toString().padStart(2, '0')
+      let mins = time.getMinutes().toString().padStart(2, '0')
+      let s = time.getSeconds().toString().padStart(2, '0')
       return `${y}-${m}-${r} ${h}:${mins}:${s}`
     },
     handleGetContent () {
@@ -232,8 +232,8 @@ export default {
     handleSeeDetail (schemalId, flag, bId) {
       this.detailDialogTitle = flag ? '命中详情' : '请求详情'
       // flag为true则是命中详情查询,flag为false则是访问详情查询
-      let panelId
-      let index
+      var panelId = undefined
+      var index = undefined
       if (schemalId.toString().indexOf('-') > 0) {
         panelId = schemalId.split('-')[0]
         index = schemalId.split('-')[1]
@@ -262,7 +262,7 @@ export default {
         const arr = []
         const apiData = this.apiTableData
         const length = apiData.length
-        for (let i = 0; i < length; i++) {
+        for (var i = 0; i < length; i++) {
           if (apiData[i].mac === id) {
             arr.push(apiData[i])
           }

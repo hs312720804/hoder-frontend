@@ -52,14 +52,8 @@ import 'async-validate'
 export default {
   name: 'thirdInterfaceAdd',
   props: {
-    editId: {
-      type: String,
-      default: ''
-    },
-    mode: {
-      type: String,
-      default: ''
-    }
+    editId: '',
+    mode: ''
   },
   data () {
     return {

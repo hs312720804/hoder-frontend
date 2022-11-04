@@ -122,8 +122,8 @@ export default {
     checkListParent: function (val) {
       this.checkList = val
     },
-    dataList: 'updateTableSelected',
-    currentSelectedTags: 'updateTableSelected'
+    'dataList': 'updateTableSelected',
+    'currentSelectedTags': 'updateTableSelected'
   },
   methods: {
     handleCheckListChange (val) {
@@ -133,7 +133,7 @@ export default {
       this.tagId = row.id
       this.currentRow = row
     },
-    handleRefresh (row) {
+    handleRefresh(row) {
       this.$confirm(`是否确认更新模型标签: ${row.tagName}?`, '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -144,8 +144,9 @@ export default {
         this.$message({
           type: 'info',
           message: '已取消更新'
-        })
+        })      
       })
+      
     },
     handleDelete (row) {
       this.$emit('delete', row.id)
@@ -208,11 +209,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.dataList
       if (select.length === 0) {
-        for (let i = 0; i < data.length; i++) {
+        for (var i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (let j = 0; j < data.length; j++) {
+        for (var j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }

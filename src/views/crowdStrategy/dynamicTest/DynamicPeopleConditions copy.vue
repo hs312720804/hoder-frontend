@@ -144,46 +144,46 @@ export default {
   methods: {
     getRule () {
       const res = {
-        policyId: 4112,
-        flowChart: null,
-        mainArithmetic: 0,
-        allCrowd: [{
-          policyId: 4112,
-          dynamicJson: null,
-          weight: 0,
-          arithmetic: null,
-          priority: 345,
-          crowdId: 11222,
-          crowdName: '345'
+        'policyId': 4112,
+        'flowChart': null,
+        'mainArithmetic': 0,
+        'allCrowd': [{
+          'policyId': 4112,
+          'dynamicJson': null,
+          'weight': 0,
+          'arithmetic': null,
+          'priority': 345,
+          'crowdId': 11222,
+          'crowdName': '345'
         }, {
-          policyId: 4112,
-          dynamicJson: '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          weight: 120,
-          arithmetic: null,
-          priority: 23,
-          crowdId: 11223,
-          crowdName: '23'
+          'policyId': 4112,
+          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          'weight': 120,
+          'arithmetic': null,
+          'priority': 23,
+          'crowdId': 11223,
+          'crowdName': '23'
         }],
-        arithmetic: null,
-        unused: [{
-          policyId: 4112,
-          dynamicJson: null,
-          weight: 0,
-          arithmetic: null,
-          priority: 345,
-          crowdId: 11222,
-          crowdName: '345'
+        'arithmetic': null,
+        'unused': [{
+          'policyId': 4112,
+          'dynamicJson': null,
+          'weight': 0,
+          'arithmetic': null,
+          'priority': 345,
+          'crowdId': 11222,
+          'crowdName': '345'
         }, {
-          policyId: 4112,
-          dynamicJson: '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          weight: 120,
-          arithmetic: null,
-          priority: 23,
-          crowdId: 11223,
-          crowdName: '23'
+          'policyId': 4112,
+          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          'weight': 120,
+          'arithmetic': null,
+          'priority': 23,
+          'crowdId': 11223,
+          'crowdName': '23'
         }],
-        crowdId: 11219,
-        exitCrowd: null
+        'crowdId': 11219,
+        'exitCrowd': null
       }
 
       this.dynamicRule = res

@@ -522,7 +522,7 @@ export default {
       return this.recordId
     },
     setSeq () {
-      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         // if (e.dynamicPolicyJson) {
@@ -640,9 +640,9 @@ export default {
     // this.form.limitLaunch = policyData.limitLaunch
     // this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
     // this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
-    const cacheIds = []
+    var cacheIds = []
     if (detail.rulesJson) {
-      const ruleJsonData = JSON.parse(detail.rulesJson)
+      let ruleJsonData = JSON.parse(detail.rulesJson)
       ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
         itemParent.rules.forEach(item => {
           if (item.tagType === 'string' || item.tagType === 'collect') {

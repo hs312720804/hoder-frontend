@@ -48,7 +48,8 @@ export default {
       const mobile = this.personalInformation.mobile
       const email = this.personalInformation.email
       const id = this.personalInformation.id
-      this.$service.updateUserInformation({ id: id, loginName: loginName, officeName: officeName, name: name, mobile: mobile, email: email }, '修改成功')
+      this.$service.updateUserInformation({
+        id: id, loginName: loginName, officeName: officeName, name: name, mobile: mobile, email: email }, '修改成功')
     }
   },
   created () {

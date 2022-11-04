@@ -98,7 +98,7 @@ export default {
           // this.dataSourceEnum = data.dataSourceEnum
           // this.typeEnum = data.typeEnum
           // this.tagCategory = data.tagCategory
-          const treeData = data.list.slice().map(item => {
+          let treeData = data.list.slice().map(item => {
             return {
               id: item.specialTagId,
               label: item.specialTagName,
@@ -112,7 +112,7 @@ export default {
           id: nodeData.id
         }
         return this.$service.specialTagChild(params).then(data => {
-          const treeData = data.slice().map(item => {
+          let treeData = data.slice().map(item => {
             return {
               id: item.specialTagId,
               label: item.specialTagName,

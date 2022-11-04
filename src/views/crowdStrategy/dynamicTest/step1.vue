@@ -161,8 +161,7 @@ export default {
     },
     // 判断表单是否通过校验
     isValidate () {
-      // eslint-disable-next-line
-      const reg = new RegExp('^[1-9]([0-9])*$')
+      let reg = new RegExp('^[1-9]([0-9])*$')
       const flag1 = this.menu.child.every(item => {
         // 校验人群名
         const flag2 = !!item.crowdName

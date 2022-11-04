@@ -27,7 +27,6 @@
                 </template>
             </el-table-column>
             <el-table-column label="操作" width="350">
-                <!-- eslint-disable-next-line -->
                 <template slot-scope="scope">
                     <el-button>编辑</el-button>
                     <el-button>删除</el-button>
@@ -64,7 +63,7 @@ export default {
   },
   watch: {
     '$route.params.redirectListId': function (val, oldVal) {
-      if (val !== oldVal && val) {
+      if (val != oldVal && val) {
         this.fetchData()
       }
     }
@@ -87,7 +86,7 @@ export default {
       }
     },
     unActiveTips (activeType) {
-      if (activeType === 1 || activeType === 3) {
+      if (activeType == 1 || activeType == 3) {
         return '人群未生效，因为该人群条件' + this.crowdValidEnum[activeType]
       } else {
         return '人群未生效，因为未点击该策略的"同步按钮"'

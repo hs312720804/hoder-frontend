@@ -1,4 +1,3 @@
-<!-- eslint-disable -->
 <template>
   <div class="demo">
     <!-- {{selectValue}} -->
@@ -120,10 +119,8 @@ export default {
         } else {
           box.insertBefore($label, $oldLabel.nextSibling)
         }
-        const copyValue = JSON.parse(JSON.stringify(this.value))
-        const item = copyValue.splice(oldIndex, 1)
-        this.$emit('input', copyValue.splice(newIndex, 0, item[0]))
-        // this.value.splice(newIndex, 0, item[0])
+        const item = this.value.splice(oldIndex, 1)
+        this.value.splice(newIndex, 0, item[0])
       }
     })
   },
@@ -176,29 +173,29 @@ export default {
       let cFlag = false // 取消勾选
       // debugger
       for (var i = 0; i < key.length; i++) {
-        if (key[i] === key1[0]) {
+        if (key[i] == key1[0]) {
           cFlag = true // 选中
         }
       }
       if (cFlag) {
-        if (key.length === 1) {
+        if (key.length == 1) {
           firstLocation = 0
           hasCheckedData.push(key[0])
         } else if (key.length > 1) {
-          // const arr = []
+          const arr = []
           // 当前有选中数据 并且 按住shift
           if (_this.shiftKey) {
             // if (isRight) {
             for (let i = 0; i < arrList.length; i++) {
               const item = value ? arrList[i][value] : arrList[i]
-              if (item === key[key.length - 2]) {
+              if (item == key[key.length - 2]) {
                 firstLocation = i
               }
-              if (item === key1[0]) {
+              if (item == key1[0]) {
                 lastLocation = i
               }
             }
-            if (firstLocation !== -1 && lastLocation !== -1) {
+            if (firstLocation != -1 && lastLocation != -1) {
               if (firstLocation < lastLocation) {
                 for (var k = 0; k < arrList.length; k++) {
                   const item = value ? arrList[k][value] : arrList[k]
@@ -224,7 +221,7 @@ export default {
         // 取消选中的
         hasCheckedData = []
         for (var i = 0; i < key.length; i++) {
-          if (key[i] !== key1[0]) {
+          if (key[i] != key1[0]) {
             hasCheckedData.push(key[i])
           }
         }

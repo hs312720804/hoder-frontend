@@ -98,7 +98,7 @@ export default {
           },
           {
             label: '操作',
-            render: this.$c_utils.component.createOperationRender(this, {
+            render: this.$createOperationRender(this, {
               handleSeeFunnel: '查看数据漏斗'
             })
           }
@@ -225,7 +225,7 @@ export default {
       this.loadColor = true
       this.$service.getHomepageReleaseRecordFunnel({ bdiId }).then((data) => {
         if (data == null) {
-          this.$refs.funnel.innerHTML = '暂无数据'
+          this.$refs['funnel'].innerHTML = '暂无数据'
         } else {
           const dataArr = []
           const obj = Object.keys(this.funnelTransform)
@@ -246,7 +246,7 @@ export default {
     generateMixed () {
       let res = ''
       for (let i = 0; i < 6; i++) {
-        const id = Math.ceil(Math.random() * 16)
+        let id = Math.ceil(Math.random() * 16)
         res += this.chars[id]
       }
       if (res == 'FFF' || res == 'FFFFFF') {

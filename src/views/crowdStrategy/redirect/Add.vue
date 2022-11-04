@@ -169,7 +169,7 @@ export default {
   },
   watch: {
     '$route.query.policyId': function (val) {
-      if (val !== undefined) {
+      if (val != undefined) {
         this.fetchData()
       }
     }

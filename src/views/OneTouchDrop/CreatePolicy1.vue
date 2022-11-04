@@ -151,15 +151,15 @@ export default {
     },
     resetSearch () {
       this.searchValue = ''
-      const currentTagsId = this.addForm.conditionTagIds
+      let currentTagsId = this.addForm.conditionTagIds
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
     handleTagChange (flag, item) {
-      let arr = []
+      var arr = []
       if (flag) { this.tagList.push(item) } else {
         arr = this.tagList
-        for (let i = arr.length - 1; i >= 0; i--) {
+        for (var i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
       }
@@ -223,7 +223,7 @@ export default {
               })
             }
           } else {
-            const oldFormData = {
+            let oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds
             }

@@ -62,7 +62,7 @@ export default {
       this.$emit('goBack')
     },
     handleEditSave () {
-      this.$refs.schemeConfigEdit.handleEditSave().then(() => {
+      this.$refs['schemeConfigEdit'].handleEditSave().then(() => {
         this.$emit('goBack')
       })
     }

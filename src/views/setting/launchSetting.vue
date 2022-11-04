@@ -139,7 +139,7 @@ export default {
       this.$refs[formName].validate((valid) => {
         if (valid) {
           const biId = this.currentId
-          const formData = JSON.parse(JSON.stringify(this.ruleForm))
+          let formData = JSON.parse(JSON.stringify(this.ruleForm))
           formData.positions = formData.positions.map(item => item).join(',')
           // 为去除之前的某组问题数据
           // formData.positions = formData.positions.filter(item => item !== '').join(',')

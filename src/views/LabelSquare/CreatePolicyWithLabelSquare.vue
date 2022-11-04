@@ -379,7 +379,7 @@ export default {
       if (mode === 'add') {
         // 如果有匹配的，就直接return
         let firstIndex = -1
-        for (let i = 0; i < tagList.length; i++) {
+        for (var i = 0; i < tagList.length; i++) {
           if (tagList[i].tagId === val.tagId) {
             firstIndex = i
             return
@@ -388,20 +388,20 @@ export default {
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
-
+          
           if (val.dataSource === 12) {
             // 人群标签 id 集合
-            this.addForm.crowdTagCrowdIds.push(val.tagId)
+            this.addForm.crowdTagCrowdIds.push(val.tagId) 
           } else {
             // 其他的标签 id 集合
-            this.addForm.conditionTagIds.push(val.tagId)
+            this.addForm.conditionTagIds.push(val.tagId) 
           }
           this.setContentBottomMargin()
         }
       } else {
         // 取消选中的则删除这一项
         let index = -1
-        for (let j = 0; j < tagList.length; j++) {
+        for (var j = 0; j < tagList.length; j++) {
           if (tagList[j].tagId === val.tagId) {
             index = j
             this.tagList.splice(index, 1)
@@ -433,7 +433,7 @@ export default {
         // 其他的标签 id 集合
         addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       }
-
+      
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       this.setContentBottomMargin()
     },
@@ -441,7 +441,7 @@ export default {
     saveAndNext (mode) {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          const addForm = JSON.parse(JSON.stringify(this.addForm))
+          let addForm = JSON.parse(JSON.stringify(this.addForm))
           if (addForm.conditionTagIds.length === 0) { // 创建策略时，标签不是必选的，因此下面两行代码注释掉
             // this.$message.error('请选择策略维度！')
             // return
@@ -458,14 +458,14 @@ export default {
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
           // 其他的标签 id 集合
-          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',') 
 
           // 人群标签 id 集合
           addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
 
           // 动态人群
           if (isDynamicPeople) {
-            const oldFormData = {
+            let oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
               crowdTagCrowdIds: addForm.crowdTagCrowdIds,
@@ -548,10 +548,10 @@ export default {
               })
             }
           } else {
-            const oldFormData = {
+            let oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
-              crowdTagCrowdIds: addForm.crowdTagCrowdIds // 人群标签
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds, // 人群标签
             }
             this.$service.policyAddSave(oldFormData).then((data) => {
               // if (data.policyId) {
@@ -584,24 +584,20 @@ export default {
     getPolicyDetail () {
       this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
         const formData = data
-        formData.conditionTagIds = formData.conditionTagIds === ''
-          ? []
-          : formData.conditionTagIds.split(',').map(function (v) {
-            return parseInt(v)
-          })
-
+        formData.conditionTagIds = formData.conditionTagIds === '' ? [] : formData.conditionTagIds.split(',').map(function (v) {
+          return parseInt(v)
+        })
+        
         // 人群标签ID
-        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds
-          ? formData.crowdTagCrowdIds.split(',').map(function (v) {
-            return parseInt(v)
-          })
-          : []
+        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds ? formData.crowdTagCrowdIds.split(',').map(function (v) {
+          return parseInt(v)
+        }) : []
 
         this.addForm = {
           recordId: this.recordId,
           policyName: formData.policyName,
           conditionTagIds: formData.conditionTagIds,
-          crowdTagCrowdIds: formData.crowdTagCrowdIds
+          crowdTagCrowdIds: formData.crowdTagCrowdIds,
         }
       })
     }
@@ -628,7 +624,7 @@ export default {
       // this.initTagList.map(function (v) {
       //   return parseInt(v.tagId)
       // })
-
+      
       this.addForm.policyId = this.policyName
     }
   }
@@ -699,7 +695,7 @@ export default {
     color #000
     font-size 12px
     margin-left 100px
-
+  
   .fix-bottom-form
     position fixed
     bottom 0

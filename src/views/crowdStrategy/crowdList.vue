@@ -1,4 +1,3 @@
-<!-- eslint-disable -->
 <template>
   <div>
   <div class="crowd-list">
@@ -1067,8 +1066,11 @@
               <div class="member-select--text">按会员权益</div>
               <el-select v-model="memberListType">
                   <template v-for="(item,index) in memberList">
-                    <!-- eslint-disable-next-line -->
-                      <el-option :key="index" :label="item.label" :value="item.value"></el-option>
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
                   </template>
               </el-select>
           </div>
@@ -1085,8 +1087,11 @@
               <div class="member-select--text">按会员权益</div>
               <el-select v-model="memberListByPay">
                   <template v-for="(item,index) in memberList">
-                    <!-- eslint-disable-next-line -->
-                      <el-option :key="index" :label="item.label" :value="item.value"></el-option>
+                      <el-option
+                              :key="index"
+                              :label="item.label"
+                              :value="item.value"
+                      ></el-option>
                   </template>
               </el-select>
           </div>
@@ -1840,10 +1845,11 @@ export default {
             label: '操作',
             // fixed: 'right',
             width: '150',
-            render: this.$c_utils.component.createOperationRender(this, {
+            render: this.$createOperationRender(this, {
               handleEditDynamic2GroupList: '编辑',
               handleFlowLinkAnalysis: '流转链路分析'
             })
+
           }
         ],
         data: []

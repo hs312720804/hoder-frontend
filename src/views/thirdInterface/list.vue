@@ -165,7 +165,7 @@ export default {
             label: '操作',
             fixed: 'right',
             width: '100',
-            render: this.$c_utils.component.createOperationRender(this, {
+            render: this.$createOperationRender(this, {
               handleEdit: '编辑',
               handleDelete: '删除'
             })

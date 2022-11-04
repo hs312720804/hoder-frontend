@@ -30,7 +30,7 @@ import List from './List'
 export default {
   name: 'TempLabel',
   components: {
-    List
+    List,
     // tempLabelAdd,
     // groupImageAdd,
     // deviceEcharts

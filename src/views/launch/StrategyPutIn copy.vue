@@ -245,7 +245,7 @@ export default {
       const policyId = crowdData[index].policyId
 
       // 选中的对象list
-      const checkedList = crowdList.filter(item => {
+      let checkedList = crowdList.filter(item => {
         const flag = val.includes(policyId + '_' + item.crowdId)
         return flag
       }) || []
@@ -259,7 +259,7 @@ export default {
       }
 
       for (let i = 0; i < checkedList.length; i++) {
-        const obj = checkedList[i]
+        let obj = checkedList[i]
         if (obj.isBehaviorCrowd) { // 选了行为人群
           this.crowdData[index].childs.forEach(item => {
             if (obj.crowdId === item.crowdId) {
@@ -317,7 +317,7 @@ export default {
         .getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
         .then(data => {
           if (this.crowdForm.abTest) {
-            const newDataForm = []
+            let newDataForm = []
             const pid = Object.keys(data[0].childs)
             pid.forEach((item) => {
               newDataForm.push({ Pid: item, childs: data[0].childs[item] })
@@ -329,7 +329,7 @@ export default {
           this.crowdData = this.crowdData.map(policy => {
             policy.childs = policy.childs.map(item => {
               let isBehaviorCrowd = false
-              const behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
+              let behaviorRulesJson = JSON.parse(item.behaviorRulesJson)
               if (behaviorRulesJson && behaviorRulesJson.rules && behaviorRulesJson.rules.length > 0) {
                 isBehaviorCrowd = true
               }
@@ -414,7 +414,7 @@ export default {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
-      const calIdType = calTypes.map((item) => item).join(',')
+      let calIdType = calTypes.map((item) => item).join(',')
       this.$service.LaunchMultiVersionCrowd({ launchCrowdId: id, calIdType: calIdType }, 'push投放成功').then(() => {
         if (this.crowdForm.launchMode.pull) {
           this.savePushDataSuccess = true
@@ -476,7 +476,7 @@ export default {
     }
   },
   watch: {
-    recordId: function (val, oldVal) {
+    'recordId': function (val, oldVal) {
       if (val === oldVal) {} else {
         this.handleGetCurrentPolicy()
       }
@@ -487,12 +487,12 @@ export default {
         this.getCrowd()
       }
     },
-    savePullDataSuccess: function (val) {
+    'savePullDataSuccess': function (val) {
       if (this.savePushDataSuccess && val) {
         this.handleEnd()
       }
     },
-    savePushDataSuccess: function (val) {
+    'savePushDataSuccess': function (val) {
       if (this.savePullDataSuccess && val) {
         this.handleEnd()
       }

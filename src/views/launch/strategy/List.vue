@@ -159,7 +159,7 @@ export default {
             label: '操作',
             fixed: 'right',
             width: '100',
-            render: this.$c_utils.component.createOperationRender(this, {
+            render: this.$createOperationRender(this, {
               cancelLaunch: '取消投放'
             })
           }
@@ -169,12 +169,12 @@ export default {
         // selected: [],
         // selectionType: 'multiple'
       },
-      launchStatusEnum: { 1: '投放中' }
+      launchStatusEnum: { '1': '投放中' }
     }
   },
   props: ['parentSource', 'showAllParent'],
   watch: {
-    showAllParent: function () {
+    'showAllParent': function () {
       this.fetchData(this.biId)
     }
   },

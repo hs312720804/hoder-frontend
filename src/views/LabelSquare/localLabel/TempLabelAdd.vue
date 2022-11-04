@@ -339,9 +339,9 @@ export default {
       this.$service
         .getTempCrowd({ launchCrowdId: this.editLaunchCrowdId })
         .then(data => {
-          const row = data
+          let row = data
           // let abTestRatio = data.ratio || {}
-          const {
+          let {
             macInitialValue,
             macAbovePer,
             macBelowPer,
@@ -391,7 +391,7 @@ export default {
     },
     // 新增
     handleRule () {
-      const crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+      let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
       let macInitialValue = crowdForm.macInitialValue
       const macBelowPer = crowdForm.macBelowPer
       let wxInitialValue = crowdForm.wxInitialValue
@@ -547,10 +547,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      const arr = a.concat(b)
-      const result = []
-      const obj = {}
-      for (const i of arr) {
+      let arr = a.concat(b)
+      let result = []
+      let obj = {}
+      for (let i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
