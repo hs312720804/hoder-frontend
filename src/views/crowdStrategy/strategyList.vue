@@ -616,6 +616,9 @@ export default {
     }
   },
   props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
+  activated () {
+    this.strategyType = this.$route.params.pagesType || 'list'
+  },
   created () {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()

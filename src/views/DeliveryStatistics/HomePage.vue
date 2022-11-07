@@ -1087,12 +1087,15 @@ export default {
     },
     handleOneTouchDrop () {
       this.$router.push({
-        path: 'oneTouchDrop'
+        name: 'strategyList',
+        params: {
+          pagesType: 'add'
+        }
       })
     },
     handleOpenLaunchList () {
       this.$router.push({
-        path: 'launch/launchTabList'
+        path: '/launch/launchTabList'
       })
     },
     handleDownload () {
@@ -1158,7 +1161,6 @@ export default {
 </style>
 <style lang="stylus" scoped>
     .launch-statistics
-      overflow hidden
       background #fff
       padding 14px
     .title

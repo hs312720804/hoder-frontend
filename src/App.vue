@@ -10,7 +10,7 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-#app
-  height 100%
-  overflow hidden
+// #app
+//   height 100%
+//   overflow hidden
 </style>
