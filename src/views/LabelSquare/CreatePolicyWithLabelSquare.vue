@@ -258,7 +258,8 @@ export default {
   methods: {
     // 返回策略列表
     handelBack () {
-      this.$router.push({ name: 'strategyList' })
+      this.$emit('back')
+      // this.$router.push({ name: 'strategyList' })
     },
     genDefaultForm () {
       return {

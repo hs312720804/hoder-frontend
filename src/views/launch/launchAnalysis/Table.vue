@@ -1,6 +1,6 @@
 <template>
     <!-- 投放分析（旧） -->
-    <div class="label-content">
+    <div class="label-content hoder-pages">
         <el-tabs
           v-model="activeName"
           @tab-click="handleTabChange"
@@ -174,8 +174,6 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.label-content
-    position relative
 .search-input
     position fixed
     top 118px
@@ -188,12 +186,5 @@ export default {
       right 10px
       transform rotate(-90deg)
 .label-content >>> .el-tabs__header
-    position fixed
     width 100%
-    z-index 999
-.label-content >>> .el-tabs__nav-wrap
-    background #fff
-    z-index 999
-    margin-top: -20px;
-    padding-top: 20px;
 </style>

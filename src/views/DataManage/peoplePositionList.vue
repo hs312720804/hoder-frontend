@@ -1,26 +1,26 @@
 <template>
-    <div class="people-position-list">
-        <c-content-wrapper
-                :filter="filter"
-                :filterSchema="filterSchema"
-                :pagination="pagination"
-                @filter-change="handleFilterChange"
-                @filter-reset="handleFilterReset"
-        >
-            <div><el-button @click="handleAdd" type="primary">新增</el-button></div>
-            <c-table
-                    :props="table.props"
-                    :header="table.header"
-                    :data="table.data"
-                    :selected="table.selected"
-                    :selection-type="table.selectionType"
-                    @row-selection-add="handleRowSelectionAdd"
-                    @row-selection-remove="handleRowSelectionRemove"
-                    @all-row-selection-change="handleAllRowSelectionChange"
-            >
-            </c-table>
-        </c-content-wrapper>
-    </div>
+  <div class="people-position-list">
+    <c-content-wrapper
+      :filter="filter"
+      :filterSchema="filterSchema"
+      :pagination="pagination"
+      @filter-change="handleFilterChange"
+      @filter-reset="handleFilterReset"
+    >
+      <div><el-button @click="handleAdd" type="primary">新增</el-button></div>
+      <c-table
+        :props="table.props"
+        :header="table.header"
+        :data="table.data"
+        :selected="table.selected"
+        :selection-type="table.selectionType"
+        @row-selection-add="handleRowSelectionAdd"
+        @row-selection-remove="handleRowSelectionRemove"
+        @all-row-selection-change="handleAllRowSelectionChange"
+      >
+      </c-table>
+    </c-content-wrapper>
+  </div>
 </template>
 
 <script>
@@ -244,8 +244,11 @@ export default {
 
 <style lang="stylus" scoped>
 .add-button
-    margin 10px 0
+  margin 10px 0
 .people-position-list >>> .filter-form
-    float right
-    margin-bottom 20px
+  float right
+  // margin-bottom 20px
+.people-position-list
+  >>>.content-list
+    margin 0
 </style>

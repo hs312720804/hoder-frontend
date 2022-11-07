@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <el-form :model="form" :rules="rules" inline label-width="100px" class="first-form">
             <!-- <el-form-item label="MAC地址：" prop="MAC">
                 <el-input v-model="outForm.MAC" required clearable></el-input>

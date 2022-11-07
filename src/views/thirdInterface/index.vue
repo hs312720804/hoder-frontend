@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <thirdInterfaceList v-if="showList" @open-add-page="openAddPage"></thirdInterfaceList>
-        <thirdInterfaceAdd v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></thirdInterfaceAdd>
-    </div>
+  <div class="hoder-pages">
+    <thirdInterfaceList v-if="showList" @open-add-page="openAddPage"></thirdInterfaceList>
+    <thirdInterfaceAdd v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></thirdInterfaceAdd>
+  </div>
 </template>
 
 <script>

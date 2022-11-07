@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <ip-manage-list v-if="showList" @open-add-page="openAddPage"></ip-manage-list>
-        <ip-manage-add v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></ip-manage-add>
-    </div>
+  <div class="hoder-pages">
+    <ip-manage-list v-if="showList" @open-add-page="openAddPage"></ip-manage-list>
+    <ip-manage-add v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></ip-manage-add>
+  </div>
 </template>
 
 <script>

@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <el-form :model="outForm" ref="outForm" inline class="first-form">
             <el-form-item label="" prop="condition">
                 <el-input

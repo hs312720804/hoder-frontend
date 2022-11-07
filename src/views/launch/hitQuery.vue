@@ -1,6 +1,6 @@
 <template>
   <!-- 所有的命中情况：包括命中、未命中、当前命中 ；以及其状态的详情 -->
-  <div>
+  <div class="hoder-pages">
     <div class="title"></div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
       <el-form-item label="MAC地址" prop="mac">

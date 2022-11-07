@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <div>
             <el-form :model="formData" :inline="true">
                 <el-form-item>

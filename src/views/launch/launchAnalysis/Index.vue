@@ -1,5 +1,5 @@
 <template>
- <div class='' id='' style="background: #f3f4fa; margin: -20px; padding: 20px;">
+ <div class="hoder-pages">
   <!-- {{ formInline }} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
     <el-form-item label="人群ID:" prop="crowdId">

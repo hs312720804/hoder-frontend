@@ -1,16 +1,16 @@
 <template>
-    <div>
-        <strategy-list
-                v-if="isShowStrategyList"
-                @openCrowdPage="openCrowdPage"
-                @openSchemePage="openSchemePage"
-                :historyFilter="historyFilter"
-                :showAllParent="showAllParent"
-                :checkListFilter="checkListFilter"
-                :parentSource="source"
-        ></strategy-list>
-        <crowd-index v-if="!isShowStrategyList && !isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></crowd-index>
-        <scheme-index v-if="isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></scheme-index>
+    <div class="crowd-strategy">
+      <strategy-list
+        v-if="isShowStrategyList"
+        @openCrowdPage="openCrowdPage"
+        @openSchemePage="openSchemePage"
+        :historyFilter="historyFilter"
+        :showAllParent="showAllParent"
+        :checkListFilter="checkListFilter"
+        :parentSource="source"
+      ></strategy-list>
+      <crowd-index v-if="!isShowStrategyList && !isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></crowd-index>
+      <scheme-index v-if="isShowSchemePage" :selectRow="selectRow" @goBack="goBack"></scheme-index>
     </div>
 </template>
 <script>
@@ -60,3 +60,9 @@ export default {
   }
 }
 </script>
+
+<style lang="stylus" scoped>
+.crowd-strategy
+  padding 14px
+  background #fff
+</style>

@@ -257,9 +257,11 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .add-button
-        margin 10px 0
-    .ip-manage-list >>> .filter-form
-        float right
-        margin-bottom 20px
+.add-button
+  margin 10px 0
+.ip-manage-list
+  >>> .filter-form
+    float right
+  >>>.content-list
+    margin 0
 </style>

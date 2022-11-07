@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <notice-list v-if="showList" @open-add-page="openAddPage"></notice-list>
         <notice-add v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></notice-add>
     </div>

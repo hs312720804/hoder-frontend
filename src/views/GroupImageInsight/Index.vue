@@ -1,9 +1,9 @@
 <template>
-    <div>
-        <group-image-list @open-add="handleOpenAddForm" @open-echarts="handleOpenEcharts" :refreshList="refreshList"></group-image-list>
-        <group-image-add v-if="showAdd" @close-add="handleCloseAddForm" @upsert-end="handleRefreshData" @save-form="handleSave"></group-image-add>
-        <device-echarts v-if="showEcharts" :current-cid="currentId" @close-echarts="handleCloseEcharts"></device-echarts>
-    </div>
+  <div class="hoder-pages">
+    <group-image-list @open-add="handleOpenAddForm" @open-echarts="handleOpenEcharts" :refreshList="refreshList"></group-image-list>
+    <group-image-add v-if="showAdd" @close-add="handleCloseAddForm" @upsert-end="handleRefreshData" @save-form="handleSave"></group-image-add>
+    <device-echarts v-if="showEcharts" :current-cid="currentId" @close-echarts="handleCloseEcharts"></device-echarts>
+  </div>
 </template>
 
 <script>

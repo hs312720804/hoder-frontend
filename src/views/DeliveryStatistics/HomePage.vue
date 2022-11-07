@@ -1158,7 +1158,9 @@ export default {
 </style>
 <style lang="stylus" scoped>
     .launch-statistics
-        overflow hidden
+      overflow hidden
+      background #fff
+      padding 14px
     .title
         font-size 20px
         margin-left 20px

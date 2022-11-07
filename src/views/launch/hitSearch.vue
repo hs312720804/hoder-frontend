@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <div class="title">查询指定MAC的命中情况</div>
         <el-form :model="form" ref="form" :rules="rules" :inline="true">
             <el-form-item label="人群id：" prop="crowdId">

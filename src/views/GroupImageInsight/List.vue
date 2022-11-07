@@ -131,6 +131,10 @@ export default {
 
 <style lang="stylus" scoped>
 .device-portrait-content
+  .header
+    margin 0
+    padding 0 0 10px 0
+    border 0
     /*margin 20px*/
 .header,.button-group,.search-content
     display flex

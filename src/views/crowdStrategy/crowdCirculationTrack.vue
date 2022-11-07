@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hoder-pages">
     <div class="title">查询指定Mac的流转轨迹</div>
     <el-form :model="form" ref="form" :rules="rules" :inline="true">
       <el-form-item label="主人群ID：" prop="crowdId">

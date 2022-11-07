@@ -1,5 +1,5 @@
 <template>
-    <div class="launch-setting">
+    <div class="launch-setting hoder-pages">
         <!-- 列表 -->
         <div class="launch-setting-list">
             <div class="button-group">

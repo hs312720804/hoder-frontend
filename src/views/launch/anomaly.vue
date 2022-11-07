@@ -1,5 +1,5 @@
 <template>
-    <div class="anomaly">
+    <div class="anomaly hoder-pages">
         <div class="anomaly-header">
                 <el-date-picker
                         v-model="time"

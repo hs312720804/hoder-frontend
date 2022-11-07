@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="hoder-pages">
         <el-form :model="outForm" inline class="first-form">
             <el-form-item label="投放ID：">
                 <el-input v-model="outForm.launchCrowdId" @keyup.enter.native="handleGetManualLaunchList" clearable></el-input>

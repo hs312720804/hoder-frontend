@@ -276,8 +276,11 @@ export default {
 
 <style lang="stylus" scoped>
     .add-button
-        margin 10px 0
-    .third-interface-list >>> .filter-form
+        margin-bottom 10px
+    .third-interface-list
+      >>> .filter-form
         float right
         margin-bottom 20px
+      >>>.content-list
+        margin 0
 </style>

@@ -1,5 +1,5 @@
 <template>
-    <div class="label-content">
+    <div class="label-content hoder-pages">
         <el-tabs
           v-model="activeName"
           @tab-click="handleTabChange"
@@ -377,8 +377,6 @@ export default {
 .label-content >>> .el-tabs__nav-wrap
     background #fff
     z-index 999
-    margin-top: -20px;
-    padding-top: 20px;
 .label-content-wrap> >>> .el-tabs__content
   height calc(100vh - 200px);
   overflow: auto

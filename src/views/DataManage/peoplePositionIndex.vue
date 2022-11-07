@@ -1,8 +1,8 @@
 <template>
-    <div>
-        <PeoplePositionList v-if="showList" @open-add-page="openAddPage"></PeoplePositionList>
-        <PeoplePositionAdd v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></PeoplePositionAdd>
-    </div>
+  <div class="hoder-pages">
+    <PeoplePositionList v-if="showList" @open-add-page="openAddPage"></PeoplePositionList>
+    <PeoplePositionAdd v-else :editId="editId" :mode="mode" @open-list-page="openListPage"></PeoplePositionAdd>
+  </div>
 </template>
 
 <script>

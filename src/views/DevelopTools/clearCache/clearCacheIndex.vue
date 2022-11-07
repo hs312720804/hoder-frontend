@@ -1,19 +1,18 @@
 <template>
-    <div class="clear-cache">
-        <div>清除指定MAC</div>
-        <div class="clear-form">
-            <el-form label-width="100px">
-                <el-form-item label="设备信息：">
-                    <el-input v-model="deviceMsg" placeholder="请输入设备MAC" class="clear-input" clearable></el-input>
-                    <el-button @click="clearCache" class="clearBtn">清除缓存</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-        <!-- <div class="clear-form">
-            <el-button v-permission="'sysAdministrative:user:add' || 'hoder:devTool:updateApiCache'" @click="handleAllCacheClean">清理人群查询接口缓存</el-button>
-        </div> -->
+  <div class="clear-cache hoder-pages">
+    <div>清除指定MAC</div>
+    <div class="clear-form">
+      <el-form label-width="100px">
+        <el-form-item label="设备信息：">
+          <el-input v-model="deviceMsg" placeholder="请输入设备MAC" class="clear-input" clearable></el-input>
+          <el-button @click="clearCache" class="clearBtn">清除缓存</el-button>
+        </el-form-item>
+      </el-form>
     </div>
-
+    <!-- <div class="clear-form">
+        <el-button v-permission="'sysAdministrative:user:add' || 'hoder:devTool:updateApiCache'" @click="handleAllCacheClean">清理人群查询接口缓存</el-button>
+    </div> -->
+  </div>
 </template>
 
 <script>
@@ -39,7 +38,7 @@ export default {
 
 <style lang="stylus" scoped>
 .clear-cache
-    margin 30px
+    // margin 30px
 .clear-form
     padding 30px
     width 50%

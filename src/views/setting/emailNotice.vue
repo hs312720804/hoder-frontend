@@ -1,5 +1,5 @@
 <template>
-  <div>
+  <div class="hoder-pages">
     <!-- authority -->
     <div class="TopNav">
       <div class="left">

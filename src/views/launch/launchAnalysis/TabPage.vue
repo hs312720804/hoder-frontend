@@ -1653,8 +1653,7 @@ export default {
       margin-top: 0 !important
       padding-top: 0 !important
     .my-collect
-        margin-top 50px
-        position relative
+      position relative
     .header
         display flex
         justify-content space-between

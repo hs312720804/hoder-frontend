@@ -584,6 +584,8 @@ export default {
       height: 100%;
       overflow: auto;
       box-sizing: border-box;
+      padding 14px
+      background #fff
     .title
         font-size 20px
         margin-left 20px
@@ -771,19 +773,13 @@ export default {
         .member-select--text
             margin-right 20px
     .active-rate
-        display flex
-        align-items center
-        margin-left 20px
+      display flex
+      align-items center
+      margin-left 20px
     .active-rate--title
-        margin-right 20px
+      margin-right 20px
     .statistics-header
-      position: sticky;
-      top: 0;
-      z-index: 1
-      background: #fff
-      padding-bottom 20px
-      // display flex
-      // justify-content space-between
+      padding-bottom 14px
 .chart-div
   height: 436px
 </style>

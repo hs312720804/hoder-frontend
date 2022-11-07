@@ -24,7 +24,6 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-    .my-pagination
-        float right
-        margin-top 10px
+.my-pagination
+  margin-top 10px
 </style>
