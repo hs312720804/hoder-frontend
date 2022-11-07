@@ -2,17 +2,19 @@ import AppState from '@william17/vue-app-state'
 import pagination from './../components/pagination.vue'
 import moment from 'moment'
 import VCharts from 'v-charts'
+// import store from 'cseed-frame/store/_index'
 
 export default function install (Vue) {
   Vue.use(VCharts)
   Vue.use(AppState)
   Vue.component('pagination', pagination)
   Vue.prototype.$moment = moment
-  Vue.directive('permission', function (el, binding, vNode) {
-    if (vNode.context.$appState.permissions[binding.value] === undefined) {
-      el.style.display = 'none'
-    }
-  })
+  // Vue.directive('permission', function (el, binding, vNode) {
+  //   console.log(store.getters.menuBtnMap)
+  //   if (vNode.context.$appState.permissions[binding.value] === undefined) {
+  //     el.style.display = 'none'
+  //   }
+  // })
   Vue.directive('loadmore', {
     bind (el, binding) {
       // 获取element-ui定义好的scroll盒子

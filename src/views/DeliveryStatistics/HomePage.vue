@@ -1162,7 +1162,7 @@ export default {
 <style lang="stylus" scoped>
     .launch-statistics
       background #fff
-      padding 14px
+      // padding 14px
     .title
         font-size 20px
         margin-left 20px

@@ -62,7 +62,4 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-.crowd-strategy
-  padding 14px
-  background #fff
 </style>

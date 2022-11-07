@@ -1,6 +1,8 @@
 <template>
-  <div id="app">
+  <div id="app">2222
+    <el-scrollbar style="height:100%" wrap-style="overflow-x:hidden;">
     <router-view />
+    </el-scrollbar>
   </div>
 </template>
 
@@ -10,7 +12,7 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-// #app
-//   height 100%
-//   overflow hidden
+#app
+  height 100%
+  overflow hidden
 </style>

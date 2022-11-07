@@ -1,183 +1,183 @@
 <template>
-    <div class="launch-statistics">
-        <div class="statistics-header">
-            <div class="date-picker">
-                <!-- <el-date-picker
-                  v-model="time0"
-                  type="daterange"
-                  range-separator="至"
-                  start-placeholder="开始日期"
-                  end-placeholder="结束日期"
-                  value-format="yyyy-MM-dd"
-                  :picker-options="pickerOptions"
-                >
-                </el-date-picker> -->
-                最近：<el-select v-model="rangeType" placeholder="请选择">
-                  <el-option
-                    v-for="item in options"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                  </el-option>
-                </el-select>
+  <div class="launch-statistics">
+      <div class="statistics-header">
+          <div class="date-picker">
+              <!-- <el-date-picker
+                v-model="time0"
+                type="daterange"
+                range-separator="至"
+                start-placeholder="开始日期"
+                end-placeholder="结束日期"
+                value-format="yyyy-MM-dd"
+                :picker-options="pickerOptions"
+              >
+              </el-date-picker> -->
+              最近：<el-select v-model="rangeType" placeholder="请选择">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value">
+                </el-option>
+              </el-select>
+          </div>
+      </div>
+      <div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">业务处理量</div>
+              <div class="unit-content">
+                  <div ref="chart1" class="chart-div"></div>
+              </div>
             </div>
-        </div>
-        <div>
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">业务处理量</div>
-                <div class="unit-content">
-                    <div ref="chart1" class="chart-div"></div>
-                </div>
-              </div>
-            </el-col>
-          </el-row>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">人群增长趋势</div>
-                <div class="unit-content">
-                    <div ref="chart2" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">人群增长趋势</div>
+              <div class="unit-content">
+                  <div ref="chart2" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">策略使用</div>
-                <div class="unit-content">
-                    <div ref="chart3" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">策略使用</div>
+              <div class="unit-content">
+                  <div ref="chart3" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">投放统计</div>
-                <div class="unit-content">
-                    <div ref="chart14" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">投放统计</div>
+              <div class="unit-content">
+                  <div ref="chart14" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">标签使用</div>
-                <div class="unit-content">
-                    <div ref="chart4" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">标签使用</div>
+              <div class="unit-content">
+                  <div ref="chart4" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">人群寿命</div>
-                <div class="unit-content">
-                    <div ref="chart5" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">人群寿命</div>
+              <div class="unit-content">
+                  <div ref="chart5" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">行为人群寿命</div>
-                <div class="unit-content">
-                    <div ref="chart6" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">行为人群寿命</div>
+              <div class="unit-content">
+                  <div ref="chart6" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">策略寿命</div>
-                <div class="unit-content">
-                    <div ref="chart7" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">策略寿命</div>
+              <div class="unit-content">
+                  <div ref="chart7" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">大数据标签热度</div>
-                <div class="unit-content">
-                    <div ref="chart8" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">大数据标签热度</div>
+              <div class="unit-content">
+                  <div ref="chart8" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">账号标签热度</div>
-                <div class="unit-content">
-                    <div ref="chart9" class="chart-div"></div>
-                </div>
+            </div>
+          </el-col>
+        </el-row>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">账号标签热度</div>
+              <div class="unit-content">
+                  <div ref="chart9" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">临时标签热度</div>
-                <div class="unit-content">
-                    <div ref="chart10" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">临时标签热度</div>
+              <div class="unit-content">
+                  <div ref="chart10" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">使用占比</div>
-                <div class="unit-content">
-                    <div ref="chart11" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">使用占比</div>
+              <div class="unit-content">
+                  <div ref="chart11" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">存储监控</div>
-                <div class="unit-content">
-                    <div ref="chart12" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">存储监控</div>
+              <div class="unit-content">
+                  <div ref="chart12" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
+            </div>
+          </el-col>
+        </el-row>
 
-          <el-row :gutter="20" class="unit-row">
-            <el-col :span="24">
-              <div class="unit-box">
-                <div class="unit-header clearfix">性能监控</div>
-                <div class="unit-content">
-                    <div ref="chart13" class="chart-div"></div>
-                </div>
+        <el-row :gutter="20" class="unit-row">
+          <el-col :span="24">
+            <div class="unit-box">
+              <div class="unit-header clearfix">性能监控</div>
+              <div class="unit-content">
+                  <div ref="chart13" class="chart-div"></div>
               </div>
-            </el-col>
-          </el-row>
-        </div>
+            </div>
+          </el-col>
+        </el-row>
+      </div>
 
-    </div>
+  </div>
 </template>
 
 <script>
@@ -581,10 +581,8 @@ export default {
     .launch-statistics
       // overflow hidden
       position: relative;
-      height: 100%;
-      overflow: auto;
-      box-sizing: border-box;
-      padding 14px
+      // box-sizing: border-box;
+      // padding 14px
       background #fff
     .title
         font-size 20px
