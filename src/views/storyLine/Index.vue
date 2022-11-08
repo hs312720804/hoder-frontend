@@ -21,10 +21,10 @@
                   暂时木有内容呀～～
                 </div>
                 <div
-                  v-for="(item,index) in sceneList"
+                  v-for="(item) in sceneList"
                   :key="item.id"
-                  @click="selectScene(index)"
-                  :class="{active: activeIndex === index, 'gray-row': item.putway === 2}"
+                  @click="selectScene(item.id)"
+                  :class="{active: activeIndex === item.id, 'gray-row': item.putway === 2}"
                   class="lists-item">
                   <i class="icon el-icon-video-camera-solid"></i>
                   <span class="item-content">
@@ -62,7 +62,7 @@
                               type="text"
                               placeholder="请输入内容"
                               v-model="rename"
-                              maxlength="20"
+                              maxlength="50"
                               show-word-limit
                               clearable
                               style="width: 250px"
@@ -140,17 +140,17 @@
                           <el-popover placement="top" trigger="click" ref="pop">
                             <div slot="reference">重命名</div>
                             <div style="display: flex">
-                              <el-input
 
-                                type="text"
-                                placeholder="请输入内容"
-                                v-model="rename2"
-                                maxlength="20"
-                                show-word-limit
-                                clearable
-                                style="width: 250px"
-                              >
-                              </el-input>
+                                <el-input
+                                  type="text"
+                                  placeholder="请输入内容"
+                                  v-model="rename2"
+                                  maxlength="50"
+                                  show-word-limit
+                                  clearable
+                                  style="width: 250px"
+                                >
+                                </el-input>
 
                               <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
                               <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
@@ -415,6 +415,9 @@ export default {
     },
 
     handelRename2 (item) {
+      if (!this.rename2) {
+        return this.$message.error('请输入名称')
+      }
       this.editReceptionist({
         id: item.id,
         // ...item,
@@ -524,9 +527,14 @@ export default {
       })
     },
     // 选择场景
-    selectScene (index) {
-      this.activeIndex = index
-      this.selectedScene = this.sceneList[index] || {}
+    selectScene (id) {
+      this.activeIndex = id
+
+      // this.selectedScene = this.sceneList[index] || {}
+      const obj = this.sceneList.find(item => item.id === id)
+      this.selectedScene = obj || {}
+
+      this.searchServicer = '' // 接待员的搜索条件置空
       this.getServiceList()
       this.getSkillListBySceneId()
     },
@@ -580,13 +588,16 @@ export default {
         console.log('this.activeIndex---》', this.activeIndex)
         if (this.sceneList.length > 0) {
           // 获取从动态人群跳转过来的场景ID，并选中
-          const id = this.$route.params.sceneId || ''
-          const redirctIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
-          if (redirctIndex > 0) {
-            this.activeIndex = redirctIndex
-          } else if (this.sceneList.length <= this.activeIndex) {
-            this.activeIndex = 0
-          }
+          const id = this.$route.params.sceneId || this.activeIndex
+          const obj = this.sceneList.find(item => item.id === id)
+
+          this.activeIndex = obj ? obj.id : this.sceneList[0].id
+          // const redirctIndex = this.sceneList.findIndex(item => Number(id) === Number(item.id))
+          // if (redirctIndex > 0) {
+          //   this.activeIndex = redirctIndex
+          // } else if (this.sceneList.length <= this.activeIndex) {
+          //   this.activeIndex = 0
+          // }
           // this.activeIndex = redirctIndex > 0 ? redirctIndex : this.activeIndex
           this.selectScene(this.activeIndex)
         }
@@ -598,6 +609,9 @@ export default {
     },
 
     handelRename (item) {
+      if (!this.rename) {
+        return this.$message.error('请输入名称')
+      }
       this.editScene({
         // id: item.id,
         ...item,
@@ -647,9 +661,11 @@ export default {
       this.$service.addScene(parmas).then(res => {
         // this.sceneList.push(item)
         const _this = this
-        this.getSceneList(function () {
-          _this.activeIndex = Number(_this.sceneList.length - 1)
-        })
+        this.getSceneList(
+        //   function () {
+        //   _this.activeIndex = Number(_this.sceneList.length - 1)
+        // }
+        )
         this.dialogVisible = false
       })
     },

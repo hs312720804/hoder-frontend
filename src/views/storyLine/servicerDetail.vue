@@ -71,7 +71,9 @@
               type="textarea"
               placeholder="请输入内容"
               @blur="editStatuChange"
-              v-model="target">
+              v-model="target"
+              maxlength="200"
+              show-word-limit>
             </el-input>
           </div>
 
@@ -129,7 +131,19 @@
                 </div>
               </div>
 
-              <div class="chart-empty"></div>
+              <!-- <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index"> -->
+                <!-- <div v-for="(chart, key) in rowObj" :key="key"> -->
+
+              <div >
+                <!-- {{ allChartData }} -->
+                <div v-if="showChart && allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
+                  <!-- <el-empty description="暂无数据"></el-empty> -->
+                <div v-else class="chart-empty"></div>
+              </div>
+                <!-- </div> -->
+              <!-- </el-row> -->
+
+              <!--  -->
 
               <div class="panel-footer"></div>
             </div>
@@ -519,6 +533,13 @@ export default {
         this.target = val.myTask || '我的任务是...'// 任务
         this.targetValue = val.indicators || ''// 绩效指标
 
+        // 清空绩效图表
+        this.allChartData = {}
+        for (const key of Object.keys(this.allCharts)) {
+          const chart = this.allCharts[key]
+          chart.clear()
+        }
+
         const obj = this.targetKeyList.find(item => {
           return this.selectedServicer.indicatorsType === item.id
         })
@@ -536,6 +557,17 @@ export default {
   },
   data () {
     return {
+      colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+
+      showChart: true,
+      rowObj: {
+        arup: { type: 'line', title: '客单价' },
+        payNum: { type: 'line', title: '付费单量' },
+        payRate: { type: 'line', title: '付费率' },
+        price: { type: 'line', title: '付费金额' }
+      },
+      allCharts: {},
+      allChartData: {},
       clientDialogVisible: false,
       target: '请输入接待员的目标',
       targetValue: '',
@@ -587,27 +619,41 @@ export default {
       },
       editExportRow: {},
       exportDialogVisible: false,
+
       targetKeyList: [{
         // 1 付费率，2 成交单数 3 成交金额 4 客单价
         id: 1,
+        key: 'payRate',
         lable: '付费率（%）'
       }, {
         id: 2,
+        key: 'payNum',
         lable: '付费单数'
       }, {
         id: 3,
+        key: 'price',
         lable: '付费金额（元）'
       }, {
         id: 4,
+        key: 'arup',
         lable: '客单价（元）'
       }],
       targetKey: '付费率（%）',
+      targetKeyId: '',
       soureceSignList: []
     }
   },
   created () {
     this.$service.getSourceSign().then(res => {
       this.soureceSignList = res
+    })
+  },
+  mounted () {
+    window.addEventListener('resize', () => {
+      for (const key of Object.keys(this.allCharts)) {
+        const chart = this.allCharts[key]
+        chart.resize()
+      }
     })
   },
   methods: {
@@ -910,24 +956,213 @@ export default {
       // }, 'no-refresh-list')
 
       this.targetKey = obj ? obj.lable : ''
+      this.targetKeyId = obj ? obj.key : ''
+
       // eslint-disable-next-line vue/no-mutating-props
       this.selectedServicer.indicatorsType = obj ? obj.id : ''
-
+      // 曲线图
       this.getPerformanceGoalData()
     },
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
       console.log('selectedScene---', this.selectedScene)
       console.log('selectedServicer---', this.selectedServicer)
+      // const params = {
+      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
+      //   dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
+      //   crowdId: this.selectedServicer.id, // 接待员id
+      //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
+      // }
       const params = {
-        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
-        dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-        crowdId: this.selectedServicer.id, // 接待员id
-        diDelCache: 1 // 是否删除绩效目标缓存   0 否  1 是
+        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
+        dynamicRuleId: 225,
+        crowdId: 13352, // 接待员id
+        isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       }
       this.$service.getPerformanceGoalData(params).then(res => {
-
+        const tableData = res.data || {}
+        console.log('tableData----', tableData)
+        this.allChartData = tableData || {}
+        this.$nextTick(() => {
+          this.drawChart()
+        })
       })
+    },
+    drawChart () {
+      const rowObj = this.rowObj
+      // key 是代表 ref 值
+      for (const key in rowObj) {
+        if (rowObj[key].type === 'line') {
+          this.showLine(this.allChartData[key], key)
+        }
+      }
+    },
+    //  折线图
+    showLine (data, chartID) {
+      const hasY2 = false
+      // console.log('showLine======111>>>', ...arguments)
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        const series = data.series || []
+        const legendData = series.map((key) => {
+          return key.name
+        })
+        const linesData = series.map((key) => {
+          if (data.yunit === '%') {
+            const arr = key.value.map(v => v * 100)
+            return { name: key.name, data: arr, type: 'line' }
+          } else {
+            return { name: key.name, data: key.value, type: 'line' }
+          }
+        })
+
+        this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit, hasY2)
+      }
+    },
+    // 通用多线性参数设置
+    setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
+      // console.log('setBarEchart======111>>>', this.$refs)
+      // console.log('setBarEchart======111>>>', element)
+      // console.log('setBarEchart======111>>>', this.$refs[element])
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
+      const echarts = require('echarts')
+      const _this = this
+      const yAxisObj = {
+        type: 'value',
+        name: yAxisObjName1,
+        axisTick: {
+          inside: true
+        },
+        axisLine: {
+          lineStyle: {
+            color: '#273169'
+          }
+        },
+        splitLine: {
+          show: true,
+          lineStyle: {
+            color: ['#273169']
+          }
+        },
+        // scale: true,
+        axisLabel: {
+          // margin: 30,
+          formatter: function (value) {
+            if (value >= 100000000) {
+              value = value / 100000000 + '亿' + yunit
+            } else if (value >= 10000000) {
+              value = value / 10000000 + '千万' + yunit
+            } else if (value >= 10000 && value < 10000000) {
+              value = value / 10000 + '万' + yunit
+            } else {
+              value = value + yunit
+            }
+            return value
+          }
+        }
+      }
+      // let myChart = echarts.init(this.$refs[element])
+      const option = {
+        backgroundColor: '', // rgba设置透明度0.1
+        grid: {
+          top: 10,
+          right: 50,
+          left: 50,
+          bottom: 30
+        },
+        title: {
+          text: title
+        },
+        textStyle: { // 图例的文字样式
+          color: '#ffffff80'
+        },
+        tooltip: {
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
+          }
+        },
+        color: _this.colorList,
+        legend: {
+          show: false,
+          data: legend,
+          icon: 'circle',
+          top: '10%',
+          right: '10%',
+          textStyle: { // 图例的文字样式
+            color: '#fff'
+          }
+        },
+        xAxis: {
+          type: 'category',
+          data: xData,
+          // 轴线的字体样式
+          axisLabel: {
+            show: true,
+            textStyle: {
+              color: '#fff',
+              fontSize: '12px'
+              // fontSize: 16, 可直接写数字,单位px
+            }
+          },
+          // 轴线的样式
+          axisLine: {
+            lineStyle: {
+              color: '#273169'
+            }
+          }
+          // // 网格线样式
+          // splitLine: {
+          //   show: true,
+          //   lineStyle: {
+          //     color: ['#273169']
+          //   }
+          // }
+          // axisLabel: {
+          //   interval: 'auto',
+          //   rotate: yData.length > 10 ? -45 : 0,
+          //   formatter: function (value) {
+          //     return value + xunit
+          //   }
+          // }
+        },
+        yAxis: [yAxisObj],
+        series: yData.map(item => {
+          return {
+            ...item,
+            areaStyle: { // 要加这个属性,折线与下方的区域才能填充颜色
+              // color: 'red', // 可以直接填充颜色
+              color: { // 这边是设置渐变色,好看一点
+                type: 'linear',
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  {
+                    offset: 0,
+                    color: 'rgba(0,156,255,0.5)'
+                  },
+                  {
+                    offset: 0.5, // 这是于下方线的距离,设置1就不留空隙
+                    color: 'rgba(0,156,255,0)'
+                  }
+                ],
+                global: false
+              }
+            }
+          }
+        })
+      }
+      // console.log('chart===>', myChart)
+
+      const myChart = echarts.init(chartElement)
+      myChart.setOption(option, true)
+      this.allCharts[element] = myChart
     }
 
   }
@@ -938,4 +1173,7 @@ export default {
 @import './sty/common.styl'
 @import './sty/dark.styl'
 @import './sty/light.styl'
+.chart-div{
+  height: 130px
+}
 </style>
