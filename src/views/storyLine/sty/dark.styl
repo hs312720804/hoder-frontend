@@ -1,3 +1,6 @@
+$borderColor=#0a6aff
+// $borderColor=#07efe7
+
 .dark
   .row-wrap {
     background: #000;
@@ -37,6 +40,9 @@
     // padding: 15px
     box-shadow: 0 0 30px 0 #4852ff;
     background: #07133cb3;
+
+    // background: url(../../assets/img/bg.jpg) center top;
+    // background-size: cover;
   }
   
   .detail-name-border {
@@ -58,7 +64,7 @@
     background: rgba(101,132,226,.1);
     background url(../../assets/img/index.png)
     border: 1px solid rgba(25,186,139,.17)
-
+    box-shadow: 0 0 6px #181c56 inset
     &:before{
       position: absolute;
       top: 0;
@@ -66,8 +72,8 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-top: 2px solid #07efe7;
-      border-left: 2px solid #07efe7;
+      border-top: 2px solid $borderColor;
+      border-left: 2px solid $borderColor;
       box-shadow:  0 0 5rem rgb(0,110,150)
     }
     &:after {
@@ -77,8 +83,8 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-top: 2px solid #07efe7;
-      border-right: 2px solid #07efe7;
+      border-top: 2px solid $borderColor;
+      border-right: 2px solid $borderColor;
       box-shadow:  0 0 5rem rgb(0,110,150)
     }
   }
@@ -156,6 +162,7 @@
     border: 1px solid rgba(25,186,139,.17)
     background url(../../assets/img/index.png)
     color #fff
+    box-shadow: 0 0 6px #181c56 inset
     &:before
       position: absolute;
       top: 0;
@@ -163,8 +170,8 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-top: 2px solid #07efe7;
-      border-left: 2px solid #07efe7;
+      border-top: 2px solid $borderColor;
+      border-left: 2px solid $borderColor;
     &:after
       position: absolute;
       top: 0;
@@ -172,8 +179,8 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-top: 2px solid #07efe7;
-      border-right: 2px solid #07efe7;
+      border-top: 2px solid $borderColor;
+      border-right: 2px solid $borderColor;
   .panel-footer
     position: absolute;
     left: 0;
@@ -186,8 +193,8 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-bottom: 2px solid #07efe7;
-      border-left: 2px solid #07efe7;
+      border-bottom: 2px solid $borderColor;
+      border-left: 2px solid $borderColor;
     &:after
       position: absolute;
       bottom: 0;
@@ -195,6 +202,10 @@
       content: "";
       width: 10px;
       height: 10px;
-      border-bottom: 2px solid #07efe7;
-      border-right: 2px solid #07efe7;
-  
+      border-bottom: 2px solid $borderColor;
+      border-right: 2px solid $borderColor;
+  .bav-wrap {
+    >>> .el-input__inner {
+      background-color: #09163c;
+    }
+  }

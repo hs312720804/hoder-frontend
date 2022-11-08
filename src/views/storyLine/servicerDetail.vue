@@ -3,7 +3,7 @@
   <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
     <div class="title">接待员详情</div>
 
-    <div style="padding: 0 10px 10px 10px" >
+    <div style="padding: 0 15px 10px" >
 
       <div class="detail-header">
 

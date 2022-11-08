@@ -43,7 +43,8 @@
             </div>
           </transition-group>
         </draggable>
-        <i v-if="groupList.length > 1" class="el-icon-delete"  @click="cutGroup(index)"></i>
+        <!-- v-if="groupList.length > 1" -->
+        <i class="el-icon-delete"  @click="cutGroup(index)"></i>
       </div>
       <el-button type="primary" plain style="width: 100%; margin-top: 10px;" size="mini" icon="el-icon-plus" @click="addGroup"></el-button>
 
