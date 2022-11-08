@@ -175,7 +175,6 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
 }
 
 function validateForm (rules, behaviorRules = [], _this) {
-  debugger
   timeTagKongList = []
   // 判断设置标签里是否有未填写的项
   let i
@@ -195,7 +194,7 @@ function validateForm (rules, behaviorRules = [], _this) {
       }
       // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
       const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
-      debugger
+
       if (isTimeTagKong) {
         if (!timeTagKongList.includes(rulesItem.tagName)) {
           timeTagKongList.push(rulesItem.tagName)

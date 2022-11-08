@@ -396,7 +396,6 @@ export default {
             // let bavFormList = []
 
             typeRefList && typeRefList.forEach(item => {
-              // debugger
               if (item.$refs.bav) bavFormList.push(item.$refs.bav)
               if (item.$refs.typeRef && Array.isArray(item.$refs.typeRef)) {
                 item.$refs.typeRef.forEach(obj => {

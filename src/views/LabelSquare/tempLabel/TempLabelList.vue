@@ -64,6 +64,9 @@
               <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
               </div>
+              <div v-else-if="scope.row.history.status === 41">
+                结果为0
+              </div>
               <!-- 新增计算中时是否是人群派对中 -->
               <div
                 v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">

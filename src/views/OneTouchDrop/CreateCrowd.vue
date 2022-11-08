@@ -33,7 +33,6 @@ export default {
   methods: {
     handleBackPrevStep (recordId) {
       if (this.isDynamicPeople) {
-        debugger
         this.$emit('dynamicCrowdPrevStep', 1, this.policyId, this.policyName)
       } else {
         this.$emit('crowdPrevStep', 1, recordId)

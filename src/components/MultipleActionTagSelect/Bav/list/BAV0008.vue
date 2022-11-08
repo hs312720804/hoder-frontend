@@ -569,7 +569,7 @@ export default {
      */
     // handelQiBoChildBehavir666SelectChange(childItem, hasChild = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []) {
     handelQiBoChildBehavirSelectChange (params = {}) {
-      let { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
+      const { childItem, hasChild = false, level = 2, extra = {}, selectPropKeyValue = 'value', isValueClear = false, defaultChild = [], reverseSelectAttr } = params
 
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
@@ -596,7 +596,6 @@ export default {
         reverseSelectAttr,
         parentId: childItem.id
       })
-      debugger
     },
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, behaviorValue -- 已经组装好的集合, attrList -- 下拉框列表
@@ -616,9 +615,8 @@ export default {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
-      debugger
       if (vals.length === 0 && level === 6) { // 清空集数
-        let obj = behaviorValue[0] // 不改变子级的数据
+        const obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
         obj.value = ''
         obj.field = ''
@@ -648,7 +646,6 @@ export default {
         }]
       }
       vals.forEach(val => {
-        debugger
         const lastNumberObj = [
           { name: '', value: '', field: 'mac', operator: '>', type: 'count' }
         ]
@@ -700,7 +697,6 @@ export default {
         //   }]
         // }
         if (level === 6 || level === 7) {
-          debugger
           const child = behaviorValue.filter(item => {
             return item.value === val
           })
@@ -709,7 +705,7 @@ export default {
         }
 
         // 模块活跃，默认 child 值特殊处理
-        let defaultchild = JSON.parse(JSON.stringify(defaultChild))
+        const defaultchild = JSON.parse(JSON.stringify(defaultChild))
 
         obj.child = obj.child || (hasChild ? lastNumberObj : defaultchild)
 
@@ -747,7 +743,6 @@ export default {
             this.getTvEpisodes(obj.source, obj.value)
             this.getAppointmentInfo(obj.source, obj.value)
           }
-          debugger
           // if (obj.child.length === 0 && obj.child[0].value === '') {
           //   obj.child = [{
           //     name: '',
@@ -779,7 +774,7 @@ export default {
           // }
         }
 
-        let obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
+        const obj2 = Object.assign({}, this.getDefaultChildObj(), obj)
         list.push(obj2)
       })
 

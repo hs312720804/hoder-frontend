@@ -163,3 +163,11 @@ export function getListGroup (params) {
     params
   })
 }
+// 接待员绩效目标查询接口
+export function getPerformanceGoalData (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/getPerformanceGoalData',
+    params
+  })
+}

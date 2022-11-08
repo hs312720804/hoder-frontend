@@ -20,7 +20,12 @@
                 <div v-if="sceneList.length === 0" class="no-data-wrap">
                   暂时木有内容呀～～
                 </div>
-                <div class="lists-item" v-for="(item,index) in sceneList" :key="item.id" @click="selectScene(index)" :class="{active: activeIndex === index}">
+                <div
+                  v-for="(item,index) in sceneList"
+                  :key="item.id"
+                  @click="selectScene(index)"
+                  :class="{active: activeIndex === index, 'gray-row': item.putway === 2}"
+                  class="lists-item">
                   <i class="icon el-icon-video-camera-solid"></i>
                   <span class="item-content">
                     {{ item.sceneName }}
@@ -70,11 +75,14 @@
                         </el-popover>
 
                       </el-dropdown-item>
+
                       <!-- 场景的 planId 为 null, 才展示按钮 -->
-                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]">
+                      <!-- :disabled="servicer.length === 0" -->
+                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" >
                         投放
                       </el-dropdown-item>
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]">
+                        <!-- putway : 1 - 上架中； 2 - 下架中 -->
                         {{ item.putway === 1 ? '下架' : '上架' }}
                       </el-dropdown-item>
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
@@ -110,9 +118,13 @@
                 <div v-if="servicer.length === 0" class="no-data-wrap">
                   暂时木有内容呀～～
                 </div>
-                <div v-for="(group) in groupServicer" :key="group.groupId" :class="{'group-sty': group.groupId !== 0}">
+                <div
+                v-for="(group) in groupServicer"
+                :key="group.groupId"
+                :class="{ 'group-sty': group.groupId !== 0 }"
+                >
                   <!-- {{group.groupId}} -->
-                  <div class="lists-item" v-for="item in group.child" :key="item.id"  @click="selectServicer(item.id)" :class="{active: activeIndex2Id === item.id}">
+                  <div class="lists-item" v-for="item in group.child" :key="item.id"  @click="selectServicer(item.id)" :class="{active: activeIndex2Id === item.id, 'gray-row': item.putway === 2}">
                     <i class="icon el-icon-user"></i>
                     <span class="item-content">
                       {{ item.receptionist }}
