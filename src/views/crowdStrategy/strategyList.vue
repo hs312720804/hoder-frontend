@@ -1362,10 +1362,10 @@ ul > li
       display: -ms-flex;
       align-items: stretch;
     }
-    .left{
+    .left {
       background: aqua;
     }
-    .right{
+    .right {
       margin-left: 110px;
       background: antiquewhite;
     }
