@@ -94,7 +94,7 @@ export default {
       // const container = document.getElementById(this.pageId)
       // const height = container.offsetHeight
       // const width = container.offsetWidth
-      const width = document.getElementsByClassName('el-main')[0].offsetWidth - 50
+      const width = document.getElementsByClassName('c-scrollbar--box')[0].offsetWidth - 50
       const height = document.documentElement.clientHeight - 225
       this.graph.changeSize(width, height)
       // 接受两个参数（改变的宽度，高度）

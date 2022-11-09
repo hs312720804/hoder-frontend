@@ -117,7 +117,7 @@ export default {
   },
   mounted () {
     // 画布宽度
-    this.width = document.getElementsByClassName('el-main')[0].offsetWidth - 40
+    this.width = document.getElementsByClassName('c-scrollbar--box')[0].offsetWidth - 40
   },
   methods: {
 

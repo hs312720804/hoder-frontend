@@ -10,7 +10,7 @@ export default function install (Vue) {
   Vue.component('pagination', pagination)
   Vue.prototype.$moment = moment
   // Vue.directive('permission', function (el, binding, vNode) {
-  //   console.log(store.getters.menuBtnMap)
+  //   // console.log(store.getters.menuBtnMap)
   //   if (vNode.context.$appState.permissions[binding.value] === undefined) {
   //     el.style.display = 'none'
   //   }
