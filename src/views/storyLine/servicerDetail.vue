@@ -508,10 +508,10 @@ export default {
       type: Object,
       default: () => {}
     },
-    skillOptions: {
-      type: Array,
-      default: () => []
-    },
+    // skillOptions: {
+    //   type: Array,
+    //   default: () => []
+    // },
     entryList: {
       type: Array,
       default: () => []
@@ -552,6 +552,11 @@ export default {
           this.getPerformanceGoalData()
         }
       }
+    },
+    'selectedScene.id': {
+      handler () {
+        this.getSkillListBySceneId()
+      }
     }
   },
   computed: {
@@ -563,6 +568,8 @@ export default {
   },
   data () {
     return {
+      skillOptions: [],
+
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
 
       showChart: true,
@@ -665,6 +672,7 @@ export default {
     })
   },
   methods: {
+
     getName (list, key) {
       const obj = list.find(item => {
         return key === item.value
@@ -870,7 +878,6 @@ export default {
       const { query } = this.$refs.selectObj
       if (!query) return
 
-      // this.value = query
       // 选择原有的
       const existArr = this.skillOptions.filter(item => item.name === query)
       if (existArr.length > 0) {
@@ -893,6 +900,19 @@ export default {
         }
       })
     },
+
+    // 根据场景ID获取技能列表
+    getSkillListBySceneId () {
+      const parmas = {
+        sceneId: this.selectedScene.id
+      }
+      return this.$service.getSceneSkillList(parmas).then(res => {
+        console.log('rs-->', res)
+        this.skillOptions = res || []
+        return res
+      })
+    },
+
     // 服务员选择技能
     selectSkill (e) {
       this.$emit('editReceptionist', {

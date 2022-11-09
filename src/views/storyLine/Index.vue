@@ -184,7 +184,6 @@
           :servicer="servicer"
           :selectedScene="selectedScene"
           :selectedServicer="selectedServicer"
-          :skillOptions="skillOptions"
           :entryList="entryList"
           :exportList="exportList"
           :activeIndex2Id="activeIndex2Id"
@@ -273,7 +272,6 @@ export default {
       tempPolicyAndCrowd: {},
       showLaunchToBusiness: false,
       editClientRow: {},
-      skillOptions: [],
       selectedScene: {}, // 选择的场景
       selectedServicer: {}, // 选择的服务员
       searchScene: '',
@@ -515,17 +513,6 @@ export default {
       })
     },
 
-    // 根据场景ID获取技能列表
-    getSkillListBySceneId () {
-      const parmas = {
-        sceneId: this.selectedScene.id
-      }
-      return this.$service.getSceneSkillList(parmas).then(res => {
-        console.log('rs-->', res)
-        this.skillOptions = res || []
-        return res
-      })
-    },
     // 选择场景
     selectScene (id) {
       this.activeIndex = id
@@ -536,7 +523,6 @@ export default {
 
       this.searchServicer = '' // 接待员的搜索条件置空
       this.getServiceList()
-      this.getSkillListBySceneId()
     },
     // 选择服务员
     selectServicer (id) {
@@ -604,7 +590,6 @@ export default {
         // this.activeIndex = 0
         // this.selectedScene = this.sceneList[0] || {}
         // this.getServiceList()
-        // this.getSkillListBySceneId()
       })
     },
 

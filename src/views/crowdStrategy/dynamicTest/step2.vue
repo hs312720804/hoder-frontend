@@ -366,8 +366,6 @@ export default {
 
           // 设置分组中小人群数据、图表数据
           this.setGroupData(val)
-
-          console.log('val=======', val)
         }
       },
       immediate: true
