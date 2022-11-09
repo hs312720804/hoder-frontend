@@ -17,7 +17,7 @@
               <div>创建人：</div>
               <div>{{ selectedServicer.userName || '-'}}</div>
               <div>创建时间：</div>
-              <div>{{ selectedServicer.createTime || '-'}}</div>
+              <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
               <div>擅长：</div>
               <div v-if="selectedServicer.userName">
                 <el-select
@@ -99,11 +99,11 @@
                       </el-dropdown-menu>
                     </el-dropdown>
                   </span>
-                  <span class="kpi-value">100%</span>
+                  <span class="kpi-value">{{ overview[targetKeyId]}}</span>
                 </div>
                 <div>
                   <span class="kpi-label">接待用户数：</span>
-                  <span class="kpi-value">10000</span>
+                  <span class="kpi-value">{{ overview.receptionUv}}</span>
                 </div>
                 <div>
                   <span class="kpi-label">目标：</span>
@@ -127,7 +127,7 @@
                 </div>
                 <div>
                   <span class="kpi-label">满意用户数：</span>
-                  <span class="kpi-value">10000</span>
+                  <span class="kpi-value">{{ overview.contentUv }}</span>
                 </div>
               </div>
 
@@ -545,6 +545,12 @@ export default {
         })
 
         this.targetKey = obj ? obj.lable : '' // 目标指标
+        this.targetKeyId = obj ? obj.key : ''
+
+        if (obj) {
+          // 曲线图
+          this.getPerformanceGoalData()
+        }
       }
     }
   },
@@ -567,7 +573,9 @@ export default {
         price: { type: 'line', title: '付费金额' }
       },
       allCharts: {},
-      allChartData: {},
+      allChartData: {
+      },
+      overview: {},
       clientDialogVisible: false,
       target: '请输入接待员的目标',
       targetValue: '',
@@ -983,6 +991,7 @@ export default {
         const tableData = res.data || {}
         console.log('tableData----', tableData)
         this.allChartData = tableData || {}
+        this.overview = tableData.overview ? tableData.overview.data : {}
         this.$nextTick(() => {
           this.drawChart()
         })
