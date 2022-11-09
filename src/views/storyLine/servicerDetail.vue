@@ -672,7 +672,6 @@ export default {
     })
   },
   methods: {
-
     getName (list, key) {
       const obj = list.find(item => {
         return key === item.value
