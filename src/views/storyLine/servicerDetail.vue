@@ -92,7 +92,7 @@
 
                     <el-dropdown @command="handleCommandTargetKey">
                       <span class="el-dropdown-link">
-                        {{ targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
+                        {{ targetKey === '' ? '请选择' : targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
                       </span>
                       <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
