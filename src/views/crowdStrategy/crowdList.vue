@@ -2473,6 +2473,7 @@ export default {
       this.estimateType = 'batch'
       this.showEstimate = true
       this.$service.getEstimateType().then((data) => {
+        console.log(data)
         this.estimateItems = data
       })
       //    初始化值
