@@ -224,12 +224,12 @@
                   >编辑
                   </el-dropdown-item>
                   <el-dropdown-item
-                          :command="['del',scope.row]"
-                          v-permission="'hoder:crowd:del'"
+                    :command="['del',scope.row]"
+                    v-permission="'hoder:crowd:del'"
                   >删除
                   </el-dropdown-item>
                   <el-dropdown-item
-                          :command="['upDown',scope.row]"
+                    :command="['upDown',scope.row]"
                   >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
                   </el-dropdown-item>
                   <!-- <el-dropdown-item

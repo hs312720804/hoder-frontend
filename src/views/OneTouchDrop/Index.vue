@@ -1,6 +1,6 @@
 <template>
     <div v-if="reloadFlag">
-        <div class="header">
+        <div class="">
           <!-- 动态人群 -->
           <el-steps v-if="isDynamicPeople" :active="activeStep" finish-status="success" simple style="margin-top: 20px">
               <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
@@ -193,7 +193,7 @@ export default {
     LaunchToBusiness,
     newCreatePolicy,
     createConfigScheme,
-    DynamicPeopleSetting,
+    DynamicPeopleSetting
     // DynamicPeopleConditions
   },
   props: {

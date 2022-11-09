@@ -341,7 +341,7 @@
             <!--</el-tab-pane>-->
           </el-tabs>
         </el-form-item>
-        <el-form-item label="已选12314标签" style="margin-top: 90px">
+        <el-form-item label="已选标签" style="margin-top: 90px">
           <!--<span v-for="tag in addForm.conditionTagIds" :key="tag">-->
             <!--<el-tag v-for="item in conditionTagIdsData"-->
                     <!--v-if="item.tagId === tag"-->
@@ -586,7 +586,8 @@ export default {
                     rows: 8,
                     readonly: true,
                     value: row.content
-                  }
+                  },
+                  class: 'get-setting'
                 }),
                 h('el-button', {
                   props: {
@@ -1369,7 +1370,7 @@ ul > li
       background: antiquewhite;
     }
 </style>
-<!-- <style lang="stylus">
-.el-textarea__inner
+<style lang="stylus">
+.get-setting .el-textarea__inner
   min-height 400px !important
-</style> -->
+</style>
