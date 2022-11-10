@@ -336,7 +336,7 @@ export default {
     getTags () {
       // this.addForm.conditionTagIds = [];
       this.$service
-        .policyTagSeach({ pageNum: this.selectTagInitCurrentPage, pageSize: this.selectTagInitPageSize, s: this.searchValue })
+        .policyTagSeach({ pageNum: this.selectTagInitCurrentPage, pageSize: this.selectTagInitPageSize, s: this.searchValue, isStoryline: 1 })
         .then(data => {
           //  let checkboxData = []
           // data.forEach((item) => { item.child.forEach((checkboxItem) => {checkboxData.push(checkboxItem)})})

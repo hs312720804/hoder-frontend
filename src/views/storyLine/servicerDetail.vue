@@ -116,6 +116,7 @@
                       </span>
                       <el-input
                         v-else
+                        type="number"
                         ref="inputValue"
                         placeholder="请输入"
                         @blur="editTargetValueChange"
