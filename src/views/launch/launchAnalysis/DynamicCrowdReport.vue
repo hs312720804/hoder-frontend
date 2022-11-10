@@ -197,6 +197,7 @@ export default {
     $route: {
       handler () {
         this.crowdId = this.$route.query.crowdId || ''
+        // this.crowdId = 12461
         this.crowdName = this.$route.query.crowdName || ''
         if (this.crowdId !== '') {
           this.initData()
@@ -1030,7 +1031,7 @@ export default {
 
             }, {
               label: '包年',
-              prop: 'bannianPayPrice'
+              prop: 'baonianPayPrice'
 
             }]
 
