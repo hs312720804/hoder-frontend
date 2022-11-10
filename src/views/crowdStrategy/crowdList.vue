@@ -1825,7 +1825,6 @@ export default {
             label: '占比',
             prop: 'flowNum',
             render: (h, { row }) => {
-              console.log(row)
               return h('div', {}, `${row.flowNum}%`)
             }
           },

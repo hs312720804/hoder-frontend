@@ -2,7 +2,7 @@
   <div style="position: relative">
     <template v-if="reloadFlag">
       <div style="height: calc(100vh - 200px); overflow: auto;">
-          <div class="header">
+          <div class="">
             <!-- 动态人群 -->
             <!-- style="width: calc(100% - 455px); margin-left: 252px;" -->
             <el-steps :active="activeStep" finish-status="success" simple >
@@ -23,6 +23,7 @@
 
             <!-- 动态人群设置 -->
             <step1
+              ref="step1"
               v-if="activeStep === 0"
               :policyId="policyId"
               :crowdId="crowdId"
@@ -50,6 +51,7 @@
 
             <!-- 第三步：填写实验有效期 -->
             <step3
+              ref="step3"
               v-if="activeStep === 2"
               :policyId="policyId"
               :crowdId="crowdId"
@@ -63,6 +65,16 @@
 
           </div>
 
+          <div v-if="activeStep === 0" class="bottom-wrap">
+            <el-button type="primary" @click="handleSaveStep1()">下一步</el-button>
+            <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
+          </div>
+
+          <div v-if="activeStep === 2" class="bottom-wrap">
+            <el-button type="primary" @click="handleSaveStep3">完成</el-button>
+            <el-button type="info" @click="handleCrowdPrevStep(2)">上一步</el-button>
+          </div>
+
       </div>
     </template>
 
@@ -71,6 +83,7 @@
       <el-button type="info" @click="handleBackPrevStep" class="btn">上一步</el-button>
       <el-button type="info" @click="$emit('goBackCrowdListPage')" class="btn">返 回</el-button>
     </div>
+
   </div>
 </template>
 
@@ -134,8 +147,14 @@ export default {
   },
 
   methods: {
+    handleSaveStep3 () {
+      this.$refs.step3.handleSave()
+    },
+    handleSaveStep1 () {
+      this.$refs.step1.handleSave()
+    },
     handleBackPrevStep () {
-      this.$refs.step2.handleBackPrevStep()
+      this.handleCrowdPrevStep(1, this.recordId)
     },
     handleSave () {
       this.$refs.step2.handleSave()
@@ -184,6 +203,7 @@ export default {
     this.$store.commit('setPolicyName', this.initPolicyName)
     this.crowdId = this.initCrowdId // 大人群ID
     this.activeStep = this.initActiveStep // 第几步
+    console.log('-----dynamicTest created-----')
   }
 }
 </script>
@@ -204,6 +224,15 @@ export default {
   }
   .btn + .btn {
     margin-right 10px
+  }
+}
+.bottom-wrap {
+  width: 80%;
+  margin: 0 auto 20px;
+  display: flex;
+  flex-direction: row-reverse;
+  .el-button {
+    margin-left 10px
   }
 }
 </style>

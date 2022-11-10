@@ -643,6 +643,38 @@ export default {
       saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
     },
 
+    handleTabChangeSave () {
+      saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+    },
+
+    // 切换tab的时候手动触发保存，ref 调用
+    tabFetchAddOrEdit (data) {
+      const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
+
+      if (this.crowdId != null) {
+        data.crowdId = this.crowdId
+        data.priority = this.priority
+        this.$service
+          .crowdUpdate(
+            data,
+            tipMessage
+            // '操作成功，修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            // this.$emit('goBackCrowdListPage', true)
+          })
+      } else {
+        this.$service
+          .crowdSave(
+            data,
+            tipMessage
+            // '操作成功，新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'
+          )
+          .then(() => {
+            // this.$emit('goBackCrowdListPage', true)
+          })
+      }
+    },
     // 请求新增或编辑接口
     fetchAddOrEdit (data) {
       console.log('this------>', this)
