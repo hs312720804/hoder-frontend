@@ -81,7 +81,7 @@
             label-width="130px"
           >
           <!-- 只有出口条件选择 -->
-            <el-form-item label="处理操作" v-if="type !== 'entry'" prop="stopType" >
+            <el-form-item label="处理操作" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
               <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
                 <el-option
                   v-for="item in options"
@@ -91,9 +91,11 @@
                   {{ item.label }}
                 </el-option>
               </el-select>
-              <!-- 正确，下一步  选择同一场景下其他接待员 -->
-              <el-select v-model="form.nextId" v-if="form.stopType === 1" prop="nextId">
+            </el-form-item>
 
+              <!-- 正确，下一步  选择同一场景下其他接待员 -->
+            <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
+              <el-select v-model="form.nextId" clearable>
                 <el-option
                   v-for="item in servicerListFilterSelect"
                   :label="item.receptionist"
@@ -116,6 +118,7 @@
             <!-- <br/> -->
             <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
             <!-- rulesJson --- {{ rulesJson }} -->
+
             <div style="position: relative">
               <!-- 且、或 切换 -->
               <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
@@ -160,7 +163,6 @@
                 </SetCirculationConditionsCom>
               </el-form-item>
             </div>
-
           </el-form>
         </el-col>
       </el-row>
@@ -254,7 +256,7 @@ export default {
       },
       formRules: {
         stopType: [{ required: true, message: '请选择', trigger: 'change' }],
-        nextId: [{ required: true, message: '请选择', trigger: 'change' }]
+        nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
         // // crowdExp: [{ required: true, message: '请选择有效期', trigger: 'blur' }],
         // limitLaunchCount: [{ validator: checkIntNumber, trigger: 'blur' }]
       },
@@ -1260,5 +1262,9 @@ i {
     }
   }
 }
-
+.inline-form-item {
+  display: inline-block;
+  margin-right: 10px
+  vertical-align: top;
+}
 </style>
