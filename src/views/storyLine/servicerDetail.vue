@@ -952,19 +952,28 @@ export default {
       this.isEdit = false
     },
     editTargetValueChange () {
-      this.$emit('editReceptionist', {
-        id: this.selectedServicer.id,
-        indicators: this.targetValue
-      }, 'no-refresh-list')
+      // 数字正则
+      const numPattern = /^-?\d*\.?\d+$/
+      // 百分比正则
+      const patt = /^(100|[1-9]?\d(\.\d\d?\d?)?)%$|0$/
 
-      // this.editReceptionist({
-      //   id: this.selectedServicer.id,
-      //   indicators: this.targetValue
-      // }, 'no-refresh-list')
+      if (numPattern.test(this.targetValue) || patt.test(this.targetValue)) {
+        this.$emit('editReceptionist', {
+          id: this.selectedServicer.id,
+          indicators: this.targetValue
+        }, 'no-refresh-list')
 
-      // eslint-disable-next-line vue/no-mutating-props
-      this.selectedServicer.indicators = this.targetValue
-      this.isEditValue = false
+        // this.editReceptionist({
+        //   id: this.selectedServicer.id,
+        //   indicators: this.targetValue
+        // }, 'no-refresh-list')
+
+        // eslint-disable-next-line vue/no-mutating-props
+        this.selectedServicer.indicators = this.targetValue
+        this.isEditValue = false
+      } else {
+        this.$message.warning('请输入数字或百分比')
+      }
     },
 
     // 设置绩效目标的 key 值
