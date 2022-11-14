@@ -26,7 +26,8 @@
                   @click="selectScene(item.id)"
                   :class="{active: activeIndex === item.id, 'gray-row': item.putway === 2}"
                   class="lists-item">
-                  <i class="icon el-icon-video-camera-solid"></i>
+                  <!-- <i class="icon el-icon-video-camera-solid"></i> -->
+                  <i class="icon el-icon-monitor"></i>
                   <span class="item-content">
                     {{ item.sceneName }}
                   </span>
@@ -542,7 +543,7 @@ export default {
         sceneId: this.selectedScene.id,
         keywords: this.searchServicer,
         pageNum: 1,
-        pageSize: 100
+        pageSize: 1000
       }
       this.servicer = []
       this.$service.getReceptionistList(parmas).then(res => {
@@ -565,7 +566,7 @@ export default {
       const parmas = {
         keywords: this.searchScene,
         pageNum: 1,
-        pageSize: 100
+        pageSize: 1000
       }
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
