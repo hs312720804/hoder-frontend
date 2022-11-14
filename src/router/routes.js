@@ -59,6 +59,7 @@ import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
+import OperationAssistant from '@/views/operationAssistant/Index'
 
 const children = [
   // {
@@ -817,6 +818,17 @@ const children = [
     meta: {
       title: '故事运营',
       tagId: 'storyLine',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'operationAssistant',
+    path: 'operationAssistant',
+    component: OperationAssistant,
+    meta: {
+      title: '人群运营助手',
+      tagId: 'operationAssistant',
       hideInMenu: true,
       isCache: false
     }

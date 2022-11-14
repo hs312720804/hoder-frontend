@@ -214,7 +214,8 @@ export default {
         '/launchHelper/status': 'launchStatus',
         '/launchHelper/resendCommand': 'resendCommand',
         '/hitQuery': 'hitQuery',
-        '/storyLine': 'storyLine'
+        '/storyLine': 'storyLine',
+        '/operationAssistant': 'operationAssistant'
       },
       activeName: 'first',
       updateMessage: [],
