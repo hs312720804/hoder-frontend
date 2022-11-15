@@ -1333,8 +1333,8 @@ export default {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
+        if (parseInt(startDay) > parseInt(endDay)) {
+          this.$message.error('第二个值不能小于第一个值')
         } else {
           item.value = startDay + '-' + endDay
         }

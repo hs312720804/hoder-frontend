@@ -188,6 +188,7 @@
           :entryList="entryList"
           :exportList="exportList"
           :activeIndex2Id="activeIndex2Id"
+          :styleType="styleType"
           @updataEntryList="getEntryListByReceptionistId"
           @updataExportList="getExportListByReceptionistId"
           @selectServicer="selectServicer"

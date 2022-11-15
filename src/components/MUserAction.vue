@@ -663,10 +663,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -698,8 +698,8 @@ export default {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
+        if (parseInt(startDay) > parseInt(endDay)) {
+          this.$message.error('第二个值不能小于第一个值')
         } else {
           item.value = startDay + '-' + endDay
         }
@@ -720,10 +720,10 @@ export default {
     fetchAllTagSuggestions () {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
-      let ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
+      const ruleJsonData = this.rulesJson || this.dynamicPolicyJson || []
       if (ruleJsonData.rules.length > 0) {
         let cacheIds = []
-        let cacheSpecialIds = []
+        const cacheSpecialIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
             if (item.tagType === 'string' || item.tagType === 'collect') {
