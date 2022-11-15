@@ -522,7 +522,7 @@ export default {
       return this.recordId
     },
     setSeq () {
-      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         // if (e.dynamicPolicyJson) {
@@ -561,8 +561,8 @@ export default {
     //   const startDay = item.startDay
     //   const endDay = item.endDay
     //   if (this.checkNumMostFour(endDay)) {
-    //     if (parseInt(startDay) >= parseInt(endDay)) {
-    //       this.$message.error('第二个值必须大于第一个值')
+    //     if (parseInt(startDay) > parseInt(endDay)) {
+    //       this.$message.error('第二个值不能小于第一个值')
     //     } else {
     //       item.value = startDay + '-' + endDay
     //     }
@@ -640,9 +640,9 @@ export default {
     // this.form.limitLaunch = policyData.limitLaunch
     // this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
     // this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
-    var cacheIds = []
+    const cacheIds = []
     if (detail.rulesJson) {
-      let ruleJsonData = JSON.parse(detail.rulesJson)
+      const ruleJsonData = JSON.parse(detail.rulesJson)
       ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
         itemParent.rules.forEach(item => {
           if (item.tagType === 'string' || item.tagType === 'collect') {

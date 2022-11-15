@@ -29,7 +29,9 @@
                   placeholder="输入或选择技能"
                   clearable
                   @blur="addOption"
-                  @change="selectSkill">
+                  @change="selectSkill"
+                  @keyup.enter.native="addOption"
+                >
                   <el-option
                     v-for="item in skillOptions"
                     :key="item.id"
@@ -44,7 +46,7 @@
           <div style="text-align: center;">业务范围</div>
           <div class="detail-business-type">
             方案：
-            {{selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
+            {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
             <div class="panel-footer"></div>
             <!-- <div class="box-fotter">
               <el-button type="text" icon="el-icon-plus">添加/修改业务范围</el-button>
@@ -160,6 +162,7 @@
             <!-- 暂时木有内容呀～～ -->
           </div>
           <div v-for="entry in entryList" :key="entry.id" class="info-class">
+            <div class="item-id">{{ entry.id }}</div>
             <div class="border-line"  style="position: relative;">
               <div class="outer-and">
                 <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
@@ -309,6 +312,7 @@
               <br/>
               <div>{{ item.behaviorRulesJson }}</div>
             </div> -->
+            <div class="item-id">{{ exportItem.id }}</div>
             <div class="border-line"  style="position: relative;">
               <div class="outer-and">
                 <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
@@ -523,11 +527,23 @@ export default {
     activeIndex2Id: {
       type: [Number, String],
       default: ''
+    },
+    styleType: {
+      type: Boolean,
+      default: true
     }
   },
   watch: {
+    styleType () {
+      for (const key of Object.keys(this.allCharts)) {
+        const chart = this.allCharts[key]
+        chart.dispose() // 销毁
+      }
+      this.drawChart()
+    },
     selectedServicer: {
       handler (val) {
+        // 选择接待员时，更新接待员详情数据
         console.log('val------>', val)
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
@@ -872,13 +888,40 @@ export default {
         })
       })
     },
+    // 服务员选择技能
+    async selectSkill (e) {
+      console.log('selectSkill----', e)
+
+      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
+      const { query } = this.$refs.selectObj
+      if (!query) return
+
+      const existArr = this.skillOptions.filter(item => item.name === query)
+      if (existArr.length === 0) {
+        this.addOption()
+        return
+      }
+      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
+
+      this.$emit('editReceptionist', {
+        id: this.selectedServicer.id,
+        skillId: e
+      })
+
+      // this.editReceptionist({
+      //   id: this.selectedServicer.id,
+      //   skillId: e
+      // }, 'no-refresh-list')
+    },
 
     addOption () {
+      // console.log('addOption')
       const { query } = this.$refs.selectObj
       if (!query) return
 
       // 选择原有的
       const existArr = this.skillOptions.filter(item => item.name === query)
+      // console.log('existArr--->', existArr)
       if (existArr.length > 0) {
         this.skillValue = existArr[0].id
         return
@@ -889,13 +932,18 @@ export default {
         sceneId: this.selectedScene.id,
         name: query
       }
+
       this.$service.addSceneSkill(parmas).then(async res => {
         const aaa = await this.getSkillListBySceneId()
         console.log('aaa--->', aaa)
 
         const existArr = this.skillOptions.filter(item => item.name === query)
+        // console.log('existArr--->', existArr)
         if (existArr.length > 0) {
           this.skillValue = existArr[0].id
+          // 选中
+          this.selectSkill(this.skillValue)
+          // console.log('this.skillValue--->', this.skillValue)
         }
       })
     },
@@ -910,19 +958,6 @@ export default {
         this.skillOptions = res || []
         return res
       })
-    },
-
-    // 服务员选择技能
-    selectSkill (e) {
-      this.$emit('editReceptionist', {
-        id: this.selectedServicer.id,
-        skillId: e
-      })
-
-      // this.editReceptionist({
-      //   id: this.selectedServicer.id,
-      //   skillId: e
-      // }, 'no-refresh-list')
     },
 
     editTargetValue () {
@@ -955,7 +990,8 @@ export default {
       // 数字正则
       const numPattern = /^-?\d*\.?\d+$/
       // 百分比正则
-      const patt = /^(100|[1-9]?\d(\.\d\d?\d?)?)%$|0$/
+      // const patt = /^(100|[1-9]?\d(\.\d\d?\d?)?)%$|0$/
+      const patt = /^(100|[1-9]*\d(\.\d\d?\d?)?)%$|0$/
 
       if (numPattern.test(this.targetValue) || patt.test(this.targetValue)) {
         this.$emit('editReceptionist', {
@@ -1001,8 +1037,8 @@ export default {
     },
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
-      console.log('selectedScene---', this.selectedScene)
-      console.log('selectedServicer---', this.selectedServicer)
+      // console.log('selectedScene---', this.selectedScene)
+      // console.log('selectedServicer---', this.selectedServicer)
       // const params = {
       //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
       //   dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
@@ -1069,21 +1105,26 @@ export default {
         type: 'value',
         name: yAxisObjName1,
         axisTick: {
+          show: false,
           inside: true
         },
         axisLine: {
+          show: false,
           lineStyle: {
-            color: '#273169'
+            color: this.styleType ? '#273169' : '#000'
           }
         },
         splitLine: {
           show: true,
           lineStyle: {
-            color: ['#273169']
+            // color: this.styleType ? '#0E183A' : '#c2c2c7'
+            color: this.styleType ? 'rgba(255,255,255,0.1)' : '#c2c2c7'
           }
+
         },
         // scale: true,
         axisLabel: {
+          color: this.styleType ? '#fff' : '#000',
           // margin: 30,
           formatter: function (value) {
             if (value >= 100000000) {
@@ -1131,7 +1172,7 @@ export default {
           top: '10%',
           right: '10%',
           textStyle: { // 图例的文字样式
-            color: '#fff'
+            color: this.styleType ? '#fff' : '#000'
           }
         },
         xAxis: {
@@ -1141,7 +1182,7 @@ export default {
           axisLabel: {
             show: true,
             textStyle: {
-              color: '#fff',
+              color: this.styleType ? '#fff' : '#000',
               fontSize: '12px'
               // fontSize: 16, 可直接写数字,单位px
             }
@@ -1149,7 +1190,8 @@ export default {
           // 轴线的样式
           axisLine: {
             lineStyle: {
-              color: '#273169'
+              color: this.styleType ? '#273169' : '#000'
+              // color: this.styleType ? '##0E183A' : '#000'
             }
           }
           // // 网格线样式
@@ -1173,6 +1215,7 @@ export default {
             ...item,
             areaStyle: { // 要加这个属性,折线与下方的区域才能填充颜色
               // color: 'red', // 可以直接填充颜色
+              opacity: this.styleType ? 1 : 0,
               color: { // 这边是设置渐变色,好看一点
                 type: 'linear',
                 x: 0,
@@ -1195,7 +1238,7 @@ export default {
           }
         })
       }
-      // console.log('chart===>', myChart)
+      console.log('option===>', option)
 
       const myChart = echarts.init(chartElement)
       myChart.setOption(option, true)

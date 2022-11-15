@@ -188,6 +188,7 @@
           :entryList="entryList"
           :exportList="exportList"
           :activeIndex2Id="activeIndex2Id"
+          :styleType="styleType"
           @updataEntryList="getEntryListByReceptionistId"
           @updataExportList="getExportListByReceptionistId"
           @selectServicer="selectServicer"
@@ -538,7 +539,7 @@ export default {
     },
 
     // 服务员列表
-    getServiceList () {
+    getServiceList (type = 'list') {
       const parmas = {
         sceneId: this.selectedScene.id,
         keywords: this.searchServicer,
@@ -555,6 +556,11 @@ export default {
           const obj = this.servicer.find(item => item.id === this.activeIndex2Id)
 
           this.activeIndex2Id = obj ? obj.id : this.servicer[0].id
+
+          if (type === 'add') { // 添加接待员，焦点落在新增的上面
+            this.activeIndex2Id = this.servicer[0].id
+          }
+
           this.selectServicer(this.activeIndex2Id)
         }
         // this.activeIndex2 = 0
@@ -562,7 +568,7 @@ export default {
       })
     },
     // 场景列表
-    getSceneList (callBack) {
+    getSceneList (type = 'list') {
       const parmas = {
         keywords: this.searchScene,
         pageNum: 1,
@@ -571,7 +577,6 @@ export default {
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
         this.sceneList = res.data || []
-        callBack && callBack()
         console.log('this.activeIndex---》', this.activeIndex)
         if (this.sceneList.length > 0) {
           // 获取从动态人群跳转过来的场景ID，并选中
@@ -586,6 +591,10 @@ export default {
           //   this.activeIndex = 0
           // }
           // this.activeIndex = redirctIndex > 0 ? redirctIndex : this.activeIndex
+
+          if (type === 'add') { // 添加接待员，焦点落在新增的上面
+            this.activeIndex = this.sceneList[0].id
+          }
           this.selectScene(this.activeIndex)
         }
         // this.activeIndex = 0
@@ -606,7 +615,7 @@ export default {
       this.handelClosePop()
     },
     editScene (parmas) {
-      const list = this.sceneList
+      // const list = this.sceneList
 
       this.$service.editScene(parmas).then(res => {
         // const index = list.findIndex(item => item.id === parmas.id)
@@ -646,12 +655,8 @@ export default {
 
       this.$service.addScene(parmas).then(res => {
         // this.sceneList.push(item)
-        const _this = this
-        this.getSceneList(
-        //   function () {
-        //   _this.activeIndex = Number(_this.sceneList.length - 1)
-        // }
-        )
+        // const _this = this
+        this.getSceneList('add')
         this.dialogVisible = false
       })
     },
@@ -666,7 +671,7 @@ export default {
 
       this.$service.addReceptionist(parmas).then(res => {
         // this.sceneList.push(item)
-        this.getServiceList()
+        this.getServiceList('add')
         this.dialogVisible2 = false
       })
     }
