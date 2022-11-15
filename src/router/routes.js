@@ -59,7 +59,7 @@ import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
-import OperationAssistant from '@/views/operationAssistant/Index'
+import operationHelper from '@/views/operationHelper/Index'
 
 const children = [
   // {
@@ -823,12 +823,12 @@ const children = [
     }
   },
   {
-    name: 'operationAssistant',
-    path: 'operationAssistant',
-    component: OperationAssistant,
+    name: 'operationHelper',
+    path: 'operationHelper',
+    component: operationHelper,
     meta: {
       title: '人群运营助手',
-      tagId: 'operationAssistant',
+      tagId: 'operationHelper',
       hideInMenu: true,
       isCache: false
     }

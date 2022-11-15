@@ -6,6 +6,10 @@
       <div>{{ groupList }}</div> -->
       <div class="col">
         <div class="title">接待员</div>
+        <!-- {{totallArr}}
+        <br/>
+        <br/>
+        {{groupA}} -->
         <draggable v-model="totallArr" :group="groupA" animation="300" dragClass="dragClass" ghostClass="ghostClass" chosenClass="chosenClass" class="drag-wrap">
           <transition-group :style="style">
             <div class="item" v-for="item in totallArr" :key="item.receptionistId">
