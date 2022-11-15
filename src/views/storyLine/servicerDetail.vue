@@ -914,13 +914,13 @@ export default {
     },
 
     addOption () {
-      console.log('addOption')
+      // console.log('addOption')
       const { query } = this.$refs.selectObj
       if (!query) return
 
       // 选择原有的
       const existArr = this.skillOptions.filter(item => item.name === query)
-      console.log('existArr--->', existArr)
+      // console.log('existArr--->', existArr)
       if (existArr.length > 0) {
         this.skillValue = existArr[0].id
         return
@@ -937,12 +937,12 @@ export default {
         console.log('aaa--->', aaa)
 
         const existArr = this.skillOptions.filter(item => item.name === query)
-        console.log('existArr--->', existArr)
+        // console.log('existArr--->', existArr)
         if (existArr.length > 0) {
           this.skillValue = existArr[0].id
           // 选中
           this.selectSkill(this.skillValue)
-          console.log('this.skillValue--->', this.skillValue)
+          // console.log('this.skillValue--->', this.skillValue)
         }
       })
     },
