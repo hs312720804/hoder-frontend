@@ -30,7 +30,22 @@
       <div>
 
       <div class="col" v-for="(g, index) in groupList" :key="index">
-        <div class="title">组{{index+1}}</div>
+        <!-- <div class="title">{{ g.groupName }}</div>
+        <el-input type="text" v-model="g.groupName"></el-input> -->
+        <el-input
+          v-if="isEditValue === index"
+          ref="inputValue"
+          placeholder="请输入组名"
+          v-model="g.groupName"
+          @blur="editValueBlur(index)"
+          style="width: 200px">
+        </el-input>
+
+        <div v-else @click="editTargetValue(index)" class="target-text title">
+          <span>{{ g.groupName }}</span>
+          <span class="text-over"></span>
+        </div>
+
         <draggable v-model="g.list" :group="groupB" animation="300" dragClass="dragClass" ghostClass="ghostClass"
           chosenClass="chosenClass">
           <transition-group :style="style">
@@ -107,7 +122,8 @@ export default {
       ],
       groupList: [],
       // 空数组之在的样式，设置了这个样式才能拖入
-      style: 'min-height:150px; display: block; height: 100%'
+      style: 'min-height:150px; display: block; height: 100%',
+      isEditValue: false
     }
   },
   watch: {
@@ -134,6 +150,15 @@ export default {
     }
   },
   methods: {
+    editValueBlur (index) {
+      this.isEditValue = false
+    },
+    editTargetValue (index) {
+      this.isEditValue = index
+      this.$nextTick(() => {
+        this.$refs.inputValue[0].focus()
+      })
+    },
     // 删除分组
     cutGroup (index) {
       const currentGroup = this.groupList[index]
@@ -156,8 +181,10 @@ export default {
       console.log('this.totallArr========', this.groupList)
     },
     addGroup () {
+      const index = this.groupList.length
       this.groupList.push({
-        list: []
+        list: [],
+        groupName: '组' + Number(index + 1)
       })
     },
     // 开始拖拽事件
@@ -174,6 +201,8 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+@import './sty/common.styl'
+
 /*定义要拖拽元素的样式*/
 .ghostClass {
   background-color: blue !important;
@@ -201,9 +230,11 @@ export default {
 }
 
 .title {
-  padding: 6px 12px 0 12px;
+  padding: 6px 10px;
   font-size: 14px;
-  color: #6c6c6c
+  color: #6c6c6c;
+  white-space: normal;
+  background: #f5f5f5;
 }
 
 .col {

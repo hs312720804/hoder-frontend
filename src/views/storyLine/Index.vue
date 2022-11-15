@@ -268,7 +268,8 @@ export default {
       noGroupService: [],
       styleType: true,
       groupData: [{
-        list: []
+        list: [],
+        groupName: '组1'
       }],
       showDragVisible: false,
       tempPolicyAndCrowd: {},
@@ -360,13 +361,15 @@ export default {
               return {
                 id: item.id,
                 sceneId: item.sceneId,
+                groupName: item.groupName,
                 list
               }
             })
           } else {
             // 初始化
             this.groupData = [{
-              list: []
+              list: [],
+              groupName: '组1'
             }]
           }
         })

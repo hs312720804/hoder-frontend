@@ -95,7 +95,7 @@
 
               <!-- 正确，下一步  选择同一场景下其他接待员 -->
             <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
-              <el-select v-model="form.nextId" clearable>
+              <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
                 <el-option
                   v-for="item in servicerListFilterSelect"
                   :label="item.receptionist"
