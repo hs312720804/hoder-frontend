@@ -543,6 +543,7 @@ export default {
     },
     selectedServicer: {
       handler (val) {
+        // 选择接待员时，更新接待员详情数据
         console.log('val------>', val)
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
