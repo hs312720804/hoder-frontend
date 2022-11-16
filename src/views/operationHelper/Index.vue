@@ -8,15 +8,15 @@
   <div class="header-wrap">
 
     <div class="search-input">
-      <el-select v-model="searchForm.select" placeholder="请选择" slot="prepend"  style="width: 140px; margin-right: 10px">
-        <el-option label="便捷面板" value="1"></el-option>
+      <el-select v-model="searchForm.bizId" placeholder="请选择" slot="prepend"  style="width: 140px; margin-right: 10px">
+        <el-option label="便捷面板" :value="1"></el-option>
       </el-select>
       <el-input
-        v-model="searchForm.policyName"
+        v-model="searchForm.keywords"
         placeholder="任务名、ID"
-        @keyup.enter.native="handleSearch"
+        @keyup.enter.native="fetchData"
       >
-        <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+        <el-button slot="append" icon="el-icon-search" @click="fetchData"></el-button>
       </el-input>
     </div>
 
@@ -50,24 +50,24 @@
   <el-dialog title="新建运营任务" :visible.sync="dialogFormVisible" >
 
     <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm" >
-      <el-form-item label="任务ID" prop="name">
-        <el-input v-model="form.name" autocomplete="off"></el-input>
+      <el-form-item label="任务ID" prop="taskCode">
+        <el-input v-model="form.taskCode" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="任务名" >
-        <el-input v-model="form.name" autocomplete="off"></el-input>
+        <el-input v-model="form.taskName" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="绑定人群" >
         <drag></drag>
         <div class="remark">备注：优先级从高到低，拖动以调整优先级，当同时命中多个人群时返回优先级高的人群</div>
       </el-form-item>
-      <el-form-item label="投放时间" prop="dateRange">
-        <el-radio-group v-model="form.timeType">
-          <el-radio :label="0">立即投放</el-radio>
-          <el-radio :label="1">指定时间段</el-radio>
+      <el-form-item label="投放时间" prop="putType">
+        <el-radio-group v-model="form.putType">
+          <el-radio :label="1">立即投放</el-radio>
+          <el-radio :label="2">指定时间段</el-radio>
         </el-radio-group>
         <el-date-picker
-          v-if="form.timeType === 1"
-          v-model="form.dateRange"
+          v-if="form.putType === 1"
+          v-model="form.putTime"
           type="daterange"
           range-separator="~"
           start-placeholder="开始日期"
@@ -94,38 +94,37 @@ export default {
   data () {
     return {
       rules: {
-        name: [
+        taskCode: [
           { required: true, message: '请输入任务ID', trigger: 'blur' }
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
         // timeType: [
         //   { required: true, message: '请选择活动资源', trigger: 'change' }
         // ],
-        dateRange: [
+        putTime: [
           { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' }
         ]
       },
       dialogFormVisible: false,
+      searchForm: {
+        bizId: 1,
+        keywords: ''
+      },
       form: {
-        name: '',
-        timeType: '',
-        dateRange: []
+        bizId: 1,
+        taskCode: '',
+        taskName: '',
+        binds: [],
+        putType: '',
+        putTime: []
       },
       formLabelWidth: '95px',
-      searchForm: {
-        select: '',
-        policyName: ''
-      },
-      // filter: {
-
-      // },
       pagination: {
         pageNum: 1,
         pageSize: 10,
         total: 0
       },
-      // totalCount: 0,
-      // selected: [],
+
       table: {
         props: {},
         header: [
@@ -135,42 +134,41 @@ export default {
             width: '50'
           },
           {
-            label: '投放id',
-            prop: 'launchCrowdId',
-            width: '70'
+            label: '任务名',
+            prop: 'taskName'
           },
           {
-            label: '名称',
-            prop: 'name'
+            label: '绑定详情(人群有交叉时优先展示优先级高的绑定方案)',
+            render: (h, { row }) => {
+              const list = row.binds
+              console.log('params-->', row)
+              console.log('list-->', list)
+              const group = []
+              list.forEach(item => {
+                group.push(h(
+                  'div',
+                  [
+                    h('span', item.crowdName),
+                    h('span', { class: 'text-tip' }, '绑定'),
+                    h('span', item.resourceName)
+                  ]
+                ))
+              })
 
-            // render: (h, params) => {
-            //   return h('el-button', {
-            //     props: {
-            //       type: 'text'
-            //     },
-            //     on: {
-            //       click: () => {
-            //         this.handleRead(params)
-            //       }
-            //     }
-            //   }, params.row.name)
-            // }
-          },
-          {
-            label: '协议',
-            prop: 'protocol'
-          },
-          {
-            label: '访问地址',
-            prop: 'url'
-          },
-          {
-            label: '参数',
-            prop: 'param'
-          },
-          {
-            label: '备注',
-            prop: 'remark'
+              return h('div', {
+                class: 'table-cell-wrap'
+              },
+              [
+                h('div', { class: 'table-cell-wrap-icon' }, [
+                  h('span', '高'),
+                  h('span', '低')
+                ]),
+                h('div', { class: 'arrow-wrap' }, [
+                  h('div', { class: 'arrow' })
+                ]),
+                h('div', { class: 'aaa' }, group)
+              ])
+            }
           },
           {
             label: '状态',
@@ -181,12 +179,22 @@ export default {
             }
           },
           {
+            label: '创建人',
+            prop: 'userName'
+          },
+          {
+            label: '创建时间',
+            prop: 'createTime'
+          },
+          {
             label: '操作',
             fixed: 'right',
             width: '100',
             render: this.$c_utils.component.createOperationRender(this, {
               handleEdit: '编辑',
-              handleDelete: '删除'
+              handleOffSet: '下架',
+              handleDelete: '删除',
+              aaa: '投后效果'
             })
           }
 
@@ -198,6 +206,13 @@ export default {
     }
   },
   methods: {
+    // 下架任务
+    handleOffSet (row) {
+      console.log('row--->', row)
+      this.$service.assistantTaskPutway().then(res => {
+
+      })
+    },
     handleSave () {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
@@ -217,9 +232,6 @@ export default {
     handleCurrentChange (val) {
       this.pagination.pageNum = val
       this.fetchData()
-    },
-    handleSearch () {
-
     },
 
     handleAdd () {
@@ -254,19 +266,22 @@ export default {
       this.fetchData()
     },
 
-    parseFilter () {
-      const { pagination } = this
-      // if (pagination) {
-      //   filter.pageNum = pagination.currentPage
-      //   filter.pageSize = pagination.pageSize
-      // }
-      return pagination
-    },
+    // parseFilter () {
+    //   const { pagination } = this
+    //   // if (pagination) {
+    //   //   filter.pageNum = pagination.currentPage
+    //   //   filter.pageSize = pagination.pageSize
+    //   // }
+    //   return pagination
+    // },
     fetchData () {
-      const pagination = this.parseFilter()
-      this.$service.peoplePositonList(pagination).then((data) => {
-        this.table.data = data.pageInfo.list
-        this.pagination.total = data.pageInfo.total
+      const params = {
+        ...this.pagination,
+        ...this.searchForm
+      }
+      this.$service.assistantTaskList(params).then((data) => {
+        this.table.data = data.row
+        this.pagination.total = data.total
       })
     }
   },
@@ -290,4 +305,48 @@ export default {
 .remark
   font-size 12px
   color: #999
+>>>.table-cell-wrap{
+  display grid
+  grid-template-columns: 20px 25px auto;
+  .arrow-wrap {
+    height: 100%;
+    background: #606266;
+    width: 2px;
+    margin-left: 7px;
+    position: relative;
+  }
+  .arrow {
+    width: 10px;
+    height: 10px;
+    border: 2px solid;
+    border-color: transparent transparent #606266 #606266;
+    position: absolute;
+    bottom: 2px;
+    left: -4px;
+    transform: rotate(314deg);
+  }
+
+  // .arrow::after{
+  //   content: '';
+  //   position: absolute;
+  //   right: -7px;
+  //   top: -9px;
+  //   border: 7px solid;
+  //   border-color: #fff transparent transparent transparent;
+  // }
+
+}
+// >>>.text-wrap
+//   display flex
+//   justify-content: space-between;
+>>>.text-tip
+  font-size 12px
+  color: #E6A23C
+  margin 0 10px
+
+>>>.table-cell-wrap-icon{
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+}
 </style>

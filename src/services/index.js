@@ -31,6 +31,7 @@ import * as listDimension from './listDimension'
 import * as tempCrowd from './crowdStrategy/tempCrowd'
 import * as localCrowd from './crowdStrategy/localCrowd'
 import * as storyLine from './crowdStrategy/storyLine'
+import * as operationHelper from './operationHelper'
 const service = {
   state: {},
   fetch,
@@ -64,7 +65,8 @@ const service = {
   ...listDimension,
   ...tempCrowd,
   ...localCrowd,
-  ...storyLine
+  ...storyLine,
+  ...operationHelper
 }
 Vue.prototype.$service = utils.wrapService(service)
 
