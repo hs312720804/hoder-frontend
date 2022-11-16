@@ -651,7 +651,7 @@ export default {
       }
     },
     tagList (val) {
-      this.checkedList = val.map(item => item.tagId)
+      this.checkedList = val ? val.map(item => String(item.tagId)) : []
     }
   },
   methods: {
@@ -780,17 +780,30 @@ export default {
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
       this.getTags()
-      this.tagList = Row.tagsList
-      this.addForm.conditionTagIds = Row.conditionTagIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        })
-      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        }) || []
+      this.tagList = Row.tagsList || []
+
+      if (Row.conditionTagIds) {
+        this.addForm.conditionTagIds = Row.conditionTagIds
+          .split(',')
+          .map(function (v) {
+            // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.conditionTagIds = []
+      }
+
+      if (Row.crowdTagCrowdIds) {
+        this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds
+          .split(',')
+          .map(function (v) {
+          // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.crowdTagCrowdIds = []
+      }
+
       // this.addForm.conditionTagIds = []
       // this.addForm.crowdTagCrowdIds = []
 
