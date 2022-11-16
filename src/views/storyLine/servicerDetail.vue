@@ -27,7 +27,6 @@
                   allow-create
                   default-first-option
                   placeholder="输入或选择技能"
-                  clearable
                   @blur="addOption"
                   @change="selectSkill"
                   @keyup.enter.native="addOption"
@@ -892,21 +891,30 @@ export default {
     async selectSkill (e) {
       console.log('selectSkill----', e)
 
-      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
-      const { query } = this.$refs.selectObj
-      if (!query) return
-
-      const existArr = this.skillOptions.filter(item => item.name === query)
-      if (existArr.length === 0) {
-        this.addOption()
+      // 先判断是否是选择了已有的ID
+      const existIdArr = this.skillOptions.filter(item => item.id === e)
+      if (existIdArr.length > 0) {
+        this.$emit('editReceptionist', {
+          id: this.selectedServicer.id,
+          skillId: e
+        })
         return
       }
-      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
 
-      this.$emit('editReceptionist', {
-        id: this.selectedServicer.id,
-        skillId: e
-      })
+      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
+      const { query } = this.$refs.selectObj
+      // console.log('query----', query)
+
+      if (query === null || query === undefined) return
+
+      const existArr = this.skillOptions.filter(item => item.name === query)
+
+      // console.log('existArr----', existArr)
+
+      if (existArr.length === 0) {
+        this.addOption()
+      }
+      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
 
       // this.editReceptionist({
       //   id: this.selectedServicer.id,
@@ -915,8 +923,10 @@ export default {
     },
 
     addOption () {
-      // console.log('addOption')
+      console.log('addOption')
       const { query } = this.$refs.selectObj
+      console.log('query--->', query)
+
       if (!query) return
 
       // 选择原有的
@@ -924,6 +934,8 @@ export default {
       // console.log('existArr--->', existArr)
       if (existArr.length > 0) {
         this.skillValue = existArr[0].id
+        // 选中
+        this.selectSkill(this.skillValue)
         return
       }
 
