@@ -47,7 +47,7 @@
     ></pagination>
   </div>
 
-  <el-dialog title="收货地址" :visible.sync="dialogFormVisible" >
+  <el-dialog title="新建运营任务" :visible.sync="dialogFormVisible" >
 
     <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm" >
       <el-form-item label="任务ID" prop="name">
