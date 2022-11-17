@@ -31,6 +31,7 @@
   </div>
 
   <c-table
+    class="list-table"
     :props="table.props"
     :header="table.header"
     :data="table.data"
@@ -47,17 +48,17 @@
     ></pagination>
   </div>
 
-  <el-dialog title="新建运营任务" :visible.sync="dialogFormVisible" >
-
+  <el-dialog :title="form.id ? '编辑运营任务' : '新建运营任务'" :visible.sync="dialogFormVisible" width="800px">
+    <!-- {{ form }} -->
     <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm" >
-      <el-form-item label="任务ID" prop="taskCode">
+      <el-form-item label="任务ID" prop="taskCode" class="inline-form-item">
         <el-input v-model="form.taskCode" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="任务名" >
+      <el-form-item label="任务名" prop="taskName" class="inline-form-item">
         <el-input v-model="form.taskName" autocomplete="off"></el-input>
       </el-form-item>
-      <el-form-item label="绑定人群" >
-        <drag></drag>
+      <el-form-item label="绑定人群" prop="binds">
+        <drag :bizId="searchForm.bizId" :form="form"></drag>
         <div class="remark">备注：优先级从高到低，拖动以调整优先级，当同时命中多个人群时返回优先级高的人群</div>
       </el-form-item>
       <el-form-item label="投放时间" prop="putType">
@@ -66,22 +67,30 @@
           <el-radio :label="2">指定时间段</el-radio>
         </el-radio-group>
         <el-date-picker
-          v-if="form.putType === 1"
+          v-if="form.putType === 2"
           v-model="form.putTime"
           type="daterange"
           range-separator="~"
           start-placeholder="开始日期"
           end-placeholder="结束日期"
+          value-format="yyyy-MM-dd"
           style="margin-left: 20px"
         >
         </el-date-picker>
+
       </el-form-item>
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button @click="dialogFormVisible = false">保存草稿</el-button>
+      <el-button @click="handleSave('draft')">保存草稿</el-button>
       <el-button type="primary" @click="handleSave">投 放</el-button>
     </div>
+  </el-dialog>
+
+  <!-- 动态人群 - 查看效果 -->
+  <el-dialog :visible.sync="showViewEffect" width="80%" title="投后效果">
+    <!-- currentTaskId --- {{currentTaskId}} -->
+    <viewEffectDialog :row="currentRow"></viewEffectDialog>
   </el-dialog>
 
 </div>
@@ -89,21 +98,28 @@
 
 <script>
 import drag from './drag.vue'
+import viewEffectDialog from './viewEffectDialog.vue'
 export default {
   name: 'peoplePositionList',
   data () {
     return {
+      currentTaskId: '',
       rules: {
         taskCode: [
           { required: true, message: '请输入任务ID', trigger: 'blur' }
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ],
-        // timeType: [
-        //   { required: true, message: '请选择活动资源', trigger: 'change' }
-        // ],
+        taskName: [
+          { required: true, message: '请输入任务名称', trigger: 'blur' }
+        ],
+        putType: [
+          { required: true, message: '请选择投放时间', trigger: 'change' }
+        ],
         putTime: [
           { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' }
-        ]
+        ],
+        binds: { type: 'array', required: true, message: '请设置绑定人群', trigger: 'blur' }
+
       },
       dialogFormVisible: false,
       searchForm: {
@@ -111,12 +127,7 @@ export default {
         keywords: ''
       },
       form: {
-        bizId: 1,
-        taskCode: '',
-        taskName: '',
-        binds: [],
-        putType: '',
-        putTime: []
+
       },
       formLabelWidth: '95px',
       pagination: {
@@ -124,14 +135,12 @@ export default {
         pageSize: 10,
         total: 0
       },
-
       table: {
-        props: {},
+        props: { 'row-class-name': this.tableRowClassName },
         header: [
           {
-            label: 'id',
-            prop: 'id',
-            width: '50'
+            label: '任务ID',
+            prop: 'taskCode'
           },
           {
             label: '任务名',
@@ -139,6 +148,7 @@ export default {
           },
           {
             label: '绑定详情(人群有交叉时优先展示优先级高的绑定方案)',
+            width: '320px',
             render: (h, { row }) => {
               const list = row.binds
               console.log('params-->', row)
@@ -148,9 +158,9 @@ export default {
                 group.push(h(
                   'div',
                   [
-                    h('span', item.crowdName),
+                    h('span', item.resourceName),
                     h('span', { class: 'text-tip' }, '绑定'),
-                    h('span', item.resourceName)
+                    h('span', item.crowdName)
                   ]
                 ))
               })
@@ -166,16 +176,20 @@ export default {
                 h('div', { class: 'arrow-wrap' }, [
                   h('div', { class: 'arrow' })
                 ]),
-                h('div', { class: 'aaa' }, group)
+                h('div', group)
               ])
             }
           },
           {
             label: '状态',
             prop: 'status',
-            width: '60',
             render: (h, { row }) => {
-              if (row.status === 1) { return '可用' } else { return '不可用' }
+              const dict = {
+                1: '生效中',
+                2: '已下架',
+                3: '草稿'
+              }
+              return dict[row.putway]
             }
           },
           {
@@ -189,34 +203,117 @@ export default {
           {
             label: '操作',
             fixed: 'right',
-            width: '100',
-            render: this.$c_utils.component.createOperationRender(this, {
-              handleEdit: '编辑',
-              handleOffSet: '下架',
-              handleDelete: '删除',
-              aaa: '投后效果'
-            })
+            width: '200px',
+            // render: this.$c_utils.component.createOperationRender(this, {
+            //   handleEdit: '编辑',
+            //   handleOffSet: '上架',
+            //   handleDelete: '删除',
+            //   aaa: '投后效果'
+            // }),
+
+            // render: (h, params) => {
+            //   return h('div', {
+            //   }, [
+            //     h('el-button', {
+            //       props: {
+            //         type: 'text'
+            //       },
+            //       on: {
+            //         click: () => { this.handleEdit(params) }
+            //       }
+            //     }, '编辑')])
+            // }
+
+            render: (h, params) => {
+              const createBtn = (label, method, permission) => {
+                return h('el-button', {
+                  // directives: [
+                  //   {
+                  //     name: 'permission',
+                  //     value: permission
+                  //   }
+                  // ],
+                  props: {
+                    type: 'text'
+                  },
+                  on: {
+                    click: () => {
+                      this[method](params)
+                    }
+                  }
+                }, label)
+              }
+              return h('div', null, [
+                createBtn('编辑', 'handleEdit'),
+                createBtn(params.row.putway === 1 ? '下架' : '上架', 'handleOffSet'),
+                createBtn('删除', 'handleDelete'),
+                createBtn('投后效果', 'handleViewEffectDialog')
+              ])
+            }
+
           }
 
         ],
         data: [],
         selected: [],
         selectionType: 'none'
-      }
+      },
+      showViewEffect: false
     }
   },
   methods: {
-    // 下架任务
-    handleOffSet (row) {
+    handleViewEffectDialog ({ row }) {
+      this.currentRow = row
+      this.showViewEffect = true
+    },
+    tableRowClassName ({ row }) {
       console.log('row--->', row)
-      this.$service.assistantTaskPutway().then(res => {
-
+      if (row.putway === 2) { return 'gray-row' }
+    },
+    initFormData () {
+      return {
+        bizId: 1,
+        taskCode: '',
+        taskName: '',
+        binds: [{
+          resourceCode: '',
+          resourceName: ''
+        }, {
+          resourceCode: '',
+          resourceName: ''
+        }],
+        putType: 1,
+        putTime: []
+      }
+    },
+    // 下架任务
+    handleOffSet ({ row }) {
+      console.log('row--->', row)
+      const params = {
+        id: row.id,
+        putway: row.putway === 1 ? 2 : 1 // 1 上架 2 下架
+      }
+      this.$service.assistantTaskPutway(params).then(res => {
+        this.fetchData()
       })
     },
-    handleSave () {
+    handleSave (type) {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
-          this.dialogFormVisible = false
+          console.log('this.form-->', this.form)
+
+          const params = {
+            ...this.form,
+            putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime
+          }
+          if (type === 'draft') { // 保存草稿
+            params.putway = 3
+          }
+
+          this.$service.saveAssistantTask(params).then(res => {
+            this.fetchData()
+            this.dialogFormVisible = false
+          })
         }
       })
     },
@@ -236,22 +333,43 @@ export default {
 
     handleAdd () {
       this.dialogFormVisible = true
+      this.$nextTick(res => {
+        // 初始化数据
+        this.form = this.initFormData()
+        this.$refs.ruleForm.resetFields()
+      })
     },
     handleEdit ({ row }) {
-      this.$emit('open-add-page', row.id, 'edit')
+      const params = {
+        id: row.id
+      }
+      this.$service.getAssistantTaskDetail(params).then(res => {
+        this.form = {
+          ...res,
+          putTime: res.putTime ? res.putTime.split(',') : []
+        }
+
+        this.dialogFormVisible = true
+
+        this.$nextTick(() => {
+          // 移除表单项的校验结果
+          this.$refs.ruleForm.clearValidate()
+        })
+      })
     },
     handleDelete ({ row }) {
-      this.$confirm('确定删除此活动吗？', '提示', {
+      this.$confirm('确定删除此任务吗？', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        this.$service.peoplePositonDel({ id: row.id }, '删除成功').then(
-          () => {
-            this.handleAllRowSelectionRemove()
-            this.fetchData()
-          }
-        )
+        const params = {
+          id: row.id,
+          delFlag: 2
+        }
+        this.$service.delAssistantTask(params, '删除成功').then(() => {
+          this.fetchData()
+        })
       })
     },
     handleFilterChange (type, pagination) {
@@ -287,9 +405,12 @@ export default {
   },
   created () {
     this.fetchData()
+    // 初始化数据
+    this.form = this.initFormData()
   },
   components: {
-    drag
+    drag,
+    viewEffectDialog
   }
 }
 
@@ -348,5 +469,12 @@ export default {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+}
+.list-table >>> .el-table tr.gray-row
+  color #ccc
+.inline-form-item {
+  width: 299px;
+  display: inline-block;
+  margin-right: 14px;
 }
 </style>

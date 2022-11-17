@@ -1,8 +1,8 @@
 <template>
-<div>
-  <draggable v-model="colors" @update="datadragEnd" :options="{animation: 300}" class="drag-wrap">
+<div class="div-wrap">
+  <draggable v-model="binds" @update="datadragEnd" :options="{animation: 300}" class="drag-wrap">
     <transition-group>
-      <div v-for="(item, index) in colors" :key="item.text" class="drag-item-wrap">
+      <div v-for="(item, index) in binds" :key="item.resourceCode" class="drag-item-wrap">
         <div class="drag-item">
 
           <!-- <el-select v-model="item.businessId" placeholder="请选择方案">
@@ -13,27 +13,27 @@
               :value="obj.id">
             </el-option>
           </el-select> -->
-
-          <el-select v-model="item.businessId" placeholder="请选择">
+<!-- {{options}} -->
+          <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)">
             <div class="options-wrap">
               <el-option
                 v-for="item in options"
-                :key="item.id"
-                :label="item.label"
-                :value="item.id">
-                <span style="float: left">{{ item.label }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.id }}</span>
+                :key="item.resourceCode"
+                :label="item.resourceName"
+                :value="item.resourceCode">
+                <span style="float: left;">{{ item.resourceCode }}</span>
+                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.resourceName }}</span>
               </el-option>
             </div>
 
             <div class="operate-wrap">
               <el-form :inline="true" :model="formInline" class="demo-form-inline">
                 <el-form-item>
-                  <el-input v-model="formInline.user" placeholder="业务方的方案ID" style="width: 130px"></el-input>
+                  <el-input v-model="formInline.resourceCode" placeholder="业务方的方案ID" style="width: 130px"></el-input>
                 </el-form-item>
 
                 <el-form-item>
-                  <el-input v-model="formInline.user" placeholder="备注（可选）" style="width: 130px"></el-input>
+                  <el-input v-model="formInline.resourceName" placeholder="备注（可选）" style="width: 130px"></el-input>
                 </el-form-item>
               </el-form>
 
@@ -42,22 +42,22 @@
           </el-select>
 
           <span class="text-tip">绑定</span>
-          <el-select v-model="item.businessId" placeholder="请选择人群" class="select-wrap">
+          <el-select v-model="item.crowdId" placeholder="请选择人群" class="select-wrap" @change="crowdIdChange($event, item)">
             <el-option-group label="人群列表">
               <div class="options2-wrap">
                 <el-option
-                  v-for="obj in options"
-                  :key="obj.id"
-                  :label="obj.label"
-                  :value="obj.id">
+                  v-for="obj in crowdList"
+                  :key="obj.crowdId"
+                  :label="obj.crowdName"
+                  :value="obj.crowdId">
                 </el-option>
               </div>
             </el-option-group>
             <el-option-group label="全量托底">
               <el-option
-                key="全量托底"
+                :key="0"
                 label="全量托底"
-                value="全量托底">
+                :value="0">
               </el-option>
             </el-option-group>
           </el-select>
@@ -70,6 +70,28 @@
     </transition-group>
   </draggable>
 
+  <!-- return h('div', {
+                class: 'table-cell-wrap'
+              },
+              [
+                h('div', { class: 'table-cell-wrap-icon' }, [
+                  h('span', '高'),
+                  h('span', '低')
+                ]),
+                h('div', { class: 'arrow-wrap' }, [
+                  h('div', { class: 'arrow' })
+                ]),
+                h('div', { class: 'aaa' }, group)
+              ]) -->
+  <div class="direction-wrap">
+    <div class='table-cell-wrap-icon'>
+      <span>高</span>
+      <span>低</span>
+    </div>
+    <div class="arrow-wrap">
+      <div class="arrow"></div>
+    </div>
+  </div>
   <div class="box-fotter">
     <el-button icon="el-icon-plus" @click="addColor">添加绑定</el-button>
   </div>
@@ -79,11 +101,39 @@
 <script>
 import draggable from 'vuedraggable'
 export default {
+  props: {
+    bizId: {
+      type: [String, Number],
+      default: 1
+    },
+    form: {
+      type: Array,
+      default: () => []
+    }
+  },
+  watch: {
+    'form.binds': {
+      handler (val) {
+        console.log('val--->', val)
+        this.binds = val
+      },
+      deep: true,
+      immediate: true
+    },
+    binds: {
+      handler (val) {
+        // eslint-disable-next-line vue/no-mutating-props
+        this.form.binds = val
+      },
+      deep: true
+    }
+  },
   data () {
     return {
+      binds: [],
       formInline: {
-        user: '',
-        region: ''
+        resourceCode: '',
+        resourceName: ''
       },
       msg: '这是测试组件',
       options: [{
@@ -108,17 +158,8 @@ export default {
         id: 6,
         label: '方案7'
       }],
-      colors: [
-        {
-          text: 'Aquamarine'
-        },
-        {
-          text: 'Hotpink'
-        },
-        {
-          text: 'Gold'
-        }
-      ],
+
+      crowdList: [],
       startArr: [],
       endArr: [],
       count: 0
@@ -128,28 +169,100 @@ export default {
     draggable
   },
   methods: {
+    // <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)">
+    resourceCodeChange (e, item) {
+      console.log('e-->', e)
+      console.log('eitem-->', item)
+
+      const obj = this.options.find(i => {
+        return e === i.resourceCode
+      })
+      console.log('obj---->', obj)
+      item.resourceId = obj ? obj.id : ''
+      item.resourceName = obj ? obj.resourceName : ''
+      item.priority = ''
+    },
+    crowdIdChange (e, item) {
+      console.log('e-->', e)
+      console.log('eitem-->', item)
+      if (e === 0) {
+        item.bindType = 2 // 全量托底
+
+        item.policyId = null
+        item.crowdName = '全量托底'
+      } else {
+        item.bindType = 1 // 人群绑定
+
+        const obj = this.crowdList.find(i => {
+          return e === i.crowdId
+        })
+        console.log('obj---->', obj)
+        item.policyId = obj ? obj.policyId : ''
+        item.crowdName = obj ? obj.crowdName : ''
+      }
+    },
+
+    // 新增方案
     addPlan () {
-      console.log('submit!')
+      const params = {
+        bizId: this.bizId, // 业务ID
+        ...this.formInline
+      }
+      this.$service.saveAssistantResource(params, '添加成功').then(res => {
+        this.formInline = {
+          resourceCode: '',
+          resourceName: ''
+        }
+
+        this.getAssistantResourceList()
+      })
+    },
+    getAssistantResourceList () {
+      const params = {
+        bizId: this.bizId, // 业务ID
+        pageNum: 1,
+        pageSize: 100
+      }
+      this.$service.getAssistantResourceList(params).then(res => {
+        this.options = res.row || []
+      })
     },
     // 删除
     cutColor (index) {
-      this.colors.splice(index, 1)
+      // eslint-disable-next-line vue/no-mutating-props
+      this.binds.splice(index, 1)
     },
     // 新增
     addColor () {
-      this.colors.push({
-        text: ''
+      // eslint-disable-next-line vue/no-mutating-props
+      this.binds.push({
+        resourceCode: '',
+        resourceName: ''
       })
     },
-    getdata (evt) {
-      console.log(evt.draggedContext.element.text)
-    },
+    // getdata (evt) {
+    //   console.log(evt.draggedContext.element.text)
+    // },
     datadragEnd (evt) {
       evt.preventDefault()
       console.log('拖动前的索引 :' + evt.oldIndex)
       console.log('拖动后的索引 :' + evt.newIndex)
-      console.log(this.colors)
+      console.log(this.binds)
+    },
+    getCrowdList () {
+      const params = {
+        crowdName: '',
+        pageNum: 1,
+        pageSize: 100
+      }
+      this.$service.getAssistantTaskCrowdList(params).then(res => {
+        this.crowdList = res.row || []
+      })
     }
+  },
+  created () {
+    this.getCrowdList()
+    this.getAssistantResourceList()
   },
   mounted () {
     // 为了防止火狐浏览器拖拽的时候以新标签打开，此代码真实有效
@@ -227,5 +340,42 @@ export default {
   }
   .select-wrap >>> .el-select-dropdown__wrap {
     max-height: 374px;
+  }
+  $arrowColor = #d7d7d7;
+  .table-cell-wrap-icon{
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    color: $arrowColor;
+    font-size 12px
+    width: 17px;
+  }
+  .arrow-wrap {
+    height: 100%;
+    background: $arrowColor;
+    width: 1px;
+    margin-left: 7px;
+    position: relative
+  }
+  .arrow {
+    width: 10px;
+    height: 10px;
+    border: 1px solid;
+    border-color: transparent transparent $arrowColor $arrowColor;
+    position: absolute;
+    bottom: 2px;
+    left: -6px;
+    -webkit-transform: rotate(314deg);
+    transform: rotate(314deg);
+  }
+  .div-wrap {
+    display: grid;
+    grid-template-columns: auto 35px;
+    grid-gap: 0 20px;
+  }
+  .direction-wrap {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0px;
   }
 </style>

@@ -11,7 +11,8 @@ export function saveAssistantTask (data) {
   return this.fetch({
     method: 'post',
     url: '/api/assistantTask/save',
-    data
+    data,
+    isJSON: true
   })
 }
 
@@ -29,7 +30,8 @@ export function saveAssistantResource (data) {
   return this.fetch({
     method: 'post',
     url: '/api/assistantResource/save',
-    data
+    data,
+    isJSON: true
   })
 }
 
@@ -38,6 +40,40 @@ export function assistantTaskPutway (data) {
   return this.fetch({
     method: 'post',
     url: '/api/assistantTask/putway',
-    data
+    data,
+    isJSON: true
+  })
+}
+
+export function delAssistantTask (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/assistantTask/del',
+    data,
+    isJSON: true
+  })
+}
+
+export function getAssistantTaskCrowdList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/assistantTask/crowdList',
+    params
+  })
+}
+// 获取方案列表
+export function getAssistantResourceList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/assistantResource/list',
+    params
+  })
+}
+// 人群小助手投后效果
+export function getEffect (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/operationAssistant/getEffect',
+    params
   })
 }
