@@ -2,7 +2,7 @@
 <div class="div-wrap">
   <draggable v-model="binds" @update="datadragEnd" :options="{animation: 300}" class="drag-wrap">
     <transition-group>
-      <div v-for="(item, index) in binds" :key="item.resourceCode" class="drag-item-wrap">
+      <div v-for="(item, index) in binds" :key="item.resourceCode + index" class="drag-item-wrap">
         <div class="drag-item">
 
           <!-- <el-select v-model="item.businessId" placeholder="请选择方案">
@@ -70,7 +70,7 @@
               <div v-if="crowdList.length === 0" class="empty-text">无数据</div>
               <el-option-group label="全量兜底">
                 <el-option
-                  :key="0"
+                  :key="index"
                   label="全量兜底"
                   :value="0">
                 </el-option>

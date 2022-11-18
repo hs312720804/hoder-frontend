@@ -50,9 +50,9 @@
 
   <el-dialog :title="form.id ? '编辑运营任务' : '新建运营任务'" :visible.sync="dialogFormVisible" width="800px">
     <!-- {{ form }} -->
-    <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm" >
+    <el-form :model="form" :label-width="formLabelWidth" :rules="rules" ref="ruleForm">
       <el-form-item label="任务ID" prop="taskCode" class="inline-form-item">
-        <el-input v-model="form.taskCode" autocomplete="off"></el-input>
+        <el-input v-model="form.taskCode" autocomplete="off" :disabled="Boolean(form.id)"></el-input>
       </el-form-item>
       <el-form-item label="任务名" prop="taskName" class="inline-form-item">
         <el-input v-model="form.taskName" autocomplete="off"></el-input>
@@ -81,6 +81,7 @@
           end-placeholder="结束日期"
           value-format="yyyy-MM-dd"
           style="margin-left: 20px"
+          :picker-options="pickerOptions"
         >
         </el-date-picker>
 
@@ -109,6 +110,12 @@ export default {
   name: 'peoplePositionList',
   data () {
     return {
+      pickerOptions: {
+        disabledDate (time) {
+          // 可选时间为包括今天在内的未来时间的三个月内，不可选时间置灰。
+          return time.getTime() < (Date.now() - 24 * 60 * 60 * 1000) || time.getTime() > (Date.now() + 90 * 24 * 60 * 60 * 1000)
+        }
+      },
       currentTaskId: '',
       rules: {
         taskCode: [
@@ -273,7 +280,8 @@ export default {
         selected: [],
         selectionType: 'none'
       },
-      showViewEffect: false
+      showViewEffect: false,
+      currentRow: {}
     }
   },
   methods: {

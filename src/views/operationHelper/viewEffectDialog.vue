@@ -4,7 +4,7 @@
     <div class="statistics-header">
       <div class="date-picker">
         <el-date-picker v-model="timeRange" type="daterange" range-separator="至" start-placeholder="开始日期"
-          end-placeholder="结束日期" value-format="yyyy-MM-dd" :picker-options="pickerOptions" @change="initChart">
+          end-placeholder="结束日期" value-format="yyyy-MM-dd" @change="initChart">
         </el-date-picker>
 
         <!-- <div class="export-button">
@@ -52,11 +52,11 @@ export default {
       allCharts: {},
       timeRange: [],
       allChartData: {},
-      pickerOptions: {
-        disabledDate (time) {
-          return time.getTime() > Date.now() - 8.64e6
-        }
-      },
+      // pickerOptions: {
+      //   disabledDate (time) {
+      //     return time.getTime() > Date.now() - 8.64e6
+      //   }
+      // },
       rowObj: [{ // 图表信息，需要和后端约定好名称
         request: { type: 'line', title: '请求次数趋势', span: 12 },
         requestPvTotal: { type: 'liquidFill', title: '请求统计（PV）', span: 6 },
@@ -99,8 +99,8 @@ export default {
     },
     initRange () {
       // 默认展示实际投放时间范围的 30天，不足 30天 的展示实际天数
-      const putTime = '2022-11-15'
-      const putTimeEnd = '2022-11-17'
+      const putTime = this.row.start
+      const putTimeEnd = this.row.end || this.$moment().format('YYYY-MM-dd')
 
       // 时间戳
       const start = +new Date(putTime)
@@ -109,8 +109,8 @@ export default {
       const putEnd = +new Date(putTimeEnd)
       let end = 0
 
-      // 取 [30天、投放终止时间、今天]中的最小值
-      end = this.getMin([range30, now, putEnd])
+      // 取 [30天、投放终止时间]中的最小值
+      end = this.getMin([range30, putEnd])
       console.log('111--->', end)
 
       const startDate = this.formatDate(start)
@@ -128,16 +128,16 @@ export default {
     initChart () {
       this.allChartData = {}
 
-      // const params = {
-      //   taskId: this.row.id,
-      //   start: this.timeRange[0],
-      //   end: this.timeRange[1]
-      // }
       const params = {
-        taskId: 10,
-        start: '2022-11-15',
-        end: '2022-11-17'
+        taskId: this.row.id,
+        start: this.timeRange[0],
+        end: this.timeRange[1]
       }
+      // const params = {
+      //   taskId: 10,
+      //   start: '2022-11-15',
+      //   end: '2022-11-17'
+      // }
 
       // 获取所有图表数据
       this.$service.getEffect(params).then(res => {
