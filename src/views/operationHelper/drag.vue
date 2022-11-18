@@ -107,8 +107,8 @@ export default {
       default: 1
     },
     form: {
-      type: Array,
-      default: () => []
+      type: Object,
+      default: () => {}
     }
   },
   watch: {
