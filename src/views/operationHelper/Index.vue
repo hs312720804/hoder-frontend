@@ -139,6 +139,10 @@ export default {
         props: { 'row-class-name': this.tableRowClassName },
         header: [
           {
+            label: 'id',
+            prop: 'id'
+          },
+          {
             label: '任务ID',
             prop: 'taskCode'
           },

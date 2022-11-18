@@ -23,7 +23,7 @@
             <div class="unit-content">
               <div v-if="allChartData[key] && allChartData[key].series" :ref="key" :id="key" class="chart-div"></div>
               <div v-else class="chart-div">
-                <el-empty :description="String(allChartData[key]) || '暂无数据'"></el-empty>
+                <el-empty description='暂无数据'></el-empty>
               </div>
             </div>
           </div>
