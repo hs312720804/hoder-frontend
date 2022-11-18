@@ -13,54 +13,70 @@
               :value="obj.id">
             </el-option>
           </el-select> -->
-<!-- {{options}} -->
-          <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)">
-            <div class="options-wrap">
-              <el-option
-                v-for="item in options"
-                :key="item.resourceCode"
-                :label="item.resourceName"
-                :value="item.resourceCode">
-                <span style="float: left;">{{ item.resourceCode }}</span>
-                <span style="float: right; color: #8492a6; font-size: 13px">{{ item.resourceName }}</span>
-              </el-option>
-            </div>
+          <!-- {{options}} -->
+          <el-form-item :prop="`binds.${index}.resourceCode`" :rules="{ required: true, message: '请选择方案',trigger: 'change'}">
 
-            <div class="operate-wrap">
-              <el-form :inline="true" :model="formInline" class="demo-form-inline">
-                <el-form-item>
-                  <el-input v-model="formInline.resourceCode" placeholder="业务方的方案ID" style="width: 130px"></el-input>
-                </el-form-item>
-
-                <el-form-item>
-                  <el-input v-model="formInline.resourceName" placeholder="备注（可选）" style="width: 130px"></el-input>
-                </el-form-item>
-              </el-form>
-
-              <el-button type="text" @click="addPlan" icon="el-icon-plus">添加方案</el-button>
-            </div>
-          </el-select>
-
-          <span class="text-tip">绑定</span>
-          <el-select v-model="item.crowdId" placeholder="请选择人群" class="select-wrap" @change="crowdIdChange($event, item)">
-            <el-option-group label="人群列表">
-              <div class="options2-wrap">
+            <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)" clearable>
+              <div class="options-wrap">
                 <el-option
-                  v-for="obj in crowdList"
-                  :key="obj.crowdId"
-                  :label="obj.crowdName"
-                  :value="obj.crowdId">
+                  v-for="item in options"
+                  :key="item.resourceCode"
+                  :label="item.resourceName"
+                  :value="item.resourceCode">
+                  <span style="float: left;">{{ item.resourceCode }}</span>
+                  <span style="float: right; color: #8492a6; font-size: 13px">{{ item.resourceName }}</span>
                 </el-option>
               </div>
-            </el-option-group>
-            <el-option-group label="全量托底">
-              <el-option
-                :key="0"
-                label="全量托底"
-                :value="0">
-              </el-option>
-            </el-option-group>
-          </el-select>
+
+              <div class="operate-wrap">
+                <el-form :inline="true" :model="formInline" class="demo-form-inline">
+                  <el-form-item>
+                    <el-input v-model="formInline.resourceCode" placeholder="业务方的方案ID" style="width: 130px"></el-input>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-input v-model="formInline.resourceName" placeholder="备注（可选）" style="width: 130px"></el-input>
+                  </el-form-item>
+                </el-form>
+
+                <el-button type="text" @click="addPlan" icon="el-icon-plus">添加方案</el-button>
+              </div>
+            </el-select>
+          </el-form-item>
+
+          <span class="text-tip">绑定</span>
+
+          <el-form-item :prop="`binds.${index}.crowdId`" :rules="{ required: true, message: '请选择人群',trigger: 'change'}">
+            <el-select
+              v-model="item.crowdId"
+              placeholder="请选择人群"
+              :filterable="true"
+              :remote="true"
+              :remote-method="getCrowdList"
+              @visible-change="getCrowdList('')"
+              clearable
+              class="select-wrap"
+              @change="crowdIdChange($event, item)">
+              <el-option-group label="人群列表">
+                <div class="options2-wrap">
+                  <el-option
+                    v-for="obj in crowdList"
+                    :key="obj.crowdId"
+                    :label="obj.crowdName"
+                    :value="obj.crowdId">
+                  </el-option>
+                </div>
+              </el-option-group>
+              <div v-if="crowdList.length === 0" class="empty-text">无数据</div>
+              <el-option-group label="全量托底">
+                <el-option
+                  :key="0"
+                  label="全量托底"
+                  :value="0">
+                </el-option>
+              </el-option-group>
+            </el-select>
+          </el-form-item>
 
           <i class="el-icon-s-operation"></i>
         </div>
@@ -221,7 +237,7 @@ export default {
       const params = {
         bizId: this.bizId, // 业务ID
         pageNum: 1,
-        pageSize: 100
+        pageSize: 500
       }
       this.$service.getAssistantResourceList(params).then(res => {
         this.options = res.row || []
@@ -249,11 +265,16 @@ export default {
       console.log('拖动后的索引 :' + evt.newIndex)
       console.log(this.binds)
     },
-    getCrowdList () {
+    // visibleChange (val, modelValue) {
+    //   if (modelValue === '') {
+    //     this.getCrowdList()
+    //   }
+    // },
+    getCrowdList (keyWord) {
       const params = {
-        crowdName: '',
+        crowdName: keyWord,
         pageNum: 1,
-        pageSize: 100
+        pageSize: 500
       }
       this.$service.getAssistantTaskCrowdList(params).then(res => {
         this.crowdList = res.row || []
@@ -378,4 +399,12 @@ export default {
     justify-content: center;
     padding: 10px 0px;
   }
+  .div-wrap
+    >>>.el-form-item--mini.el-form-item, >>>.el-form-item--small.el-form-item
+      margin-bottom 0
+  .empty-text
+    margin: 0;
+    text-align: center;
+    color: #999;
+    font-size: 14px;
 </style>

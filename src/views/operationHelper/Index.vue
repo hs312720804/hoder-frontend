@@ -58,6 +58,12 @@
         <el-input v-model="form.taskName" autocomplete="off"></el-input>
       </el-form-item>
       <el-form-item label="绑定人群" prop="binds">
+        <div class="list-header">
+          <span>方案</span>
+          <span>人群</span>
+          <span>可拖拽</span>
+          <span>优先级</span>
+        </div>
         <drag :bizId="searchForm.bizId" :form="form"></drag>
         <div class="remark">备注：优先级从高到低，拖动以调整优先级，当同时命中多个人群时返回优先级高的人群</div>
       </el-form-item>
@@ -82,7 +88,7 @@
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
-      <el-button @click="handleSave('draft')">保存草稿</el-button>
+      <el-button @click="handleSaveDraft">保存草稿</el-button>
       <el-button type="primary" @click="handleSave">投 放</el-button>
     </div>
   </el-dialog>
@@ -159,14 +165,16 @@ export default {
               console.log('list-->', list)
               const group = []
               list.forEach(item => {
-                group.push(h(
-                  'div',
-                  [
-                    h('span', item.resourceName),
-                    h('span', { class: 'text-tip' }, '绑定'),
-                    h('span', item.crowdName)
-                  ]
-                ))
+                if (!!item.resourceName && !!item.crowdName) {
+                  group.push(h(
+                    'div',
+                    [
+                      h('span', item.resourceName),
+                      h('span', { class: 'text-tip' }, '绑定'),
+                      h('span', item.crowdName)
+                    ]
+                  ))
+                }
               })
 
               return h('div', {
@@ -186,14 +194,16 @@ export default {
           },
           {
             label: '状态',
-            prop: 'status',
+            // prop: 'status',
             render: (h, { row }) => {
               const dict = {
                 1: '生效中',
                 2: '已下架',
-                3: '草稿'
+                3: '草稿',
+                4: '未开始（未到投放周期）',
+                5: '已过期（已过投放周期内）'
               }
-              return dict[row.putway]
+              return dict[row.status]
             }
           },
           {
@@ -238,7 +248,8 @@ export default {
                   //   }
                   // ],
                   props: {
-                    type: 'text'
+                    type: 'text',
+                    disabled: params.row.putway === 3 && method === 'handleOffSet' // 草稿不允许上下架
                   },
                   on: {
                     click: () => {
@@ -301,7 +312,24 @@ export default {
         this.fetchData()
       })
     },
-    handleSave (type) {
+    // 保存草稿
+    handleSaveDraft () {
+      if (this.form.taskCode === '' || this.form.taskName === '') {
+        return this.$message.error('请输入 任务ID 和 任务名称 ')
+      }
+      const params = {
+        ...this.form,
+        putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
+        priority: null, // 优先级字段不创
+        putway: 3  // 草稿
+      }
+
+      this.$service.saveAssistantTask(params).then(res => {
+        this.fetchData()
+        this.dialogFormVisible = false
+      })
+    },
+    handleSave () {
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           console.log('this.form-->', this.form)
@@ -310,11 +338,9 @@ export default {
             ...this.form,
             putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
             priority: null, // 优先级字段不创
-            putway: 1
+            putway: 1  // 投放
           }
-          if (type === 'draft') { // 保存草稿
-            params.putway = 3
-          }
+
 
           this.$service.saveAssistantTask(params).then(res => {
             this.fetchData()
@@ -482,5 +508,22 @@ export default {
   width: 299px;
   display: inline-block;
   margin-right: 14px;
+}
+
+.list-header {
+  display: flex;
+  color: #999;
+  font-size: 12px;
+  justify-content: space-between;
+  border-bottom: 1px dashed #efefef;
+  span:nth-child(1) {
+    margin-left: 95px;
+  }
+  span:nth-child(2) {
+    margin-left: 234px;
+  }
+  span:nth-child(3) {
+    margin-left: 62px;
+  }
 }
 </style>
