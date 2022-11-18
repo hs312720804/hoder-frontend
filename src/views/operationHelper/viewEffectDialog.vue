@@ -92,12 +92,30 @@ export default {
     })
   },
   methods: {
+    // 取最小值
+    getMin (arr) {
+      arr.sort((a, b) => { return a - b })
+      return arr[0]
+    },
     initRange () {
-      // 设置默认时间为今天的前一周
-      const start = new Date()
-      const end = new Date()
-      const startDate = this.formatDate(start.setTime(start.getTime() - 3600 * 1000 * 24 * 30))
-      const endDate = this.formatDate(end.setTime(end.getTime()))
+      // 默认展示实际投放时间范围的 30天，不足 30天 的展示实际天数
+      const putTime = '2022-11-15'
+      const putTimeEnd = '2022-11-17'
+
+      // 时间戳
+      const start = +new Date(putTime)
+      const range30 = +new Date(putTime) + 3600 * 1000 * 24 * 30
+      const now = +new Date()
+      const putEnd = +new Date(putTimeEnd)
+      let end = 0
+
+      // 取 [30天、投放终止时间、今天]中的最小值
+      end = this.getMin([range30, now, putEnd])
+      console.log('111--->', end)
+
+      const startDate = this.formatDate(start)
+      const endDate = this.formatDate(end)
+
       this.timeRange = [startDate, endDate]
     },
     formatDate (d) {
@@ -205,7 +223,7 @@ export default {
           data: xData,
           axisLabel: {
             interval: 'auto',
-            rotate: -45,
+            // rotate: -45,
             formatter: function (value) {
               return value + xunit
             }

@@ -304,7 +304,8 @@ export default {
 
           const params = {
             ...this.form,
-            putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime
+            putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
+            priority: null // 优先级字段不创
           }
           if (type === 'draft') { // 保存草稿
             params.putway = 3
