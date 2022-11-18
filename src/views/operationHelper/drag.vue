@@ -68,10 +68,10 @@
                 </div>
               </el-option-group>
               <div v-if="crowdList.length === 0" class="empty-text">无数据</div>
-              <el-option-group label="全量托底">
+              <el-option-group label="全量兜底">
                 <el-option
                   :key="0"
-                  label="全量托底"
+                  label="全量兜底"
                   :value="0">
                 </el-option>
               </el-option-group>
