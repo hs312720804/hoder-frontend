@@ -1,7 +1,8 @@
 /* eslint-disable no-mixed-operators */
 <template>
 
-  <el-form :model="childItem" ref="bav" :rules="bavFormRules" :inline="true">
+  <el-form :model="childItem" ref="bav" :rules="bavFormRules" :inline="true" :disabled="isView">
+    <!-- {{_this}} -->
     <div class="bav-attr-warp">
 
       <el-tag class="oc-item" :type="dataSourceColorEnum[childItem.dataSource]">
@@ -3281,6 +3282,7 @@ import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 import Bav0012 from './Bav0012.vue'
 import myMinix from './minix'
 export default {
+  inject: ['_this'],
   mixins: [myMinix], // todo.vue 中声明minix 进行混合
   components: {
     Type,
@@ -3296,6 +3298,16 @@ export default {
     bavAttrList: {
       default: () => {},
       type: Object
+    }
+    // isView: { // 查看模式
+    //   type: Boolean,
+    //   default: false
+    // }
+  },
+  computed: {
+    isView () {
+      debugger
+      return this._this && this._this.isView ? this._this.isView : false
     }
   }
 }

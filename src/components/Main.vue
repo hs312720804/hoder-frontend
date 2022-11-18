@@ -86,7 +86,7 @@
           <i class="el-icon-question" style="color: #409EFF; font-size: 18px; margin-right: 5px;"></i>
           <el-button
             type="text"
-            @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')"
+            @click="handelGo('http://wiki.cc0808.com/pages/viewpage.action?pageId=49470290')"
             style="font-size: 16px;font-weight: 600;"
           >
             使用文档
@@ -213,7 +213,9 @@ export default {
         '/specialTag/index': 'specialTag',
         '/launchHelper/status': 'launchStatus',
         '/launchHelper/resendCommand': 'resendCommand',
-        '/hitQuery': 'hitQuery'
+        '/hitQuery': 'hitQuery',
+        '/storyLine': 'storyLine',
+        '/operationHelper': 'operationHelper'
       },
       activeName: 'first',
       updateMessage: [],

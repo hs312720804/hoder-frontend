@@ -98,13 +98,14 @@
     <div v-if="!isShowCrowdList && mode === 'editDynamicCrowd'">
       <!-- style="width: 252px; position: absolute;" -->
       <!-- <el-tabs v-model="tabSet" type="card" v-if="tabSet === 'first' || (tabSet === 'second' && dynamicTestActiveStep !== 1)"> -->
-      <el-tabs v-model="tabSet" type="card">
+      <el-tabs v-model="tabSet" type="card" @tab-click="handleTabClick" :before-leave="handleBeforeTagLeave">
         <el-tab-pane label="编辑人群条件" name="first">
         </el-tab-pane>
         <el-tab-pane label="编辑动态人群" name="second">
         </el-tab-pane>
       </el-tabs>
       <crowd-add
+        ref="crowdAddRef"
         v-if="tabSet === 'first'"
         :crowd="crowd"
         :crowdId="crowdId"
@@ -114,6 +115,7 @@
         >
       </crowd-add>
       <DynamicTest
+        ref="dynamicTestRef"
         v-if="tabSet === 'second'"
         :initPolicyId="selectRow.policyId"
         :initPolicyName="selectRow.policyName"
@@ -177,6 +179,34 @@ export default {
     }
   },
   methods: {
+    handleBeforeTagLeave (activeName, oldActiveName) {
+      if (oldActiveName === 'first') {
+        const crowdAddRef = this.$refs.crowdAddRef
+        // 手动触发保存人群
+        crowdAddRef.handleTabChangeSave()
+
+        console.log('crowdAddRef--->', crowdAddRef)
+      } else {
+        const dynamicTestRef = this.$refs.dynamicTestRef
+
+        const step = dynamicTestRef.activeStep // 动态人群第几步
+
+        if (step === 0) {
+          dynamicTestRef.handleSaveStep1()
+        } else if (step === 1) {
+          dynamicTestRef.handleSave()
+        } else if (step === 2) {
+          dynamicTestRef.handleSaveStep3()
+        }
+        console.log('step--->', step)
+      }
+    },
+    handleTabClick (e) {
+      // console.log('e---->', e)
+      // console.log('e---->', this.tabSet)
+      // 动态人群的步骤重置为0（第一步）
+      this.initActiveStep = 0
+    },
     handleActiveStepChange (val) {
       this.dynamicTestActiveStep = val
     },

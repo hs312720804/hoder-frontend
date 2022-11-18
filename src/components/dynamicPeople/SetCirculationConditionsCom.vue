@@ -1,7 +1,6 @@
 <template>
   <el-form :model="rulesJson" ref="ruleForm" >
     <div v-if="tags && tags.length > 0" class="label-container">
-      <div v-if="tags && tags.length > 0" >
         <div
           v-show="rulesJson.rules.length > 1"
           class="label-or-space"
@@ -80,13 +79,15 @@
             </el-tag>
           </div>
         </div>
+    </div>
+
+    <template v-if="crowdId">
+      <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
+      <div style="float: right">
+        <el-button type="warning" @click="handleCancel">取消</el-button>
+        <el-button type="primary" @click="handleSave">保存</el-button>
       </div>
-    </div>
-    <el-checkbox v-model="applyAll" style="margin-bottom: 30px;">应用全部人群</el-checkbox>
-    <div style="float: right">
-      <el-button type="warning" @click="handleCancel">取消</el-button>
-      <el-button type="primary" @click="handleSave">保存</el-button>
-    </div>
+    </template>
   </el-form>
 </template>
 
@@ -94,7 +95,7 @@
 import RuleCom from './ruleComs/RuleCom.vue'
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
+  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule', 'storyLineCirculationRulesJson'],
   // inject: ['graphData'],
   // computed: {
   //   computedGraphData () {
@@ -153,6 +154,51 @@ export default {
     handleSave () {
       // 必填校验
       debugger
+      // this.$refs["ruleForm"].forEach(res => {
+      //   res.$children[0].validate((valid) => {
+      //       if (valid) {
+      //           // 保存时，重置初始数据
+      //           this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson));
+      //           this.$emit("handleSave", { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll });
+      //       }
+      //   });
+      // })
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          // 保存时，重置初始数据
+          this.initRulesJson = JSON.parse(JSON.stringify(this.rulesJson))
+          this.$emit('handleSave', { rulesJson: this.rulesJson, policyId: this.policyId, applyAll: this.applyAll })
+        }
+      })
+    },
+    storyLineCirculationRulesJson: {
+      handler (val) {
+        this.rulesJson = val
+      },
+      immediate: true
+    },
+    rulesJson: {
+      handler (val) {
+        this.$emit('update:storyLineCirculationRulesJson', val)
+      },
+      deep: true
+    }
+  },
+  created () {
+    // 获取标签
+    this.$service.getRuleIndicators().then(res => {
+      this.tags = res
+    })
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
+  },
+  mounted () {
+    this.init()
+  },
+  methods: {
+    handleSave () {
+      // 必填校验
       // this.$refs["ruleForm"].forEach(res => {
       //   res.$children[0].validate((valid) => {
       //       if (valid) {
@@ -261,10 +307,10 @@ export default {
 </script>
 
 <style scoped  lang="stylus">
-.label-container {
-  margin: 0 0 20px;
-  padding: 0 0 0 40px;
-}
+// .label-container {
+//   margin: 0 0 20px;
+//   padding: 0 0 0 40px;
+// }
 .div-class {
   padding: 20px;
   background-color: rgba(249,249,249,0.85);
@@ -431,7 +477,7 @@ i {
   top: 10px;
   right: 0;
   bottom: 5px;
-  left: 0;
+  left: -40px;
   width: 3px;
   height: auto;
   margin: auto 0;

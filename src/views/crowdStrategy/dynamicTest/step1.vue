@@ -39,10 +39,10 @@
 
       </div>
 
-      <el-form-item label-width="0">
+      <!-- <el-form-item label-width="0">
         <el-button type="info" @click="$emit('goBackCrowdListPage')">返回</el-button>
         <el-button type="primary" @click="handleSave()">下一步</el-button>
-      </el-form-item>
+      </el-form-item> -->
 
     </el-form>
   </div>
@@ -161,7 +161,7 @@ export default {
     },
     // 判断表单是否通过校验
     isValidate () {
-      let reg = new RegExp('^[1-9]([0-9])*$')
+      const reg = new RegExp('^[1-9]([0-9])*$')
       const flag1 = this.menu.child.every(item => {
         // 校验人群名
         const flag2 = !!item.crowdName

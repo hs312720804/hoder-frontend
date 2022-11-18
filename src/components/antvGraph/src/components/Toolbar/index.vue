@@ -8,13 +8,13 @@
     <i
       class="command iconfont icon-undo"
       title="撤销"
-      :class="undoList.length>0?'':'disable'"
+      :class="undoList.length > 0?'':'disable'"
       @click="handleUndo"
     ></i>
     <i
       class="command iconfont icon-redo"
       title="重做"
-      :class="redoList.length>0?'':'disable'"
+      :class="redoList.length > 0?'':'disable'"
       @click="handleRedo"
     ></i>
     <span class="separator"></span>

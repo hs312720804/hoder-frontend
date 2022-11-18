@@ -30,7 +30,7 @@
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i+'condition'"
-                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }} 111111111111
+                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
                 </el-button>
 
               <!-- {{ (crowd.behaviorRulesJson.link || crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
@@ -177,7 +177,7 @@
                 </el-form-item>
 
                 <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-                  <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+                  <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount" style="width: 220px;"></el-input-number>
                 </el-form-item>
 
                 <el-form-item label="备注" :prop="formProp('remark')">

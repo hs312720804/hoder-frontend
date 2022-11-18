@@ -58,6 +58,8 @@ import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
+import StoryLine from '@/views/storyLine/Index'
+import operationHelper from '@/views/operationHelper/Index'
 
 const children = [
   // {
@@ -805,6 +807,28 @@ const children = [
     meta: {
       title: '动态实验报告',
       tagId: 'dynamicCrowdReport',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'storyLine',
+    path: 'storyLine',
+    component: StoryLine,
+    meta: {
+      title: '故事运营',
+      tagId: 'storyLine',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'operationHelper',
+    path: 'operationHelper',
+    component: operationHelper,
+    meta: {
+      title: '人群运营助手',
+      tagId: 'operationHelper',
       hideInMenu: true,
       isCache: false
     }

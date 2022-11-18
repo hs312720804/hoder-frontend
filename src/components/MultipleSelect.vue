@@ -1114,6 +1114,7 @@ export default {
         }
       }
 
+      // eslint-disable-next-line vue/no-mutating-props
       this.rulesJson.rules.push({
         condition: 'AND',
         rules: [
@@ -1230,6 +1231,7 @@ export default {
         this.$message.warning('已达最大数量')
         return
       }
+      // eslint-disable-next-line vue/no-mutating-props
       this.dynamicPolicyJson.rules.push({
         condition: 'AND',
         rules: [
@@ -1314,8 +1316,8 @@ export default {
       const startDay = item.startDay ? item.startDay : '@'
       const endDay = item.endDay ? item.endDay : '@'
       if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
+        if (parseInt(startDay) > parseInt(endDay)) {
+          this.$message.error('第二个值不能小于第一个值')
         } else if (item.version > 0) { // 二期之后的版本
           item.value = startDay + '~' + endDay
         } else {

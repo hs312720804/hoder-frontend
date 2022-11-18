@@ -25,7 +25,7 @@ export default {
     },
     childItem: {
       handler (val) {
-        console.log('childItem=====>>>', val)
+        // console.log('childItem=====>>>', val)
         // 编辑回显
         if (val && val.tagCode === 'BAV0004') { // 【模块活跃】需要查询版面、板块ID
           this.getModuleId(val.bav.behaviorValue)

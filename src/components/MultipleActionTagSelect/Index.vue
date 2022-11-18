@@ -42,6 +42,7 @@
               <!-- 购买行为 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
                 <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
+                  <!-- 查看模式 -->
                   <Range
                     ref="range"
                     :childItem="childItem"
@@ -625,6 +626,11 @@
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
 export default {
+  provide () {
+    return {
+      _this: this
+    }
+  },
   data () {
     return {
       showHitTip: true,
@@ -722,7 +728,12 @@ export default {
     crowd: {
       type: Object,
       default: () => {}
+    },
+    isView: {
+      type: Boolean,
+      default: false
     }
+
   },
   watch: {
     behaviorRulesJson: {
@@ -1322,8 +1333,8 @@ export default {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
+        if (parseInt(startDay) > parseInt(endDay)) {
+          this.$message.error('第二个值不能小于第一个值')
         } else {
           item.value = startDay + '-' + endDay
         }

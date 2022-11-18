@@ -23,8 +23,11 @@
       >
         <el-select style="width: 100px" name="oxve" v-model="childItem.action" clearable class="input-inline">
           <template>
-            <el-option value="show" label="曝光"></el-option>
-            <el-option value="click" label="点击"></el-option>
+
+            <el-option v-for="item in actionOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="show" label="曝光"></el-option>
+            <el-option value="click" label="点击"></el-option> -->
           </template>
         </el-select>
       </el-form-item>
@@ -39,8 +42,10 @@
       >
         <el-select style="width: 100px" name="oxve" v-model="childItem.locationType" clearable class="input-inline">
           <template>
-            <el-option :value="1" label="板块位"></el-option>
-            <el-option :value="2" label="推荐位"></el-option>
+            <el-option v-for="item in locationTypeOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option :value="1" label="板块位"></el-option>
+            <el-option :value="2" label="推荐位"></el-option> -->
           </template>
         </el-select>
       </el-form-item>
@@ -67,8 +72,10 @@
       >
         <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline">
           <template>
-            <el-option value="pv" label="次数"></el-option>
-            <el-option value="days" label="天数"></el-option>
+            <el-option v-for="item in countOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="pv" label="次数"></el-option>
+            <el-option value="days" label="天数"></el-option> -->
           </template>
         </el-select>
       </el-form-item>
@@ -93,9 +100,11 @@
       >
         <el-select style="width: 100px" name="oxve" v-model="childItem.coupon" clearable class="input-inline">
           <template>
-            <el-option value="couponShowPv" label="曝光"></el-option>
+            <el-option v-for="item in couponOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="couponShowPv" label="曝光"></el-option>
             <el-option value="couponCreatePv" label="领用"></el-option>
-            <el-option value="couponUsePv" label="使用"></el-option>
+            <el-option value="couponUsePv" label="使用"></el-option> -->
           </template>
         </el-select>
       </el-form-item>
@@ -125,8 +134,10 @@
       >
         <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline">
           <template>
-            <el-option value="orderNum" label="下单次数"></el-option>
-            <el-option value="orderDays " label="下单天数"></el-option>
+            <el-option v-for="item in productCountOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="orderNum" label="下单次数"></el-option>
+            <el-option value="orderDays " label="下单天数"></el-option> -->
           </template>
         </el-select>
       </el-form-item>
@@ -165,6 +176,50 @@ export default {
   },
   data () {
     return {
+      couponOptions: [
+        {
+          label: '曝光',
+          value: 'couponShowPv'
+        },
+        {
+          label: '领用',
+          value: 'couponCreatePv'
+        },
+        {
+          label: '使用',
+          value: 'couponUsePv'
+        }
+      ],
+      actionOptions: [{
+        label: '曝光',
+        value: 'show'
+      },
+      {
+        label: '点击',
+        value: 'click'
+      }],
+      locationTypeOptions: [{
+        label: '板块位',
+        value: 1
+      }, {
+        label: '推荐位',
+        value: 2
+      }],
+      countOptions: [{
+        label: '次数',
+        value: 'pv'
+      }, {
+        label: '天数',
+        value: 'days'
+      }],
+      productCountOptions: [{
+        label: '下单次数',
+        value: 'orderNum'
+      }, {
+        label: '下单天数',
+        value: 'orderDays'
+      }]
+
     }
   },
   created () {

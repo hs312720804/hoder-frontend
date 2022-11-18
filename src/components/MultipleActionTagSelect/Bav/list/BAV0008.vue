@@ -596,7 +596,6 @@ export default {
         reverseSelectAttr,
         parentId: childItem.id
       })
-      debugger
     },
     // 通过 vals 获取完整的 valList
     // vals -- value 集合, behaviorValue -- 已经组装好的集合, attrList -- 下拉框列表
@@ -616,7 +615,6 @@ export default {
       // console.log('rulesJson.rules===>', this.rulesJson.rules)
       let list = []
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false
-      debugger
       if (vals.length === 0 && level === 6) { // 清空集数
         const obj = behaviorValue[0] // 不改变子级的数据
         obj.name = ''
@@ -648,7 +646,6 @@ export default {
         }]
       }
       vals.forEach(val => {
-        debugger
         const lastNumberObj = [
           { name: '', value: '', field: 'mac', operator: '>', type: 'count' }
         ]
@@ -700,7 +697,6 @@ export default {
         //   }]
         // }
         if (level === 6 || level === 7) {
-          debugger
           const child = behaviorValue.filter(item => {
             return item.value === val
           })
@@ -747,7 +743,6 @@ export default {
             this.getTvEpisodes(obj.source, obj.value)
             this.getAppointmentInfo(obj.source, obj.value)
           }
-          debugger
           // if (obj.child.length === 0 && obj.child[0].value === '') {
           //   obj.child = [{
           //     name: '',

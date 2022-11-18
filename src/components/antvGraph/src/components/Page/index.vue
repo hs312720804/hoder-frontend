@@ -12,12 +12,14 @@
       title="设置动态流转条件"
       :visible.sync="dialogVisible"
       width="900px"
+      class="setCirculation"
     >
       <SetCirculationConditionsCom
         :crowdId="crowdId"
         :graph="graph"
         @handleCancel="dialogVisible = false"
-        @handleSave="handleSave">
+        @handleSave="handleSave"
+      >
       </SetCirculationConditionsCom>
     </el-dialog>
 
@@ -368,7 +370,7 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 
 .hover_con{
   background: #303133;
@@ -381,5 +383,8 @@ export default {
   line-height: 1.2;
   min-width: 10px;
   word-wrap: break-word;
+}
+.setCirculation /deep/ .el-dialog__body {
+  padding-left: 75px
 }
 </style>

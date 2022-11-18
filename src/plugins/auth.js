@@ -32,6 +32,7 @@ Vue.prototype.$login = async function (data) {
       password: data.password,
       version: res.version,
       roleName: res.roleNames,
+      permissions: res.permissions,
       userId: res.userInfo.userId
     }
     this.$service.service.state = user

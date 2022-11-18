@@ -197,6 +197,7 @@ export default {
     $route: {
       handler () {
         this.crowdId = this.$route.query.crowdId || ''
+        // this.crowdId = 12461
         this.crowdName = this.$route.query.crowdName || ''
         if (this.crowdId !== '') {
           this.initData()
@@ -655,6 +656,9 @@ export default {
     return {
       downloadUrl: undefined,
       options: [{
+        value: 6,
+        label: '故事线'
+      }, {
         value: 0,
         label: '顺序'
       }, {
@@ -731,7 +735,7 @@ export default {
               return this.cc_format_number(row.hitAmount)
             }
           }, {
-            label: '产品页页面曝光设备量',
+            label: '产品包页面曝光设备量',
             prop: 'showMac',
             render: (h, { row }) => {
               return this.cc_format_number(row.showMac)
@@ -1027,7 +1031,7 @@ export default {
 
             }, {
               label: '包年',
-              prop: 'bannianPayPrice'
+              prop: 'baonianPayPrice'
 
             }]
 

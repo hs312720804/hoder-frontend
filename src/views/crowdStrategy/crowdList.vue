@@ -224,12 +224,12 @@
                   >编辑
                   </el-dropdown-item>
                   <el-dropdown-item
-                          :command="['del',scope.row]"
-                          v-permission="'hoder:crowd:del'"
+                    :command="['del',scope.row]"
+                    v-permission="'hoder:crowd:del'"
                   >删除
                   </el-dropdown-item>
                   <el-dropdown-item
-                          :command="['upDown',scope.row]"
+                    :command="['upDown',scope.row]"
                   >人群<span v-if="scope.row.putway === 1">下架</span><span v-else>上架</span>
                   </el-dropdown-item>
                   <!-- <el-dropdown-item
@@ -1825,7 +1825,6 @@ export default {
             label: '占比',
             prop: 'flowNum',
             render: (h, { row }) => {
-              console.log(row)
               return h('div', {}, `${row.flowNum}%`)
             }
           },
@@ -1833,7 +1832,7 @@ export default {
             label: '流转方式',
             prop: 'mainArithmetic',
             render: (h, { row }) => {
-              const options = ['顺序', '循环', '随机', '自定义', '不流转', '智能']
+              const options = ['顺序', '循环', '随机', '自定义', '不流转', '智能', '故事线']
               return options[row.mainArithmetic]
             }
           },
