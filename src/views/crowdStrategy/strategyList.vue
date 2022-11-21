@@ -13,11 +13,14 @@
             <div class="search-input">
               <el-input
                 v-model="searchForm.policyName"
-                style="width: 350px"
                 placeholder="支持按策略、人群、创建人、部门搜索"
                 @keyup.enter.native="handleSearch"
-              ></el-input>
-              <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+                clearable
+                style="width: 350px"
+              >
+              <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+            </el-input>
+              <!-- <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
             </div>
           </div>
           <div class="header-right">
@@ -87,7 +90,7 @@
             <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
           <!--</template>-->
         <!--</el-table-column>-->
-        <el-table-column prop="tagsList">
+        <el-table-column prop="tagsList" width="400px">
           <template
                   slot="header"
                   slot-scope="{ column, $index }"
@@ -154,7 +157,7 @@
           </template>
         </el-table-column>
 
-        <el-table-column label="操作" fixed="right" width="180">
+        <el-table-column label="操作" fixed="right">
           <template slot-scope="scope">
             <div class="el-button-group">
               <!-- 动态人群：{{scope.row.smart}} -->
@@ -288,7 +291,7 @@
             <!--</el-tabs>-->
           <!--</el-form-item>-->
           <div class="tags-tips">
-            <!-- 1111注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+            <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
             <span class="checkbox--red">红色为大数据标签</span>,
             <span class="checkbox--green">绿色为自定义/本地标签</span>,
             <span class="checkbox--blue">蓝色为账号标签</span>,
@@ -592,7 +595,8 @@ export default {
                     rows: 8,
                     readonly: true,
                     value: row.content
-                  }
+                  },
+                  class: 'get-setting'
                 }),
                 h('el-button', {
                   props: {
@@ -659,7 +663,7 @@ export default {
       }
     },
     tagList (val) {
-      this.checkedList = val.map(item => item.tagId)
+      this.checkedList = val ? val.map(item => String(item.tagId)) : []
     }
   },
   methods: {
@@ -792,17 +796,30 @@ export default {
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
       this.getTags()
-      this.tagList = Row.tagsList
-      this.addForm.conditionTagIds = Row.conditionTagIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        })
-      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        }) || []
+      this.tagList = Row.tagsList || []
+
+      if (Row.conditionTagIds) {
+        this.addForm.conditionTagIds = Row.conditionTagIds
+          .split(',')
+          .map(function (v) {
+            // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.conditionTagIds = []
+      }
+
+      if (Row.crowdTagCrowdIds) {
+        this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds
+          .split(',')
+          .map(function (v) {
+          // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.crowdTagCrowdIds = []
+      }
+
       // this.addForm.conditionTagIds = []
       // this.addForm.crowdTagCrowdIds = []
 
@@ -1374,15 +1391,15 @@ ul > li
       display: -ms-flex;
       align-items: stretch;
     }
-    .left{
+    .left {
       background: aqua;
     }
-    .right{
+    .right {
       margin-left: 110px;
       background: antiquewhite;
     }
 </style>
 <style lang="stylus">
-.el-textarea__inner
+.get-setting .el-textarea__inner
   min-height 400px !important
 </style>

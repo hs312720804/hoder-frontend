@@ -57,7 +57,10 @@ import effectDataStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
+<<<<<<< HEAD
 
+=======
+>>>>>>> fcb36b7e541620a23eca280adaf1c160e5d7683c
 const children = [
   {
     name: 'OverallDeliveryStatistics',
@@ -665,7 +668,7 @@ const children = [
   },
   {
     name: 'storyLine',
-    path: 'storyLine',
+    path: '/storyLine',
     component: StoryLine,
     meta: {
       title: '故事运营',
@@ -676,7 +679,7 @@ const children = [
   },
   {
     name: 'operationHelper',
-    path: 'operationHelper',
+    path: '/operationHelper',
     component: operationHelper,
     meta: {
       title: '人群运营助手',
