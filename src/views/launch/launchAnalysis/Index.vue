@@ -1378,4 +1378,8 @@ export default {
   height: 40px
   border-top: 1px dashed #e7e7e7;
 }
+.hoder-pages {
+  background: #f3f4fa;
+  padding: 20px;
+}
 </style>

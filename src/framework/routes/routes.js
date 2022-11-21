@@ -57,10 +57,6 @@ import effectDataStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
-<<<<<<< HEAD
-
-=======
->>>>>>> fcb36b7e541620a23eca280adaf1c160e5d7683c
 const children = [
   {
     name: 'OverallDeliveryStatistics',

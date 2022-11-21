@@ -266,7 +266,7 @@ export default {
   data () {
     return {
       noGroupService: [],
-      styleType: true,
+      styleType: false,
       groupData: [{
         list: [],
         groupName: '组1'
