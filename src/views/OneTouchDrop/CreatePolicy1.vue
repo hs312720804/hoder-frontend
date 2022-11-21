@@ -194,7 +194,7 @@ export default {
                       message: '即将自动跳转至策略列表页'
                     })
                     this.$emit('handleDirectStrategyList')
-                    // this.$router.push({ path: 'launch/strategyList' })
+                    // this.$router.push({ path: 'strategyList' })
                   }).catch(() => {
                   })
                 } else {
@@ -239,12 +239,12 @@ export default {
                     message: '即将自动跳转至策略列表页'
                   })
                   this.$emit('handleDirectStrategyList')
-                  // this.$router.push({ path: 'launch/strategyList' })
+                  // this.$router.push({ path: 'strategyList' })
                 }).catch(() => {
                 })
               } else {
                 // this.$root.$emit('stratege-list-refresh')
-                // this.$router.push({path: 'launch/strategyList'})
+                // this.$router.push({path: 'strategyList'})
                 this.$emit('handleDirectStrategyList')
                 this.resetForm()
                 this.$emit('resetFormData')

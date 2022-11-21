@@ -258,7 +258,7 @@ export default {
   methods: {
     // 返回策略列表
     handelBack () {
-      this.$emit('back')
+      this.$emit('handleDirectStrategyList')
       // this.$router.push({ name: 'strategyList' })
     },
     genDefaultForm () {
@@ -389,13 +389,13 @@ export default {
         // 如果没有匹配的，就执行新增
         if (firstIndex === -1) {
           this.tagList.push(val)
-          
+
           if (val.dataSource === 12) {
             // 人群标签 id 集合
-            this.addForm.crowdTagCrowdIds.push(val.tagId) 
+            this.addForm.crowdTagCrowdIds.push(val.tagId)
           } else {
             // 其他的标签 id 集合
-            this.addForm.conditionTagIds.push(val.tagId) 
+            this.addForm.conditionTagIds.push(val.tagId)
           }
           this.setContentBottomMargin()
         }
@@ -434,7 +434,7 @@ export default {
         // 其他的标签 id 集合
         addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
       }
-      
+
       this.tagList.splice(this.tagList.indexOf(tag), 1)
       this.setContentBottomMargin()
     },
@@ -459,7 +459,7 @@ export default {
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
           // 其他的标签 id 集合
-          addForm.conditionTagIds = addForm.conditionTagIds.join(',') 
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
 
           // 人群标签 id 集合
           addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
@@ -520,7 +520,7 @@ export default {
                       message: '即将自动跳转至策略列表页'
                     })
                     this.$emit('handleDirectStrategyList')
-                    // this.$router.push({ path: 'launch/strategyList' })
+                    // this.$router.push({ path: 'strategyList' })
                   }).catch(() => {
                   })
                 } else {
@@ -566,12 +566,12 @@ export default {
               //       message: '即将自动跳转至策略列表页'
               //     })
               //     this.$emit('handleDirectStrategyList')
-              //     // this.$router.push({ path: 'launch/strategyList' })
+              //     // this.$router.push({ path: 'strategyList' })
               //   }).catch(() => {
               //   })
               // } else {
               // this.$root.$emit('stratege-list-refresh')
-              // this.$router.push({path: 'launch/strategyList'})
+              // this.$router.push({path: 'strategyList'})
               this.$emit('handleDirectStrategyList')
               this.$emit('resetFormData')
               // }
@@ -588,7 +588,7 @@ export default {
         formData.conditionTagIds = formData.conditionTagIds === '' ? [] : formData.conditionTagIds.split(',').map(function (v) {
           return parseInt(v)
         })
-        
+
         // 人群标签ID
         formData.crowdTagCrowdIds = formData.crowdTagCrowdIds ? formData.crowdTagCrowdIds.split(',').map(function (v) {
           return parseInt(v)
@@ -625,7 +625,7 @@ export default {
       // this.initTagList.map(function (v) {
       //   return parseInt(v.tagId)
       // })
-      
+
       this.addForm.policyId = this.policyName
     }
   }
@@ -696,7 +696,7 @@ export default {
     color #000
     font-size 12px
     margin-left 100px
-  
+
   .fix-bottom-form
     position fixed
     bottom 0

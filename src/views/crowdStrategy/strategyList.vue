@@ -438,7 +438,7 @@
         <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
       </el-dialog>
     </template>
-    <one-touch-drop v-else @back="backList"></one-touch-drop>
+    <!-- <one-touch-drop v-else @back="backList"></one-touch-drop> -->
   </div>
 </template>
 <script>
@@ -767,11 +767,11 @@ export default {
       this.strategyType = 'list'
     },
     handleAdd () {
-      this.strategyType = 'add'
-      // this.$router.push({
-      //   name: 'oneTouchDrop',
-      //   params: { source: this.parentSource ? 'myCrowd' : undefined, refresh: true } // 刷新页面
-      // })
+      // this.strategyType = 'add'
+      this.$router.push({
+        name: 'oneTouchDrop',
+        params: { source: this.parentSource ? 'myCrowd' : undefined, refresh: true } // 刷新页面
+      })
       // 清空编辑时设置的数据
       this.$store.commit('setSchemeConfigNull')
       // this.addFormVisible = true;

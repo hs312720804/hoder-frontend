@@ -621,7 +621,7 @@ export default {
           )
           .then(() => {
             // this.$root.$emit('stratege-list-refresh')
-            // this.$router.push({ path: 'launch/strategyList' })
+            // this.$router.push({ path: 'strategyList' })
             this.$emit('handleDirectStrategyListBrother')
             this.$emit('resetFormData')
           })

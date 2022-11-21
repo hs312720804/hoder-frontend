@@ -463,7 +463,7 @@ export default {
         this.$message.success('保存成功')
         this.$emit('handleDirectStrategyList')
         // this.$root.$emit('stratege-list-refresh')
-        // this.$router.push({ path: 'launch/strategyList' })
+        // this.$router.push({ path: 'strategyList' })
         this.$emit('resetFormData')
       }
     },

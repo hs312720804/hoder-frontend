@@ -291,7 +291,7 @@ const children = [
   },
   {
     name: 'strategyList',
-    path: 'launch/strategyList',
+    path: 'strategyList',
     component: strategyList,
     meta: {
       tagId: 'strategyList',

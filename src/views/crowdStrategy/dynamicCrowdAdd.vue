@@ -216,7 +216,7 @@ export default {
       if (this.routeSource) {
         this.$router.push({ path: 'launch/myPolicy' })
       } else {
-        this.$router.push({ path: 'launch/strategyList' })
+        this.$router.push({ path: 'strategyList' })
       }
     }
   },

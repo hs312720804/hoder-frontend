@@ -84,7 +84,7 @@ export default function install (Vue) {
             }
             return result
           })
-          .catch(() => {
+          // .catch(() => {
             // if (error.request && error.request.status === 401) {
             //   location.href = location.origin + location.pathname + '#/login'
             // } else {
@@ -95,7 +95,7 @@ export default function install (Vue) {
             //   })
             //   return Promise.reject(error)
             // }
-          })
+          // })
       }
     } else {
       $service[key] = service[key]
