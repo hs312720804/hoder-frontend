@@ -1050,11 +1050,11 @@ export default {
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
       // console.log('selectedScene---', this.selectedScene)
-      // console.log('selectedServicer---', this.selectedServicer)
+      // console.log('selectedServicer---', this.selectedServicer)/
       const params = {
         // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
         dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-        crowdId: this.selectedServicer.id, // 接待员id
+        crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
         isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       }
       // const params = {
