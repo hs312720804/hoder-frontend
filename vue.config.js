@@ -1,6 +1,7 @@
 const ENV = process.env.NODE_ENV
 
 const BACKEND = process.env.BACKEND || '172.20.151.197:9080'
+// const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
 const HOST = process.env.HOST || '0.0.0.0'
 const PORT = process.env.PORT || '8686'
 const isDev = ENV === 'development'
@@ -21,10 +22,10 @@ module.exports = {
       'Access-Control-Allow-Origin': '*'
     },
     proxy: {
-      '/api': {
-        target: 'http://' + BACKEND,
-        pathRewrite: { '^/api': '/' }
-      },
+      // '/api': {
+      //   target: 'http://' + BACKEND,
+      //   pathRewrite: { '^/api': '/' }
+      // },
       '/violet-api': {
         target: 'http://' + BACKEND,
         pathRewrite: { '^/violet-api': '/' }
