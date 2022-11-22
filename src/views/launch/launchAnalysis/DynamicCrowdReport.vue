@@ -114,6 +114,7 @@
             <!-- <span>共 0 个</span> -->
           </div>
         </div>
+        <!-- {{ allTableData.reportDayDetail }} -->
         <dynamic-table
           :table-data="allTableData.reportDayDetail.data"
           :table-header="allTableData.reportDayDetail.tableConfig"
@@ -401,12 +402,14 @@ export default {
       })
 
       result.reportDayDetail = {
-        name: reportDayDetail.name,
-        data: reportDayDetailReData
+        name: res.reportDayDetail.name,
+        data: reportDayDetailReData,
+        title: res.reportDayDetail.title
       }
       result.reportSum = {
-        name: reportSum.name,
-        data: reportSumReData
+        name: res.reportSum.name,
+        data: reportSumReData,
+        title: res.reportSum.title
       }
       result.reportGroupSum = {
         name: reportGroupSum.name,
@@ -508,6 +511,8 @@ export default {
       const d = res
 
       for (const key in d) {
+        const allData = res[key]
+
         const data = d[key].data // 单个表格的数据
         if (key === 'reportDayDetail' || key === 'reportSum') {
           let mainkey
@@ -516,7 +521,7 @@ export default {
           } else {
             mainkey = 'date'
           }
-          const reutrnData = this.restoreData(key, data, mainkey)
+          const reutrnData = this.restoreData(key, data, mainkey, allData)
 
           this.allTableData[key].data = reutrnData.tableData
           this.allTableData[key].tableConfig = reutrnData.tableConfig
@@ -611,7 +616,10 @@ export default {
       this.allCharts[element] = myChart
     },
     // 重构数据
-    restoreData (key, data, mainkey) {
+    restoreData (key, data, mainkey, allData) {
+      // const titleArr = allData.title.split(',')
+      // console.log('d-------->', titleArr)
+
       let tableData = []
       let tableConfig = []
       tableData = data.map((item, index) => {
@@ -625,21 +633,26 @@ export default {
           const crowdObj = d[itemKey]
           if (typeof crowdObj === 'object') { // 动态人群
             for (const itemKey2 in crowdObj) { // itemKey2: name、 show、payRate、price
-              reObj[`${itemKey}${itemKey2}`] = crowdObj[itemKey2]
+              reObj[`${crowdObj.planName}${itemKey2}`] = crowdObj[itemKey2] // 根据名称(planName) 和 属性名确定唯一值
 
-              if (index === 0) { // 通过第一条数据，构建header
-                tableConfig = this.allTableData[key].tableConfig.map(header => {
-                  if (header.prop === itemKey2) {
-                    // console.log('itemKey2-------->', itemKey2)
-                    // console.log('header.children-------->', header.children)
+              // if (index === 0) { // 通过第一条数据，构建header
+              tableConfig = this.allTableData[key].tableConfig.map(header => {
+                if (header.prop === itemKey2) {
+                  // console.log('itemKey2-------->', itemKey2)
+                  // console.log('header.children-------->', header.children)
+                  const propName = `${crowdObj.planName}${itemKey2}`
+
+                  const a = header.children.filter(y => y.prop === propName) || []
+                  if (a && a.length === 0) {
                     header.children.push({
                       label: crowdObj.planName,
-                      prop: `${itemKey}${itemKey2}`
+                      prop: propName
                     })
                   }
-                  return header
-                })
-              }
+                }
+                return header
+              })
+              // }
             }
           }
         }
