@@ -1,5 +1,5 @@
 <template>
-  <div :class="styleType ? 'dark' : 'light'">
+  <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
     <!-- {{groupServicer}} -->
     <div class='row-wrap' >
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>

@@ -1,3 +1,9 @@
+.total-wrap
+  position: absolute;
+  top: 0px;
+  bottom: 0;
+  right: 0;
+  left: 0;
 .row-wrap
   display: grid;
   grid-template-columns: 200px 200px minmax(0, 1fr);
@@ -15,7 +21,7 @@
   font-weight: 500;
   font-size: 16px;
 .content {
-  height calc(100vh - 142px)
+  height calc(100vh - 88px)
   overflow auto
   box-sizing: border-box;
   position relative
@@ -61,6 +67,7 @@
   position absolute
   right: 17px;
   top: -6px;
+  z-index: 999;
 .item-content
   flex 1
   word-break: break-word;
