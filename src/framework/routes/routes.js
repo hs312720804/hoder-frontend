@@ -57,7 +57,19 @@ import effectDataStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
+import operate from '@/views/operate/Index'
+
 const children = [
+  {
+    name: 'operate',
+    path: '/operate',
+    component: operate,
+    meta: {
+      tagId: 'operate',
+      title: '操作指引',
+      icon: 'el-icon-cc-home'
+    }
+  },
   {
     name: 'OverallDeliveryStatistics',
     path: '/homePage/OverallDeliveryStatistics',

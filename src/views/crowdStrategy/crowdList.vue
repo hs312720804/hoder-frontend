@@ -2081,8 +2081,8 @@ export default {
         ratio: '当前路径流入设备量/父级路径流入设备量'
       }
       this.$service.getCrowdFlowPath(parmas).then(res => {
-        if (typeof res.data === 'string') {
-          return this.$message.info(res.data) // 数据不存在
+        if (res.data === null) {
+          return this.$message.info(res.result) // 数据不存在
         }
         console.log('res====>', res)
         const data = [res]
@@ -3035,7 +3035,8 @@ export default {
       }
     },
     goToDynamicCrowdReport (crowdId, crowdName) {
-      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId, crowdName } })
+      // 跳转到操作指引
+      this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', crowdId, crowdName } })
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {

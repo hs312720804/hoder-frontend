@@ -89,6 +89,7 @@ export function getCrowdFlowPath (params) {
   return this.fetch({
     method: 'get',
     url: '/api/crowdFlowPath',
-    params
+    params,
+    isReturnAllInfor: true
   })
 }
