@@ -67,7 +67,7 @@
         <drag :bizId="searchForm.bizId" :form="form"></drag>
         <div class="remark">备注：优先级从高到低，拖动以调整优先级，当同时命中多个人群时返回优先级高的人群</div>
       </el-form-item>
-      <el-form-item label="投放时间" prop="putType">
+      <!-- <el-form-item label="投放时间" prop="putType">
         <el-radio-group v-model="form.putType">
           <el-radio :label="1">立即投放</el-radio>
           <el-radio :label="2">指定时间段</el-radio>
@@ -85,7 +85,7 @@
         >
         </el-date-picker>
 
-      </el-form-item>
+      </el-form-item> -->
     </el-form>
     <div slot="footer" class="dialog-footer">
       <el-button @click="dialogFormVisible = false">取 消</el-button>
@@ -125,12 +125,12 @@ export default {
         taskName: [
           { required: true, message: '请输入任务名称', trigger: 'blur' }
         ],
-        putType: [
-          { required: true, message: '请选择投放时间', trigger: 'change' }
-        ],
-        putTime: [
-          { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' }
-        ],
+        // putType: [
+        //   { required: true, message: '请选择投放时间', trigger: 'change' }
+        // ],
+        // putTime: [
+        //   { type: 'array', required: true, message: '请选择时间范围', trigger: 'change' }
+        // ],
         binds: { type: 'array', required: true, message: '请设置绑定人群', trigger: 'blur' }
 
       },
@@ -304,9 +304,9 @@ export default {
         }, {
           resourceCode: '',
           resourceName: ''
-        }],
-        putType: 1,
-        putTime: []
+        }]
+        // putType: 1,
+        // putTime: []
       }
     },
     // 下架任务
@@ -329,7 +329,7 @@ export default {
         ...this.form,
         putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
         priority: null, // 优先级字段不创
-        putway: 3  // 草稿
+        putway: 3 // 草稿
       }
 
       this.$service.saveAssistantTask(params).then(res => {
@@ -346,9 +346,8 @@ export default {
             ...this.form,
             putTime: Array.isArray(this.form.putTime) ? this.form.putTime.join(',') : this.form.putTime,
             priority: null, // 优先级字段不创
-            putway: 1  // 投放
+            putway: 1 // 投放
           }
-
 
           this.$service.saveAssistantTask(params).then(res => {
             this.fetchData()

@@ -21,7 +21,7 @@
                 <el-option
                   v-for="item in options"
                   :key="item.resourceCode"
-                  :label="item.resourceName"
+                  :label="item.resourceCode"
                   :value="item.resourceCode">
                   <span style="float: left;">{{ item.resourceCode }}</span>
                   <span style="float: right; color: #8492a6; font-size: 13px">{{ item.resourceName }}</span>
@@ -29,13 +29,14 @@
               </div>
 
               <div class="operate-wrap">
-                <el-form :inline="true" :model="formInline" class="demo-form-inline">
-                  <el-form-item>
+                <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
+                <el-form :inline="true" :model="formInline" class="demo-form-inline" >
+                  <el-form-item prop="resourceCode">
                     <el-input v-model="formInline.resourceCode" placeholder="业务方的方案ID" style="width: 130px"></el-input>
                   </el-form-item>
 
                   <el-form-item>
-                    <el-input v-model="formInline.resourceName" placeholder="备注（可选）" style="width: 130px"></el-input>
+                    <el-input v-model="formInline.resourceName" placeholder="备注（可选）" @keydown.enter.native="addPlan" style="width: 130px"></el-input>
                   </el-form-item>
                 </el-form>
 
@@ -146,6 +147,7 @@ export default {
   },
   data () {
     return {
+      formInlineRule: { required: true, message: '请输入任务ID', trigger: 'blur' },
       binds: [],
       formInline: {
         resourceCode: '',
@@ -219,7 +221,12 @@ export default {
     },
 
     // 新增方案
-    addPlan () {
+    addPlan (index) {
+      // this.$refs[`formInlineRef${index}`][0].validate(valid => {
+      //   if (valid) {
+      if (this.formInline.resourceCode === '') {
+        return this.$message.error('请输入业务方的方案ID')
+      }
       const params = {
         bizId: this.bizId, // 业务ID
         ...this.formInline
@@ -232,6 +239,8 @@ export default {
 
         this.getAssistantResourceList()
       })
+      //   }
+      // })
     },
     getAssistantResourceList () {
       const params = {
