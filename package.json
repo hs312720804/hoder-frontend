@@ -6,6 +6,7 @@
     "serve": "vue-cli-service serve",
     "build:test": "cross-env NODE_ENV=test vue-cli-service build",
     "build": "vue-cli-service build",
+    "build102": "vue-cli-service build && c-web-cli deploy",
     "lint": "vue-cli-service lint",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
     "analyzer": "use_analyzer=true"
