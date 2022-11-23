@@ -77,3 +77,20 @@ export function getEffect (params) {
     params
   })
 }
+// 人群运营助手同步接口
+export function genLuaById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/assistantTaskSync/genLuaById',
+    params
+  })
+}
+
+// 人群运营运营助手配置接口
+export function getAssistantLuaList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/assistantLua/list',
+    params
+  })
+}
