@@ -1087,11 +1087,14 @@ export default {
       })
     },
     handleOneTouchDrop () {
+      // this.$router.push({
+      //   name: 'strategyList',
+      //   params: {
+      //     pagesType: 'add'
+      //   }
+      // })
       this.$router.push({
-        name: 'strategyList',
-        params: {
-          pagesType: 'add'
-        }
+        name: 'oneTouchDrop',
       })
     },
     handleOpenLaunchList () {

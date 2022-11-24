@@ -12,10 +12,16 @@
 <script>
 // 动态人群报告
 import DynamicCrowdReport from '@/views/launch/launchAnalysis/DynamicCrowdReport'
+import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
+// 组合标签
+import specialTag from '@/views/SpecialTag/Index'
+
 
 export default {
   components: {
-    DynamicCrowdReport
+    DynamicCrowdReport,
+    homepageReleaseRecord,
+    specialTag
   },
   data() {
     return {

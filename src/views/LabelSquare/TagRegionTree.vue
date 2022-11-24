@@ -65,7 +65,6 @@ export default {
       }
       this.$service.specialTagDetailList(filter).then((data) => {
         // eslint-disable-next-line
-                    
         // this.dataSourceEnum = data.dataSourceEnum
         // this.typeEnum = data.typeEnum
         // this.tagCategory = data.tagCategory
