@@ -100,6 +100,22 @@
     <viewEffectDialog :row="currentRow"></viewEffectDialog>
   </el-dialog>
 
+  <!-- 查看配置弹窗-->
+  <el-dialog title="查看配置" :visible.sync="showConfiguration">
+    <c-content-wrapper
+      :pagination="detailPagination.pagination"
+      @filter-change="loadDetailList"
+    >
+      <c-table
+        :data="seeDetailData.data"
+        :props="seeDetailData.props"
+        :header="seeDetailData.header"
+      >
+      </c-table>
+    </c-content-wrapper>
+    <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
+  </el-dialog>
+
 </div>
 </template>
 
@@ -110,6 +126,64 @@ export default {
   name: 'peoplePositionList',
   data () {
     return {
+      detailPagination: {
+        filter: {},
+        pagination: {
+          pageSize: 10,
+          currentPage: 1,
+          total: 0
+        },
+        taskCode: null
+      },
+      showConfiguration: false,
+      seeDetailData: {
+        props: {
+          border: true
+        },
+        data: [],
+        header: [
+          {
+            label: '版本号',
+            prop: 'versionId'
+          },
+          {
+            label: '文件名称',
+            prop: 'fileName'
+          },
+          {
+            label: '创建时间',
+            prop: 'createTime'
+          },
+          {
+            label: '操作',
+            width: '100px',
+            render: (h, { row }) => {
+              return h('el-popover', {
+                attrs: {
+                  placement: 'left',
+                  width: '600',
+                  trigger: 'click'
+                }
+              }, [
+                h('el-input', {
+                  props: {
+                    type: 'textarea',
+                    rows: 8,
+                    readonly: true,
+                    value: row.content
+                  },
+                  class: 'get-setting'
+                }),
+                h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  slot: 'reference'
+                }, '查看配置')])
+            }
+          }
+        ]
+      },
       pickerOptions: {
         disabledDate (time) {
           // 可选时间为包括今天在内的未来时间的三个月内，不可选时间置灰。
@@ -269,7 +343,9 @@ export default {
                 createBtn('编辑', 'handleEdit'),
                 createBtn(params.row.putway === 1 ? '下架' : '上架', 'handleOffSet'),
                 createBtn('删除', 'handleDelete'),
-                createBtn('投后效果', 'handleViewEffectDialog')
+                createBtn('投后效果', 'handleViewEffectDialog'),
+                createBtn(params.row.synchronous === 1 ? '未同步' : '已同步', 'freshCache'),
+                createBtn('查看配置', 'seeDevDetail')
               ])
             }
 
@@ -285,6 +361,39 @@ export default {
     }
   },
   methods: {
+    // 查看配置分页
+    handleFilterChange () {
+      this.loadDetailList(this.detailPagination.currentId)
+    },
+    seeDevDetail ({ row }) {
+      this.showConfiguration = true
+      this.detailPagination.taskCode = row.taskCode
+      this.loadDetailList()
+    },
+    loadDetailList () {
+      const params = {
+        taskCode: this.detailPagination.taskCode,
+        pageNum: this.detailPagination.pagination.currentPage,
+        pageSize: this.detailPagination.pagination.pageSize
+      }
+      this.$service.getAssistantLuaList(params).then((data) => {
+        this.seeDetailData.data = data.rows
+        this.detailPagination.pagination.total = data.total
+      })
+    },
+    // 同步
+    freshCache ({ row }) {
+      this.$confirm('新建的人群策略将实时生效，旧的策略更新需要延时2小时生效', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.genLuaById({ taskCode: row.taskCode }, '操作成功').then(data => {
+            this.fetchData()
+          })
+        })
+    },
     handleViewEffectDialog ({ row }) {
       this.currentRow = row
       this.showViewEffect = true
