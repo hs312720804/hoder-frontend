@@ -173,7 +173,12 @@ export function estimateTemp (object) {
   return this.fetch({
     method: 'post',
     url: '/api/syncCrowdEstimate',
+    isReturnAllInfor: true,
     data: newFormData
+  }).then(res => {
+    return {
+      data: res.result
+    }
   })
 }
 // 获取新估算结果
