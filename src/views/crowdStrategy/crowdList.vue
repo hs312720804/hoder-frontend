@@ -3746,7 +3746,11 @@ export default {
     handleSeeHomepageData (crowdId, crowdName) {
       this.showDivideDetail = false
       this.$appState.$set('homepageReleaseCrowdName', crowdName)
-      this.$router.push({ name: 'homepageReleaseRecord', params: { homepageReleaseRecordId: crowdId, crowdName: crowdName } })
+      // this.$router.push({ name: 'homepageReleaseRecord', params: { homepageReleaseRecordId: crowdId, crowdName: crowdName } })
+
+      // 操作指引：查看主页数据
+      this.$router.push({ name: 'operate', query: { comName: 'homepageReleaseRecord' } , params: { homepageReleaseRecordId: crowdId, crowdName: crowdName } })
+
     },
     //  导出估算画像数据
     handleDownload () {

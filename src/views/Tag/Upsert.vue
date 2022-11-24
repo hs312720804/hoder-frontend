@@ -4,8 +4,24 @@
             :visible.sync="showCreateDialog"
             :append-to-body='true'
     >
-        <c-gate-schema-form ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
-        </c-gate-schema-form>
+        <!-- <c-gate-schema-form ref="gForm" @submit="handleSubmit" :schema="schema" v-model="tag">
+        </c-gate-schema-form> -->
+
+        <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="100px" class="demo-ruleForm">
+          <el-form-item label="名称" prop="attrName">
+            <el-input v-model="ruleForm.attrName" placeholder="请输入名称" ></el-input>
+          </el-form-item>
+          <el-form-item label="值" prop="attrValue">
+            <el-input v-model="ruleForm.attrValue" placeholder="100位以内字符串" ></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button type="primary" @click="handleSubmit">立即创建</el-button>
+
+          </el-form-item>
+        </el-form>
+
+
     </el-dialog>
 
 </template>
@@ -21,6 +37,14 @@ export default {
         tagType: undefined,
         attrName: undefined,
         attrValue: undefined
+      },
+      ruleForm: {
+        attrName: '',
+        attrValue: ''
+      },
+      rules: {
+        attrName: { required: true, message: '请输入名称', trigger: ['blur'] },
+        attrValue: { required: true, message: '请输入值', trigger: ['blur'] },
       },
       schema: _
         .map({
@@ -69,24 +93,32 @@ export default {
   props: ['currentTag'],
   watch: {
     currentTag: function (val) {
-      const form = this.$refs.gForm
-      if (form) {
-        form.activePaths = {}
-      }
+      // const form = this.$refs.gForm
+      // if (form) {
+      //   form.activePaths = {}
+      // }
       this.tag = val || {}
-      if (val.attrId != undefined && this.isJson(val.attrValue)) {
-        val.attrValue = JSON.parse(val.attrValue)
-      }
+      this.ruleForm = val || {}
+
+      // if (val.attrId != undefined && this.isJson(val.attrValue)) {
+      //   val.attrValue = JSON.parse(val.attrValue)
+      // }
     }
   },
   methods: {
-    handleSubmit (errors) {
-      if (errors.length === 0) {
-        this.$service.upsertTag(this.getFormData(), '提交成功').then(() => {
-          this.$emit('upsert-end')
-          this.showCreateDialog = false
-        })
-      }
+    handleSubmit () {
+      this.$refs.ruleForm.validate((valid) => {
+        if (valid) {
+          const params = {
+            ...this.ruleForm,
+            tagId: this.tag.tagId
+          }
+          this.$service.upsertTag(params, '提交成功').then(() => {
+            this.$emit('upsert-end')
+            this.showCreateDialog = false
+          })
+        }
+      })
     },
     getFormData () {
       const data = JSON.parse(JSON.stringify(this.tag))

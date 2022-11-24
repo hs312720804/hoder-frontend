@@ -91,7 +91,11 @@ export default {
       })
     },
     handleAdd () {
-      this.$router.push({ name: 'specialTag', query: { belongTagId: this.tagId } })
+      // this.$router.push({ name: 'specialTag', query: { belongTagId: this.tagId } })
+
+      // 跳转到操作指引
+      this.$router.push({ name: 'operate', query: { comName: 'specialTag', belongTagId: this.tagId } })
+
     },
     handleEdit (specialTagId) {
       // console.log('parentId===', parentId)
@@ -106,7 +110,10 @@ export default {
       //     params: this.paramsData
       // })
       if (specialTagId) {
-        this.$router.push({ name: 'specialTag', query: { specialTagId } })
+        // this.$router.push({ name: 'specialTag', query: { specialTagId } })
+        // 跳转到操作指引
+        this.$router.push({ name: 'operate', query: { comName: 'specialTag', specialTagId } })
+
       }
       // this.$router.push({path: '/specialTag'})
 
