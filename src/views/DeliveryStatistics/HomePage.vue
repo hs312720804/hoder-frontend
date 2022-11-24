@@ -304,6 +304,7 @@
 
 <script>
 import veWordcloud from 'v-charts/lib/wordcloud'
+import { exportFile } from '@/services/exportExcel.js'
 export default {
   name: 'statisticsHomePageAA',
   components: {
@@ -1099,10 +1100,18 @@ export default {
       })
     },
     handleDownload () {
-      this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      exportFile({
+        url: '/api/chart/exportExcel',
+        method: 'get',
+        params: {
+          beginTime: this.time0[0],
+          endTime: this.time0[1]
+        }
       })
+      // this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
+      // this.$nextTick(() => {
+      //   this.$refs.download_Url.click()
+      // })
     },
     // 主页推荐位分人群情况
     handleGetHomePageRecommend (beginTime, endTime) {

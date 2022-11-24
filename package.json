@@ -23,6 +23,7 @@
     "@william17/vue-app-state": "^0.1.1",
     "async-validate": "^1.0.1",
     "axios": "^0.19.2",
+    "downloadjs": "^1.4.7",
     "echarts": "^4.9.0",
     "element-ui": "^2.15.1",
     "gateschema": "^0.2.1",
