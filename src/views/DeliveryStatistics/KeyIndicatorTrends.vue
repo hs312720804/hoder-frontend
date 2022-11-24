@@ -778,6 +778,12 @@ export default {
       margin-right 20px
     .statistics-header
       padding-bottom 14px
+      position sticky
+      z-index 999
+      left 0
+      top 0
+      width 100%
+      background #fff
 .chart-div
   height: 436px
 </style>
