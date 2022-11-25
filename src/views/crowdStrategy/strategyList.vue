@@ -588,7 +588,8 @@ export default {
                     type: 'textarea',
                     rows: 8,
                     readonly: true,
-                    value: row.content
+                    value: row.content,
+                    autosize: { minRows: 10, maxRows: 20 }
                   },
                   class: 'get-setting'
                 }),
