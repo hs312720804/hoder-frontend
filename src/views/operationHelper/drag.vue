@@ -16,7 +16,7 @@
           <!-- {{options}} -->
           <el-form-item :prop="`binds.${index}.resourceCode`" :rules="{ required: true, message: '请选择方案',trigger: 'change'}">
 
-            <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)" clearable>
+            <el-select v-model="item.resourceCode" placeholder="请选择方案" @change="resourceCodeChange($event, item)" clearable :popper-append-to-body="false">
               <div class="options-wrap">
                 <el-option
                   v-for="item in options"
@@ -57,7 +57,8 @@
               @visible-change="getCrowdList('')"
               clearable
               class="select-wrap"
-              @change="crowdIdChange($event, item)">
+              @change="crowdIdChange($event, item)"
+              :popper-append-to-body="false">
               <el-option-group label="人群列表">
                 <div class="options2-wrap">
                   <el-option

@@ -14,7 +14,7 @@
   "dependencies": {
     "@antv/x6": "^1.18.1",
     "@ccprivate/admin-toolkit": "^1.1.4",
-    "@ccprivate/framework-saas-mirco": "^1.7.2",
+    "@ccprivate/framework-saas-mirco": "^1.7.4",
     "@ccprivate/vue-cli-plugin-framework-loader": "^1.7.1",
     "@cseed/admin-toolkit": "^0.10.1",
     "@cseed/ui-menu-designer": "^0.10.2",
