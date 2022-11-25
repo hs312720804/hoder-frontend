@@ -594,7 +594,9 @@ export default {
                     type: 'textarea',
                     rows: 8,
                     readonly: true,
-                    value: row.content
+                    value: row.content,
+                    autosize: { minRows: 10, maxRows: 20 }
+
                   },
                   class: 'get-setting'
                 }),
@@ -1399,7 +1401,7 @@ ul > li
       background: antiquewhite;
     }
 </style>
-<style lang="stylus">
+<!-- <style lang="stylus">
 .get-setting .el-textarea__inner
   min-height 400px !important
-</style>
+</style> -->
