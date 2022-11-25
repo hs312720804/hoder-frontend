@@ -1,6 +1,6 @@
 <template>
     <div>
-        <div class="header">
+        <div class="">
             <el-steps :active="activeStep" finish-status="success" simple style="margin-top: 20px">
                 <el-step title="第一步：挑选基础标签" icon="el-icon-edit"></el-step>
                 <el-step title="第二步：编辑组合标签" icon="el-icon-edit"></el-step>
