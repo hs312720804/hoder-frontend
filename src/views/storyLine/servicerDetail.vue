@@ -19,24 +19,61 @@
               <div>创建时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
               <div>擅长：</div>
-              <div v-if="selectedServicer.userName">
+              <div v-if="selectedServicer.receptionist">
                 <el-select
                   ref="selectObj"
                   v-model="skillValue"
                   filterable
-                  allow-create
-                  default-first-option
-                  placeholder="输入或选择技能"
-                  @blur="addOption"
+                  placeholder="选择技能"
                   @change="selectSkill"
-                  @keyup.enter.native="addOption"
+                  :popper-append-to-body="false"
                 >
-                  <el-option
-                    v-for="item in skillOptions"
-                    :key="item.id"
-                    :label="item.name"
-                    :value="item.id">
-                  </el-option>
+                  <!-- @blur="addOption"
+                  @keyup.enter.native="addOption" -->
+                  <div class="options-wrap">
+
+                    <el-option
+                      v-for="item in skillOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </div>
+
+                  <div class="operate-wrap">
+                    <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
+                    <el-form :inline="true" :model="formInline" >
+                      <el-form-item prop="skillName">
+                        <el-input
+                          v-model="formInline.skillName"
+                          placeholder="技能分类"
+                          @keyup.enter.native="addOption"
+                          clearable>
+                          <!-- <el-button slot="append" @click="addOption" icon="el-icon-plus">添加技能分类</el-button> -->
+                        </el-input>
+                      </el-form-item>
+
+                    </el-form>
+                    <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
+                  </div>
+
+                  <div slot="empty" class="operate-wrap">
+                    <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
+                    <el-form :inline="true" :model="formInline" >
+                      <el-form-item prop="skillName">
+                        <el-input
+                          v-model="formInline.skillName"
+                          placeholder="技能分类"
+                          @keyup.enter.native="addOption"
+                          clearable>
+                          <!-- <el-button slot="append" @click="addOption" icon="el-icon-plus">添加技能分类</el-button> -->
+                        </el-input>
+                      </el-form-item>
+
+                    </el-form>
+
+                    <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
+                  </div>
                 </el-select>
               </div>
               <div v-else>-</div>
@@ -583,6 +620,9 @@ export default {
   },
   data () {
     return {
+      formInline: {
+        skillName: ''
+      },
       skillOptions: [],
 
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
@@ -892,73 +932,102 @@ export default {
       console.log('selectSkill----', e)
 
       // 先判断是否是选择了已有的ID
-      const existIdArr = this.skillOptions.filter(item => item.id === e)
-      if (existIdArr.length > 0) {
-        this.$emit('editReceptionist', {
-          id: this.selectedServicer.id,
-          skillId: e
-        })
-        return
-      }
-
-      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
-      const { query } = this.$refs.selectObj
-      // console.log('query----', query)
-
-      if (query === null || query === undefined) return
-
-      const existArr = this.skillOptions.filter(item => item.name === query)
-
-      // console.log('existArr----', existArr)
-
-      if (existArr.length === 0) {
-        this.addOption()
-      }
-      // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
-
-      // this.editReceptionist({
-      //   id: this.selectedServicer.id,
-      //   skillId: e
-      // }, 'no-refresh-list')
+      // const existIdArr = this.skillOptions.filter(item => item.id === e)
+      // if (existIdArr.length > 0) {
+      this.$emit('editReceptionist', {
+        id: this.selectedServicer.id,
+        skillId: e
+      })
     },
 
     addOption () {
-      console.log('addOption')
-      const { query } = this.$refs.selectObj
-      console.log('query--->', query)
-
-      if (!query) return
-
-      // 选择原有的
-      const existArr = this.skillOptions.filter(item => item.name === query)
-      // console.log('existArr--->', existArr)
-      if (existArr.length > 0) {
-        this.skillValue = existArr[0].id
-        // 选中
-        this.selectSkill(this.skillValue)
-        return
+      if (this.formInline.skillName === '') {
+        return this.$message.error('请输入技能分类')
       }
-
-      // 创建新技能，并选中
+      // // 创建新技能，并选中
       const parmas = {
         sceneId: this.selectedScene.id,
-        name: query
+        name: this.formInline.skillName
       }
 
-      this.$service.addSceneSkill(parmas).then(async res => {
-        const aaa = await this.getSkillListBySceneId()
-        console.log('aaa--->', aaa)
-
-        const existArr = this.skillOptions.filter(item => item.name === query)
-        // console.log('existArr--->', existArr)
-        if (existArr.length > 0) {
-          this.skillValue = existArr[0].id
-          // 选中
-          this.selectSkill(this.skillValue)
-          // console.log('this.skillValue--->', this.skillValue)
-        }
+      this.$service.addSceneSkill(parmas, '添加成功').then(async res => {
+        this.formInline.skillName = ''
+        this.getSkillListBySceneId()
       })
     },
+
+    // 服务员选择技能
+    // async selectSkill111 (e) {
+    //   console.log('selectSkill----', e)
+
+    //   // 先判断是否是选择了已有的ID
+    //   const existIdArr = this.skillOptions.filter(item => item.id === e)
+    //   if (existIdArr.length > 0) {
+    //     this.$emit('editReceptionist', {
+    //       id: this.selectedServicer.id,
+    //       skillId: e
+    //     })
+    //     return
+    //   }
+
+    //   // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
+    //   const { query } = this.$refs.selectObj
+    //   // console.log('query----', query)
+
+    //   if (query === null || query === undefined) return
+
+    //   const existArr = this.skillOptions.filter(item => item.name === query)
+
+    //   // console.log('existArr----', existArr)
+
+    //   if (existArr.length === 0) {
+    //     this.addOption()
+    //   }
+    //   // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
+
+    //   // this.editReceptionist({
+    //   //   id: this.selectedServicer.id,
+    //   //   skillId: e
+    //   // }, 'no-refresh-list')
+    // },
+
+    // addOption111 () {
+    //   console.log('addOption')
+    //   const { query } = this.$refs.selectObj
+    //   console.log('query--->', query)
+
+    //   if (!query) return
+
+    //   // 选择原有的
+    //   const existArr = this.skillOptions.filter(item => item.name === query)
+    //   // console.log('existArr--->', existArr)
+    //   if (existArr.length > 0) {
+    //     this.skillValue = existArr[0].id
+    //     // 选中
+    //     this.selectSkill(this.skillValue)
+    //     return
+    //   }
+
+    //   // 创建新技能，并选中
+    //   const parmas = {
+    //     sceneId: this.selectedScene.id,
+    //     name: query
+    //   }
+
+    //   this.$service.addSceneSkill(parmas).then(async res => {
+    //     const aaa = await this.getSkillListBySceneId()
+    //     console.log('aaa--->', aaa)
+
+    //     const existArr = this.skillOptions.filter(item => item.name === query)
+    //     // console.log('existArr--->', existArr)
+    //     if (existArr.length > 0) {
+    //       this.skillValue = existArr[0].id
+    //       // 选中
+    //       this.selectSkill(this.skillValue)
+    //       // console.log('this.skillValue--->', this.skillValue)
+    //     }
+    //   })
+    // },
 
     // 根据场景ID获取技能列表
     getSkillListBySceneId () {

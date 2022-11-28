@@ -596,7 +596,6 @@ export default {
                     readonly: true,
                     value: row.content,
                     autosize: { minRows: 10, maxRows: 20 }
-
                   },
                   class: 'get-setting'
                 }),
