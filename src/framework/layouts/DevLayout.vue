@@ -12,7 +12,7 @@
         </c-menu>
       </el-aside>
       <el-main class="dev_main">
-        <el-scrollbar class="c-scrollbar" :id="getId($route.path)" wrap-style="overflow-x:hidden;">
+        <el-scrollbar class="c-scrollbar" wrap-style="overflow-x:hidden;">
           <div class="c-scrollbar--box">
             <keep-alive>
               <router-view v-if="menuId" :menu-id="menuId" :key="$route.path" ></router-view>

@@ -34,6 +34,10 @@ export default defineComponent({
       mId.value = tagId
     }
 
+    // function getId (path) {
+    //   return path && path.split('/').length > 0 ? path.split('/')[1] : undefined
+    // }
+
     onMounted(() => {
       nextTick(() => {
         setMenuId()

@@ -6,7 +6,7 @@
                   v-model="outForm.condition"
                   @keyup.enter="handleGetManualLaunchList"
                   clearable
-                  placeholder="人群ID、人群名、投放ID">
+                  placeholder="人群ID、人群名">
                 </el-input>
             </el-form-item>
             <el-form-item>
