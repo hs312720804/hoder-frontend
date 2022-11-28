@@ -32,6 +32,7 @@ import * as tempCrowd from './crowdStrategy/tempCrowd'
 import * as localCrowd from './crowdStrategy/localCrowd'
 import * as storyLine from './crowdStrategy/storyLine'
 import * as operationHelper from './operationHelper'
+import * as exportExcel from './exportExcel'
 const service = {
   state: {},
   fetch,
@@ -66,7 +67,8 @@ const service = {
   ...tempCrowd,
   ...localCrowd,
   ...storyLine,
-  ...operationHelper
+  ...operationHelper,
+  ...exportExcel
 }
 export default function install (Vue) {
   const $service = {}

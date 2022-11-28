@@ -1,14 +1,13 @@
 <template>
     <!-- 统计 估算画像 -->
     <el-dialog
-            :visible.sync="showEstimateEcharts"
-            width="90%"
-            title="该人群估算出的用户画像"
-            @close="$emit('close-echarts')"
+      :visible.sync="showEstimateEcharts"
+      width="90%"
+      title="该人群估算出的用户画像"
+      @close="$emit('close-echarts')"
     >
         <div class="export-button">
-            <a :href="downloadUrl" download ref="download_Url"></a>
-            <el-button type="success" @click="handleDownload">导出数据</el-button>
+          <el-button type="success" @click="handleDownload">导出数据</el-button>
         </div>
         <div>
             <!--<div class="estimate-item">-->
@@ -443,9 +442,8 @@ export default {
     },
     //  导出估算画像数据
     handleDownload () {
-      this.downloadUrl = '/api/crowd/exportDevPacketPortrait/' + this.currentCid
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      this.$service.exportFile({
+        url:  `/api/crowd/exportDevPacketPortrait/${this.currentCid}`
       })
     },
     // 设备画像---开始

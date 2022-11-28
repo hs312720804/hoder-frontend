@@ -14,7 +14,6 @@
                 </el-date-picker>
             </div>
             <div>
-                <a :href="downloadUrl" download ref="download_Url"></a>
                 <el-button type="success" @click="handleDownload">导出数据</el-button>
                 <el-button type="primary" @click="handleOneTouchDrop">创建人群</el-button>
                 <el-button type="warning" @click="handleOpenLaunchList">投放列表</el-button>
@@ -304,7 +303,7 @@
 
 <script>
 import veWordcloud from 'v-charts/lib/wordcloud'
-import { exportFile } from '@/services/exportExcel.js'
+// import { exportFile } from '@/services/exportExcel.js'
 export default {
   name: 'statisticsHomePageAA',
   components: {
@@ -1103,18 +1102,13 @@ export default {
       })
     },
     handleDownload () {
-      exportFile({
+      this.$service.exportFile({
         url: '/api/chart/exportExcel',
-        method: 'get',
         params: {
           beginTime: this.time0[0],
           endTime: this.time0[1]
         }
       })
-      // this.downloadUrl = '/api/chart/exportExcel?beginTime=' + this.time0[0] + '&endTime=' + this.time0[1]
-      // this.$nextTick(() => {
-      //   this.$refs.download_Url.click()
-      // })
     },
     // 主页推荐位分人群情况
     handleGetHomePageRecommend (beginTime, endTime) {

@@ -1,7 +1,7 @@
 import fetch from 'cseed-frame/services/_fetch'
 import download from 'downloadjs'
 import { Message } from 'element-ui'
-export function exportFile ({ url, method, data, params }) {
+export function exportFile ({ url, method = 'get', data, params }) {
   return fetch({
     method,
     url,

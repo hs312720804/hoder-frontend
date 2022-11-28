@@ -53,7 +53,6 @@
         <div class="big-title">总览</div>
 
         <div class="export-button">
-          <a :href="downloadUrl" download ref="download_Url"></a>
           <el-button type="success" @click="handleGxportRightsInterests">导出数据</el-button>
         </div>
       </div>
@@ -461,23 +460,27 @@ export default {
     },
     //  投后分析导出
     handleGxportRightsInterests () {
-      const params = {
-        crowdId: this.formInline.crowdId,
-        sourceNameList: this.formInline.sourceNameList.join(','),
-        startDate: this.formInline.timeRange[0],
-        endDate: this.formInline.timeRange[1]
-      }
-
       // const params = {
-      //   crowdId: 11731,
-      //   sourceNameList: '酷喵VIP',
-      //   startDate: '2022-08-01',
-      //   endDate: '2022-08-15'
+      //   crowdId: this.formInline.crowdId,
+      //   sourceNameList: this.formInline.sourceNameList.join(','),
+      //   startDate: this.formInline.timeRange[0],
+      //   endDate: this.formInline.timeRange[1]
       // }
-      const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
-      this.downloadUrl = '/api/exportRightsInterests?' + urlParams
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      // const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
+      // this.downloadUrl = '/api/exportRightsInterests?' + urlParams
+      // this.$nextTick(() => {
+      //   this.$refs.download_Url.click()
+      // })
+
+
+      this.$service.exportFile({
+        url:  '/api/exportRightsInterests',
+        params: {
+          crowdId: this.formInline.crowdId,
+          sourceNameList: this.formInline.sourceNameList.join(','),
+          startDate: this.formInline.timeRange[0],
+          endDate: this.formInline.timeRange[1]
+        }
       })
     },
 
