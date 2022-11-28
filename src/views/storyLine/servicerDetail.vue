@@ -23,7 +23,6 @@
                 <el-select
                   ref="selectObj"
                   v-model="skillValue"
-                  filterable
                   placeholder="选择技能"
                   @change="selectSkill"
                   :popper-append-to-body="false"
@@ -41,37 +40,34 @@
                   </div>
 
                   <div class="operate-wrap">
-                    <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
                     <el-form :inline="true" :model="formInline" >
                       <el-form-item prop="skillName">
                         <el-input
                           v-model="formInline.skillName"
                           placeholder="技能分类"
                           @keyup.enter.native="addOption"
-                          clearable>
-                          <!-- <el-button slot="append" @click="addOption" icon="el-icon-plus">添加技能分类</el-button> -->
+                          clearable
+                          style="width: 122px;margin-right: -8px">
                         </el-input>
                       </el-form-item>
 
                     </el-form>
+
                     <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
                   </div>
 
                   <div slot="empty" class="operate-wrap">
-                    <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
-                    <el-form :inline="true" :model="formInline" >
+                    <el-form :inline="true" :model="formInline">
                       <el-form-item prop="skillName">
                         <el-input
                           v-model="formInline.skillName"
                           placeholder="技能分类"
                           @keyup.enter.native="addOption"
-                          clearable>
-                          <!-- <el-button slot="append" @click="addOption" icon="el-icon-plus">添加技能分类</el-button> -->
+                          clearable
+                          style="width: 122px;margin-right: -8px">
                         </el-input>
                       </el-form-item>
-
                     </el-form>
-
                     <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
                   </div>
                 </el-select>
@@ -727,6 +723,83 @@ export default {
     })
   },
   methods: {
+    // selectTemplate () {
+
+    // },
+    // visibleChange (visible, refName, type) {
+    //   if (visible) {
+    //     const ref = this.$refs[refName]
+    //     let popper = ref.$refs.popper
+
+    //     console.log('popper--->', popper)
+    //     if (popper.$el) popper = popper.$el
+    //     if (!Array.from(popper.children).some(v => v.className === 'el-template-menu__list')) {
+    //       // const el = document.createElement('ul')
+    //       // el.className = 'el-template-menu__list'
+    //       // el.style = 'border-top:2px solid rgb(219 225 241); padding:0; color:rgb(64 158 255);font-size: 13px'
+    //       // el.innerHTML = `
+    //       // <li class="el-cascader-node text-center" style="height:37px;line-height: 50px">
+    //       //   <span><i class="font-blue el-icon-plus"></i>添加技能分类</span>
+    //       // </li>`
+    //       // popper.appendChild(el)
+
+    //       const el = document.createElement('ul')
+    //       el.className = 'el-template-menu__list'
+    //       popper.appendChild(el)
+
+    //       // this.$nextTick(() => {
+    //       // console.log('h--->', h)
+    //       const Profile = Vue.extend({
+    //         render: h => {
+    //           const button = h(
+    //             'span',
+    //             {
+    //               class: 'el-cascader-node text-center'
+    //             },
+    //             h('el-button',
+    //               {
+
+    //               },
+    //               '12313')
+    //           )
+
+    //           return h('div', {},
+    //             [
+    //               h('el-input', {
+    //                 props: {
+    //                   type: 'text'
+    //                 }
+    //               }),
+    //               h('el-button', {
+    //                 props: {
+    //                   type: 'text'
+    //                 }
+    //               }, '查看配置')]
+    //           )
+    //         }
+    //       })
+    //       console.log('Profile--->', Profile)
+    //       new Profile().$mount('.el-template-menu__list')
+    //       // })
+
+    //       // console.log('tabCmp--->', tabCmp)
+    //       // popper.appendChild(tabCmp.$el)
+
+    //       // el.onclick = () => {
+    //       //   if (type === 'Ship') {
+    //       //     this.showShipTemplate(null, false)
+    //       //   } else {
+    //       //     this.showReturnTemplate(null, false)
+    //       //   }
+    //       //   if (ref.toggleDropDownVisible) {
+    //       //     ref.toggleDropDownVisible(false)
+    //       //   } else {
+    //       //     ref.visible = false
+    //       //   }
+    //       // }
+    //     }
+    //   }
+    // },
     getName (list, key) {
       const obj = list.find(item => {
         return key === item.value

@@ -39,7 +39,7 @@ module.exports = {
     },
     historyApiFallback: true
   },
-
+  runtimeCompiler: true, // 配置 支持编译 template 模板
   pluginOptions: {
     i18n: {
       locale: 'zh',
