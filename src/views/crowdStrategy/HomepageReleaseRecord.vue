@@ -39,7 +39,6 @@
         </c-content-wrapper>
         <el-dialog :visible.sync="showFunnel" @close="handleClose" title="该推荐位人群投后全链路的漏斗数据">
             <div class="export-button">
-                <a :href="downloadUrl" download ref="download_Url"></a>
                 <el-button type="primary" @click="handleExport">导出数据</el-button>
             </div>
             <div class="funnel-item" v-for="(item,index) in funnelData" :key="index">
@@ -237,10 +236,8 @@ export default {
       })
     },
     handleExport () {
-      const bdiId = this.currentId
-      this.downloadUrl = '/api/businessDelivery/exportExcel?bdiId=' + bdiId
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      this.$service.exportFile({
+        url:  `/api/businessDelivery/exportExcel?bdiId=${this.currentId}`
       })
     },
     generateMixed () {

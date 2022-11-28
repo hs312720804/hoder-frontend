@@ -1020,7 +1020,6 @@
             title="该人群估算出的用户画像"
     >
       <div class="export-button">
-          <a :href="downloadUrl" download ref="download_Url"></a>
           <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
       <div>
@@ -3754,14 +3753,8 @@ export default {
     },
     //  导出估算画像数据
     handleDownload () {
-      // this.downloadUrl = '/api/map/esCrdStsMapBasic/exportExcel/' + this.currentCid
-      // this.$nextTick(() => {
-      //     this.$refs.download_Url.click()
-      // })
-      this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
-      // this.downloadUrl = '/api/crowd/exportCrowdPortrait/' + this.currentCid
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      this.$service.exportFile({
+        url: `/api/crowd/exportCrowdPortrait/${this.currentCid}`
       })
     },
     //  导出投后效果数据

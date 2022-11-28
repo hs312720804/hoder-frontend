@@ -34,7 +34,6 @@
 
       <div class="export-button">
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
-        <a :href="downloadUrl" download ref="download_Url"></a>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
 
@@ -235,9 +234,8 @@ export default {
     },
     //  导出估算画像数据
     handleDownload () {
-      this.downloadUrl = '/api/chart/dynamicCrowdReportDownload?crowdId=' + this.crowdId
-      this.$nextTick(() => {
-        this.$refs.download_Url.click()
+      this.$service.exportFile({
+        url:  `/api/chart/dynamicCrowdReportDownload?crowdId=${this.crowdId}`
       })
     },
     changeView () {
