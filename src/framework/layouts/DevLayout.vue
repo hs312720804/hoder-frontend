@@ -12,7 +12,7 @@
         </c-menu>
       </el-aside>
       <el-main class="dev_main">
-        <el-scrollbar class="c-scrollbar" wrap-style="overflow-x:hidden;">
+        <el-scrollbar class="c-scrollbar" :id="getId($route.path)" wrap-style="overflow-x:hidden;">
           <div class="c-scrollbar--box">
             <keep-alive>
               <router-view v-if="menuId" :menu-id="menuId" :key="$route.path" ></router-view>
@@ -47,6 +47,9 @@ export default defineComponent({
         updateMenuId()
       }
     )
+    function getId (path) {
+      return path && path.split('/').length > 0 ? path.split('/')[1] : undefined
+    }
     function updateMenuId () {
       const { name } = _this.$route
       menuId.value = menuIdMap[name]
@@ -85,7 +88,8 @@ export default defineComponent({
     return {
       prodMenus,
       productName: process.env.VUE_APP_PROJECT_NAME,
-      menuId
+      menuId,
+      getId
     }
   }
 })
