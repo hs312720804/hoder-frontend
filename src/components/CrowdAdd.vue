@@ -96,7 +96,7 @@
                       </div>
                     </el-tooltip>
                   </div>
-                  <div v-if="!crowd.referCrowdId"><el-button @click="handleEstimate(crowd)">估算</el-button></div>
+                  <!-- <div v-if="!crowd.referCrowdId"><el-button @click="handleEstimate(crowd)">估算</el-button></div> -->
                 </div>
                 <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
                   <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
