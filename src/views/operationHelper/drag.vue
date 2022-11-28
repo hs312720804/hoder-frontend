@@ -42,6 +42,21 @@
 
                 <el-button type="text" @click="addPlan" icon="el-icon-plus">添加方案</el-button>
               </div>
+
+              <div slot="empty" class="operate-wrap">
+                <!-- :rule="formInlineRule" :ref="`formInlineRef${index}`" -->
+                <el-form :inline="true" :model="formInline" class="demo-form-inline" >
+                  <el-form-item prop="resourceCode">
+                    <el-input v-model="formInline.resourceCode" placeholder="业务方的方案ID" style="width: 130px"></el-input>
+                  </el-form-item>
+
+                  <el-form-item>
+                    <el-input v-model="formInline.resourceName" placeholder="备注（可选）" @keydown.enter.native="addPlan" style="width: 130px"></el-input>
+                  </el-form-item>
+                </el-form>
+
+                <el-button type="text" @click="addPlan" icon="el-icon-plus">添加方案</el-button>
+              </div>
             </el-select>
           </el-form-item>
 
