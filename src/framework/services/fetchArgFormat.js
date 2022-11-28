@@ -12,6 +12,7 @@ export default args => {
   if (url.indexOf('/api') === 0) {
     args0.url = url.replace('/api', `${process.env.VUE_APP_PROJECT_CODE}`)
   }
+  console.log(`>>>>>>>>>${url}`)
 
   args0.successCodes = successCodes || [0, '0'] // 当 code 为空时也返回正常数据
   return args

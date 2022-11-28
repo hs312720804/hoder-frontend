@@ -37,7 +37,6 @@ export function getNoticeHeaderList (params) {
   return this.fetch({
     method: 'get',
     url: '/api/manager/notice/getByNoticeType',
-    params,
-    loadingShow: false
+    params
   })
 }

@@ -8,6 +8,7 @@ export default (data, { args }) => {
    * 其它接口只返回data值
    */
   //
+  console.log(`${url}<<<<<<<<<<<<`)
   const allResponseUrl = ['auth/', 'admin/']
   if (allResponseUrl.some(ele => url.indexOf(ele) === 0) || isReturnAllInfor || isFile) {
     return data
