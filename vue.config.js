@@ -39,6 +39,7 @@ module.exports = {
     '@cseed/ui-menu-designer'
   ],
 
+  runtimeCompiler: true, // 配置 支持编译 template 模板
   pluginOptions: {
     cseedFrame: {
       frame: '@ccprivate/framework-saas-mirco',
