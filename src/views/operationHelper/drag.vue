@@ -147,8 +147,7 @@ export default {
   watch: {
     'form.binds': {
       handler (val) {
-        console.log('val--->', val)
-        this.binds = val
+        this.binds = val || []
       },
       deep: true,
       immediate: true

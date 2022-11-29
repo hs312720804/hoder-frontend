@@ -564,7 +564,7 @@ export default {
               }
               this.$service.addScenedynamic(params).then(res => {
                 console.log('id===========', res)
-                this.$router.push({ name: 'storyLine', params: { sceneId: res } })
+                // this.$router.push({ name: 'storyLine', params: { sceneId: res } })
               })
             }
             this.dialogFormVisible = false
