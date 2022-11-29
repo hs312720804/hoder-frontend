@@ -2,6 +2,10 @@
   <div :class="styleType ? 'dark' : 'light'">
     <!-- {{groupServicer}} -->
     <div class='row-wrap' >
+      <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
+        继续编辑
+      </el-button>
+
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
       <div class="box">
         <div class="content">
@@ -464,6 +468,9 @@ export default {
       } else if (type === 'deleteScene') {
         this.deleteScene(row)
       }
+    },
+    returnCrowd () {
+      this.$router.push({ name: 'strategyList' })
     },
     showRename (item) {
       this.rename = item.sceneName

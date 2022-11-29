@@ -47,7 +47,7 @@
                           placeholder="技能分类"
                           @keyup.enter.native="addOption"
                           clearable
-                          style="width: 122px;margin-right: -8px">
+                          >
                         </el-input>
                       </el-form-item>
 
@@ -64,7 +64,7 @@
                           placeholder="技能分类"
                           @keyup.enter.native="addOption"
                           clearable
-                          style="width: 122px;margin-right: -8px">
+                          >
                         </el-input>
                       </el-form-item>
                     </el-form>

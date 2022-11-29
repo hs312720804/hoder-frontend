@@ -242,7 +242,7 @@ export default {
             label: '绑定详情(人群有交叉时优先展示优先级高的绑定方案)',
             width: '320px',
             render: (h, { row }) => {
-              const list = row.binds
+              const list = row.binds || []
               console.log('params-->', row)
               console.log('list-->', list)
               const group = []
