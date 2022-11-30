@@ -9,6 +9,7 @@
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
       <div class="box">
         <div class="content">
+<!-- {{$route.params.sceneId}} -- {{selectedScene.id}} -->
 
             <div class="title">场景</div>
 
@@ -315,6 +316,13 @@ export default {
     servicerListFilterSelect () {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
       return data
+    }
+  },
+  watch: {
+    '$route.params'(val) {
+      if (val.sceneId) {
+        this.getSceneList()
+      }
     }
   },
   created () {
