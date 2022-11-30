@@ -133,7 +133,8 @@
                       </el-dropdown-menu>
                     </el-dropdown>
                   </span>
-                  <span class="kpi-value">{{ overview[targetKeyId]}}</span>
+                  <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
+                  <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
                 </div>
                 <div>
                   <span class="kpi-label">接待用户数：</span>
@@ -723,6 +724,12 @@ export default {
     })
   },
   methods: {
+    toPercent (point) {
+      if (!point) return ''
+      let str = Number(point * 100).toFixed(2)
+      str += '%'
+      return str
+    },
     // selectTemplate () {
 
     // },
