@@ -64,7 +64,10 @@
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">主页活跃人数</div>
+              <div class="title-one">
+                主页活跃人数
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ cc_format_number(overview.homepageActiveUv) }}
               </div>
@@ -79,7 +82,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">起播活跃率</div>
+              <div class="title-one">起播活跃率
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPlayRate) }}
               </div>
@@ -100,7 +105,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">产品包曝光率</div>
+              <div class="title-one">产品包曝光率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgShowRate) }}
               </div>
@@ -121,7 +128,9 @@
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">下单率</div>
+              <div class="title-one">下单率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgXiadanRate) }}
               </div>
@@ -138,7 +147,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费率</div>
+              <div class="title-one">付费率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgPayRate) }}
               </div>
@@ -155,7 +166,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费金额</div>
+              <div class="title-one">付费金额
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two" style="height: 70px">
                 {{ cc_format_number(overview.totalPrice) }}
               </div>
@@ -1377,5 +1390,10 @@ export default {
   width: 100%;
   height: 40px
   border-top: 1px dashed #e7e7e7;
+}
+.remark {
+  font-size: 12px;
+  color: #C0C4CC;
+  font-weight 400
 }
 </style>
