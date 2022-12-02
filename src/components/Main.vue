@@ -215,7 +215,8 @@ export default {
         '/launchHelper/resendCommand': 'resendCommand',
         '/hitQuery': 'hitQuery',
         '/storyLine': 'storyLine',
-        '/operationHelper': 'operationHelper'
+        '/operationHelper': 'operationHelper',
+        '/crowdCompute': 'crowdCompute'
       },
       activeName: 'first',
       updateMessage: [],
