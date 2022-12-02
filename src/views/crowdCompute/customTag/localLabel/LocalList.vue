@@ -1,0 +1,424 @@
+<template>
+    <div class="temp-label-list">
+        <div class="header">
+            <div v-if="!showSelection">
+                <el-button
+                        @click="handleAdd"
+                        type="primary"
+                >
+                    新建
+                </el-button>
+
+            </div>
+            <div v-else></div>
+            <div style="display: flex; justify-content: space-between; ">
+              <div class="search-input">
+                  <el-input
+                          placeholder="支持按标签名、ID搜索"
+                          class="header-input"
+                          v-model="launchName"
+                          @keyup.enter.native="fetchData"
+                  ></el-input>
+                  <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+              </div>
+              <el-popover
+                placement="top"
+                trigger="click"
+                class="popover-button"
+              >
+                <div>
+                  <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                      <el-checkbox label="creatorName">创建人</el-checkbox>
+                      <el-checkbox label="createTime">创建时间</el-checkbox>
+                      <!--<el-checkbox label="status">投放状态</el-checkbox>-->
+                      <el-checkbox label="department">业务部门</el-checkbox>
+                  </el-checkbox-group>
+                </div>
+                <i
+                  class="el-icon-cc-setting operate"
+                  slot="reference">
+                </i>
+              </el-popover>
+            </div>
+        </div>
+        <div>
+            <el-table
+                    ref="tempChangeTable"
+                    :data="tableData"
+                    border
+                    @select="handleSelectOrCancel"
+                    @select-all="handleSelectAllOrCancel"
+            >
+                <el-table-column
+                        type="selection"
+                        width="55"
+                        v-if="showSelection"
+                ></el-table-column>
+                <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
+                <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
+                <el-table-column prop="launchName" label="名称"></el-table-column>
+                <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
+                <el-table-column prop="count" label="使用次数">
+                    <!--<template slot-scope="scope">-->
+                        <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
+                    <!--</template>-->
+                </el-table-column>
+                <el-table-column
+                        label="状态"
+                >
+                    <template #default="scope">
+                        <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
+                        <el-tag v-else type="info">已下架</el-tag>
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('creatorName') > -1)"
+                        label="创建人"
+                        prop="creatorName">
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('createTime') > -1)"
+                        label="创建时间"
+                        prop="history.createTime">
+                </el-table-column>
+                <el-table-column
+                        v-if="(checkList.indexOf('department') > -1)"
+                        label="业务部门"
+                        prop="department">
+                </el-table-column>
+                <el-table-column label="设备数量">
+                    <template slot-scope="scope">
+                        {{cc_format_number(scope.row.history.totalUser)}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="微信数量">
+                    <template slot-scope="scope">
+                        {{cc_format_number(scope.row.history.totalWxOpenid)}}
+                    </template>
+                </el-table-column>
+                <el-table-column label="版本">
+                    <template slot-scope="scope">
+                        {{scope.row.history.version}}
+                    </template>
+                </el-table-column>
+                <el-table-column
+                        label="操作"
+                        width="200"
+                        v-if="!showSelection"
+                >
+                    <template slot-scope="scope">
+                        <el-button-group>
+                            <!--<el-button-->
+                                    <!--type="text"-->
+                                    <!--@click="calculate(scope.row)"-->
+                            <!--&gt;-->
+                                <!--计算-->
+                            <!--</el-button>-->
+                            <!-- <el-button
+                                    type="text"
+                                    @click="condition(scope.row)"
+                            >
+                                标签条件
+                            </el-button> -->
+                            <el-button
+                                    type="text"
+                                    @click="handleEdit(scope.row)"
+                            >
+                                编辑
+                            </el-button>
+                            <el-button
+                                    type="text"
+                                    @click="onOrOffLocalCrowd(scope.row)"
+                            >
+                                <!-- {{ scope.row.launchTempCrowdStatus }} -->
+                                {{ scope.row.onOffCrowd ? '下架' : '上架' }}
+                            </el-button>
+                            <el-button
+                                    type="text"
+                                    @click="del(scope.row)"
+                            >
+                                删除
+                            </el-button>
+                            <!--<el-button-->
+                                    <!--type="text"-->
+                                    <!--@click="minitor(scope.row)"-->
+                            <!--&gt;-->
+                                <!--监控-->
+                            <!--</el-button>-->
+                            <!-- <el-dropdown @command="handleCommandOpreate">
+                                <el-button size="small" type="text">
+                                    操作
+                                </el-button>
+                                <el-dropdown-menu slot="dropdown">
+                                    <el-dropdown-item
+                                            :command="['edit',scope.row]"
+                                    >编辑
+                                    </el-dropdown-item>
+                                    <el-dropdown-item
+                                            :command="['del',scope.row]"
+                                            v-permission="'hoder:launch:crowd:ver:delete'"
+                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                                    >删除
+                                    </el-dropdown-item>
+                                </el-dropdown-menu>
+                            </el-dropdown> -->
+                        </el-button-group>
+                    </template>
+                </el-table-column>
+            </el-table>
+            <div align="right">
+                <pagination
+                        :currentpage="currentPage"
+                        :pagesize="pageSize"
+                        :totalcount="totalCount"
+                        @handle-size-change="handleSizeChange"
+                        @handle-current-change="handleCurrentChange"
+                ></pagination>
+            </div>
+        </div>
+        <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+            <!--<el-form v-if="launchType === 0">-->
+                <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
+                    <!--<el-checkbox-->
+                            <!--v-model="v.choosed"-->
+                            <!--v-for="v in item.childs"-->
+                            <!--:key="v.crowdId"-->
+                            <!--disabled-->
+                    <!--&gt;{{v.crowdName}}-->
+                    <!--</el-checkbox>-->
+                <!--</el-form-item>-->
+            <!--</el-form>-->
+            <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
+            <div>{{selectStrategy}}</div>
+        </el-dialog>
+    </div>
+</template>
+
+<script>
+export default {
+  name: 'TempLabel',
+  props: {
+    refreshFlag: {
+      type: Boolean
+    },
+    showSelection: {
+      type: Boolean
+    },
+    currentSelectTag: {
+      type: Array
+    },
+    checkListParent: {
+      type: Array
+    }
+  },
+  data () {
+    return {
+      tableData: [],
+      filter: {},
+      launchName: undefined,
+      launchStatusEnum: {},
+      pageSize: 10,
+      currentPage: 1,
+      totalCount: 1,
+      isShowCondition: false,
+      // launchType: undefined,
+      launchTitle: '',
+      selectStrategy: null, // 人群条件的选择策略
+      checkList: []
+    }
+  },
+  created () {
+    this.$root.$on('local-label-list-refresh', this.fetchData)
+    this.fetchData()
+  },
+  watch: {
+    refreshFlag: function (val) {
+      if (val) {
+        this.fetchData()
+      }
+    },
+    currentSelectTag: 'updateTableSelected',
+    checkListParent: function (val) {
+      this.checkList = val
+    }
+  },
+  methods: {
+    fetchData () {
+      const filter = {
+        pageNum: this.currentPage,
+        pageSize: this.pageSize,
+        search: this.launchName
+      }
+      this.$service.getLocalCrowdList(filter).then(data => {
+        // this.launchStatusEnum = data.launchStatusEnum
+        this.tableData = data.pageInfo.list
+        this.totalCount = data.pageInfo.total
+        if (this.showSelection) {
+          this.updateTableSelected()
+        }
+        this.tableData.forEach(item => {
+          item.dataSource = 1
+        })
+      })
+    },
+    // handleCommandOpreate(scope) {
+    //     const type = scope[0]
+    //     const params = scope[1]
+    //     switch (type) {
+    //         case 'edit':
+    //             this.handleEdit(params)
+    //             break
+    //         case 'del':
+    //             this.del(params)
+    //             break
+    //         // case 'monitor':
+    //         //     this.handleMonitor(params)
+    //         //     break
+    //     }
+    // },
+    // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
+    handleSizeChange (val) {
+      this.pageSize = val
+      // 每次切换页码条，都把页面数重置为1
+      this.currentPage = 1
+      this.fetchData()
+    },
+    // 页码变更, 如第1页变成第2页时,val=2
+    handleCurrentChange (val) {
+      this.currentPage = val
+      this.fetchData()
+    },
+    condition (row) {
+      this.isShowCondition = true
+      this.$service
+        .getTempCrowd({ launchCrowdId: row.launchCrowdId })
+        .then(data => {
+          this.launchTitle = '人群条件'
+          this.selectStrategy = data.crowdSql
+        })
+    },
+    // 删除
+    del (row) {
+      // const crowdName = row.launchName
+      const launchCrowdId = row.launchCrowdId
+      // this.$confirm(`该标签正在被人群 ${crowdName} 人群名使用，你确定要删除吗`, "提示", {
+      this.$confirm('确定要删除吗?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.delTempCrowd({ launchCrowdId }, '删除成功').then(() => {
+            this.fetchData()
+          })
+        })
+        .catch(() => {
+        })
+    },
+    // 下架
+    onOrOffLocalCrowd (row) {
+      const localCrowdId = row.launchCrowdId
+      const params = {
+        onOffCrowd: !row.onOffCrowd,
+        localCrowdId
+      }
+      const tipText = params.onOffCrowd ? '上架成功' : '下架成功'
+      this.$service.OnOrOffLocalCrowd(params, tipText).then(() => {
+        this.fetchData()
+      })
+    },
+    // 编辑
+    handleEdit (row) {
+      const crowdName = row.launchName
+      const localCrowdId = row.launchCrowdId
+      this.$emit('show-add', localCrowdId, crowdName)
+    },
+    // minitor (row) {},
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.fetchData()
+      })
+    },
+    // 新增
+    handleAdd () {
+      this.$emit('show-add')
+    },
+    handleSelectOrCancel (select, row) {
+      const selectedFlag = select.length && select.indexOf(row) !== -1
+      // true就是选中，0或者false是取消选中
+      if (selectedFlag) {
+        this.$refs.tempChangeTable.toggleRowSelection(row, true)
+        this.$emit('table-selected', row, 'add')
+      } else {
+        this.$refs.tempChangeTable.toggleRowSelection(row, false)
+        this.$emit('table-selected', row, 'del')
+      }
+    },
+    handleSelectAllOrCancel (select) {
+      // 当select长度为0，则是取消全选，否则是全选
+      const data = this.tableData
+      if (select.length === 0) {
+        for (let i = 0; i < data.length; i++) {
+          this.$emit('table-selected', data[i], 'del')
+        }
+      } else {
+        for (let j = 0; j < data.length; j++) {
+          this.$emit('table-selected', data[j], 'add')
+        }
+      }
+    },
+    updateTableSelected () {
+      const arr = []
+      const currentSelectRows = this.currentSelectTag
+      this.tableData.forEach((item, index) => {
+        currentSelectRows.forEach((i) => {
+          if (item.tagId === i.tagId) {
+            arr.push(this.tableData[index])
+          }
+        })
+      })
+      if (arr.length > 0) {
+        // 如果存在，则先清空选中，再赋值
+        this.$nextTick(() => {
+          this.$refs.tempChangeTable.clearSelection()
+          arr.forEach(row => {
+            this.$refs.tempChangeTable.toggleRowSelection(row, true)
+          })
+        })
+      } else {
+        this.$refs.tempChangeTable.clearSelection()
+      }
+    },
+    handleCheckListChange (val) {
+      this.$emit('change-checkList', val)
+    }
+  }
+}
+</script>
+
+<style lang="stylus" scoped>
+    // .temp-label-list
+    //     margin-top 50px
+    .temp-label-list >>> .el-button-group
+        display flex
+        align-items center
+        .el-button
+            margin 0 5px
+    .header
+        display flex
+        justify-content space-between
+        margin 10px 0
+    .search-input
+        position relative
+        display flex
+        width 350px
+    .icon-fixed
+        position absolute
+        top 8px
+        right 10px
+        transform rotate(-90deg)
+    .operate
+        margin-left 20px
+        cursor pointer
+</style>

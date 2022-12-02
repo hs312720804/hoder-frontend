@@ -1,36 +1,25 @@
 <template>
   <div class="my-collect">
-      <!-- <div class="header">
-          <div v-if="!showSelection">
-            <el-button
-                @click="handleAdd"
-                type="primary"
-            >
-                新建
-            </el-button>
-          </div>
-
-      </div> -->
-
-      <div class="search-input">
-          <el-input
-              placeholder="支持按标签名、ID搜索"
-              class="header-input"
-              v-model="filter.tagName"
-              @keyup.enter.native="fetchData"
-          ></el-input>
-          <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-      </div>
-
-      <el-tabs
-        v-if="showTypeTab"
-        v-model="activeName"
-        @tab-click="handleTabChange"
-      >
-        <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
-        </el-tab-pane>
-      </el-tabs>
-
+      <div class="header">
+            <div v-if="!showSelection">
+                <el-button
+                    @click="handleAdd"
+                    type="primary"
+                >
+                  新建
+                </el-button>
+            </div>
+            <div v-else></div>
+            <div class="search-input">
+                <el-input
+                        placeholder="支持按标签名、ID搜索"
+                        class="header-input"
+                        v-model="launchName"
+                        @keyup.enter.native="fetchData"
+                ></el-input>
+                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+            </div>
+        </div>
       <tag-list
         :data-list="dataList"
         :data-source-enum="dataSourceEnum"
@@ -38,6 +27,8 @@
         :check-list-parent="checkList"
         :current-selected-tags="currentSelectTag"
         :show-selection="showSelection"
+        :show-delete-btn="true"
+        :show-edit-btn="true"
         @fetch-data="fetchData"
         @change-checkList="handleCheckListChange"
         @table-selected="handleTableSelected"
@@ -45,13 +36,13 @@
         @edit="handleEdit"
       >
         <div align="right">
-          <pagination
-              :currentpage="filter.pageNum"
-              :pagesize="filter.pageSize"
-              :totalcount="totalCount"
-              @handle-size-change="handleSizeChange"
-              @handle-current-change="handleCurrentChange"
-          ></pagination>
+            <pagination
+                    :currentpage="filter.pageNum"
+                    :pagesize="filter.pageSize"
+                    :totalcount="totalCount"
+                    @handle-size-change="handleSizeChange"
+                    @handle-current-change="handleCurrentChange"
+            ></pagination>
         </div>
       </tag-list>
 
@@ -80,16 +71,16 @@
 </template>
 
 <script>
-import tagList from './TagList'
+import tagList from '../coms/TagList'
 export default {
   name: 'MyCollect',
   components: {
     tagList
   },
   props: {
-    // tagName: {
-    //     type: String
-    // },
+    tagName: {
+      type: String
+    },
     checkList: {
       type: Array
     },
@@ -101,19 +92,17 @@ export default {
     }
   },
   watch: {
-    // 'tagName': function (val) {
-    //     if (val !== undefined) {
-    //         this.filter.tagName = val
-    //         this.fetchData()
-    //     }
-    // }
+    tagName: function (val) {
+      if (val !== undefined) {
+        this.filter.tagName = val
+        this.fetchData()
+      }
+    }
   },
   data () {
     return {
       dataList: [],
       filter: {
-        searchType: 1,
-        tagType: 2,
         pageNum: 1,
         pageSize: 10,
         tagName: undefined
@@ -127,18 +116,12 @@ export default {
         tagKey: '',
         remark: ''
       },
+      launchName: '',
       dialogTitle: '',
-      totalCount: 0,
-      typeTabsList: [],
-      activeName: '',
-      showTypeTab: true
+      totalCount: 0
     }
   },
   methods: {
-    handleTabChange () {
-      this.filter.tagName = this.activeName
-      this.fetchData()
-    },
     // 删除
     handleDelete (id) {
       this.$service.deleteSpecialTagType(id).then(() => {
@@ -177,17 +160,15 @@ export default {
       this.dialogTitle = '新增标签'
       this.dialogVisible = true
     },
-    async fetchData () {
-      // 搜索时名称为空时，默认赋值为类型第一个
-      if (!this.filter.tagName && this.typeTabsList.length > 0) {
-        this.filter.tagName = this.typeTabsList[0].groupName
-        this.activeName = this.typeTabsList[0].groupName
+    fetchData () {
+      // const filter = this.filter
+      const filter = {
+        ...this.filter,
+        launchName: this.launchName
       }
-
-      this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
-
-      const filter = this.filter
-      this.$service.searchByGroup(filter).then(data => {
+      this.$service.specialTagList(filter).then(data => {
+        // eslint-disable-next-line
+                // debugger
         const result = data
         this.dataList = result.pageInfo.list
         this.totalCount = result.pageInfo.total
@@ -213,26 +194,11 @@ export default {
     handleCurrentChange (val) {
       this.filter.pageNum = val
       this.fetchData()
-    },
-    async fetchTypeData () {
-      const typeFilter = {
-        searchType: 2,
-        tagType: 2,
-        pageNum: 1,
-        pageSize: 10
-      }
-
-      this.typeTabsList = await this.$service.searchByGroup(typeFilter)
-
-      this.filter.tagName = this.typeTabsList[0].groupName
-      this.activeName = this.typeTabsList[0].groupName
-
-      return this.typeTabsList
     }
+
   },
   created () {
-    this.$root.$on('third-tag-list-refresh', this.fetchData)
-    this.fetchTypeData()
+    this.$root.$on('special-tag-list-refresh', this.fetchData)
     this.fetchData()
   }
 }
@@ -240,40 +206,25 @@ export default {
 
 <style lang="stylus" scoped>
     .my-collect >>> .el-icon-cc-star-fill
-      color #E6A13C
+        color #E6A13C
     .my-collect >>> .el-button-group
-      display flex
-      align-items center
-      .el-button
-        margin 0 5px
-    .my-collect >>> .el-tabs__header
-      position relative !important
-      width 100% !important
-      z-index 999 !important
-    .my-collect >>> .el-tabs__nav-wrap
-      overflow: hidden !important
-      margin-bottom: -1px !important
-      position: relative !important
-      margin-top: 0 !important
-      padding-top: 0 !important
-    .my-collect
-        // margin-top 50px
-        position relative
+        display flex
+        align-items center
+        .el-button
+            margin 0 5px
+    // .my-collect
+    //     margin-top 50px
     .header
         display flex
         justify-content space-between
-        // margin 10px 0
+        margin 10px 0
     .search-input
+        position relative
         display flex
         width 350px
-        position: absolute;
-        z-index: 9999;
-        right: 0;
-        top: 0;
     .icon-fixed
         position absolute
         top 8px
         right 10px
         transform rotate(-90deg)
-
 </style>

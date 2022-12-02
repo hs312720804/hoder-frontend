@@ -1,17 +1,5 @@
 <template>
   <div class="my-collect">
-      <!-- <div class="header">
-          <div v-if="!showSelection">
-            <el-button
-                @click="handleAdd"
-                type="primary"
-            >
-                新建
-            </el-button>
-          </div>
-
-      </div> -->
-
       <div class="search-input">
           <el-input
               placeholder="支持按标签名、ID搜索"
@@ -26,34 +14,34 @@
         v-if="showTypeTab"
         v-model="activeName"
         @tab-click="handleTabChange"
+        class="label-content-wrap"
       >
         <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
+          <tag-list
+            :data-list="dataList"
+            :data-source-enum="dataSourceEnum"
+            :type-enum="typeEnum"
+            :check-list-parent="checkList"
+            :current-selected-tags="currentSelectTag"
+            :show-selection="showSelection"
+            @fetch-data="fetchData"
+            @change-checkList="handleCheckListChange"
+            @table-selected="handleTableSelected"
+            @delete="handleDelete"
+            @edit="handleEdit"
+          >
+            <div align="right">
+              <pagination
+                  :currentpage="filter.pageNum"
+                  :pagesize="filter.pageSize"
+                  :totalcount="totalCount"
+                  @handle-size-change="handleSizeChange"
+                  @handle-current-change="handleCurrentChange"
+              ></pagination>
+            </div>
+          </tag-list>
         </el-tab-pane>
       </el-tabs>
-
-      <tag-list
-        :data-list="dataList"
-        :data-source-enum="dataSourceEnum"
-        :type-enum="typeEnum"
-        :check-list-parent="checkList"
-        :current-selected-tags="currentSelectTag"
-        :show-selection="showSelection"
-        @fetch-data="fetchData"
-        @change-checkList="handleCheckListChange"
-        @table-selected="handleTableSelected"
-        @delete="handleDelete"
-        @edit="handleEdit"
-      >
-        <div align="right">
-          <pagination
-              :currentpage="filter.pageNum"
-              :pagesize="filter.pageSize"
-              :totalcount="totalCount"
-              @handle-size-change="handleSizeChange"
-              @handle-current-change="handleCurrentChange"
-          ></pagination>
-        </div>
-      </tag-list>
 
       <el-dialog
         :title="dialogTitle"
@@ -80,7 +68,7 @@
 </template>
 
 <script>
-import tagList from './TagList'
+import tagList from '../coms/TagList.vue'
 export default {
   name: 'MyCollect',
   components: {
@@ -178,12 +166,13 @@ export default {
       this.dialogVisible = true
     },
     async fetchData () {
+      debugger
       // 搜索时名称为空时，默认赋值为类型第一个
       if (!this.filter.tagName && this.typeTabsList.length > 0) {
         this.filter.tagName = this.typeTabsList[0].groupName
         this.activeName = this.typeTabsList[0].groupName
       }
-
+      console.log('this.typeTabsList1111====>', this.typeTabsList)
       this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
 
       const filter = this.filter
@@ -223,57 +212,22 @@ export default {
       }
 
       this.typeTabsList = await this.$service.searchByGroup(typeFilter)
-
+      console.log('this.typeTabsList====>', this.typeTabsList)
       this.filter.tagName = this.typeTabsList[0].groupName
       this.activeName = this.typeTabsList[0].groupName
-
-      return this.typeTabsList
     }
   },
-  created () {
+  async created () {
     this.$root.$on('third-tag-list-refresh', this.fetchData)
-    this.fetchTypeData()
+    console.log(1)
+    await this.fetchTypeData()
+    console.log(2)
     this.fetchData()
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-    .my-collect >>> .el-icon-cc-star-fill
-      color #E6A13C
-    .my-collect >>> .el-button-group
-      display flex
-      align-items center
-      .el-button
-        margin 0 5px
-    .my-collect >>> .el-tabs__header
-      position relative !important
-      width 100% !important
-      z-index 999 !important
-    .my-collect >>> .el-tabs__nav-wrap
-      overflow: hidden !important
-      margin-bottom: -1px !important
-      position: relative !important
-      margin-top: 0 !important
-      padding-top: 0 !important
-    .my-collect
-        // margin-top 50px
-        position relative
-    .header
-        display flex
-        justify-content space-between
-        // margin 10px 0
-    .search-input
-        display flex
-        width 350px
-        position: absolute;
-        z-index: 9999;
-        right: 0;
-        top: 0;
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
+@import '../common.styl'
 
 </style>
