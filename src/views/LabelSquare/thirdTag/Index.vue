@@ -75,9 +75,6 @@ export default {
     tagList
   },
   props: {
-    // tagName: {
-    //     type: String
-    // },
     checkList: {
       type: Array
     },

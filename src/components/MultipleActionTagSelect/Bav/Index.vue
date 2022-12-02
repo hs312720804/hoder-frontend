@@ -3268,17 +3268,9 @@
 </template>
 
 <script>
-// import Type from '../Type.vue'
-// import ConditionLine from '../ConditionLine.vue'
-// import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
-// import Bav0012 from './Bav0012.vue'
-// import _ from 'lodash'
-// import { v4 as uuidv4 } from 'uuid'
-// todo.vue
 
 import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
-import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 import Bav0012 from './Bav0012.vue'
 import myMinix from './minix'
 export default {
@@ -3287,7 +3279,6 @@ export default {
   components: {
     Type,
     ConditionLine,
-    LabelZone,
     Bav0012
   },
   props: {

@@ -1,198 +1,70 @@
 <template>
-    <div class="label-content">
-        <el-tabs
-          v-model="activeName"
-          @tab-click="handleTabChange"
-          class="label-content-wrap"
-        >
-            <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
-                <el-input
-                    v-model="searchVal"
-                    placeholder="支持按标签名、Code、描述搜索"
-                    @keyup.enter.native="handleSearch"
-                >
-                </el-input>
-                <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-            </div> -->
+<div >
+  <el-tabs
+    v-model="activeName"
+    @tab-click="handleTabChange"
+  >
+    <el-tab-pane label="统计" name="total">
+      <Total></Total>
+    </el-tab-pane>
 
-            <el-tab-pane label="设备标签" name="labelZone">
-                <label-zone
-                    :tagName="labelZoneTagName"
-                    @clear-search="handleClearSearch"
-                    :checkList="checkList"
-                    @change-checkList="handleCheckListChange"
-                    @fetch-checkList="fetchCheckListData"
-                    @get-table-selected="handleGetTableSelectedData"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                >
-                </label-zone>
-            </el-tab-pane>
+    <el-tab-pane label="大数据标签" name="bigDataTag">
+      <BigDataTag
+        :checkList="checkList"
+        :show-selection="showSelection"
+        :currentSelectTag="tagList"
+        @clear-search="handleClearSearch"
+        @change-checkList="handleCheckListChange"
+        @get-table-selected="handleGetTableSelectedData"
+      ></BigDataTag>
+    </el-tab-pane>
 
-            <el-tab-pane label="行为标签" name="behaviorLabel">
-                <temp-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                    :crowdType=3
-                >
-                </temp-label-index>
-            </el-tab-pane>
+    <el-tab-pane label="第三方标签" name="third">
+      <third-party-tag
+        :checkList="checkList"
+        :show-selection="showSelection"
+        :currentSelectTag="tagList"
+        @clear-search="handleClearSearch"
+        @change-checkList="handleCheckListChange"
+        @get-table-selected="handleGetTableSelectedData"
+      >
+      </third-party-tag>
+    </el-tab-pane>
 
-            <el-tab-pane label="组合标签" name="specialTag">
-                <special-tag
-                    :tagName="myCollectTagName"
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </special-tag>
-            </el-tab-pane>
+    <el-tab-pane label="自定义标签" name="customTag">
+      <custom-tag
+        :checkList="checkList"
+        :show-selection="showSelection"
+        :currentSelectTag="tagList"
+        @clear-search="handleClearSearch"
+        @change-checkList="handleCheckListChange"
+        @get-table-selected="handleGetTableSelectedData"
+      >
+      </custom-tag>
+    </el-tab-pane>
 
-            <el-tab-pane label="第三方标签" name="ThirdPartyTag">
-                <third-party-tag
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </third-party-tag>
-            </el-tab-pane>
+  </el-tabs>
 
-            <el-tab-pane label="临时标签" name="tempLabel">
-                <temp-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    :crowdType=2
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                >
-                </temp-label-index>
-            </el-tab-pane>
-
-            <el-tab-pane label="本地标签" name="localLabel">
-                <local-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                >
-                </local-label-index>
-            </el-tab-pane>
-
-            <el-tab-pane label="自定义标签" name="customTag">
-                <custom-tag
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </custom-tag>
-            </el-tab-pane>
-
-            <el-tab-pane label="数据银行标签" name="bankLabel">
-                <temp-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                    :crowdType=4
-                >
-                </temp-label-index>
-            </el-tab-pane>
-
-            <el-tab-pane label="模型标签" name="modelLabel">
-                <ModelLabelIndex
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </ModelLabelIndex>
-            </el-tab-pane>
-
-            <el-tab-pane label="人群标签" name="crowdLabel">
-                <CrowdLabel
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    :crowdType=2
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                >
-                </CrowdLabel>
-            </el-tab-pane>
-
-            <el-tab-pane label="我的收藏" name="myCollect">
-                <my-collect
-                    :tagName="myCollectTagName"
-                    :checkList="checkList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                >
-                </my-collect>
-            </el-tab-pane>
-
-        </el-tabs>
-
-        <div v-if="showSelection">
-            <div>已选标签：</div>
-            <el-tag v-for="(item,index) in tagList"
-                    :key="item.tagId+'_'+index"
-                    :type="dataSourceColorEnum[item.dataSource]"
-                    closable
-                    @close="removeTag(item)"
-            >
-                {{item.tagName}}
-            </el-tag>
-        </div>
-    </div>
+</div>
 </template>
 
 <script>
-import labelZone from './LabelZone'
-import myCollect from './MyCollect'
-import tempLabelIndex from './tempLabel/TempLabelIndex'
-import LocalLabelIndex from './localLabel/Index'
-import specialTag from './SpecialTag'
-import CustomTag from './CustomTag'
-import ThirdPartyTag from './ThirdPartyTag'
-import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
-import CrowdLabel from './crowdLabel/Index.vue'
+import Total from './Total.vue'
+import BigDataTag from './bigDataTag/Index.vue'
+import ThirdPartyTag from './thirdTag/Index.vue'
+import CustomTag from './customTag/Index.vue'
 
 export default {
-  name: 'labelSquareAA',
+  name: 'crowdCompute',
   components: {
-    labelZone,
-    myCollect,
-    tempLabelIndex,
-    specialTag,
-    LocalLabelIndex,
-    CustomTag,
+    Total,
+    BigDataTag,
     ThirdPartyTag,
-    ModelLabelIndex,
-    CrowdLabel
+    CustomTag
   },
   data () {
     return {
-      activeName: 'labelZone',
+      activeName: 'total',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,
@@ -209,20 +81,6 @@ export default {
     }
   },
   methods: {
-
-    handleSearch () {
-      // 全局搜索
-      if (this.activeName === 'labelZone') {
-        this.labelZoneTagName = this.searchVal
-      } else {
-        this.myCollectTagName = this.searchVal
-      }
-    },
-    handleClearSearch () {
-      this.searchVal = undefined
-      this.labelZoneTagName = undefined
-      this.myCollectTagName = undefined
-    },
     fetchCheckListData () {
       this.$service.getListDimension({ type: 4 }).then(data => {
         if (data) {
@@ -236,65 +94,29 @@ export default {
         }
       })
     },
-
+    fetchTempCheckListData () {
+      this.$service.getListDimension({ type: 5 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.tempCheckList = data.behaviorShow.split(',')
+          } else {
+            this.tempCheckList = ['defineRemark']
+          }
+        } else {
+          this.tempCheckList = ['defineRemark']
+        }
+      })
+    },
     handleTabChange () {
-      switch (this.activeName) {
-        case 'labelZone':
-          // 刷新标签广场页
-          this.fetchCheckListData()
-          this.$root.$emit('label-zone-list-refresh')
-          break
-        case 'myCollect':
-          // 刷新我的收藏
-          this.fetchCheckListData()
-          this.$root.$emit('my-collect-list-refresh')
-          break
-        case 'tempLabel':
-          // 临时标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-2')
-          break
-        case 'specialTag':
-          // 刷新组合标签
-          this.fetchCheckListData()
-          this.$root.$emit('special-tag-list-refresh')
-          break
-        case 'localLabel':
-          // 本地标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('local-label-list-refresh')
-          break
-        case 'behaviorLabel':
-          // 行为标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-3')
-          break
-        case 'bankLabel':
-          // 数据银行标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-4')
-          break
-        case 'customTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('custom-tag-list-refresh')
-          break
-        case 'ThirdPartyTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('third-tag-list-refresh')
-          break
-        case 'modelLabel':
-          // 模型标签
-          // this.fetchListData()
-          this.$root.$emit('model-tag-list-refresh')
-          break
-        case 'crowdLabel':
-          // 人群标签
-          // this.fetchListData()
-          this.$root.$emit('crowd-label-list-refresh')
-          break
-      }
+
+    },
+    handleClearSearch () {
+      this.searchVal = undefined
+      this.labelZoneTagName = undefined
+      this.myCollectTagName = undefined
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
     },
     handleGetTableSelectedData (val, mode) {
       // 只支持单数组，多数组要多次调用这个
@@ -323,63 +145,16 @@ export default {
           }
         }
       }
-    },
-    removeTag (tag) {
-      // const addForm = this.addForm
-      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-    },
-    fetchTempCheckListData () {
-      this.$service.getListDimension({ type: 5 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.tempCheckList = data.behaviorShow.split(',')
-          } else {
-            this.tempCheckList = ['defineRemark']
-          }
-        } else {
-          this.tempCheckList = ['defineRemark']
-        }
-      })
-    },
-    handleCheckListChange (val) {
-      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
-    },
-    handleTempCheckListChange (val) {
-      this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
     }
   },
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
   }
+
 }
 </script>
 
 <style lang="stylus" scoped>
-.label-content
-    position relative
-.search-input
-    position fixed
-    top 118px
-    right 35px
-    width 350px
-    z-index 999
-    .icon-fixed
-      position absolute
-      top 8px
-      right 10px
-      transform rotate(-90deg)
-.label-content >>> .el-tabs__header
-    // position fixed
-    width 100%
-    z-index 999
-.label-content >>> .el-tabs__nav-wrap
-    background #fff
-    z-index 999
-    margin-top: -20px;
-    padding-top: 20px;
-.label-content-wrap> >>> .el-tabs__content
-  height calc(100vh - 200px);
-  overflow: auto
+
 </style>

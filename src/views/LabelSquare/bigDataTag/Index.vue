@@ -5,28 +5,38 @@
 
       </el-tab-pane>
       <el-tab-pane label="设备标签" name="labelZone">
-        <label-zone :tagName="labelZoneTagName" @clear-search="handleClearSearch" :checkList="checkList"
-          @change-checkList="handleCheckListChange" @fetch-checkList="fetchCheckListData"
-          @get-table-selected="handleGetTableSelectedData" :show-selection="showSelection" :currentSelectTag="tagList">
+        <label-zone
+          :tagName="labelZoneTagName"
+          @clear-search="handleClearSearch"
+          :checkList="checkList"
+          @change-checkList="handleCheckListChange"
+          @fetch-checkList="fetchCheckListData"
+          @get-table-selected="handleGetTableSelectedData"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList">
         </label-zone>
       </el-tab-pane>
 
       <el-tab-pane label="模型标签" name="modelLabel">
-        <ModelLabelIndex :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
-          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+        <ModelLabelIndex
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </ModelLabelIndex>
       </el-tab-pane>
 
     </el-tabs>
 
-    <div v-if="showSelection">
+    <!-- <div v-if="showSelection">
       <div>已选标签：</div>
       <el-tag v-for="(item, index) in tagList" :key="item.tagId + '_' + index" :type="dataSourceColorEnum[item.dataSource]"
         closable @close="removeTag(item)">
         {{ item.tagName }}
       </el-tag>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -39,6 +49,11 @@ export default {
   components: {
     labelZone,
     ModelLabelIndex
+  },
+  props: {
+    showSelection: {
+      type: Boolean
+    }
   },
   data () {
     return {
@@ -54,7 +69,6 @@ export default {
         3: '',
         5: 'warning'
       },
-      showSelection: false,
       tempCheckList: []
     }
   },
@@ -147,32 +161,33 @@ export default {
       }
     },
     handleGetTableSelectedData (val, mode) {
+      this.$emit('get-table-selected', val, mode)
       // 只支持单数组，多数组要多次调用这个
-      const tagList = this.tagList
-      if (mode === 'add') {
-        // 如果有匹配的，就直接return
-        let firstIndex = -1
-        for (let i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
-            firstIndex = i
-            return
-          }
-        }
-        // 如果没有匹配的，就执行新增
-        if (firstIndex === -1) {
-          this.tagList.push(val)
-        }
-      } else {
-        // 取消选中的则删除这一项
-        let index = -1
-        for (let i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
-            index = i
-            this.tagList.splice(index, 1)
-            return
-          }
-        }
-      }
+      // const tagList = this.tagList
+      // if (mode === 'add') {
+      //   // 如果有匹配的，就直接return
+      //   let firstIndex = -1
+      //   for (let i = 0; i < tagList.length; i++) {
+      //     if (tagList[i].tagId === val.tagId) {
+      //       firstIndex = i
+      //       return
+      //     }
+      //   }
+      //   // 如果没有匹配的，就执行新增
+      //   if (firstIndex === -1) {
+      //     this.tagList.push(val)
+      //   }
+      // } else {
+      //   // 取消选中的则删除这一项
+      //   let index = -1
+      //   for (let i = 0; i < tagList.length; i++) {
+      //     if (tagList[i].tagId === val.tagId) {
+      //       index = i
+      //       this.tagList.splice(index, 1)
+      //       return
+      //     }
+      //   }
+      // }
     },
     removeTag (tag) {
       // const addForm = this.addForm

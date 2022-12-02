@@ -53,14 +53,15 @@ import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 import groupImageInsight from '@/views/GroupImageInsight/Index'
 import userTagsSearch from '@/views/launch/userTagsSearch'
 import hitSearch from '@/views/launch/hitSearch'
-import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
-import crowdCompute from '@/views/crowdCompute/Index'
+
+import labelSquare from '@/views/LabelSquare/Index'
+import crowdCompute from '@/views/LabelSquare1/Index'
 
 const children = [
   // {

@@ -24,10 +24,19 @@
             </div>
             <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
             <template v-if="activeTab === childItem.groupId">
-              <tag-list v-if="toggleShow" :tabIndex="index" :data-list="dataList" :data-source-enum="dataSourceEnum"
-                :type-enum="typeEnum" :loading="loading" :check-list-parent="checkList" :show-selection="showSelection"
-                @fetch-data="fetchTagList" @change-checkList="handleCheckListChange"
-                @table-selected="handleTableSelected" :current-selected-tags="currentSelectTag">
+              <tag-list
+                v-if="toggleShow"
+                :tabIndex="index"
+                :data-list="dataList"
+                :data-source-enum="dataSourceEnum"
+                :type-enum="typeEnum"
+                :loading="loading"
+                :check-list-parent="checkList"
+                :show-selection="showSelection"
+                @fetch-data="fetchTagList"
+                @change-checkList="handleCheckListChange"
+                @table-selected="handleTableSelected"
+                :current-selected-tags="currentSelectTag">
               </tag-list>
             </template>
           </el-tab-pane>
@@ -35,14 +44,27 @@
       </div>
     </div>
     <div class="other-form" v-else>
-      <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum" :loading="loading"
-        :check-list-parent="checkList" :show-selection="showSelection" @fetch-data="fetchTagAllList"
-        @change-checkList="handleCheckListChange" @table-selected="handleTableSelected"
+      <tag-list
+        :data-list="dataList"
+        :data-source-enum="dataSourceEnum"
+        :type-enum="typeEnum"
+        :loading="loading"
+        :check-list-parent="checkList"
+        :show-selection="showSelection"
+        @fetch-data="fetchTagAllList"
+        @change-checkList="handleCheckListChange"
+        @table-selected="handleTableSelected"
         :current-selected-tags="currentSelectTag">
       </tag-list>
     </div>
-    <TagCategoryUpsert ref="tagCategoryUpsert" :current-tag-category="tagCategory" :type-enum="typeEnum"
-      :data-source-enum="dataSourceEnum" @upsert-end="fetchTagList" :definedTagId="definedTagId" />
+    <TagCategoryUpsert
+      ref="tagCategoryUpsert"
+      :current-tag-category="tagCategory"
+      :type-enum="typeEnum"
+      :data-source-enum="dataSourceEnum"
+      :definedTagId="definedTagId"
+      @upsert-end="fetchTagList"
+    />
   </div>
 </template>
 

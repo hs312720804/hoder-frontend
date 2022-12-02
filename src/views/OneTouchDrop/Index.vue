@@ -182,17 +182,17 @@ import { mapGetters } from 'vuex'
 import createCrowd from './CreateCrowd'
 import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
-import createConfigScheme from './createConfigScheme'
+// import createConfigScheme from './createConfigScheme'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 // import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
-  name: 'index',
+  name: 'OneTouchDrop',
   components: {
     // createPolicy,
     createCrowd,
     LaunchToBusiness,
     newCreatePolicy,
-    createConfigScheme,
+    // createConfigScheme,
     DynamicPeopleSetting
     // DynamicPeopleConditions
   },
