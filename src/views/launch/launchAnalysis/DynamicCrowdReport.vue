@@ -294,7 +294,7 @@ export default {
         // 表格
         this.setTableData(getAllData)
         // 折线图数据
-        const vipPlay = this.getChartData(res.reportDayDetail.data, 'showMac')
+        const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
         const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
 
         console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
@@ -429,18 +429,21 @@ export default {
         title: '',
         xunit: ''
       }
-
+      if (key === 'payRate') { // 支付率，数据转为百分比
+        reObj.yunit = '%'
+      }
       reObj.series = chartData.reduce((result, current, index) => {
         reObj.xaxis.push(current.date)
         const oneDateData = current.data
         oneDateData.forEach(dayObj => {
+          const valueNum = dayObj[key]
           const flag = result.find(i => i.name === dayObj.planName)
           if (flag) {
-            flag.value.push(dayObj[key])
+            flag.value.push(valueNum)
           } else {
             result.push({
               name: dayObj.planName,
-              value: [dayObj[key]]
+              value: [valueNum]
             })
           }
         })
@@ -473,7 +476,7 @@ export default {
         })
         const linesData = series.map((key) => {
           if (data.yunit === '%') {
-            const arr = key.value.map(v => v * 100)
+            const arr = key.value.map(v => Number(v * 100).toFixed(2))
             return { name: key.name, data: arr, type: 'line' }
           } else {
             return { name: key.name, data: key.value, type: 'line' }
