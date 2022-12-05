@@ -581,8 +581,6 @@ export default {
             }
           },
           formatter: function (parmas) {
-            // console.log('parmas------------->', parmas)
-
             // let str = parmas[0].marker + parmas[0].name + '<br/>'
             let str = parmas[0].name + '<br/>'
             for (const item of parmas) {

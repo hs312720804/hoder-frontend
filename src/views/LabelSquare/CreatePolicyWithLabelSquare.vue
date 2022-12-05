@@ -1,12 +1,8 @@
 <template>
-  <div>
-    <el-tabs
-      v-model="activeName"
-      @tab-click="handleTabChange"
-    >
-      <el-tab-pane label="统计" name="total">
-        <Total
-        ></Total>
+  <div class="one-step-select-tag">
+    <el-tabs v-model="activeName" @tab-click="handleTabChange">
+      <el-tab-pane label="我常用的" name="total">
+        <Total></Total>
       </el-tab-pane>
 
       <el-tab-pane label="大数据标签" name="bigDataTag">
@@ -16,8 +12,7 @@
           :currentSelectTag="tagList"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
+          @get-table-selected="handleGetTableSelectedData">
         </BigDataTag>
       </el-tab-pane>
 
@@ -28,8 +23,7 @@
           :currentSelectTag="tagList"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
+          @get-table-selected="handleGetTableSelectedData">
         </third-party-tag>
       </el-tab-pane>
 
@@ -40,32 +34,50 @@
           :currentSelectTag="tagList"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
+          @get-table-selected="handleGetTableSelectedData">
         </custom-tag>
       </el-tab-pane>
 
     </el-tabs>
 
-    <div v-if="showSelection">
-      <div>已选标签：</div>
-      <el-tag
-        v-for="(item, index) in tagList"
-        :key="item.tagId + '_' + index"
-        :type="dataSourceColorEnum[item.dataSource]"
-        closable @close="removeTag(item)">
-        {{ item.tagName }}
-      </el-tag>
-    </div>
+    <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px" class="fix-bottom-form">
+      <el-form-item label="已选标签">
+        <el-tag v-for="(item,  index) in tagList" :key="item.tagId  +  '_'  +  index" :type="dataSourceColorEnum[item.dataSource]"
+          closable @close="removeTag(item)">
+          {{ item.tagName }}
+        </el-tag>
+      </el-form-item>
+      <div class="tags-tips">
+        注：<span class="checkbox--red">红色</span>为大数据标签,
+        <span class="checkbox--green">绿色</span>为自定义/本地标签,
+        <span class="checkbox--blue">蓝色</span>为账号标签,
+        <span class="checkbox--yellow">黄色</span>为实时标签,
+        <span class="checkbox--orange">紫色</span>为动态指标,
+        <span class="checkbox--orange2">棕色</span>为组合标签,
+        <span class="checkbox--cyan">青色</span>为行为标签,
+        <span class="checkbox--gray">灰色</span>为人群标签
+      </div>
+      <el-form-item label="策略名称" prop="policyName">
+        <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
+        <slot name="isChoosePeople"></slot>
+      </el-form-item>
+      <el-form-item>
+        <el-button type="warning" @click="handelBack">返回</el-button>
+        <el-button type="warning" @click="saveAndNext(0)">跳过下一步保存</el-button>
+        <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
+      </el-form-item>
+    </el-form>
 
   </div>
-  </template>
+</template>
 
 <script>
+import { mapGetters } from 'vuex'
 import Total from './Total.vue'
 import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 
 export default {
   name: 'crowdCompute',
@@ -75,6 +87,13 @@ export default {
     ThirdPartyTag,
     CustomTag
   },
+  props: ['recordId', 'initTagList', 'policyId'],
+  computed: {
+    ...mapGetters(['policyName']),
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    }
+  },
   data () {
     return {
       activeName: 'total',
@@ -83,17 +102,162 @@ export default {
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       showSelection: true,
-      tempCheckList: []
+      addForm: this.genDefaultForm(),
+      addFormRules: {
+        policyName: [
+          { required: true, message: '请填写策略名称', trigger: 'blur' }
+        ]
+      },
+      tempCheckList: [],
+      bottomHeight: 169 + 'px'
+    }
+  },
+  watch: {
+    tagList: {
+      handler (val) {
+        this.addForm.crowdTagCrowdIds = []
+        this.addForm.conditionTagIds = []
+
+        val.forEach(item => {
+          if (item.dataSource === 12) {
+            // 人群标签 id 集合
+            this.addForm.crowdTagCrowdIds.push(item.tagId)
+          } else {
+            // 其他的标签 id 集合
+            this.addForm.conditionTagIds.push(item.tagId)
+          }
+        })
+      }
     }
   },
   methods: {
+    // 下一步
+    saveAndNext (mode) {
+      this.$refs.addForm.validate(valid => {
+        if (valid) {
+          const addForm = JSON.parse(JSON.stringify(this.addForm))
+          if (addForm.conditionTagIds.length === 0) { // 创建策略时，标签不是必选的，因此下面两行代码注释掉
+            // this.$message.error('请选择策略维度！')
+            // return
+          }
+
+          // 是否为动态人群
+          const isDynamicPeople = this.$parent.isDynamicPeople
+          // 其他的标签 id 集合
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
+
+          // 人群标签 id 集合
+          addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
+
+          // 动态人群
+          if (isDynamicPeople) {
+            const oldFormData = {
+              policyName: addForm.policyName,
+              conditionTagIds: addForm.conditionTagIds,
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds,
+              smart: isDynamicPeople
+            }
+            if (this.policyId) {
+              oldFormData.policyId = this.policyId
+              this.$service.policyUpate(oldFormData).then((data) => {
+                const policyId = this.policyId
+                const policyName = oldFormData.policyName
+
+                if (mode === 1) {
+                  this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                } else {
+                  this.$message({
+                    type: 'success',
+                    message: '即将自动跳转至策略列表页'
+                  })
+                  this.$emit('handleDirectStrategyList')
+                }
+                // }
+              })
+            } else {
+              this.$service.policyAddSave(oldFormData).then((data) => {
+                const policyId = data.policyId
+                const policyName = data.policyName
+
+                if (mode === 1) {
+                  this.$emit('dynamicPolicyNextStep', this.tagList, policyId, policyName)
+                } else {
+                  this.$message({
+                    type: 'success',
+                    message: '即将自动跳转至策略列表页'
+                  })
+                  this.$emit('handleDirectStrategyList')
+                }
+                // }
+              })
+            }
+          } else if (mode === 1) {
+            if (this.addForm.recordId) {
+              this.$service.oneDropPolicyAddSave(addForm).then((data) => {
+                if (data.policyId) {
+                  this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
+                    confirmButtonText: '确定',
+                    cancelButtonText: '取消',
+                    type: 'warning'
+                  }).then(() => {
+                    this.$message({
+                      type: 'success',
+                      message: '即将自动跳转至策略列表页'
+                    })
+                    this.$emit('handleDirectStrategyList')
+                    // this.$router.push({ path: 'launch/strategyList' })
+                  }).catch(() => {
+                  })
+                } else {
+                  this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
+                }
+              })
+            } else {
+              this.$service.oneDropPolicyAddSave(addForm).then((data) => {
+                this.addForm.recordId = data.recordId
+                this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
+              })
+            }
+          } else {
+            const oldFormData = {
+              policyName: addForm.policyName,
+              conditionTagIds: addForm.conditionTagIds,
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds // 人群标签
+            }
+            this.$service.policyAddSave(oldFormData).then((data) => {
+              this.$emit('handleDirectStrategyList')
+              this.$emit('resetFormData')
+            })
+          }
+        } else {
+          return false
+        }
+      })
+    },
+    // 返回策略列表
+    handelBack () {
+      this.$router.push({ name: 'strategyList' })
+    },
+    genDefaultForm () {
+      return {
+        recordId: undefined,
+        policyName: '',
+        conditionTagIds: [],
+        crowdTagCrowdIds: [] // 人群标签的 crowdId 集合
+      }
+    },
     fetchCheckListData () {
       this.$service.getListDimension({ type: 4 }).then(data => {
         if (data) {
@@ -164,15 +328,98 @@ export default {
           }
         }
       }
+    },
+    getPolicyDetail () {
+      this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
+        const formData = data
+        formData.conditionTagIds = formData.conditionTagIds === ''
+          ? []
+          : formData.conditionTagIds.split(',').map(function (v) {
+            return parseInt(v)
+          })
+
+        // 人群标签ID
+        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds
+          ? formData.crowdTagCrowdIds.split(',').map(function (v) {
+            return parseInt(v)
+          })
+          : []
+
+        this.addForm = {
+          recordId: this.recordId,
+          policyName: formData.policyName,
+          conditionTagIds: formData.conditionTagIds,
+          crowdTagCrowdIds: formData.crowdTagCrowdIds
+        }
+      })
     }
   },
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
+
+    if (this.recordId) {
+      this.getPolicyDetail()
+      this.tagList = this.initTagList
+    }
+    if (this.policyId) {
+      this.tagList = this.initTagList
+      this.addForm.policyName = this.policyName
+      this.addForm.conditionTagIds = []
+      this.addForm.crowdTagCrowdIds = []
+      this.initTagList.forEach(function (v) {
+        if (v.dataSource === 12) {
+          this.addForm.crowdTagCrowdIds.push(parseInt(v.tagId)) // 人群标签
+        } else {
+          this.addForm.conditionTagIds.push(parseInt(v.tagId))
+        }
+      })
+
+      this.addForm.policyId = this.policyName
+    }
   }
 }
 </script>
 
-  <style lang="stylus" scoped>
+<style lang="stylus" scoped>
+.one-step-select-tag
+  position relative
+  padding 0 130px 180px
+  >>> .el-tag--warningOrange
+    color #512DA8
+    background-color rgba(119, 81, 200, .4)
+    border-color rgba(81, 45, 168, .45)
+    .el-tag__close
+      color #512DA8
+  >>> .el-tag--warningOrange2
+    color: #795548;
+    background-color: rgba(167, 130, 117, .5);
+    border-color: #7955488c;
+    .el-tag__close
+      color #512DA8
+  >>> .el-tag--warningCyan
+    color: #00bcd4;
+    background-color: rgba(0, 189, 214, .1);
+    border-color: #00bcd42b
+  >>> .el-tag--gray
+    color: #fff;
+    background-color: rgba(165,155,149, 1);
+    border-color: rgba(165,155,149, 1);
+    .el-tag__close
+      color #fff
+      &:hover{
+        background-color: #666
+      }
+.tags-tips
+  color #000
+  font-size 12px
+  margin-left 100px
 
-  </style>
+.fix-bottom-form
+  position fixed
+  bottom 0
+  background-color #fff
+  z-index 999
+  width: calc(100% - 363px);
+
+</style>

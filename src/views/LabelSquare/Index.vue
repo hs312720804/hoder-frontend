@@ -1,8 +1,9 @@
 <template>
-<div >
+<div id="label-square">
   <el-tabs
     v-model="activeName"
     @tab-click="handleTabChange"
+    class="label-square-tabs"
   >
     <el-tab-pane label="统计" name="total">
       <Total></Total>
@@ -156,5 +157,5 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-
+@import './common.styl'
 </style>

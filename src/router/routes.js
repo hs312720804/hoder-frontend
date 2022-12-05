@@ -61,7 +61,7 @@ import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
 
 import labelSquare from '@/views/LabelSquare/Index'
-import crowdCompute from '@/views/LabelSquare1/Index'
+import crowdCompute from '@/views/crowdCompute/Index'
 
 const children = [
   // {

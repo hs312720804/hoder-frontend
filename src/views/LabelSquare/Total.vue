@@ -2,22 +2,30 @@
 <div class="total-wrap">
   <div class="max-top box">
     <div class="title">使用最多TOP30</div>
-    <div class="lists-wrap">
-      <div v-for="(item,index) in list" :key="index" class="lists-item">
-        <span class="item-index">{{index+1}}、</span>
-        {{item.name}}
-        <span class="item-type">{{item.type}}</span>
-      </div>
+    <div class="content-wrap">
+      <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+        <div class="lists-wrap">
+          <div v-for="(item,index) in topMax30" :key="index" class="lists-item">
+            <span class="item-index">{{index+1}}、</span>
+            {{item.tagName}}
+            <span class="item-type">{{item.tagCategory}}</span>
+          </div>
+        </div>
+      </el-scrollbar>
     </div>
   </div>
   <div class="min-top box">
     <div class="title">使用最少TOP30</div>
-    <div class="lists-wrap">
-      <div v-for="(item,index) in list" :key="index" class="lists-item">
-        <span class="item-index">{{index+1}}、</span>
-        {{item.name}}
-        <span class="item-type">{{item.type}}</span>
-      </div>
+    <div class="content-wrap">
+      <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+        <div class="lists-wrap">
+          <div v-for="(item,index) in topMin30" :key="index" class="lists-item">
+            <span class="item-index">{{index+1}}、</span>
+            {{item.tagName}}
+            <span class="item-type">{{item.tagCategory}}</span>
+          </div>
+        </div>
+      </el-scrollbar>
     </div>
 
   </div>
@@ -27,7 +35,7 @@
       <div :span="chart.span" v-for="(chart, key) in row" :key="key">
         <div class="unit-box">
 
-          <div v-if="show && chart.title">
+          <div v-if="(show && chart.title)">
             <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div" ></div>
             <div v-else class="chart-div">
               <el-empty description="暂无数据"></el-empty>
@@ -42,71 +50,26 @@
 </template>
 
 <script>
+import { title } from 'process'
+
 export default {
   components: {},
   data () {
     return {
-      list: [{
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }, {
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }, {
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }, {
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }, {
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }, {
-        id: 1,
-        type: '大数据标签',
-        name: '主页版本'
-      }, {
-        id: 2,
-        type: '大数据标签',
-        name: '设备型号'
-      }],
+      topMax30: [],
+      topMin30: [],
       rowObj: [
         {
-          ratio: { type: 'pie', title: '标签来源占比', span: 24 }
+          classification: { type: 'pie', title: '标签来源占比', span: 24 }
         },
         {
-          vipPkgPay: { type: 'bar', title: '各权益付费人数及占比', span: 24 }
+          addTags: { type: 'bar', title: '各权益付费人数及占比', span: 24 }
         }
       ],
       show: true,
       allCharts: {},
       allChartData: {
-        ratio: {
+        classification: {
           data: [
             {
               count: 30,
@@ -149,10 +112,9 @@ export default {
               percent: '2.56%'
             }
           ],
-          title: '影视VIP观影分类占比'
-
+          title: '标签来源占比'
         },
-        vipPkgPay: {
+        addTags: {
           xaxis: [
             '影视VIP',
             '酷奇异果VIP',
@@ -170,7 +132,7 @@ export default {
             10228
           ],
           series2: null,
-          title: '各权益起播人数及占比',
+          title: '近一个月新增标签来源',
           xunit: ''
         }
       },
@@ -180,7 +142,7 @@ export default {
     }
   },
   created () {
-
+    this.fetchData()
   },
   mounted () {
     // 图表自适应
@@ -190,19 +152,31 @@ export default {
         chart.resize()
       }
     })
-
-    this.drawChart()
   },
   methods: {
+    fetchData () {
+      this.$service.getTagStatistics().then(res => {
+        this.topMax30 = res.topMax30
+        this.topMin30 = res.topMin30
+        this.allChartData = {
+          addTags: res.addTags,
+          classification: {
+            data: res.classification,
+            title: '标签来源占比'
+          }
+        }
+        this.drawChart()
+
+        console.log('this.allChartData===', this.allChartData)
+      })
+    },
     drawChart () {
       const rowObj = this.rowObj
 
       rowObj.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
-          if (item[key].type === 'line') {
-            this.showLine(this.allChartData[key], key)
-          } else if (item[key].type === 'bar') {
+          if (item[key].type === 'bar') {
             this.showBar(this.allChartData[key], key)
           } else if (item[key].type === 'pie') {
             this.showPie(this.allChartData[key], key)
@@ -218,7 +192,7 @@ export default {
           data.series = data.series.map(v => v * 100)
         }
         // console.log('23333=========>', data)
-        this.setBarEchart(chartID, '', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
+        this.setBarEchart(chartID, data.title, data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
       }
     },
     // 通用柱状图参数设置
@@ -240,12 +214,10 @@ export default {
           // trigger: 'item',
           trigger: 'axis',
           formatter: function (parmas) {
-            // console.log('parmas------------->', parmas)
-
-            let str = parmas[0].marker + parmas[0].name + '<br/>'
+            let str = parmas[0].seriesName + '<br/>' + parmas[0].marker
             // let str = ''
             for (const item of parmas) {
-              str = str + item.name + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>' + '占比: ' + dataaxis[item.dataIndex]
+              str = str + item.name + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
             }
             // return _this.cc_format_number(a.data)
             return str
@@ -305,6 +277,7 @@ export default {
           }
         },
         series: [{
+          name: title,
           // data: yData.length === 0 ? this.fillEmptyData.data : yData,
           data: yData,
           type: 'bar',
@@ -312,16 +285,16 @@ export default {
           backgroundStyle: {
             color: 'rgba(180, 180, 180, 0.2)'
           },
-          barWidth: yData.length > 10 ? '30%' : 20, // 10%
-          label: {
-            show: true,
-            position: 'top',
-            formatter: function (data) {
-              // console.log('value----->', data.dataIndex)
-              return `${dataaxis[data.dataIndex]}`
-            },
-            color: '#000'
-          }
+          barWidth: yData.length > 10 ? '30%' : 20 // 10%
+          // label: {
+          //   show: true,
+          //   position: 'top',
+          //   formatter: function (data) {
+          //     // console.log('value----->', data.dataIndex)
+          //     return `${dataaxis[data.dataIndex]}`
+          //   },
+          //   color: '#000'
+          // }
         }]
       }, true)
 
@@ -350,33 +323,29 @@ export default {
         const d = data.data.map((v, index) => {
           return {
             ...v,
-            value: v.count
+            value: v.count || v.value
             // name: '123'
           }
         })
-        console.log('d==------------------------>', d)
-        console.log('d==------------------------>', chartID)
-        // showPie
-        // console.log('')
-        this.setPie(chartID, d)
+        // console.log('d==------------------------>', d)
+        // console.log('d==------------------------>', chartID)
+        this.setPie(chartID, d, data.title)
       }
     },
     // 环形图
-    setPie (element, data) {
+    setPie (element, data, title = '') {
       const chartElement = document.getElementById(element)
       if (!chartElement) return
-      // console.log('aaaaaaaaaaa--------------->', element)
-      // console.log('aaaaaaaaaaa--------------->', data)
-      // const name = '登录量'
       const _this = this
       const option = {
         tooltip: {
-          trigger: 'item'
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)'
         },
         title: {
-          text: '标签来源占比',
+          text: title
           // subtext: 'Fake Data',
-          left: '5%'
+          // left: '5%'
         },
         // legend: {
         //   top: '5%',
@@ -400,27 +369,17 @@ export default {
             color: '#999' // 翻页数字颜色
           },
           align: 'left', // 图例icon在左侧
-          formatter: function (name) {
-            // console.log('p------->', name)
-            // 文字太长时只取20个字符
-            // const label = p.length > 20 ? p.substr(0, 20) : p
-            // 文字宽度：后台设有宽度时使用后台传的值，若没有默认70
-            // const width = 70
-            // 渲染图例文字
-            // return echarts.format.truncateText(label, width, '14px Microsoft Yahei', '…')
-            // widthStyle 对应为legend.textStyle.rich中的key名，可设置label显示的样式
-            // return `{widthStyle|${label}}`
-            // return label
-            let tarValue
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].name === name) {
-                tarValue = data[i].percent
-              }
-            }
+          // formatter: function (name) {
+          //   let tarValue
+          //   for (let i = 0; i < data.length; i++) {
+          //     if (data[i].name === name) {
+          //       tarValue = data[i].percent
+          //     }
+          //   }
 
-            // return [`{name|${name}}`, `{num|${tarValue}}`].join(' |  ')
-            return `{name|${name}}    |    {num|${tarValue}}`
-          },
+          //   // return [`{name|${name}}`, `{num|${tarValue}}`].join(' |  ')
+          //   return `{name|${name}}    |    {num|${tarValue}}`
+          // },
           // tooltip: {
           //   show: true, // 显示图例的tooltip
           //   textStyle: {
@@ -518,6 +477,13 @@ export default {
   background: #f3f4fa;
 .box
   border-right 1px dashed #e9e9e9
+  position relative
+.content-wrap
+  position: absolute;
+  width: 100%;
+  bottom: 12px;
+  top: 46px;
+  overflow: auto;
 .title {
   padding: 10px 16px 20px
   overflow: hidden;
@@ -527,7 +493,7 @@ export default {
   font-size: 16px;
 }
 .lists-wrap {
-  margin-left: 15px;
+  padding: 0 15px 15px
 }
 .lists-item {
   font-size: 14px;
@@ -547,11 +513,12 @@ export default {
 .unit-box {
   border-radius: 4px;
   height: 100%;
+  background #f3f4fa
 }
-#ratio
+#classification
   height: calc(50vh - 80px)
 
-#vipPkgPay
+#addTags
   height: calc(50vh - 160px)
 .chart-box {
   padding: 20px;

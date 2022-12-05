@@ -884,8 +884,6 @@ export default {
           // trigger: 'item',
           trigger: 'axis',
           formatter: function (parmas) {
-            // console.log('parmas------------->', parmas)
-
             let str = parmas[0].marker + parmas[0].name + '<br/>'
             // let str = ''
             for (const item of parmas) {

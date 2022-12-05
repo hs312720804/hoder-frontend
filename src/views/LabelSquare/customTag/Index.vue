@@ -4,7 +4,7 @@
       <el-tab-pane label="本地标签" name="localLabel">
         <local-label-index
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           :checkList="tempCheckList"
           @get-table-selected="handleGetTableSelectedData"
           @change-checkList="handleTempCheckListChange">
@@ -15,7 +15,7 @@
         <custom-tag
           :checkList="checkList"
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
@@ -24,7 +24,7 @@
       <el-tab-pane label="临时标签" name="tempLabel">
         <temp-label-index
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           :checkList="tempCheckList"
           :crowdType=2
           @get-table-selected="handleGetTableSelectedData"
@@ -75,6 +75,10 @@ export default {
   props: {
     showSelection: {
       type: Boolean
+    },
+    currentSelectTag: {
+      type: Array,
+      default: () => []
     }
   },
   data () {

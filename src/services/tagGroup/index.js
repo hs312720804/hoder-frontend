@@ -161,7 +161,7 @@ export function specialTagChild (params) {
 export function editSpecialTag ({ rulesJson }) {
   return this.fetch({
     method: 'put',
-    url: `/api/specialTag`,
+    url: '/api/specialTag',
     data: rulesJson,
     isJSON: true
   })
@@ -170,7 +170,7 @@ export function editSpecialTag ({ rulesJson }) {
 export function addSpecialTag ({ rulesJson }) {
   return this.fetch({
     method: 'post',
-    url: `/api/specialTag`,
+    url: '/api/specialTag',
     data: rulesJson,
     isJSON: true
   })
@@ -203,7 +203,7 @@ export function deleteSpecialTagAttr (id) {
 export function saveSpecialTag (params) {
   return this.fetch({
     method: 'get',
-    url: `/api/specialTag/tagList`,
+    url: '/api/specialTag/tagList',
     params
   })
 }
@@ -212,7 +212,7 @@ export function saveSpecialTag (params) {
 export function addSpecialTagType (data) {
   return this.fetch({
     method: 'post',
-    url: `/api/specialTag/tags`,
+    url: '/api/specialTag/tags',
     data,
     isJSON: true
   })
@@ -222,7 +222,7 @@ export function addSpecialTagType (data) {
 export function editSpecialTagType (data) {
   return this.fetch({
     method: 'put',
-    url: `/api/specialTag/tags`,
+    url: '/api/specialTag/tags',
     data,
     isJSON: true
   })
@@ -293,6 +293,38 @@ export function updateModelTag (params) {
   return this.fetch({
     method: 'get',
     url: '/api/modelTag/updateModelTag',
+    params
+  })
+}
+// 标签广场 - 获取标签分类统计
+export function getTagStatistics (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/statistics',
+    params
+  })
+}
+// 一键投放 - 我常用top30接口
+export function getMytopMax30 (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/mytopMax30',
+    params
+  })
+}
+// 标签广场 - 获取行为标签
+export function getTagBehavior (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/getBehavior',
+    params
+  })
+}
+// 标签广场 - 获取实时标签
+export function getTagRealTime (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/tag/getRealTime',
     params
   })
 }

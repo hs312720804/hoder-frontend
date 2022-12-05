@@ -13,7 +13,7 @@
           @fetch-checkList="fetchCheckListData"
           @get-table-selected="handleGetTableSelectedData"
           :show-selection="showSelection"
-          :currentSelectTag="tagList">
+          :currentSelectTag="currentSelectTag">
         </label-zone>
       </el-tab-pane>
 
@@ -21,7 +21,7 @@
         <ModelLabelIndex
           :checkList="checkList"
           :show-selection="showSelection"
-          :currentSelectTag="tagList"
+          :currentSelectTag="currentSelectTag"
           @clear-search="handleClearSearch"
           @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
@@ -53,6 +53,10 @@ export default {
   props: {
     showSelection: {
       type: Boolean
+    },
+    currentSelectTag: {
+      type: Array,
+      default: () => []
     }
   },
   data () {
@@ -189,11 +193,7 @@ export default {
       //   }
       // }
     },
-    removeTag (tag) {
-      // const addForm = this.addForm
-      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-    },
+
     fetchTempCheckListData () {
       this.$service.getListDimension({ type: 5 }).then(data => {
         if (data) {
