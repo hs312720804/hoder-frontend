@@ -1,47 +1,30 @@
 <template>
   <div class="one-step-select-tag">
     <el-tabs v-model="activeName" @tab-click="handleTabChange">
-      <el-tab-pane label="我常用的" name="total">
-        <MyTopMax30
-          :tagName="myCollectTagName"
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
+      <el-tab-pane label="我常用的" name="myTop">
+        <MyTopMax30 :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
+          :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </MyTopMax30>
       </el-tab-pane>
 
       <el-tab-pane label="大数据标签" name="bigDataTag">
-        <BigDataTag
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
+        <BigDataTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </BigDataTag>
       </el-tab-pane>
 
       <el-tab-pane label="第三方标签" name="third">
-        <third-party-tag
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
+        <third-party-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </third-party-tag>
       </el-tab-pane>
 
       <el-tab-pane label="自定义标签" name="customTag">
-        <custom-tag
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
+        <custom-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </custom-tag>
       </el-tab-pane>
@@ -50,8 +33,8 @@
 
     <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px" class="fix-bottom-form">
       <el-form-item label="已选标签">
-        <el-tag v-for="(item,  index) in tagList" :key="item.tagId  +  '_'  +  index" :type="dataSourceColorEnum[item.dataSource]"
-          closable @close="removeTag(item)">
+        <el-tag v-for="(item, index) in tagList" :key="item.tagId + '_' + index"
+          :type="dataSourceColorEnum[item.dataSource]" closable @close="removeTag(item)">
           {{ item.tagName }}
         </el-tag>
       </el-form-item>
@@ -106,7 +89,7 @@ export default {
   },
   data () {
     return {
-      activeName: 'total',
+      activeName: 'myTop',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,
@@ -296,6 +279,11 @@ export default {
     },
     handleTabChange () {
       switch (this.activeName) {
+        case 'myTop':
+          // 我常用的
+          // this.fetchCheckListData()
+          this.$root.$emit('my-top-list-refresh')
+          break
         case 'bigDataTag':
           // 刷新大数据
           // this.fetchCheckListData()

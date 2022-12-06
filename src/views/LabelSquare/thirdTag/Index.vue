@@ -1,79 +1,50 @@
 <template>
   <div class="my-collect">
-      <div class="search-input">
-          <el-input
-              placeholder="支持按标签名、ID搜索"
-              class="header-input"
-              v-model="filter.tagName"
-              @keyup.enter.native="fetchData"
-          ></el-input>
-          <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+    <div class="search-input">
+      <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="filter.tagName"
+        @keyup.enter.native="fetchData"></el-input>
+      <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+    </div>
+    <!-- {{showTypeTab}} -->
+    <!-- v-if="showTypeTab" -->
+    <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
+      <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName">
+        <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
+          :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
+          @fetch-data="fetchData" @change-checkList="handleCheckListChange" @table-selected="handleTableSelected"
+          @delete="handleDelete" @edit="handleEdit">
+          <div align="right">
+            <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
+              @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
+          </div>
+        </tag-list>
+      </el-tab-pane>
+
+      <el-tab-pane label="实时标签" name="realTime">
+        <RealTimeTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="currentSelectTag"
+          @change-checkList="handleCheckListChange" @get-table-selected="handleTableSelected">
+        </RealTimeTag>
+      </el-tab-pane>
+    </el-tabs>
+
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
+      <el-form label-position="left" label-width="80px" :model="form">
+        <el-form-item label="名称" required>
+          <el-input v-model="form.tagName"></el-input>
+        </el-form-item>
+        <el-form-item label="英文名" required>
+          <el-input v-model="form.tagKey"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.remark"></el-input>
+        </el-form-item>
+
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
       </div>
-      <!-- {{showTypeTab}} -->
-      <!-- v-if="showTypeTab" -->
-      <el-tabs
-        v-model="activeName"
-        @tab-click="handleTabChange"
-        class="label-content-wrap"
-      >
-        <el-tab-pane v-for="item in typeTabsList" :label="item.groupName" :name="item.groupName" :key="item.groupName" >
-          <tag-list
-            :data-list="dataList"
-            :data-source-enum="dataSourceEnum"
-            :type-enum="typeEnum"
-            :check-list-parent="checkList"
-            :current-selected-tags="currentSelectTag"
-            :show-selection="showSelection"
-            @fetch-data="fetchData"
-            @change-checkList="handleCheckListChange"
-            @table-selected="handleTableSelected"
-            @delete="handleDelete"
-            @edit="handleEdit"
-          >
-            <div align="right">
-              <pagination
-                  :currentpage="filter.pageNum"
-                  :pagesize="filter.pageSize"
-                  :totalcount="totalCount"
-                  @handle-size-change="handleSizeChange"
-                  @handle-current-change="handleCurrentChange"
-              ></pagination>
-            </div>
-          </tag-list>
-        </el-tab-pane>
-
-        <el-tab-pane label="实时标签" name="realTime">
-          <RealTimeTag
-            :checkList="checkList"
-            :show-selection="showSelection"
-            :currentSelectTag="currentSelectTag"
-            @change-checkList="handleCheckListChange"
-            @get-table-selected="handleTableSelected">
-          </RealTimeTag>
-        </el-tab-pane>
-      </el-tabs>
-
-      <el-dialog
-        :title="dialogTitle"
-        :visible.sync="dialogVisible"
-        width="500px">
-            <el-form label-position="left" label-width="80px" :model="form">
-                <el-form-item label="名称" required>
-                    <el-input v-model="form.tagName"></el-input>
-                </el-form-item>
-                <el-form-item label="英文名" required>
-                    <el-input v-model="form.tagKey"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input v-model="form.remark"></el-input>
-                </el-form-item>
-
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
-            </div>
-      </el-dialog>
+    </el-dialog>
   </div>
 </template>
 

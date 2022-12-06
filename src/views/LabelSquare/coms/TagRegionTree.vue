@@ -1,8 +1,8 @@
 <template>
-    <el-card shadow="never">
-        <div slot="header">
-            <span>标签列表</span>
-            <!-- <el-form :inline="true" style="float: right">
+  <el-card shadow="never">
+    <div slot="header">
+      <span>标签列表</span>
+      <!-- <el-form :inline="true" style="float: right">
                 <el-form-item>
                     <el-input clearable @keyup.enter.native="fetchData" v-model="filter.name" placeholder="标签名称"></el-input>
                 </el-form-item>
@@ -10,22 +10,15 @@
                     <el-button type="primary" @click="fetchData">查询</el-button>
                 </el-form-item>
             </el-form> -->
-        </div>
-        <el-tree
-            lazy
-            :load="loadNode"
-            :props="defaultProps"
-            node-key="id"
-            ref="tree"
-            :expand-on-click-node="false"
-        >
-            <span class="custom-tree-node" slot-scope="{ node }">
-                <span class="tree-label">{{ node.label }}</span>
-                <!-- <span class="tree-label">{{ node.level }}</span> -->
-                <span class="tree-edit" @click="edit(node)" v-if="node.level !== 1">编辑</span>
-            </span>
-        </el-tree>
-    </el-card>
+    </div>
+    <el-tree lazy :load="loadNode" :props="defaultProps" node-key="id" ref="tree" :expand-on-click-node="false">
+      <span class="custom-tree-node" slot-scope="{ node }">
+        <span class="tree-label">{{ node.label }}</span>
+        <!-- <span class="tree-label">{{ node.level }}</span> -->
+        <span class="tree-edit" @click="edit(node)" v-if="node.level !== 1">编辑</span>
+      </span>
+    </el-tree>
+  </el-card>
 </template>
 
 <script>
@@ -65,7 +58,7 @@ export default {
       }
       this.$service.specialTagDetailList(filter).then((data) => {
         // eslint-disable-next-line
-                    
+
         // this.dataSourceEnum = data.dataSourceEnum
         // this.typeEnum = data.typeEnum
         // this.tagCategory = data.tagCategory
@@ -94,11 +87,11 @@ export default {
         }
         return this.$service.specialTagDetailList(filter).then((data) => {
           // eslint-disable-next-line
-                        // debugger
+          // debugger
           // this.dataSourceEnum = data.dataSourceEnum
           // this.typeEnum = data.typeEnum
           // this.tagCategory = data.tagCategory
-          let treeData = data.list.slice().map(item => {
+          const treeData = data.list.slice().map(item => {
             return {
               id: item.specialTagId,
               label: item.specialTagName,
@@ -112,7 +105,7 @@ export default {
           id: nodeData.id
         }
         return this.$service.specialTagChild(params).then(data => {
-          let treeData = data.slice().map(item => {
+          const treeData = data.slice().map(item => {
             return {
               id: item.specialTagId,
               label: item.specialTagName,
@@ -133,10 +126,10 @@ export default {
 </script>
 <style lang="stylus" scoped>
 .tree-label
-    color: #303133;
-    font-size: 14px;
+  color: #303133;
+  font-size: 14px;
 .tree-edit
-    color: #409EFF;
-    font-size: 13px;
-    margin-left 8px
+  color: #409EFF;
+  font-size: 13px;
+  margin-left 8px
 </style>

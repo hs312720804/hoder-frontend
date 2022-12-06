@@ -13,7 +13,7 @@
         </el-button>
 
         <!-- 行为人群 -->
-        <el-radio-group v-if="crowdType === 3" v-model="myself" @change="fetchData" >
+        <el-radio-group v-if="crowdType === 3" v-model="myself" @change="fetchData">
           <el-radio :label="0">全部</el-radio>
           <el-radio :label="1">我的</el-radio>
         </el-radio-group>
@@ -58,7 +58,7 @@
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
               <!-- 状态为计算中，显示进度 -->
-              <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+              <div v-if="scope.row.history.status >= 20 && scope.row.history.status < 30">
                 {{ scope.row.history.process }}
               </div>
               <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
@@ -159,7 +159,8 @@
                   </el-dropdown-item>
                   <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">数据监控
                   </el-dropdown-item>
-                  <el-dropdown-item :command="['shenCeAnalysis', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">神策分析
+                  <el-dropdown-item :command="['shenCeAnalysis', scope.row]"
+                    v-permission="'hoder:launch:crowd:ver:index'">神策分析
                   </el-dropdown-item>
 
                 </el-dropdown-menu>
@@ -544,29 +545,29 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    // .temp-label-list
-    //     margin-top 50px
-    .temp-label-list >>> .el-button-group
-        display flex
-        align-items center
-        .el-button
-            margin 0 5px
-    .header
-        display flex
-        justify-content space-between
-        margin 10px 0
-    .search-input
-      position relative
-      display flex
-      width 350px
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
-    .operate
-        margin-left 20px
-        cursor pointer
-    .monitor-time
-        margin-bottom 30px
+// .temp-label-list
+//     margin-top 50px
+.temp-label-list >>> .el-button-group
+    display flex
+    align-items center
+    .el-button
+        margin 0 5px
+.header
+    display flex
+    justify-content space-between
+    margin 10px 0
+.search-input
+  position relative
+  display flex
+  width 350px
+.icon-fixed
+    position absolute
+    top 8px
+    right 10px
+    transform rotate(-90deg)
+.operate
+    margin-left 20px
+    cursor pointer
+.monitor-time
+    margin-bottom 30px
 </style>

@@ -1,52 +1,54 @@
 <template>
-<div class="total-wrap">
-  <div class="max-top box">
-    <div class="title">使用最多TOP30</div>
-    <div class="content-wrap">
-      <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
-        <div class="lists-wrap">
-          <div v-for="(item,index) in topMax30" :key="index" class="lists-item">
-            <span class="item-index">{{index+1}}、</span>
-            {{item.tagName}}
-            <span class="item-type">{{item.tagCategory}}</span>
+  <div class="total-wrap">
+    <div class="max-top box">
+      <div class="title">使用最多TOP30</div>
+      <div class="content-wrap">
+        <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+          <div class="lists-wrap">
+            <div v-for="(item, index) in topMax30" :key="index" class="lists-item">
+              <span class="item-index">{{ index + 1 }}、</span>
+              {{ item.tagName }}
+              <span class="item-type">{{ item.tagCategory }}</span>
+            </div>
           </div>
-        </div>
-      </el-scrollbar>
+        </el-scrollbar>
+      </div>
     </div>
-  </div>
-  <div class="min-top box">
-    <div class="title">使用最少TOP30</div>
-    <div class="content-wrap">
-      <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
-        <div class="lists-wrap">
-          <div v-for="(item,index) in topMin30" :key="index" class="lists-item">
-            <span class="item-index">{{index+1}}、</span>
-            {{item.tagName}}
-            <span class="item-type">{{item.tagCategory}}</span>
+    <div class="min-top box">
+      <div class="title">使用最少TOP30</div>
+      <div class="content-wrap">
+        <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
+          <div class="lists-wrap">
+            <div v-for="(item, index) in topMin30" :key="index" class="lists-item">
+              <span class="item-index">{{ index + 1 }}、</span>
+              {{ item.tagName }}
+              <span class="item-type">{{ item.tagCategory }}</span>
+            </div>
           </div>
-        </div>
-      </el-scrollbar>
+        </el-scrollbar>
+      </div>
+
     </div>
+    <div class="chart-box box">
 
-  </div>
-  <div class="chart-box box">
+      <div v-for="(row, index) in rowObj" :key="index">
+        <div :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
 
-    <div v-for="(row, index) in rowObj" :key="index">
-      <div :span="chart.span" v-for="(chart, key) in row" :key="key">
-        <div class="unit-box">
-
-          <div v-if="(show && chart.title)">
-            <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div" ></div>
-            <div v-else class="chart-div">
-              <el-empty description="暂无数据"></el-empty>
+            <div v-if="(show && chart.title)">
+              <div
+                v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)"
+                :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
+    </div>
   </div>
-</div>
 </template>
 
 <script>

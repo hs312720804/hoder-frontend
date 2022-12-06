@@ -10,60 +10,33 @@
     <div>
       <el-row :gutter="40">
         <el-col :span="24">
-          <el-form
-            :model="crowdDefineForm"
-            :rules="crowdDefineFormRules"
-            ref="crowdDefineForm"
-            label-width="140px"
-          >
+          <el-form :model="crowdDefineForm" :rules="crowdDefineFormRules" ref="crowdDefineForm" label-width="140px">
             <el-form-item label="人群名称" prop="launchName">
-              <el-input
-                size="small"
-                v-model="crowdDefineForm.launchName"
-                :disabled="
-                  status !== undefined && (status === 2 || status === 3)
-                "
-                :maxlength="50"
-              ></el-input>
+              <el-input size="small" v-model="crowdDefineForm.launchName" :disabled="
+                status !== undefined && (status === 2 || status === 3)
+              " :maxlength="50"></el-input>
             </el-form-item>
             <el-form-item label="SQL语句" prop="crowdSql">
-              <el-input
-                type="textarea"
-                placeholder="请输入生成临时人群的sql语句"
-                :disabled="
-                  status !== undefined && (status === 2 || status === 3)
-                "
-                v-model="crowdDefineForm.crowdSql"
-              >
+              <el-input type="textarea" placeholder="请输入生成临时人群的sql语句" :disabled="
+                status !== undefined && (status === 2 || status === 3)
+              " v-model="crowdDefineForm.crowdSql">
               </el-input>
             </el-form-item>
             <div class="horizontal-line">
               <el-form-item label="每天是否更新" prop="autoVersion">
-                <el-radio-group
-                  v-model="crowdDefineForm.autoVersion"
-                  :disabled="
-                    status !== undefined && (status === 2 || status === 3)
-                  "
-                >
+                <el-radio-group v-model="crowdDefineForm.autoVersion" :disabled="
+                  status !== undefined && (status === 2 || status === 3)
+                ">
                   <el-radio :label="0">否</el-radio>
                   <el-radio :label="1">是</el-radio>
                 </el-radio-group>
               </el-form-item>
-              <el-form-item
-                label="每天更新时间点"
-                prop="autoLaunchTime"
-                v-if="crowdDefineForm.autoVersion === 1"
-              >
-                <el-time-picker
-                  v-model="crowdDefineForm.autoLaunchTime"
-                  value-format="HH:mm:ss"
-                  :disabled="
-                    status !== undefined && (status === 2 || status === 3)
-                  "
-                  :picker-options="{
-                    selectableRange: '9:00:00 - 23:59:59'
-                  }"
-                ></el-time-picker>
+              <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdDefineForm.autoVersion === 1">
+                <el-time-picker v-model="crowdDefineForm.autoLaunchTime" value-format="HH:mm:ss" :disabled="
+                  status !== undefined && (status === 2 || status === 3)
+                " :picker-options="{
+  selectableRange: '9:00:00 - 23:59:59'
+}"></el-time-picker>
               </el-form-item>
               <!--<el-form-item label="更新持续时间" prop="expiryDay" v-if="crowdDefineForm.autoVersion === 1">-->
               <!--<el-select-->
@@ -82,127 +55,57 @@
             </div>
             <div class="basic-line" v-if="crowdDefineForm.autoVersion === 1">
               <el-form-item label="Mac数量基准" class="one-line">
-                <el-form-item
-                  label=""
-                  prop="macInitialValue"
-                  class="inline-block base-line"
-                >
-                  <cc-input-thousands-int
-                    v-model="crowdDefineForm.macInitialValue"
-                    ref="inputThousandsInt"
-                    @change="handleRule"
-                  >
+                <el-form-item label="" prop="macInitialValue" class="inline-block base-line">
+                  <cc-input-thousands-int v-model="crowdDefineForm.macInitialValue" ref="inputThousandsInt"
+                    @change="handleRule">
                   </cc-input-thousands-int>
                 </el-form-item>
-                <el-form-item
-                  label="环比低于"
-                  label-width="100px"
-                  prop="macBelowPer"
-                  class="inline-block ratio"
-                >
-                  <el-input-number
-                    v-model="crowdDefineForm.macBelowPer"
-                    :precision="2"
-                    @change="handleRule"
-                    :min="1"
-                  ></el-input-number> </el-form-item
-                >&nbsp;&nbsp;%，则告警
-                <el-form-item
-                  label="环比高于"
-                  label-width="100px"
-                  prop="macAbovePer"
-                  class="inline-block ratio"
-                >
-                  <el-input-number
-                    v-model="crowdDefineForm.macAbovePer"
-                    :precision="2"
-                    :min="1"
-                  ></el-input-number> </el-form-item
-                >&nbsp;&nbsp;%，则告警
+                <el-form-item label="环比低于" label-width="100px" prop="macBelowPer" class="inline-block ratio">
+                  <el-input-number v-model="crowdDefineForm.macBelowPer" :precision="2" @change="handleRule"
+                    :min="1"></el-input-number> </el-form-item>&nbsp;&nbsp;%，则告警
+                <el-form-item label="环比高于" label-width="100px" prop="macAbovePer" class="inline-block ratio">
+                  <el-input-number v-model="crowdDefineForm.macAbovePer" :precision="2" :min="1"></el-input-number>
+                </el-form-item>&nbsp;&nbsp;%，则告警
                 <span>请至少填写一组基准和环比阀值</span>
               </el-form-item>
               <el-form-item label="微信数量基准" class="one-line">
-                <el-form-item
-                  label=""
-                  prop="wxInitialValue"
-                  class="inline-block base-line"
-                >
-                  <cc-input-thousands-int
-                    v-model="crowdDefineForm.wxInitialValue"
-                  >
+                <el-form-item label="" prop="wxInitialValue" class="inline-block base-line">
+                  <cc-input-thousands-int v-model="crowdDefineForm.wxInitialValue">
                   </cc-input-thousands-int>
                 </el-form-item>
-                <el-form-item
-                  label="环比低于"
-                  label-width="100px"
-                  prop="wxBelowPer"
-                  class="inline-block ratio"
-                >
-                  <el-input-number
-                    v-model="crowdDefineForm.wxBelowPer"
-                    :precision="2"
-                    @change="handleRule"
-                    :min="1"
-                  ></el-input-number> </el-form-item
-                >&nbsp;&nbsp;%，则告警
-                <el-form-item
-                  label="环比高于"
-                  label-width="100px"
-                  prop="wxAbovePer"
-                  class="inline-block ratio"
-                >
-                  <el-input-number
-                    v-model="crowdDefineForm.wxAbovePer"
-                    :precision="2"
-                    @change="handleRule"
-                    :min="1"
-                  ></el-input-number> </el-form-item
-                >&nbsp;&nbsp;%，则告警
+                <el-form-item label="环比低于" label-width="100px" prop="wxBelowPer" class="inline-block ratio">
+                  <el-input-number v-model="crowdDefineForm.wxBelowPer" :precision="2" @change="handleRule"
+                    :min="1"></el-input-number> </el-form-item>&nbsp;&nbsp;%，则告警
+                <el-form-item label="环比高于" label-width="100px" prop="wxAbovePer" class="inline-block ratio">
+                  <el-input-number v-model="crowdDefineForm.wxAbovePer" :precision="2" @change="handleRule"
+                    :min="1"></el-input-number> </el-form-item>&nbsp;&nbsp;%，则告警
                 <span>请至少填写一组基准和环比阀值</span>
               </el-form-item>
               <div class="basic-line-error">{{ basicLineErrorText }}</div>
             </div>
             <el-form-item label="该人群所属的视频源">
-              <el-radio-group
-                v-model="crowdDefineForm.videoSource"
-                :disabled="
-                  status !== undefined && (status === 2 || status === 3)
-                "
-              >
+              <el-radio-group v-model="crowdDefineForm.videoSource" :disabled="
+                status !== undefined && (status === 2 || status === 3)
+              ">
                 <el-radio label="0">不区分</el-radio>
                 <el-radio label="1">区分</el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item label="" v-show="crowdDefineForm.videoSource === '1'">
-              <el-checkbox-group
-                v-model="crowdDefineForm.videoSourceIds"
-                :disabled="
-                  status !== undefined && (status === 2 || status === 3)
-                "
-              >
-                <el-checkbox
-                  v-for="(item, index) in videoSourceList"
-                  :key="index"
-                  :label="item.tagValueId"
-                  >{{ item.tagValue }}</el-checkbox
-                >
+              <el-checkbox-group v-model="crowdDefineForm.videoSourceIds" :disabled="
+                status !== undefined && (status === 2 || status === 3)
+              ">
+                <el-checkbox v-for="(item, index) in videoSourceList" :key="index" :label="item.tagValueId">{{
+                    item.tagValue
+                }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
             <el-form-item label="数据类型" prop="calType">
-              <el-checkbox-group
-                v-model="crowdDefineForm.calType"
-                aria-required="true"
-                :disabled="
-                  status !== undefined && (status === 2 || status === 3)
-                "
-              >
-                <el-checkbox
-                  v-for="(item, index) in estimateItems"
-                  :value="index"
-                  :label="index"
-                  :key="index"
-                  >{{ item }}</el-checkbox
-                >
+              <el-checkbox-group v-model="crowdDefineForm.calType" aria-required="true" :disabled="
+                status !== undefined && (status === 2 || status === 3)
+              ">
+                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index">{{ item
+                }}</el-checkbox>
               </el-checkbox-group>
             </el-form-item>
           </el-form>
@@ -339,9 +242,9 @@ export default {
       this.$service
         .getTempCrowd({ launchCrowdId: this.editLaunchCrowdId })
         .then(data => {
-          let row = data
+          const row = data
           // let abTestRatio = data.ratio || {}
-          let {
+          const {
             macInitialValue,
             macAbovePer,
             macBelowPer,
@@ -391,7 +294,7 @@ export default {
     },
     // 新增
     handleRule () {
-      let crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
+      const crowdForm = JSON.parse(JSON.stringify(this.crowdDefineForm))
       let macInitialValue = crowdForm.macInitialValue
       const macBelowPer = crowdForm.macBelowPer
       let wxInitialValue = crowdForm.wxInitialValue
@@ -547,10 +450,10 @@ export default {
     },
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1

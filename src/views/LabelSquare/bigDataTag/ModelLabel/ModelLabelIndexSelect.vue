@@ -1,32 +1,20 @@
 <template>
   <div class="label-zone tab-content">
-      <el-tabs v-model="activeTab" @tab-click="handleTabClick">
-        <el-tab-pane
-          v-for="item in dataList"
-          :key="item.id"
-          :name="'_'+ item.id"
-          :label="item.tagName"
-        >
-          <!-- <span slot="label">
+    <el-tabs v-model="activeTab" @tab-click="handleTabClick">
+      <el-tab-pane v-for="item in dataList" :key="item.id" :name="'_' + item.id" :label="item.tagName">
+        <!-- <span slot="label">
             {{ item.tagName }}
           </span> -->
 
-          <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
-          <template v-if="activeTab === (`_${item.id}`)">
-            <AttrListSelect
-              :row="row"
-              :data-list="tagList"
-              :data-source-enum="dataSourceEnum"
-              :type-enum="typeEnum"
-              :loading="loading"
-              :showSelection="true"
-              :currentSelectTag="currentSelectTag"
-              @table-selected="handleTableSelected"
-              >
-            </AttrListSelect>
-          </template>
-        </el-tab-pane>
-      </el-tabs>
+        <!-- 为了防止taglist多次执行，所以只显示当前tab下的列表-->
+        <template v-if="activeTab === (`_${item.id}`)">
+          <AttrListSelect :row="row" :data-list="tagList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
+            :loading="loading" :showSelection="true" :currentSelectTag="currentSelectTag"
+            @table-selected="handleTableSelected">
+          </AttrListSelect>
+        </template>
+      </el-tab-pane>
+    </el-tabs>
 
   </div>
 </template>
@@ -122,25 +110,6 @@ export default {
       })
     },
 
-    // fetchData () {
-    //   this.$service.getNewTreeList().then(data => {
-    //     const result = []
-    //     data.forEach(item => {
-    //       item.children.forEach(secondChild => {
-    //         const childList = secondChild.children.map(childItem => {
-    //           if (childItem.groupName === '自定义标签') {
-    //             this.definedTagId = childItem.groupId
-    //           }
-    //           return { groupId: childItem.groupId.toString(), groupName: childItem.groupName, newOrUpdateCount: childItem.newOrUpdateCount }
-    //         })
-    //         result.push({ parentName: secondChild.groupName, newOrUpdateCount: secondChild.newOrUpdateCount, parentId: secondChild.groupId, children: childList })
-    //       })
-    //     })
-    //     this.treeData = result
-
-    //     this.fetchTagList()
-    //   })
-    // },
     // 搜索可勾选的模型标签
     fetchTagList () {
       // console.log('this.activeTab===', this.activeTab)

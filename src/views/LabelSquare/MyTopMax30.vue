@@ -155,33 +155,20 @@ export default {
 
   },
   created () {
-    this.$root.$on('special-tag-list-refresh', this.fetchData)
+    this.$root.$on('my-top-list-refresh', this.fetchData)
     this.fetchData()
   }
 }
 </script>
 
 <style lang="stylus" scoped>
-.my-collect >>> .el-icon-cc-star-fill
-  color #E6A13C
-.my-collect >>> .el-button-group
-  display flex
-  align-items center
-  .el-button
-    margin 0 5px
-// .my-collect
-//     margin-top 50px
-.header
-  display flex
-  justify-content space-between
-  margin 10px 0
+@import './common.styl'
 .search-input
   position relative
   display flex
   width 350px
-.icon-fixed
-  position absolute
-  top 8px
-  right 10px
-  transform rotate(-90deg)
+.header
+  display flex
+  justify-content space-between
+  margin 10px 0
 </style>

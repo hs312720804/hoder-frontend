@@ -1,53 +1,42 @@
 <template>
-    <div class="read-tag-category">
-        <template v-if="tagCategory && !showEdit">
-            <el-card shadow="never">
-                <div slot="header">
-                    <span>{{ tagCategory.tagName }}</span>
-                    <el-button style="float:right; margin-top: -7px;" @click="$emit('read-cancel')" type="primary">返回</el-button>
-                </div>
+  <div class="read-tag-category">
+    <template v-if="tagCategory && !showEdit">
+      <el-card shadow="never">
+        <div slot="header">
+          <span>{{ tagCategory.tagName }}</span>
+          <el-button style="float:right; margin-top: -7px;" @click="$emit('read-cancel')" type="primary">返回</el-button>
+        </div>
 
-                <el-form label-position="left" label-width="80px">
-                    <el-form-item label="ID">
-                        {{ tagCategory.tagId }}
-                    </el-form-item>
-                    <el-form-item label="数据来源">
-                        {{ dataSourceEnum[tagCategory.dataSource] }}
-                    </el-form-item>
-                    <el-form-item label="类型">
-                        {{ typeEnum[tagCategory.tagType] }}
-                    </el-form-item>
-                    <el-form-item v-show="tagCategory.tagType === 'number'" label="单位">
-                        {{ tagCategory.tagUnit }}
-                    </el-form-item>
-                    <el-form-item label="备注">
-                        {{ tagCategory.remark }}
-                    </el-form-item>
-                </el-form>
-            </el-card>
+        <el-form label-position="left" label-width="80px">
+          <el-form-item label="ID">
+            {{ tagCategory.tagId }}
+          </el-form-item>
+          <el-form-item label="数据来源">
+            {{ dataSourceEnum[tagCategory.dataSource] }}
+          </el-form-item>
+          <el-form-item label="类型">
+            {{ typeEnum[tagCategory.tagType] }}
+          </el-form-item>
+          <el-form-item v-show="tagCategory.tagType === 'number'" label="单位">
+            {{ tagCategory.tagUnit }}
+          </el-form-item>
+          <el-form-item label="备注">
+            {{ tagCategory.remark }}
+          </el-form-item>
+        </el-form>
+      </el-card>
 
-            <tag-region-tree
-                v-if="tagCategory.composeType === 0"
-                :tagId="tagId"
-                @edit="handleEdit"
-            >
-            </tag-region-tree>
+      <tag-region-tree v-if="tagCategory.composeType === 0" :tagId="tagId" @edit="handleEdit">
+      </tag-region-tree>
 
-            <device-tag-list
-                v-else-if="tagCategory.composeType === 1"
-                :tagId="tagId"
-                :tagCategory="tagCategory"
-                :dataSourceEnum="dataSourceEnum"
-                :typeEnum="typeEnum"
-                @edit="handleEdit"
-                @add="handleAdd"
-            >
-            </device-tag-list>
+      <device-tag-list v-else-if="tagCategory.composeType === 1" :tagId="tagId" :tagCategory="tagCategory"
+        :dataSourceEnum="dataSourceEnum" :typeEnum="typeEnum" @edit="handleEdit" @add="handleAdd">
+      </device-tag-list>
 
-            <tag-list v-else :tag-category="tagCategory" />
-        </template>
-        <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
-    </div>
+      <tag-list v-else :tag-category="tagCategory" />
+    </template>
+    <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
+  </div>
 </template>
 
 <script>

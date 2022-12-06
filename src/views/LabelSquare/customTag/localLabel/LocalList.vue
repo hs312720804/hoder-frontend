@@ -1,197 +1,146 @@
 <template>
-    <div class="temp-label-list">
-        <div class="header">
-            <div v-if="!showSelection">
-                <el-button
-                        @click="handleAdd"
-                        type="primary"
-                >
-                    新建
-                </el-button>
+  <div class="temp-label-list">
+    <div class="header">
+      <div v-if="!showSelection">
+        <el-button @click="handleAdd" type="primary">
+          新建
+        </el-button>
 
-            </div>
-            <div v-else></div>
-            <div style="display: flex; justify-content: space-between; ">
-              <div class="search-input">
-                  <el-input
-                          placeholder="支持按标签名、ID搜索"
-                          class="header-input"
-                          v-model="launchName"
-                          @keyup.enter.native="fetchData"
-                  ></el-input>
-                  <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-              </div>
-              <el-popover
-                placement="top"
-                trigger="click"
-                class="popover-button"
-              >
-                <div>
-                  <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                      <el-checkbox label="creatorName">创建人</el-checkbox>
-                      <el-checkbox label="createTime">创建时间</el-checkbox>
-                      <!--<el-checkbox label="status">投放状态</el-checkbox>-->
-                      <el-checkbox label="department">业务部门</el-checkbox>
-                  </el-checkbox-group>
-                </div>
-                <i
-                  class="el-icon-cc-setting operate"
-                  slot="reference">
-                </i>
-              </el-popover>
-            </div>
+      </div>
+      <div v-else></div>
+      <div style="display: flex; justify-content: space-between; ">
+        <div class="search-input">
+          <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="launchName"
+            @keyup.enter.native="fetchData"></el-input>
+          <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
         </div>
-        <div>
-            <el-table
-                    ref="tempChangeTable"
-                    :data="tableData"
-                    border
-                    @select="handleSelectOrCancel"
-                    @select-all="handleSelectAllOrCancel"
-            >
-                <el-table-column
-                        type="selection"
-                        width="55"
-                        v-if="showSelection"
-                ></el-table-column>
-                <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
-                <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
-                <el-table-column prop="launchName" label="名称"></el-table-column>
-                <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
-                <el-table-column prop="count" label="使用次数">
-                    <!--<template slot-scope="scope">-->
-                        <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
-                    <!--</template>-->
-                </el-table-column>
-                <el-table-column
-                        label="状态"
-                >
-                    <template #default="scope">
-                        <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
-                        <el-tag v-else type="info">已下架</el-tag>
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        v-if="(checkList.indexOf('creatorName') > -1)"
-                        label="创建人"
-                        prop="creatorName">
-                </el-table-column>
-                <el-table-column
-                        v-if="(checkList.indexOf('createTime') > -1)"
-                        label="创建时间"
-                        prop="history.createTime">
-                </el-table-column>
-                <el-table-column
-                        v-if="(checkList.indexOf('department') > -1)"
-                        label="业务部门"
-                        prop="department">
-                </el-table-column>
-                <el-table-column label="设备数量">
-                    <template slot-scope="scope">
-                        {{cc_format_number(scope.row.history.totalUser)}}
-                    </template>
-                </el-table-column>
-                <el-table-column label="微信数量">
-                    <template slot-scope="scope">
-                        {{cc_format_number(scope.row.history.totalWxOpenid)}}
-                    </template>
-                </el-table-column>
-                <el-table-column label="版本">
-                    <template slot-scope="scope">
-                        {{scope.row.history.version}}
-                    </template>
-                </el-table-column>
-                <el-table-column
-                        label="操作"
-                        width="200"
-                        v-if="!showSelection"
-                >
-                    <template slot-scope="scope">
-                        <el-button-group>
-                            <!--<el-button-->
-                                    <!--type="text"-->
-                                    <!--@click="calculate(scope.row)"-->
-                            <!--&gt;-->
-                                <!--计算-->
-                            <!--</el-button>-->
-                            <!-- <el-button
+        <el-popover placement="top" trigger="click" class="popover-button">
+          <div>
+            <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+              <el-checkbox label="creatorName">创建人</el-checkbox>
+              <el-checkbox label="createTime">创建时间</el-checkbox>
+              <!--<el-checkbox label="status">投放状态</el-checkbox>-->
+              <el-checkbox label="department">业务部门</el-checkbox>
+            </el-checkbox-group>
+          </div>
+          <i class="el-icon-cc-setting operate" slot="reference">
+          </i>
+        </el-popover>
+      </div>
+    </div>
+    <div>
+      <el-table ref="tempChangeTable" :data="tableData" border @select="handleSelectOrCancel"
+        @select-all="handleSelectAllOrCancel">
+        <el-table-column type="selection" width="55" v-if="showSelection"></el-table-column>
+        <el-table-column prop="launchCrowdId" label="ID"></el-table-column>
+        <el-table-column prop="dmpCrowdId" label="投放ID"></el-table-column>
+        <el-table-column prop="launchName" label="名称"></el-table-column>
+        <!--<el-table-column prop="jobEndTime" label="有效期"></el-table-column>-->
+        <el-table-column prop="count" label="使用次数">
+          <!--<template slot-scope="scope">-->
+          <!--{{scope.row.history.status}}+++{{(launchStatusEnum[scope.row.history.status]).code}}-->
+          <!--</template>-->
+        </el-table-column>
+        <el-table-column label="状态">
+          <template #default="scope">
+            <el-tag v-if="scope.row.onOffCrowd">生效中</el-tag>
+            <el-tag v-else type="info">已下架</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" label="创建人" prop="creatorName">
+        </el-table-column>
+        <el-table-column v-if="(checkList.indexOf('createTime') > -1)" label="创建时间" prop="history.createTime">
+        </el-table-column>
+        <el-table-column v-if="(checkList.indexOf('department') > -1)" label="业务部门" prop="department">
+        </el-table-column>
+        <el-table-column label="设备数量">
+          <template slot-scope="scope">
+            {{ cc_format_number(scope.row.history.totalUser) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="微信数量">
+          <template slot-scope="scope">
+            {{ cc_format_number(scope.row.history.totalWxOpenid) }}
+          </template>
+        </el-table-column>
+        <el-table-column label="版本">
+          <template slot-scope="scope">
+            {{ scope.row.history.version }}
+          </template>
+        </el-table-column>
+        <el-table-column label="操作" width="200" v-if="!showSelection">
+          <template slot-scope="scope">
+            <el-button-group>
+              <!--<el-button-->
+              <!--type="text"-->
+              <!--@click="calculate(scope.row)"-->
+              <!--&gt;-->
+              <!--计算-->
+              <!--</el-button>-->
+              <!-- <el-button
                                     type="text"
                                     @click="condition(scope.row)"
                             >
                                 标签条件
                             </el-button> -->
-                            <el-button
-                                    type="text"
-                                    @click="handleEdit(scope.row)"
-                            >
-                                编辑
-                            </el-button>
-                            <el-button
-                                    type="text"
-                                    @click="onOrOffLocalCrowd(scope.row)"
-                            >
-                                <!-- {{ scope.row.launchTempCrowdStatus }} -->
-                                {{ scope.row.onOffCrowd ? '下架' : '上架' }}
-                            </el-button>
-                            <el-button
-                                    type="text"
-                                    @click="del(scope.row)"
-                            >
-                                删除
-                            </el-button>
-                            <!--<el-button-->
-                                    <!--type="text"-->
-                                    <!--@click="minitor(scope.row)"-->
-                            <!--&gt;-->
-                                <!--监控-->
-                            <!--</el-button>-->
-                            <!-- <el-dropdown @command="handleCommandOpreate">
-                                <el-button size="small" type="text">
-                                    操作
-                                </el-button>
-                                <el-dropdown-menu slot="dropdown">
-                                    <el-dropdown-item
-                                            :command="['edit',scope.row]"
-                                    >编辑
-                                    </el-dropdown-item>
-                                    <el-dropdown-item
-                                            :command="['del',scope.row]"
-                                            v-permission="'hoder:launch:crowd:ver:delete'"
-                                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
-                                    >删除
-                                    </el-dropdown-item>
-                                </el-dropdown-menu>
-                            </el-dropdown> -->
-                        </el-button-group>
-                    </template>
-                </el-table-column>
-            </el-table>
-            <div align="right">
-                <pagination
-                        :currentpage="currentPage"
-                        :pagesize="pageSize"
-                        :totalcount="totalCount"
-                        @handle-size-change="handleSizeChange"
-                        @handle-current-change="handleCurrentChange"
-                ></pagination>
-            </div>
-        </div>
-        <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
-            <!--<el-form v-if="launchType === 0">-->
-                <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
-                    <!--<el-checkbox-->
-                            <!--v-model="v.choosed"-->
-                            <!--v-for="v in item.childs"-->
-                            <!--:key="v.crowdId"-->
-                            <!--disabled-->
-                    <!--&gt;{{v.crowdName}}-->
-                    <!--</el-checkbox>-->
-                <!--</el-form-item>-->
-            <!--</el-form>-->
-            <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
-            <div>{{selectStrategy}}</div>
-        </el-dialog>
+              <el-button type="text" @click="handleEdit(scope.row)">
+                编辑
+              </el-button>
+              <el-button type="text" @click="onOrOffLocalCrowd(scope.row)">
+                <!-- {{ scope.row.launchTempCrowdStatus }} -->
+                {{ scope.row.onOffCrowd ? '下架' : '上架' }}
+              </el-button>
+              <el-button type="text" @click="del(scope.row)">
+                删除
+              </el-button>
+              <!--<el-button-->
+              <!--type="text"-->
+              <!--@click="minitor(scope.row)"-->
+              <!--&gt;-->
+              <!--监控-->
+              <!--</el-button>-->
+              <!-- <el-dropdown @command="handleCommandOpreate">
+                <el-button size="small" type="text">
+                    操作
+                </el-button>
+                <el-dropdown-menu slot="dropdown">
+                    <el-dropdown-item
+                            :command="['edit',scope.row]"
+                    >编辑
+                    </el-dropdown-item>
+                    <el-dropdown-item
+                            :command="['del',scope.row]"
+                            v-permission="'hoder:launch:crowd:ver:delete'"
+                            v-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 5 || (launchStatusEnum[scope.row.history.status]).code === 7"
+                    >删除
+                    </el-dropdown-item>
+                </el-dropdown-menu>
+            </el-dropdown> -->
+            </el-button-group>
+          </template>
+        </el-table-column>
+      </el-table>
+      <div align="right">
+        <pagination :currentpage="currentPage" :pagesize="pageSize" :totalcount="totalCount"
+          @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
+      </div>
     </div>
+    <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+      <!--<el-form v-if="launchType === 0">-->
+      <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
+      <!--<el-checkbox-->
+      <!--v-model="v.choosed"-->
+      <!--v-for="v in item.childs"-->
+      <!--:key="v.crowdId"-->
+      <!--disabled-->
+      <!--&gt;{{v.crowdName}}-->
+      <!--</el-checkbox>-->
+      <!--</el-form-item>-->
+      <!--</el-form>-->
+      <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
+      <div>{{ selectStrategy }}</div>
+    </el-dialog>
+  </div>
 </template>
 
 <script>
@@ -400,25 +349,25 @@ export default {
 <style lang="stylus" scoped>
     // .temp-label-list
     //     margin-top 50px
-    .temp-label-list >>> .el-button-group
-        display flex
-        align-items center
-        .el-button
-            margin 0 5px
-    .header
-        display flex
-        justify-content space-between
-        margin 10px 0
-    .search-input
-        position relative
-        display flex
-        width 350px
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
-    .operate
-        margin-left 20px
-        cursor pointer
+.temp-label-list >>> .el-button-group
+    display flex
+    align-items center
+    .el-button
+        margin 0 5px
+.header
+    display flex
+    justify-content space-between
+    margin 10px 0
+.search-input
+    position relative
+    display flex
+    width 350px
+.icon-fixed
+    position absolute
+    top 8px
+    right 10px
+    transform rotate(-90deg)
+.operate
+    margin-left 20px
+    cursor pointer
 </style>

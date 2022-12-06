@@ -2,51 +2,30 @@
   <div class="label-content">
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
       <el-tab-pane label="行为标签" name="behaviorLabel">
-        <BehaviorTag
-          :tagName="myCollectTagName"
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="tagList"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
+        <BehaviorTag :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
+          :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </BehaviorTag>
       </el-tab-pane>
       <el-tab-pane label="设备标签" name="labelZone">
-        <label-zone
-          :tagName="labelZoneTagName"
-          @clear-search="handleClearSearch"
-          :checkList="checkList"
-          @change-checkList="handleCheckListChange"
-          @fetch-checkList="fetchCheckListData"
-          @get-table-selected="handleGetTableSelectedData"
-          :show-selection="showSelection"
+        <label-zone :tagName="labelZoneTagName" @clear-search="handleClearSearch" :checkList="checkList"
+          @change-checkList="handleCheckListChange" @fetch-checkList="fetchCheckListData"
+          @get-table-selected="handleGetTableSelectedData" :show-selection="showSelection"
           :currentSelectTag="currentSelectTag">
         </label-zone>
       </el-tab-pane>
 
       <el-tab-pane label="模型标签" name="modelLabel">
         <!-- 一键投放时用这个组件 -->
-        <ModelLabelIndexSelect
-          v-if="showSelection"
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="currentSelectTag"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData"
-        >
+        <ModelLabelIndexSelect v-if="showSelection" :checkList="checkList" :show-selection="showSelection"
+          :currentSelectTag="currentSelectTag" @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange" @get-table-selected="handleGetTableSelectedData">
         </ModelLabelIndexSelect>
 
         <!-- 标签广场用这个 -->
-        <ModelLabelIndex
-          v-else
-          :checkList="checkList"
-          :show-selection="showSelection"
-          :currentSelectTag="currentSelectTag"
-          @clear-search="handleClearSearch"
-          @change-checkList="handleCheckListChange"
-          @get-table-selected="handleGetTableSelectedData">
+        <ModelLabelIndex v-else :checkList="checkList" :show-selection="showSelection"
+          :currentSelectTag="currentSelectTag" @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange" @get-table-selected="handleGetTableSelectedData">
         </ModelLabelIndex>
       </el-tab-pane>
 
@@ -87,7 +66,7 @@ export default {
   },
   data () {
     return {
-      activeName: 'labelZone',
+      activeName: 'behaviorLabel',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,

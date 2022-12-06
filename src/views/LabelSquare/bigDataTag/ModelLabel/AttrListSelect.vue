@@ -1,52 +1,34 @@
 <template>
-    <div class="tag-list">
-        <el-table
-            ref="changeTable"
-            v-show="!tagId"
-            v-loading="loading"
-            element-loading-text="拼命加载中"
-            element-loading-spinner="el-icon-loading"
-            border
-            :data="dataList"
-            @select="handleSelectOrCancel"
-            @select-all="handleSelectAllOrCancel"
-        >
-            <el-table-column
-              type="selection"
-              width="55"
-              v-if="showSelection"
-            >
-            </el-table-column>
-            <el-table-column prop="tagId" label="ID">
-            </el-table-column>
-            <el-table-column prop="tagName" label="名称">
-                <template slot-scope="scope">
-                    {{ scope.row.tagName }}
-                </template>
-            </el-table-column>
-            <el-table-column prop="dataSource" label="数据来源">
-                <template slot-scope="scope">
-                    {{ dataSourceEnum[scope.row.dataSource] }}
-                </template>
-            </el-table-column>
+  <div class="tag-list">
+    <el-table ref="changeTable" v-show="!tagId" v-loading="loading" element-loading-text="拼命加载中"
+      element-loading-spinner="el-icon-loading" border :data="dataList" @select="handleSelectOrCancel"
+      @select-all="handleSelectAllOrCancel">
+      <el-table-column type="selection" width="55" v-if="showSelection">
+      </el-table-column>
+      <el-table-column prop="tagId" label="ID">
+      </el-table-column>
+      <el-table-column prop="tagName" label="名称">
+        <template slot-scope="scope">
+          {{ scope.row.tagName }}
+        </template>
+      </el-table-column>
+      <el-table-column prop="dataSource" label="数据来源">
+        <template slot-scope="scope">
+          {{ dataSourceEnum[scope.row.dataSource] }}
+        </template>
+      </el-table-column>
 
-            <el-table-column
-                prop="tagKey"
-                label="标签code"
-            >
-            </el-table-column>
-            <el-table-column
-                prop="tagType"
-                label="类型"
-            >
-                <template slot-scope="scope">
-                    {{ typeEnum[scope.row.tagType] }}
-                </template>
-            </el-table-column>
+      <el-table-column prop="tagKey" label="标签code">
+      </el-table-column>
+      <el-table-column prop="tagType" label="类型">
+        <template slot-scope="scope">
+          {{ typeEnum[scope.row.tagType] }}
+        </template>
+      </el-table-column>
 
-        </el-table>
+    </el-table>
 
-    </div>
+  </div>
 </template>
 
 <script>
@@ -88,8 +70,8 @@ export default {
     checkListParent: function (val) {
       this.checkList = val
     },
-    'dataList': 'updateTableSelected',
-    'currentSelectTag': 'updateTableSelected'
+    dataList: 'updateTableSelected',
+    currentSelectTag: 'updateTableSelected'
   },
   methods: {
     handleCheckListChange (val) {
@@ -133,11 +115,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.dataList
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }
@@ -153,15 +135,15 @@ export default {
 .tag-list >>> .el-icon-cc-star-fill
     color #E6A13C
 .tag-list >>> .el-button-group
-    display flex
-    align-items center
-    .el-button
-        margin 0 5px
+  display flex
+  align-items center
+  .el-button
+      margin 0 5px
 .operate
-    margin-left 20px
-    cursor pointer
+  margin-left 20px
+  cursor pointer
 .red-new
-    color #ff0000
-    position absolute
-    top 0
+  color #ff0000
+  position absolute
+  top 0
 </style>

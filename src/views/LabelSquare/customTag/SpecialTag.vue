@@ -205,26 +205,13 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    .my-collect >>> .el-icon-cc-star-fill
-        color #E6A13C
-    .my-collect >>> .el-button-group
-        display flex
-        align-items center
-        .el-button
-            margin 0 5px
-    // .my-collect
-    //     margin-top 50px
-    .header
-        display flex
-        justify-content space-between
-        margin 10px 0
-    .search-input
-        position relative
-        display flex
-        width 350px
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
+@import '../common.styl'
+.search-input
+  position relative
+  display flex
+  width 350px
+.header
+  display flex
+  justify-content space-between
+  margin 10px 0
 </style>

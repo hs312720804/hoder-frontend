@@ -1,52 +1,33 @@
 <template>
-<div id="label-square">
-  <el-tabs
-    v-model="activeName"
-    @tab-click="handleTabChange"
-    class="label-square-tabs"
-  >
-    <el-tab-pane label="统计" name="total">
-      <Total></Total>
-    </el-tab-pane>
+  <div id="label-square">
+    <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-square-tabs">
+      <el-tab-pane label="统计" name="total">
+        <Total></Total>
+      </el-tab-pane>
 
-    <el-tab-pane label="大数据标签" name="bigDataTag">
-      <BigDataTag
-        :checkList="checkList"
-        :show-selection="showSelection"
-        :currentSelectTag="tagList"
-        @clear-search="handleClearSearch"
-        @change-checkList="handleCheckListChange"
-        @get-table-selected="handleGetTableSelectedData"
-      ></BigDataTag>
-    </el-tab-pane>
+      <el-tab-pane label="大数据标签" name="bigDataTag">
+        <BigDataTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData"></BigDataTag>
+      </el-tab-pane>
 
-    <el-tab-pane label="第三方标签" name="third">
-      <third-party-tag
-        :checkList="checkList"
-        :show-selection="showSelection"
-        :currentSelectTag="tagList"
-        @clear-search="handleClearSearch"
-        @change-checkList="handleCheckListChange"
-        @get-table-selected="handleGetTableSelectedData"
-      >
-      </third-party-tag>
-    </el-tab-pane>
+      <el-tab-pane label="第三方标签" name="third">
+        <third-party-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </third-party-tag>
+      </el-tab-pane>
 
-    <el-tab-pane label="自定义标签" name="customTag">
-      <custom-tag
-        :checkList="checkList"
-        :show-selection="showSelection"
-        :currentSelectTag="tagList"
-        @clear-search="handleClearSearch"
-        @change-checkList="handleCheckListChange"
-        @get-table-selected="handleGetTableSelectedData"
-      >
-      </custom-tag>
-    </el-tab-pane>
+      <el-tab-pane label="自定义标签" name="customTag">
+        <custom-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </custom-tag>
+      </el-tab-pane>
 
-  </el-tabs>
+    </el-tabs>
 
-</div>
+  </div>
 </template>
 
 <script>

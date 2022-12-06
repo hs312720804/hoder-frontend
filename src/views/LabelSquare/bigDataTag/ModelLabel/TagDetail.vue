@@ -1,31 +1,31 @@
 <template>
-    <div class="read-tag-category">
-        <template v-if="row && !showEdit">
-            <el-card shadow="never">
-                <div slot="header">
-                    <span>{{ row.tagName }}</span>
-                    <el-button style="float:right; margin-top: -7px;" @click="$emit('read-cancel')" type="primary">返回</el-button>
-                </div>
+  <div class="read-tag-category">
+    <template v-if="row && !showEdit">
+      <el-card shadow="never">
+        <div slot="header">
+          <span>{{ row.tagName }}</span>
+          <el-button style="float:right; margin-top: -7px;" @click="$emit('read-cancel')" type="primary">返回</el-button>
+        </div>
 
-                <el-form label-position="left" label-width="120px">
-                    <el-form-item label="ID">
-                        {{ row.id }}
-                    </el-form-item>
-                    <el-form-item label="英文名">
-                        {{ row.tagEnName }}
-                    </el-form-item>
-                    <el-form-item label="是否每日更新">
-                        {{ row.autoVersion === 1 ? '是': '否' }}
-                    </el-form-item>
-                    <el-form-item label="备注">
-                        {{ row.remark }}
-                    </el-form-item>
-                </el-form>
-            </el-card>
-            <AttrList :row="row" ></AttrList>
-        </template>
-        <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
-    </div>
+        <el-form label-position="left" label-width="120px">
+          <el-form-item label="ID">
+            {{ row.id }}
+          </el-form-item>
+          <el-form-item label="英文名">
+            {{ row.tagEnName }}
+          </el-form-item>
+          <el-form-item label="是否每日更新">
+            {{ row.autoVersion === 1 ? '是' : '否' }}
+          </el-form-item>
+          <el-form-item label="备注">
+            {{ row.remark }}
+          </el-form-item>
+        </el-form>
+      </el-card>
+      <AttrList :row="row"></AttrList>
+    </template>
+    <!-- <AddOrEditSpecialTag v-if="showEdit" :paramsData="paramsData"></AddOrEditSpecialTag> -->
+  </div>
 </template>
 
 <script>
@@ -44,7 +44,7 @@ export default {
     },
     row: {
       type: Object,
-      default: () => {}
+      default: () => { }
     }
   },
   data () {
@@ -100,6 +100,6 @@ export default {
 
 </script>
 <style lang="stylus" scoped>
-    .read-tag-category
-        width 100%
+.read-tag-category
+    width 100%
 </style>
