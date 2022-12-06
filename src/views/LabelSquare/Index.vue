@@ -109,8 +109,83 @@ export default {
       })
     },
     handleTabChange () {
-
+      switch (this.activeName) {
+        case 'bigDataTag':
+          // 刷新大数据
+          // this.fetchCheckListData()
+          this.$root.$emit('big-data-list-refresh')
+          break
+        case 'third':
+          // 刷新第三方
+          // this.fetchCheckListData()
+          this.$root.$emit('third-list-refresh')
+          break
+        case 'customTag':
+          // 自定义
+          // this.fetchTempCheckListData()
+          this.$root.$emit('custom-tag-list-refresh')
+          break
+      }
     },
+    // handleTabChange () {
+    //   switch (this.activeName) {
+    //     case 'labelZone':
+    //       // 刷新标签广场页
+    //       this.fetchCheckListData()
+    //       this.$root.$emit('label-zone-list-refresh')
+    //       break
+    //     case 'myCollect':
+    //       // 刷新我的收藏
+    //       this.fetchCheckListData()
+    //       this.$root.$emit('my-collect-list-refresh')
+    //       break
+    //     case 'tempLabel':
+    //       // 临时标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('temp-label-list-refresh-2')
+    //       break
+    //     case 'specialTag':
+    //       // 刷新组合标签
+    //       this.fetchCheckListData()
+    //       this.$root.$emit('special-tag-list-refresh')
+    //       break
+    //     case 'localLabel':
+    //       // 本地标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('local-label-list-refresh')
+    //       break
+    //     case 'behaviorLabel':
+    //       // 行为标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('temp-label-list-refresh-3')
+    //       break
+    //     case 'bankLabel':
+    //       // 数据银行标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('temp-label-list-refresh-4')
+    //       break
+    //     case 'customTag':
+    //       // 自定义标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('custom-tag-list-refresh')
+    //       break
+    //     case 'ThirdPartyTag':
+    //       // 自定义标签
+    //       this.fetchTempCheckListData()
+    //       this.$root.$emit('third-tag-list-refresh')
+    //       break
+    //     case 'modelLabel':
+    //       // 模型标签
+    //       // this.fetchListData()
+    //       this.$root.$emit('model-tag-list-refresh')
+    //       break
+    //     case 'crowdLabel':
+    //       // 人群标签
+    //       // this.fetchListData()
+    //       this.$root.$emit('crowd-label-list-refresh')
+    //       break
+    //   }
+    // },
     handleClearSearch () {
       this.searchVal = undefined
       this.labelZoneTagName = undefined

@@ -145,12 +145,10 @@ export default {
     dataList: {
       type: Array
     },
-    dataSourceEnum: {
-      type: Object
-    },
-    typeEnum: {
-      type: Object
-    },
+
+    // typeEnum: {
+    //   type: Object
+    // },
     checkListParent: {
       type: Array
     },
@@ -184,7 +182,9 @@ export default {
       multipleSelection: [],
       tagId: undefined,
       checkList: [],
-      showDetailDialog: false
+      showDetailDialog: false,
+      dataSourceEnum: {},
+      typeEnum: {}
     }
   },
   watch: {
@@ -195,6 +195,21 @@ export default {
     currentSelectedTags: 'updateTableSelected'
   },
   methods: {
+    getDataSourceList () {
+      this.$service.getDatasource().then((data) => {
+        // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
+        // this.dataSourceEnum = arr
+        this.dataSourceEnum = data || {}
+      })
+    },
+    getTagType () {
+      this.$service.getTagType().then((data) => {
+        // const arr = Object.keys(data).map(value => ({ value: parseInt(value), label: data[value] }))
+        // this.dataSourceEnum = arr
+        this.typeEnum = data || {}
+      })
+    },
+
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     },
@@ -279,6 +294,8 @@ export default {
     }
   },
   created () {
+    this.getDataSourceList()
+    this.getTagType()
     this.checkList = this.checkListParent
   }
 }

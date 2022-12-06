@@ -1,72 +1,46 @@
 <template>
   <div class="my-collect">
-      <div class="header">
-            <div v-if="!showSelection">
-                <el-button
-                    @click="handleAdd"
-                    type="primary"
-                >
-                  新建
-                </el-button>
-            </div>
-            <div v-else></div>
-            <div class="search-input">
-                <el-input
-                        placeholder="支持按标签名、ID搜索"
-                        class="header-input"
-                        v-model="launchName"
-                        @keyup.enter.native="fetchData"
-                ></el-input>
-                <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-            </div>
-        </div>
-      <tag-list
-        :data-list="dataList"
-        :data-source-enum="dataSourceEnum"
-        :type-enum="typeEnum"
-        :check-list-parent="checkList"
-        :current-selected-tags="currentSelectTag"
-        :show-selection="showSelection"
-        :show-delete-btn="true"
-        :show-edit-btn="true"
-        @fetch-data="fetchData"
-        @change-checkList="handleCheckListChange"
-        @table-selected="handleTableSelected"
-        @delete="handleDelete"
-        @edit="handleEdit"
-      >
-        <div align="right">
-            <pagination
-                    :currentpage="filter.pageNum"
-                    :pagesize="filter.pageSize"
-                    :totalcount="totalCount"
-                    @handle-size-change="handleSizeChange"
-                    @handle-current-change="handleCurrentChange"
-            ></pagination>
-        </div>
-      </tag-list>
+    <div class="header">
+      <div v-if="!showSelection">
+        <el-button @click="handleAdd" type="primary">
+          新建
+        </el-button>
+      </div>
+      <div v-else></div>
+      <div class="search-input">
+        <el-input placeholder="支持按标签名搜索" class="header-input" v-model="launchName"
+          @keyup.enter.native="fetchData"></el-input>
+        <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
+      </div>
+    </div>
+    <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
+      :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
+      :show-delete-btn="true" :show-edit-btn="true" @fetch-data="fetchData" @change-checkList="handleCheckListChange"
+      @table-selected="handleTableSelected" @delete="handleDelete" @edit="handleEdit">
+      <div align="right">
+        <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
+          @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
+      </div>
+    </tag-list>
 
-      <el-dialog
-        :title="dialogTitle"
-        :visible.sync="dialogVisible"
-        width="500px">
-            <el-form label-position="left" label-width="80px" :model="form">
-                <el-form-item label="名称" required>
-                    <el-input v-model="form.tagName"></el-input>
-                </el-form-item>
-                <el-form-item label="英文名" required>
-                    <el-input v-model="form.tagKey"></el-input>
-                </el-form-item>
-                <el-form-item label="备注">
-                    <el-input v-model="form.remark"></el-input>
-                </el-form-item>
+    <el-dialog :title="dialogTitle" :visible.sync="dialogVisible" width="500px">
+      <el-form label-position="left" label-width="80px" :model="form">
+        <el-form-item label="名称" required>
+          <el-input v-model="form.tagName"></el-input>
+        </el-form-item>
+        <el-form-item label="英文名" required>
+          <el-input v-model="form.tagKey"></el-input>
+        </el-form-item>
+        <el-form-item label="备注">
+          <el-input v-model="form.remark"></el-input>
+        </el-form-item>
 
-            </el-form>
-            <div slot="footer" class="dialog-footer">
-                <el-button @click="dialogVisible = false">取 消</el-button>
-                <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
-            </div>
-      </el-dialog>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="dialogVisible = false">取 消</el-button>
+        <el-button type="primary" @click="handleAddOrEdit">提 交</el-button>
+      </div>
+    </el-dialog>
   </div>
 </template>
 
@@ -104,7 +78,7 @@ export default {
       dataList: [],
       filter: {
         pageNum: 1,
-        pageSize: 10,
+        pageSize: 50,
         tagName: undefined
       },
       dataSourceEnum: {},
@@ -164,16 +138,18 @@ export default {
       // const filter = this.filter
       const filter = {
         ...this.filter,
-        launchName: this.launchName
+        keyword: this.launchName
       }
-      this.$service.specialTagList(filter).then(data => {
+      this.$service.getTagBehavior(filter).then(data => {
         // eslint-disable-next-line
-                // debugger
+        // debugger
         const result = data
-        this.dataList = result.pageInfo.list
-        this.totalCount = result.pageInfo.total
-        this.dataSourceEnum = result.DataSourceMap
+        this.dataList = result.row
+        this.totalCount = result.total
+        // this.dataSourceEnum = result.DataSourceMap
         this.typeEnum = result.tagKey
+
+        console.log('this.dataList--->', this.dataList)
       })
     },
     handleCheckListChange (val) {
@@ -198,7 +174,7 @@ export default {
 
   },
   created () {
-    this.$root.$on('custom-tag-list-refresh', this.fetchData)
+    this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

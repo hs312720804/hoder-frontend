@@ -2,7 +2,15 @@
   <div class="one-step-select-tag">
     <el-tabs v-model="activeName" @tab-click="handleTabChange">
       <el-tab-pane label="我常用的" name="total">
-        <Total></Total>
+        <MyTopMax30
+          :tagName="myCollectTagName"
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </MyTopMax30>
       </el-tab-pane>
 
       <el-tab-pane label="大数据标签" name="bigDataTag">
@@ -73,19 +81,21 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import Total from './Total.vue'
+// import Total from './Total.vue'
 import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import { dataSourceColorEnum } from '@/utils/tags.js'
+import MyTopMax30 from './MyTopMax30'
 
 export default {
   name: 'crowdCompute',
   components: {
-    Total,
+    // Total,
     BigDataTag,
     ThirdPartyTag,
-    CustomTag
+    CustomTag,
+    MyTopMax30
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
@@ -285,7 +295,23 @@ export default {
       })
     },
     handleTabChange () {
-
+      switch (this.activeName) {
+        case 'bigDataTag':
+          // 刷新大数据
+          // this.fetchCheckListData()
+          this.$root.$emit('big-data-list-refresh')
+          break
+        case 'third':
+          // 刷新第三方
+          // this.fetchCheckListData()
+          this.$root.$emit('third-list-refresh')
+          break
+        case 'customTag':
+          // 自定义
+          // this.fetchTempCheckListData()
+          this.$root.$emit('custom-tag-list-refresh')
+          break
+      }
     },
     handleClearSearch () {
       this.searchVal = undefined
@@ -421,5 +447,7 @@ export default {
   background-color #fff
   z-index 999
   width: calc(100% - 363px);
+  height: 185px;
+  overflow: auto;
 
 </style>

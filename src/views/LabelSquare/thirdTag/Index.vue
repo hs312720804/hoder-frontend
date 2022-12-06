@@ -9,9 +9,9 @@
           ></el-input>
           <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div>
-
+      <!-- {{showTypeTab}} -->
+      <!-- v-if="showTypeTab" -->
       <el-tabs
-        v-if="showTypeTab"
         v-model="activeName"
         @tab-click="handleTabChange"
         class="label-content-wrap"
@@ -41,6 +41,16 @@
             </div>
           </tag-list>
         </el-tab-pane>
+
+        <el-tab-pane label="实时标签" name="realTime">
+          <RealTimeTag
+            :checkList="checkList"
+            :show-selection="showSelection"
+            :currentSelectTag="currentSelectTag"
+            @change-checkList="handleCheckListChange"
+            @get-table-selected="handleTableSelected">
+          </RealTimeTag>
+        </el-tab-pane>
       </el-tabs>
 
       <el-dialog
@@ -69,10 +79,13 @@
 
 <script>
 import tagList from '../coms/TagList.vue'
+import RealTimeTag from './RealTimeTag.vue'
+
 export default {
   name: 'MyCollect',
   components: {
-    tagList
+    tagList,
+    RealTimeTag
   },
   props: {
     checkList: {
@@ -115,8 +128,8 @@ export default {
       dialogTitle: '',
       totalCount: 0,
       typeTabsList: [],
-      activeName: '',
-      showTypeTab: true
+      activeName: ''
+      // showTypeTab: true
     }
   },
   methods: {
@@ -163,14 +176,13 @@ export default {
       this.dialogVisible = true
     },
     async fetchData () {
-      debugger
       // 搜索时名称为空时，默认赋值为类型第一个
       if (!this.filter.tagName && this.typeTabsList.length > 0) {
         this.filter.tagName = this.typeTabsList[0].groupName
         this.activeName = this.typeTabsList[0].groupName
       }
       console.log('this.typeTabsList1111====>', this.typeTabsList)
-      this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
+      // this.showTypeTab = !!this.typeTabsList.find(item => item.groupName === this.filter.tagName) // 搜索时隐藏类型tab
 
       const filter = this.filter
       this.$service.searchByGroup(filter).then(data => {
@@ -215,10 +227,8 @@ export default {
     }
   },
   async created () {
-    this.$root.$on('third-tag-list-refresh', this.fetchData)
-    console.log(1)
+    this.$root.$on('third-list-refresh', this.fetchData)
     await this.fetchTypeData()
-    console.log(2)
     this.fetchData()
   }
 }

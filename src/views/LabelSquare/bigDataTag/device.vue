@@ -209,7 +209,7 @@ export default {
 
   },
   created () {
-    this.$root.$on('label-zone-list-refresh', this.fetchData)
+    this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

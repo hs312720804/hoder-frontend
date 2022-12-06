@@ -320,12 +320,12 @@ export default {
     }
   },
   created () {
-    this.$root.$on(`temp-label-list-refresh-${this.crowdType}`, this.fetchData)
+    this.$root.$on('custom-tag-list-refresh', this.fetchData)
     this.fetchData()
     // this.monitorRangeTime = [this.$moment().subtract(6, 'days').format('YYYY-MM-DD'), this.$moment().subtract(0, 'days').format('YYYY-MM-DD')]
   },
   beforeDestroy () {
-    this.$root.$off(`temp-label-list-refresh-${this.crowdType}`)
+    this.$root.$off('custom-tag-list-refresh')
   },
   watch: {
     refreshFlag: function (val) {

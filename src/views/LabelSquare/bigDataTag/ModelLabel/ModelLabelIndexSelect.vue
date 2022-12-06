@@ -1,6 +1,5 @@
 <template>
   <div class="label-zone tab-content">
-<!-- {{activeTab}} -->
       <el-tabs v-model="activeTab" @tab-click="handleTabClick">
         <el-tab-pane
           v-for="item in dataList"
@@ -201,7 +200,7 @@ export default {
 
   },
   created () {
-    this.$root.$on('model-tag-list-refresh', this.fetchData)
+    this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

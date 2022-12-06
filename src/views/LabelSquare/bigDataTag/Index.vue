@@ -2,7 +2,15 @@
   <div class="label-content">
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
       <el-tab-pane label="行为标签" name="behaviorLabel">
-
+        <BehaviorTag
+          :tagName="myCollectTagName"
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </BehaviorTag>
       </el-tab-pane>
       <el-tab-pane label="设备标签" name="labelZone">
         <label-zone
@@ -18,7 +26,21 @@
       </el-tab-pane>
 
       <el-tab-pane label="模型标签" name="modelLabel">
+        <!-- 一键投放时用这个组件 -->
+        <ModelLabelIndexSelect
+          v-if="showSelection"
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="currentSelectTag"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData"
+        >
+        </ModelLabelIndexSelect>
+
+        <!-- 标签广场用这个 -->
         <ModelLabelIndex
+          v-else
           :checkList="checkList"
           :show-selection="showSelection"
           :currentSelectTag="currentSelectTag"
@@ -43,12 +65,16 @@
 <script>
 import labelZone from './device.vue'
 import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
+import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
+import BehaviorTag from './BehaviorTag.vue'
 
 export default {
   name: 'bigDataTag',
   components: {
     labelZone,
-    ModelLabelIndex
+    ModelLabelIndex,
+    ModelLabelIndexSelect,
+    BehaviorTag
   },
   props: {
     showSelection: {
@@ -106,63 +132,6 @@ export default {
     },
 
     handleTabChange () {
-      switch (this.activeName) {
-        case 'labelZone':
-          // 刷新标签广场页
-          this.fetchCheckListData()
-          this.$root.$emit('label-zone-list-refresh')
-          break
-        case 'myCollect':
-          // 刷新我的收藏
-          this.fetchCheckListData()
-          this.$root.$emit('my-collect-list-refresh')
-          break
-        case 'tempLabel':
-          // 临时标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-2')
-          break
-        case 'specialTag':
-          // 刷新组合标签
-          this.fetchCheckListData()
-          this.$root.$emit('special-tag-list-refresh')
-          break
-        case 'localLabel':
-          // 本地标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('local-label-list-refresh')
-          break
-        case 'behaviorLabel':
-          // 行为标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-3')
-          break
-        case 'bankLabel':
-          // 数据银行标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-4')
-          break
-        case 'customTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('custom-tag-list-refresh')
-          break
-        case 'ThirdPartyTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('third-tag-list-refresh')
-          break
-        case 'modelLabel':
-          // 模型标签
-          // this.fetchListData()
-          this.$root.$emit('model-tag-list-refresh')
-          break
-        case 'crowdLabel':
-          // 人群标签
-          // this.fetchListData()
-          this.$root.$emit('crowd-label-list-refresh')
-          break
-      }
     },
     handleGetTableSelectedData (val, mode) {
       this.$emit('get-table-selected', val, mode)

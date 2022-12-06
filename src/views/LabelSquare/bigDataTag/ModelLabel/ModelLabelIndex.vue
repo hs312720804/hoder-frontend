@@ -218,7 +218,7 @@ export default {
 
   },
   created () {
-    this.$root.$on('model-tag-list-refresh', this.fetchData)
+    this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

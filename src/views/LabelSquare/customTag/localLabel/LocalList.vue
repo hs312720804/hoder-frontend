@@ -228,7 +228,7 @@ export default {
     }
   },
   created () {
-    this.$root.$on('local-label-list-refresh', this.fetchData)
+    this.$root.$on('custom-tag-list-refresh', this.fetchData)
     this.fetchData()
   },
   watch: {
