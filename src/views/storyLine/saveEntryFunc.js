@@ -11,7 +11,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   })
 
   // 校验流转指标
-  const valid2 = flowCondition
+  const valid2 = flowCondition && flowCondition.rules.length > 0
     ? await new Promise((resolve, reject) => {
       return _this.$refs.setCirculationRef.$refs.ruleForm.validate((valid) => {
         resolve(valid)
@@ -19,7 +19,14 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
     })
     : true
 
-  if (!valid1 || !valid2) return
+  // 校验普通标签里面的流转指标
+  const valid3 = await new Promise((resolve, reject) => {
+    return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
+      resolve(valid)
+    })
+  })
+
+  if (!valid1 || !valid2 || !valid3) return
 
   console.log('aa--->', valid2)
   // const form = JSON.parse(JSON.stringify(thisForm))

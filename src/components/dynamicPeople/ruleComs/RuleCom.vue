@@ -332,7 +332,7 @@ export default {
 .label-item span {
   margin-right: 10px;
 }
-.form-item-styl {
-  margin-top: 4px
-}
+// .form-item-styl {
+//   margin-top: 4px
+// }
 </style>

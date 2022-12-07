@@ -1,12 +1,14 @@
 <template>
   <div class="label-content">
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
+
       <el-tab-pane label="行为标签" name="behaviorLabel">
         <BehaviorTag :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
           :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
           @get-table-selected="handleGetTableSelectedData">
         </BehaviorTag>
       </el-tab-pane>
+
       <el-tab-pane label="设备标签" name="labelZone">
         <label-zone :tagName="labelZoneTagName" @clear-search="handleClearSearch" :checkList="checkList"
           @change-checkList="handleCheckListChange" @fetch-checkList="fetchCheckListData"
@@ -29,6 +31,18 @@
         </ModelLabelIndex>
       </el-tab-pane>
 
+      <!-- 一键投放时, 隐藏 -->
+      <el-tab-pane v-if="!showSelection" label="动态流转标签" name="circularTag" >
+        <CirculationTag
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          @clear-search="handleClearSearch"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </CirculationTag>
+      </el-tab-pane>
+
     </el-tabs>
 
     <!-- <div v-if="showSelection">
@@ -42,10 +56,11 @@
 </template>
 
 <script>
-import labelZone from './device.vue'
+import labelZone from './Device.vue'
 import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
 import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
 import BehaviorTag from './BehaviorTag.vue'
+import CirculationTag from './CirculationTag.vue'
 
 export default {
   name: 'bigDataTag',
@@ -53,7 +68,8 @@ export default {
     labelZone,
     ModelLabelIndex,
     ModelLabelIndexSelect,
-    BehaviorTag
+    BehaviorTag,
+    CirculationTag
   },
   props: {
     showSelection: {
