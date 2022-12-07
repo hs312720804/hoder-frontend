@@ -1,5 +1,5 @@
 <template>
-  <div  class="label-item">
+  <div class="label-item">
     <template v-if="childItem.tagKey === 'exposeDays' || childItem.tagKey === 'exposeTimes' || childItem.tagKey === 'payAmount'">
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
@@ -149,6 +149,66 @@
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
 
+    <!-- 试看二维码 -->
+    <template v-if="childItem.tagKey === 'detailAdPos'">
+      <!-- 选择产品包 -->
+      <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
+
+      <el-form-item
+        label=""
+        :prop="'rules.' + index + '.rules.' + n + '.count'"
+        :rules="{
+          required: true, message: '不能为空', trigger: 'change'
+        }"
+        class="form-item-styl"
+      >
+        <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline">
+          <template>
+            <el-option v-for="item in detailAdPosOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="orderNum" label="下单次数"></el-option>
+            <el-option value="orderDays " label="下单天数"></el-option> -->
+          </template>
+        </el-select>
+      </el-form-item>
+
+      <!-- 选择 operator -->
+      <Operator :childItem="childItem" :index="index" :n="n"></Operator>
+
+      <!-- 输入 value -->
+      <Value :childItem="childItem" :index="index" :n="n"></Value>
+    </template>
+
+    <!-- 详情页曝光 -->
+    <template v-if="childItem.tagKey === 'detailPageView'">
+      <!-- 选择产品包 -->
+      <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
+
+      <el-form-item
+        label=""
+        :prop="'rules.' + index + '.rules.' + n + '.count'"
+        :rules="{
+          required: true, message: '不能为空', trigger: 'change'
+        }"
+        class="form-item-styl"
+      >
+        <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline">
+          <template>
+            <el-option v-for="item in detailPageViewOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="orderNum" label="下单次数"></el-option>
+            <el-option value="orderDays " label="下单天数"></el-option> -->
+          </template>
+        </el-select>
+      </el-form-item>
+
+      <!-- 选择 operator -->
+      <Operator :childItem="childItem" :index="index" :n="n"></Operator>
+
+      <!-- 输入 value -->
+      <Value :childItem="childItem" :index="index" :n="n"></Value>
+    </template>
+
   </div>
 </template>
 
@@ -218,6 +278,22 @@ export default {
       }, {
         label: '下单天数',
         value: 'orderDays'
+      }],
+      // 试看二维码
+      detailAdPosOptions: [{
+        label: '曝光次数',
+        value: 'detailAdPosShowPv '
+      }, {
+        label: '曝光天数',
+        value: 'detailAdPosShowDays '
+      }],
+      // 详情页曝光
+      detailPageViewOptions: [{
+        label: '次数',
+        value: 'detailPageViewPv'
+      }, {
+        label: '天数',
+        value: 'detailPageViewDays'
       }]
 
     }
