@@ -109,6 +109,25 @@
         </el-select>
       </el-form-item>
 
+      <!-- 天数次数 -->
+      <el-form-item
+        label=""
+        :prop="'rules.' + index + '.rules.' + n + '.count'"
+        :rules="{
+          required: true, message: '不能为空', trigger: 'change'
+        }"
+        class="form-item-styl"
+      >
+        <el-select style="width: 100px" name="oxve" v-model="childItem.count" clearable class="input-inline" >
+          <template>
+            <el-option v-for="item in countOptions" :key="item.value" :value="item.value" :label="item.label"></el-option>
+
+            <!-- <el-option value="pv" label="次数"></el-option>
+            <el-option value="days" label="天数"></el-option> -->
+          </template>
+        </el-select>
+      </el-form-item>
+
       <!-- 选择产品包 -->
       <SourceSign :childItem="childItem" :index="index" :n="n"></SourceSign>
 
@@ -236,6 +255,8 @@ export default {
   },
   data () {
     return {
+      // 优惠券活跃： 天数次数选项，为了兼容旧版本，需要特殊处理
+      couponsActiveCountType: 'pv',
       couponOptions: [
         {
           label: '曝光',
@@ -265,6 +286,7 @@ export default {
         label: '推荐位',
         value: 2
       }],
+      // 该字段多处使用，勿改
       countOptions: [{
         label: '次数',
         value: 'pv'
