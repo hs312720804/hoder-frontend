@@ -203,6 +203,7 @@
                 </span>
               </div>
               <!-- {{entry.rulesJson}} -->
+              <!-- {{ JSON.parse(entry.rulesJson).rules }} -->
               <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
               <span class="border-title">普通标签</span>
               <div class="rule-string" >
@@ -221,14 +222,27 @@
                       >
                       <!-- {{childItem}} -->
                         <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.categoryName }}</span>
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
+
+                        <!-- 流转标签 -->
+                        <template v-if="(childItem.dataSource === 20)">
+                          <ShowFlowConditionRuleItem
+                            :childItem="childItem"
+                            :soureceSignList="soureceSignList"
+                            >
+                          </ShowFlowConditionRuleItem>
+                        </template>
+
+                        <template v-else>
+                          <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                          <span class="in">
+                            <span >{{ childItem.value }}</span>
+                          </span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        </template>
+
                       </div>)
                     </div>
                   </div>
@@ -253,52 +267,12 @@
               <div class="rule-string">
                 <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
                   <!-- {{entry.flowCondition}} -->
-                  <div
-                    v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
-                    :key="index"
-                    class="rule-detail"
-                  >
-                    <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
-                    <!-- {{ item }} -->
-                    <div class="label-ground">
-                      (
-                      <div
-                        v-for="(childItem, childItemIndex) in item.rules"
-                        :key="childItem.tagId+childItemIndex"
-                        class="label-item"
-                      >
-                        <!-- {{ childItem }} -->
-                        <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.tagName }}</span>，
+                  <ShowFlowConditionRule
+                    :flowCondition="JSON.parse(entry.flowCondition)"
+                    :conditionEnum="conditionEnum"
+                    :soureceSignList="soureceSignList"
+                  ></ShowFlowConditionRule>
 
-                        <!-- 模块活跃 -->
-                        <template v-if="childItem.tagKey=== 'moduleActive'" >
-                          <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                          <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                          <span class="txt">{{ childItem.locationId || '' }}</span>，
-                          <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                        </template>
-
-                        <!-- 优惠券活跃 -->
-                        <template v-if="childItem.tagKey=== 'couponsActive'">
-                          <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                        </template>
-
-                        <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                        <!-- 产品包下单 -->
-                        <template v-if="childItem.tagKey=== 'productOrder'">
-                          ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                        </template>
-
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                      </div>
-                      )
-                    </div>
-                  </div>
                 </div>
                 <div v-else class="no-data-text">暂无</div>
               </div>
@@ -403,52 +377,12 @@
               <div class="rule-string">
                 <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
                   <!-- {{exportItem.flowCondition}} -->
-                  <div
-                    v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
-                    :key="index"
-                    class="rule-detail"
-                  >
-                    <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
-                    <!-- {{ item }} -->
-                    <div class="label-ground">
-                      (
-                      <div
-                        v-for="(childItem, childItemIndex) in item.rules"
-                        :key="childItem.tagId+childItemIndex"
-                        class="label-item"
-                      >
-                        <!-- {{ childItem }} -->
-                        <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.tagName }}</span>，
+                  <ShowFlowConditionRule
+                    :flowCondition="JSON.parse(exportItem.flowCondition)"
+                    :conditionEnum="conditionEnum"
+                    :soureceSignList="soureceSignList"
+                  ></ShowFlowConditionRule>
 
-                        <!-- 模块活跃 -->
-                        <template v-if="childItem.tagKey=== 'moduleActive'" >
-                          <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                          <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                          <span class="txt">{{ childItem.locationId || '' }}</span>，
-                          <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                        </template>
-
-                        <!-- 优惠券活跃 -->
-                        <template v-if="childItem.tagKey=== 'couponsActive'">
-                          <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                        </template>
-
-                        <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                        <!-- 产品包下单 -->
-                        <template v-if="childItem.tagKey=== 'productOrder'">
-                          ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                        </template>
-
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                      </div>
-                      )
-                    </div>
-                  </div>
                 </div>
                 <div v-else class="no-data-text">暂无</div>
               </div>
@@ -526,11 +460,15 @@ import { handleSave as saveFunc } from './saveEntryFunc.js'
 
 import createClientDialog from './createClientDialog.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
+import ShowFlowConditionRule from './ShowFlowConditionRule.vue'
+import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
 
 export default {
   components: {
     createClientDialog,
-    MultipleActionTagSelect
+    MultipleActionTagSelect,
+    ShowFlowConditionRule,
+    ShowFlowConditionRuleItem
   },
   props: {
     servicer: {
@@ -641,45 +579,45 @@ export default {
       skillValue: '',
       isEdit: false,
       isEditValue: false,
-      couponOptions: [{
-        label: '曝光',
-        value: 'couponShowPv'
-      }, {
-        label: '领用',
-        value: 'couponCreatePv'
-      }, {
-        label: '使用',
-        value: 'couponUsePv'
-      }],
-      actionOptions: [{
-        label: '曝光',
-        value: 'show'
-      },
-      {
-        label: '点击',
-        value: 'click'
-      }],
-      locationTypeOptions: [{
-        label: '板块位',
-        value: 1
-      }, {
-        label: '推荐位',
-        value: 2
-      }],
-      countOptions: [{
-        label: '次数',
-        value: 'pv'
-      }, {
-        label: '天数',
-        value: 'days'
-      }],
-      productCountOptions: [{
-        label: '下单次数',
-        value: 'orderNum'
-      }, {
-        label: '下单天数',
-        value: 'orderDays'
-      }],
+      // couponOptions: [{
+      //   label: '曝光',
+      //   value: 'couponShowPv'
+      // }, {
+      //   label: '领用',
+      //   value: 'couponCreatePv'
+      // }, {
+      //   label: '使用',
+      //   value: 'couponUsePv'
+      // }],
+      // actionOptions: [{
+      //   label: '曝光',
+      //   value: 'show'
+      // },
+      // {
+      //   label: '点击',
+      //   value: 'click'
+      // }],
+      // locationTypeOptions: [{
+      //   label: '板块位',
+      //   value: 1
+      // }, {
+      //   label: '推荐位',
+      //   value: 2
+      // }],
+      // countOptions: [{
+      //   label: '次数',
+      //   value: 'pv'
+      // }, {
+      //   label: '天数',
+      //   value: 'days'
+      // }],
+      // productCountOptions: [{
+      //   label: '下单次数',
+      //   value: 'orderNum'
+      // }, {
+      //   label: '下单天数',
+      //   value: 'orderDays'
+      // }],
       conditionEnum: {
         AND: '且',
         OR: '或'
@@ -807,18 +745,7 @@ export default {
     //     }
     //   }
     // },
-    getName (list, key) {
-      const obj = list.find(item => {
-        return key === item.value
-      })
-      return obj ? obj.label : ''
-    },
-    getsourceSignName (key) {
-      const obj = this.soureceSignList.find(item => {
-        return key === item.sourceSign
-      })
-      return obj ? obj.sourceName : ''
-    },
+
     redirctByNextId (id) {
       const servicer = this.getServicerBynextId(id)
       // 选择接待员
