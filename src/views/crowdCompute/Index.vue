@@ -3,20 +3,37 @@
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
 
       <el-tab-pane label="临时标签" name="tempLabel">
-        <temp-label-index :show-selection="showSelection" :currentSelectTag="tagList" :checkList="tempCheckList"
-          :crowdType=2 @get-table-selected="handleGetTableSelectedData" @change-checkList="handleTempCheckListChange">
+        <temp-label-index
+          :crowdType=2
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleTempCheckListChange">
         </temp-label-index>
       </el-tab-pane>
 
       <el-tab-pane label="行为标签" name="behaviorLabel">
-        <temp-label-index :show-selection="showSelection" :currentSelectTag="tagList" :checkList="tempCheckList"
-          @get-table-selected="handleGetTableSelectedData" @change-checkList="handleTempCheckListChange" :crowdType=3>
+        <temp-label-index
+          :crowdType=3
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleTempCheckListChange"
+        >
         </temp-label-index>
       </el-tab-pane>
 
       <el-tab-pane label="数据银行标签" name="bankLabel">
-        <temp-label-index :show-selection="showSelection" :currentSelectTag="tagList" :checkList="tempCheckList"
-          @get-table-selected="handleGetTableSelectedData" @change-checkList="handleTempCheckListChange" :crowdType=4>
+        <temp-label-index
+          :crowdType=4
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleTempCheckListChange"
+        >
         </temp-label-index>
       </el-tab-pane>
 

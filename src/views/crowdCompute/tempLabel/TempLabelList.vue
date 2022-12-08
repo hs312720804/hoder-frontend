@@ -159,7 +159,13 @@
                   </el-dropdown-item>
                   <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">数据监控
                   </el-dropdown-item>
-                  <el-dropdown-item :command="['shenCeAnalysis', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">神策分析
+
+                  <!-- 只有行为人群有神策按钮 -->
+                  <el-dropdown-item
+                    v-if="(crowdType === 3)"
+                    :command="['shenCeAnalysis', scope.row]"
+                    v-permission="'hoder:launch:crowd:ver:index'">
+                    神策分析
                   </el-dropdown-item>
 
                 </el-dropdown-menu>
