@@ -166,6 +166,9 @@
                         <el-dropdown-item class="clearfix" :command="['offSet', item]">
                           {{ item.putway === 1 ? '下架' : '上架' }}
                         </el-dropdown-item>
+                        <el-dropdown-item class="clearfix" :command="['copy', item]">
+                          复制
+                        </el-dropdown-item>
                         <el-dropdown-item class="clearfix" :command="['deleteService', item]">
                           删除
                         </el-dropdown-item>
@@ -252,6 +255,34 @@
         </span>
       </el-dialog>
 
+      <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
+        <LaunchToBusiness
+          :recordId="tempPolicyAndCrowd.policyId"
+          :tempPolicyAndCrowd="tempPolicyAndCrowd"
+          @closeDialog="handleCloseDialog"
+        ></LaunchToBusiness>
+      </el-dialog>
+
+      <!-- 复制接待员 -->
+      <el-dialog :visible.sync="copyDialogVisible" title="将接待员复制到以下场景" width="550px">
+        <el-form :model="copyForm" ref="copyFormRef">
+          <el-form-item label="选择场景" prop="sceneId" required>
+            <el-select v-model="copyForm.sceneId" clearable>
+              <el-option
+                v-for="item in sceneList"
+                :key="item.id"
+                :label="item.sceneName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="copyDialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="comfirmCopy">确 定</el-button>
+        </span>
+      </el-dialog>
+
    </div>
   </div>
 </template>
@@ -269,6 +300,11 @@ export default {
   },
   data () {
     return {
+      copyForm: {
+        id: '',
+        sceneId: ''
+      },
+      copyDialogVisible: false,
       noGroupService: [],
       styleType: true,
       groupData: [{
@@ -454,7 +490,24 @@ export default {
         this.offSetService(row)
       } else if (type === 'deleteService') {
         this.deleteService(row)
+      } else if (type === 'copy') {
+        this.copyService(row)
       }
+    },
+    copyService (item) {
+      this.copyForm.id = item.id
+      this.copyDialogVisible = true
+    },
+    comfirmCopy () {
+      this.$refs.copyFormRef.validate((valid) => {
+        if (valid) {
+          this.$service.copyServicer(this.copyForm, '复制成功').then(res => {
+            // 刷新列表
+            this.getServiceList()
+            this.copyDialogVisible = false
+          })
+        }
+      })
     },
     handleSceneCommand (scope) {
       const type = scope[0]

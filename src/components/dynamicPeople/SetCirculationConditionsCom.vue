@@ -437,6 +437,7 @@ i {
 .label-container {
   position: relative;
   z-index: 1;
+  margin-bottom 20px
 }
 
 .label-or-space {

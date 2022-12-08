@@ -171,3 +171,12 @@ export function getPerformanceGoalData (params) {
     params
   })
 }
+// 接待员复制接口
+export function copyServicer (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/copy',
+    isJSON: true,
+    data
+  })
+}
