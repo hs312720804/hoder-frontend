@@ -722,6 +722,8 @@ export default {
 
       this.$service.getTargetById(parmas).then(res => {
         this.indicatorsTypelabel = this.getName(res.indicatorsType, this.indicatorsOptions)
+        // 曲线图
+        this.getPerformanceGoalData()
       })
     },
 
