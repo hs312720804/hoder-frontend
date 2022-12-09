@@ -180,3 +180,38 @@ export function copyServicer (data) {
     data
   })
 }
+
+// 查询影片接口
+export function getReceptionistVideo (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getVideo',
+    params
+  })
+}
+// 获取内容源接口
+export function getReceptionistVideoSource (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getVideoSource',
+    params
+  })
+}
+// 保存绩效指标接口
+export function saveEditIndicator (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/editIndicator',
+    isJSON: true,
+    data
+  })
+}
+
+// 获取内容源接口
+export function getTargetById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getReceptionistById',
+    params
+  })
+}

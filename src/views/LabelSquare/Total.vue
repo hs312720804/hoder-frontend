@@ -138,7 +138,7 @@ export default {
           xunit: ''
         }
       },
-      colorList: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#7ED3F4', '#9E6CD8', '#07A872', '#ccc', '#FFBDF4']
+      colorList: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#7ED3F4', '#40B27D', '#FC8452', '#A969C6']
       // colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc']
 
     }
