@@ -467,6 +467,7 @@
   >
   <!-- {{ targetKeyFormParent }} -->
     <EditTargetKeyDialog
+      ref="editTargetKeyDialogRef"
       v-if="editTargetKeyVisible"
       :selectedServicer="selectedServicer"
       :indicatorsOptions="indicatorsOptions"
@@ -725,36 +726,35 @@ export default {
     },
 
     comfirmEditTargetKey () {
-      // this.$refs.targetKeyFormRef.validate((valid) => {
-      //   if (valid) {
+      this.$refs.editTargetKeyDialogRef.$refs.targetKeyFormRef.validate((valid) => {
+        if (valid) {
+          let resource = []
 
-      let resource = []
-
-      // 会员
-      if (this.targetKeyFormParent.indicatorsType < 6) {
-        resource = [this.targetKeyFormParent.resource]
-      } else { // 内容
-        resource = this.targetKeyFormParent.resource && this.targetKeyFormParent.resource.map(item => {
-          return {
-            ...item,
-            videoSource: this.targetKeyFormParent.videoSource
+          // 会员
+          if (this.targetKeyFormParent.indicatorsType < 6) {
+            resource = [this.targetKeyFormParent.resource]
+          } else { // 内容
+            resource = this.targetKeyFormParent.resource && this.targetKeyFormParent.resource.map(item => {
+              return {
+                ...item,
+                videoSource: this.targetKeyFormParent.videoSource
+              }
+            })
           }
-        })
-      }
 
-      const parmas = {
-        ...this.targetKeyFormParent,
-        resource: JSON.stringify(resource),
-        id: this.selectedServicer.id // 接待员ID
-      }
+          const parmas = {
+            ...this.targetKeyFormParent,
+            resource: JSON.stringify(resource),
+            id: this.selectedServicer.id // 接待员ID
+          }
 
-      this.$service.saveEditIndicator(parmas, '操作成功').then(res => {
-        // 刷新数据
-        this.getTargetById()
-        this.editTargetKeyVisible = false
+          this.$service.saveEditIndicator(parmas, '操作成功').then(res => {
+            // 刷新数据
+            this.getTargetById()
+            this.editTargetKeyVisible = false
+          })
+        }
       })
-      //   }
-      // })
     },
 
     editTargetKey () {

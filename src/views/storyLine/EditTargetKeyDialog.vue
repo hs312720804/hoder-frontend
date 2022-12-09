@@ -1,8 +1,8 @@
 <template>
-  <el-form :model="targetKeyForm" label-width="120px" ref="targetKeyFormRef">
+  <el-form :model="targetKeyForm" label-width="120px" ref="targetKeyFormRef" :rules="rules" :inline="true">
     <!-- {{ targetKeyForm }} -->
     <el-form-item label="指标类型" prop="indicatorsType" required>
-      <el-select v-model="targetKeyForm.indicatorsType" @change="indicatorsTypeChange" >
+      <el-select v-model="targetKeyForm.indicatorsType" @change="indicatorsTypeChange" clearable >
         <el-option
           v-for="item in indicatorsOptions"
           :label="item.label +' '+ item.indicatorsType "
@@ -14,9 +14,7 @@
 
     <!-- 会员的 -->
     <el-form-item  v-if="(targetKeyForm.indicatorsType < 6)" label="选择权益" prop="resource" required>
-      <el-select
-        v-model="targetKeyForm.resource"
-        value-key="resourceId">
+      <el-select v-model="targetKeyForm.resource" value-key="resourceId" clearable>
         <el-option
           v-for="item in soureceSignListOptions"
           :label="item.resourceName"
@@ -27,32 +25,39 @@
     </el-form-item>
 
     <!-- 内容的 -->
-    <el-form-item v-else label="选择影片" prop="videoSource" required >
-      <!-- 内容源 -->
-      <el-select v-model="targetKeyForm.videoSource" @change="videoSourceChange">
-        <el-option
-          v-for="item in videoSourceOptions"
-          :label="item.sourceName"
-          :value="item.sourceId"
-          :key="item.sourceId">
-        </el-option>
-      </el-select>
-      <el-select
-        v-model="targetKeyForm.resource"
-        value-key="resourceId"
-        multiple
-        filterable
-        :filter-method="searchResourceList"
-        :loading="searchLoading"
-        loading-text="加载中">
-        <el-option
-          v-for="item in resourceListOptions"
-          :label="item.resourceName"
-          :value="item"
-          :key="item.resourceId">
-        </el-option>
-      </el-select>
-    </el-form-item>
+    <template v-else>
+
+      <el-form-item  label="选择影片" prop="videoSource" required >
+        <!-- 内容源 -->
+        <el-select v-model="targetKeyForm.videoSource" @change="videoSourceChange" clearable>
+          <el-option
+            v-for="item in videoSourceOptions"
+            :label="item.sourceName"
+            :value="item.sourceId"
+            :key="item.sourceId">
+          </el-option>
+        </el-select>
+        </el-form-item>
+      <el-form-item prop="resource" required >
+
+        <el-select
+          v-model="targetKeyForm.resource"
+          value-key="resourceId"
+          multiple
+          filterable
+          :filter-method="searchResourceList"
+          :loading="searchLoading"
+          loading-text="加载中"
+          clearable>
+          <el-option
+            v-for="item in resourceListOptions"
+            :label="item.resourceName"
+            :value="item"
+            :key="item.resourceId">
+          </el-option>
+        </el-select>
+      </el-form-item>
+    </template>
 
   </el-form>
 </template>
@@ -81,6 +86,11 @@ export default {
   },
   data () {
     return {
+      rules: {
+        indicatorsType: { required: true, message: '请选择指标类型', trigger: 'change' },
+        videoSource: { required: true, message: '请选择视频源', trigger: 'change' },
+        resource: { required: true, message: '选择内容', trigger: 'change' }
+      },
       searchLoading: false,
       resourceListOptions: '',
       targetKeyForm: {
