@@ -111,7 +111,9 @@
               show-word-limit>
             </el-input>
           </div>
-
+          <!-- targetKeyId: {{targetKeyId}}
+          <br/>
+          overview： {{overview}} -->
           <div class="kpi-wrap">
             <div>绩效目标</div>
             <div class="detail-kpi">
@@ -122,8 +124,8 @@
                 <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
               </el-descriptions> -->
               <div class="detail-kpi-table">
-                <div>
-                  <span class="kpi-label">
+                <div style="display: flex;">
+                  <span class="kpi-label" style="display: grid">
 
                     <!-- <el-dropdown @command="handleCommandTargetKey">
                       <span class="el-dropdown-link">
@@ -133,15 +135,16 @@
                         <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown> -->
-                    <span style="font-size: 16px;">{{ indicatorsTypelabel }}</span>
-                    <div style="margin-top: -5px" v-if="selectedServicer.id">
+                    <span style="font-size: 16px;" v-if="indicatorsTypelabel">{{ indicatorsTypelabel }}</span>
+                    <span v-if="selectedServicer.id">
                       <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button>
-                    </div>
+                    </span>
 
                   </span>
-
-                  <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
-                  <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
+                  <span style="flex: 1; text-align: center;">
+                    <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) || '-' }}</span>
+                    <span class="kpi-value" v-else>{{ overview[targetKeyId] || '-' }}</span>
+                  </span>
                 </div>
                 <div>
                   <span class="kpi-label">接待用户数：</span>
@@ -178,7 +181,7 @@
 
               <div >
                 <!-- {{ allChartData }} -->
-                <div v-if="showChart && allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
+                <div v-if="allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
                   <!-- <el-empty description="暂无数据"></el-empty> -->
                 <div v-else class="chart-empty"></div>
               </div>
@@ -612,12 +615,16 @@ export default {
 
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
 
-      showChart: true,
       rowObj: {
-        arup: { type: 'line', title: '客单价' },
-        payNum: { type: 'line', title: '付费单量' },
-        payRate: { type: 'line', title: '付费率' },
-        price: { type: 'line', title: '付费金额' }
+        arup: { type: 'line', title: '会员 - 客单价', targetKeyId: 4 },
+        avgPlayPrice: { type: 'line', title: '内容 - 影片播放均价', targetKeyId: 9 },
+        orderNum: { type: 'line', title: '内容 - 影片吸金订单量', targetKeyId: 6 },
+        orderRatio: { type: 'line', title: '内容 - 影片订单转换率', targetKeyId: 7 },
+        payNum: { type: 'line', title: '会员 - 付费单数', targetKeyId: 2 },
+        payRate: { type: 'line', title: '会员 - 付费率', targetKeyId: 1 },
+        payUv: { type: 'line', title: '会员 - 付费设备量', targetKeyId: 5 },
+        perOrder: { type: 'line', title: '内容 - 影片订单均价', targetKeyId: 8 },
+        price: { type: 'line', title: '会员 - 付费金额', targetKeyId: 3 }
       },
       allCharts: {},
       allChartData: {
@@ -724,6 +731,7 @@ export default {
     getTargetById () {
       // 清空
       this.indicatorsTypelabel = ''
+      this.targetKeyId = ''
 
       const parmas = {
         id: this.selectedServicer.id
@@ -731,6 +739,11 @@ export default {
       if (!parmas.id) return
 
       this.$service.getTargetById(parmas).then(res => {
+        for (const key in this.rowObj) {
+          if (this.rowObj[key].targetKeyId === res.indicatorsType) {
+            this.targetKeyId = key
+          }
+        }
         this.indicatorsTypelabel = this.getName(res.indicatorsType, this.indicatorsOptions)
         // 曲线图
         this.getPerformanceGoalData()
@@ -1089,20 +1102,22 @@ export default {
 
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
+      this.allChartData = {}
+      this.overview = {}
       // console.log('selectedScene---', this.selectedScene)
       // console.log('selectedServicer---', this.selectedServicer)/
-      const params = {
-        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
-        dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-        crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
-        isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
-      }
       // const params = {
-      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
-      //   dynamicRuleId: 225,
-      //   crowdId: 13352, // 接待员id
+      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
+      //   dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
+      //   crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
+      const params = {
+        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
+        dynamicRuleId: 292,
+        crowdId: 14331, // 接待员id
+        isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
+      }
       this.$service.getPerformanceGoalData(params).then(res => {
         const tableData = res.data || {}
         console.log('tableData----', tableData)
