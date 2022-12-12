@@ -12,7 +12,8 @@
   },
   "dependencies": {
     "@antv/x6": "^1.18.1",
-    "@ccprivate/admin-toolkit": "^1.1.4",
+    "@ccms/cms-engine": "^0.1.0",
+    "@ccprivate/admin-toolkit": "^1.2.9",
     "@stateform/element": "^0.1.14",
     "@tinymce/tinymce-vue": "^2.1.0",
     "@william17/vue-app-state": "^0.1.1",
