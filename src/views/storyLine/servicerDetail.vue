@@ -728,6 +728,9 @@ export default {
     },
 
     comfirmEditTargetKey () {
+      if (!this.targetKeyFormParent.indicatorsType) {
+        return this.$message.error('请选择指标')
+      }
       this.$refs.editTargetKeyDialogRef.$refs.targetKeyFormRef.validate((valid) => {
         if (valid) {
           let resource = []

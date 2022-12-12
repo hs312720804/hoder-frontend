@@ -1,7 +1,8 @@
 <template>
-  <el-form :model="targetKeyForm" label-width="120px" ref="targetKeyFormRef" :rules="rules" :inline="true">
+<div>
+  <el-form :model="targetKeyForm" label-width="170px" ref="targetKeyFormRef" :rules="rules" :inline="true" v-if="targetKeyForm.indicatorsType" style="margin-bottom: 50px;">
     <!-- {{ targetKeyForm }} -->
-    <el-form-item label="指标类型" prop="indicatorsType" required>
+    <!-- <el-form-item label="指标类型" prop="indicatorsType" required>
       <el-select v-model="targetKeyForm.indicatorsType" @change="indicatorsTypeChange" clearable >
         <el-option
           v-for="item in indicatorsOptions"
@@ -10,11 +11,12 @@
           :key="item.indicatorsType">
         </el-option>
       </el-select>
-    </el-form-item>
+
+    </el-form-item> -->
 
     <!-- 会员的 -->
-    <el-form-item  v-if="(targetKeyForm.indicatorsType < 6)" label="选择权益" prop="resource" required>
-      <el-select v-model="targetKeyForm.resource" value-key="resourceId" clearable>
+    <el-form-item  v-if="(targetKeyForm.indicatorsType < 6)" :label="selectIndicatorsName" prop="resource" required>
+      <el-select v-model="targetKeyForm.resource" value-key="resourceId" clearable placeholder="请选择权益">
         <el-option
           v-for="item in soureceSignListOptions"
           :label="item.resourceName"
@@ -27,9 +29,9 @@
     <!-- 内容的 -->
     <template v-else>
 
-      <el-form-item  label="选择影片" prop="videoSource" required >
+      <el-form-item  :label="selectIndicatorsName"  prop="videoSource" required >
         <!-- 内容源 -->
-        <el-select v-model="targetKeyForm.videoSource" @change="videoSourceChange" clearable>
+        <el-select v-model="targetKeyForm.videoSource" @change="videoSourceChange" clearable placeholder="请选择内容源">
           <el-option
             v-for="item in videoSourceOptions"
             :label="item.sourceName"
@@ -48,7 +50,8 @@
           :filter-method="searchResourceList"
           :loading="searchLoading"
           loading-text="加载中"
-          clearable>
+          clearable
+          placeholder="请选择影片">
           <el-option
             v-for="item in resourceListOptions"
             :label="item.resourceName"
@@ -60,6 +63,17 @@
     </template>
 
   </el-form>
+  <div >
+    <el-tag
+      v-for="item in indicatorsOptions"
+      :key="item.indicatorsType"
+      class="tag-style"
+      @click="tagClick(item)"
+    >
+      {{(item.label +' '+ item.indicatorsType)}}
+    </el-tag>
+  </div>
+</div>
 </template>
 
 <script>
@@ -87,9 +101,9 @@ export default {
   data () {
     return {
       rules: {
-        indicatorsType: { required: true, message: '请选择指标类型', trigger: 'change' },
-        videoSource: { required: true, message: '请选择视频源', trigger: 'change' },
-        resource: { required: true, message: '选择内容', trigger: 'change' }
+        indicatorsType: { required: true, message: '请选择', trigger: 'change' },
+        videoSource: { required: true, message: '请选择', trigger: 'change' },
+        resource: { required: true, message: '请选择', trigger: 'change' }
       },
       searchLoading: false,
       resourceListOptions: '',
@@ -99,7 +113,8 @@ export default {
         // resource: [],
         // videoSource: ''
       },
-      videoSourceOptions: []
+      videoSourceOptions: [],
+      selectIndicatorsName: '选择权益'
 
     }
   },
@@ -120,11 +135,19 @@ export default {
     this.getTargetById()
   },
   methods: {
-    indicatorsTypeChange () {
+    tagClick (item) {
       // 清空
       this.targetKeyForm.videoSource = ''
       this.targetKeyForm.resource = []
+
+      this.targetKeyForm.indicatorsType = item.indicatorsType
+      this.selectIndicatorsName = item.label
     },
+    // indicatorsTypeChange () {
+    //   // 清空
+    //   this.targetKeyForm.videoSource = ''
+    //   this.targetKeyForm.resource = []
+    // },
     videoSourceChange (val) {
       // 清空
       this.targetKeyForm.resource = ''
@@ -160,6 +183,9 @@ export default {
           indicatorsType: res.indicatorsType,
           resource,
           videoSource: res.indicatorsType < 6 ? undefined : resource[0].videoSource
+        }
+        if (res.indicatorsType) {
+          this.selectIndicatorsName = this.indicatorsOptions.find(item => item.indicatorsType === res.indicatorsType).label || ''
         }
 
         // if (res.indicatorsType > 5) {
@@ -207,5 +233,8 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-
+.tag-style {
+  margin: 10px 10px 0 0;
+  cursor pointer
+}
 </style>
