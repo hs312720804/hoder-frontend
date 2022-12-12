@@ -48,6 +48,7 @@
                 style="width: 120px"
                 name="oxve"
                 class="input-inline"
+                filterable
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
                   level: 2,
@@ -405,6 +406,7 @@
                       style="width: 110px"
                       name="asdq"
                       class="input-inline"
+                      filterable
                       @change="handelChildBehavirSelectChange({
                         childItem: item2,
                         hasChild: false,
@@ -3159,6 +3161,7 @@
             style="width: 120px"
             name="oxve"
             class="input-inline"
+            filterable
             @change="handelBehavirSelectChange()"
           >
             <template v-for="item in getBehaviorAttrList(1)">
