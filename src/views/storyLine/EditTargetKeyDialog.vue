@@ -16,7 +16,12 @@
 
     <!-- 会员的 -->
     <el-form-item  v-if="(targetKeyForm.indicatorsType < 6)" :label="selectIndicatorsName" prop="resource" required>
-      <el-select v-model="targetKeyForm.resource" value-key="resourceId" clearable placeholder="请选择权益">
+      <el-select
+        v-model="targetKeyForm.resource"
+        value-key="resourceId"
+        clearable
+        placeholder="请选择权益"
+        filterable>
         <el-option
           v-for="item in soureceSignListOptions"
           :label="item.resourceName"
@@ -106,7 +111,7 @@ export default {
         resource: { required: true, message: '请选择', trigger: 'change' }
       },
       searchLoading: false,
-      resourceListOptions: '',
+      resourceListOptions: [],
       targetKeyForm: {
         // id: '', // 接待员ID
         // indicatorsType: '', // 1 会员付费率，2 会员成交单数 3 会员成交金额 4 会员客单价 5会员付费设备量 6 内容影片吸金订单量 7 订单转换率 8 订单均价 9 影片播放均价
@@ -191,9 +196,11 @@ export default {
         // if (res.indicatorsType > 5) {
         // 查视频源
         this.getReceptionistVideoSource()
-        // 查视频
+
+        // 视频下拉列表 就是保存的数据
         if (this.targetKeyForm.videoSource) {
-          this.getReceptionistVideo({ sourceId: this.targetKeyForm.videoSource })
+          this.resourceListOptions = this.targetKeyForm.resource
+          // this.getReceptionistVideo({ sourceId: this.targetKeyForm.videoSource })
         }
         // }
       })
@@ -204,7 +211,7 @@ export default {
         sourceId: this.targetKeyForm.videoSource,
         keywords,
         page: 1,
-        pageSize: 10
+        pageSize: 30
       }
       this.searchLoading = true
       // 影片
@@ -215,6 +222,7 @@ export default {
             resourceName: item.sourceName
           }
         }) || []
+
         this.searchLoading = false
       })
     },
