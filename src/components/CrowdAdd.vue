@@ -178,6 +178,7 @@
 
                 <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
                   <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount" style="width: 220px;"></el-input-number>
+                  <span class="tip-text">命中的设备数量上限</span>
                 </el-form-item>
 
                 <el-form-item label="备注" :prop="formProp('remark')">

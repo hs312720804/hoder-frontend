@@ -103,6 +103,7 @@
                 v-model="form.limitLaunchCount"
                 style="width: 220px;"
               ></el-input-number>
+              <span class="tip-text">命中的设备数量上限</span>
             </el-form-item>
             <el-form-item label="备注" prop="remark">
               <el-input size="small" v-model="form.remark"></el-input>
