@@ -22,7 +22,10 @@
           <!-- :picker-options="pickerOptions" -->
     </el-form-item>
     <el-form-item style="margin-left: 15px;">
-      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">    清除缓存 </el-checkbox>
+      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">清除历史记录 </el-checkbox>
+    </el-form-item>
+    <el-form-item style="margin-left: 15px;">
+      <el-button type="text" @click="resetForm('ruleForm')">重置查询</el-button>
     </el-form-item>
     <br/>
     <el-form-item label="业务范围:" prop="sourceNameList" style="max-width: 70%; white-space: nowrap;">
@@ -464,6 +467,15 @@ export default {
     console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
+    resetForm (formName) {
+      // 重置数据
+      this.pageStatus = 0
+      this.crowdName = ''
+      this.checkAll = false
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
+    },
     // 删除历史
     deleteHistory (id) {
       this.$service.delRightsInterestsSearchRecord({ id }, '删除成功').then(res => {
