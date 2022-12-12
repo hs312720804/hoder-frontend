@@ -401,6 +401,7 @@
               转
               <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
             </div>
+            <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
             <div class="drop-class">
               <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                 <span class="el-dropdown-link" >
@@ -705,6 +706,15 @@ export default {
     })
   },
   methods: {
+    getStopTypeName (val) {
+      if (val === 2) {
+        return '直接转化'
+      } else if (val === 3) {
+        return '继续观察'
+      } else if (val === 4) {
+        return '不喜欢'
+      }
+    },
     getName (val, list) {
       const obj = list.find(item => item.indicatorsType === val)
       return obj ? obj.label : ''
