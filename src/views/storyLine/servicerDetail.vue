@@ -135,7 +135,7 @@
                         <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
                       </el-dropdown-menu>
                     </el-dropdown> -->
-                    <span style="font-size: 16px;" v-if="indicatorsTypelabel">{{ indicatorsTypelabel }}</span>
+                    <span style="font-size: 16px;" v-if="indicatorsTypelabel">{{ indicatorsTypelabel }}：</span>
                     <span v-if="selectedServicer.id">
                       <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button>
                     </span>

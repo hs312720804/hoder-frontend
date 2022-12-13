@@ -35,6 +35,10 @@ module.exports = {
       '/api': {
         target: 'http://' + BACKEND,
         pathRewrite: { '^/api': '/' }
+      },
+      '/dev_cms': {
+        target: 'http://172.20.151.197:9080'
+        // pathRewrite: { '^/dev_cms': '/' }
       }
     },
     historyApiFallback: true
@@ -51,7 +55,10 @@ module.exports = {
   chainWebpack: config => {
     config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
   },
-  productionSourceMap: false // 关闭生产环境的sourceMap 文件
+  productionSourceMap: false, // 关闭生产环境的sourceMap 文件
+  transpileDependencies: [
+    '@ccms/cms-engine'
+  ]
   // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   // plugins: [
   //   new BundleAnalyzerPlugin()
