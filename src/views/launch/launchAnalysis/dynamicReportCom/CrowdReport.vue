@@ -182,8 +182,8 @@
 </template>
 
 <script>
-import DynamicTable from './dynamicTable/Index.vue'
-import AutoHighLightAnchor from './dynamicTable/autoHighLightAnchor.js'
+import DynamicTable from '../dynamicTable/Index.vue'
+import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 
 export default {
   components: {

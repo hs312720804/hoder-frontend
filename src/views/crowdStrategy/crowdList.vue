@@ -711,7 +711,7 @@
                 <!-- 动态人群才展示 -->
                 <el-dropdown-item
                   v-if="scope.row.dynamicFlag === 1"
-                  :command="['dynamicCrowdReport',scope.row]"
+                  :command="['dynamicReport',scope.row]"
                 >动态实验报告</el-dropdown-item>
 
                 <!-- 动态人群才展示 --><!-- 流转异常监控 -->
@@ -3032,7 +3032,7 @@ export default {
         case 'operationalAnalysis':
           this.goToOperationalAnalysis(this.currentCid)
           break
-        case 'dynamicCrowdReport':
+        case 'dynamicReport':
           // 动态实验报告
           this.goToDynamicCrowdReport(this.currentCid, row.crowdName)
           break
@@ -3043,10 +3043,10 @@ export default {
       }
     },
     goToDynamicCrowdReport (crowdId, crowdName) {
-      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId, crowdName } })
+      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName } })
     },
     goToNomalyMonitoring (crowdId, crowdName) {
-      this.$router.push({ path: '/dynamicCrowdReport', query: { crowdId, crowdName } })
+      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, error: true } })
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {
