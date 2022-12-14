@@ -2,7 +2,7 @@
   <div style="display: flex;">
     <el-form-item
       label=""
-      :prop="'rules.' + index + '.rules.' + n + '.value'"
+      :prop="'rules.' + index + '.rules.' + n + '.tagCode'"
       :rules="{
         required: true, message: '不能为空', trigger: 'change'
       }"
@@ -19,31 +19,34 @@
         :loading="loading"
         v-loadmore="{'methord': handelQiboLoadmore}"
         @change="selectChange($event, childItem)"
+        style="width: 300px"
         >
         <template v-if="(filmModelTagOptions.length > 0)">
 
           <el-option
             v-for="item in filmModelTagOptions"
             :key="item.tagCode"
-            :label="item.tagCnName"
+            :label="(item.tagCnName + '    ( ' + item.pathName + ' )' + item.tagCode)"
             :value="item">
           </el-option>
         </template>
-        <template v-else-if="(childItem.value)">
+
+        <template v-else-if="(childItem.tagCode)">
           <el-option
             :key="filmModelTagValue.tagCode"
-            :label="filmModelTagValue.tagCnName"
+            :label="(childItem.tagCnName + '    ( ' + childItem.pathName + ' )' + childItem.tagCode)"
             :value="filmModelTagValue">
           </el-option>
         </template>
       </el-select>
     </el-form-item>
 
-    <span v-if="(childItem.value)" style="white-space: nowrap;line-height: 34px;">【{{childItem.pathName}}】</span>
+    <!-- <span v-if="(childItem.value)" style="white-space: nowrap;line-height: 34px;">【{{childItem.pathName}}】</span> -->
   </div>
 </template>
 
 <script>
+
 export default {
   inject: ['_this'],
   props: {
@@ -82,7 +85,10 @@ export default {
   watch: {
     value: {
       handler (val) {
-        this.filmModelTagValue = val
+        this.filmModelTagValue = {
+          tagCode: '',
+          ...val
+        }
       },
       immediate: true
     },
@@ -98,7 +104,9 @@ export default {
   methods: {
     selectChange (obj, childItem) {
       console.log('val--->', obj)
-      childItem.value = obj.tagCode
+      childItem.tagCode = obj.tagCode
+      this.$set(childItem, 'tagCode', obj.tagCode)
+
       childItem.tagCnName = obj.tagCnName
       childItem.pathName = obj.pathName
     },

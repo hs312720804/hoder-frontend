@@ -1103,7 +1103,8 @@ export default {
           ...tag,
           operator: '>',
           sourceSign: '',
-          value: ''
+          value: '',
+          tagCode: ''
         }]
       })
     },
@@ -1112,7 +1113,8 @@ export default {
         ...tag,
         operator: '>',
         sourceSign: '',
-        value: ''
+        value: '',
+        tagCode: ''
       })
     },
     /* 添加一级标签 */

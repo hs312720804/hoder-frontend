@@ -228,10 +228,15 @@
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
 
-    <!-- {{ childItem }} -->
     <!-- 影视模型 -->
     <template v-if="childItem.tagKey === 'filmModelTag'">
       <FilmModelTagValueSelect :childItem="childItem" :index="index" :n="n" v-model="filmModelTagValue"></FilmModelTagValueSelect>
+
+      <!-- 选择 operator -->
+      <Operator :childItem="childItem" :index="index" :n="n"></Operator>
+
+      <!-- 输入 value -->
+      <Value :childItem="childItem" :index="index" :n="n"></Value>
       <!-- <el-form-item
         label=""
         class="form-item-styl"
@@ -343,7 +348,7 @@ export default {
       handler (val) {
         if (val === 'filmModelTag') {
           this.filmModelTagValue = {
-            tagCode: this.childItem.value,
+            tagCode: this.childItem.tagCode,
             tagCnName: this.childItem.tagCnName,
             pathName: this.childItem.pathName
           }

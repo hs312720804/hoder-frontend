@@ -142,7 +142,7 @@
         </div>
         <!-- --------{{currentGroup}} -->
         <div v-if="radioType === 6" class="aaa">
-          <el-button type="primary" size="large" @click="$router.push({ name: 'storyLine', params: { sceneId: currentGroup.sceneId } })">配置故事运营</el-button>
+          <el-button type="primary" size="large" @click="storySetting">配置故事运营</el-button>
         </div>
         <div style="position: relative" v-else>
           <!-- 拓扑图 -->
@@ -394,6 +394,9 @@ export default {
     eventBus.$off()
   },
   methods: {
+    storySetting () {
+      this.$router.push({ name: 'storyLine', params: { sceneId: this.currentGroup.sceneId } })
+    },
     fullScreen () {
       // const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
       const element = document.getElementById('step2') // 若要全屏页面中div，var element= document.getElementById("divID");

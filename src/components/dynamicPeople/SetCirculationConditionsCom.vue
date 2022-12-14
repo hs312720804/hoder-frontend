@@ -235,7 +235,8 @@ export default {
           ...tag,
           operator: '>',
           sourceSign: '',
-          value: ''
+          value: '',
+          tagCode: ''
         }]
       })
     },
@@ -244,7 +245,8 @@ export default {
         ...tag,
         operator: '>',
         sourceSign: '',
-        value: ''
+        value: '',
+        tagCode: ''
       })
     },
     handleRulesConditionChange (item) {
