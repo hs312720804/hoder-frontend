@@ -395,6 +395,8 @@ export default {
   },
   methods: {
     storySetting () {
+      // 先保存，再跳转页面
+      this.handleSave('justSave')
       this.$router.push({ name: 'storyLine', params: { sceneId: this.currentGroup.sceneId } })
     },
     fullScreen () {
@@ -728,7 +730,7 @@ export default {
       rulesJson.rules.splice(index, 1)
     },
 
-    handleSave () {
+    handleSave (type = '') {
       // 获取当前图表的graph数据，并保存
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
@@ -741,7 +743,9 @@ export default {
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
         // this.$emit('goBackCrowdListPage')
-        this.$emit('crowdNextStep', 2)
+        if (type !== 'justSave') {
+          this.$emit('crowdNextStep', 2)
+        }
       })
     },
 
