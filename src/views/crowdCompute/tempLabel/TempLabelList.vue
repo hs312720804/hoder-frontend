@@ -168,6 +168,10 @@
                     神策分析
                   </el-dropdown-item>
 
+                  <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
+                  <el-dropdown-item :command="['export', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">
+                    导出
+                  </el-dropdown-item>
                 </el-dropdown-menu>
               </el-dropdown>
             </el-button-group>
@@ -231,8 +235,10 @@ export default {
       type: Number
     }
   },
+
   data () {
     return {
+      launchedExportUrl: undefined,
       myself: 1,
       tableData: [],
       filter: {},
@@ -428,6 +434,30 @@ export default {
         case 'shenCeAnalysis':
           this.handleShenCeAnalysis(params)
           break
+        case 'export':
+          this.handleExport(params)
+          break
+      }
+    },
+    async handleExport (row) {
+      const launchCrowdId = row.launchCrowdId
+      console.log('launchCrowdId', launchCrowdId)
+      // 0   文件生成中   1  文件已经生成
+      const status = await this.$service.checkMackFileIsExist({ launchCrowdId }).then(res => {
+        this.$message.info(res.msg)
+        return res.status || 0
+      })
+      console.log('status', status)
+      if (status === 1) {
+        // this.$service.downloadMacFile({ launchCrowdId }).then(res => {
+
+        // })
+        // 下载文件
+        this.launchedExportUrl = '/api/macExport/downloadMacFile?launchCrowdId=' + launchCrowdId
+
+        this.$nextTick(() => {
+          this.$refs.launchedDownLoad.click()
+        })
       }
     },
     handleShenCeAnalysis (row) {

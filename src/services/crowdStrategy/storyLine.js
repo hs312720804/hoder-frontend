@@ -215,3 +215,20 @@ export function getTargetById (params) {
     params
   })
 }
+// 动态人群新增影视模型标签
+export function getUptmTree (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/tree',
+    params
+  })
+}
+
+// 动态人群新增影视模型标签
+export function getUptmTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getTag',
+    params
+  })
+}

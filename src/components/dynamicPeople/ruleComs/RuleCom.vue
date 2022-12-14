@@ -228,6 +228,21 @@
       <Value :childItem="childItem" :index="index" :n="n"></Value>
     </template>
 
+    <!-- {{ childItem }} -->
+    <!-- 影视模型 -->
+    <template v-if="childItem.tagKey === 'filmModelTag'">
+      <FilmModelTagValueSelect :childItem="childItem" :index="index" :n="n" v-model="filmModelTagValue"></FilmModelTagValueSelect>
+      <!-- <el-form-item
+        label=""
+        class="form-item-styl"
+      >
+        <FilmModelTagSelect :childItem="childItem" :treeDataVal.sync="treeDataVal"></FilmModelTagSelect>
+      </el-form-item> -->
+
+      <!-- {{ filmModelTagValue }} -->
+
+    </template>
+
   </div>
 </template>
 
@@ -235,8 +250,10 @@
 import SourceSign from './elements/SourceSign.vue'
 import Operator from './elements/Operator.vue'
 import Value from './elements/Value.vue'
+import FilmModelTagValueSelect from './elements/FilmModelTagValueSelect.vue'
+// import FilmModelTagSelect from './elements/FilmModelTagSelect.vue'
 export default {
-  components: { SourceSign, Operator, Value },
+  components: { SourceSign, Operator, Value, FilmModelTagValueSelect },
   inject: ['_this'],
   props: {
     childItem: {
@@ -316,11 +333,25 @@ export default {
       }, {
         label: '天数',
         value: 'detailPageViewDays'
-      }]
-
+      }],
+      // treeDataVal: { value: 2166, child: { value: 2167, child: { value: 2186, child: { value: 2213, child: { value: 4792 } } } } },
+      filmModelTagValue: {}
     }
   },
-  created () {
+  watch: {
+    'childItem.tagKey': {
+      handler (val) {
+        if (val === 'filmModelTag') {
+          this.filmModelTagValue = {
+            tagCode: this.childItem.value,
+            tagCnName: this.childItem.tagCnName,
+            pathName: this.childItem.pathName
+          }
+        }
+      },
+      immediate: true
+    }
+
   },
   methods: {
 

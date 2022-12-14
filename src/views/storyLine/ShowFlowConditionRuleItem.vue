@@ -32,11 +32,19 @@
       ，<span class="txt">{{ getName(detailPageViewOptions, childItem.count) }}</span>
     </template>
 
-    <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-    <span class="in">
-      <span>{{ childItem.value }}</span>
-    </span>
+    <!-- 影视模型不展示 -->
+    <template v-if="childItem.tagKey !== 'filmModelTag'">
 
+      <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
+      <span class="in">
+        <span>{{ childItem.value }}</span>
+      </span>
+    </template>
+
+    <!-- 影视模型展示 -->
+    <template v-if="childItem.tagKey === 'filmModelTag'">
+      <span>{{ childItem.tagCnName }}</span>
+    </template>
   </div>
 </template>
 
