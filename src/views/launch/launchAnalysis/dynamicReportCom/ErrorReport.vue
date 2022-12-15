@@ -115,6 +115,7 @@
           :props="allTableData.t4.props"
           :header="allTableData.t4.header"
           :data="allTableData.t4.data"
+          @row-click="(row,column,e)=>handleRowClicked(row,column,e,allTableData.t4.data)"
         ></c-table>
       </div>
 
@@ -224,6 +225,12 @@ export default {
     })
   },
   methods: {
+    handleRowClicked (row, column, event, data) {
+      console.log(row)
+      console.log(data)
+      const arr = data.filter(item => item.dt === row.dt && item.dynamicRuleName === row.dynamicRuleName)
+      console.log('arr===>', arr)
+    },
     handleBackToCrowdList () {
       // 根据GlobalStrategySource判断是从哪里跳来的
       const source = this.$appState.$get('GlobalStrategySource')
