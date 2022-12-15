@@ -403,3 +403,11 @@ export function getDynamicCrowdReportB (params) {
     params
   })
 }
+// 流转异常监控
+export function dynamicCrowdMonitoring (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/dynamicCrowdMonitoring',
+    params
+  })
+}

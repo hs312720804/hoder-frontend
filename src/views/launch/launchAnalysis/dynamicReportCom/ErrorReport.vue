@@ -4,33 +4,60 @@
     <!-- {{data}}
     <br/>
     tableData: {{tableData}} -->
+    <!-- {{ allTableData }} -->
+    <div id="ul111">
+      <div class="icon-open-close" @click="changeView">
+        <i v-if="showNav" class="el-icon-d-arrow-right"></i>
+        <i v-else class="el-icon-d-arrow-left"></i>
+      </div>
+
+      <div class="list-wrap" :class="{aaa: !showNav}">
+        <div><a href="javascript:void(0)" to="a1" @click="goAnchor('#a1')" title="各业务命中设备量">各业务命中设备量</a></div>
+        <div><a href="javascript:void(0)" to="a2" @click="goAnchor('#a2')" title="流转指标中间表">流转指标中间表</a></div>
+        <div><a href="javascript:void(0)" to="a3" @click="goAnchor('#a3')" title="各分组命中设备数及占比">各分组命中设备数及占比</a></div>
+        <div><a href="javascript:void(0)" to="a4" @click="goAnchor('#a4')" title="各流转链路设备数">各流转链路设备数</a></div>
+        <div><a href="javascript:void(0)" to="a5" @click="goAnchor('#a5')" title="分组、基础人群对">分组、基础人群对</a></div>
+        <div><a href="javascript:void(0)" to="a6" @click="goAnchor('#a6')" title="子人群产品包对齐">子人群产品包对齐</a></div>
+      </div>
+
+    </div>
 
     <div>
       <!-- <div class="title">crowdId: 12461 【亲子】亲子全量-同步01 - 流转异常监控</div> -->
       <div class="title"> {{ crowdName }} - 流转异常监控</div>
-
       <div class="export-button">
+        <div class="date-picker">
+          <el-date-picker
+            v-model="time0"
+            type="daterange"
+            range-separator="至"
+            start-placeholder="开始日期"
+            end-placeholder="结束日期"
+            value-format="yyyy-MM-dd"
+          >
+          </el-date-picker>
+        </div>
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
+      </div>
+
+      <div id='a1' class="table-wrap">
+        <div class="title-layout">
+          <div class="per-index-title">
+            各业务命中设备量 （t2）
+            <span>目的：主要看各分组各人群在各业务平台是否命中。查看人群各平台当天是否应该被命中，是否有命中。</span>
+          </div>
+        </div>
+        <c-table
+          :props="allTableData.t2.props"
+          :header="allTableData.t2.header"
+          :data="allTableData.t2.data"
+        ></c-table>
       </div>
 
       <div id='a2' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            各业务命中设备量
-            <span>目的：主要看各分组各人群在各业务平台是否命中。查看人群各平台当天是否应该被命中，是否有命中。</span>
-          </div>
-        </div>
-        <c-table
-          :props="allTableData.reportTotal.props"
-          :header="allTableData.reportTotal.header"
-          :data="allTableData.reportTotal.data"
-        ></c-table>
-      </div>
-
-      <div id='a3' class="table-wrap">
-        <div class="title-layout">
-          <div class="per-index-title">
-            流转指标中间表
+            流转指标中间表（t5）
             <span>
               <span>目的：查看各人群每天产品包页面曝光及优惠券曝光数据，看看是否有某天数据量级异常</span>
             </span>
@@ -65,12 +92,17 @@
           </el-col>
         </el-row>
 
+        <c-table
+          :props="allTableData.t5.props"
+          :header="allTableData.t5.header"
+          :data="allTableData.t5.data"
+        ></c-table>
       </div>
 
-      <div id='a7' class="table-wrap">
+      <div id='a3' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            各分组命中设备数及占比
+            各分组命中设备数及占比（t4）
 
             <span>
               <span>目的：查看子人群在分组中的占比情况是否正常</span>
@@ -80,16 +112,16 @@
 
         </div>
         <c-table
-          :props="allTableData.reportTotal.props"
-          :header="allTableData.reportTotal.header"
-          :data="allTableData.reportTotal.data"
+          :props="allTableData.t4.props"
+          :header="allTableData.t4.header"
+          :data="allTableData.t4.data"
         ></c-table>
       </div>
 
-      <div id='a8' class="table-wrap">
+      <div id='a4' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            各流转链路设备数
+            各流转链路设备数（t3）
             <span>
               <span>目的：监控各种流转路径是否正常</span>
             </span>
@@ -98,9 +130,43 @@
 
         </div>
         <c-table
-          :props="allTableData.reportTotal.props"
-          :header="allTableData.reportTotal.header"
-          :data="allTableData.reportTotal.data"
+          :props="allTableData.t3.props"
+          :header="allTableData.t3.header"
+          :data="allTableData.t3.data"
+        ></c-table>
+      </div>
+      <div id='a5' class="table-wrap">
+        <div class="title-layout">
+          <div class="per-index-title">
+            分组、基础人群对齐（t1）
+            <span>
+              <span>目的：验证各分组人群是否交叉</span>
+            </span>
+
+          </div>
+
+        </div>
+        <c-table
+          :props="allTableData.t1.props"
+          :header="allTableData.t1.header"
+          :data="allTableData.t1.data"
+        ></c-table>
+      </div>
+      <div id='a6' class="table-wrap">
+        <div class="title-layout">
+          <div class="per-index-title">
+            子人群产品包对齐（t6）
+            <span>
+              <span>目的：验证用户购买的方案价格是否为预想的方案价格</span>
+            </span>
+
+          </div>
+
+        </div>
+        <c-table
+          :props="allTableData.t6.props"
+          :header="allTableData.t6.header"
+          :data="allTableData.t6.data"
         ></c-table>
       </div>
 
@@ -111,7 +177,7 @@
 
 <script>
 // import DynamicTable from './dynamicTable/Index.vue'
-// import AutoHighLightAnchor from './dynamicTable/autoHighLightAnchor.js'
+import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 
 export default {
   components: {
@@ -129,7 +195,9 @@ export default {
         // this.crowdId = 12461
         this.crowdName = this.$route.query.crowdName || ''
         if (this.crowdId !== '') {
+          // 初始化数据
           this.initData()
+          console.log('2222222222222->>', this.allTableData)
           this.$nextTick(() => {
             console.log('val--->', document.querySelector('.el-main'))
             document.querySelector('.el-main').scrollTop = 0
@@ -137,10 +205,14 @@ export default {
         }
       },
       immediate: true
+    },
+    time0 (val) {
+      // 初始化数据
+      this.initData()
     }
   },
   mounted () {
-    // this.high()
+    this.high()
 
     // chart5
     // 图表自适应
@@ -184,30 +256,47 @@ export default {
         behavior: 'smooth'
       })
     },
-    // high () {
-    //   const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
-    // },
+    high () {
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
+    },
     initData () {
-      this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {
-        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+      // const parmas = {
+      //   crowdId: 11223,
+      //   startDate: '2022-11-26',
+      //   endDate: '2022-11-28'
+      // }
+      const parmas = {
+        crowdId: this.crowdId,
+        startDate: this.time0[0],
+        endDate: this.time0[0]
+      }
+      this.$service.dynamicCrowdMonitoring(parmas).then(res => {
+        // const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
-        // 表格
+        // // 表格
+        // this.setTableData(getAllData)
+
+        // this.allTableData = res || {}
+        // console.log('33333333333->>', this.allTableData)
+        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+        // 表格数据
         this.setTableData(getAllData)
 
         // 折线图数据
-        const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
-        const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
+        const vipPlay = this.getChartData(res[5], 'pkgShowUv')
+        const vipPlayTrend = this.getChartData(res[5], 'couponShowUv')
 
-        console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
-        console.log('aaa---->', vipPlay)
         this.allChartData = {
           vipPlay,
           vipPlayTrend
         }
-
+        // 图表
         this.$nextTick(() => {
           this.drawChart()
         })
+
+        // console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
+        // console.log('aaa---->', vipPlay)
       })
 
       // this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
@@ -215,105 +304,76 @@ export default {
       // })
     },
     formatData (res) {
+      // 1: 分组、基础人群对齐
+      // 2: 各业务命中设备量
+      // 3: 各流转链路设备数
+      // 4: 各分组命中设备数及占比
+      // 5: 流转指标中间表
+      // 6: 子人群产品包对齐
+
       const result = JSON.parse(JSON.stringify(res))
-      const reportDayDetail = res.reportDayDetail.data // 每日收益明细
-      const reportSum = res.reportSum.data // 每日收益明细
-      const reportGroupSum = res.reportGroupSum.data // 每日收益明细
-      const reportRights = res.reportRights.data // 每日收益明细
+      const t1 = res[1] // 每日收益明细
+      const t2 = res[2] // 每日收益明细
+      const t3 = res[3] // 每日收益明细
+      const t4 = res[4] // 每日收益明细
+      const t5 = res[5] // 每日收益明细
+      const t6 = res[6] // 每日收益明细
 
-      const reportDayDetailReData = reportDayDetail.map(item => {
-        const obj = {
-          date: item.date
-        }
-        obj.data = item.data.map(obj => {
-          return {
-            ...obj,
-            arup: this.cc_format_number(obj.arup),
-            priceTotalHitRate: this.cc_format_number(obj.priceTotalHitRate),
-            payRate: this.toPercent(obj.payRate),
-            priceTotal: this.cc_format_number(obj.priceTotal),
-            showMac: this.cc_format_number(obj.showMac)
-          }
-        })
-        return obj
-      })
-
-      const reportSumReData = reportSum.map(item => {
-        const obj = {
-          day: item.day
-        }
-        obj.data = item.data.map(obj => {
-          return {
-            ...obj,
-            arup: this.cc_format_number(obj.arup),
-            priceTotalHitRate: this.cc_format_number(obj.priceTotalHitRate),
-            payRate: this.toPercent(obj.payRate),
-            priceTotal: this.cc_format_number(obj.priceTotal),
-            showMac: this.cc_format_number(obj.showMac)
-          }
-        })
-        return obj
-      })
-
-      const reportGroupSumReData = reportGroupSum.map(obj => {
+      const t1Data = t1.map(item => {
         return {
-          ...obj,
-          arup: this.cc_format_number(obj.arup),
-          putongbaoyuePayPrice: this.cc_format_number(obj.putongbaoyuePayPrice),
-          baonianPayMacRate: this.toPercent(obj.baonianPayMacRate),
-          liaoxubaoyuePayMacRate: this.toPercent(obj.liaoxubaoyuePayMacRate),
-          payRate: this.toPercent(obj.payRate),
-          liaoxubaojiPayMacRate: this.toPercent(obj.liaoxubaojiPayMacRate),
-          liaoxubaoyuePayPrice: this.cc_format_number(obj.liaoxubaoyuePayPrice),
-          showMac: this.cc_format_number(obj.showMac),
-          payMac: this.cc_format_number(obj.payMac),
-          putongbaoyuePayMacRate: this.toPercent(obj.putongbaoyuePayMacRate),
-          hitAmount: this.cc_format_number(obj.hitAmount),
-          baojiPayMacRate: this.toPercent(obj.baojiPayMacRate),
-          priceTotal: this.cc_format_number(obj.priceTotal),
-          bannianPayPrice: this.cc_format_number(obj.bannianPayPrice),
-          baojiPayPrice: this.cc_format_number(obj.baojiPayPrice),
-          baonianPayPrice: this.cc_format_number(obj.baonianPayPrice),
-          liaoxubaojiPayPrice: this.cc_format_number(obj.liaoxubaojiPayPrice),
-          bannianPayMacRate: this.toPercent(obj.bannianPayMacRate)
-        }
-      })
-      const reportRightsReData = reportRights.map(obj => {
-        return {
-          ...obj,
-          yingshiMacRate: this.toPercent(obj.yingshiMacRate),
-          yingshiMac: this.cc_format_number(obj.yingshiMac),
-          aiqiyiMacRate: this.toPercent(obj.aiqiyiMacRate),
-          qinziMacRate: this.toPercent(obj.qinziMacRate),
-          qinziMac: this.cc_format_number(obj.qinziMac),
-          chuileiMacRate: this.toPercent(obj.chuileiMacRate),
-          otherMacRate: this.toPercent(obj.otherMacRate),
-          otherMac: this.cc_format_number(obj.otherMac),
-          aiqiyiMac: this.cc_format_number(obj.aiqiyiMac),
-          chuileiMac: this.cc_format_number(obj.chuileiMac)
+          ...item
         }
       })
 
-      result.reportDayDetail = {
-        name: res.reportDayDetail.name,
-        data: reportDayDetailReData,
-        title: res.reportDayDetail.title
+      const t2Data = t2.map(item => {
+        return {
+          ...item
+        }
+      })
+
+      const t3Data = t3.map(item => {
+        return {
+          ...item
+        }
+      })
+
+      const t4Data = t4.map(item => {
+        return {
+          ...item
+        }
+      })
+      const t5Data = t5.map(item => {
+        return {
+          ...item
+        }
+      })
+      const t6Data = t6.map(item => {
+        return {
+          ...item
+        }
+      })
+
+      result.t1 = {
+        data: t1Data
       }
-      result.reportSum = {
-        name: res.reportSum.name,
-        data: reportSumReData,
-        title: res.reportSum.title
+      result.t2 = {
+        data: t2Data
       }
-      result.reportGroupSum = {
-        name: reportGroupSum.name,
-        data: reportGroupSumReData
+      result.t3 = {
+        data: t3Data
       }
-      result.reportRights = {
-        name: reportRights.name,
-        data: reportRightsReData
+      result.t4 = {
+        data: t4Data
+      }
+      result.t5 = {
+        data: t5Data
+      }
+      result.t6 = {
+        data: t6Data
       }
       return result
     },
+
     getChartData (chartData, key) {
       const reObj = {
         xaxis: [],
@@ -322,27 +382,73 @@ export default {
         title: '',
         xunit: ''
       }
-      if (key === 'payRate') { // 支付率，数据转为百分比
-        reObj.yunit = '%'
-      }
-      reObj.series = chartData.reduce((result, current, index) => {
-        reObj.xaxis.push(current.date)
-        const oneDateData = current.data
-        oneDateData.forEach(dayObj => {
-          const valueNum = dayObj[key]
-          const flag = result.find(i => i.name === dayObj.planName)
-          if (flag) {
-            flag.value.push(valueNum)
-          } else {
-            result.push({
-              name: dayObj.planName,
-              value: [valueNum]
-            })
-          }
+      const crowdNameList = []
+      chartData.forEach(item => {
+        // 找到所有的日期
+        const flag = reObj.xaxis.find(i => i === item.dt)
+        if (!flag) {
+          reObj.xaxis.push(item.dt)
+        }
+        // 找到所有的人群
+        const flag2 = crowdNameList.find(i => i === item.crowdName)
+        if (!flag2) {
+          crowdNameList.push(item.crowdName)
+        }
+      })
+
+      console.log('crowdName--->', crowdNameList)
+      crowdNameList.forEach(name => {
+        const xArr = reObj.xaxis
+        const value = []
+        xArr.forEach((xValue, index) => {
+          const obj = chartData.find(itemObj => itemObj.dt === xValue && itemObj.crowdName === name)
+          value[index] = obj[key]
         })
 
-        return result
-      }, [])
+        reObj.series.push({
+          name,
+          value
+        })
+      })
+      console.log('reObj--->', reObj)
+      // const aa = reObj.xaxis.reduce((result, current, index) => {
+      //   // 一个日期的 多个人群 的数组
+      //   const arr = chartData.filter(obj => obj.dt === current)
+      //   // const re = {}
+      //   arr.forEach(arrObj => {
+      //     const old = result[current] && result[current][arrObj.crowdId] ? result[current][arrObj.crowdId] : {}
+      //     const ob = {
+      //       [current]: {
+      //         [arrObj.crowdId]: {
+      //           ...old,
+      //           [index]: arrObj[key]
+      //         }
+      //       }
+      //     }
+      //     console.log('ob->', ob)
+      //     result = Object.assign(result, ob)
+      //   })
+      //   return result
+      // }, {})
+      // console.log('reObj-->', aa)
+      // reObj.series = chartData.reduce((result, current, index) => {
+      //   const oneDateData = current.data
+
+      //   oneDateData.forEach(dayObj => {
+      //     const valueNum = dayObj[key]
+      //     const flag = result.find(i => i.name === dayObj.crowdId)
+      //     if (flag) {
+      //       flag.value.push(valueNum)
+      //     } else {
+      //       result.push({
+      //         name: dayObj.crowdId,
+      //         value: [valueNum]
+      //       })
+      //     }
+      //   })
+
+      //   return result
+      // }, [])
 
       return reObj
     },
@@ -380,44 +486,18 @@ export default {
       }
     },
     setTableData (res) {
-      // // 实验分组概览
-      // this.table1.data = d.reportPlans.data
-      // // 实验效果汇总
-      // this.table2.data = d.reportTotal.data
+      const allData = res
 
-      const d = res
+      for (const key in allData) {
+        const data = allData[key].data // 单个表格的数据
 
-      for (const key in d) {
-        const allData = res[key]
-
-        const data = d[key].data // 单个表格的数据
-
-        if (key === 'reportDayDetail' || key === 'reportSum') {
-          // let mainkey
-          // if (key === 'reportSum') {
-          //   mainkey = 'day'
-          // } else {
-          //   mainkey = 'date'
-          // }
-          // const reutrnData = this.restoreData(key, data, mainkey, allData)
-
-          // this.allTableData[key].data = reutrnData.tableData
-          // this.allTableData[key].tableConfig = reutrnData.tableConfig
-
-          // console.log('this.allTableData.reportDayDetail-------->', this.allTableData.reportSum)
-        } else {
-          if (this.allTableData[key]) {
-            this.allTableData[key].data = data
-          }
+        if (this.allTableData[key]) {
+          this.allTableData[key].data = data
         }
       }
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
-      // console.log('yData--------->', yData)
-      // console.log('setBarEchart======111>>>', this.$refs)
-      // console.log('setBarEchart======111>>>', element)
-      // console.log('setBarEchart======111>>>', this.$refs[element])
       const echarts = require('echarts')
       const _this = this
       const yAxisObj = {
@@ -547,6 +627,7 @@ export default {
   },
   data () {
     return {
+      time0: [],
       downloadUrl: undefined,
       options: [{
         value: 6,
@@ -571,92 +652,170 @@ export default {
         label: '智能'
       }],
       allTableData: {
-
-        reportTotal: {
+        t2: {
           header: [{
             label: '日期',
-            prop: 'dynamicRuleId'
+            prop: 'dt'
           }, {
             label: '子人群',
-            prop: 'dynamicName'
+            prop: 'crowdName'
           }, {
             label: '分组',
-            prop: 'dynamicType'
+            prop: 'dynamicRuleName'
           }, {
             label: '业务平台',
-            prop: 'hitAmount',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.hitAmount)
-            }
+            prop: 'bidName'
           }, {
             label: '命中设备量',
-            prop: 'showMac',
+            prop: 'uv',
             render: (h, { row }) => {
-              return this.cc_format_number(row.showMac)
+              return this.cc_format_number(row.uv)
             }
           }],
           data: []
         },
-        reportDayDetail: { // 每日收益明细
-          tableConfig: [ // 表头配置项
-            {
-              id: 1,
-              label: '日期',
-              prop: 'date'
-            },
-            {
-              id: 2,
-              label: '产品包曝光量',
-              prop: 'showMac',
-              children: [
 
-              ]
-            },
-            {
-              id: 3,
-              label: '支付率',
-              prop: 'payRate',
-              children: [
-
-              ]
-            },
-            {
-              id: 4,
-              label: '客单价',
-              prop: 'arup',
-              children: [
-                // {
-                //     id:303,
-                //     label:"动态人群_A",
-                //     prop:"priceDongA"
-                // },
-                // {
-                //     id:304,
-                //     label:"动态人群_B",
-                //     prop:"priceDongB"
-                // },
-                // {
-                //     id:305,
-                //     label:"动态人群_C",
-                //     prop:"priceDongC"
-                // },
-              ]
-            },
-            {
-              id: 5,
-              label: '总营收(元)',
-              prop: 'priceTotal',
-              children: [
-              ]
-            },
-            {
-              id: 6,
-              label: '总营收(元)【按命中流量比例换算】',
-              prop: 'priceTotalHitRate',
-              children: [
-              ]
+        t4: { // 各分组命中设备数及占比
+          header: [{
+            label: '日期',
+            prop: 'dt'
+          }, {
+            label: '子人群',
+            prop: 'crowdName'
+          }, {
+            label: '分组',
+            prop: 'dynamicRuleName'
+          }, {
+            label: '命中设备量',
+            prop: 'uv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.uv)
             }
-          ],
+          }, {
+            label: '分组总命中设备量',
+            prop: 'totalUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.totalUv)
+            }
+          }, {
+            label: '占比',
+            prop: 'dynamicRuleRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.dynamicRuleRate)
+            }
+          }],
+          data: []
+        },
+        t5: { // 流转指标中间表
+          header: [{
+            label: '日期',
+            prop: 'dt'
+          }, {
+            label: '子人群',
+            prop: 'crowdName'
+          }, {
+            label: '产品包曝光',
+            prop: 'pkgShowUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.pkgShowUv)
+            }
+          }, {
+            label: '优惠券曝光',
+            prop: 'couponShowUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.couponShowUv)
+            }
+          }],
+          data: []
+        },
+        t3: { // 各流转链路设备数
+          header: [{
+            label: '开始日期',
+            prop: 'startDate'
+          }, {
+            label: '结束日期',
+            prop: 'endDate'
+          }, {
+            label: '分组',
+            prop: 'dynamicRuleName'
+          }, {
+            label: '流转路径',
+            prop: 'pkgShowPath'
+          }, {
+            label: '产品包曝光设备量',
+            prop: 'totalUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.pkgShowUv)
+            }
+          }],
+          data: []
+        },
+        t1: { // 分组、基础人群对齐
+          header: [{
+            label: '开始日期',
+            prop: 'startDate'
+          }, {
+            label: '结束日期',
+            prop: 'endDate'
+          }, {
+            label: '分组',
+            prop: 'dynamicRuleName'
+          }, {
+            label: '命中设备量',
+            prop: 'showMac',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.dynamicRuleHitUv)
+            }
+          }, {
+            label: '各组命中设备总量',
+            prop: 'totalHitUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.totalHitUv)
+            }
+          }, {
+            label: '基础人群命中设备量',
+            prop: 'distinctTotalHitUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.distinctTotalHitUv)
+            }
+          }, {
+            label: '是否正确',
+            prop: 'flag'
+          }],
+          data: []
+        },
+        t6: { // 子人群产品包对齐
+          header: [{
+            label: '开始日期',
+            prop: 'dt'
+          }, {
+            label: '子人群',
+            prop: 'crowdName'
+          }, {
+            label: '权益名称',
+            prop: 'sourceName'
+          }, {
+            label: '价格',
+            prop: 'price',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.price)
+            }
+          }, {
+            label: '产品包类型',
+            prop: 'productType'
+          }, {
+            label: '成交单量',
+            prop: 'payNum',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.payNum)
+            }
+          }, {
+            label: '成交设备量',
+            prop: 'payUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.payUv)
+            }
+          }],
           data: []
         }
 
@@ -666,8 +825,8 @@ export default {
       allChartData: {},
       rowObj2: [
         {
-          vipPlay: { type: 'line', title: '每组动态人群每日曝光支付率数据', span: 12 },
-          vipPlayTrend: { type: 'line', title: '每组动态人群每日曝光客单价数据', span: 12 }
+          vipPlay: { type: 'line', title: '产品包曝光折线图', span: 12 },
+          vipPlayTrend: { type: 'line', title: '优惠券曝光折线图', span: 12 }
         }
       ],
       allCharts: {},
@@ -765,7 +924,7 @@ export default {
     padding-left 5px
     border-left: 1px solid #e4e7ed;
   }
-  .chart-div{
+  .chart-div {
     height: 436px
   }
   .aaa {
@@ -774,5 +933,5 @@ export default {
   }
   .export-button
     display flex
-    justify-content flex-end
+    justify-content space-between
 </style>
