@@ -116,8 +116,9 @@
             :props="allTableData.t4.props"
             :header="allTableData.t4.header"
             :data="allTableData.t4.data"
-            @row-click="(row,column,e)=>handleRowClicked(row,column,e,allTableData.t4.data)"
+            @row-click="(row,column,e) => handleRowClicked(row, allTableData.t4.data)"
           ></c-table>
+
           <template v-if="(allTableData.t4.data && allTableData.t4.data.length > 0)">
             <div class="unit-row" v-for="(row, index) in rowObj2" :key="index">
               <div v-for="(chart, key) in row" :key="key" class="unit-box">
@@ -247,7 +248,7 @@ export default {
     })
   },
   methods: {
-    handleRowClicked (row, column, event, data) {
+    handleRowClicked (row, data) {
       console.log(row)
       console.log(data)
       const arr = data.filter(item => item.dt === row.dt && item.dynamicRuleName === row.dynamicRuleName)
@@ -318,15 +319,10 @@ export default {
         endDate: this.time0[0]
       }
       this.$service.dynamicCrowdMonitoring(parmas).then(res => {
-        // const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+        // 格式化一些数据： 千分位、百分比
+        const getAllData = this.formatData(res)
 
-        // // 表格
-        // this.setTableData(getAllData)
-
-        // this.allTableData = res || {}
-        // console.log('33333333333->>', this.allTableData)
-        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
-        // 表格数据
+        // 构建表格所需数据格式 => 构建 allTableData
         this.setTableData(getAllData)
 
         // 折线图数据
@@ -341,6 +337,12 @@ export default {
         this.$nextTick(() => {
           this.drawChart()
         })
+
+        // 各分组命中设备数及占比（t4）
+        if ((this.allTableData.t4.data && this.allTableData.t4.data.length > 0)) {
+          const list0 = this.allTableData.t4.data[0]
+          this.handleRowClicked(list0, this.allTableData.t4.data) // 默认选择第一条数据
+        }
 
         // console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
         // console.log('aaa---->', vipPlay)
