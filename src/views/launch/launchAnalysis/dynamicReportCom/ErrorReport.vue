@@ -191,6 +191,7 @@
           :props="allTableData.t6.props"
           :header="allTableData.t6.header"
           :data="allTableData.t6.data"
+
         ></c-table>
       </div>
 
@@ -915,6 +916,9 @@ export default {
           data: []
         },
         t6: { // 子人群产品包对齐
+          props: {
+            'max-height': '570px'
+          },
           header: [{
             label: '开始日期',
             prop: 'dt'
