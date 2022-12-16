@@ -64,9 +64,9 @@
           </div>
 
         </div>
-        <!-- {{ rowObj2 }}
+        <!-- {{ rowObj }}
         {{ allChartData }} -->
-        <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+        <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
           <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
             <div class="unit-box">
               <!-- {{allChartData[key]}} -->
@@ -111,12 +111,33 @@
           </div>
 
         </div>
-        <c-table
-          :props="allTableData.t4.props"
-          :header="allTableData.t4.header"
-          :data="allTableData.t4.data"
-          @row-click="(row,column,e)=>handleRowClicked(row,column,e,allTableData.t4.data)"
-        ></c-table>
+        <div style="display: grid; grid-template-columns: 70% minmax(0, 1fr); grid-gap: 20px;">
+          <c-table
+            :props="allTableData.t4.props"
+            :header="allTableData.t4.header"
+            :data="allTableData.t4.data"
+            @row-click="(row,column,e)=>handleRowClicked(row,column,e,allTableData.t4.data)"
+          ></c-table>
+          <template v-if="(allTableData.t4.data && allTableData.t4.data.length > 0)">
+            <div class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+              <div v-for="(chart, key) in row" :key="key" class="unit-box">
+                <div v-if="pieText" class="unit-header clearfix">
+                  <span>
+                    {{ pieText }} (命中饼图)
+                  </span>
+                </div>
+
+                <div v-if="chart.title">
+                    <!-- {{ allChartData[key] && allChartData[key].series }} -->
+                  <div v-if="allChartData2[key] && ((allChartData2[key].series && allChartData2[key].series.length > 0) || allChartData2[key].data)" :ref="key" :id="key" style="height: 300px"></div>
+                  <div v-else >
+                    <el-empty description="点击左侧表格列，展示所属分组命中饼图"></el-empty>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </template>
+        </div>
       </div>
 
       <div id='a4' class="table-wrap">
@@ -135,6 +156,7 @@
           :header="allTableData.t3.header"
           :data="allTableData.t3.data"
         ></c-table>
+
       </div>
       <div id='a5' class="table-wrap">
         <div class="title-layout">
@@ -229,7 +251,25 @@ export default {
       console.log(row)
       console.log(data)
       const arr = data.filter(item => item.dt === row.dt && item.dynamicRuleName === row.dynamicRuleName)
-      console.log('arr===>', arr)
+      this.pieText = `${row.dt}  ${row.dynamicRuleName}`
+      const arrMap = arr.map(item => {
+        return {
+          name: item.crowdName,
+          count: item.dynamicRuleRate
+        }
+      })
+      const data11 = [].concat(arrMap)
+
+      this.allChartData2 = {
+        t4: {
+          data: data11
+        }
+      }
+      // 图表
+      this.$nextTick(() => {
+        this.drawChart2()
+      })
+      console.log('arr===>', this.allChartData2)
     },
     handleBackToCrowdList () {
       // 根据GlobalStrategySource判断是从哪里跳来的
@@ -461,8 +501,8 @@ export default {
     },
     // echart 图表渲染
     drawChart () {
-      const rowObj2 = this.rowObj2
-      rowObj2.forEach(item => {
+      const rowObj = this.rowObj
+      rowObj.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
           if (item[key].type === 'line') {
@@ -470,6 +510,86 @@ export default {
           }
         }
       })
+    },
+    // echart 饼图
+    drawChart2 () {
+      const rowObj2 = this.rowObj2
+
+      rowObj2.forEach(item => {
+        // key 是代表 ref 值
+        for (const key in item) {
+          debugger
+          if (item[key].type === 'pie') { // 饼图
+            this.showPie(this.allChartData2[key], key)
+          }
+        }
+      })
+    },
+    //  环形图
+    showPie (data, chartID) {
+      console.log('showBar======111>>>', data)
+      if (data && data.data) {
+        const d = data.data.map((v, index) => {
+          return {
+            ...v,
+            value: v.count || v.value
+            // name: '123'
+          }
+        })
+        // console.log('d==------------------------>', d)
+        // console.log('d==------------------------>', chartID)
+        this.setPie(chartID, d, data.title)
+      }
+    },
+    // 环形图
+    setPie (element, data, title = '') {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+      const _this = this
+      const option = {
+        tooltip: {
+          trigger: 'item',
+          formatter: '{b}: {c} ({d}%)'
+        },
+        title: {
+          text: title
+          // subtext: 'Fake Data',
+          // left: '5%'
+        },
+        // legend: {
+        //   top: '5%',
+        //   left: 'right',
+        //   orient: 'vertical'
+        // },
+        legend: {
+          bottom: '5%',
+          left: 'center'
+        },
+        color: _this.colorList,
+
+        series: [
+          {
+            // name: 'Access From',
+            type: 'pie',
+            emphasis: {
+              itemStyle: {
+                shadowBlur: 10,
+                shadowOffsetX: 0,
+                shadowColor: 'rgba(0, 0, 0, 0.5)'
+              }
+            },
+            center: ['50%', '40%'],
+            radius: '50%',
+            data
+          }
+        ]
+      }
+      const echarts = require('echarts')
+      // let myChart = echarts.init(this.$refs[element])
+      const myChart = echarts.init(chartElement)
+
+      myChart.setOption(option)
+      this.allCharts[element] = myChart
     },
     //  折线图
     showLine (data, chartID) {
@@ -634,6 +754,7 @@ export default {
   },
   data () {
     return {
+      pieText: '',
       time0: [],
       downloadUrl: undefined,
       options: [{
@@ -829,13 +950,17 @@ export default {
       },
 
       getAllData: [],
-      allChartData: {},
-      rowObj2: [
+      allChartData: {}, // allChartData 和 rowObj 中的 key 值需要一一对应
+      rowObj: [
         {
           vipPlay: { type: 'line', title: '产品包曝光折线图', span: 12 },
           vipPlayTrend: { type: 'line', title: '优惠券曝光折线图', span: 12 }
         }
       ],
+      rowObj2: [{
+        t4: { type: 'pie', title: '饼图', span: 12 }
+      }],
+      allChartData2: {},
       allCharts: {},
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       showNav: true,

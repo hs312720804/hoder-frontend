@@ -127,6 +127,7 @@ export default {
       const params = {
         uniqueId: '1602187350081798144'
       }
+      // 正式环境的：https://api.cloud.coocaa.com/dev_cms/
       axios.get('http://172.20.151.197:9080/dev_cms/release/page/info', { params }).then(res => {
         const data = res.data
         if (data.code === 1000) {
