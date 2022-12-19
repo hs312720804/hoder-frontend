@@ -59,7 +59,7 @@
           placeholder="请选择影片">
           <el-option
             v-for="item in resourceListOptions"
-            :label="item.resourceName"
+            :label="item.resourceName + '（'+item.resourceId+'）'"
             :value="item"
             :key="item.resourceId">
           </el-option>

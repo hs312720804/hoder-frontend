@@ -125,10 +125,12 @@ export default {
   methods: {
     getConfig () {
       const params = {
-        uniqueId: '1602187350081798144'
+        // uniqueId: '1602187350081798144'
+        uniqueId: '1596028063978618880'
       }
       // 正式环境的：https://api.cloud.coocaa.com/dev_cms/
-      axios.get('http://172.20.151.197:9080/dev_cms/release/page/info', { params }).then(res => {
+      // axios.get('http://172.20.151.197:9080/dev_cms/release/page/info', { params }).then(res => {
+      axios.get('https://api.cloud.coocaa.com/dev_cms/release/page/info', { params }).then(res => {
         const data = res.data
         if (data.code === 1000) {
           this.formConf = JSON.parse(data.data.config)

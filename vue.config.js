@@ -37,7 +37,8 @@ module.exports = {
         pathRewrite: { '^/api': '/' }
       },
       '/dev_cms': {
-        target: 'http://172.20.151.197:9080'
+        // target: 'http://172.20.151.197:9080'
+        target: 'https://api.cloud.coocaa.com'
         // pathRewrite: { '^/dev_cms': '/' }
       }
     },
