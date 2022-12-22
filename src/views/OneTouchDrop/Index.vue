@@ -2,7 +2,7 @@
     <div v-if="reloadFlag">
         <div class="">
           <!-- 动态人群 -->
-          <el-steps v-if="isDynamicPeople" :active="activeStep" finish-status="success" simple style="margin-top: 20px">
+          <el-steps v-if="isDynamicPeople" :active="activeStep" finish-status="success" simple >
               <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
               <el-step title="第二步：圈出人群" icon="el-icon-edit"></el-step>
               <el-step title="第三步：动态人群配置" icon="el-icon-edit"></el-step>
@@ -11,7 +11,7 @@
           </el-steps>
 
           <!-- 普通人群 -->
-          <el-steps v-else :active="activeStep" finish-status="success" simple style="margin-top: 20px">
+          <el-steps v-else :active="activeStep" finish-status="success" simple >
               <el-step title="第一步：选择策略维度" icon="el-icon-edit"></el-step>
               <el-step title="第二步：创建人群" icon="el-icon-edit"></el-step>
               <el-step title="第三步：投放到业务平台" icon="el-icon-edit"></el-step>
@@ -182,17 +182,17 @@ import { mapGetters } from 'vuex'
 import createCrowd from './CreateCrowd'
 import LaunchToBusiness from './LaunchToBusinessPlatform'
 import newCreatePolicy from '../LabelSquare/CreatePolicyWithLabelSquare'
-import createConfigScheme from './createConfigScheme'
+// import createConfigScheme from './createConfigScheme'
 import DynamicPeopleSetting from '@/components/dynamicPeople/DynamicPeopleSetting'
 // import DynamicPeopleConditions from '@/components/dynamicPeople/DynamicPeopleConditions'
 export default {
-  name: 'index',
+  name: 'OneTouchDrop',
   components: {
     // createPolicy,
     createCrowd,
     LaunchToBusiness,
     newCreatePolicy,
-    createConfigScheme,
+    // createConfigScheme,
     DynamicPeopleSetting
     // DynamicPeopleConditions
   },

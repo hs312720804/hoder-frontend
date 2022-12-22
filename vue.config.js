@@ -29,6 +29,11 @@ module.exports = {
       '/violet-api': {
         target: 'http://' + BACKEND,
         pathRewrite: { '^/violet-api': '/' }
+      },
+      '/dev_cms': {
+        // target: 'http://172.20.151.197:9080'
+        target: 'https://api.cloud.coocaa.com'
+        // pathRewrite: { '^/dev_cms': '/' }
       }
     },
     historyApiFallback: true
@@ -56,6 +61,9 @@ module.exports = {
     config.resolve.alias.set('@antvGraph', resolve('src/components/antvGraph/src'))
   },
   productionSourceMap: false // 关闭生产环境的sourceMap 文件
+  // transpileDependencies: [
+  //   '@ccms/cms-engine'
+  // ]
   // config.plugin('webpack-bundle-analyzer').use(require('webpack-bundle-analyzer').BundleAnalyzerPlugin)
   // plugins: [
   //   new BundleAnalyzerPlugin()

@@ -1,43 +1,54 @@
 <template>
 <div id="login">
-  <span class="web-logo" >
-    <img src="../assets/img/logo.png" width="60px" height="60px">
-    <img src="../assets/img/logo_text.png" width="95px" height="23px">
-  </span>
-  <el-row class="login-content">
-    <el-col :span="6" :offset="9" class="login-form">
-      <!-- <div class="login-logo"></div> -->
-
-      <img src="../assets/img/bg1.jpg" class="login-bg" width="100%" height="100%">
-
-      <p class="title">账号登录</p>
-      <c-gate-schema-form ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
-      </c-gate-schema-form>
-
-      <!-- <el-form ref="loginForm" :model="user" :rules="rules">
-        <div class="login-title">登陆名称</div>
-        <el-form-item label="" style="margin-bottom: 26px;">
-          <el-input required v-model="user.username" placeholder="请输入登录名称"></el-input>
-        </el-form-item>
-
-        <div class="login-title">登陆密码</div>
-        <el-form-item label="">
-          <el-input required v-model="user.password" placeholder="请输入登陆密码"></el-input>
-        </el-form-item>
-
-        <el-form-item>
-          <el-button class="login-form__btn" type="primary" size="big" @click="handleLogin()">登录</el-button>
-        </el-form-item>
-      </el-form> -->
-
-      <el-button class="login-form__btn" style="background-color: #2778FF; height: 45px" type="primary" size="big" @click="$refs.loginForm.handleSubmit()">登录</el-button>
-    </el-col>
-  </el-row>
+  <!-- {{ formConf }} -->
+  <div v-if="!isLogin">
+    <el-button type="primary" @click="(isLogin = !isLogin)" class="login-btn">登录</el-button>
+    <!-- <Parser ref="parserRef" v-if="formConf" :formConf="formConf"  class="parser"></Parser> -->
   </div>
+
+  <template v-else >
+    <span class="web-logo" >
+      <img src="../assets/img/logo.png" width="60px" height="60px">
+      <img src="../assets/img/logo_text.png" width="95px" height="23px">
+    </span>
+    <el-row class="login-content">
+      <el-col :span="6" :offset="9" class="login-form">
+        <!-- <div class="login-logo"></div> -->
+
+        <img src="../assets/img/bg1.jpg" class="login-bg" width="100%" height="100%">
+
+        <p class="title">账号登录</p>
+        <c-gate-schema-form ref="loginForm" :schema="formSchema" v-model="user" @submit="handleLogin">
+        </c-gate-schema-form>
+
+        <!-- <el-form ref="loginForm" :model="user" :rules="rules">
+          <div class="login-title">登陆名称</div>
+          <el-form-item label="" style="margin-bottom: 26px;">
+            <el-input required v-model="user.username" placeholder="请输入登录名称"></el-input>
+          </el-form-item>
+
+          <div class="login-title">登陆密码</div>
+          <el-form-item label="">
+            <el-input required v-model="user.password" placeholder="请输入登陆密码"></el-input>
+          </el-form-item>
+
+          <el-form-item>
+            <el-button class="login-form__btn" type="primary" size="big" @click="handleLogin()">登录</el-button>
+          </el-form-item>
+        </el-form> -->
+
+        <el-button class="login-form__btn" style="background-color: #2778FF; height: 45px" type="primary" size="big" @click="$refs.loginForm.handleSubmit()">登录</el-button>
+      </el-col>
+    </el-row>
+  </template>
+</div>
 </template>
 
 <script>
 import _ from 'gateschema'
+import axios from 'axios'
+// import { Parser } from '@ccms/cms-engine'
+
 const schema = _.map({
   username: _.required.$msg('请输入登陆名称').string.other('form', {
     placeholder: '请输入登陆名称',
@@ -84,6 +95,9 @@ const schema = _.map({
 //     layout: 'vertical'
 //   })
 export default {
+  components: {
+    // Parser
+  },
   data () {
     return {
       user: {
@@ -93,7 +107,9 @@ export default {
       rules: {
         username: { required: true, message: '请输入登录名', trigger: 'blur' },
         password: { required: true, message: '请输入密码', trigger: 'blur' }
-      }
+      },
+      formConf: null,
+      isLogin: false
     }
   },
   computed: {
@@ -102,7 +118,29 @@ export default {
     }
   },
   props: ['schema'],
+  created () {
+    console.log('created')
+    this.getConfig()
+  },
   methods: {
+    getConfig () {
+      const params = {
+        // uniqueId: '1602187350081798144'
+        uniqueId: '1596028063978618880'
+      }
+      // 正式环境的：https://api.cloud.coocaa.com/dev_cms/
+      // axios.get('http://172.20.151.197:9080/dev_cms/release/page/info', { params }).then(res => {
+      axios.get('https://api.cloud.coocaa.com/dev_cms/release/page/info', { params }).then(res => {
+        const data = res.data
+        if (data.code === 1000) {
+          this.formConf = JSON.parse(data.data.config)
+        } else {
+          this.formConf = null
+        }
+
+        console.log('this.formConf-->', this.formConf)
+      })
+    },
     handleLogin (err) {
       if (err.length === 0) {
         this.$login(this.user).then(() => {
@@ -146,6 +184,7 @@ export default {
   margin-top: 26px
 #login
   height 100%
+  overflow: auto;
   // background url('../assets/img/bg1.jpg');
   // background-size cover
 .login-bg
@@ -194,4 +233,10 @@ export default {
   left 36px
   img
     vertical-align middle
+.login-btn
+  position: absolute;
+  z-index: 9999;
+  right: 34px;
+  top: 14px;
+  border-radius: 14px;
 </style>

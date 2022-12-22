@@ -711,8 +711,14 @@
                 <!-- 动态人群才展示 -->
                 <el-dropdown-item
                   v-if="scope.row.dynamicFlag === 1"
-                  :command="['dynamicCrowdReport',scope.row]"
+                  :command="['dynamicReport',scope.row]"
                 >动态实验报告</el-dropdown-item>
+
+                <!-- 动态人群才展示 --><!-- 流转异常监控 -->
+                <el-dropdown-item
+                  v-if="scope.row.dynamicFlag === 1"
+                  :command="['nomalyMonitoring',scope.row]"
+                >流转异常监控</el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
@@ -3027,15 +3033,26 @@ export default {
         case 'operationalAnalysis':
           this.goToOperationalAnalysis(this.currentCid)
           break
-        case 'dynamicCrowdReport':
+        case 'dynamicReport':
           // 动态实验报告
           this.goToDynamicCrowdReport(this.currentCid, row.crowdName)
+          break
+        case 'nomalyMonitoring':
+          // 流转异常监控
+          this.goToNomalyMonitoring(this.currentCid, row.crowdName)
           break
       }
     },
     goToDynamicCrowdReport (crowdId, crowdName) {
       // 跳转到操作指引
       this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', crowdId, crowdName } })
+      // this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName } })
+    },
+    goToNomalyMonitoring (crowdId, crowdName) {
+      // 跳转到操作指引
+      this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', crowdId, crowdName, error: true } })
+
+      // this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, error: true } })
     },
     goToOperationalAnalysis (crowdId) {
       this.$service.portraitParam({ crowdId }).then(res => {

@@ -1,5 +1,7 @@
 <template>
-  <!-- 故事线 - 回显规则 -->
+  <!-- 故事线 - 回显行为标签规则
+  不是编辑
+  -->
   <div class="label-container multipleSelect">
     <!-- 行为标签 -->
     <!-- {{ actionTags}} -->

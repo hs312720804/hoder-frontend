@@ -142,7 +142,7 @@
         </div>
         <!-- --------{{currentGroup}} -->
         <div v-if="radioType === 6" class="aaa">
-          <el-button type="primary" size="large" @click="$router.push({ name: 'storyLine', params: { sceneId: currentGroup.sceneId } })">配置故事运营</el-button>
+          <el-button type="primary" size="large" @click="storySetting">配置故事运营</el-button>
         </div>
         <div style="position: relative" v-else>
           <!-- 拓扑图 -->
@@ -394,6 +394,11 @@ export default {
     eventBus.$off()
   },
   methods: {
+    storySetting () {
+      // 先保存，再跳转页面
+      this.handleSave('justSave')
+      this.$router.push({ name: 'storyLine', params: { sceneId: this.currentGroup.sceneId } })
+    },
     fullScreen () {
       // const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
       const element = document.getElementById('step2') // 若要全屏页面中div，var element= document.getElementById("divID");
@@ -725,7 +730,7 @@ export default {
       rulesJson.rules.splice(index, 1)
     },
 
-    handleSave () {
+    handleSave (type = '') {
       // 获取当前图表的graph数据，并保存
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
@@ -738,7 +743,9 @@ export default {
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
         // this.$emit('goBackCrowdListPage')
-        this.$emit('crowdNextStep', 2)
+        if (type !== 'justSave') {
+          this.$emit('crowdNextStep', 2)
+        }
       })
     },
 

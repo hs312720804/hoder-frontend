@@ -48,6 +48,7 @@
                 style="width: 120px"
                 name="oxve"
                 class="input-inline"
+                filterable
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
                   level: 2,
@@ -405,6 +406,7 @@
                       style="width: 110px"
                       name="asdq"
                       class="input-inline"
+                      filterable
                       @change="handelChildBehavirSelectChange({
                         childItem: item2,
                         hasChild: false,
@@ -3159,6 +3161,7 @@
             style="width: 120px"
             name="oxve"
             class="input-inline"
+            filterable
             @change="handelBehavirSelectChange()"
           >
             <template v-for="item in getBehaviorAttrList(1)">
@@ -3268,17 +3271,9 @@
 </template>
 
 <script>
-// import Type from '../Type.vue'
-// import ConditionLine from '../ConditionLine.vue'
-// import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
-// import Bav0012 from './Bav0012.vue'
-// import _ from 'lodash'
-// import { v4 as uuidv4 } from 'uuid'
-// todo.vue
 
 import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
-import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 import Bav0012 from './Bav0012.vue'
 import myMinix from './minix'
 export default {
@@ -3287,7 +3282,6 @@ export default {
   components: {
     Type,
     ConditionLine,
-    LabelZone,
     Bav0012
   },
   props: {

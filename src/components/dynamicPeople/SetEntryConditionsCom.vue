@@ -5,6 +5,8 @@
     {{ tagIds }}
     <hr>
     {{ selectModelGroupValue }} -->
+
+    <!-- 动态人群 - 智能人群 - 设置入口条件 -->
     <el-row>
       <el-col :span="4" class="row-title">
       选择入口标签：
@@ -211,10 +213,7 @@ export default {
     }
   },
   created () {
-    // 获取标签
-    // this.$service.getRuleIndicators().then(res => {
-    //   this.tags = res
-    // })
+
   },
   mounted () {
     this.fetchData()

@@ -64,3 +64,12 @@ export function getDatasource (params) {
     params
   })
 }
+
+// 获取标签类型
+export function getTagType (params) {
+  return this.fetch({
+    url: '/api/tag/getTagType',
+    method: 'get',
+    params
+  })
+}
