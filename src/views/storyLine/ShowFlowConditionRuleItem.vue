@@ -104,10 +104,10 @@ export default {
       // 试看二维码
       detailAdPosOptions: [{
         label: '曝光次数',
-        value: 'detailAdPosShowPv '
+        value: 'detailAdPosShowPv'
       }, {
         label: '曝光天数',
-        value: 'detailAdPosShowDays '
+        value: 'detailAdPosShowDays'
       }],
       // 详情页曝光
       detailPageViewOptions: [{
