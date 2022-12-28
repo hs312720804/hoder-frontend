@@ -1,5 +1,5 @@
 <template>
-  <div :class="styleType ? 'dark' : 'light'">
+  <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
     <!-- {{groupServicer}} -->
     <div class='row-wrap' >
       <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
@@ -353,8 +353,19 @@ export default {
       return data
     }
   },
+  watch: {
+    '$route.params': {
+      handler (val) {
+        console.log('val--->', val)
+        // if (val.sceneId) {
+        this.getSceneList()
+        // }
+      },
+      immediate: true
+    }
+  },
   created () {
-    this.getSceneList()
+    // this.getSceneList()
 
     this.getPolicyList()
   },
