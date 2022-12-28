@@ -58,6 +58,7 @@ import hitQuery from '@/views/launch/hitQuery'
 import StoryLine from '@/views/storyLine/Index'
 import operationHelper from '@/views/operationHelper/Index'
 import operate from '@/views/operate/Index'
+import crowdCompute from '@/views/crowdCompute/Index'
 
 const children = [
   {
@@ -160,6 +161,16 @@ const children = [
     meta: {
       tagId: 'labelSquare',
       title: '标签广场',
+      icon: 'el-icon-cc-file'
+    }
+  },
+  {
+    name: 'crowdCompute',
+    path: '/crowdCompute',
+    component: crowdCompute,
+    meta: {
+      tagId: 'crowdCompute',
+      title: '人群计算',
       icon: 'el-icon-cc-file'
     }
   },

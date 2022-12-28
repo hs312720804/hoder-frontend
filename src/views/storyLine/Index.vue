@@ -355,14 +355,18 @@ export default {
     }
   },
   watch: {
-    '$route.params'(val) {
-      if (val.sceneId) {
+    '$route.params': {
+      handler(val) {
+        console.log('val--->', val)
+        // if (val.sceneId) {
         this.getSceneList()
-      }
-    }
+        // }
+      },
+      immediate: true
+    },
   },
   created () {
-    this.getSceneList()
+    // this.getSceneList()
 
     this.getPolicyList()
   },
