@@ -1,6 +1,7 @@
 <template>
 <div class="content detail">
   <!-- {{ selectedServicer }} -->
+  <!-- {{selectedScene}} -->
   <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
     <div class="title">接待员详情</div>
 
@@ -1119,18 +1120,18 @@ export default {
       this.overview = {}
       // console.log('selectedScene---', this.selectedScene)
       // console.log('selectedServicer---', this.selectedServicer)/
-      // const params = {
-      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
-      //   dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-      //   crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
-      //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
-      // }
       const params = {
-        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
-        dynamicRuleId: 292,
-        crowdId: 14331, // 接待员id
+        // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
+        dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
+        crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
         isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       }
+      // const params = {
+      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
+      //   dynamicRuleId: 292,
+      //   crowdId: 14331, // 接待员id
+      //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
+      // }
       this.$service.getPerformanceGoalData(params).then(res => {
         const tableData = res.data || {}
         console.log('tableData----', tableData)
