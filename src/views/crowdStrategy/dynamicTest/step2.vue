@@ -19,6 +19,8 @@
         <!-- <hr> -->
         <!-- groupCheckIndex::{{groupCheckIndex}} -->
       <!-- </div> -->
+      <!-- {{ this.currentGroup }} -->
+
       <div class="top">
       <!-- <div> -->
         <el-tabs
@@ -552,9 +554,6 @@ export default {
           params.flowChart = flowChart
 
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
-            this.allGroupList.push(res)
-            this.groupCheckIndex = (this.allGroupList.length - 1).toString()
-
             if (this.form.mainArithmetic === 6) { // 创建故事线
               console.log('form', this.form)
               const crowdNames = this.form.cid.map(id => {
@@ -567,10 +566,17 @@ export default {
                 sceneName: this.form.name, // 方案组名称
                 crowdNames: crowdNames.join(',') // 创建方案组选择的小人群名称
               }
-              this.$service.addScenedynamic(params).then(res => {
-                console.log('id===========', res)
+              this.$service.addScenedynamic(params).then(sceneId => {
+                this.allGroupList.push({
+                  ...res,
+                  sceneId
+                })
+                this.groupCheckIndex = (this.allGroupList.length - 1).toString()
                 // this.$router.push({ name: 'storyLine', params: { sceneId: res } })
               })
+            } else {
+              this.allGroupList.push(res)
+              this.groupCheckIndex = (this.allGroupList.length - 1).toString()
             }
             this.dialogFormVisible = false
             // this.getDynamic2PlanList('add')
