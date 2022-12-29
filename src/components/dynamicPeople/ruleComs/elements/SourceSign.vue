@@ -21,7 +21,7 @@
           v-for="item in soureceSignList"
           :value="item.sourceSign"
           :key="item.sourceSign"
-          :label="item.sourceName">
+          :label="item.sourceName + '（'+ item.sourceSign + '）'">
         </el-option>
       </template>
 
