@@ -1,6 +1,10 @@
 <template>
   <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
     <!-- {{groupServicer}} -->
+    <!-- <div style="color: red; position: absolute; z-index: 999">
+      【{{$route.params.sceneId}}】
+      【{{selectedScene.id}}】
+    </div> -->
     <div class='row-wrap' >
       <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
         继续编辑
@@ -356,14 +360,14 @@ export default {
   },
   watch: {
     '$route.params': {
-      handler(val) {
+      handler (val) {
         console.log('val--->', val)
         // if (val.sceneId) {
         this.getSceneList()
         // }
       },
       immediate: true
-    },
+    }
   },
   created () {
     // this.getSceneList()
