@@ -20,11 +20,11 @@
         v-model="targetKeyForm.resource"
         value-key="resourceId"
         clearable
-        placeholder="请选择权益"
+        placeholder="请选择产品包"
         filterable>
         <el-option
           v-for="item in soureceSignListOptions"
-          :label="item.resourceName"
+          :label="item.resourceName  + '（'+ item.resourceId + '）'"
           :value="item"
           :key="item.resourceId">
         </el-option>
