@@ -237,6 +237,19 @@
 
       <!-- 输入 value -->
       <Value :childItem="childItem" :index="index" :n="n"></Value>
+      <!--
+      <el-popover
+        placement="top"
+        trigger="hover"
+        class="popover-button"
+      > -->
+        <div class="tip-text" style="line-height: 18px;">
+          <i class="el-icon-warning-outline"></i>
+          该影片标签的偏好权重排名共10个，排名1为偏好权重最高，排名10为偏好权重最低
+        </div>
+        <!-- <span class="priority-tip" slot="reference">!</span>
+      </el-popover> -->
+
       <!-- <el-form-item
         label=""
         class="form-item-styl"
