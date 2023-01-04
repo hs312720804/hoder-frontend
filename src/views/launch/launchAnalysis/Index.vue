@@ -448,6 +448,9 @@ export default {
       }
     })
 
+    // 设置初始化展示数据
+    this.setDefaultData()
+
     // 历史搜索记录
     this.handleGetRightsInterestsSearchRecord()
   },
@@ -639,7 +642,22 @@ export default {
       str += '%'
       return str
     },
-    // 分析
+
+    // 设置初始化展示数据
+    setDefaultData () {
+      // 默认展示的数据参数
+      this.formInline = {
+        crowdId: '14123',
+        sourceNameList: ['音乐K歌会员'],
+        timeRange: ['2022-11-25', '2022-12-01'],
+        isDelCache: 0
+      }
+      this.$nextTick(() => {
+        this.onSubmit()
+      })
+    },
+
+    // 点击分析 或者 点击柱状图 触发
     onSubmit (sourceName) {
       // console.log('submit!')
       // this.formInline.crowdId = 10013
@@ -667,7 +685,8 @@ export default {
       }
       this.initChart()
     },
-    // 手动点击分析 或者 点击历史记录分析 执行函数
+
+    // 手动点击分析调用 或者 点击历史记录分析调用
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
@@ -698,6 +717,8 @@ export default {
         this.loading = false
       })
     },
+
+    // 查询图表数据
     fetchAllData (sourceName) {
       this.loading = true
       const originParams = this.formInline

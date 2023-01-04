@@ -118,7 +118,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" v-if="!showSelection">
+        <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -157,7 +157,11 @@
                     v-if="(scope.row.history.status && (launchStatusEnum[scope.row.history.status]).code !== 2) && crowdType !== 3"
                     :command="['del', scope.row]" v-permission="'hoder:launch:crowd:ver:delete'">删除
                   </el-dropdown-item>
-                  <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">数据监控
+                  <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">
+                    数据监控
+                  </el-dropdown-item>
+                  <el-dropdown-item>
+                    神策分析
                   </el-dropdown-item>
                   <!-- <el-dropdown-item :command="['shenCeAnalysis', scope.row]"
                     v-permission="'hoder:launch:crowd:ver:index'">神策分析

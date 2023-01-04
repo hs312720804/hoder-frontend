@@ -68,7 +68,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" v-if="!showSelection">
+        <el-table-column label="操作" width="200" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -92,6 +92,9 @@
               </el-button>
               <el-button type="text" @click="del(scope.row)">
                 删除
+              </el-button>
+              <el-button type="text">
+                神策分析
               </el-button>
               <!--<el-button-->
               <!--type="text"-->
