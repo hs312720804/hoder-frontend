@@ -361,5 +361,5 @@ export default {
   grid-template-columns: repeat(5, 1fr);
   grid-gap: 20px;
 .chart-div
-  height: 436px
+  height: 400px
 </style>
