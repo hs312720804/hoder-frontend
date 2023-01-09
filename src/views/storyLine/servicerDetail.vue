@@ -20,7 +20,7 @@
               <div>{{ selectedServicer.userName || '-'}}</div>
               <div>创建时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
-              <div>擅长：</div>
+              <div>擅长(可选)：</div>
               <div v-if="selectedServicer.receptionist">
                 <el-select
                   ref="selectObj"
@@ -90,7 +90,7 @@
         </div>
         <div class="aaa"></div>
         <div class="detail-header-column">
-          <div class="target">我的任务</div>
+          <div class="target">我的任务（可选）</div>
           <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
           <div class="flex-content">
@@ -116,7 +116,7 @@
           <br/>
           overview： {{overview}} -->
           <div class="kpi-wrap">
-            <div>绩效目标</div>
+            <div>绩效目标(可选)</div>
             <div class="detail-kpi">
               <!-- <el-descriptions title="" column="2">
                 <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
@@ -199,7 +199,7 @@
       </div>
 
       <div>
-        <div class="title2">服务对象选择</div>
+        <div class="title2">服务对象选择（可选）</div>
         <div class="set-start">
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -318,7 +318,7 @@
         </div>
       </div>
       <div>
-        <div class="title2">服务终止条件</div>
+        <div class="title2">服务终止条件（可选）</div>
         <div class="set-end">
           <div v-if="exportList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
