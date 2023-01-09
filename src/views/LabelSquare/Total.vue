@@ -52,7 +52,6 @@
 </template>
 
 <script>
-import { title } from 'process'
 
 export default {
   components: {},
@@ -113,8 +112,8 @@ export default {
               name: '其他',
               percent: '2.56%'
             }
-          ],
-          title: '标签来源占比'
+          ]
+          // title: '标签来源占比'
         },
         addTags: {
           xaxis: [
@@ -134,7 +133,7 @@ export default {
             10228
           ],
           series2: null,
-          title: '近一个月新增标签来源',
+          // title: '近一个月新增标签来源',
           xunit: ''
         }
       },

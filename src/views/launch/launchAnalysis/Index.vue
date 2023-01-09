@@ -1245,26 +1245,13 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+@import url('~@/assets/overview.styl')
 // .ibox {
 //   border-radius: 4px;
 //   min-height: 36px;
 //   background red
 // }
-.wrap-div{
-  display: flex;
-  justify-content: space-between;
-}
-.ibox {
-  margin-bottom: 25px;
-  background-color: #fff;
-  // border: 1px solid #e7eaec;
-  border-radius: 4px;
-  padding: 15px 20px 20px 20px;
-  height: 139px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+
 .big-title{
   color rgb(103, 106, 108)
   font-family "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif
@@ -1276,32 +1263,7 @@ export default {
   flex: 1 0 730px
   color rgb(103, 106, 108)
 }
-.title-one{
-  // margin-top: 5px;
-  // margin-bottom: 20px;
-  font-size 12px
-  font-weight 600
-}
-.text-two{
-  font-size 24px
-  // margin-bottom 15px
-  // margin-top 5px
-  color rgb(26, 179, 148)
-  text-align: center;
-}
-.small-box {
-  display flex
-  justify-content: end
-  flex-direction: column;
-}
-.small{
-  display inline
-  font-size 13.3333px
-  display flex
-  justify-content: space-between
-  align-content: space-around
-  margin-top: 15px
-}
+
 // .small:nth-child(1) {
 //   margin-bottom 10px
 // }
