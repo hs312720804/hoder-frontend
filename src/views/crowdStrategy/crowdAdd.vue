@@ -105,6 +105,40 @@
               ></el-input-number>
               <span class="tip-text">命中的设备数量上限</span>
             </el-form-item>
+            <el-form-item label="人群黑名单" prop="remark">
+              <el-radio-group v-model="form.limitLaunch">
+                <el-radio :label="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <el-form-item>
+              <div
+                class="filed-row"
+                v-for="(field, key) in aaa"
+                :key="key"
+              >
+                <el-input
+                  v-model="field.crowdName"
+                  placeholder="请输入要屏蔽的MAC地址"
+                  clearable
+                  style="width: 250px">
+                </el-input>
+
+                <el-button
+                  v-if="aaa.length > 2"
+                  type="text"
+                  icon="el-icon-remove-outline"
+                  class="delete-btn"
+                >
+                </el-button>
+              </div>
+              <!-- </div> -->
+              <div class="filed-row">
+                <el-button @click="handleAddFiled" icon="el-icon-plus" class="add-btn">添加</el-button>
+              </div>
+            </el-form-item>
+
             <el-form-item label="备注" prop="remark">
               <el-input size="small" v-model="form.remark"></el-input>
             </el-form-item>
@@ -260,7 +294,8 @@ export default {
         12: 'gray'
       },
       cityData: [],
-      provinceValueList: []
+      provinceValueList: [],
+      aaa: []
     }
   },
   watch: {
@@ -278,6 +313,14 @@ export default {
   },
   props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'],
   methods: {
+    // 添加字段
+    handleAddFiled () {
+      if (this.aaa.length < 32) { // 动态方案数量上限为32
+        this.aaa.push({
+          crowdName: ''
+        })
+      }
+    },
 
     // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
     hasMoveBehaviorTagRule () {
@@ -1004,5 +1047,9 @@ i {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+.filed-row {
+  margin-bottom 15px
+  position relative
 }
 </style>
