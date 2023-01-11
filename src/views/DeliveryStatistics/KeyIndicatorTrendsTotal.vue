@@ -7,14 +7,14 @@
         总请求量
       </div>
       <div class="text-two">
-        1111
+        {{ cc_format_number(3779572629) }}
         <!-- {{ cc_format_number(overview.homepageActiveUv) }} -->
       </div>
       <div class="small-box">
         <div class="small">
           <span>总命中量</span>
           <span>
-            1111
+            {{ cc_format_number(646387883) }}
             <!-- {{ cc_format_number(overview.quandingUv) }} -->
           </span>
         </div>
@@ -25,14 +25,14 @@
       <div class="title-one">总策略数
       </div>
       <div class="text-two">
-        2222
+        {{ cc_format_number(3851) }}
         <!-- {{ toPercent(overview.totalPlayRate) }} -->
       </div>
       <div class="small-box">
         <div class="small">
           <span>活跃策略数</span>
           <span>
-            2222
+            {{ cc_format_number(381) }}
             <!-- {{ cc_format_number(overview.totalPlayUv) }} -->
           </span>
         </div>
@@ -44,13 +44,13 @@
       <div class="title-one">总人群数
       </div>
       <div class="text-two">
-        3333
+        {{ cc_format_number(10571) }}
         <!-- {{ toPercent(overview.totalPkgShowRate) }} -->
       </div>
       <div class="small-box">
         <div class="small">
           <span>活跃人群数</span>
-          3333
+          {{ cc_format_number(1579) }}
           <!-- <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span> -->
         </div>
 
@@ -61,7 +61,7 @@
       <div class="title-one">估算人群数量
       </div>
       <div class="text-two" style="height: 70px">
-        4444
+        {{ cc_format_number(2648) }}
         <!-- {{ toPercent(overview.totalPkgXiadanRate) }} -->
       </div>
     </div>
@@ -70,7 +70,7 @@
       <div class="title-one">AB人群数量
       </div>
       <div class="text-two" style="height: 70px">
-        5555
+        {{ cc_format_number(1724) }}
         <!-- {{ toPercent(overview.totalPkgPayRate) }} -->
       </div>
     </div>
@@ -80,7 +80,6 @@
     <el-row v-for="(row, index) in rowObj" :key="index">
       <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
         <template>
-
           <div v-if="(show && chart.title)">
             <div
               v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)"
@@ -163,7 +162,7 @@ export default {
           data: [
             {
               count: 10,
-              name: 'sh',
+              name: 'push',
               percent: '45%'
             },
             {
@@ -227,6 +226,9 @@ export default {
 
   },
   methods: {
+    changeView () {
+      this.showNav = !this.showNav
+    },
     fetchData () {
       this.$service.getTagStatistics().then(res => {
         this.allChartData = {
@@ -355,7 +357,7 @@ export default {
 @import url('~@/assets/overview.styl')
 .ibox
   background #fff
-  border: 1px solid #e7e7e7;
+  border: 1px solid #ddd;
 .overview-table
   display: grid;
   grid-template-columns: repeat(5, 1fr);

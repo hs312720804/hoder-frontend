@@ -1,5 +1,19 @@
 <template>
   <div class="launch-statistics">
+    <div id="ul111">
+      <div class="icon-open-close" @click="changeView">
+        <i v-if="showNav" class="el-icon-d-arrow-right"></i>
+        <i v-else class="el-icon-d-arrow-left"></i>
+      </div>
+
+      <div class="list-wrap" :class="{aaa: !showNav}">
+        <div v-for="item in chartList" :key="item.hookId">
+          <a href="javascript:void(0)" :to="item.hookId" @click="goAnchor('#'+ item.hookId)" :title="item.title">{{ item.title }}</a>
+        </div>
+
+      </div>
+
+    </div>
 
     <KeyIndicatorTrendsTotal></KeyIndicatorTrendsTotal>
 
@@ -25,159 +39,19 @@
           </el-select>
       </div>
     </div>
+
     <div>
-      <el-row :gutter="20" class="unit-row">
+      <el-row :gutter="20" class="unit-row" v-for="item in chartList" :key="item.hookId" :id='item.hookId'>
         <el-col :span="24">
           <div class="unit-box">
-            <div class="unit-header clearfix">业务处理量</div>
+            <div class="unit-header clearfix">{{ item.title }}</div>
             <div class="unit-content">
-                <div ref="chart1" class="chart-div"></div>
+                <div :ref="item.chartRef" :id="item.chartRef" class="chart-div"></div>
             </div>
           </div>
         </el-col>
       </el-row>
 
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">人群增长趋势</div>
-            <div class="unit-content">
-                <div ref="chart2" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">策略使用</div>
-            <div class="unit-content">
-                <div ref="chart3" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">投放统计</div>
-            <div class="unit-content">
-                <div ref="chart14" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">标签使用</div>
-            <div class="unit-content">
-                <div ref="chart4" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">人群寿命</div>
-            <div class="unit-content">
-                <div ref="chart5" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">行为人群寿命</div>
-            <div class="unit-content">
-                <div ref="chart6" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">策略寿命</div>
-            <div class="unit-content">
-                <div ref="chart7" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">大数据标签热度</div>
-            <div class="unit-content">
-                <div ref="chart8" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">账号标签热度</div>
-            <div class="unit-content">
-                <div ref="chart9" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">临时标签热度</div>
-            <div class="unit-content">
-                <div ref="chart10" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">使用占比</div>
-            <div class="unit-content">
-                <div ref="chart11" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">存储监控</div>
-            <div class="unit-content">
-                <div ref="chart12" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
-
-      <el-row :gutter="20" class="unit-row">
-        <el-col :span="24">
-          <div class="unit-box">
-            <div class="unit-header clearfix">性能监控</div>
-            <div class="unit-content">
-                <div ref="chart13" class="chart-div"></div>
-            </div>
-          </div>
-        </el-col>
-      </el-row>
     </div>
 
   </div>
@@ -185,6 +59,8 @@
 
 <script>
 import KeyIndicatorTrendsTotal from './KeyIndicatorTrendsTotal.vue'
+import AutoHighLightAnchor from '@/views/launch/launchAnalysis/dynamicTable/autoHighLightAnchor.js'
+
 export default {
   name: 'keyIndicatorTrendsAA',
   components: {
@@ -192,6 +68,64 @@ export default {
   },
   data () {
     return {
+      chartList: [{
+        title: '业务处理量',
+        chartRef: 'chart1',
+        hookId: 'a1'
+      }, {
+        title: '人群增长趋势',
+        chartRef: 'chart2',
+        hookId: 'a2'
+      }, {
+        title: '策略使用',
+        chartRef: 'chart3',
+        hookId: 'a3'
+      }, {
+        title: '投放统计',
+        chartRef: 'chart14',
+        hookId: 'a4'
+      }, {
+        title: '标签使用',
+        chartRef: 'chart4',
+        hookId: 'a5'
+      }, {
+        title: '人群寿命',
+        chartRef: 'chart5',
+        hookId: 'a6'
+      }, {
+        title: '行为人群寿命',
+        chartRef: 'chart6',
+        hookId: 'a7'
+      }, {
+        title: '策略寿命',
+        chartRef: 'chart7',
+        hookId: 'a8'
+      }, {
+        title: '大数据标签热度',
+        chartRef: 'chart8',
+        hookId: 'a9'
+      }, {
+        title: '账号标签热度',
+        chartRef: 'chart9',
+        hookId: 'a10'
+      }, {
+        title: '临时标签热度',
+        chartRef: 'chart10',
+        hookId: 'a11'
+      }, {
+        title: '使用占比',
+        chartRef: 'chart11',
+        hookId: 'a12'
+      }, {
+        title: '存储监控',
+        chartRef: 'chart12',
+        hookId: 'a13'
+      }, {
+        title: '性能监控',
+        chartRef: 'chart13',
+        hookId: 'a14'
+      }],
+      showNav: true,
       allCharts: {},
       rangeType: 'OM',
       options: [{
@@ -218,6 +152,17 @@ export default {
     }
   },
   methods: {
+    goAnchor (selector) {
+      document.querySelector(selector).scrollIntoView({
+        behavior: 'smooth'
+      })
+    },
+    high () {
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
+    },
+    changeView () {
+      this.showNav = !this.showNav
+    },
     initChart () {
       // chart1
       this.getBusinessUseTendency(this.rangeType)
@@ -253,7 +198,9 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -267,7 +214,9 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart2', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart2', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -281,7 +230,9 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart3', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart3', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
     //  4
@@ -294,35 +245,45 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart4', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart4', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
     //  5
     getStatisticCrowdLife (rangeType) {
       this.$service.getStatisticCrowdLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart5', '', data.xaxis, data.series, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setBarEchart('chart5', '', data.xaxis, data.series, data.xunit, data.yunit)
+        })
       })
     },
 
     //  6
     getStatisticBehaviorCrowdLife (rangeType) {
       this.$service.getStatisticBehaviorCrowdLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart6', '', data.xaxis, data.series, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setBarEchart('chart6', '', data.xaxis, data.series, data.xunit, data.yunit)
+        })
       })
     },
 
     //  7
     getStatisticStrategyLife (rangeType) {
       this.$service.getStatisticStrategyLife({ rangeType }).then((data) => {
-        this.setBarEchart('chart7', '', data.xaxis, data.series, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setBarEchart('chart7', '', data.xaxis, data.series, data.xunit, data.yunit)
+        })
       })
     },
 
     //  8 9 10
     getCountGetTag (type, chartId) {
       this.$service.getCountGetTag({ type }).then((data) => {
-        this.setBarEchart(chartId, '', data.xaxis, data.series, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setBarEchart(chartId, '', data.xaxis, data.series, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -337,7 +298,9 @@ export default {
           const valueMap = key.value.map((item) => Math.round(item * 100))
           return { name: key.name, data: valueMap, type: 'line' }
         })
-        this.setLinesEchart('chart11', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart11', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -351,7 +314,9 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart12', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart12', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -365,7 +330,9 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         }) || []
-        this.setLinesEchart('chart13', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart13', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
@@ -379,16 +346,18 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
-        this.setLinesEchart('chart14', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        this.$nextTick(() => {
+          this.setLinesEchart('chart14', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
+        })
       })
     },
 
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData, xunit = '', yunit = '') {
-      // const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
-      myChart.setOption({
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
+      const option = {
         title: {
           text: title
         },
@@ -444,16 +413,23 @@ export default {
           type: 'bar',
           barWidth: 10
         }]
-      }, true)
+      }
+
+      // const _this = this
+      const echarts = require('echarts')
+      const myChart = echarts.init(chartElement)
+      myChart.setOption(option)
+
       this.allCharts[element] = myChart
     },
 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
-      myChart.setOption({
+      debugger
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
+      const option = {
         title: {
           text: title
         },
@@ -547,13 +523,19 @@ export default {
           }
         },
         series: yData
-      }, true)
-      // console.log('chart===>', myChart)
+      }
+
+      const echarts = require('echarts')
+      const myChart = echarts.init(chartElement)
+
+      myChart.setOption(option)
 
       this.allCharts[element] = myChart
     }
   },
   mounted () {
+    this.high() // 锚点侧边栏
+
     // chart5
     this.getStatisticCrowdLife()
 
@@ -575,6 +557,7 @@ export default {
         chart.resize()
       }
     })
+    console.log('refs--->', this.$refs)
   },
   created () {
 
@@ -585,10 +568,7 @@ export default {
 <style lang="stylus" scoped>
 @import url('~@/assets/overview.styl')
 .launch-statistics
-  // overflow hidden
   position: relative;
-  height: 100%;
-  overflow: auto;
   box-sizing: border-box;
 .title
     font-size 20px
@@ -784,13 +764,16 @@ export default {
     margin-right 20px
 .statistics-header
   position: sticky;
-  top: 0;
+  top: -20px;
   z-index: 1
   background: #fff
-  padding-bottom 20px
+  margin-bottom 20px
   // display flex
   // justify-content space-between
 .chart-div
   height: 436px
-
+#ul111
+  top: 28%;
+  // .list-wrap
+  //   width 120px
 </style>
