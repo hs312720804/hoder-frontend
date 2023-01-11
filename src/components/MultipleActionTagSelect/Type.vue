@@ -35,6 +35,7 @@
         <el-option value="<="></el-option>
         <el-option value=">"></el-option>
         <el-option value="<"></el-option>
+        <el-option value="between" label="位于区间"></el-option>
       </el-select>
     </el-form-item>
 

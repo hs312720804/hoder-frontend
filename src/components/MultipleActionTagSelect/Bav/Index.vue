@@ -1237,6 +1237,8 @@
                                 <el-option value="<="></el-option>
                                 <el-option value=">"></el-option>
                                 <el-option value="<"></el-option>
+                                <el-option value="between" label="位于区间"></el-option>
+
                               </el-select>
                               <el-input
                                 placeholder="请输入"
@@ -1264,6 +1266,7 @@
                           level: 6
                         })"
                       >
+
                         <el-option
                           v-for="(tv, index) in qiBoCollectionOptions"
                           :key="tv.value + index"
@@ -1368,6 +1371,7 @@
                                   <el-option value="<="></el-option>
                                   <el-option value=">"></el-option>
                                   <el-option value="<"></el-option>
+                                  <el-option value="between" label="位于区间"></el-option>
                                 </el-select>
                                 <el-input
                                   placeholder="请输入"
@@ -1434,6 +1438,7 @@
                           <el-option value="<="></el-option>
                           <el-option value=">"></el-option>
                           <el-option value="<"></el-option>
+                          <el-option value="between" label="位于区间"></el-option>
                         </el-select>
                         <el-input
                           v-if="index === 0"
@@ -3300,7 +3305,6 @@ export default {
   },
   computed: {
     isView () {
-      debugger
       return this._this && this._this.isView ? this._this.isView : false
     }
   }
