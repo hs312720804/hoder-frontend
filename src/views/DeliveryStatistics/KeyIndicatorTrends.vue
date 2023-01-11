@@ -425,7 +425,6 @@ export default {
 
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '') {
-      debugger
       const chartElement = document.getElementById(element)
       if (!chartElement) return
 
@@ -557,7 +556,6 @@ export default {
         chart.resize()
       }
     })
-    console.log('refs--->', this.$refs)
   },
   created () {
 
