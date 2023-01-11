@@ -212,7 +212,7 @@ export default {
     }
   },
   mounted () {
-    this.high()
+    this.high() // 锚点侧边栏
 
     // chart5
     // 图表自适应
@@ -1349,61 +1349,9 @@ export default {
       line-height: 17px;
     }
   }
-  #ul111 {
-    // width: 220px;
-    padding: 10px
-    display: flex;
-    align-items: center
-    // flex-direction: column;
-    // list-style: none;
-    position: fixed;
-    top: 55%;
-    right: 0;
-    z-index: 99;
-    // background: #ffffffa3;
-    color #000
-    div {
-      margin-bottom 5px
-    }
-    a {
-      text-decoration: none;
-      color: #646a73
-      font-size: 14px;
-      white-space nowrap
-    }
-    .highLight {
-      color: #3370ff;
-    }
-  }
-  .icon-open-close{
-    left: -27px;
-    border-right: 0;
-    border-radius: 8px 0 0 8px;
-    // position: absolute;
-    // top: 50%;
-    padding: 30px 3px;
-    z-index: 10;
-    border: 1px solid #ddd;
-    border-right: 0px
-    background: #ffffffa3;
-    cursor: pointer;
-    border-right: 1px solid #fff;
-  }
-  .list-wrap {
-    background: #ffffffa3;
-    transition: all 0.5s
-    box-sizing: border-box;
-    overflow: hidden;
-    width 165px
-    padding-left 5px
-    border-left: 1px solid #e4e7ed;
-  }
+
   .chart-div{
     height: 436px
-  }
-  .aaa {
-    width: 20px;
-    // height: 201px;
   }
   .export-button
     display flex

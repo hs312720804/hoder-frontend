@@ -1259,7 +1259,7 @@ export default {
   font-weight 100
   margin 10px 0
 }
-.overview-table{
+.overview-table {
   flex: 1 0 730px
   color rgb(103, 106, 108)
 }
@@ -1270,13 +1270,13 @@ export default {
 .chart-wrap {
   flex: 0.8 0 550px;
 }
-.chart-1{
+.chart-1 {
   width: 550px;
   height: 360px;
   margin: 0 auto;
 }
 
-.launch-statistics{
+.launch-statistics {
   // overflow hidden
   // position: relative;
   // height: 100%;
@@ -1290,24 +1290,15 @@ export default {
   background: #fff
   padding-bottom 20px
 }
-.chart-div{
+.chart-div {
   height: 436px
 }
 
 .unit-box {
   // margin-bottom: 0;
   background-color: #fff;
-  // border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 100%;
-  // -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
 }
-.unit-header {
-  border-bottom: 1px solid #e7eaec
-  line-height: 56px;
-  padding: 0 15px;
-  font-size: 14px;
-}
+
 .search-text {
   font-size: 12px;
   border-radius: 10px;
