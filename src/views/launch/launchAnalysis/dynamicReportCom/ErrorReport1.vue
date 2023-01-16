@@ -319,12 +319,7 @@ export default {
         startDate: this.time0[0],
         endDate: this.time0[0]
       }
-      this.$service.dynamicCrowdMonitoring(parmas).then(dataObj => {
-        // 处理 dataObj 中的空对象
-        const res = {}
-        for (const key in dataObj) {
-          res[key] = dataObj[key] || []
-        }
+      this.$service.dynamicCrowdMonitoring(parmas).then(res => {
         // 格式化一些数据： 千分位、百分比
         const getAllData = this.formatData(res)
 
@@ -429,7 +424,7 @@ export default {
       return result
     },
 
-    getChartData (chartData = [], key) {
+    getChartData (chartData, key) {
       const reObj = {
         xaxis: [],
         yunit: '',
@@ -438,7 +433,7 @@ export default {
         xunit: ''
       }
       const crowdNameList = []
-      chartData || [].forEach(item => {
+      chartData.forEach(item => {
         // 找到所有的日期
         const flag = reObj.xaxis.find(i => i === item.dt)
         if (!flag) {
@@ -526,6 +521,7 @@ export default {
       rowObj2.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
+          debugger
           if (item[key].type === 'pie') { // 饼图
             this.showPie(this.allChartData2[key], key)
           }
