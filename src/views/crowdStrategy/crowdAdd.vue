@@ -105,39 +105,47 @@
               ></el-input-number>
               <span class="tip-text">命中的设备数量上限</span>
             </el-form-item>
-            <el-form-item label="人群黑名单" prop="remark">
-              <el-radio-group v-model="form.limitLaunch">
-                <el-radio :label="false">否</el-radio>
-                <el-radio :label="true">是</el-radio>
+            <el-form-item label="人群黑名单" prop="blackFlag">
+              <el-radio-group v-model="form.blackFlag">
+                <el-radio :label="0">否</el-radio>
+                <el-radio :label="1">是</el-radio>
               </el-radio-group>
             </el-form-item>
 
-            <el-form-item>
+            <template v-if="form.blackFlag === 1">
               <div
                 class="filed-row"
-                v-for="(field, key) in aaa"
-                :key="key"
+                v-for="(item, index) in form.blackList"
+                :key="index"
               >
-                <el-input
-                  v-model="field.crowdName"
-                  placeholder="请输入要屏蔽的MAC地址"
-                  clearable
-                  style="width: 250px">
-                </el-input>
+                <el-form-item
+                  :prop="'blackList.' + index + '.value'"
+                  :rules="[
+                    { required: true, message: '不能为空', trigger: 'blur' },
+                    { validator: checkBlackName, trigger: ['blur'] }
+                  ]">
+                  <el-input
+                    v-model="item.value"
+                    placeholder="请输入要屏蔽的MAC地址"
+                    clearable
+                    style="width: 250px">
+                  </el-input>
 
-                <el-button
-                  v-if="aaa.length > 2"
-                  type="text"
-                  icon="el-icon-remove-outline"
-                  class="delete-btn"
-                >
-                </el-button>
+                  <el-button
+                    v-if="form.blackList.length > 1"
+                    type="text"
+                    icon="el-icon-remove-outline"
+                    class="delete-btn"
+                    @click="handleDeleteBlack(index)"
+                  >
+                  </el-button>
+                </el-form-item>
               </div>
-              <!-- </div> -->
-              <div class="filed-row">
-                <el-button @click="handleAddFiled" icon="el-icon-plus" class="add-btn">添加</el-button>
+
+              <div class="filed-row" style="margin-left: 130px">
+                <el-button @click="handleAddBlack" icon="el-icon-plus" class="add-btn">添加</el-button>
               </div>
-            </el-form-item>
+            </template>
 
             <el-form-item label="备注" prop="remark">
               <el-input size="small" v-model="form.remark"></el-input>
@@ -257,7 +265,12 @@ export default {
         autoVersion: false,
         isShowAutoVersion: false,
         limitLaunch: false,
-        limitLaunchCount: undefined
+        limitLaunchCount: undefined,
+        blackFlag: 0,
+        blacks: '',
+        blackList: [{ // 前端数据，不需要传给后端
+          value: ''
+        }]
       },
       formRules: {
         name: [{ required: true, message: '请填写人群名称', trigger: 'blur' }],
@@ -313,11 +326,25 @@ export default {
   },
   props: ['policyId', 'crowdId', 'limitLaunchDisabled', 'isDynamicPeople', 'crowd'],
   methods: {
+    checkBlackName (rule, value, callback) {
+      console.warn('checkBlackName')
+      const reg = /^[a-fA-F0-9]{12}$/
+      // const reg = /^[\w]{12}$/
+
+      if (!reg.test(value)) {
+        callback(new Error('mac 格式为大小写的 a-f 和数字的 12 位字符组合'))
+      } else {
+        callback()
+      }
+    },
+    handleDeleteBlack (index) {
+      this.form.blackList.splice(index, 1)
+    },
     // 添加字段
-    handleAddFiled () {
-      if (this.aaa.length < 32) { // 动态方案数量上限为32
-        this.aaa.push({
-          crowdName: ''
+    handleAddBlack () {
+      if (this.form.blackList.length < 100) { // 黑名单数量上限为 100
+        this.form.blackList.push({
+          value: ''
         })
       }
     },
@@ -834,6 +861,18 @@ export default {
         this.form.limitLaunchCount = policyData.limitLaunch
           ? policyData.limitLaunchCount
           : undefined
+
+        // 黑名单 回显数据
+        this.form.blackFlag = policyData.blackFlag
+        this.form.blacks = policyData.blacks
+        if (policyData.blackFlag === 1) {
+          this.form.blackList = policyData.blacks.split(',').map(item => {
+            return {
+              value: item
+            }
+          })
+        }
+
         this.currentLaunchLimitCount = policyData.limitLaunch
           ? policyData.limitLaunchCount
           : undefined

@@ -93,7 +93,12 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
           }
         })
       })
-
+      if (form.blackFlag === 1) {
+        const list = form.blackList.map(item => {
+          return item.value
+        })
+        form.blacks = list.join(',')
+      }
       const data = {
         crowdName: form.name,
         tagIds: tagIds.join(','),
@@ -110,7 +115,10 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
         limitLaunchCount: form.limitLaunch
           ? form.limitLaunchCount
           : undefined,
-        versionNum: 2
+        versionNum: 2,
+        blackFlag: form.blackFlag,
+        blacks: form.blacks
+        // blackList: form.blackList
       }
 
       // 获取到组件中的form  校验必填项

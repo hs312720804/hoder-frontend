@@ -138,6 +138,11 @@ export default {
   },
   created () {},
   methods: {
+    handleOperatorChange (item) {
+      item.value = ''
+      item.value1 = ''
+      item.value2 = ''
+    },
     // 判断是否选了集数
     isCheckEpisodes (item) {
       let flag = false

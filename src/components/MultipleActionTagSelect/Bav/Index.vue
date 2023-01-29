@@ -1231,6 +1231,7 @@
                                 style="max-width: 100px; min-width: 100px;"
                                 name="oxve"
                                 class="input-inline"
+                                @change="handleOperatorChange(item7)"
                               >
                                 <el-option value="="></el-option>
                                 <el-option value=">="></el-option>
@@ -1240,13 +1241,22 @@
                                 <el-option value="between" label="位于区间"></el-option>
 
                               </el-select>
-                              <el-input
-                                placeholder="请输入"
-                                v-model="item7.value"
-                                clearable
-                                style="max-width: 100px; min-width: 100px;"
-                              >
-                              </el-input>
+
+                              <template>
+                                <span v-if="item7.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                                  <el-input-number :value="item7.value1" @input="handelInputBetween($event, item7, 'value1')" @blur="handelInputBlur(item7)" controls-position="right"></el-input-number>
+                                ~ <el-input-number :value="item7.value2" @input="handelInputBetween($event, item7, 'value2')" @blur="handelInputBlur(item7)" controls-position="right"></el-input-number>
+                                </span>
+
+                                <el-input
+                                  v-else
+                                  placeholder="请输入"
+                                  v-model="item7.value"
+                                  clearable
+                                  style="max-width: 100px; min-width: 100px;"
+                                >
+                                </el-input>
+                              </template>
                             </span>
                           </span>
                         </span>
@@ -1365,6 +1375,7 @@
                                   style="max-width: 100px; min-width: 100px;"
                                   name="oxve"
                                   class="input-inline"
+                                  @change="handleOperatorChange(item8)"
                                 >
                                   <el-option value="="></el-option>
                                   <el-option value=">="></el-option>
@@ -1373,13 +1384,23 @@
                                   <el-option value="<"></el-option>
                                   <el-option value="between" label="位于区间"></el-option>
                                 </el-select>
-                                <el-input
-                                  placeholder="请输入"
-                                  v-model="item8.value"
-                                  clearable
-                                  style="max-width: 100px; min-width: 100px;"
-                                >
-                                </el-input>
+
+                                <template>
+                                  <span v-if="item8.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                                    <el-input-number :value="item8.value1" @input="handelInputBetween($event, item8, 'value1')" @blur="handelInputBlur(item8)" controls-position="right"></el-input-number>
+                                  ~ <el-input-number :value="item8.value2" @input="handelInputBetween($event, item8, 'value2')" @blur="handelInputBlur(item8)" controls-position="right"></el-input-number>
+                                  </span>
+
+                                  <el-input
+                                    v-else
+                                    placeholder="请输入"
+                                    v-model="item8.value"
+                                    clearable
+                                    style="max-width: 100px; min-width: 100px;"
+                                  >
+                                  </el-input>
+                                </template>
+
                               </span>
                             </span>
                           </span>
@@ -1432,6 +1453,7 @@
                           style="max-width: 100px; min-width: 100px;"
                           name="oxve"
                           class="input-inline"
+                          @change="handleOperatorChange(item6)"
                         >
                           <el-option value="="></el-option>
                           <el-option value=">="></el-option>
@@ -1440,14 +1462,24 @@
                           <el-option value="<"></el-option>
                           <el-option value="between" label="位于区间"></el-option>
                         </el-select>
-                        <el-input
-                          v-if="index === 0"
-                          placeholder="请输入"
-                          v-model="item6.value"
-                          clearable
-                          style="max-width: 100px; min-width: 100px;"
-                        >
-                        </el-input>
+
+                        <template>
+
+                          <span v-if="item6.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                            <el-input-number :value="item6.value1" @input="handelInputBetween($event, item6, 'value1')" @blur="handelInputBlur(item6)" controls-position="right"></el-input-number>
+                          ~ <el-input-number :value="item6.value2" @input="handelInputBetween($event, item6, 'value2')" @blur="handelInputBlur(item6)" controls-position="right"></el-input-number>
+                          </span>
+
+                          <el-input
+                            v-else-if="index === 0"
+                            placeholder="请输入"
+                            v-model="item6.value"
+                            clearable
+                            style="max-width: 100px; min-width: 100px;"
+                          >
+                          </el-input>
+                        </template>
+
                       </span>
                     </span>
                   </span>
@@ -2133,6 +2165,7 @@
       </span>
 
       <!-- 起播活跃 三期-->
+      <!-- 起播活跃的数据特殊处理 使用 showBehaviorValue 而不是 behaviorValue-->
       <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0011'">
         <!-- 第一级 -->
         <el-form-item prop="bav.value">
