@@ -118,7 +118,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" v-if="!showSelection">
+        <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
