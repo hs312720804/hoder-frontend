@@ -160,12 +160,10 @@
                   <el-dropdown-item :command="['monitor', scope.row]" v-permission="'hoder:launch:crowd:ver:index'">
                     数据监控
                   </el-dropdown-item>
-                  <el-dropdown-item>
+                  <el-dropdown-item :command="['shenCeAnalysis', scope.row]"
+                    v-permission="'hoder:launch:crowd:ver:index'">
                     神策分析
                   </el-dropdown-item>
-                  <!-- <el-dropdown-item :command="['shenCeAnalysis', scope.row]"
-                    v-permission="'hoder:launch:crowd:ver:index'">神策分析
-                  </el-dropdown-item> -->
 
                 </el-dropdown-menu>
               </el-dropdown>

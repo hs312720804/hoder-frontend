@@ -226,10 +226,14 @@ export default {
 
   },
   methods: {
+    statisticPieChart () {
+      this.$service.statisticPieChart()
+    },
     changeView () {
       this.showNav = !this.showNav
     },
     fetchData () {
+      this.statisticPieChart()
       this.$service.getTagStatistics().then(res => {
         this.allChartData = {
           ...this.allChartData,

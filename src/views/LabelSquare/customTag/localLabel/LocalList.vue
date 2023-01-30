@@ -93,7 +93,7 @@
               <el-button type="text" @click="del(scope.row)">
                 删除
               </el-button>
-              <el-button type="text">
+              <el-button type="text" @click="launchShence(scope.row)">
                 神策分析
               </el-button>
               <!--<el-button-->
@@ -195,6 +195,9 @@ export default {
     }
   },
   methods: {
+    launchShence () {
+
+    },
     fetchData () {
       const filter = {
         pageNum: this.currentPage,
