@@ -93,12 +93,15 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
           }
         })
       })
+
+      // 黑名单
       if (form.blackFlag === 1) {
         const list = form.blackList.map(item => {
           return item.value
         })
         form.blacks = list.join(',')
       }
+
       const data = {
         crowdName: form.name,
         tagIds: tagIds.join(','),

@@ -128,7 +128,9 @@
                     v-model="item.value"
                     placeholder="请输入要屏蔽的MAC地址"
                     clearable
-                    style="width: 250px">
+                    style="width: 250px"
+                    maxlength="12"
+                    show-word-limit>
                   </el-input>
 
                   <el-button
@@ -865,6 +867,8 @@ export default {
         // 黑名单 回显数据
         this.form.blackFlag = policyData.blackFlag
         this.form.blacks = policyData.blacks
+        this.form.blackList = [{ value: '' }]
+
         if (policyData.blackFlag === 1) {
           this.form.blackList = policyData.blacks.split(',').map(item => {
             return {

@@ -181,6 +181,51 @@
                   <span class="tip-text">命中的设备数量上限</span>
                 </el-form-item>
 
+                <el-form-item label="人群黑名单" prop="blackFlag">
+                  <el-radio-group v-model="crowd.blackFlag">
+                    <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+
+                <template v-if="crowd.blackFlag === 1">
+                  <div
+                    class="filed-row"
+                    v-for="(item, index) in crowd.blackList"
+                    :key="index"
+                    style="margin-left: 130px"
+                  >
+                    <el-form-item
+                      :prop="propPrefix + i + '.blackList.' + index + '.value'"
+                      :rules="[
+                        { required: true, message: '不能为空', trigger: 'blur' },
+                        { validator: checkBlackName, trigger: ['blur'] }
+                      ]">
+                      <el-input
+                        v-model="item.value"
+                        placeholder="请输入要屏蔽的MAC地址"
+                        clearable
+                        style="width: 250px"
+                        maxlength="12"
+                        show-word-limit>
+                      </el-input>
+
+                      <el-button
+                        v-if="crowd.blackList.length > 1"
+                        type="text"
+                        icon="el-icon-remove-outline"
+                        class="delete-btn"
+                        @click="handleDeleteBlack(index, crowd)"
+                      >
+                      </el-button>
+                    </el-form-item>
+                  </div>
+
+                  <div class="filed-row" style="margin-left: 130px">
+                    <el-button @click="handleAddBlack(crowd)" icon="el-icon-plus" class="add-btn">添加</el-button>
+                  </div>
+                </template>
+
                 <el-form-item label="备注" :prop="formProp('remark')">
                   <el-input v-model="crowd.remark" placeholder="备注"></el-input>
                 </el-form-item>
@@ -329,6 +374,28 @@ export default {
     }
   },
   methods: {
+    checkBlackName (rule, value, callback) {
+      console.warn('checkBlackName')
+      const reg = /^[a-fA-F0-9]{12}$/
+      // const reg = /^[\w]{12}$/
+
+      if (!reg.test(value)) {
+        callback(new Error('mac 格式为大小写的 a-f 和数字的 12 位字符组合'))
+      } else {
+        callback()
+      }
+    },
+    handleDeleteBlack (index, crowd) {
+      crowd.blackList.splice(index, 1)
+    },
+    // 添加字段
+    handleAddBlack (crowd) {
+      if (crowd.blackList.length < 100) { // 黑名单数量上限为 100
+        crowd.blackList.push({
+          value: ''
+        })
+      }
+    },
     // 取消
     handleCancel () {
       this.linkDialogVisible = false
@@ -438,7 +505,12 @@ export default {
               isShowAutoVersion: false,
               limitLaunch: false,
               limitLaunchCount: undefined,
-              total0: undefined
+              total0: undefined,
+              blackFlag: 0, // 黑名单
+              blacks: '',
+              blackList: [{ // 前端数据，不需要传给后端
+                value: ''
+              }]
             }
           )
           // this.setSeq()
@@ -528,7 +600,13 @@ export default {
             isShowAutoVersion: false,
             limitLaunch: false,
             limitLaunchCount: undefined,
-            total0: undefined
+            total0: undefined,
+            blackFlag: 0, // 黑名单
+            blacks: '',
+            blackList: [{ // 前端数据，不需要传给后端
+              value: ''
+            }]
+
           }
         )
       }
