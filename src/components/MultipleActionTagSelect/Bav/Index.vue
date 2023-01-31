@@ -535,7 +535,7 @@
                                       <!-- 价格区间 -->
                                       <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
                                         <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
-                                      —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
+                                      ~ <el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
                                       </span>
 
                                       <!-- 产品包ID -->
@@ -3302,6 +3302,179 @@
           </div>
         </div>
       </span>
+
+      <!-- 优惠券行为 -->
+      <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0016'">
+        <!-- 第一级 -->
+        <el-form-item prop="bav.value">
+          <el-select
+            v-model="childItem.bav.value"
+            style="width: 120px"
+            name="oxve"
+            class="input-inline"
+            filterable
+            @change="handelBehavirSelectChange()"
+          >
+            <template v-for="item in getBehaviorAttrList(1)">
+              <el-option
+                :value="item.value"
+                :label="item.name"
+                :key="item.value"
+              ></el-option>
+            </template>
+          </el-select>
+        </el-form-item>
+
+        <!-- {{ childItem.bav.showBehaviorValue }} -->
+
+        <span
+          v-for="(item, index) in childItem.bav.showBehaviorValue"
+          :key="item.value"
+          class="flex-row"
+        >
+          <!-- <el-form-item
+            :prop="`bav.behaviorValue[${index}].childCheckedVal[0]`"
+            :rules="{ required: true, message: '请选择', trigger: 'change' }"
+          > -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[0]"
+              placeholder="请选择"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                extra: {type: childItem.bav.value},
+              })"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})" >
+                <el-option
+                  :value="attrChildItem.name"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.name"
+                >
+                </el-option>
+              </template>
+            </el-select>
+
+            <span
+              v-for="(item2, index2) in item.child"
+              :key="index2"
+              style="margin-right: 0;"
+            >
+              <Bav0012 v-if="item.childCheckedVal[0] === item2.value && !!item2.mapName" :aaa="item"></Bav0012>
+            </span>
+          </span>
+
+          <!-- </el-form-item> -->
+
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[1]"
+              placeholder="卡种"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 3,
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(3)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+          </span>
+
+          <!-- 用券行为  有子级 -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[2]"
+              placeholder="用券行为"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 4,
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(4)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+            <span
+              v-for="(item2, index2) in item.child"
+              :key="index2"
+              style="margin-right: 0;"
+            >
+              <Bav0012 v-if="item.childCheckedVal[2] === item2.value && !!item2.mapName" :aaa="item"></Bav0012>
+            </span>
+          </span>
+
+          <!-- 券方式 -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              placeholder="券方式"
+              style="width: 120px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 5,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(5)"
+                :key="follow.name"
+                :label="follow.name"
+                :value="follow.name">
+              </el-option>
+            </el-select>
+
+            <span class="flex-row" >
+              <span
+                v-for="(item2, index2) in item.child"
+                :key="index2"
+                style="margin-right: 0;"
+              >
+              <!-- 【{{ item2.name }}】 -->
+                <template v-if="item.childCheckedVal[3] === item2.name">
+                  <!-- 券金额 -->
+                  <span v-if="item.childCheckedVal[3] == '劵金额'" class="flex-row" style="width: 300px; height: 31px">
+                    <el-input-number :value="item2.value1" :min="1" :max="5000" @input="handelInputBetween($event, item2, 'value1')" @blur="handelInputBlur(item2)" controls-position="right"></el-input-number>
+                  ~ <el-input-number :value="item2.value2" :min="1" :max="5000" @input="handelInputBetween($event, item2, 'value2')" @blur="handelInputBlur(item2)" controls-position="right"></el-input-number>
+                  </span>
+
+                  <!-- 产品包 ID -->
+                  <span v-if="item.childCheckedVal[3] == '优惠券ID'" class="flex-row" style="min-width: 150px">
+                    <el-input
+                      placeholder="请输入产品包 ID"
+                      v-model="item2.value"
+                      clearable
+                    >
+                    </el-input>
+
+                  </span>
+                </template>
+
+              </span>
+            </span>
+          </span>
+
+          <Type ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+
+        </span>
+
+      </span>
+
       <!-- 111111111111111111111111111 -->
       <!-- <div>{{ childItem }}</div> -->
     </div>
