@@ -220,6 +220,7 @@ export default {
           isCurrentNodeId
         })
       } else if (
+        this.childItem.tagCode === 'BAV0016' ||
         this.childItem.tagCode === 'BAV0012' ||
           this.childItem.tagCode === 'BAV0011'
       ) {
@@ -309,7 +310,7 @@ export default {
 
     // 获取指定id值
     getParentVal (nodes, id, operator) {
-      const nodeTree = this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
+      const nodeTree = this.childItem.tagCode === 'BAV0016' || this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011' ? this.childItem.bav.showBehaviorValue : this.childItem.bav.behaviorValue
       if (!nodes || !id) {
         return
       }
@@ -662,7 +663,7 @@ export default {
       const vals = (typeof (childItem.bav.value) === 'string' ? childItem.bav.value.split(',') : childItem.bav.value)
       const behaviorAttrList = this.getBehaviorAttrList(level)
 
-      if (childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 【起播活跃】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
+      if (childItem.tagCode === 'BAV0016' || childItem.tagCode === 'BAV0012' || childItem.tagCode === 'BAV0011') { // 【综合起播】 【起播活跃】 的数据放在 showBehaviorValue 字段中， 需要特殊处理
         this.videoOptions = [] // 【综合起播】 切换了业务类型 影片列表需要清除掉
         this.childItem.bav.countValue = { // 针对【综合起播】 进行处理
           name: '',
@@ -712,7 +713,7 @@ export default {
     handelChildBehavirSelectChange (params = {}) {
       // 改变数据时将所有的checkbox归位false
       this.$set(this.childItem.bav, 'reverseSelect', false)
-      if (this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
+      if (this.childItem.tagCode === 'BAV0016' || this.childItem.tagCode === 'BAV0012' || this.childItem.tagCode === 'BAV0011') {
         this.childItem.bav.showBehaviorValue = this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
       } else if (
         this.childItem.tagCode === 'BAV0002' ||
@@ -877,8 +878,9 @@ export default {
         }
         // 先从已选列表里面进行查找，找不到再从所有列表里面查找，获取原值
         const matchObj = behaviorValue.find(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
-        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val)
+        const matchObj2 = attrList.find(item => item[selectPropKeyValue] === val || item.value === val || item.name === val)
         obj = matchObj || matchObj2
+        if (!obj) return
 
         // 清空对象中的 value（【模块活跃 004】特殊 value 不等于下拉选项的 value，而是后面查询出来的结果）
         if (isValueClear) obj.value = ''
@@ -1560,6 +1562,22 @@ export default {
             attrlist = dict.attrType || []
             // const obj = dict.app_type.find(item => item.dictValue === extra.type) || {}
             // attrlist = dict[obj.mapName] || dict.app_type_all
+          }
+        } else if (childItem.tagCode === 'BAV0016') {
+          if (extra.listMapName) {
+            attrlist = dict[extra.listMapName]
+          } else if (level === 1) {
+            attrlist = dict.business_type
+          } else if (level === 2) {
+            const obj = dict.business_type.find(item => item.dictValue === extra.type) || {}
+            attrlist = dict[obj.mapName] || []
+          } else if (level === 3) { // 卡种
+            // attrlist = dict.business_type || []
+            attrlist = dict.buy_type || []
+          } else if (level === 4) { // 用券行为
+            attrlist = dict.coupon_action || []
+          } else if (level === 5) { // 券方式
+            attrlist = dict.coupon_type || []
           }
         } else {
           attrlist = [
