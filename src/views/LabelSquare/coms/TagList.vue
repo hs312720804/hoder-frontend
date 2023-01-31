@@ -60,9 +60,10 @@
             <el-button v-if="showDeleteBtn" type="text" @click="handleDelete(scope.row)">
               删除
             </el-button>
-            <div :class="scope.row.myCollect ? 'el-icon-cc-star-fill' : 'el-icon-cc-star'"
+            <!-- 收藏 -->
+            <!-- <div :class="scope.row.myCollect ? 'el-icon-cc-star-fill' : 'el-icon-cc-star'"
               @click="handleCollect(scope.row)">
-            </div>
+            </div> -->
           </el-button-group>
         </template>
       </el-table-column>

@@ -1,4 +1,5 @@
 <template>
+  <!-- 大数据标签 - 实时标签 -->
   <div class="my-collect">
     <div class="header">
       <div v-if="!showSelection">
@@ -11,10 +12,20 @@
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
       </div>
     </div>
-    <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
-      :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"
-      :show-delete-btn="true" :show-edit-btn="true" @fetch-data="fetchData" @change-checkList="handleCheckListChange"
-      @table-selected="handleTableSelected" @delete="handleDelete" @edit="handleEdit">
+    <tag-list
+      :data-list="dataList"
+      :data-source-enum="dataSourceEnum"
+      :type-enum="typeEnum"
+      :check-list-parent="checkList"
+      :current-selected-tags="currentSelectTag"
+      :show-selection="showSelection"
+      :show-delete-btn="true"
+      :show-edit-btn="true"
+      @fetch-data="fetchData"
+      @change-checkList="handleCheckListChange"
+      @table-selected="handleTableSelected"
+      @delete="handleDelete"
+      @edit="handleEdit">
       <div align="right">
         <pagination :currentpage="filter.pageNum" :pagesize="filter.pageSize" :totalcount="totalCount"
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
@@ -76,7 +87,7 @@ export default {
       dataList: [],
       filter: {
         pageNum: 1,
-        pageSize: 50,
+        pageSize: 10,
         tagName: undefined
       },
       dataSourceEnum: {},
@@ -136,13 +147,13 @@ export default {
       // const filter = this.filter
       const filter = {
         ...this.filter,
-        keyword: this.launchName
+        keywords: this.launchName
       }
-      this.$service.getTagRealTime(filter).then(data => {
+      this.$service.getbigDataRealTimeList(filter).then(data => {
         // eslint-disable-next-line
         // debugger
         const result = data
-        this.dataList = result.row
+        this.dataList = result.rows
         this.totalCount = result.total
         // this.dataSourceEnum = result.DataSourceMap
         this.typeEnum = result.tagKey
@@ -172,7 +183,7 @@ export default {
 
   },
   created () {
-    this.$root.$on('third-list-refresh', this.fetchData)
+    this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
   }
 }

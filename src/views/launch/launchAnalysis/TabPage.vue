@@ -1663,7 +1663,7 @@ export default {
         display flex
         width 350px
         position: absolute;
-        z-index: 9999;
+        z-index: 9;
         right: 0;
         top: 0;
     .icon-fixed
