@@ -3456,7 +3456,7 @@
                   <!-- 产品包 ID -->
                   <span v-if="item.childCheckedVal[3] == '优惠券ID'" class="flex-row" style="min-width: 150px">
                     <el-input
-                      placeholder="请输入产品包 ID"
+                      placeholder="请输入优惠券ID"
                       v-model="item2.value"
                       clearable
                     >
