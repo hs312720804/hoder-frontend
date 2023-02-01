@@ -1,7 +1,7 @@
 <template>
 <div>
+  <!-- {{ totalOverview }} -->
   <div class="overview-table">
-
     <div class="ibox">
       <div class="title-one">
         总请求量
@@ -101,121 +101,34 @@
 export default {
   components: {
   },
+  props: {
+    totalOverview: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       rowObj: [
         {
-          classification: { type: 'pie', title: '标签来源占比', span: 8 },
-          a1: { type: 'pie', title: '标签来源占比', span: 8 },
-          a2: { type: 'pie', title: '标签来源占比', span: 8 }
+          launchPie: { type: 'pie', title: '历史总投放', span: 8 },
+          tagsTypePie: { type: 'pie', title: '各类标签使用占比', span: 8 },
+          crowdLifePie: { type: 'pie', title: '人群寿命', span: 8 }
         }
       ],
       show: true,
       allCharts: {},
       allChartData: {
-        classification: {
-          data: [
-            {
-              count: 30,
-              name: '电视剧',
-              percent: '76.92%'
-            },
-            {
-              count: 29,
-              name: '电影',
-              percent: '74.36%'
-            },
-            {
-              count: 24,
-              name: '综艺',
-              percent: '61.54%'
-            },
-            {
-              count: 14,
-              name: '动漫',
-              percent: '35.90%'
-            },
-            {
-              count: 14,
-              name: '儿童',
-              percent: '35.90%'
-            },
-            {
-              count: 3,
-              name: '纪录片',
-              percent: '7.69%'
-            },
-            {
-              count: 1,
-              name: '游戏',
-              percent: '2.56%'
-            },
-            {
-              count: 1,
-              name: '其他',
-              percent: '2.56%'
-            }
-          ]
-          // title: '标签来源占比'
-        },
-        a1: {
-          data: [
-            {
-              count: 10,
-              name: 'push',
-              percent: '45%'
-            },
-            {
-              count: 15,
-              name: 'pull',
-              percent: '55%'
-            }
-          ],
+        launchPie: {
+          data: [],
           title: '历史总投放'
         },
-        a2: {
-          data: [
-            {
-              count: 30,
-              name: '电视剧',
-              percent: '76.92%'
-            },
-            {
-              count: 29,
-              name: '电影',
-              percent: '74.36%'
-            },
-            {
-              count: 24,
-              name: '综艺',
-              percent: '61.54%'
-            },
-            {
-              count: 14,
-              name: '动漫',
-              percent: '35.90%'
-            },
-            {
-              count: 14,
-              name: '儿童',
-              percent: '35.90%'
-            },
-            {
-              count: 3,
-              name: '纪录片',
-              percent: '7.69%'
-            },
-            {
-              count: 1,
-              name: '游戏',
-              percent: '2.56%'
-            },
-            {
-              count: 1,
-              name: '其他',
-              percent: '2.56%'
-            }
-          ],
+        tagsTypePie: {
+          data: [],
+          title: '各类标签使用占比'
+        },
+        crowdLifePie: {
+          data: [],
           title: '人群寿命'
         }
       },
@@ -226,21 +139,13 @@ export default {
 
   },
   methods: {
-    statisticPieChart () {
-      this.$service.statisticPieChart()
-    },
     changeView () {
       this.showNav = !this.showNav
     },
     fetchData () {
-      this.statisticPieChart()
-      this.$service.getTagStatistics().then(res => {
-        this.allChartData = {
-          ...this.allChartData,
-          classification: {
-            data: res.classification,
-            title: '标签来源占比'
-          }
+      this.$service.statisticPieChart().then(res => {
+        for (const key in res) {
+          this.allChartData[key].data = res[key]
         }
         this.drawChart()
 

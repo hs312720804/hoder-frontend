@@ -15,7 +15,7 @@
 
     </div>
 
-    <KeyIndicatorTrendsTotal></KeyIndicatorTrendsTotal>
+    <KeyIndicatorTrendsTotal :totalOverview="totalOverview" ></KeyIndicatorTrendsTotal>
 
     <div class="statistics-header">
       <div class="date-picker">
@@ -140,7 +140,17 @@ export default {
       }, {
         value: 'TN',
         label: '上线至今'
-      }]
+      }],
+      totalOverview: {
+        totalHit: 0,
+        totalReq: 0,
+        totaStrategys: 0,
+        useStrategys: 0,
+        totalCrowd: 0,
+        usedCrowd: 0,
+        estimateCrowd: 0,
+        abCrowd: 0
+      }
     }
   },
   watch: {
@@ -198,6 +208,13 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
+
+        // 统计数据
+        if (series.length > 0) {
+          this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
+          this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
+        }
+
         this.$nextTick(() => {
           this.setLinesEchart('chart1', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
         })
@@ -214,6 +231,15 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
+
+        // 统计数据
+        if (series.length > 0) {
+          this.totalOverview.totalCrowd = series[5].value[series[5].value.length - 1]
+          this.totalOverview.usedCrowd = series[1].value[series[1].value.length - 1]
+          this.totalOverview.estimateCrowd = series[2].value[series[2].value.length - 1] // 估算人群
+          this.totalOverview.abCrowd = series[6].value[series[6].value.length - 1]
+        }
+
         this.$nextTick(() => {
           this.setLinesEchart('chart2', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
         })
@@ -230,6 +256,13 @@ export default {
         const linesData = series.map((key) => {
           return { name: key.name, data: key.value, type: 'line' }
         })
+
+        // 统计数据
+        if (series.length > 0) {
+          this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
+          this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
+        }
+
         this.$nextTick(() => {
           this.setLinesEchart('chart3', '', data.xaxis, linesData, legendData, data.xunit, data.yunit)
         })
