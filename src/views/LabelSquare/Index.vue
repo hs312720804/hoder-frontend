@@ -52,12 +52,12 @@ export default {
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning'
+      // },
       showSelection: false,
       tempCheckList: []
     }

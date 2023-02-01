@@ -232,7 +232,7 @@ import antvGraph from '@antvGraph/Index.vue'
 import eventBus from '@antvGraph/utils/eventBus'
 import DragSortMultiSelect from './DragSortMultiSelect'
 import CreateNodesAndEdges from '@/components/antvGraph/src/createNodesAndEdges'
-
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   components: {
     antvGraph,
@@ -245,15 +245,15 @@ export default {
       initDynamicGroupId: this.crowdIndexThis.dynamicGroupId,
       groupCheckIndex: undefined,
       radioType: 0,
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       tags: [],
       rulesJson: {
         condition: 'OR',
@@ -376,6 +376,9 @@ export default {
   computed: {
     height () {
       return document.documentElement.clientHeight - 225
+    },
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   created () {

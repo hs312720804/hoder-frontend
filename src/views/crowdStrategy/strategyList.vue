@@ -102,7 +102,9 @@
           <span class="checkbox--orange">紫色</span>为动态指标,
           <span class="checkbox--orange2">棕色</span>为组合标签,
           <span class="checkbox--cyan">青色</span>为行为标签,
-          <span class="checkbox--gray">灰色</span>为人群标签）
+          <span class="checkbox--gray">灰色</span>为人群标签,
+          <span class="checkbox--pink">粉红色</span>为实时标签[大数据]）
+          )
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -264,7 +266,7 @@
       v-if="addFormVisible"
       v-model="addFormVisible"
       :close-on-click-modal="false"
-      width="800px"
+      width="1000px"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
@@ -291,14 +293,15 @@
         <!--</el-form-item>-->
         <div class="tags-tips">
           <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
-          <span class="checkbox--red">红色为大数据标签</span>,
+          注：<span class="checkbox--red">红色为大数据标签</span>,
           <span class="checkbox--green">绿色为自定义/本地标签</span>,
           <span class="checkbox--blue">蓝色为账号标签</span>,
           <span class="checkbox--yellow">黄色为实时标签</span>,
           <span class="checkbox--orange">紫色为动态指标</span>,
           <span class="checkbox--orange2">棕色为组合标签</span>,
           <span class="checkbox--cyan">青色为行为标签</span>,
-          <span class="checkbox--gray">灰色为人群标签</span>
+          <span class="checkbox--gray">灰色为人群标签</span>,
+          <span class="checkbox--pink">粉红色为实时标签[大数据]</span>
         </div>
         <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
@@ -445,6 +448,8 @@
 import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import viewEffectDialog from '../launch/viewEffectDialog'
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
+
 export default {
   components: {
     LaunchToBusiness,
@@ -531,28 +536,28 @@ export default {
       launchSource: 'strategy',
       checkList: [],
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorClassEnum: {
-        1: 'checkbox--green',
-        2: 'checkbox--red',
-        3: 'checkbox--blue',
-        5: 'checkbox--yellow',
-        6: 'checkbox--orange',
-        7: 'checkbox--orange2',
-        8: 'checkbox--cyan',
-        11: 'success',
-        12: 'gray'
-      },
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorClassEnum: {
+      //   1: 'checkbox--green',
+      //   2: 'checkbox--red',
+      //   3: 'checkbox--blue',
+      //   5: 'checkbox--yellow',
+      //   6: 'checkbox--orange',
+      //   7: 'checkbox--orange2',
+      //   8: 'checkbox--cyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       showAll: false,
       seeDetailData: {
         props: {
@@ -612,6 +617,14 @@ export default {
         },
         currentId: null
       }
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
@@ -1339,33 +1352,7 @@ ul > li
   float none
   margin 0 3px
 .strategy-list
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 .header-left
   display flex
   align-items center

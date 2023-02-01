@@ -165,6 +165,7 @@
 </template>
 
 <script>
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
   props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
@@ -176,15 +177,15 @@ export default {
   // },
   data () {
     return {
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       tags: [],
       rulesJson: {
         condition: 'OR',
@@ -203,6 +204,11 @@ export default {
       },
       dataList: [],
       tagIds: [] // 设置规则的 tagkey 集合
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   watch: {

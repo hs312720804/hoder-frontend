@@ -59,7 +59,7 @@
 <script>
 import tempLabelIndex from './tempLabel/TempLabelIndex'
 import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
-
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   name: 'labelSquareAA',
   components: {
@@ -74,14 +74,19 @@ export default {
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning'
+      // },
       showSelection: false,
       tempCheckList: []
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   methods: {

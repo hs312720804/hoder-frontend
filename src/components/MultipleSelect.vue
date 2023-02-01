@@ -824,6 +824,7 @@
 
 <script>
 import RuleCom from '@/components/dynamicPeople/ruleComs/RuleCom.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 
 export default {
   components: {
@@ -864,17 +865,17 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       cityData: [],
       provinceValueList: []
     }
@@ -904,6 +905,11 @@ export default {
     crowd: {
       type: Object,
       default: () => {}
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   watch: {

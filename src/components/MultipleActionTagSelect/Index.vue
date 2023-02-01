@@ -625,6 +625,7 @@
 <script>
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   provide () {
     return {
@@ -686,18 +687,23 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       cityData: [],
       provinceValueList: [],
       showRange: true
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   components: {

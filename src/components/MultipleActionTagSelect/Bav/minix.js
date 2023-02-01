@@ -1,6 +1,7 @@
 
 import _ from 'lodash'
 import { v4 as uuidv4 } from 'uuid'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   name: 'bavList',
   provide () {
@@ -90,15 +91,15 @@ export default {
         ],
         multipleSelect: false
       },
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       moDefaultChild: [{ name: '', value: '', field: 'mac', operator: '=', type: 'count', multipleSelect: false }],
       // BAV0006DefaultChild: [{
       //   name: '',
@@ -134,6 +135,11 @@ export default {
       appointmentInfo: [],
       musicList: [],
       singerList: []
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   created () {},

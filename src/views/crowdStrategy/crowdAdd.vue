@@ -297,17 +297,17 @@ export default {
       },
       currentLaunchLimitCount: undefined,
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       cityData: [],
       provinceValueList: [],
       aaa: []
@@ -1032,42 +1032,7 @@ i {
 }
 
 .add {
-  >>> .el-tag--warningOrange {
-    color: #512DA8;
-    background-color: rgba(119, 81, 200, 0.4);
-    border-color: rgba(81, 45, 168, 0.45);
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningOrange2 {
-    color: #795548;
-    background-color: rgba(167, 130, 117, 0.5);
-    border-color: #7955488c;
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningCyan {
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  }
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 }
 
 .outer-and {
