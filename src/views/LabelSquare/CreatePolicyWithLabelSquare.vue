@@ -47,7 +47,7 @@
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签,
         <span class="checkbox--gray">灰色</span>为人群标签,
-        <span class="checkbox--pink">粉红色</span>为实时标签[大数据]
+        <span class="checkbox--pink">粉色</span>为实时标签[大数据]
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>

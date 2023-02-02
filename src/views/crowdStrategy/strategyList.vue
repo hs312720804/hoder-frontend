@@ -103,7 +103,7 @@
           <span class="checkbox--orange2">棕色</span>为组合标签,
           <span class="checkbox--cyan">青色</span>为行为标签,
           <span class="checkbox--gray">灰色</span>为人群标签,
-          <span class="checkbox--pink">粉红色</span>为实时标签[大数据]）
+          <span class="checkbox--pink">粉色</span>为实时标签[大数据]）
           )
         </template>
         <template slot-scope="scope">
@@ -301,7 +301,7 @@
           <span class="checkbox--orange2">棕色为组合标签</span>,
           <span class="checkbox--cyan">青色为行为标签</span>,
           <span class="checkbox--gray">灰色为人群标签</span>,
-          <span class="checkbox--pink">粉红色为实时标签[大数据]</span>
+          <span class="checkbox--pink">粉色为实时标签[大数据]</span>
         </div>
         <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
