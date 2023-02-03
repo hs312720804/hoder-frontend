@@ -804,7 +804,7 @@
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
-            @change="ReverseSelect($event)"
+            @change="ReverseSelect($event, childItem.bav.behaviorValue)"
           >
             圈出未活跃
           </el-checkbox>
