@@ -788,7 +788,6 @@
               name="oxve"
               class="input-inline"
               @change="handelBehavirSelectChange({
-                hasChild: true,
                 reverseSelectAttr: true
               })"
             >
@@ -801,11 +800,11 @@
               </template>
             </el-select>
           </el-form-item>
-
+          <!-- @change="ReverseSelect($event, childItem.bav.behaviorValue)" -->
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
-            @change="ReverseSelect($event, childItem.bav.behaviorValue)"
+            @change="ReverseSelect($event)"
           >
             圈出未活跃
           </el-checkbox>
@@ -818,17 +817,12 @@
             class="flex-row child-attr-wrap"
           >
             <span class="w100">{{ item.name }}</span>
-            <span class="flex-column">
-              <!-- 第二级 -->
-              <span
-                v-for="(item2, index) in item.child"
-                :key="index"
-                class="flex-row child"
-              >
-                <!-- 次数、天数 -->
-                <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
-              </span>
-            </span>
+
+            <Bav0012 v-if="!!item.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012>
+
+            <!-- 次数、天数 -->
+            <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+
           </div>
         </div>
       </span>
@@ -963,14 +957,16 @@
 
                 </span>
 
-                <span v-else class="flex-column">
-                  <span
+                <span v-else class="flex-row">
+                  <Bav0012 v-if="!!item2.mapName" :aaa="item"></Bav0012>
+                  <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                  <!-- <span
                     v-for="(item3, index) in item2.child"
                     :key="index"
                     class="flex-row child"
                   >
                     <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
-                  </span>
+                  </span> -->
                 </span>
 
               </div>
@@ -1192,7 +1188,7 @@
                             :value="attrChildItem.value">
                           </el-option>
                         </el-select>
-                        <!-- 天数次数等 11111111111111111111111111111 -->
+                        <!-- 天数次数等  -->
                         <span v-if="!childItem.bav.reverseSelect">
                           <span
                             v-for="(item6, index) in item5.child"

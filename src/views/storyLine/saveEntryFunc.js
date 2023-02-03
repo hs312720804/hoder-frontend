@@ -1,4 +1,4 @@
-import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
+import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
@@ -319,8 +319,8 @@ function validateForm (rules, behaviorRules = [], _this) {
           rulesItem.value = startDay + '~' + endDay
         } else { // 一期
           if (
-            this.checkNum(rulesItem.startDay) &&
-            this.checkNum(rulesItem.endDay)
+            checkNum(rulesItem.startDay) &&
+            checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay

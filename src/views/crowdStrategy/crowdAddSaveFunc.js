@@ -1,3 +1,4 @@
+import { MessageBox, Message } from 'element-ui'
 let timeTagKongList = []
 
 function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, thisDynamicPolicyJson, limitLaunchDisabled, currentLaunchLimitCount, fetchAddOrEdit) {
@@ -28,7 +29,7 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
       // }
       if (limitLaunchDisabled && currentLaunchLimitCount) {
         if (currentLaunchLimitCount > form.limitLaunchCount) {
-          _this.$message.error('投放数量不能小于上一次设置的限制数量')
+          Message.error('投放数量不能小于上一次设置的限制数量')
           return
         }
       }
@@ -85,6 +86,13 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
               const itemCopy = JSON.parse(JSON.stringify(item))
               const childArray = ReorganizationData(itemCopy.child)
               const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+
+              // let countValue = {}
+              // if (rulesItem.tagCode === 'BAV0005') {
+              //   countValue = JSON.parse(JSON.stringify(item.perCountValue))
+              // } else {
+              //   countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
+              // }
               countValue.child = childArray
               itemCopy.child = [countValue]
               rData.push(itemCopy)
@@ -157,7 +165,7 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
       if (timeTagKongList.length > 0) {
         const tip = timeTagKongList.join(',')
         const h = _this.$createElement
-        this.$msgbox({
+        MessageBox({
           title: '配置提醒',
           message: h('p', null, [
             h('span', null, `${tip}`),
@@ -176,10 +184,10 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
                 // 新增或编辑
                 fetchAddOrEdit(data)
               } else {
-                _this.$message.error('请输入必填项')
+                Message.error('请输入必填项')
               }
             }).catch(() => {
-              _this.$message.error('请至少设置一个行为标签规则')
+              Message.error('请至少设置一个行为标签规则')
             })
           } else { // 没有行为标签的
             // 新增或编辑
@@ -195,10 +203,10 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
               // 新增或编辑
               fetchAddOrEdit(data)
             } else {
-              _this.$message.error('请输入必填项')
+              Message.error('请输入必填项')
             }
           }).catch(() => {
-            _this.$message.error('请至少设置一个行为标签规则')
+            Message.error('请至少设置一个行为标签规则')
           })
         } else { // 没有行为标签的
           // 新增或编辑
@@ -210,6 +218,19 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
     }
   })
 }
+
+// function aaa (item) {
+//   const returnObj = item
+
+//   if (item.child.length > 0) {
+//     const child = item.child
+//     child.forEach(childItem => {
+
+//     })
+//   }
+
+//   return returnObj
+// }
 
 function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
   timeTagKongList = []
@@ -236,7 +257,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
           timeTagKongList.push(rulesItem.tagName)
         }
       } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-        _this.$message.error(
+        Message.error(
           '请正确填写第' +
             (i + 1) +
             '设置标签块里面的第' +
@@ -261,7 +282,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
             ) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
             } else {
-              _this.$message.error(
+              Message.error(
                 '第' +
                   (i + 1) +
                   '设置标签块里面的第' +
@@ -272,7 +293,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
               break
             }
           } else {
-            _this.$message.error(
+            Message.error(
               '第' +
                 (i + 1) +
                 '设置标签块里面的第' +
@@ -306,7 +327,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
       const rulesItem = behaviorRules[x].rules[y]
 
       if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
-        _this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
+        Message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
         rulesFlag = false
         break
       }
@@ -317,7 +338,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
           timeTagKongList.push(rulesItem.tagName)
         }
       } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-        _this.$message.error(
+        Message.error(
           '请正确填写第' +
             (x + 1) +
             '行为标签块里面的第' +
@@ -337,13 +358,13 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
           rulesItem.value = startDay + '~' + endDay
         } else { // 一期
           if (
-            this.checkNum(rulesItem.startDay) &&
-            this.checkNum(rulesItem.endDay)
+            checkNum(rulesItem.startDay) &&
+            checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
             } else {
-              _this.$message.error(
+              Message.error(
                 '第' +
                   (x + 1) +
                   '行为标签块里面的第' +
@@ -354,7 +375,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
               break
             }
           } else {
-            _this.$message.error(
+            Message.error(
               '第' +
                 (x + 1) +
                 '行为标签块里面的第' +
@@ -375,7 +396,7 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
     for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
       const rulesItem = dynamicPolicyRules[i].rules[j]
       if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-        _this.$message.error(
+        Message.error(
           '请正确填写第' +
             (i + 1) +
             '动态因子里面的第' +
@@ -392,7 +413,14 @@ function validateForm (rules, dynamicPolicyRules, behaviorRules = [], _this) {
   // if (!dynamicPolicyFlag) return
   return rulesFlag
 }
-
+function checkNum (num) {
+  if (/(^\d+$)/.test(num)) {
+    return true
+  } else {
+    Message.error('该值为必填项，且必须是大于等于0整数')
+    return false
+  }
+}
 function ReorganizationData (data) { // 将数组变成层级关系
   let rData = []
   const len = data.length
@@ -456,15 +484,15 @@ function getFormPromise (form) {
   })
 }
 
-function checkNumMostFour (num) {
+function checkNumMostFour (num, _this) {
   const numInt = parseInt(num)
   if (/(^\d+$)/.test(num) && numInt <= 9999) {
     return true
   } else {
-    _this.$message.error(
+    Message.error(
       '该值为必填项，且必须是大于等于0的整数且不能超过4位数'
     )
     return false
   }
 }
-export { handleSave, validateForm, ReorganizationData, checkIfChildrenExist, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour }
+export { handleSave, validateForm, ReorganizationData, checkIfChildrenExist, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum }

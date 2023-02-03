@@ -79,6 +79,13 @@ export default {
         field: '',
         operator: '=',
         type: 'string',
+        perCountValue: {
+          name: '',
+          filed: 'mac',
+          type: 'count',
+          operator: '=',
+          value: ''
+        },
         child: [
           {
             name: '',
@@ -200,12 +207,12 @@ export default {
       console.log('a===>', behaviorValue)
       this.childItem.bav.reverseSelect = val
 
-      // 应用活跃 起波活跃
+      // 应用活跃 起播活跃
       if (
         this.childItem.tagCode === 'BAV0002' ||
-          this.childItem.tagCode === 'BAV0003' ||
-          this.childItem.tagCode === 'BAV0008' ||
-          this.childItem.tagCode === 'BAV0006'
+        this.childItem.tagCode === 'BAV0003' ||
+        this.childItem.tagCode === 'BAV0008' ||
+        this.childItem.tagCode === 'BAV0006'
       ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
@@ -228,36 +235,39 @@ export default {
       } else if (
         this.childItem.tagCode === 'BAV0016' ||
         this.childItem.tagCode === 'BAV0012' ||
-          this.childItem.tagCode === 'BAV0011'
+        this.childItem.tagCode === 'BAV0011'
       ) {
         if (val) {
-          const showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
-          if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
+          this.childItem.bav.showBehaviorValue.forEach(showBehaviorValue => {
+            // const showBehaviorValue = this.childItem.bav.showBehaviorValue[0]
+
+            if (showBehaviorValue.child && showBehaviorValue.child.length > 0) {
             // 一维数组循环找到存在值得项
-            const firstChild = showBehaviorValue.child
-            for (let i = firstChild.length; i--; i > 0) {
-              const curChild = firstChild[i]
-              // 没有子集且存在值
-              if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
-                curChild.operator = '!='
-                break
-              } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
-                const list = [this.getNodesLastItem([curChild]).pop()] // 【起播活跃】【综合起播】比较特殊，只取最后一个对象反选
-                // 递归去设置
-                this.iteratorNodes({
-                  nodes: this.childItem.bav.showBehaviorValue,
-                  currentNodes: list,
-                  val,
-                  seclectVal,
-                  clearVal,
-                  isCurrentNodeId: false
-                })
-                break
+              const firstChild = showBehaviorValue.child
+              for (let i = firstChild.length; i--; i > 0) {
+                const curChild = firstChild[i]
+                // 没有子集且存在值
+                if (curChild.value && (curChild.child && curChild.child.length <= 0)) {
+                  curChild.operator = '!='
+                  break
+                } else if (curChild.value && (curChild.child && curChild.child.length > 0)) { // 存在子集
+                  const list = [this.getNodesLastItem([curChild]).pop()] // 【起播活跃】【综合起播】比较特殊，只取最后一个对象反选
+                  // 递归去设置
+                  this.iteratorNodes({
+                    nodes: this.childItem.bav.showBehaviorValue,
+                    currentNodes: list,
+                    val,
+                    seclectVal,
+                    clearVal,
+                    isCurrentNodeId: false
+                  })
+                  break
+                }
               }
+            } else {
+              showBehaviorValue.operator = '!='
             }
-          } else {
-            showBehaviorValue.operator = '!='
-          }
+          })
           // 针对【综合起播】 进行处理, 默认选择次数
           // if (val && seclectVal !== '' && item.value !== '' && (seclectVal === 'default' || seclectVal === item.value)) {
           //   this.childItem.bav.countValue = {
@@ -724,8 +734,7 @@ export default {
       } else if (
         this.childItem.tagCode === 'BAV0002' ||
           this.childItem.tagCode === 'BAV0003' ||
-          this.childItem.tagCode === 'BAV0008' ||
-          this.childItem.tagCode === 'BAV0011'
+          this.childItem.tagCode === 'BAV0008'
       ) {
         this.childItem.bav.behaviorValue = this.setRecoveryItem(this.childItem.bav.behaviorValue)
       }
@@ -1417,11 +1426,15 @@ export default {
             attrlist = dict.blockPid
           }
         } else if (childItem.tagCode === 'BAV0005') {
-          if (level === 1) {
+          if (extra.listMapName) {
+            attrlist = dict[extra.listMapName]
+          } else if (level === 1) {
             attrlist = dict.page_active
           }
         } else if (childItem.tagCode === 'BAV0006') {
-          if (level === 1) {
+          if (extra.listMapName) {
+            attrlist = dict[extra.listMapName]
+          } else if (level === 1) {
             attrlist = dict.business_type
           } else if (level === 2) {
             const obj = dict.business_type.find(item => item.dictValue === extra.type) || {}
