@@ -47,6 +47,10 @@
             <div class="unit-header clearfix">{{ item.title }}</div>
             <div class="unit-content">
                 <div :ref="item.chartRef" :id="item.chartRef" class="chart-div"></div>
+              <!-- <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="item.chartRef" :id="item.chartRef" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div> -->
             </div>
           </div>
         </el-col>
@@ -210,6 +214,8 @@ export default {
         })
 
         // 统计数据
+        this.totalOverview.totalHit = 0
+        this.totalOverview.totalReq = 0
         if (series.length > 0) {
           this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
           this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
@@ -233,11 +239,24 @@ export default {
         })
 
         // 统计数据
+        this.totalOverview.totalCrowd = 0
+        this.totalOverview.usedCrowd = 0
+        this.totalOverview.estimateCrowd = 0
+        this.totalOverview.abCrowd = 0
+
         if (series.length > 0) {
-          this.totalOverview.totalCrowd = series[5].value[series[5].value.length - 1]
-          this.totalOverview.usedCrowd = series[1].value[series[1].value.length - 1]
-          this.totalOverview.estimateCrowd = series[2].value[series[2].value.length - 1] // 估算人群
-          this.totalOverview.abCrowd = series[6].value[series[6].value.length - 1]
+          const totalCrowd = series.find(item => item.name.indexOf('人群总数') !== -1) || {}
+          this.totalOverview.totalCrowd = totalCrowd.value[totalCrowd.value.length - 1]
+
+          const usedCrowd = series.find(item => item.name.indexOf('使用中') !== -1) || {}
+          this.totalOverview.usedCrowd = usedCrowd.value[usedCrowd.value.length - 1]
+
+          const estimateCrowd = series.find(item => item.name.indexOf('估算') !== -1) || {}
+          this.totalOverview.estimateCrowd = estimateCrowd.value[estimateCrowd.value.length - 1]
+
+          const abCrowd = series.find(item => item.name.indexOf('ab') !== -1) || {}
+          this.totalOverview.abCrowd = abCrowd.value[abCrowd.value.length - 1]
+          // this.totalOverview.abCrowd = series[6].value[series[6].value.length - 1]
         }
 
         this.$nextTick(() => {
@@ -258,6 +277,8 @@ export default {
         })
 
         // 统计数据
+        this.totalOverview.totaStrategys = 0
+        this.totalOverview.useStrategys = 0
         if (series.length > 0) {
           this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
           this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
