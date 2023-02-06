@@ -304,14 +304,6 @@ export default {
       soureceSignList: []
     }
   },
-  computed: {
-    dataSourceColorEnum () {
-      return dataSourceColorEnum
-    },
-    dataSourceColorClassEnum () {
-      return dataSourceColorClassEnum
-    }
-  },
   watch: {
     // behaviorRulesJson: {
     //   handler () {
@@ -331,6 +323,12 @@ export default {
   computed: {
     hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
+    },
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   props: {
