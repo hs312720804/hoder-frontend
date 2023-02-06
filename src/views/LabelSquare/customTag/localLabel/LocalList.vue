@@ -195,8 +195,18 @@ export default {
     }
   },
   methods: {
-    launchShence () {
-
+    launchShence (row) {
+      const launchCrowdId = row.launchCrowdId
+      console.log('launchCrowdId', launchCrowdId)
+      this.$service.sensorAnalysis({ launchCrowdId }).then(res => {
+        console.log('res', res)
+        // 人群已经发送到神策平台，请前往神策继续分析
+        if (res.data.indexOf('成功') > 0 || res.data.indexOf('已经发送') > 0) {
+          this.$message.success(res.data)
+        } else {
+          this.$message.info(res.data)
+        }
+      })
     },
     fetchData () {
       const filter = {
