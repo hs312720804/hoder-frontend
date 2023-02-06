@@ -81,7 +81,7 @@ export default {
         type: 'string',
         perCountValue: {
           name: '',
-          filed: 'mac',
+          field: 'mac',
           type: 'count',
           operator: '=',
           value: ''
