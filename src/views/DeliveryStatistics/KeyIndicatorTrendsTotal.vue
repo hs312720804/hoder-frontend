@@ -26,7 +26,7 @@
       </div>
       <div class="text-two">
         <!-- {{ cc_format_number(3851) }} -->
-        {{ toPercent(totalOverview.totaStrategys) }}
+        {{ cc_format_number(totalOverview.totaStrategys) }}
       </div>
       <div class="small-box">
         <div class="small">
@@ -45,7 +45,7 @@
       </div>
       <div class="text-two">
         <!-- {{ cc_format_number(10571) }} -->
-        {{ toPercent(totalOverview.totalCrowd) }}
+        {{ cc_format_number(totalOverview.totalCrowd) }}
       </div>
       <div class="small-box">
         <div class="small">
@@ -62,7 +62,7 @@
       </div>
       <div class="text-two" style="height: 70px">
         <!-- {{ cc_format_number(2648) }} -->
-        {{ toPercent(totalOverview.estimateCrowd) }}
+        {{ cc_format_number(totalOverview.estimateCrowd) }}
       </div>
     </div>
 
@@ -71,7 +71,7 @@
       </div>
       <div class="text-two" style="height: 70px">
         <!-- {{ cc_format_number(1724) }} -->
-        {{ toPercent(totalOverview.abCrowd) }}
+        {{ cc_format_number(totalOverview.abCrowd) }}
       </div>
     </div>
 
