@@ -207,12 +207,12 @@ export default {
       console.log('a===>', behaviorValue)
       this.childItem.bav.reverseSelect = val
 
-      // 应用活跃 起播活跃
       if (
         this.childItem.tagCode === 'BAV0002' ||
         this.childItem.tagCode === 'BAV0003' ||
         this.childItem.tagCode === 'BAV0008' ||
-        this.childItem.tagCode === 'BAV0006'
+        this.childItem.tagCode === 'BAV0006' ||
+        this.childItem.tagCode === 'BAV0005'
       ) {
         // 遍历整个标签的结构， 拿到每一层最后一项
         let isCurrentNodeId = false
@@ -282,6 +282,7 @@ export default {
           this.setRecoveryItem(this.childItem.bav.showBehaviorValue)
         }
       } else {
+        // 【模块活跃 - BAV0004】
         behaviorValue.forEach((item) => {
           item.operator = val ? '!=' : '='
           if (clearVal && clearVal === item.value) { // 需要清空的 value 值
