@@ -7,15 +7,15 @@
         总请求量
       </div>
       <div class="text-two">
-        {{ cc_format_number(3779572629) }}
-        <!-- {{ cc_format_number(overview.homepageActiveUv) }} -->
+        <!-- {{ cc_format_number(3779572629) }} -->
+        {{ cc_format_number(totalOverview.totalReq) }}
       </div>
       <div class="small-box">
         <div class="small">
           <span>总命中量</span>
           <span>
-            {{ cc_format_number(646387883) }}
-            <!-- {{ cc_format_number(overview.quandingUv) }} -->
+            <!-- {{ cc_format_number(646387883) }} -->
+            {{ cc_format_number(totalOverview.totalHit) }}
           </span>
         </div>
       </div>
@@ -25,15 +25,15 @@
       <div class="title-one">总策略数
       </div>
       <div class="text-two">
-        {{ cc_format_number(3851) }}
-        <!-- {{ toPercent(overview.totalPlayRate) }} -->
+        <!-- {{ cc_format_number(3851) }} -->
+        {{ toPercent(totalOverview.totaStrategys) }}
       </div>
       <div class="small-box">
         <div class="small">
           <span>活跃策略数</span>
           <span>
-            {{ cc_format_number(381) }}
-            <!-- {{ cc_format_number(overview.totalPlayUv) }} -->
+            <!-- {{ cc_format_number(381) }} -->
+            {{ cc_format_number(totalOverview.useStrategys) }}
           </span>
         </div>
 
@@ -44,14 +44,14 @@
       <div class="title-one">总人群数
       </div>
       <div class="text-two">
-        {{ cc_format_number(10571) }}
-        <!-- {{ toPercent(overview.totalPkgShowRate) }} -->
+        <!-- {{ cc_format_number(10571) }} -->
+        {{ toPercent(totalOverview.totalCrowd) }}
       </div>
       <div class="small-box">
         <div class="small">
           <span>活跃人群数</span>
-          {{ cc_format_number(1579) }}
-          <!-- <span>{{ cc_format_number(overview.totalPkgShowUv) }}</span> -->
+          <!-- {{ cc_format_number(1579) }} -->
+          <span>{{ cc_format_number(totalOverview.usedCrowd) }}</span>
         </div>
 
       </div>
@@ -61,8 +61,8 @@
       <div class="title-one">估算人群数量
       </div>
       <div class="text-two" style="height: 70px">
-        {{ cc_format_number(2648) }}
-        <!-- {{ toPercent(overview.totalPkgXiadanRate) }} -->
+        <!-- {{ cc_format_number(2648) }} -->
+        {{ toPercent(totalOverview.estimateCrowd) }}
       </div>
     </div>
 
@@ -70,8 +70,8 @@
       <div class="title-one">AB人群数量
       </div>
       <div class="text-two" style="height: 70px">
-        {{ cc_format_number(1724) }}
-        <!-- {{ toPercent(overview.totalPkgPayRate) }} -->
+        <!-- {{ cc_format_number(1724) }} -->
+        {{ toPercent(totalOverview.abCrowd) }}
       </div>
     </div>
 
