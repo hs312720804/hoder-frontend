@@ -354,34 +354,57 @@ export default {
     // 判断条件： 满足1、2其中一条就显示,默认值为 ‘是’，反之隐藏；
     // 1、行为标签选择【动态周期】;
     // 2、选择了以下标签：【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
+    // hasMoveBehaviorTagRule () {
+    //   const crowd = this.form
+    //   const behaviorRules = this.behaviorRulesJson.rules
+
+    //   let hasBehaviorRule = false // 是否有行为标签
+    //   let hasMoveRule = false // 是否有动态周期
+    //   let hasFullTag = false // 是否有下面的标签，有的话就展示；【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
+    //   const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010', 'BAV0016']
+
+    //   if (behaviorRules.length > 0) {
+    //     hasBehaviorRule = true
+    //     for (let x = 0; x < behaviorRules.length; x++) {
+    //       const rule = behaviorRules[x]
+    //       for (let y = 0; y < rule.rules.length; y++) {
+    //         const item = rule.rules[y]
+    //         if (item.bav && item.bav.rangeType === 'move') {
+    //           hasMoveRule = true
+    //           break
+    //         }
+    //         if (fullTagList.includes(item.tagCode)) {
+    //           hasFullTag = true
+    //           break
+    //         }
+    //       }
+    //     }
+    //   }
+
+    //   if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
+    //     // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
+    //     if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+    //       crowd.autoVersion = true
+    //     }
+    //     crowd.isShowAutoVersion = true
+    //   } else {
+    //     crowd.isShowAutoVersion = false
+    //     crowd.autoVersion = false
+    //   }
+    // },
+
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
     hasMoveBehaviorTagRule () {
       const crowd = this.form
       const behaviorRules = this.behaviorRulesJson.rules
 
       let hasBehaviorRule = false // 是否有行为标签
-      let hasMoveRule = false // 是否有动态周期
-      let hasFullTag = false // 是否有下面的标签，有的话就展示；【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
-      const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010', 'BAV0016']
-
       if (behaviorRules.length > 0) {
         hasBehaviorRule = true
-        for (let x = 0; x < behaviorRules.length; x++) {
-          const rule = behaviorRules[x]
-          for (let y = 0; y < rule.rules.length; y++) {
-            const item = rule.rules[y]
-            if (item.bav && item.bav.rangeType === 'move') {
-              hasMoveRule = true
-              break
-            }
-            if (fullTagList.includes(item.tagCode)) {
-              hasFullTag = true
-              break
-            }
-          }
-        }
       }
 
-      if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
+      if (hasBehaviorRule) { // 展示勾选“是否每日更新”
         // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
         if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
           crowd.autoVersion = true
@@ -392,7 +415,6 @@ export default {
         crowd.autoVersion = false
       }
     },
-
     // citySelectChange (val, childRule, cityList) {
     //   if (childRule.tagType === 'mix') {
     //     const matchCity = cityList.find(item => {
