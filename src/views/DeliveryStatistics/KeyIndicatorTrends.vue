@@ -213,12 +213,14 @@ export default {
           return { name: key.name, data: key.value, type: 'line' }
         })
 
-        // 统计数据
-        this.totalOverview.totalHit = 0
-        this.totalOverview.totalReq = 0
-        if (series.length > 0) {
-          this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
-          this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
+        if (rangeType === 'OM') {
+          // 统计数据
+          this.totalOverview.totalHit = 0
+          this.totalOverview.totalReq = 0
+          if (series.length > 0) {
+            this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
+            this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
+          }
         }
 
         this.$nextTick(() => {
@@ -238,25 +240,27 @@ export default {
           return { name: key.name, data: key.value, type: 'line' }
         })
 
-        // 统计数据
-        this.totalOverview.totalCrowd = 0
-        this.totalOverview.usedCrowd = 0
-        this.totalOverview.estimateCrowd = 0
-        this.totalOverview.abCrowd = 0
+        if (rangeType === 'OM') {
+          // 统计数据
+          this.totalOverview.totalCrowd = 0
+          this.totalOverview.usedCrowd = 0
+          this.totalOverview.estimateCrowd = 0
+          this.totalOverview.abCrowd = 0
 
-        if (series.length > 0) {
-          const totalCrowd = series.find(item => item.name.indexOf('人群总数') !== -1) || {}
-          this.totalOverview.totalCrowd = totalCrowd.value[totalCrowd.value.length - 1]
+          if (series.length > 0) {
+            const totalCrowd = series.find(item => item.name.indexOf('人群总数') !== -1) || {}
+            this.totalOverview.totalCrowd = totalCrowd.value[totalCrowd.value.length - 1]
 
-          const usedCrowd = series.find(item => item.name.indexOf('使用中') !== -1) || {}
-          this.totalOverview.usedCrowd = usedCrowd.value[usedCrowd.value.length - 1]
+            const usedCrowd = series.find(item => item.name.indexOf('使用中') !== -1) || {}
+            this.totalOverview.usedCrowd = usedCrowd.value[usedCrowd.value.length - 1]
 
-          const estimateCrowd = series.find(item => item.name.indexOf('估算') !== -1) || {}
-          this.totalOverview.estimateCrowd = estimateCrowd.value[estimateCrowd.value.length - 1]
+            const estimateCrowd = series.find(item => item.name.indexOf('估算') !== -1) || {}
+            this.totalOverview.estimateCrowd = estimateCrowd.value[estimateCrowd.value.length - 1]
 
-          const abCrowd = series.find(item => item.name.indexOf('ab') !== -1) || {}
-          this.totalOverview.abCrowd = abCrowd.value[abCrowd.value.length - 1]
-          // this.totalOverview.abCrowd = series[6].value[series[6].value.length - 1]
+            const abCrowd = series.find(item => item.name.indexOf('ab') !== -1) || {}
+            this.totalOverview.abCrowd = abCrowd.value[abCrowd.value.length - 1]
+            // this.totalOverview.abCrowd = series[6].value[series[6].value.length - 1]
+          }
         }
 
         this.$nextTick(() => {
@@ -276,12 +280,14 @@ export default {
           return { name: key.name, data: key.value, type: 'line' }
         })
 
-        // 统计数据
-        this.totalOverview.totaStrategys = 0
-        this.totalOverview.useStrategys = 0
-        if (series.length > 0) {
-          this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
-          this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
+        if (rangeType === 'OM') {
+          // 统计数据
+          this.totalOverview.totaStrategys = 0
+          this.totalOverview.useStrategys = 0
+          if (series.length > 0) {
+            this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
+            this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
+          }
         }
 
         this.$nextTick(() => {
