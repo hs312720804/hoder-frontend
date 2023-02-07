@@ -1003,6 +1003,7 @@ export default {
   border: 1px solid #ebeef5;
   padding: 20px;
   border-radius: 4px;
+  @import '~@/assets/tag.styl'
 }
 
 .title {
@@ -1029,10 +1030,6 @@ i {
 
 .showMoreTags >>> .el-radio {
   margin: 5px;
-}
-
-.add {
-  @import '~@/assets/tag.styl'
 }
 
 .outer-and {
