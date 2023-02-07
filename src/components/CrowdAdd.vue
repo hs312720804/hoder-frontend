@@ -426,14 +426,17 @@ export default {
       return (this.propPrefix || '') + key
     },
 
-    // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 满足1、2其中一条就显示,默认值为 是，反之隐藏；
+    // 1、行为标签选择【动态周期】;
+    // 2、选择了以下标签：【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
     hasMoveBehaviorTagRule () {
       this.inputValue.forEach((crowd) => {
         const behaviorRules = crowd.behaviorRulesJson.rules
         let hasBehaviorRule = false
         let hasMoveRule = false
-        let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
-        const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
+        let hasFullTag = false // 是否有下面的标签，有的话就展示；【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
+        const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010', 'BAV0016']
 
         if (behaviorRules.length > 0) {
           hasBehaviorRule = true
