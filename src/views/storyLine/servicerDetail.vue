@@ -118,6 +118,7 @@
           <div class="kpi-wrap">
             <div>绩效目标(可选)</div>
             <div class="detail-kpi">
+              <i class="el-icon-loading load-place" v-if="getGoalDataLoading"></i>
               <!-- <el-descriptions title="" column="2">
                 <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
                 <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
@@ -613,6 +614,7 @@ export default {
   },
   data () {
     return {
+      getGoalDataLoading: false,
       targetKeyFormParent: {
         id: '', // 接待员ID
         indicatorsType: '', // 1 会员付费率，2 会员成交单数 3 会员成交金额 4 会员客单价 5会员付费设备量 6 内容影片吸金订单量 7 订单转换率 8 订单均价 9 影片播放均价
@@ -1132,14 +1134,19 @@ export default {
       //   crowdId: 14331, // 接待员id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
+      console.log('this.selectedServicer.crowdId---->', this.selectedServicer.crowdId)
+      this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        const tableData = res.data || {}
-        console.log('tableData----', tableData)
-        this.allChartData = tableData || {}
-        this.overview = tableData.overview ? tableData.overview.data : {}
-        this.$nextTick(() => {
-          this.drawChart()
-        })
+        // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
+        if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
+          const tableData = res.data || {}
+          this.allChartData = tableData || {}
+          this.overview = tableData.overview ? tableData.overview.data : {}
+          this.$nextTick(() => {
+            this.drawChart()
+          })
+        }
+        this.getGoalDataLoading = false
       })
     },
     drawChart () {
@@ -1336,5 +1343,11 @@ export default {
 @import './sty/light.styl'
 .chart-div{
   height: 130px
+}
+.load-place {
+  position absolute
+  right 10px
+  top 10px
+  font-size 18px
 }
 </style>
