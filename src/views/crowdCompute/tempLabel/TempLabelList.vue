@@ -196,11 +196,8 @@
       <!--</el-form-item>-->
       <!--</el-form>-->
       <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
-      <div v-if="selectStrategy.behaviorRulesJson" class="show-select-strategy">
-        <div>{{ selectStrategy.behaviorRulesJson ? selectStrategy.behaviorRulesJson : '无数据' }}</div>
-        <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
-      </div>
-      <div v-else>
+      <div  class="show-select-strategy">
+        <div v-if="selectStrategy.behaviorRulesJson">{{ selectStrategy.behaviorRulesJson }}</div>
         <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
       </div>
     </el-dialog>
@@ -614,10 +611,11 @@ export default {
     margin-bottom 30px
 .show-select-strategy
   display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-gap: 20px
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-gap: 10px
   div {
     max-height 600px;
     overflow: auto;
+    padding: 5px 15px
   }
 </style>
