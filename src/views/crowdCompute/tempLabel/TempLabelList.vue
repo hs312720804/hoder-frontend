@@ -183,7 +183,7 @@
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
       </div>
     </div>
-    <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+    <el-dialog :title="launchTitle" :visible.sync="isShowCondition" :width="selectStrategy.behaviorRulesJson ? '1000px' : '600px'">
       <!--<el-form v-if="launchType === 0">-->
       <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
       <!--<el-checkbox-->
@@ -196,11 +196,13 @@
       <!--</el-form-item>-->
       <!--</el-form>-->
       <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
-      <div>{{ selectStrategy.behaviorRulesJson ? selectStrategy.behaviorRulesJson : '无数据' }}</div>
-      <br/>
-      <hr>
-      <br/>
-      <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
+      <div v-if="selectStrategy.behaviorRulesJson" class="show-select-strategy">
+        <div>{{ selectStrategy.behaviorRulesJson ? selectStrategy.behaviorRulesJson : '无数据' }}</div>
+        <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
+      </div>
+      <div v-else>
+        <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
+      </div>
     </el-dialog>
     <el-dialog title="数据监控" :visible.sync="monitorDialog">
       <el-date-picker v-model="monitorRangeTime" type="daterange" align="right" @change="getDataMonitor"
@@ -585,29 +587,37 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    // .temp-label-list
-    //     margin-top 50px
-    .temp-label-list >>> .el-button-group
-        display flex
-        align-items center
-        .el-button
-            margin 0 5px
-    .header
-        display flex
-        justify-content space-between
-        margin 10px 0
-    .search-input
-      position relative
-      display flex
-      width 350px
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
-    .operate
-        margin-left 20px
-        cursor pointer
-    .monitor-time
-        margin-bottom 30px
+// .temp-label-list
+//     margin-top 50px
+.temp-label-list >>> .el-button-group
+    display flex
+    align-items center
+    .el-button
+        margin 0 5px
+.header
+    display flex
+    justify-content space-between
+    margin 10px 0
+.search-input
+  position relative
+  display flex
+  width 350px
+.icon-fixed
+    position absolute
+    top 8px
+    right 10px
+    transform rotate(-90deg)
+.operate
+    margin-left 20px
+    cursor pointer
+.monitor-time
+    margin-bottom 30px
+.show-select-strategy
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  grid-gap: 20px
+  div {
+    max-height 600px;
+    overflow: auto;
+  }
 </style>
