@@ -834,10 +834,10 @@
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
-       <div>设备：{{totalUser}}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
-       <div>手机号：{{total1 === undefined ? '暂无数据': cc_format_number(total1)}}</div>
-       <div>酷开openId：{{total2}}</div>
-       <div>微信openId：{{total3}}</div>
+       <div>设备：{{ totalUser }}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
+       <div>手机号：{{ total1 === undefined ? '暂无数据': total1 }}</div>
+       <div>酷开openId：{{ total2 }}</div>
+       <div>微信openId：{{ total3 }}</div>
    </el-dialog>
     <!-- 查看统计 投后效果弹窗-->
     <el-dialog
