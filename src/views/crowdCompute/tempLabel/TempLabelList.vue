@@ -196,7 +196,11 @@
       <!--</el-form-item>-->
       <!--</el-form>-->
       <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
-      <div>{{ selectStrategy }}</div>
+      <div>{{ selectStrategy.behaviorRulesJson ? selectStrategy.behaviorRulesJson : '无数据' }}</div>
+      <br/>
+      <hr>
+      <br/>
+      <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
     </el-dialog>
     <el-dialog title="数据监控" :visible.sync="monitorDialog">
       <el-date-picker v-model="monitorRangeTime" type="daterange" align="right" @change="getDataMonitor"
@@ -250,7 +254,7 @@ export default {
       isShowCondition: false,
       // launchType: undefined,
       launchTitle: '',
-      selectStrategy: null, // 人群条件的选择策略
+      selectStrategy: {}, // 人群条件的选择策略
       checkList: [],
       monitorDialog: false,
       monitorRangeTime: undefined,
@@ -487,11 +491,12 @@ export default {
     },
     condition (row) {
       this.isShowCondition = true
+      this.selectStrategy = {}
       this.$service
         .getTempCrowd({ launchCrowdId: row.launchCrowdId })
         .then(data => {
           this.launchTitle = '人群条件'
-          this.selectStrategy = data.crowdSql
+          this.selectStrategy = data || {}
         })
     },
     // 删除
