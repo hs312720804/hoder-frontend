@@ -377,7 +377,6 @@ export default {
               dataSource: item.tDataSource
             }
           })
-          console.log('1111111111------------->', this.conditionTagsFiltered)
           this.selectTagTagsListTotal = data.pageInfo.total
         })
     },
