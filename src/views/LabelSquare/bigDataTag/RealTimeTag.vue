@@ -185,6 +185,9 @@ export default {
   created () {
     this.$root.$on('big-data-list-refresh', this.fetchData)
     this.fetchData()
+  },
+  beforeDestroy () {
+    this.$root.$off('big-data-list-refresh')
   }
 }
 </script>

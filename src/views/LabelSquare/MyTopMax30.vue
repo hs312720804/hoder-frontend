@@ -157,6 +157,9 @@ export default {
   created () {
     this.$root.$on('my-top-list-refresh', this.fetchData)
     this.fetchData()
+  },
+  beforeDestroy () {
+    this.$root.$off('my-top-list-refresh')
   }
 }
 </script>
