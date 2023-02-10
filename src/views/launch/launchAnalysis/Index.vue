@@ -32,12 +32,12 @@
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
       <!-- <div style="margin: 15px 0;"></div> -->
-      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange" style="white-space: break-spaces;">
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
 
       <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">广电直播</el-checkbox>
-      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange2" style="white-space: break-spaces;">
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
         <el-checkbox v-for="city in cities2" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
 
@@ -459,6 +459,20 @@ export default {
     // 历史搜索记录
     this.handleGetRightsInterestsSearchRecord()
   },
+  watch: {
+    'formInline.sourceNameList': {
+      handler (val) {
+        const checkedCount = val.length
+        const allCount = cityOptions.concat(cityOptions2).length
+
+        this.checkAll = checkedCount === allCount
+        this.isIndeterminate = checkedCount > 0 && checkedCount < allCount
+
+        this.checkAll2 = cityOptions2.every(item => val.indexOf(item) > -1)
+        this.isIndeterminate2 = cityOptions2.some(item => val.indexOf(item) > -1) && !this.checkAll2
+      }
+    }
+  },
   beforeDestroy () {
     // 销毁定时器
     this.destoryTimeInterval()
@@ -525,21 +539,9 @@ export default {
     },
     handleCheckAllChange (val) {
       this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
-      this.isIndeterminate = false
-      this.checkAll2 = val
     },
     handleCheckAllChange2 (val) {
       this.formInline.sourceNameList = val ? this.formInline.sourceNameList.concat(cityOptions2) : this.formInline.sourceNameList.filter(item => cityOptions2.indexOf(item) === -1)
-      this.isIndeterminate2 = false
-    },
-    handleCheckedCitiesChange (value) {
-      const checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
-    },
-    handleCheckedCitiesChange2 (value) {
-      this.checkAll2 = cityOptions2.every(item => value.indexOf(item) > -1)
-      this.isIndeterminate2 = cityOptions2.some(item => value.indexOf(item) > -1) && !this.checkAll2
     },
     handleClick (tab, event) {
       this.$nextTick(() => {
