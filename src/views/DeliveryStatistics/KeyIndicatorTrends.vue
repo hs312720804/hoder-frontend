@@ -217,9 +217,16 @@ export default {
           // 统计数据
           this.totalOverview.totalHit = 0
           this.totalOverview.totalReq = 0
+          // if (series.length > 0) {
+          //   this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
+          //   this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
+          // }
           if (series.length > 0) {
-            this.totalOverview.totalHit = series[0].value[series[0].value.length - 1]
-            this.totalOverview.totalReq = series[1].value[series[1].value.length - 1]
+            const totalHit = series.find(item => item.name.indexOf('命中') !== -1) || {}
+            this.totalOverview.totalHit = totalHit.value[totalHit.value.length - 1]
+
+            const totalReq = series.find(item => item.name.indexOf('请求') !== -1) || {}
+            this.totalOverview.totalReq = totalReq.value[totalReq.value.length - 1]
           }
         }
 
@@ -284,9 +291,17 @@ export default {
           // 统计数据
           this.totalOverview.totaStrategys = 0
           this.totalOverview.useStrategys = 0
+          // if (series.length > 0) {
+          //   this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
+          //   this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
+          // }
+
           if (series.length > 0) {
-            this.totalOverview.totaStrategys = series[0].value[series[0].value.length - 1]
-            this.totalOverview.useStrategys = series[1].value[series[1].value.length - 1]
+            const totaStrategys = series.find(item => item.name.indexOf('总') !== -1) || {}
+            this.totalOverview.totaStrategys = totaStrategys.value[totaStrategys.value.length - 1]
+
+            const useStrategys = series.find(item => item.name.indexOf('使用') !== -1) || {}
+            this.totalOverview.useStrategys = useStrategys.value[useStrategys.value.length - 1]
           }
         }
 
