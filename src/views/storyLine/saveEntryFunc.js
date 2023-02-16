@@ -28,7 +28,6 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
 
   if (!valid1 || !valid2 || !valid3) return
 
-  console.log('aa--->', valid2)
   // const form = JSON.parse(JSON.stringify(thisForm))
   const tagIds = []
   const ruleJson = JSON.parse(JSON.stringify(thisRulesJson))

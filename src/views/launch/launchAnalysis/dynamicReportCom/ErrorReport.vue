@@ -317,7 +317,7 @@ export default {
       const parmas = {
         crowdId: this.crowdId,
         startDate: this.time0[0],
-        endDate: this.time0[0]
+        endDate: this.time0[1]
       }
       this.$service.dynamicCrowdMonitoring(parmas).then(dataObj => {
         // 处理 dataObj 中的空对象
