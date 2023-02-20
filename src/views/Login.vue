@@ -3,7 +3,7 @@
   <!-- {{ formConf }} -->
   <div v-if="!isLogin">
     <el-button type="primary" @click="(isLogin = !isLogin)" class="login-btn">登录</el-button>
-    <Parser ref="parserRef" v-if="formConf" :formConf="formConf"  class="parser"></Parser>
+    <Parser ref="parserRef" v-if="formConf" :formConf="formConf" class="parser"></Parser>
   </div>
 
   <template v-else >
