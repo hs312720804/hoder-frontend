@@ -348,8 +348,15 @@
                 class="film-btn"
                 title="双击复制"
                 @dblclick="copyText(film.id + '-' + film.title)"
-                >
-                {{ film.id }} - {{ film.title }}
+              >
+                <el-popover
+                  placement="top"
+                  width="150px"
+                  trigger="manual"
+                  content="复制成功"
+                  :value="popoverVisible === film.id + '-' + film.title">
+                  <span slot="reference">{{ film.id }} - {{ film.title }}</span>
+                </el-popover>
               </span>
             </template>
             <span v-else class="no-data-text">暂无推荐</span>
@@ -676,6 +683,7 @@ export default {
   },
   data () {
     return {
+      popoverVisible: '',
       recommendLoading: false,
       getGoalDataLoading: false,
       targetKeyFormParent: {
@@ -815,13 +823,18 @@ export default {
       const body = document.querySelector('body')
       body.append(input)
       input.value = str
+      this.popoverVisible = str
       input.select()
       document.execCommand('copy')
       input.remove()
-      this.$message({
-        message: '复制成功',
-        type: 'success'
-      })
+
+      setTimeout(() => {
+        this.popoverVisible = ''
+      }, 3000)
+      // this.$message({
+      //   message: '复制成功',
+      //   type: 'success'
+      // })
     },
     getKeyName (key) {
       const obj = this.tagCodeList.find(item => Number(item.tagCode) === Number(key))
