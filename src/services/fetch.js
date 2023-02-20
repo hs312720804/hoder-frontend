@@ -12,7 +12,7 @@ axios.interceptors.response.use((response) => {
     // window.location = '/login'
     // window.location.reload()
     console.log('token 失效啦')
-    return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
+    // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
   } else {
     return Promise.reject(error)
   }
