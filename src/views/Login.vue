@@ -3,7 +3,7 @@
   <!-- {{ formConf }} -->
   <div v-if="!isLogin">
     <el-button type="primary" @click="(isLogin = !isLogin)" class="login-btn">登录</el-button>
-    <!-- <Parser ref="parserRef" v-if="formConf" :formConf="formConf"  class="parser"></Parser> -->
+    <Parser ref="parserRef" v-if="formConf" :formConf="formConf" class="parser"></Parser>
   </div>
 
   <template v-else >
@@ -47,7 +47,7 @@
 <script>
 import _ from 'gateschema'
 import axios from 'axios'
-// import { Parser } from '@ccms/cms-engine'
+import { Parser } from '@ccms/cms-engine'
 
 const schema = _.map({
   username: _.required.$msg('请输入登陆名称').string.other('form', {
@@ -96,7 +96,7 @@ const schema = _.map({
 //   })
 export default {
   components: {
-    // Parser
+    Parser
   },
   data () {
     return {

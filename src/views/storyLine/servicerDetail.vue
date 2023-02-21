@@ -20,7 +20,7 @@
               <div>{{ selectedServicer.userName || '-'}}</div>
               <div>创建时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
-              <div>擅长：</div>
+              <div>擅长(可选)：</div>
               <div v-if="selectedServicer.receptionist">
                 <el-select
                   ref="selectObj"
@@ -90,7 +90,7 @@
         </div>
         <div class="aaa"></div>
         <div class="detail-header-column">
-          <div class="target">我的任务</div>
+          <div class="target">我的任务（可选）</div>
           <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
           <div class="flex-content">
@@ -116,8 +116,9 @@
           <br/>
           overview： {{overview}} -->
           <div class="kpi-wrap">
-            <div>绩效目标</div>
+            <div>绩效目标(可选)</div>
             <div class="detail-kpi">
+              <i class="el-icon-loading load-place" v-if="getGoalDataLoading"></i>
               <!-- <el-descriptions title="" column="2">
                 <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
                 <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
@@ -199,7 +200,7 @@
       </div>
 
       <div>
-        <div class="title2">服务对象选择</div>
+        <div class="title2">服务对象选择（可选）</div>
         <div class="set-start">
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -317,8 +318,55 @@
           </div>
         </div>
       </div>
+
+      <!-- 推荐绑定内容 -->
+      <div
+        v-if="entryList && entryList.length > 0 && tagCodeList.length > 0"
+      >
+        <div class="title2">推荐绑定内容</div>
+        <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
+
+          <div class="bav-wrap" style="overflow: hidden;">
+            内容源：
+            <el-select v-model="selectSourceCode" @change="getUptmRecommendResourceList" class="select-source-sty">
+              <el-option
+                v-for="item in sourceList"
+                :label="item.sourceTitle"
+                :value="item.sourceCode"
+                :key="item.sourceCode">
+              </el-option>
+            </el-select>
+          </div>
+
+          <div v-for="(arr, key) in recommendResourceList" :key="key" class="recommend-list" >
+            <span class="border-title" >{{ getKeyName(key) }}：</span>
+            <!-- {{ arr }} -->
+            <template v-if="arr && arr.length > 0">
+              <span
+                v-for="film in arr"
+                :key="film.id"
+                class="film-btn"
+                title="双击复制"
+                @dblclick="copyText(film.id + '-' + film.title)"
+              >
+                <el-popover
+                  placement="top"
+                  width="150px"
+                  trigger="manual"
+                  content="复制成功"
+                  :value="popoverVisible === film.id + '-' + film.title">
+                  <span slot="reference">{{ film.id }} - {{ film.title }}</span>
+                </el-popover>
+              </span>
+            </template>
+            <span v-else class="no-data-text">暂无推荐</span>
+          </div>
+          <!-- {{ recommendResourceList }} -->
+        </div>
+      </div>
+
       <div>
-        <div class="title2">服务终止条件</div>
+        <div class="title2">服务终止条件（可选）</div>
         <div class="set-end">
           <div v-if="exportList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -552,6 +600,28 @@ export default {
     }
   },
   watch: {
+    entryList (val) {
+      console.log('entryList--->', val)
+      if (val.length > 0) {
+        const returnArr = []
+
+        val.forEach(item => {
+          const ruleArr = JSON.parse(item.rulesJson).rules
+          console.log('rulesJson-->', ruleArr)
+
+          ruleArr.forEach(z1Item => {
+            z1Item.rules.forEach(z2Item => {
+              if (z2Item.tagKey === 'filmModelTag' && returnArr.findIndex(reItem => reItem.tagCode === z2Item.tagCode) === -1) {
+                returnArr.push(z2Item)
+              }
+            })
+          })
+        })
+
+        this.tagCodeList = returnArr
+        this.getUptmRecommendResourceList()
+      }
+    },
     styleType () {
       for (const key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
@@ -613,6 +683,9 @@ export default {
   },
   data () {
     return {
+      popoverVisible: '',
+      recommendLoading: false,
+      getGoalDataLoading: false,
       targetKeyFormParent: {
         id: '', // 接待员ID
         indicatorsType: '', // 1 会员付费率，2 会员成交单数 3 会员成交金额 4 会员客单价 5会员付费设备量 6 内容影片吸金订单量 7 订单转换率 8 订单均价 9 影片播放均价
@@ -710,12 +783,20 @@ export default {
           indicatorsType: 5,
           label: '会员 - 付费设备量'
         }
-      ]
+      ],
+      sourceList: [], // 内容源
+      selectSourceCode: 'tencent', // 所选内容源
+      recommendResourceList: [], // 推荐影片
+      tagCodeList: []
     }
   },
   created () {
     this.$service.getSourceSign().then(res => {
       this.soureceSignList = res
+    })
+
+    this.$service.getSourceList().then(res => {
+      this.sourceList = res
     })
   },
   mounted () {
@@ -727,6 +808,59 @@ export default {
     })
   },
   methods: {
+    // handleCopy () {
+    //   const range = document.createRange() // 创建range对象
+    //   range.selectNode(document.getElementById('copycode')) // 获取复制内容的 id 选择器
+    //   const selection = window.getSelection() // 创建 selection对象
+    //   if (selection.rangeCount > 0) selection.removeAllRanges() // 如果页面已经有选取了的话，会自动删除这个选区，没有选区的话，会把这个选取加入选区
+    //   selection.addRange(range) // 将range对象添加到selection选区当中，会高亮文本块
+    //   document.execCommand('copy') // 复制选中的文字到剪贴板
+    //   this.$toast('复制成功')
+    //   selection.removeRange(range) // 移除选中的元素
+    // },
+    copyText (str) {
+      const input = document.createElement('input')
+      const body = document.querySelector('body')
+      body.append(input)
+      input.value = str
+      this.popoverVisible = str
+      input.select()
+      document.execCommand('copy')
+      input.remove()
+
+      setTimeout(() => {
+        this.popoverVisible = ''
+      }, 3000)
+      // this.$message({
+      //   message: '复制成功',
+      //   type: 'success'
+      // })
+    },
+    getKeyName (key) {
+      const obj = this.tagCodeList.find(item => Number(item.tagCode) === Number(key))
+      console.log('obj--->', obj)
+      return obj ? obj.tagCnName : ''
+    },
+    getUptmRecommendResourceList () {
+      this.recommendLoading = true
+      this.recommendResourceList = []
+      const tagCodeList = this.tagCodeList
+      if (tagCodeList.length > 0) {
+        const tagCodes = tagCodeList.map(item => item.tagCode).join(',')
+        const params = {
+          source: this.selectSourceCode,
+          tagCodes
+        }
+        this.$service.getTopRecommendResourceList(params).then(res => {
+          console.log('res--->', res)
+          this.recommendResourceList = res || []
+          this.recommendLoading = false
+        }).catch(() => {
+          this.recommendResourceList = []
+          this.recommendLoading = false
+        })
+      }
+    },
     getStopTypeName (val) {
       if (val === 2) {
         return '直接转化'
@@ -1132,14 +1266,19 @@ export default {
       //   crowdId: 14331, // 接待员id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
+      console.log('this.selectedServicer.crowdId---->', this.selectedServicer.crowdId)
+      this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        const tableData = res.data || {}
-        console.log('tableData----', tableData)
-        this.allChartData = tableData || {}
-        this.overview = tableData.overview ? tableData.overview.data : {}
-        this.$nextTick(() => {
-          this.drawChart()
-        })
+        // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
+        if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
+          const tableData = res.data || {}
+          this.allChartData = tableData || {}
+          this.overview = tableData.overview ? tableData.overview.data : {}
+          this.$nextTick(() => {
+            this.drawChart()
+          })
+        }
+        this.getGoalDataLoading = false
       })
     },
     drawChart () {
@@ -1336,5 +1475,37 @@ export default {
 @import './sty/light.styl'
 .chart-div{
   height: 130px
+}
+.load-place {
+  position absolute
+  right 10px
+  top 10px
+  font-size 18px
+}
+.recommend-list {
+  padding: 10px 0;
+}
+.recommend-list + .recommend-list {
+  border-top: 1px dashed #4a4a4a;
+  // border-top: 1px dashed #f3f3f3
+}
+.select-source-sty :deep(.el-input__inner) {
+  background-color: rgb(255 0 0 / 0%);
+  color: #606266;
+}
+.film-btn {
+  color: #67c23a;
+  background: #f0f9eb;
+  border: 1px solid #c2e7b0;
+  font-size: 12px;
+  border-radius: 3px;
+  padding: 5px 12px;
+  display inline-block
+  margin: 3px
+  &:hover {
+    color: #fff;
+    background-color: #67c23a;
+    border-color: #67c23a;
+  }
 }
 </style>

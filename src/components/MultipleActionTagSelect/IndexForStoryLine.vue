@@ -41,10 +41,10 @@
               :class="{ 'label-item': true, paddingTop: n > 0 }"
             >
               <!-- 行为标签专属日期选项 -->
-              <!-- 会员状态 不需要周期范围的所有下拉框选项 -->
-              <!-- 购买行为 不需要星期范围 时间区间 -->
+              <!-- 【会员状态】、【优惠券行为】 不需要周期范围的所有下拉框选项 -->
+              <!-- 【购买行为】 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
+                <div v-if="childItem.tagCode !== 'BAV0016' && childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
                   <Range
                     ref="range"
                     :childItem="childItem"
@@ -556,6 +556,7 @@
 <script>
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   // provide: {
   //   _this: () => this
@@ -585,7 +586,8 @@ export default {
         BAV0012: 12,
         BAV0013: 13,
         BAV0014: 14,
-        BAV0015: 15
+        BAV0015: 15,
+        BAV0016: 16
       },
       // ----------------
       cache: {},
@@ -619,18 +621,23 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       cityData: [],
       provinceValueList: [],
       showRange: true
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   components: {

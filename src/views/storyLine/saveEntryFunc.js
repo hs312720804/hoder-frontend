@@ -1,4 +1,4 @@
-import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
+import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
@@ -28,7 +28,6 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
 
   if (!valid1 || !valid2 || !valid3) return
 
-  console.log('aa--->', valid2)
   // const form = JSON.parse(JSON.stringify(thisForm))
   const tagIds = []
   const ruleJson = JSON.parse(JSON.stringify(thisRulesJson))
@@ -83,7 +82,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
         }).flat()
       }
 
-      if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+      if (rulesItem.tagCode === 'BAV0016' || rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
         const rData = []
         const showBehaviorValue = rulesItem.bav.showBehaviorValue
         showBehaviorValue.forEach(item => {
@@ -319,8 +318,8 @@ function validateForm (rules, behaviorRules = [], _this) {
           rulesItem.value = startDay + '~' + endDay
         } else { // 一期
           if (
-            this.checkNum(rulesItem.startDay) &&
-            this.checkNum(rulesItem.endDay)
+            checkNum(rulesItem.startDay) &&
+            checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay

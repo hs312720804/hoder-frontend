@@ -31,7 +31,7 @@
                     <el-button>编辑</el-button>
                     <el-button>删除</el-button>
                     <el-button>投后效果</el-button>
-                    <el-button>看主页数据</el-button>
+                    <!-- <el-button>看主页数据</el-button> -->
                 </template>
             </el-table-column>
         </el-table>

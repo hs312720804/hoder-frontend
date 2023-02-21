@@ -68,7 +68,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" v-if="!showSelection">
+        <el-table-column label="操作" width="200" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -92,6 +92,9 @@
               </el-button>
               <el-button type="text" @click="del(scope.row)">
                 删除
+              </el-button>
+              <el-button type="text" @click="launchShence(scope.row)">
+                神策分析
               </el-button>
               <!--<el-button-->
               <!--type="text"-->
@@ -192,6 +195,19 @@ export default {
     }
   },
   methods: {
+    launchShence (row) {
+      const launchCrowdId = row.launchCrowdId
+      console.log('launchCrowdId', launchCrowdId)
+      this.$service.sensorAnalysis({ launchCrowdId }).then(res => {
+        console.log('res', res)
+        // 人群已经发送到神策平台，请前往神策继续分析
+        if (res.data.indexOf('成功') > 0 || res.data.indexOf('已经发送') > 0) {
+          this.$message.success(res.data)
+        } else {
+          this.$message.info(res.data)
+        }
+      })
+    },
     fetchData () {
       const filter = {
         pageNum: this.currentPage,

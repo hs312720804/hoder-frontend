@@ -232,3 +232,20 @@ export function getUptmTag (params) {
     params
   })
 }
+
+// 获取某内容源推荐影片接口
+export function getTopRecommendResourceList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getTopRecommendResourceList',
+    params
+  })
+}
+// 获取内容源列表接口
+export function getSourceList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getSourceList',
+    params
+  })
+}

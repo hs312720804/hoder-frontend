@@ -1,463 +1,462 @@
 <template>
   <div class="strategy-list">
-    <template v-if="strategyType === 'list'">
-      <div class="TopNav">
-        <div class="header">
-          <div class="header-left">
-            <div>
-              <el-radio-group v-model="showAll" @change="handleShowAllChange">
-                <el-radio :label="true">全部</el-radio>
-                <el-radio :label="false">我的</el-radio>
-              </el-radio-group>
-            </div>
-            <div class="search-input">
-              <el-input
-                v-model="searchForm.policyName"
-                placeholder="支持按策略、人群、创建人、部门搜索"
-                @keyup.enter.native="handleSearch"
-                clearable
-                style="width: 350px"
-              >
-              <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
-            </el-input>
-              <!-- <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
-            </div>
+    <div class="TopNav">
+      <div class="header">
+        <div class="header-left">
+          <div>
+            <el-radio-group v-model="showAll" @change="handleShowAllChange">
+              <el-radio :label="true">全部</el-radio>
+              <el-radio :label="false">我的</el-radio>
+            </el-radio-group>
           </div>
-          <div class="header-right">
-            <!--<div class="search-input">-->
-              <!--<el-input-->
-                      <!--v-model="searchForm.policyName"-->
-                      <!--style="width: 350px"-->
-                      <!--placeholder="支持按策略、人群、创建人、部门搜索"-->
-                      <!--:clearable='true'-->
-                      <!--@keyup.enter.native="handleSearch"-->
-              <!--&gt;</el-input>-->
-              <!--<i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>-->
-            <!--</div>-->
-            <div>
-              <el-button
-                      type="primary"
-                      size="small"
-                      @click="handleAdd"
-                      v-permission="'hoder:policy:add'"
-              >
-                <a class="fa fa-plus" style="color: white;"></a>新增
-              </el-button>
-            </div>
-              <!--<el-button-->
-                      <!--type="primary"-->
-                      <!--size="small"-->
-                      <!--@click="freshService"-->
-                      <!--v-permission="'hoder:policy:add'"-->
-              <!--&gt;-->
-                <!--<a class="fa fa-plus" style="color: white;"></a>刷新策略服务-->
-              <!--</el-button>-->
-            <div>
-              <el-popover
-                placement="top"
-                trigger="click"
-                class="popover-button"
-              >
-                <div>
-                  <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
-                    <el-checkbox label="createTime">创建时间</el-checkbox>
-                    <el-checkbox label="creatorName">创建人</el-checkbox>
-                    <el-checkbox label="useStatus">投放状态</el-checkbox>
-                    <!-- <el-checkbox label="smart">是否动态策略</el-checkbox> -->
-                    <el-checkbox label="department">业务部门</el-checkbox>
-                  </el-checkbox-group>
-                </div>
-                <i
-                  class="el-icon-cc-setting operate"
-                  slot="reference"
-                >
-                </i>
-                <!--<el-button slot="reference">选择列表展示维度</el-button>-->
-              </el-popover>
-              <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
-            </div>
+          <div class="search-input">
+            <el-input
+              v-model="searchForm.policyName"
+              placeholder="支持按策略、人群、创建人、部门搜索"
+              @keyup.enter.native="handleSearch"
+              clearable
+              style="width: 350px"
+            >
+            <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+          </el-input>
+            <!-- <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
           </div>
         </div>
-
-      </div>
-      <!-- talbe -->
-      <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
-        <el-table-column type="index" width="50"></el-table-column>
-        <el-table-column prop="policyId" label="策略ID" width="70"></el-table-column>
-        <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
-        <!--<el-table-column prop="dataSource" label="数据来源" width="90">-->
-          <!--<template scope="scope">-->
-            <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
-          <!--</template>-->
-        <!--</el-table-column>-->
-        <el-table-column prop="tagsList" width="400px">
-          <template
-                  slot="header"
-                  slot-scope="{ column, $index }"
-          >
-            策略维度（
-            <span class="checkbox--red">红色</span>为大数据标签,
-            <span class="checkbox--green">绿色</span>为自定义/本地标签,
-            <span class="checkbox--blue">蓝色</span>为账号标签,
-            <span class="checkbox--yellow">黄色</span>为实时标签,
-            <span class="checkbox--orange">紫色</span>为动态指标,
-            <span class="checkbox--orange2">棕色</span>为组合标签,
-            <span class="checkbox--cyan">青色</span>为行为标签,
-            <span class="checkbox--gray">灰色</span>为人群标签）
-          </template>
-          <template slot-scope="scope">
-            <span v-for="item in scope.row.tagsList"
-                  :key="item.tagId"
-                  style="margin: 0 2px"
-                  :class="dataSourceColorClassEnum[item.dataSource]">
-              {{item.tagName}}
-            </span>
-            <!--<el-tag-->
-                    <!--size="mini"-->
-                    <!--v-for="item in scope.row.tagsList"-->
-                    <!--:key="item.tagId"-->
-                    <!--:type= "dataSourceColorEnum[item.dataSource]"-->
-            <!--&gt;{{item.tagName}}</el-tag>-->
-          </template>
-        </el-table-column>
-        <!--<el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>-->
-        <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
-          <template slot-scope="scope">
-            <el-icon name="time"></el-icon>
-            <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
-          </template>
-        </el-table-column>
-        <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="60"></el-table-column>
-        <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="70"></el-table-column>
-        <el-table-column v-if="(checkList.indexOf('useStatus') > -1)" prop="useStatus" label="状态" width="60">
-          <template slot-scope="scope">
-            <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
-            <span v-else>未投放</span>
-          </template>
-        </el-table-column>
-
-        <!-- <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
-          <template slot-scope="scope">
-            <span v-if="scope.row.smart" > 动态策略 </span>
-            <span v-else> 普通策略 </span>
-          </template>
-        </el-table-column> -->
-
-        <el-table-column prop="past7Active" label="7日是否有命中" width="110">
-          <template slot-scope="scope">
-            <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
-            <span v-else> 否 </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column prop="past7Active" label="7日是否有请求" width="110">
-          <template slot-scope="scope">
-            <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
-            <span v-else> 否 </span>
-          </template>
-        </el-table-column>
-
-        <el-table-column label="操作" fixed="right">
-          <template slot-scope="scope">
-            <div class="el-button-group">
-              <!-- 动态人群：{{scope.row.smart}} -->
-              <!-- <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
-              <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button> -->
-              <el-button size="small" type="text" @click="crowdList(scope.row)" >查看人群</el-button>
-
-              <!-- <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button> -->
-              <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
-              <el-button
-                      size="small"
-                      type="text"
-                      v-permission="'hoder:policy:sync'"
-                      @click="freshCache(scope.row)"
-              >
-                <span v-if="scope.row.status === 1">未同步</span>
-                <span v-if="scope.row.status === 2">已同步</span>
-              </el-button>
-              <el-dropdown @command="handleCommand">
-                <el-button size="small" type="text">
-                  更多
-                </el-button>
-                <el-dropdown-menu slot="dropdown">
-                  <el-dropdown-item
-                          :command="['edit',scope.row]"
-                          v-permission="'hoder:policy:edit'"
-                  >编辑</el-dropdown-item>
-                  <el-dropdown-item
-                          :command="['del',scope.row]"
-                          v-permission="'hoder:policy:del'"
-                  >删除</el-dropdown-item>
-                  <el-dropdown-item
-                          :command="['detail',scope.row]"
-                  >查看配置</el-dropdown-item>
-                  <el-dropdown-item
-                          v-if="!scope.row.myCollect"
-                          :command="['collect',scope.row]"
-                  >添加到'我的'</el-dropdown-item>
-                  <el-dropdown-item
-                          v-if="scope.row.myCollect && !parentSource"
-                          disabled
-                  >添加到'我的'</el-dropdown-item>
-                  <el-dropdown-item
-                          v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
-                          :command="['collect',scope.row]"
-                  >从'我的'删除</el-dropdown-item>
-                  <el-dropdown-item
-                          :command="['statics',scope.row]"
-                  >调用统计</el-dropdown-item>
-                  <el-dropdown-item
-                      v-if="scope.row.smart"
-                      :command="['viewEffect',scope.row]"
-                  >查看效果</el-dropdown-item>
-                </el-dropdown-menu>
-              </el-dropdown>
-              <!--<el-dropdown @command="handleCommandStastic">-->
-                <!--<el-button size="small" type="text">-->
-                  <!--统计-->
-                <!--</el-button>-->
-                <!--<el-dropdown-menu slot="dropdown">-->
-                  <!--<el-dropdown-item-->
-                          <!--:command="['detail',scope.row]"-->
-                  <!--&gt;使用情况</el-dropdown-item>-->
-                <!--</el-dropdown-menu>-->
-              <!--</el-dropdown>-->
-              <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
-                  <!--<div>操作</div>-->
-                  <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
-                    <!--<li-->
-                      <!--v-permission="'hoder:policy:edit'"-->
-                      <!--@click="handleEdit(scope.row)"-->
-                      <!--class="operate-item"-->
-                    <!--&gt;-->
-                      <!--编辑-->
-                    <!--</li>-->
-                    <!--<li-->
-                      <!--v-permission="'hoder:policy:del'"-->
-                      <!--@click="del(scope.row)"-->
-                      <!--class="operate-item"-->
-                    <!--&gt;-->
-                      <!--删除-->
-                    <!--</li>-->
-                  <!--</ul>-->
-              <!--</el-button>-->
-            </div>
-          </template>
-        </el-table-column>
-      </el-table>
-      <!-- pagination -->
-      <!-- pagination -->
-      <div align="right">
-        <pagination
-                v-bind:currentpage="currentPage"
-                v-bind:pagesize="pageSize"
-                v-bind:totalcount="totalCount"
-                @handle-size-change="handleSizeChange"
-                @handle-current-change="handleCurrentChange"
-        ></pagination>
-      </div>
-
-      <!--新增界面-->
-      <el-dialog
-        :title="title"
-        :visible.sync="addFormVisible"
-        v-if="addFormVisible"
-        v-model="addFormVisible"
-        :close-on-click-modal="false"
-        width="800px"
-      >
-        <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
-          <el-form-item label="策略名称" prop="policyName">
-            <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
-          </el-form-item>
-          <!--<el-form-item label="数据来源" prop="dataSource">-->
-            <!--<el-select v-model="addForm.dataSource" filterable placeholder="请选择类型" @change="getTags">-->
-              <!--<el-option label="数据平台" value="2"></el-option>-->
-              <!--<el-option label="自定义" value="1"></el-option>-->
-            <!--</el-select>-->
-          <!--</el-form-item>-->
-          <!--<el-form-item label="策略维度" prop="conditionTagIds">-->
-            <!--<el-tabs tab-position="top" style="height: 200px;">-->
-              <!--<el-tab-pane-->
-                <!--v-for="item in conditionTagIdsData"-->
-                <!--:label="item.groupName"-->
-                <!--:key="item.groupId"-->
-              <!--&gt;-->
-                <!--<el-checkbox-group v-model="addForm.conditionTagIds" class="checkList">-->
-                  <!--<el-checkbox v-for="v in item.child" :label="v.tagId" :key="v.tagId">{{v.tagName}}</el-checkbox>-->
-                <!--</el-checkbox-group>-->
-              <!--</el-tab-pane>-->
-            <!--</el-tabs>-->
-          <!--</el-form-item>-->
-          <div class="tags-tips">
-            <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
-            <span class="checkbox--red">红色为大数据标签</span>,
-            <span class="checkbox--green">绿色为自定义/本地标签</span>,
-            <span class="checkbox--blue">蓝色为账号标签</span>,
-            <span class="checkbox--yellow">黄色为实时标签</span>,
-            <span class="checkbox--orange">紫色为动态指标</span>,
-            <span class="checkbox--orange2">棕色为组合标签</span>,
-            <span class="checkbox--cyan">青色为行为标签</span>,
-            <span class="checkbox--gray">灰色为人群标签</span>
+        <div class="header-right">
+          <!--<div class="search-input">-->
+            <!--<el-input-->
+                    <!--v-model="searchForm.policyName"-->
+                    <!--style="width: 350px"-->
+                    <!--placeholder="支持按策略、人群、创建人、部门搜索"-->
+                    <!--:clearable='true'-->
+                    <!--@keyup.enter.native="handleSearch"-->
+            <!--&gt;</el-input>-->
+            <!--<i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>-->
+          <!--</div>-->
+          <div>
+            <el-button
+                    type="primary"
+                    size="small"
+                    @click="handleAdd"
+                    v-permission="'hoder:policy:add'"
+            >
+              <a class="fa fa-plus" style="color: white;"></a>新增
+            </el-button>
           </div>
-          <el-form-item label="策略维度" prop="conditionTagIds" >
-            <el-tabs tab-position="top" style="height: 200px;">
-              <!--<el-tab-pane-->
-                      <!--v-for="item in conditionTagIdsData"-->
-                      <!--:label="item.groupName"-->
-                      <!--:key="item.groupId"-->
-              <!--&gt;-->
-              <div class="strategy-search">
-              <el-input aria-placeholder="请输入标签关键字进行搜索"
-                        v-model="searchValue"
-                        class="strategy-search--input"
-                        @keyup.enter.native="getTags()"
-              >
-              </el-input>
-              <el-button @click="getTags()">查询</el-button>
-              <el-button @click="resetSearch">重置</el-button>
-              </div>
-                <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
-                  <el-checkbox
-                    v-for="item in conditionTagsFiltered"
-                    :class="dataSourceColorClassEnum[item.tDataSource]"
-                    :label="item.tagId"
-                    :key="item.tagId"
-                    @change="handleTagChange($event,item)"
-                  >
-                    {{item.tagName}}
-                  </el-checkbox>
+            <!--<el-button-->
+                    <!--type="primary"-->
+                    <!--size="small"-->
+                    <!--@click="freshService"-->
+                    <!--v-permission="'hoder:policy:add'"-->
+            <!--&gt;-->
+              <!--<a class="fa fa-plus" style="color: white;"></a>刷新策略服务-->
+            <!--</el-button>-->
+          <div>
+            <el-popover
+              placement="top"
+              trigger="click"
+              class="popover-button"
+            >
+              <div>
+                <el-checkbox-group v-model="checkList" @change="handleCheckListChange">
+                  <el-checkbox label="createTime">创建时间</el-checkbox>
+                  <el-checkbox label="creatorName">创建人</el-checkbox>
+                  <el-checkbox label="useStatus">投放状态</el-checkbox>
+                  <!-- <el-checkbox label="smart">是否动态策略</el-checkbox> -->
+                  <el-checkbox label="department">业务部门</el-checkbox>
                 </el-checkbox-group>
-              <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
-              <el-pagination
-                      small
-                      class="pagination"
-                      layout="prev,pager,next"
-                      :total="tagsListTotal"
-                      :page-size="initPageSize"
-                      :current-page="initCurrentPage"
-                      @current-change="handleTagCurrentChange"
-                      @prev-click="handleTagCurrentChange"
-                      @next-click="handleTagCurrentChange"
+              </div>
+              <i
+                class="el-icon-cc-setting operate"
+                slot="reference"
               >
-              </el-pagination>
-              <!--</el-tab-pane>-->
-            </el-tabs>
-          </el-form-item>
-          <el-form-item label="已选标签" style="margin-top: 90px">
-            <!--<span v-for="tag in addForm.conditionTagIds" :key="tag">-->
-              <!--<el-tag v-for="item in conditionTagIdsData"-->
-                      <!--v-if="item.tagId === tag"-->
-                      <!--:key="item.tagId"-->
-                      <!--:type= "item.tDataSource === 1 ? 'success' : (item.tDataSource === 2 ? 'danger' : '')"-->
-                      <!--closable-->
-                      <!--@close="removeTag(item.tagId)"-->
-              <!--&gt;-->
-                <!--{{item.tagName}}-->
-              <!--</el-tag>-->
-              <el-tag v-for="item in tagList"
-                      :key="item.tagId"
-                      :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
-                      closable
-                      @close="removeTag(item)"
-              >
-                {{item.tagName}}
-              </el-tag>
-            <!--</span>-->
-          </el-form-item>
-        </el-form>
-        <div slot="footer" class="dialog-footer">
-          <el-button @click="cancelAdd">取消</el-button>
-          <el-button type="primary" @click="addSubmit">保存</el-button>
+              </i>
+              <!--<el-button slot="reference">选择列表展示维度</el-button>-->
+            </el-popover>
+            <!--<a class="manual" href="http://mgr-hoder.skysrt.com/hoder-manual/ren-qun-fen-ge-guan-li.html" target="_blank">操作指南</a>-->
+          </div>
         </div>
-      </el-dialog>
-      <!-- 查看配置弹窗-->
-      <el-dialog title="查看配置" :visible.sync="showConfiguration">
-        <c-content-wrapper
-          :pagination="detailPagination.pagination"
-          @filter-change="handleFilterChange"
+      </div>
+
+    </div>
+    <!-- talbe -->
+    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
+      <el-table-column type="index" width="50"></el-table-column>
+      <el-table-column prop="policyId" label="策略ID" width="70"></el-table-column>
+      <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
+      <!--<el-table-column prop="dataSource" label="数据来源" width="90">-->
+        <!--<template scope="scope">-->
+          <!--<span style="margin-left: 10px">{{lableDataSourceEnum[scope.row.dataSource]}}</span>-->
+        <!--</template>-->
+      <!--</el-table-column>-->
+      <el-table-column prop="tagsList" width="400px">
+        <template
+                slot="header"
+                slot-scope="{ column, $index }"
         >
-          <c-table
-            :data="seeDetailData.data"
-            :props="seeDetailData.props"
-            :header="seeDetailData.header"
-          >
-          </c-table>
-        </c-content-wrapper>
-        <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
-      </el-dialog>
-      <!-- 查看统计弹窗-->
-      <el-dialog
-              :visible.sync="showStatistics"
-              width="90%"
-      >
-        <div class="crowd-statistic">
-          <div class="echarts-container">
-            <div class="click-date-picker">
-              <el-date-picker
-                      v-model="time"
-                      type="daterange"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      value-format="yyyy-MM-dd"
-              >
-              </el-date-picker>
-            </div>
-            <div class="lines-title">{{linesTitle}}</div>
-            <div class="main" ref="main" v-if=" showStatistics === true"></div>
+          策略维度（
+          <span class="checkbox--red">红色</span>为大数据标签,
+          <span class="checkbox--green">绿色</span>为自定义/本地标签,
+          <span class="checkbox--blue">蓝色</span>为账号标签,
+          <span class="checkbox--yellow">黄色</span>为实时标签,
+          <span class="checkbox--orange">紫色</span>为动态指标,
+          <span class="checkbox--orange2">棕色</span>为组合标签,
+          <span class="checkbox--cyan">青色</span>为行为标签,
+          <span class="checkbox--gray">灰色</span>为人群标签,
+          <span class="checkbox--pink">粉色</span>为实时标签[大数据]）
+          )
+        </template>
+        <template slot-scope="scope">
+          <span v-for="item in scope.row.tagsList"
+                :key="item.tagId"
+                style="margin: 0 2px"
+                :class="dataSourceColorClassEnum[item.dataSource]">
+            {{item.tagName}}
+          </span>
+          <!--<el-tag-->
+                  <!--size="mini"-->
+                  <!--v-for="item in scope.row.tagsList"-->
+                  <!--:key="item.tagId"-->
+                  <!--:type= "dataSourceColorEnum[item.dataSource]"-->
+          <!--&gt;{{item.tagName}}</el-tag>-->
+        </template>
+      </el-table-column>
+      <!--<el-table-column prop="remark" label="应用场景" width="100px"></el-table-column>-->
+      <el-table-column v-if="(checkList.indexOf('createTime') > -1)" prop="createTime" label="创建时间" width="170">
+        <template slot-scope="scope">
+          <el-icon name="time"></el-icon>
+          <span style="margin-left: 10px">{{ scope.row.createTime }}</span>
+        </template>
+      </el-table-column>
+      <el-table-column v-if="(checkList.indexOf('creatorName') > -1)" prop="creatorName" label="创建人" width="60"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('department') > -1)" prop="department" label="业务部门" width="70"></el-table-column>
+      <el-table-column v-if="(checkList.indexOf('useStatus') > -1)" prop="useStatus" label="状态" width="60">
+        <template slot-scope="scope">
+          <span v-if="scope.row.useStatus === '投放中'" @click="launchDetail(scope.row.policyId)" class="under_line">投放中</span>
+          <span v-else>未投放</span>
+        </template>
+      </el-table-column>
+
+      <!-- <el-table-column v-if="(checkList.indexOf('smart') > -1)" prop="past7Active" label="是否动态策略" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.smart" > 动态策略 </span>
+          <span v-else> 普通策略 </span>
+        </template>
+      </el-table-column> -->
+
+      <el-table-column prop="past7Active" label="7日是否有命中" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
+          <span v-else> 否 </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column prop="past7Active" label="7日是否有请求" width="110">
+        <template slot-scope="scope">
+          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
+          <span v-else> 否 </span>
+        </template>
+      </el-table-column>
+
+      <el-table-column label="操作" fixed="right">
+        <template slot-scope="scope">
+          <div class="el-button-group">
+            <!-- 动态人群：{{scope.row.smart}} -->
+            <!-- <el-button size="small" type="text" @click="crowdList(scope.row)" v-if="!scope.row.smart">查看人群</el-button>
+            <el-button size="small" type="text" @click="smartScheme(scope.row)" v-else>查看方案</el-button> -->
+            <el-button size="small" type="text" @click="crowdList(scope.row)" >查看人群</el-button>
+
+            <!-- <el-button v-if="scope.row.useStatus === '未投放' && scope.row.isBehavior === 0" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button> -->
+            <el-button v-if="scope.row.useStatus === '未投放'" size="small" type="text" @click="handleLaunch(scope.row)">投放</el-button>
+            <el-button
+                    size="small"
+                    type="text"
+                    v-permission="'hoder:policy:sync'"
+                    @click="freshCache(scope.row)"
+            >
+              <span v-if="scope.row.status === 1">未同步</span>
+              <span v-if="scope.row.status === 2">已同步</span>
+            </el-button>
+            <el-dropdown @command="handleCommand">
+              <el-button size="small" type="text">
+                更多
+              </el-button>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item
+                        :command="['edit',scope.row]"
+                        v-permission="'hoder:policy:edit'"
+                >编辑</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['del',scope.row]"
+                        v-permission="'hoder:policy:del'"
+                >删除</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['detail',scope.row]"
+                >查看配置</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="!scope.row.myCollect"
+                        :command="['collect',scope.row]"
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect && !parentSource"
+                        disabled
+                >添加到'我的'</el-dropdown-item>
+                <el-dropdown-item
+                        v-if="scope.row.myCollect && parentSource && scope.row.creator !== $appState.user.userId"
+                        :command="['collect',scope.row]"
+                >从'我的'删除</el-dropdown-item>
+                <el-dropdown-item
+                        :command="['statics',scope.row]"
+                >调用统计</el-dropdown-item>
+                <el-dropdown-item
+                    v-if="scope.row.smart"
+                    :command="['viewEffect',scope.row]"
+                >查看效果</el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+            <!--<el-dropdown @command="handleCommandStastic">-->
+              <!--<el-button size="small" type="text">-->
+                <!--统计-->
+              <!--</el-button>-->
+              <!--<el-dropdown-menu slot="dropdown">-->
+                <!--<el-dropdown-item-->
+                        <!--:command="['detail',scope.row]"-->
+                <!--&gt;使用情况</el-dropdown-item>-->
+              <!--</el-dropdown-menu>-->
+            <!--</el-dropdown>-->
+            <!--<el-button size="small" type="primary" @click="showOperate(scope.row)" class="operate">-->
+                <!--<div>操作</div>-->
+                <!--<ul v-if="scope.row.showOperateOrNot" class="more-operate">-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:edit'"-->
+                     <!--@click="handleEdit(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--编辑-->
+                  <!--</li>-->
+                  <!--<li-->
+                     <!--v-permission="'hoder:policy:del'"-->
+                     <!--@click="del(scope.row)"-->
+                     <!--class="operate-item"-->
+                  <!--&gt;-->
+                    <!--删除-->
+                  <!--</li>-->
+                <!--</ul>-->
+            <!--</el-button>-->
           </div>
-          <div class="echarts-container">
-            <div class="click-date-picker">
-              <el-date-picker
-                      v-model="time1"
-                      type="daterange"
-                      range-separator="至"
-                      start-placeholder="开始日期"
-                      end-placeholder="结束日期"
-                      value-format="yyyy-MM-dd"
-              >
-              </el-date-picker>
-            </div>
-            <div class="lines-title">{{pieTitle}}</div>
-            <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
-          </div>
+        </template>
+      </el-table-column>
+    </el-table>
+    <!-- pagination -->
+    <!-- pagination -->
+    <div align="right">
+      <pagination
+              v-bind:currentpage="currentPage"
+              v-bind:pagesize="pageSize"
+              v-bind:totalcount="totalCount"
+              @handle-size-change="handleSizeChange"
+              @handle-current-change="handleCurrentChange"
+      ></pagination>
+    </div>
+
+    <!--新增界面-->
+    <el-dialog
+      :title="title"
+      :visible.sync="addFormVisible"
+      v-if="addFormVisible"
+      v-model="addFormVisible"
+      :close-on-click-modal="false"
+      width="1000px"
+    >
+      <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+        <el-form-item label="策略名称" prop="policyName">
+          <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
+        </el-form-item>
+        <!--<el-form-item label="数据来源" prop="dataSource">-->
+          <!--<el-select v-model="addForm.dataSource" filterable placeholder="请选择类型" @change="getTags">-->
+            <!--<el-option label="数据平台" value="2"></el-option>-->
+            <!--<el-option label="自定义" value="1"></el-option>-->
+          <!--</el-select>-->
+        <!--</el-form-item>-->
+        <!--<el-form-item label="策略维度" prop="conditionTagIds">-->
+          <!--<el-tabs tab-position="top" style="height: 200px;">-->
+            <!--<el-tab-pane-->
+              <!--v-for="item in conditionTagIdsData"-->
+              <!--:label="item.groupName"-->
+              <!--:key="item.groupId"-->
+            <!--&gt;-->
+              <!--<el-checkbox-group v-model="addForm.conditionTagIds" class="checkList">-->
+                <!--<el-checkbox v-for="v in item.child" :label="v.tagId" :key="v.tagId">{{v.tagName}}</el-checkbox>-->
+              <!--</el-checkbox-group>-->
+            <!--</el-tab-pane>-->
+          <!--</el-tabs>-->
+        <!--</el-form-item>-->
+        <div class="tags-tips">
+          <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+          注：<span class="checkbox--red">红色为大数据标签</span>,
+          <span class="checkbox--green">绿色为自定义/本地标签</span>,
+          <span class="checkbox--blue">蓝色为账号标签</span>,
+          <span class="checkbox--yellow">黄色为实时标签</span>,
+          <span class="checkbox--orange">紫色为动态指标</span>,
+          <span class="checkbox--orange2">棕色为组合标签</span>,
+          <span class="checkbox--cyan">青色为行为标签</span>,
+          <span class="checkbox--gray">灰色为人群标签</span>,
+          <span class="checkbox--pink">粉色为实时标签[大数据]</span>
         </div>
-      </el-dialog>
-      <!-- 投放中弹窗-->
-      <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
-        <!--<div>该策略正在使用情况</div>-->
-        <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
-      </el-dialog>
-      <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
-        <LaunchToBusiness
-                :recordId="recordId"
-                :tempPolicyAndCrowd="tempPolicyAndCrowd"
-                @closeDialog="handleCloseDialog"
-        ></LaunchToBusiness>
-      </el-dialog>
-      <el-dialog :visible.sync="showViewEffect" width="80%">
-        <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
-      </el-dialog>
-    </template>
-    <!-- <one-touch-drop v-else @back="backList"></one-touch-drop> -->
+        <el-form-item label="策略维度" prop="conditionTagIds" >
+          <el-tabs tab-position="top" style="height: 200px;">
+            <!--<el-tab-pane-->
+                    <!--v-for="item in conditionTagIdsData"-->
+                    <!--:label="item.groupName"-->
+                    <!--:key="item.groupId"-->
+            <!--&gt;-->
+            <div class="strategy-search">
+            <el-input aria-placeholder="请输入标签关键字进行搜索"
+                      v-model="searchValue"
+                      class="strategy-search--input"
+                      @keyup.enter.native="getTags()"
+            >
+            </el-input>
+            <el-button @click="getTags()">查询</el-button>
+            <el-button @click="resetSearch">重置</el-button>
+            </div>
+              <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
+                <el-checkbox
+                  v-for="item in conditionTagsFiltered"
+                  :class="dataSourceColorClassEnum[item.tDataSource]"
+                  :label="item.tagId"
+                  :key="item.tagId"
+                  @change="handleTagChange($event,item)"
+                >
+                  {{item.tagName}}
+                </el-checkbox>
+              </el-checkbox-group>
+            <div class="checkbox--red" v-else>该标签不存在，请重新输入标签名进行搜索</div>
+            <el-pagination
+                    small
+                    class="pagination"
+                    layout="prev,pager,next"
+                    :total="tagsListTotal"
+                    :page-size="initPageSize"
+                    :current-page="initCurrentPage"
+                    @current-change="handleTagCurrentChange"
+                    @prev-click="handleTagCurrentChange"
+                    @next-click="handleTagCurrentChange"
+            >
+            </el-pagination>
+            <!--</el-tab-pane>-->
+          </el-tabs>
+        </el-form-item>
+        <el-form-item label="已选标签" style="margin-top: 90px">
+          <!--<span v-for="tag in addForm.conditionTagIds" :key="tag">-->
+            <!--<el-tag v-for="item in conditionTagIdsData"-->
+                    <!--v-if="item.tagId === tag"-->
+                    <!--:key="item.tagId"-->
+                    <!--:type= "item.tDataSource === 1 ? 'success' : (item.tDataSource === 2 ? 'danger' : '')"-->
+                    <!--closable-->
+                    <!--@close="removeTag(item.tagId)"-->
+            <!--&gt;-->
+              <!--{{item.tagName}}-->
+            <!--</el-tag>-->
+            <el-tag v-for="item in tagList"
+                    :key="item.tagId"
+                    :type="dataSourceColorEnum[item.dataSource || item.tDataSource]"
+                    closable
+                    @close="removeTag(item)"
+            >
+              {{item.tagName}}
+            </el-tag>
+          <!--</span>-->
+        </el-form-item>
+      </el-form>
+      <div slot="footer" class="dialog-footer">
+        <el-button @click="cancelAdd">取消</el-button>
+        <el-button type="primary" @click="addSubmit">保存</el-button>
+      </div>
+    </el-dialog>
+    <!-- 查看配置弹窗-->
+    <el-dialog title="查看配置" :visible.sync="showConfiguration">
+      <c-content-wrapper
+        :pagination="detailPagination.pagination"
+        @filter-change="handleFilterChange"
+      >
+        <c-table
+          :data="seeDetailData.data"
+          :props="seeDetailData.props"
+          :header="seeDetailData.header"
+        >
+        </c-table>
+      </c-content-wrapper>
+      <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
+    </el-dialog>
+    <!-- 查看统计弹窗-->
+    <el-dialog
+            :visible.sync="showStatistics"
+            width="90%"
+    >
+      <div class="crowd-statistic">
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{linesTitle}}</div>
+          <div class="main" ref="main" v-if=" showStatistics === true"></div>
+        </div>
+        <div class="echarts-container">
+          <div class="click-date-picker">
+            <el-date-picker
+                    v-model="time1"
+                    type="daterange"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    value-format="yyyy-MM-dd"
+            >
+            </el-date-picker>
+          </div>
+          <div class="lines-title">{{pieTitle}}</div>
+          <div class="main" ref="hitBiTotal" v-if=" showStatistics === true"></div>
+        </div>
+      </div>
+    </el-dialog>
+    <!-- 投放中弹窗-->
+    <el-dialog :visible.sync="showLaunch" title="该策略正在使用情况">
+      <!--<div>该策略正在使用情况</div>-->
+      <div>正在投放：<span v-for="(item,index) in launchItems" :key="index" class="launch-item">{{item}}</span></div>
+    </el-dialog>
+    <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
+      <LaunchToBusiness
+              :recordId="recordId"
+              :tempPolicyAndCrowd="tempPolicyAndCrowd"
+              @closeDialog="handleCloseDialog"
+      ></LaunchToBusiness>
+    </el-dialog>
+    <el-dialog :visible.sync="showViewEffect" width="80%">
+      <viewEffectDialog :policyId="currentPid"></viewEffectDialog>
+    </el-dialog>
   </div>
 </template>
 <script>
 import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import viewEffectDialog from '../launch/viewEffectDialog'
-import oneTouchDrop from '@/views/OneTouchDrop/Index'
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
+
 export default {
   components: {
     LaunchToBusiness,
-    viewEffectDialog,
-    oneTouchDrop
+    viewEffectDialog
   },
   data () {
     return {
-      strategyType: 'list',
       showViewEffect: false,
       // 表格当前页数据
       tableData: [],
@@ -537,28 +536,28 @@ export default {
       launchSource: 'strategy',
       checkList: [],
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorClassEnum: {
-        1: 'checkbox--green',
-        2: 'checkbox--red',
-        3: 'checkbox--blue',
-        5: 'checkbox--yellow',
-        6: 'checkbox--orange',
-        7: 'checkbox--orange2',
-        8: 'checkbox--cyan',
-        11: 'success',
-        12: 'gray'
-      },
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorClassEnum: {
+      //   1: 'checkbox--green',
+      //   2: 'checkbox--red',
+      //   3: 'checkbox--blue',
+      //   5: 'checkbox--yellow',
+      //   6: 'checkbox--orange',
+      //   7: 'checkbox--orange2',
+      //   8: 'checkbox--cyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       showAll: false,
       seeDetailData: {
         props: {
@@ -620,10 +619,15 @@ export default {
       }
     }
   },
-  props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
-  activated () {
-    this.strategyType = this.$route.params.pagesType || 'list'
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
+    }
   },
+  props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
   created () {
     this.$root.$on('stratege-list-refresh', this.loadData)
     this.loadData()
@@ -768,11 +772,7 @@ export default {
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
-    backList () {
-      this.strategyType = 'list'
-    },
     handleAdd () {
-      // this.strategyType = 'add'
       this.$router.push({
         name: 'oneTouchDrop',
         params: { source: this.parentSource ? 'myCrowd' : undefined, refresh: true } // 刷新页面
@@ -1352,33 +1352,7 @@ ul > li
   float none
   margin 0 3px
 .strategy-list
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 .header-left
   display flex
   align-items center
@@ -1400,7 +1374,7 @@ ul > li
       background: antiquewhite;
     }
 </style>
-<!-- <style lang="stylus">
+<style lang="stylus">
 .get-setting .el-textarea__inner
   min-height 400px !important
-</style> -->
+</style>

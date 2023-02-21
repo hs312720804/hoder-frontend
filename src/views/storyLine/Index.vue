@@ -723,6 +723,7 @@ export default {
       this.dialogVisible = true
     },
     addServicer () {
+      this.formServicer.name = ''
       this.dialogVisible2 = true
     },
     confirmAddScene () {

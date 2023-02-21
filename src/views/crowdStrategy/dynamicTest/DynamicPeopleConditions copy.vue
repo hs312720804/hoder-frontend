@@ -68,6 +68,7 @@
 <script>
 import antvGraph from '@antvGraph/Index.vue'
 import eventBus from '@antvGraph/utils/eventBus'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   components: {
     antvGraph
@@ -77,15 +78,15 @@ export default {
   data () {
     return {
       radioType: 0,
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       tags: [
       //   {
       //   tagId: 1,
@@ -117,6 +118,11 @@ export default {
       crowdOptions: []
     }
   },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    }
+  },
   watch: {
     radioType: {
       handler () {
@@ -144,46 +150,46 @@ export default {
   methods: {
     getRule () {
       const res = {
-        'policyId': 4112,
-        'flowChart': null,
-        'mainArithmetic': 0,
-        'allCrowd': [{
-          'policyId': 4112,
-          'dynamicJson': null,
-          'weight': 0,
-          'arithmetic': null,
-          'priority': 345,
-          'crowdId': 11222,
-          'crowdName': '345'
+        policyId: 4112,
+        flowChart: null,
+        mainArithmetic: 0,
+        allCrowd: [{
+          policyId: 4112,
+          dynamicJson: null,
+          weight: 0,
+          arithmetic: null,
+          priority: 345,
+          crowdId: 11222,
+          crowdName: '345'
         }, {
-          'policyId': 4112,
-          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          'weight': 120,
-          'arithmetic': null,
-          'priority': 23,
-          'crowdId': 11223,
-          'crowdName': '23'
+          policyId: 4112,
+          dynamicJson: '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          weight: 120,
+          arithmetic: null,
+          priority: 23,
+          crowdId: 11223,
+          crowdName: '23'
         }],
-        'arithmetic': null,
-        'unused': [{
-          'policyId': 4112,
-          'dynamicJson': null,
-          'weight': 0,
-          'arithmetic': null,
-          'priority': 345,
-          'crowdId': 11222,
-          'crowdName': '345'
+        arithmetic: null,
+        unused: [{
+          policyId: 4112,
+          dynamicJson: null,
+          weight: 0,
+          arithmetic: null,
+          priority: 345,
+          crowdId: 11222,
+          crowdName: '345'
         }, {
-          'policyId': 4112,
-          'dynamicJson': '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
-          'weight': 120,
-          'arithmetic': null,
-          'priority': 23,
-          'crowdId': 11223,
-          'crowdName': '23'
+          policyId: 4112,
+          dynamicJson: '{"condition":"OR","rules":[{"condition":"AND","rules":[{"tagId":2,"tagKey":"exposeTimes","tagName":"产品包曝光次数","tagType":"int","operator":">","value":10}]}]}',
+          weight: 120,
+          arithmetic: null,
+          priority: 23,
+          crowdId: 11223,
+          crowdName: '23'
         }],
-        'crowdId': 11219,
-        'exitCrowd': null
+        crowdId: 11219,
+        exitCrowd: null
       }
 
       this.dynamicRule = res

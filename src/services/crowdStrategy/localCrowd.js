@@ -111,3 +111,11 @@ export function downloadMacFile (params) {
     params
   })
 }
+// 本地人群发送神策
+export function sensorAnalysis (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/localCrowd/sensorAnalysis',
+    params
+  })
+}

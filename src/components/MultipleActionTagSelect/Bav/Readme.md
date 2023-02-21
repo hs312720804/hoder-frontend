@@ -8,5 +8,13 @@
 8 起播行为
 9 应用状态
 10 用户活跃
+11 起播活跃
+12 综合起播行为
+13 续费包签约状态
 
-childItem, isLast = false, item, level=2, extra, selectPropKeyValue = 'value', isValueClear = false, defaultChild = []
+## 【起播活跃】、【综合起播行为】特殊数据
+```
+【起播活跃】、【综合起播行为】 的数据特殊处理，使用 showBehaviorValue 而不是 behaviorValue
+```
+
+

@@ -41,7 +41,8 @@ module.exports = {
 
   transpileDependencies: [
     '@cseed/ui-lowcode-engine',
-    '@cseed/ui-menu-designer'
+    '@cseed/ui-menu-designer',
+    '@ccms/cms-engine'
   ],
 
   runtimeCompiler: true, // 配置 支持编译 template 模板

@@ -43,6 +43,15 @@
         </CirculationTag>
       </el-tab-pane>
 
+      <el-tab-pane label="实时标签[大数据]" name="realTimeTagBigData">
+        <RealTimeTag
+          :checkList="checkList"
+          :show-selection="showSelection"
+          :currentSelectTag="currentSelectTag"
+          @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </RealTimeTag>
+      </el-tab-pane>
     </el-tabs>
 
     <!-- <div v-if="showSelection">
@@ -61,6 +70,7 @@ import ModelLabelIndex from './ModelLabel/ModelLabelIndex.vue'
 import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
 import BehaviorTag from './BehaviorTag.vue'
 import CirculationTag from './CirculationTag.vue'
+import RealTimeTag from './RealTimeTag.vue'
 
 export default {
   name: 'bigDataTag',
@@ -69,7 +79,8 @@ export default {
     ModelLabelIndex,
     ModelLabelIndexSelect,
     BehaviorTag,
-    CirculationTag
+    CirculationTag,
+    RealTimeTag
   },
   props: {
     showSelection: {
@@ -88,12 +99,12 @@ export default {
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning'
+      // },
       tempCheckList: []
     }
   },

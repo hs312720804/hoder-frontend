@@ -320,11 +320,20 @@ export function getTagBehavior (params) {
     params
   })
 }
-// 标签广场 - 获取实时标签
+// 标签广场 - 第三方标签 - 获取实时标签
 export function getTagRealTime (params) {
   return this.fetch({
     method: 'get',
     url: '/api/tag/getRealTime',
+    params
+  })
+}
+
+// 标签广场 - 大数据标签 - 获取实时标签
+export function getbigDataRealTimeList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/realTag/list',
     params
   })
 }

@@ -190,7 +190,7 @@
 
               <el-dropdown @command="handleCommandStastic">
                 <el-button size="small" type="text">
-                  统计
+                  分析
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
@@ -199,13 +199,13 @@
                   >估算画像</el-dropdown-item>
                   <el-dropdown-item
                           :command="['detail',scope.row]"
-                  >投后效果</el-dropdown-item>
-                  <el-dropdown-item
+                  >命中曝光分析</el-dropdown-item>
+                  <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
-                  >看主页数据</el-dropdown-item>
-                  <el-dropdown-item
+                  >看主页数据</el-dropdown-item> -->
+                  <!-- <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item>
+                  >预约投后分析</el-dropdown-item> -->
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -355,7 +355,7 @@
 
               <el-dropdown @command="handleCommandStastic">
                 <el-button size="small" type="text">
-                  统计
+                  分析
                 </el-button>
                 <el-dropdown-menu slot="dropdown">
                   <el-dropdown-item
@@ -364,13 +364,13 @@
                   >估算画像</el-dropdown-item>
                   <el-dropdown-item
                           :command="['detail',scope.row]"
-                  >投后效果</el-dropdown-item>
-                  <el-dropdown-item
+                  >命中曝光分析</el-dropdown-item>
+                  <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
-                  >看主页数据</el-dropdown-item>
-                  <el-dropdown-item
+                  >看主页数据</el-dropdown-item> -->
+                  <!-- <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item>
+                  >预约投后分析</el-dropdown-item> -->
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -687,26 +687,26 @@
             >估算数量</el-button>
             <el-dropdown @command="handleCommandStastic">
               <el-button size="small" type="text">
-                统计
+                分析
               </el-button>
               <el-dropdown-menu slot="dropdown">
                 <el-dropdown-item
                   v-if="scope.row.forcastStatus == 3"
                   :command="['estimatedDetail',scope.row]"
                 >估算画像</el-dropdown-item>
-                <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+                <!-- AB 、 画像平台分析 、 动态人群 是互斥的 -->
                 <el-dropdown-item v-if="isShow('Yunying', scope.row)"
                   :command="['operationalAnalysis',scope.row]"
-                >运营分析</el-dropdown-item>
+                >画像平台分析</el-dropdown-item>
                 <el-dropdown-item
                   :command="['detail',scope.row]"
-                >投后效果</el-dropdown-item>
-                <el-dropdown-item
+                >命中曝光分析</el-dropdown-item>
+                <!-- <el-dropdown-item
                   :command="['homepageData',scope.row]"
-                >看主页数据</el-dropdown-item>
-                <el-dropdown-item
+                >看主页数据</el-dropdown-item> -->
+                <!-- <el-dropdown-item
                   :command="['appointment',scope.row]"
-                >预约投后分析</el-dropdown-item>
+                >预约投后分析</el-dropdown-item> -->
 
                 <!-- 动态人群才展示 -->
                 <el-dropdown-item
@@ -719,13 +719,17 @@
                   v-if="scope.row.dynamicFlag === 1"
                   :command="['nomalyMonitoring',scope.row]"
                 >流转异常监控</el-dropdown-item>
+                <el-dropdown-item
+                  :command="['shenCeAnalysis',scope.row]"
+                >神策分析
+                </el-dropdown-item>
                 <!--<el-dropdown-item-->
                 <!--:command="['redirectCrowd',scope.row]"-->
                 <!--&gt;重定向数据</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
 
-            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+            <!-- AB 、 画像平台分析 、 动态人群 是互斥的 -->
             <el-button
               v-if="isShow('AB', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
               size="small"
@@ -734,7 +738,7 @@
               AB实验
             </el-button>
 
-            <!-- AB 、 运营分析 、 动态人群 是互斥的 -->
+            <!-- AB 、 画像平台分析 、 动态人群 是互斥的 -->
             <el-button
               v-if="isShow('Dynamic', scope.row) && !isReferCrowd(scope.row.referCrowdId)"
               size="small"
@@ -786,10 +790,7 @@
                   :command="['commitHistory',scope.row]"
                 >提交历史数据
                 </el-dropdown-item>
-                <el-dropdown-item
-                  :command="['shenCeAnalysis',scope.row]"
-                >神策分析
-                </el-dropdown-item>
+
               </el-dropdown-menu>
             </el-dropdown>
             <!--<el-button-->
@@ -833,10 +834,10 @@
   <!-- 估算结果弹窗 -->
    <el-dialog :visible.sync="showResult" title="估算结果">
        <div class="estimate-tips">只估算包含大数据标签的人群数量为：（已按人群优先级除去交叉人群，交叉部分算入优先级高的人群）</div>
-       <div>设备：{{totalUser}}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
-       <div>手机号：{{total1 === undefined ? '暂无数据': cc_format_number(total1)}}</div>
-       <div>酷开openId：{{total2}}</div>
-       <div>微信openId：{{total3}}</div>
+       <div>设备：{{ totalUser }}<span v-if="totalUser == '暂无数据'" class="blue-tip">（你的人群条件查无数据，请重新设置人群条件）</span></div>
+       <div>手机号：{{ total1 === undefined ? '暂无数据': total1 }}</div>
+       <div>酷开openId：{{ total2 }}</div>
+       <div>微信openId：{{ total3 }}</div>
    </el-dialog>
     <!-- 查看统计 投后效果弹窗-->
     <el-dialog
@@ -1149,9 +1150,9 @@
             </el-table-column>
             <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
-                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                    <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
-                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
+                    <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
+                    <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
+                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
                     <el-button type="text" @click="handleShenCeAnalysis(scope.row, 'AB')">神策分析</el-button>
                 </template>
             </el-table-column>
@@ -1196,8 +1197,8 @@
             </el-table-column>
             <el-table-column label="操作" width="160">
               <template slot-scope="scope">
-                <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">投后效果</el-button>
-                <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
+                <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
+                <!-- <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
               </template>
             </el-table-column>
             <el-table-column label="状态" width="150">
@@ -1457,7 +1458,7 @@
           ></pagination>
       </div>
     </el-dialog>
-    <!-- 运营分析 - 大数据页面 -->
+    <!-- 画像平台分析 - 大数据页面 -->
     <el-dialog :visible.sync="showOperationalAnalysis" width="1500px" >
     <!-- {{operationalAnalysisUrl}} -->
       <iframe :src="operationalAnalysisUrl" width="100%" height="800px" frameborder="0" id="myIframe" ref="myIframe"></iframe>
@@ -1551,6 +1552,7 @@ import CommitHistoryDialog from '@/components/CommitHistory'
 import numOrTextEdit from '../../components/EditNumOrText'
 import viewEffectDialog from '../launch/viewEffectDialog'
 import LinkAnalysis from './LinkAnalysis/Index'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 
 export default {
   components: {
@@ -1724,17 +1726,17 @@ export default {
       showLimitLaunchDialog: false,
       showLimitLaunchCount: undefined,
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       conditionEnum: {
         AND: '且',
         OR: '或'
@@ -1867,6 +1869,9 @@ export default {
   computed: {
     smart () {
       return this.selectRow.smart
+    },
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   created () {
@@ -2191,7 +2196,7 @@ export default {
       // // AB
       // const showAB = row.abMainCrowd === 0 && !row.limitLaunch
 
-      // // 运营分析
+      // // 画像平台分析
       // const showYunying = row.behaviorTempCrowdId && row.abMainCrowd !== 1
 
       // // 动态实验
@@ -3041,6 +3046,9 @@ export default {
           // 流转异常监控
           this.goToNomalyMonitoring(this.currentCid, row.crowdName)
           break
+        case 'shenCeAnalysis':
+          this.handleShenCeAnalysis(row)
+          break
       }
     },
     goToDynamicCrowdReport (crowdId, crowdName) {
@@ -3309,9 +3317,6 @@ export default {
           break
         case 'commitHistory':
           this.handleCommitHistory(params)
-          break
-        case 'shenCeAnalysis':
-          this.handleShenCeAnalysis(params)
           break
       }
     },
@@ -4295,22 +4300,7 @@ fieldset>div
   .el-button
     font-size 16px
 .crowd-top
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
+  @import '~@/assets/tag.styl'
 
 .button-margin
   margin-top 10px
@@ -4385,33 +4375,6 @@ fieldset>div
   margin-bottom: 30px;
 .boldCss
   font-weight 800
->>> .el-tag--warningOrange
-  color #512DA8
-  background-color rgba(119, 81, 200, .4)
-  border-color rgba(81, 45, 168, .45)
-  .el-tag__close
-    color #512DA8
->>> .el-tag--warningOrange2
-  color: #795548;
-  background-color: rgba(167, 130, 117, .5);
-  border-color: #7955488c;
-  .el-tag__close
-    color #512DA8
->>> .el-tag--warningCyan {
-  color: #00bcd4;
-  background-color: rgba(0, 189, 214, .1);
-  border-color: #00bcd42b
-}
->>> .el-tag--gray {
-  color: #fff;
-  background-color: rgba(165,155,149, 1);
-  border-color: rgba(165,155,149, 1);
-  .el-tag__close {
-    color #fff
-    &:hover{
-      background-color: #666
-    }
-  }
-}
 
+@import '~@/assets/tag.styl'
 </style>

@@ -201,6 +201,9 @@ export default {
     this.$root.$on('third-list-refresh', this.fetchData)
     await this.fetchTypeData()
     this.fetchData()
+  },
+  beforeDestroy () {
+    this.$root.$off('third-list-refresh')
   }
 }
 </script>

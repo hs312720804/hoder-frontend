@@ -118,7 +118,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="120" v-if="!showSelection">
+        <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -183,7 +183,7 @@
           @handle-size-change="handleSizeChange" @handle-current-change="handleCurrentChange"></pagination>
       </div>
     </div>
-    <el-dialog :title="launchTitle" :visible.sync="isShowCondition">
+    <el-dialog :title="launchTitle" :visible.sync="isShowCondition" :width="selectStrategy.behaviorRulesJson ? '1000px' : '600px'">
       <!--<el-form v-if="launchType === 0">-->
       <!--<el-form-item :label="item.policyName" v-for="item in selectStrategy" :key="item.policyName">-->
       <!--<el-checkbox-->
@@ -196,7 +196,10 @@
       <!--</el-form-item>-->
       <!--</el-form>-->
       <!--<div v-if="launchType === 1">{{selectStrategy}}</div>-->
-      <div>{{ selectStrategy }}</div>
+      <div  class="show-select-strategy">
+        <div v-if="selectStrategy.behaviorRulesJson">{{ selectStrategy.behaviorRulesJson }}</div>
+        <div>{{ selectStrategy.crowdSql ? selectStrategy.crowdSql : '无数据' }}</div>
+      </div>
     </el-dialog>
     <el-dialog title="数据监控" :visible.sync="monitorDialog">
       <el-date-picker v-model="monitorRangeTime" type="daterange" align="right" @change="getDataMonitor"
@@ -250,7 +253,7 @@ export default {
       isShowCondition: false,
       // launchType: undefined,
       launchTitle: '',
-      selectStrategy: null, // 人群条件的选择策略
+      selectStrategy: {}, // 人群条件的选择策略
       checkList: [],
       monitorDialog: false,
       monitorRangeTime: undefined,
@@ -487,11 +490,12 @@ export default {
     },
     condition (row) {
       this.isShowCondition = true
+      this.selectStrategy = {}
       this.$service
         .getTempCrowd({ launchCrowdId: row.launchCrowdId })
         .then(data => {
           this.launchTitle = '人群条件'
-          this.selectStrategy = data.crowdSql
+          this.selectStrategy = data || {}
         })
     },
     // 删除
@@ -580,29 +584,38 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-    // .temp-label-list
-    //     margin-top 50px
-    .temp-label-list >>> .el-button-group
-        display flex
-        align-items center
-        .el-button
-            margin 0 5px
-    .header
-        display flex
-        justify-content space-between
-        margin 10px 0
-    .search-input
-      position relative
-      display flex
-      width 350px
-    .icon-fixed
-        position absolute
-        top 8px
-        right 10px
-        transform rotate(-90deg)
-    .operate
-        margin-left 20px
-        cursor pointer
-    .monitor-time
-        margin-bottom 30px
+// .temp-label-list
+//     margin-top 50px
+.temp-label-list >>> .el-button-group
+    display flex
+    align-items center
+    .el-button
+        margin 0 5px
+.header
+    display flex
+    justify-content space-between
+    margin 10px 0
+.search-input
+  position relative
+  display flex
+  width 350px
+.icon-fixed
+    position absolute
+    top 8px
+    right 10px
+    transform rotate(-90deg)
+.operate
+    margin-left 20px
+    cursor pointer
+.monitor-time
+    margin-bottom 30px
+.show-select-strategy
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(0, 1fr));
+  grid-gap: 10px
+  div {
+    max-height 600px;
+    overflow: auto;
+    padding: 5px 15px
+  }
 </style>

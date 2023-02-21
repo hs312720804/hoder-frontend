@@ -172,8 +172,11 @@ export default {
 
   },
   created () {
-    this.$root.$on('big-data-list-refresh', this.fetchData)
+    this.$root.$on('third-list-refresh', this.fetchData)
     this.fetchData()
+  },
+  beforeDestroy () {
+    this.$root.$off('third-list-refresh')
   }
 }
 </script>

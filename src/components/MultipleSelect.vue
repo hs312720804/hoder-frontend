@@ -53,52 +53,31 @@
               </span>
             </template>
 
-            <!-- 其他的普通标签 -->
+            <!-- 其他的普通标签（不是故事线的）-->
             <template v-else>
               <span class="txt">{{ childItem.categoryName }}</span>
 
-              <span class="sel">
-                <!-- 不是时间（time）类型的下拉框 -->
-                <el-select v-if="childItem.tagType !== 'time'"
-                  style="width: 80px"
-                  name="oxve"
-                  v-model="childItem.operator"
-                  class="input-inline"
-                  @change="handleOperatorChange(childItem)"
+              <!-- 实时标签[大数据] 标签  需要特地增加一个下拉框选择二级标签-->
+              <!-- v-if="childItem.tagCode === 'vip_status' || childItem.tagCode === 'vip_last_buy' " -->
+              <span v-if="childItem.dataSource === 13">
+                <el-select
+                  style="width: 130px"
+                  class="time-dot-select-new"
+                  :key="n + 'realTime'"
+                  v-model="childItem.subTag"
+                  filterable
+                  clearable
+                  placeholder="请选择权益"
                 >
-                  <!-- number 类型 -->
-                  <template v-if="childItem.tagType === 'number'">
-                    <el-option value="="></el-option>
-                    <el-option value=">="></el-option>
-                    <el-option value="<="></el-option>
-                    <el-option value=">"></el-option>
-                    <el-option value="<"></el-option>
-                  </template>
-
-                  <!-- string 或者 mix 类型 -->
-                  <template
-                    v-if="
-                      childItem.tagType === 'string' ||
-                      childItem.tagType === 'mix'
-                    "
-                  >
-                    <el-option value="=" label="是"></el-option>
-                    <el-option value="!=" label="不是"></el-option>
-                    <!-- <el-option value="like" label="包含"></el-option> -->
-                    <el-option value="null" label="为空"></el-option>
-                  </template>
-
-                  <!-- boolean 类型 -->
-                  <template v-if="childItem.tagType === 'boolean'">
-                    <el-option value="=" label="="></el-option>
-                  </template>
-
-                  <!-- collect 类型 -->
-                  <template v-if="childItem.tagType === 'collect' || childItem.tagType === 'crowd'">
-                    <el-option value="=" label="是"></el-option>
-                    <el-option value="!=" label="不是"></el-option>
-                  </template>
+                  <el-option
+                    v-for="item in getTagAttrChild[childItem.tagId]"
+                    :key="item.attrId"
+                    :value="item.attrValue"
+                    :label="item.attrName">
+                  </el-option>
                 </el-select>
+              </span>
+              <span class="sel">
 
                 <!-- 是时间（time）类型的下拉框 -->
                 <template v-if="childItem.tagType === 'time'">
@@ -150,6 +129,48 @@
                   </template>
 
                 </template>
+
+                <!-- 不是时间（time）类型的下拉框 -->
+                <el-select v-else
+                  style="width: 100px"
+                  name="oxve"
+                  v-model="childItem.operator"
+                  class="input-inline"
+                  @change="handleOperatorChange(childItem)"
+                >
+                  <!-- number 类型 -->
+                  <template v-if="childItem.tagType === 'number'">
+                    <el-option value="="></el-option>
+                    <el-option value=">="></el-option>
+                    <el-option value="<="></el-option>
+                    <el-option value=">"></el-option>
+                    <el-option value="<"></el-option>
+                  </template>
+
+                  <!-- string 或者 mix 类型 -->
+                  <template
+                    v-if="
+                      childItem.tagType === 'string' ||
+                      childItem.tagType === 'mix'
+                    "
+                  >
+                    <el-option value="=" label="是"></el-option>
+                    <el-option value="!=" label="不是"></el-option>
+                    <!-- <el-option value="like" label="包含"></el-option> -->
+                    <el-option value="null" label="为空"></el-option>
+                  </template>
+
+                  <!-- boolean 类型 -->
+                  <template v-if="childItem.tagType === 'boolean'">
+                    <el-option value="=" label="="></el-option>
+                  </template>
+
+                  <!-- collect 类型 -->
+                  <template v-if="childItem.tagType === 'collect' || childItem.tagType === 'crowd'">
+                    <el-option value="=" label="是"></el-option>
+                    <el-option value="!=" label="不是"></el-option>
+                  </template>
+                </el-select>
               </span>
 
               <span class="in" v-if="childItem.tagType !== 'crowd'">
@@ -427,6 +448,7 @@
                   >
                 </template>
               </span>
+
               <template v-if="cache[childItem.tagId]">
                 <span
                   v-if="
@@ -824,6 +846,7 @@
 
 <script>
 import RuleCom from '@/components/dynamicPeople/ruleComs/RuleCom.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 
 export default {
   components: {
@@ -864,19 +887,20 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       cityData: [],
-      provinceValueList: []
+      provinceValueList: [],
+      getTagAttrChild: {}
     }
   },
   // props: ['tags', 'crowd', 'specialTags', 'i'],
@@ -906,7 +930,24 @@ export default {
       default: () => {}
     }
   },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    }
+  },
   watch: {
+    tags: {
+      handler (val) {
+        this.getTagAttrChild = {}
+        val.forEach(item => {
+          const child = item.child
+          if (child && child.length > 0) {
+            this.$set(this.getTagAttrChild, item.tagId, item.child)
+          }
+        })
+      },
+      immediate: true
+    },
     rulesJson: {
       handler () {
         this.fetchAllTagSuggestions()
@@ -921,6 +962,10 @@ export default {
     }
   },
   methods: {
+    getChild (childItem) {
+      const obj = this.tags.filter(item => item.tagId === childItem.tagId)
+      return obj && obj.child ? obj.child : []
+    },
     // 复制标签规则
     handelCopyRule (rule, childRule, index) {
       const childRuleCopy = JSON.parse(JSON.stringify(childRule))
@@ -1057,9 +1102,13 @@ export default {
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .getTagAttr({ tagId: tagId, pageNum: 1 })
         .then(data => {
+          let list = data.pageInfo.list
+          if (data.info && data.info.length > 0) {
+            list = data.info
+          }
           this.$set(this.cache, tagId, {
             select: data.select,
-            list: data.pageInfo.list
+            list: list
           })
         })
     },
@@ -1207,7 +1256,8 @@ export default {
                 ? tag.rulesJson
                   ? tag.rulesJson
                   : ''
-                : undefined
+                : undefined,
+            subTag: tag.dataSource === 13 ? '' : undefined
           }
         ]
       })
@@ -1282,7 +1332,8 @@ export default {
         endDay:
           tag.tagType === 'time' ? (tag.endDay ? tag.endDay : '') : undefined,
         initValue: tag.initValue,
-        specialCondition: ''
+        specialCondition: '',
+        subTag: tag.dataSource === 13 ? '' : undefined
       })
     },
     handleAddSpecialRule (tag) {
@@ -1518,6 +1569,7 @@ export default {
 }
 
 .label-item .txt {
+  margin-right: 20px;
   text-align: right;
 }
 

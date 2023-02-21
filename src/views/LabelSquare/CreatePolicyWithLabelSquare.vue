@@ -46,7 +46,8 @@
         <span class="checkbox--orange">紫色</span>为动态指标,
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签,
-        <span class="checkbox--gray">灰色</span>为人群标签
+        <span class="checkbox--gray">灰色</span>为人群标签,
+        <span class="checkbox--pink">粉色</span>为实时标签[大数据]
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -399,31 +400,7 @@ export default {
 .one-step-select-tag
   position relative
   padding 0 130px 180px
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  >>> .el-tag--gray
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close
-      color #fff
-      &:hover{
-        background-color: #666
-      }
+  @import '~@/assets/tag.styl'
 .tags-tips
   color #000
   font-size 12px
