@@ -1571,6 +1571,7 @@ export default {
 .label-item .txt {
   margin-right: 20px;
   text-align: right;
+  flex-shrink: 0;
 }
 
 .label-item .in {
