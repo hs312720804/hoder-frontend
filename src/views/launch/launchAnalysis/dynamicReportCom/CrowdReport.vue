@@ -283,7 +283,7 @@ export default {
       // }
       // console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
       // console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-scrollbar__wrap'), 'type3')
     },
     initData () {
       this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {

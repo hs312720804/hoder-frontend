@@ -33,7 +33,6 @@ class AutoHighLightAnchor {
 
   highLightAnchor (id) {
     this.anchors.forEach(element => {
-      console.log('', )
       element.classList.remove('highLight')
       if (element.getAttribute('to') === id) {
         element.classList.add('highLight')
