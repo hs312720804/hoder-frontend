@@ -306,7 +306,7 @@ export default {
       })
     },
     high () {
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-scrollbar__wrap'), 'type3')
+      const high = new AutoHighLightAnchor(document.querySelector('#ul111'),  document.querySelector('.app-wrapper').querySelector('.el-scrollbar__wrap'), 'type3')
     },
     initData () {
       // const parmas = {
