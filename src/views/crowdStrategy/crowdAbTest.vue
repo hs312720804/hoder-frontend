@@ -61,7 +61,7 @@
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="step = 2">上一步</el-button>
-                    <el-button 
+                    <el-button
                       type="primary"
                       @click="finish('divideForm')"
                       v-loading.fullscreen.lock="fullscreenLoading"
@@ -141,7 +141,7 @@ export default {
           this.copies = crowd.length
           const percent = data.ratio
           this.crowdChildItem = crowd
-          let [pctArr, names, ids, pcts, crowdIds] = [[], [], [], [], [], []]
+          const [pctArr, names, ids, pcts, crowdIds] = [[], [], [], [], [], []]
           for (let i = 0; i < percent.length; i++) {
             pctArr.push(percent[i].ratio)
             pcts.push(percent[i].ratio)
@@ -170,8 +170,8 @@ export default {
     firstStep () {
       this.step = 2
       const copies = this.copies
-      let arr = []
-      let percentArray = []
+      const arr = []
+      const percentArray = []
       for (let i = 0; i < copies; i++) {
         arr.push(i)
         percentArray.push(parseInt(100 / copies))
@@ -182,7 +182,7 @@ export default {
       }
     },
     secondStep () {
-      let total = this.percentTotal
+      const total = this.percentTotal
       if (total > 100) {
         this.$message.error('所有比例总和不能超过100%')
       } else {
@@ -193,7 +193,7 @@ export default {
     finish (formName) {
       const form = this.divideForm
       const crowdLength = form.pct.length
-      let crowdData = []
+      const crowdData = []
       let item = {}
       // AB TEST 新增保存时
       this.$refs[formName].validate((valid) => {
@@ -207,7 +207,7 @@ export default {
               }
               crowdData.push(item)
             }
-            let formData = {
+            const formData = {
               crowd: crowdData,
               startTime: form.validityTime[0],
               endTime: form.validityTime[1]
@@ -227,12 +227,12 @@ export default {
               }
               crowdData.push(item)
             }
-            let formData = {
+            const formData = {
               crowd: crowdData,
               startTime: form.validityTime[0],
               endTime: form.validityTime[1]
             }
-            this.$service.crowdABTestEditSave({ model: getFormData.currentCrowdId, data: formData }, '编辑保存A/B test划分成功').then(() => {
+            this.$service.crowdABTestEditSave({ model: getFormData.currentCrowdId, data: formData }, '保存A/B test划分成功').then(() => {
               this.fullscreenLoading = false
               this.$emit('goBackCrowdListPage', true)
             })

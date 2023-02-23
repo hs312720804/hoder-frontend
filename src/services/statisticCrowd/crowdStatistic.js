@@ -258,3 +258,11 @@ export function getPolicySixIndexStats2 (params) {
     params
   })
 }
+// 关键指标总览
+export function statisticPieChart (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/statisticPieChart',
+    params
+  })
+}

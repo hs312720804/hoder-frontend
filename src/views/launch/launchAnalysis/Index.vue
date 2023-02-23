@@ -22,37 +22,56 @@
           <!-- :picker-options="pickerOptions" -->
     </el-form-item>
     <el-form-item style="margin-left: 15px;">
-      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">    清除缓存 </el-checkbox>
+      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">清除历史记录 </el-checkbox>
+    </el-form-item>
+    <el-form-item style="margin-left: 15px;">
+      <el-button type="text" @click="resetForm('ruleForm')">重置查询</el-button>
     </el-form-item>
     <br/>
     <el-form-item label="业务范围:" prop="sourceNameList" style="max-width: 70%; white-space: nowrap;">
-      <!-- <el-checkbox-group v-model="formInline.sourceNameList">
-        <el-checkbox :label="0" name="type">全选</el-checkbox>
-        <el-checkbox :label="影视VIP" name="type">影视VIP</el-checkbox>
-        <el-checkbox :label="奇异果VIP" name="type">奇异果VIP</el-checkbox>
-      </el-checkbox-group> -->
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
       <!-- <div style="margin: 15px 0;"></div> -->
-      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange" style="white-space: break-spaces;">
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
+
+      <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">广电直播</el-checkbox>
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
+        <el-checkbox v-for="city in cities2" :label="city" :key="city">{{city}}</el-checkbox>
+      </el-checkbox-group>
+
     </el-form-item>
     <el-form-item style="margin-left: 136px">
       <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
+      <el-button type="text" @click="drawer = true" style="margin-left: 16px;">
+        历史记录
+      </el-button>
     </el-form-item>
   </el-form>
 
   <!-- 总览 -->
-  <div v-if="!!allChartData.overview && allChartData.overview.data">
+  <div v-if="pageStatus === 1">
     <div >
-      <div class="big-title">总览</div>
+      <div style="display: flex; justify-content: space-between;">
+        <div class="big-title">总览</div>
+
+        <div class="export-button">
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleGxportRightsInterests">导出数据</el-button>
+        </div>
+      </div>
+      <!-- 多级多层的表单填写项 -->
+
       <div class="wrap-div">
         <div class="overview-table">
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">主页活跃人数</div>
+              <div class="title-one">
+                主页活跃人数
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ cc_format_number(overview.homepageActiveUv) }}
               </div>
@@ -67,7 +86,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">起播活跃率</div>
+              <div class="title-one">起播活跃率
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPlayRate) }}
               </div>
@@ -88,7 +109,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">产品包曝光率</div>
+              <div class="title-one">产品包曝光率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgShowRate) }}
               </div>
@@ -109,7 +132,9 @@
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">下单率</div>
+              <div class="title-one">下单率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgXiadanRate) }}
               </div>
@@ -126,7 +151,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费率</div>
+              <div class="title-one">付费率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgPayRate) }}
               </div>
@@ -143,7 +170,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费金额</div>
+              <div class="title-one">付费金额
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two" style="height: 70px">
                 {{ cc_format_number(overview.totalPrice) }}
               </div>
@@ -156,7 +185,7 @@
 
         <!-- 漏斗图 -->
         <div class="chart-wrap">
-          <div ref="chart1" class="chart-1" >chart1</div>
+          <div id="chart1" ref="chart1" class="chart-1" >chart1</div>
         </div>
       </div>
     </div>
@@ -219,7 +248,7 @@
 
                     </div>
 
-                    <div class="unit-content" v-if="show && chart.title" >
+                    <div class="unit-content" v-if="show && chart.title">
                       <!-- {{ allChartData[key] && allChartData[key].series }} -->
                       <div v-if="allChartData[key] && allChartData[key].series && allChartData[key].series.length > 0" :ref="key" :id="key" class="chart-div"></div>
                       <div v-else class="chart-div">
@@ -238,23 +267,98 @@
   </div>
 
   <!-- 初始页面 或者 查询为空 时 -->
-  <div v-else style="height: calc(100vh - 321px);">
+  <div
+    v-else
+    v-loading="loading"
+    element-loading-text="拼命加载中"
+    style="height: calc(100vh - 321px);"
+    element-loading-background="rgb(243, 244, 250)"
+  >
     <el-empty v-if="emptyTxt" :description="emptyTxt" ></el-empty>
   </div>
+
+  <el-drawer
+    title="历史记录"
+    :visible.sync="drawer"
+    size="45%"
+  >
+    <div style="position: relative; height: 50px">
+      <el-input
+        placeholder="搜索历史记录"
+        prefix-icon="el-icon-search"
+        v-model="historysCondition"
+        class="search-input"
+        clearable
+        @keyup.enter.native="handleGetRightsInterestsSearchRecord">
+      </el-input>
+    </div>
+    <div class="history-content">
+      <div
+        v-for="(item) in historys"
+        :key="item.id"
+        class="search-text"
+        @click="hitHistory(item)"
+      >
+
+      <i @click.stop="deleteHistory(item.id)" class="delete-icon el-icon-close"></i>
+      <!-- <span><i class="el-icon-search" style="color: #1ab394; font-size: 16px"></i></span> -->
+      <span>{{ item.crowdId }}</span>
+        <span>{{ item.crowdName }}</span>
+        <span>{{ item.startDate }} 至 {{ item.endDate }}</span>
+        <br/>
+        <span>{{ item.sourceNameStr }}</span>
+
+        <!-- {{item.crowdId + '' + item.startDate + '-' + item.endDate + item.sourceNameStr"}} -->
+        <span class="foot">
+          <span :class="{'bold': item.status === 1}">
+            {{ statusMap[item.status] }}
+          </span>
+          <span>{{ item.createTime }}</span>
+        </span>
+      </div>
+    </div>
+    <div class="bottom-delete-all">
+      <el-popover
+        placement="top"
+        width="160"
+        v-model="visible">
+        <p>确认清空历史记录吗？</p>
+        <div style="text-align: right; margin: 0">
+          <el-button size="mini" type="text" @click="visible = false">取消</el-button>
+          <el-button type="primary" size="mini" @click.stop="deleteHistory(-1)">确定</el-button>
+        </div>
+        <el-button slot="reference" type="text">清空历史记录</el-button>
+      </el-popover>
+    </div>
+  </el-drawer>
 
  </div>
 </template>
 
 <script>
-const cityOptions = ['影视VIP', '奇异果VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '埋堆堆VIP', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '1905', '欢喜', '广电直播', '亲子VIP', '音乐K歌会员', '电竞VIP']
+const cityOptions = ['腾讯影视VIP', '爱奇艺影视VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '港剧VIP', '欢喜', '亲子VIP', '音乐K歌会员', '家庭影院VIP', '画报屏保', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '电竞VIP', '1905']
+const cityOptions2 = ['湖南', '河北', '贵州', '四川', '重庆', '云南', '江西', '河南', '安徽', '山西', '湖北', '甘肃', '广西', '江苏', '新疆', '山东', '辽宁', '陕西', '海南']
 export default {
   components: {},
   data () {
     return {
+      visible: false,
+      statusMap: {
+        0: '分析中',
+        1: '已查出数据',
+        2: '暂无数据'
+      },
+      setTimeOutVal: undefined,
+      historys: [],
+      historysCondition: '',
+      drawer: false,
       checkAll: false,
+      checkAll2: false,
       checkedCities: [],
       cities: cityOptions,
+      cities2: cityOptions2,
       isIndeterminate: false,
+      isIndeterminate2: false,
       // allData: {},
       overview: {},
       formInline: {
@@ -321,7 +425,9 @@ export default {
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       loading: false,
       crowdName: '',
-      emptyTxt: ''
+      pageStatus: 2, // 暂无数据
+      emptyTxt: '投后效果，一键分析',
+      downloadUrl: ''
       // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06']
       // policyId: 4323
     }
@@ -346,16 +452,96 @@ export default {
         chart.resize()
       }
     })
+
+    // 设置初始化展示数据
+    this.setDefaultData()
+
+    // 历史搜索记录
+    this.handleGetRightsInterestsSearchRecord()
+  },
+  watch: {
+    'formInline.sourceNameList': {
+      handler (val) {
+        const checkedCount = val.length
+        const allCount = cityOptions.concat(cityOptions2).length
+
+        this.checkAll = checkedCount === allCount
+        this.isIndeterminate = checkedCount > 0 && checkedCount < allCount
+
+        this.checkAll2 = cityOptions2.every(item => val.indexOf(item) > -1)
+        this.isIndeterminate2 = cityOptions2.some(item => val.indexOf(item) > -1) && !this.checkAll2
+      }
+    }
+  },
+  beforeDestroy () {
+    // 销毁定时器
+    this.destoryTimeInterval()
+  },
+  activated () {
+    console.log('activated - setTimeOutVal------->', this.setTimeOutVal)
+    if (this.setTimeOutVal) {
+      this.fetchAllData()
+      // 搜索历史记录，更新数据
+      this.handleGetRightsInterestsSearchRecord()
+    }
+  },
+  deactivated () {
+    console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
-    handleCheckAllChange (val) {
-      this.formInline.sourceNameList = val ? cityOptions : []
-      this.isIndeterminate = false
+    resetForm (formName) {
+      // 重置数据
+      this.pageStatus = 0
+      this.crowdName = ''
+      this.checkAll = false
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
     },
-    handleCheckedCitiesChange (value) {
-      const checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    // 删除历史
+    deleteHistory (id) {
+      this.$service.delRightsInterestsSearchRecord({ id }, '删除成功').then(res => {
+        // 刷新、
+        // 历史搜索记录
+        this.handleGetRightsInterestsSearchRecord()
+      })
+    },
+    //  投后分析导出
+    handleGxportRightsInterests () {
+      const params = {
+        crowdId: this.formInline.crowdId,
+        sourceNameList: this.formInline.sourceNameList.join(','),
+        startDate: this.formInline.timeRange[0],
+        endDate: this.formInline.timeRange[1]
+      }
+
+      // const params = {
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15'
+      // }
+      const urlParams = `crowdId=${params.crowdId}&startDate=${params.startDate}&endDate=${params.endDate}&sourceNameList=${params.sourceNameList}`
+      this.downloadUrl = '/api/exportRightsInterests?' + urlParams
+      this.$nextTick(() => {
+        this.$refs.download_Url.click()
+      })
+    },
+
+    // 历史记录查询
+    handleGetRightsInterestsSearchRecord () {
+      const params = {
+        condition: this.historysCondition
+      }
+      this.$service.getRightsInterestsSearchRecord(params).then(res => {
+        this.historys = res || []
+      })
+    },
+    handleCheckAllChange (val) {
+      this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
+    },
+    handleCheckAllChange2 (val) {
+      this.formInline.sourceNameList = val ? this.formInline.sourceNameList.concat(cityOptions2) : this.formInline.sourceNameList.filter(item => cityOptions2.indexOf(item) === -1)
     },
     handleClick (tab, event) {
       this.$nextTick(() => {
@@ -368,6 +554,9 @@ export default {
 
     // 漏斗图
     showFunnel (element, data) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
       const chartData = [
         { value: data.homepageActiveUv, name: '主页活跃' },
         { value: data.totalPlayUv, name: '起播' },
@@ -440,9 +629,12 @@ export default {
             // ]
           }
         ]
+
       }
       const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs.chart1)
+      const myChart = echarts.init(chartElement)
+      console.log('echarts--------->', echarts)
+      console.log('myChart--------->', myChart)
 
       myChart.setOption(option)
     },
@@ -466,9 +658,28 @@ export default {
       str += '%'
       return str
     },
-    // 分析
+
+    // 设置初始化展示数据
+    setDefaultData () {
+      // 默认展示的数据参数
+      this.formInline = {
+        crowdId: '14123',
+        sourceNameList: ['音乐K歌会员'],
+        timeRange: ['2022-11-25', '2022-12-01'],
+        isDelCache: 0
+      }
+      this.$nextTick(() => {
+        this.onSubmit()
+      })
+    },
+
+    // 点击分析 或者 点击柱状图 触发
     onSubmit (sourceName) {
       // console.log('submit!')
+      // this.formInline.crowdId = 10013
+      // this.formInline.sourceNameList = ['影视VIP', '奇异果VIP', '4K花园']
+      // this.formInline.timeRange = ['2022-07-18', '2022-07-19']
+
       this.$refs.ruleForm.validate((valid) => {
         if (valid) {
           this.loading = true
@@ -480,9 +691,23 @@ export default {
         }
       })
     },
+    // 历史记录查询数据
+    hitHistory (item) {
+      this.formInline = {
+        crowdId: item.crowdId,
+        sourceNameList: item.sourceNameStr.split(','),
+        timeRange: [item.startDate, item.endDate],
+        isDelCache: 0
+      }
+      this.initChart()
+    },
+
+    // 手动点击分析调用 或者 点击历史记录分析调用
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
+      // 销毁定时器
+      this.destoryTimeInterval()
       // const params = {
       //   crowdId: 10013,
       //   sourceNameList: '影视VIP,奇异果VIP,4K花园',
@@ -490,52 +715,94 @@ export default {
       //   endDate: '2022-07-19',
       //   sourceName: sourceName || ''
       // }
-
-      const params = {
-        crowdId: this.formInline.crowdId,
-        sourceNameList: this.formInline.sourceNameList.join(','),
-        startDate: this.formInline.timeRange[0],
-        endDate: this.formInline.timeRange[1],
-        isDelCache: this.formInline.isDelCache,
-        sourceName: sourceName || ''
-      }
-
       // const params = {
-      //   crowdId: 3219,
-      //   startDate: '2022-05-11',
-      //   endDate: '2022-06-10'
+      //   crowdId: 11731,
+      //   sourceNameList: '酷喵VIP',
+      //   startDate: '2022-08-01',
+      //   endDate: '2022-08-15',
+      //   isDelCache: this.formInline.isDelCache,
+      //   sourceName: sourceName || ''
       // }
+
       // 先查询人群是否存在，若存在，再去分析
-      this.$service.crowdEdit({ crowdId: params.crowdId }).then(res => {
+      this.$service.crowdEdit({ crowdId: this.formInline.crowdId }).then(res => {
         this.crowdName = res.policyCrowds.crowdName
 
-        // 获取所有图表数据
-        this.$service.rightsInterestsOutcome(params).then(res => {
-        // this.allData = res || {}
-          this.loading = false
-
-          if (!!res.overview && res.overview.data) {
-            this.overview = res.overview.data || {}
-            this.allChartData = res || {}
-            // 概览 - 漏斗图
-            this.show = true
-            this.$nextTick(() => {
-              this.showFunnel('chart1', this.overview)
-              // 详情图表
-              this.drawChart()
-            })
-          } else {
-            this.emptyTxt = '数据正在分析中，请稍后重试'
-            this.allChartData = {}
-          }
-        }).catch(e => {
-          this.loading = false
-        })
+        this.fetchAllData(sourceName)
       }).catch(e => {
         this.loading = false
       })
     },
 
+    // 查询图表数据
+    fetchAllData (sourceName) {
+      this.loading = true
+      const originParams = this.formInline
+      const params = {
+        crowdId: originParams.crowdId,
+        sourceNameList: originParams.sourceNameList.join(','),
+        startDate: originParams.timeRange[0],
+        endDate: originParams.timeRange[1],
+        isDelCache: originParams.isDelCache,
+        sourceName: sourceName || '' // 点击柱状图查询单个业务数据
+      }
+      // 获取所有图表数据
+      this.$service.rightsInterestsOutcome(params).then(res => {
+        // this.allData = res || {}
+        this.loading = false
+
+        this.pageStatus = res.status
+        console.log('this.setTimeOutVal===', this.setTimeOutVal)
+        if (this.setTimeOutVal) {
+          // 销毁定时器
+          this.destoryTimeInterval()
+        }
+        if (this.pageStatus === 0) { // 分析中
+          this.emptyTxt = '数据正在分析中，请稍后重试'
+          this.allChartData = {}
+
+          // 开启定时器
+          this.openTimeInterval()
+        } else if (this.pageStatus === 1) { // 有数据
+          // 真实数据
+          const tableData = res.data || {}
+
+          this.overview = tableData.overview.data || {}
+          this.allChartData = tableData || {}
+          // 概览 - 漏斗图
+          this.show = true
+          this.$nextTick(() => {
+            this.showFunnel('chart1', this.overview)
+            // 详情图表
+            this.drawChart()
+          })
+        } else { // 无数据
+          this.emptyTxt = '暂无数据'
+          this.allChartData = {}
+        }
+
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
+      }).catch(e => {
+        this.loading = false
+        // 销毁定时器
+        this.destoryTimeInterval()
+        // 重新搜索历史记录，更新数据
+        this.handleGetRightsInterestsSearchRecord()
+      })
+    },
+    // 开启定时器
+    openTimeInterval () {
+      console.log('我执行了定时器-----')
+      this.setTimeOutVal = setInterval(() => {
+        this.fetchAllData()
+      }, 8000)
+    },
+    // 销毁定时器
+    destoryTimeInterval () {
+      console.log('=========我清除了定时器-----')
+      clearInterval(this.setTimeOutVal)
+    },
     drawChart () {
       const rowObj = this.rowObj
       const rowObj2 = this.rowObj2
@@ -649,13 +916,15 @@ export default {
 
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData, xunit = '', yunit = '', dataaxis = []) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
+      // let myChart = echarts.init(this.$refs[element])
       const _this = this
       const echarts = require('echarts')
-      // let myChart = echarts.init(this.$refs[element])
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
       myChart.setOption({
         title: {
           text: title
@@ -664,8 +933,6 @@ export default {
           // trigger: 'item',
           trigger: 'axis',
           formatter: function (parmas) {
-            // console.log('parmas------------->', parmas)
-
             let str = parmas[0].marker + parmas[0].name + '<br/>'
             // let str = ''
             for (const item of parmas) {
@@ -773,6 +1040,9 @@ export default {
       // console.log('setBarEchart======111>>>', this.$refs)
       // console.log('setBarEchart======111>>>', element)
       // console.log('setBarEchart======111>>>', this.$refs[element])
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
+
       const echarts = require('echarts')
       const _this = this
       const yAxisObj = {
@@ -834,13 +1104,15 @@ export default {
       if (hasY2) {
         option.yAxis.push({ ...yAxisObj, name: yAxisObjName2 })
       }
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
       myChart.setOption(option, true)
       this.allCharts[element] = myChart
     },
 
     // 环形图
     setPie (element, data) {
+      const chartElement = document.getElementById(element)
+      if (!chartElement) return
       // console.log('aaaaaaaaaaa--------------->', element)
       // console.log('aaaaaaaaaaa--------------->', data)
       // const name = '登录量'
@@ -978,7 +1250,7 @@ export default {
       }
       const echarts = require('echarts')
       // let myChart = echarts.init(this.$refs[element])
-      const myChart = echarts.init(document.getElementById(element))
+      const myChart = echarts.init(chartElement)
 
       myChart.setOption(option)
       this.allCharts[element] = myChart
@@ -989,26 +1261,13 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+@import url('~@/assets/overview.styl')
 // .ibox {
 //   border-radius: 4px;
 //   min-height: 36px;
 //   background red
 // }
-.wrap-div{
-  display: flex;
-  justify-content: space-between;
-}
-.ibox {
-  margin-bottom: 25px;
-  background-color: #fff;
-  // border: 1px solid #e7eaec;
-  border-radius: 4px;
-  padding: 15px 20px 20px 20px;
-  height: 139px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+
 .big-title{
   color rgb(103, 106, 108)
   font-family "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif
@@ -1016,49 +1275,24 @@ export default {
   font-weight 100
   margin 10px 0
 }
-.overview-table{
+.overview-table {
   flex: 1 0 730px
   color rgb(103, 106, 108)
 }
-.title-one{
-  // margin-top: 5px;
-  // margin-bottom: 20px;
-  font-size 12px
-  font-weight 600
-}
-.text-two{
-  font-size 24px
-  // margin-bottom 15px
-  // margin-top 5px
-  color rgb(26, 179, 148)
-  text-align: center;
-}
-.small-box {
-  display flex
-  justify-content: end
-  flex-direction: column;
-}
-.small{
-  display inline
-  font-size 13.3333px
-  display flex
-  justify-content: space-between
-  align-content: space-around
-  margin-top: 15px
-}
+
 // .small:nth-child(1) {
 //   margin-bottom 10px
 // }
 .chart-wrap {
   flex: 0.8 0 550px;
 }
-.chart-1{
+.chart-1 {
   width: 550px;
   height: 360px;
   margin: 0 auto;
 }
 
-.launch-statistics{
+.launch-statistics {
   // overflow hidden
   // position: relative;
   // height: 100%;
@@ -1072,22 +1306,94 @@ export default {
   background: #fff
   padding-bottom 20px
 }
-.chart-div{
+.chart-div {
   height: 436px
 }
 
 .unit-box {
   // margin-bottom: 0;
   background-color: #fff;
-  // border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 100%;
-  // -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
 }
-.unit-header {
-  border-bottom: 1px solid #e7eaec
-  line-height: 56px;
-  padding: 0 15px;
-  font-size: 14px;
+
+.search-text {
+  font-size: 12px;
+  border-radius: 10px;
+  padding: 10px;
+  // margin: 0 6px 35px 6px;
+  display: inline-block;
+  background-color: #f4f4f4;
+  cursor pointer
+  position: relative;
+  width: 100%;
+  box-sizing: border-box;
+  margin-bottom: 35px;
+  span {
+    margin-right: 15px;
+    display: inline-block;
+    margin-bottom: 4px;
+  }
+}
+.search-input {
+  height: 36px;
+  border-radius: 36px;
+  // background: #f4f4f4;
+  color: #999;
+  position: absolute;
+  margin-bottom: 39px;
+  right: 20px;
+  left: 20px;
+  width: auto;
+}
+>>>.el-drawer__body {
+  position: relative;
+}
+.foot {
+  color: #5d5d76
+  position: absolute;
+  bottom: -27px;
+  right: -23px;
+}
+.bold {
+  color: #349344
+}
+
+.delete-icon {
+  position: absolute;
+  right: 6px;
+  top: 5px;
+  color: #999;
+  padding: 2px;
+  border-radius: 50%;
+  display: inline-block;
+  font-size: 16px;
+}
+.delete-icon:hover {
+  background gray;
+  color: #fff
+}
+.history-content {
+  position: absolute;
+  top: 50px;
+  bottom: 40px;
+  right: 0;
+  left: 0;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 0 6px 6px 6px
+}
+.bottom-delete-all {
+  position: absolute;
+  bottom: 0;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 40px
+  border-top: 1px dashed #e7e7e7;
+}
+.remark {
+  font-size: 12px;
+  color: #C0C4CC;
+  font-weight 400
 }
 </style>

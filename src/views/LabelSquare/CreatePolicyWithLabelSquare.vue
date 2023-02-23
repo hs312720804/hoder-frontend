@@ -1,175 +1,40 @@
 <template>
-  <div class="label-content">
-    <!-- {{addForm.conditionTagIds}} -->
-    <div class="table-list" :style="{marginBottom: bottomHeight}">
+  <div class="one-step-select-tag">
+    <el-tabs v-model="activeName" @tab-click="handleTabChange">
+      <el-tab-pane label="我常用的" name="myTop">
+        <MyTopMax30 :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
+          :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </MyTopMax30>
+      </el-tab-pane>
 
-        <el-tabs
-          v-model="activeName"
-          @tab-click="handleTabChange"
-        >
+      <el-tab-pane label="大数据标签" name="bigDataTag">
+        <BigDataTag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </BigDataTag>
+      </el-tab-pane>
 
-          <!-- <div class="search-input" v-if="activeName === 'labelZone' || activeName === 'myCollect'">
-            <el-input
-              v-model="searchVal"
-              placeholder="支持按标签名、Code、描述搜索"
-              @keyup.enter.native="handleSearch"
-            >
-            </el-input>
-            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-          </div> -->
+      <el-tab-pane label="第三方标签" name="third">
+        <third-party-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </third-party-tag>
+      </el-tab-pane>
 
-          <el-tab-pane label="设备标签" name="labelZone">
-              <label-zone
-                  :tagName="labelZoneTagName"
-                  @clear-search="handleClearSearch"
-                  :checkList="checkList"
-                  @change-checkList="handleCheckListChange"
-                  @fetch-checkList="fetchCheckListData"
-                  @get-table-selected="handleGetTableSelectedData"
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-              >
-              </label-zone>
-          </el-tab-pane>
+      <el-tab-pane label="自定义标签" name="customTag">
+        <custom-tag :checkList="checkList" :show-selection="showSelection" :currentSelectTag="tagList"
+          @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
+          @get-table-selected="handleGetTableSelectedData">
+        </custom-tag>
+      </el-tab-pane>
 
-          <!-- <el-tab-pane label="行为标签" name="behaviorLabel">
-              <temp-label-index
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  :checkList="tempCheckList"
-                  @get-table-selected="handleGetTableSelectedData"
-                  @change-checkList="handleTempCheckListChange"
-                  :crowdType=3
-              >
-              </temp-label-index>
-          </el-tab-pane> -->
+    </el-tabs>
 
-          <el-tab-pane label="组合标签" name="specialTag">
-              <special-tag
-                  :tagName="myCollectTagName"
-                  :checkList="checkList"
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  @clear-search="handleClearSearch"
-                  @change-checkList="handleCheckListChange"
-                  @get-table-selected="handleGetTableSelectedData"
-              >
-              </special-tag>
-          </el-tab-pane>
-
-          <el-tab-pane label="第三方标签" name="ThirdPartyTag">
-                <third-party-tag
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </third-party-tag>
-          </el-tab-pane>
-
-          <el-tab-pane label="临时标签" name="tempLabel">
-              <temp-label-index
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  :checkList="tempCheckList"
-                  @get-table-selected="handleGetTableSelectedData"
-                  @change-checkList="handleTempCheckListChange"
-                  @fetch-checkList="fetchTempCheckListData"
-              >
-              </temp-label-index>
-          </el-tab-pane>
-
-          <el-tab-pane label="本地标签" name="localLabel">
-              <local-label-index
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  :checkList="tempCheckList"
-                  @get-table-selected="handleGetTableSelectedData"
-                  @change-checkList="handleTempCheckListChange"
-                  @fetch-checkList="fetchTempCheckListData"
-              >
-              </local-label-index>
-          </el-tab-pane>
-
-          <el-tab-pane label="自定义标签" name="customTag">
-                <custom-tag
-                    :checkList="checkList"
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    @clear-search="handleClearSearch"
-                    @change-checkList="handleCheckListChange"
-                    @get-table-selected="handleGetTableSelectedData"
-                >
-                </custom-tag>
-          </el-tab-pane>
-
-          <el-tab-pane label="数据银行标签" name="bankLabel">
-                <temp-label-index
-                    :show-selection="showSelection"
-                    :currentSelectTag="tagList"
-                    :checkList="tempCheckList"
-                    @get-table-selected="handleGetTableSelectedData"
-                    @change-checkList="handleTempCheckListChange"
-                    :crowdType=4
-                >
-                </temp-label-index>
-          </el-tab-pane>
-
-          <el-tab-pane label="模型标签" name="modelLabel">
-              <ModelLabelIndexSelect
-                  :checkList="checkList"
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  @clear-search="handleClearSearch"
-                  @change-checkList="handleCheckListChange"
-                  @get-table-selected="handleGetTableSelectedData"
-              >
-              </ModelLabelIndexSelect>
-          </el-tab-pane>
-
-          <el-tab-pane label="人群标签" name="crowdLabel">
-              <CrowdLabel
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-                  :checkList="tempCheckList"
-                  :crowdType=2
-                  @get-table-selected="handleGetTableSelectedData"
-                  @change-checkList="handleTempCheckListChange"
-              >
-              </CrowdLabel>
-          </el-tab-pane>
-
-          <el-tab-pane label="我的收藏" name="myCollect">
-              <my-collect
-                  :tagName="myCollectTagName"
-                  :checkList="checkList"
-                  @clear-search="handleClearSearch"
-                  @change-checkList="handleCheckListChange"
-                  @get-table-selected="handleGetTableSelectedData"
-                  :show-selection="showSelection"
-                  :currentSelectTag="tagList"
-              >
-              </my-collect>
-          </el-tab-pane>
-        </el-tabs>
-    </div>
-
-    <el-form
-            :model="addForm"
-            :rules="addFormRules"
-            ref="addForm"
-            label-width="100px"
-            class="fix-bottom-form"
-    >
+    <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px" class="fix-bottom-form">
       <el-form-item label="已选标签">
-        <el-tag v-for="(item,index) in tagList"
-                :key="item.tagId+'_'+index"
-                :type="dataSourceColorEnum[item.dataSource]"
-                closable
-                @close="removeTag(item)"
-        >
+        <el-tag v-for="(item, index) in tagList" :key="item.tagId + '_' + index"
+          :type="dataSourceColorEnum[item.dataSource]" closable @close="removeTag(item)">
           {{ item.tagName }}
         </el-tag>
       </el-form-item>
@@ -181,7 +46,8 @@
         <span class="checkbox--orange">紫色</span>为动态指标,
         <span class="checkbox--orange2">棕色</span>为组合标签,
         <span class="checkbox--cyan">青色</span>为行为标签,
-        <span class="checkbox--gray">灰色</span>为人群标签
+        <span class="checkbox--gray">灰色</span>为人群标签,
+        <span class="checkbox--pink">粉色</span>为实时标签[大数据]
       </div>
       <el-form-item label="策略名称" prop="policyName">
         <el-input size="small" v-model="addForm.policyName" style="width: 30%"></el-input>
@@ -193,57 +59,54 @@
         <el-button type="primary" @click="saveAndNext(1)">下一步</el-button>
       </el-form-item>
     </el-form>
+
   </div>
 </template>
 
 <script>
 import { mapGetters } from 'vuex'
-import labelZone from './LabelZone'
-import myCollect from './MyCollect'
-import tempLabelIndex from './tempLabel/TempLabelIndex'
-import LocalLabelIndex from './localLabel/Index'
-import specialTag from './SpecialTag'
-import CustomTag from './CustomTag'
-import ThirdPartyTag from './ThirdPartyTag'
-import ModelLabelIndexSelect from './ModelLabel/ModelLabelIndexSelect.vue'
-import CrowdLabel from './crowdLabel/Index.vue'
+// import Total from './Total.vue'
+import BigDataTag from './bigDataTag/Index.vue'
+import ThirdPartyTag from './thirdTag/Index.vue'
+import CustomTag from './customTag/Index.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
+import MyTopMax30 from './MyTopMax30'
 
 export default {
-  name: 'labelSquareAA',
+  name: 'crowdCompute',
   components: {
-    labelZone,
-    myCollect,
-    tempLabelIndex,
-    specialTag,
-    LocalLabelIndex,
-    CustomTag,
+    // Total,
+    BigDataTag,
     ThirdPartyTag,
-    ModelLabelIndexSelect,
-    CrowdLabel
+    CustomTag,
+    MyTopMax30
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
-    ...mapGetters(['policyName'])
+    ...mapGetters(['policyName']),
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    }
   },
   data () {
     return {
-      activeName: 'labelZone',
+      activeName: 'myTop',
       searchVal: '',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       showSelection: true,
       addForm: this.genDefaultForm(),
       addFormRules: {
@@ -255,217 +118,46 @@ export default {
       bottomHeight: 169 + 'px'
     }
   },
-  methods: {
-    // 返回策略列表
-    handelBack () {
-      this.$router.push({ name: 'strategyList' })
-    },
-    genDefaultForm () {
-      return {
-        recordId: undefined,
-        policyName: '',
-        conditionTagIds: [],
-        crowdTagCrowdIds: [] // 人群标签的 crowdId 集合
-      }
-    },
-    handleSearch () {
-      // 全局搜索
-      if (this.activeName === 'labelZone') {
-        this.labelZoneTagName = this.searchVal
-      } else {
-        this.myCollectTagName = this.searchVal
-      }
-    },
-    handleClearSearch () {
-      this.searchVal = undefined
-      this.labelZoneTagName = undefined
-      this.myCollectTagName = undefined
-    },
-    fetchCheckListData () {
-      this.$service.getListDimension({ type: 4 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.checkList = data.behaviorShow.split(',')
-          } else {
-            this.checkList = ['defineRemark']
-          }
-        } else {
-          this.checkList = ['defineRemark']
-        }
-      })
-    },
-    handleCheckListChange (val) {
-      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
-    },
-    fetchTempCheckListData () {
-      this.$service.getListDimension({ type: 5 }).then(data => {
-        if (data) {
-          if (data.behaviorShow) {
-            this.tempCheckList = data.behaviorShow.split(',')
-          } else {
-            this.tempCheckList = ['defineRemark']
-          }
-        } else {
-          this.tempCheckList = ['defineRemark']
-        }
-      })
-    },
-    handleTempCheckListChange (val) {
-      this.$service.saveListDimension({ type: 5, behaviorShow: val.join(',') })
-    },
-    handleTabChange () {
-      switch (this.activeName) {
-        case 'labelZone':
-          // 刷新标签广场页
-          this.fetchCheckListData()
-          this.$root.$emit('label-zone-list-refresh')
-          break
-        case 'myCollect':
-          // 刷新我的收藏
-          this.fetchCheckListData()
-          this.$root.$emit('my-collect-list-refresh')
-          break
-        case 'tempLabel':
-          // 临时标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-2')
-          break
-        case 'specialTag':
-          // 刷新组合标签
-          this.fetchCheckListData()
-          this.$root.$emit('special-tag-list-refresh')
-          break
-        case 'localLabel':
-          // 本地标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('local-label-list-refresh')
-          break
-        case 'behaviorLabel':
-          // 行为标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-3')
-          break
-        case 'bankLabel':
-          // 数据银行标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('temp-label-list-refresh-4')
-          break
-        case 'customTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('custom-tag-list-refresh')
-          break
-        case 'ThirdPartyTag':
-          // 自定义标签
-          this.fetchTempCheckListData()
-          this.$root.$emit('third-tag-list-refresh')
-          break
-        case 'modelLabel':
-          // 模型标签
-          // this.fetchListData()
-          this.$root.$emit('model-tag-list-refresh')
-          break
-        case 'crowdLabel':
-          // 人群标签
-          // this.fetchListData()
-          this.$root.$emit('crowd-label-list-refresh')
-          break
-      }
-    },
-    // 选择或取消选择 tag
-    handleGetTableSelectedData (val, mode) {
-      // 只支持单数组，多数组要多次调用这个
-      const tagList = this.tagList
-      if (mode === 'add') {
-        // 如果有匹配的，就直接return
-        let firstIndex = -1
-        for (var i = 0; i < tagList.length; i++) {
-          if (tagList[i].tagId === val.tagId) {
-            firstIndex = i
-            return
-          }
-        }
-        // 如果没有匹配的，就执行新增
-        if (firstIndex === -1) {
-          this.tagList.push(val)
-          
-          if (val.dataSource === 12) {
+  watch: {
+    tagList: {
+      handler (val) {
+        this.addForm.crowdTagCrowdIds = []
+        this.addForm.conditionTagIds = []
+
+        val.forEach(item => {
+          if (item.dataSource === 12) {
             // 人群标签 id 集合
-            this.addForm.crowdTagCrowdIds.push(val.tagId) 
+            this.addForm.crowdTagCrowdIds.push(item.tagId)
           } else {
             // 其他的标签 id 集合
-            this.addForm.conditionTagIds.push(val.tagId) 
+            this.addForm.conditionTagIds.push(item.tagId)
           }
-          this.setContentBottomMargin()
-        }
-      } else {
-        // 取消选中的则删除这一项
-        let index = -1
-        for (var j = 0; j < tagList.length; j++) {
-          if (tagList[j].tagId === val.tagId) {
-            index = j
-            this.tagList.splice(index, 1)
-            if (val.dataSource === 12) {
-              // 人群标签 id 集合
-              this.addForm.crowdTagCrowdIds = this.addForm.crowdTagCrowdIds.filter(tagId => tagId !== val.tagId)
-            } else {
-              // 其他的标签 id 集合
-              this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== val.tagId)
-            }
-            this.setContentBottomMargin()
-            return
-          }
-        }
+        })
       }
-    },
-    setContentBottomMargin () {
-      this.$nextTick(() => {
-        const bottomMargin = document.getElementsByClassName('fix-bottom-form')[0].offsetHeight
-        this.bottomHeight = bottomMargin + 'px'
-      })
-    },
-    removeTag (tag) {
-      const addForm = this.addForm
-      if (tag.dataSource === 12) {
-        // 人群标签 id 集合
-        addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.filter(tagId => tagId !== tag.tagId)
-      } else {
-        // 其他的标签 id 集合
-        addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
-      }
-      
-      this.tagList.splice(this.tagList.indexOf(tag), 1)
-      this.setContentBottomMargin()
-    },
+    }
+  },
+  methods: {
     // 下一步
     saveAndNext (mode) {
       this.$refs.addForm.validate(valid => {
         if (valid) {
-          let addForm = JSON.parse(JSON.stringify(this.addForm))
+          const addForm = JSON.parse(JSON.stringify(this.addForm))
           if (addForm.conditionTagIds.length === 0) { // 创建策略时，标签不是必选的，因此下面两行代码注释掉
             // this.$message.error('请选择策略维度！')
             // return
           }
-          // if (this.$parent.peoplePageCheck) {
-          //   let result = this.tagList.filter(item => {
-          //     return item.dataSource === 6
-          //   })
-          //   if (!result.length) {
-          //     this.$message.error('创建智能人群策略，需要选择动态指标！')
-          //     return
-          //   }
-          // }
+
           // 是否为动态人群
           const isDynamicPeople = this.$parent.isDynamicPeople
           // 其他的标签 id 集合
-          addForm.conditionTagIds = addForm.conditionTagIds.join(',') 
+          addForm.conditionTagIds = addForm.conditionTagIds.join(',')
 
           // 人群标签 id 集合
           addForm.crowdTagCrowdIds = addForm.crowdTagCrowdIds.join(',')
 
           // 动态人群
           if (isDynamicPeople) {
-            let oldFormData = {
+            const oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
               crowdTagCrowdIds: addForm.crowdTagCrowdIds,
@@ -528,52 +220,19 @@ export default {
               })
             } else {
               this.$service.oneDropPolicyAddSave(addForm).then((data) => {
-                // if (data.policyId) {
-                //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
-                //     confirmButtonText: '确定',
-                //     cancelButtonText: '取消',
-                //     type: 'warning'
-                //   }).then(() => {
-                //     this.$message({
-                //       type: 'success',
-                //       message: '即将自动跳转至策略列表页'
-                //     })
-                //     this.$emit('handleDirectStrategyList')
-                //   }).catch(() => {
-                //   })
-                // } else {
                 this.addForm.recordId = data.recordId
                 this.$emit('policyNextStep', this.addForm.recordId, this.tagList)
-                // }
               })
             }
           } else {
-            let oldFormData = {
+            const oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds,
-              crowdTagCrowdIds: addForm.crowdTagCrowdIds, // 人群标签
+              crowdTagCrowdIds: addForm.crowdTagCrowdIds // 人群标签
             }
             this.$service.policyAddSave(oldFormData).then((data) => {
-              // if (data.policyId) {
-              //   this.$confirm('保存失败，该策略维度已存在！请在策略' + data.policyId + '中新建人群即可', '提示', {
-              //     confirmButtonText: '确定',
-              //     cancelButtonText: '取消',
-              //     type: 'warning'
-              //   }).then(() => {
-              //     this.$message({
-              //       type: 'success',
-              //       message: '即将自动跳转至策略列表页'
-              //     })
-              //     this.$emit('handleDirectStrategyList')
-              //     // this.$router.push({ path: 'launch/strategyList' })
-              //   }).catch(() => {
-              //   })
-              // } else {
-              // this.$root.$emit('stratege-list-refresh')
-              // this.$router.push({path: 'launch/strategyList'})
               this.$emit('handleDirectStrategyList')
               this.$emit('resetFormData')
-              // }
             })
           }
         } else {
@@ -581,23 +240,131 @@ export default {
         }
       })
     },
+    // 返回策略列表
+    handelBack () {
+      this.$router.push({ name: 'strategyList' })
+    },
+    genDefaultForm () {
+      return {
+        recordId: undefined,
+        policyName: '',
+        conditionTagIds: [],
+        crowdTagCrowdIds: [] // 人群标签的 crowdId 集合
+      }
+    },
+    fetchCheckListData () {
+      this.$service.getListDimension({ type: 4 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.checkList = data.behaviorShow.split(',')
+          } else {
+            this.checkList = ['defineRemark']
+          }
+        } else {
+          this.checkList = ['defineRemark']
+        }
+      })
+    },
+    fetchTempCheckListData () {
+      this.$service.getListDimension({ type: 5 }).then(data => {
+        if (data) {
+          if (data.behaviorShow) {
+            this.tempCheckList = data.behaviorShow.split(',')
+          } else {
+            this.tempCheckList = ['defineRemark']
+          }
+        } else {
+          this.tempCheckList = ['defineRemark']
+        }
+      })
+    },
+    handleTabChange () {
+      switch (this.activeName) {
+        case 'myTop':
+          // 我常用的
+          // this.fetchCheckListData()
+          this.$root.$emit('my-top-list-refresh')
+          break
+        case 'bigDataTag':
+          // 刷新大数据
+          // this.fetchCheckListData()
+          this.$root.$emit('big-data-list-refresh')
+          break
+        case 'third':
+          // 刷新第三方
+          // this.fetchCheckListData()
+          this.$root.$emit('third-list-refresh')
+          break
+        case 'customTag':
+          // 自定义
+          // this.fetchTempCheckListData()
+          this.$root.$emit('custom-tag-list-refresh')
+          break
+      }
+    },
+    handleClearSearch () {
+      this.searchVal = undefined
+      this.labelZoneTagName = undefined
+      this.myCollectTagName = undefined
+    },
+    handleCheckListChange (val) {
+      this.$service.saveListDimension({ type: 4, behaviorShow: val.join(',') })
+    },
+
+    removeTag (tag) {
+      // const addForm = this.addForm
+      // addForm.conditionTagIds = addForm.conditionTagIds.filter(tagId => tagId !== tag.tagId)
+      this.tagList.splice(this.tagList.indexOf(tag), 1)
+    },
+    handleGetTableSelectedData (val, mode) {
+      // 只支持单数组，多数组要多次调用这个
+      const tagList = this.tagList
+      if (mode === 'add') {
+        // 如果有匹配的，就直接return
+        let firstIndex = -1
+        for (let i = 0; i < tagList.length; i++) {
+          if (tagList[i].tagId === val.tagId) {
+            firstIndex = i
+            return
+          }
+        }
+        // 如果没有匹配的，就执行新增
+        if (firstIndex === -1) {
+          this.tagList.push(val)
+        }
+      } else {
+        // 取消选中的则删除这一项
+        let index = -1
+        for (let i = 0; i < tagList.length; i++) {
+          if (tagList[i].tagId === val.tagId) {
+            index = i
+            this.tagList.splice(index, 1)
+            return
+          }
+        }
+      }
+    },
     getPolicyDetail () {
       this.$service.oneDropGetPolicyDetail(this.recordId).then((data) => {
         const formData = data
-        formData.conditionTagIds = formData.conditionTagIds === '' ? [] : formData.conditionTagIds.split(',').map(function (v) {
-          return parseInt(v)
-        })
-        
+        formData.conditionTagIds = formData.conditionTagIds === ''
+          ? []
+          : formData.conditionTagIds.split(',').map(function (v) {
+            return parseInt(v)
+          })
+
         // 人群标签ID
-        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds ? formData.crowdTagCrowdIds.split(',').map(function (v) {
-          return parseInt(v)
-        }) : []
+        formData.crowdTagCrowdIds = formData.crowdTagCrowdIds
+          ? formData.crowdTagCrowdIds.split(',').map(function (v) {
+            return parseInt(v)
+          })
+          : []
 
         this.addForm = {
           recordId: this.recordId,
           policyName: formData.policyName,
           conditionTagIds: formData.conditionTagIds,
-          crowdTagCrowdIds: formData.crowdTagCrowdIds,
+          crowdTagCrowdIds: formData.crowdTagCrowdIds
         }
       })
     }
@@ -605,6 +372,7 @@ export default {
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
+
     if (this.recordId) {
       this.getPolicyDetail()
       this.tagList = this.initTagList
@@ -621,10 +389,7 @@ export default {
           this.addForm.conditionTagIds.push(parseInt(v.tagId))
         }
       })
-      // this.initTagList.map(function (v) {
-      //   return parseInt(v.tagId)
-      // })
-      
+
       this.addForm.policyId = this.policyName
     }
   }
@@ -632,77 +397,22 @@ export default {
 </script>
 
 <style lang="stylus" scoped>
-  .label-content
-    position relative
-    padding 0 130px
-    >>> .tab-content
-      margin-top 0
-      .el-tabs__nav-wrap
-        z-index 1
-    >>> .my-collect
-        margin-top 0
-    >>> .label-zone
-        margin-top 0
-    >>> .temp-label-list
-        margin-top 0
-    >>> .el-tag--warningOrange
-        color #512DA8
-        background-color rgba(119, 81, 200, .4)
-        border-color rgba(81, 45, 168, .45)
-        .el-tag__close
-          color #512DA8
-    >>> .el-tag--warningOrange2
-        color: #795548;
-        background-color: rgba(167, 130, 117, .5);
-        border-color: #7955488c;
-        .el-tag__close
-          color #512DA8
-    >>> .el-tag--warningCyan
-        color: #00bcd4;
-        background-color: rgba(0, 189, 214, .1);
-        border-color: #00bcd42b
-    >>> .el-tag--gray
-        color: #fff;
-        background-color: rgba(165,155,149, 1);
-        border-color: rgba(165,155,149, 1);
-        .el-tag__close
-          color #fff
-          &:hover{
-            background-color: #666
-          }
+.one-step-select-tag
+  position relative
+  padding 0 130px 180px
+  @import '~@/assets/tag.styl'
+.tags-tips
+  color #000
+  font-size 12px
+  margin-left 100px
 
-  .search-input
-    position relative
-    // top 0
-    // right 30px
-    width 350px
-    z-index 999
-    margin 10px 0
-    .icon-fixed
-      position absolute
-      top 8px
-      right 10px
-      transform rotate(-90deg)
+.fix-bottom-form
+  position fixed
+  bottom 0
+  background-color #fff
+  z-index 999
+  width: calc(100% - 363px);
+  height: 185px;
+  overflow: auto;
 
-  /*.label-content >>> .el-tabs__header*/
-    /*position fixed*/
-    /*width 100%*/
-    /*z-index 999*/
-  .label-content >>> .el-tabs__nav-wrap
-    background #fff
-    z-index 999
-  .tags-tips
-    color #000
-    font-size 12px
-    margin-left 100px
-  
-  .fix-bottom-form
-    position fixed
-    bottom 0
-    background-color #fff
-    z-index 999
-    width: calc(100% - 363px);
-  .table-list
-    width 100%
-    height 100%
 </style>

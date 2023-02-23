@@ -1,5 +1,5 @@
 <template>
-  <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true">
+  <el-form :model="item3" ref="typeForm" :rules="typeFormRules" :inline="true" :disabled="isView">
     <el-form-item prop="type">
       <el-select
         v-model="item3.type"
@@ -29,17 +29,26 @@
         style="max-width: 100px; min-width: 100px;"
         name="oxve"
         class="input-inline"
+        @change="handleOperatorChange"
       >
         <el-option value="="></el-option>
         <el-option value=">="></el-option>
         <el-option value="<="></el-option>
         <el-option value=">"></el-option>
         <el-option value="<"></el-option>
+        <el-option value="between" label="位于区间"></el-option>
       </el-select>
     </el-form-item>
 
     <el-form-item prop="value">
+
+      <span v-if="item3.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+        <el-input-number :value="item3.value1" @input="handelInputBetween($event, item3, 'value1')" @blur="handelInputBlur(item3)" controls-position="right"></el-input-number>
+      ~ <el-input-number :value="item3.value2" @input="handelInputBetween($event, item3, 'value2')" @blur="handelInputBlur(item3)" controls-position="right"></el-input-number>
+      </span>
+
       <el-input
+        v-else
         placeholder="请输入"
         v-model="item3.value"
         clearable
@@ -52,6 +61,7 @@
 
 <script>
 export default {
+  inject: ['_this'],
   data () {
     return {
       attrList: [],
@@ -77,6 +87,10 @@ export default {
       type: Boolean,
       default: true
     }
+    // isView: { // 查看模式
+    //   type: Boolean,
+    //   default: false
+    // }
   },
   watch: {
     isRequired: { // 是否必填
@@ -123,11 +137,46 @@ export default {
       immediate: true
     }
   },
+  computed: {
+    isView () {
+      return this._this && this._this.isView ? this._this.isView : false
+    }
+  },
   methods: {
     handleChange (val) {
       const obj = this.attrList.find(item => item.value === val)
       console.log('obj==>', obj)
       this.item3.field = obj.field
+    },
+    handleOperatorChange () {
+      this.item3.value = ''
+      this.item3.value1 = ''
+      this.item3.value2 = ''
+    },
+    handelInputBlur (item) {
+      this.isFoucs = false
+
+      if (!this.isFoucs && item.value1 && item.value2 && item.value2 < item.value1) { // 自定义时间仅支持正数，过期时间的大数在前面，小数在后面
+        const num = item.value1
+        item.value1 = item.value2
+        item.value2 = num
+      }
+    },
+    handelInputBetween (val, item, key) {
+      console.log('val===', val)
+      console.log('item===', item)
+      console.log('key===', key)
+
+      this.$set(item, key, val)
+      item[key] = val
+      if (!item.value1 || item.value1 < 0) {
+        this.$set(item, 'value1', 0)
+      }
+      if (!item.value2 || item.value2 < 0) {
+        this.$set(item, 'value2', 0)
+      }
+
+      item.value = `${item.value1}-${item.value2}`
     }
   }
 }

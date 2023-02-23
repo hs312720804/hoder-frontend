@@ -40,12 +40,12 @@ export default {
       myCollectTagName: undefined,
       checkList: [],
       tagList: [],
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning'
+      // },
       showSelection: false,
       tempCheckList: [],
       typeTabsList: [
@@ -119,7 +119,7 @@ export default {
       if (mode === 'add') {
         // 如果有匹配的，就直接return
         let firstIndex = -1
-        for (var i = 0; i < tagList.length; i++) {
+        for (let i = 0; i < tagList.length; i++) {
           if (tagList[i].tagId === val.tagId) {
             firstIndex = i
             return

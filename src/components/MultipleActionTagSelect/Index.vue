@@ -38,10 +38,11 @@
               :class="{ 'label-item': true, paddingTop: n > 0 }"
             >
               <!-- 行为标签专属日期选项 -->
-              <!-- 会员状态 不需要周期范围的所有下拉框选项 -->
-              <!-- 购买行为 不需要星期范围 时间区间 -->
+              <!-- 【会员状态】、【优惠券行为】不需要周期范围的所有下拉框选项 -->
+              <!-- 【购买行为】 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
+                <div v-if="childItem.tagCode !== 'BAV0016' && childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
+                  <!-- 查看模式 -->
                   <Range
                     ref="range"
                     :childItem="childItem"
@@ -559,7 +560,7 @@
             <i class="el-icon-thumb" style="font-size: 28px;"></i>
             <span style="font-size: 12px;">点击标签来编辑人群条件</span>
           </div>
-          
+
         </div>
       </div>
     </div>
@@ -624,28 +625,35 @@
 <script>
 import Range from './Range.vue'
 import Bav from './Bav/Index.vue'
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
+  provide () {
+    return {
+      _this: this
+    }
+  },
   data () {
     return {
       showHitTip: true,
       tipVisible: false,
       bavAttrList: {},
       tagCodeValue: {
-        'BAV0001': 1,
-        'BAV0002': 2,
-        'BAV0003': 3,
-        'BAV0004': 4,
-        'BAV0005': 5,
-        'BAV0006': 6,
-        'BAV0007': 7,
-        'BAV0008': 8,
-        'BAV0009': 9,
-        'BAV0010': 10,
-        'BAV0011': 11,
-        'BAV0012': 12,
-        'BAV0013': 13,
-        'BAV0014': 14,
-        'BAV0015': 15,
+        BAV0001: 1,
+        BAV0002: 2,
+        BAV0003: 3,
+        BAV0004: 4,
+        BAV0005: 5,
+        BAV0006: 6,
+        BAV0007: 7,
+        BAV0008: 8,
+        BAV0009: 9,
+        BAV0010: 10,
+        BAV0011: 11,
+        BAV0012: 12,
+        BAV0013: 13,
+        BAV0014: 14,
+        BAV0015: 15,
+        BAV0016: 16
       },
       // ----------------
       cache: {},
@@ -679,18 +687,23 @@ export default {
         ]
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       cityData: [],
       provinceValueList: [],
       showRange: true
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   components: {
@@ -722,7 +735,12 @@ export default {
     crowd: {
       type: Object,
       default: () => {}
+    },
+    isView: {
+      type: Boolean,
+      default: false
     }
+
   },
   watch: {
     behaviorRulesJson: {
@@ -734,7 +752,7 @@ export default {
     }
   },
   methods: {
-    getRangeType(tagCode) {
+    getRangeType (tagCode) {
       let type = ['range', 'week', 'time']
       if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') {
         type = ['range']
@@ -1287,10 +1305,10 @@ export default {
 
     // 数组去重
     distinct (a, b) {
-      let arr = a.concat(b)
-      let result = []
-      let obj = {}
-      for (let i of arr) {
+      const arr = a.concat(b)
+      const result = []
+      const obj = {}
+      for (const i of arr) {
         if (!obj[i]) {
           result.push(i)
           obj[i] = 1
@@ -1322,8 +1340,8 @@ export default {
       const startDay = item.startDay
       const endDay = item.endDay
       if (this.checkNumMostFour(endDay)) {
-        if (parseInt(startDay) >= parseInt(endDay)) {
-          this.$message.error('第二个值必须大于第一个值')
+        if (parseInt(startDay) > parseInt(endDay)) {
+          this.$message.error('第二个值不能小于第一个值')
         } else {
           item.value = startDay + '-' + endDay
         }
@@ -1349,7 +1367,7 @@ export default {
       // console.log('this.tags====', this.tags)
       // console.log('this.tags====', this.specialTags)
 
-      let ruleJsonData = this.behaviorRulesJson || {}
+      const ruleJsonData = this.behaviorRulesJson || {}
       // console.log('ruleJsonData==>',  ruleJsonData)
       const len = (JSON.stringify(ruleJsonData) !== '{}' && ruleJsonData.rules) ? ruleJsonData.rules.length : 0
       // console.log('ruleJsonData==>',  ruleJsonData)
@@ -1358,7 +1376,7 @@ export default {
         this.showHitTip = false // 关闭新手指引 - 点击提示
 
         let cacheIds = []
-        let cacheActionIds = []
+        const cacheActionIds = []
         ruleJsonData.rules.forEach(itemParent => {
           itemParent.rules.forEach(item => {
             // 行为标签
@@ -1625,6 +1643,5 @@ i {
   border-left: 6px solid transparent;
   border-right: 54px solid #e2e2e2;
 }
-
 
 </style>

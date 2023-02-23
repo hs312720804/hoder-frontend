@@ -9,10 +9,17 @@
           <span v-show="!isCollapseMenu">极光引擎</span> -->
 
           <!-- <image src="../assets/img/bg1.jpg"/> -->
-          <span v-show="!isCollapseMenu" class="logo-img"></span>
-          <span class="logo-text-img"></span>
+          <span class="logo-img" :class="{'logo-img-collapse' : isCollapseMenu}"></span>
+          <span v-show="!isCollapseMenu" class="logo-text-img"></span>
         </div>
-        <div class="version">{{$appState.user.version}}</div>
+
+        <div v-if="isCollapseMenu" style="color: #fff; font-size: 15px; font-weight: 600">
+          <div>极光</div>
+          <div>引擎</div>
+          <div class="version">{{ $appState.user.version.split(':')[1] }}</div>
+        </div>
+
+        <div v-else class="version">{{ $appState.user.version }}</div>
       </div>
       <el-menu
         :default-active="activeRouteName"
@@ -79,7 +86,7 @@
           <i class="el-icon-question" style="color: #409EFF; font-size: 18px; margin-right: 5px;"></i>
           <el-button
             type="text"
-            @click="handelGo('http://wiki.skyoss.com/pages/viewpage.action?pageId=49470290')"
+            @click="handelGo('http://wiki.cc0808.com/pages/viewpage.action?pageId=49470290')"
             style="font-size: 16px;font-weight: 600;"
           >
             使用文档
@@ -206,7 +213,10 @@ export default {
         '/specialTag/index': 'specialTag',
         '/launchHelper/status': 'launchStatus',
         '/launchHelper/resendCommand': 'resendCommand',
-        '/hitQuery': 'hitQuery'
+        '/hitQuery': 'hitQuery',
+        '/storyLine': 'storyLine',
+        '/operationHelper': 'operationHelper',
+        '/crowdCompute': 'crowdCompute'
       },
       activeName: 'first',
       updateMessage: [],
@@ -495,6 +505,7 @@ export default {
     display flex
     flex-direction column
     background-color #092035
+    // align-items: center
   .leftMenu >>> .menu
     flex-grow 1
     overflow-y auto
@@ -538,6 +549,7 @@ export default {
   .version
     color #ccc
     font-size 14px
+    margin-top: 5px;
   .notice-title
       width 300px
       margin 5px 10px
@@ -582,6 +594,11 @@ export default {
   display inline-block
   vertical-align middle
   margin-left: -7px;
+.logo-img-collapse
+  width 34px
+  height 40px
+  margin-left: 0
+
 .logo-text-img
   background url('../assets/img/logo_text.png');
   background-size cover

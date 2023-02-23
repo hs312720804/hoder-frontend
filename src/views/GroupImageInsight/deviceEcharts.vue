@@ -149,8 +149,8 @@ export default {
       memberListType: '',
       memberListByPay: '',
       expirationDayList: {
-        '7': '近7日',
-        '30': '近30日'
+        7: '近7日',
+        30: '近30日'
       },
       expirationDay: '7',
       fillEmptyData: {
@@ -180,8 +180,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -229,8 +229,8 @@ export default {
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -279,8 +279,8 @@ export default {
     // 圆饼图
     setCircleEcharts (element, title, legend, data, showDetail) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title,
@@ -309,11 +309,13 @@ export default {
             // center: ['50%', '60%'],
             avoidLabelOverlap: false,
             itemStyle: {
-              normal: { label: {
-                show: showDetail,
-                formatter: '{b} : {c} ({d}%)'
+              normal: {
+                label: {
+                  show: showDetail,
+                  formatter: '{b} : {c} ({d}%)'
+                },
+                labelLine: { show: showDetail }
               },
-              labelLine: { show: showDetail } },
               emphasis: {
                 label: {
                   show: showDetail,
@@ -334,8 +336,8 @@ export default {
     // 中国地图
     setMapEcharts (element, title, data, minValue, maxValue) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       // 中国地图
       myChart.setOption({
         title: {
@@ -384,8 +386,8 @@ export default {
     },
     // 漏斗图
     setFunnelEcharts (element, title, legend, data) {
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -498,7 +500,7 @@ export default {
       const typeEnum = ['portrait.top50.active.city']
       this.$service.seeDevicePortraintCharts({ params: { type: typeEnum[0], orderBy: 'value', sortOrder: 'desc' }, id: this.currentCid }).then(data => {
         const arr = data.dataList
-        var sum = 0
+        let sum = 0
         arr.forEach(item => {
           sum += parseInt(item.value)
         })
@@ -520,8 +522,8 @@ export default {
     },
     // 对象转成数组
     objectToArray (obj) {
-      let arr = []
-      for (let i in obj) {
+      const arr = []
+      for (const i in obj) {
         arr.push({ value: i, label: obj[i] })
       }
       return arr
@@ -529,55 +531,55 @@ export default {
     getUserType () {
       // 正常用户类型
       const typeWithSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.member',
-        'djPlatform': 'portrait.user.category.premier.theater.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.member',
-        'aqy': 'portrait.user.category.iqiyi.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.member',
-        'fkGarden': 'portrait.user.category.4k.garden.member',
-        'phyVIP': 'portrait.user.category.sports.vip.member',
-        'tencent': 'portrait.user.category.tencent.movie.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.member'
+        jyVIP: 'portrait.user.category.education.vip.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.member',
+        djPlatform: 'portrait.user.category.premier.theater.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.member',
+        aqy: 'portrait.user.category.iqiyi.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.member',
+        fkGarden: 'portrait.user.category.4k.garden.member',
+        phyVIP: 'portrait.user.category.sports.vip.member',
+        tencent: 'portrait.user.category.tencent.movie.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.member'
       }
       // 非会员
       const typeWithNoVipSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.nonmember',
-        'sjyVIP': 'portrait.user.category.education.super.vip.nonmember',
-        'djPlatform': 'portrait.user.category.premier.theater.nonmember',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.nonmember',
-        'aqy': 'portrait.user.category.iqiyi.nonmember',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.nonmember',
-        'fkGarden': 'portrait.user.category.4k.garden.nonmember',
-        'phyVIP': 'portrait.user.category.sports.vip.nonmember',
-        'tencent': 'portrait.user.category.tencent.movie.nonmember',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.nonmember'
+        jyVIP: 'portrait.user.category.education.vip.nonmember',
+        sjyVIP: 'portrait.user.category.education.super.vip.nonmember',
+        djPlatform: 'portrait.user.category.premier.theater.nonmember',
+        cjyVIP: 'portrait.user.category.education.kids.vip.nonmember',
+        aqy: 'portrait.user.category.iqiyi.nonmember',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.nonmember',
+        fkGarden: 'portrait.user.category.4k.garden.nonmember',
+        phyVIP: 'portrait.user.category.sports.vip.nonmember',
+        tencent: 'portrait.user.category.tencent.movie.nonmember',
+        kmVIP: 'portrait.user.category.cool.meow.vip.nonmember'
       }
       // 有效期会员
       const typeWithVipSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.validdate.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.validdate.member',
-        'djPlatform': 'portrait.user.category.premier.theater.validdate.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.validdate.member',
-        'aqy': 'portrait.user.category.iqiyi.validdate.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.validdate.member',
-        'fkGarden': 'portrait.user.category.4k.garden.validdate.member',
-        'phyVIP': 'portrait.user.category.sports.vip.validdate.member',
-        'tencent': 'portrait.user.category.tencent.movie.validdate.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.validdate.member'
+        jyVIP: 'portrait.user.category.education.vip.validdate.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.validdate.member',
+        djPlatform: 'portrait.user.category.premier.theater.validdate.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.validdate.member',
+        aqy: 'portrait.user.category.iqiyi.validdate.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.validdate.member',
+        fkGarden: 'portrait.user.category.4k.garden.validdate.member',
+        phyVIP: 'portrait.user.category.sports.vip.validdate.member',
+        tencent: 'portrait.user.category.tencent.movie.validdate.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.validdate.member'
       }
       // 已过期会员
       const typeWithVipNoValidSelectEnum = {
-        'jyVIP': 'portrait.user.category.education.vip.expireddate.member',
-        'sjyVIP': 'portrait.user.category.education.super.vip.expireddate.member',
-        'djPlatform': 'portrait.user.category.premier.theater.expireddate.member',
-        'cjyVIP': 'portrait.user.category.education.kids.vip.expireddate.member',
-        'aqy': 'portrait.user.category.iqiyi.expireddate.member',
-        'multAqy': 'portrait.user.category.mixed.source.iqiyi.expireddate.member',
-        'fkGarden': 'portrait.user.category.4k.garden.expireddate.member',
-        'phyVIP': 'portrait.user.category.sports.vip.expireddate.member',
-        'tencent': 'portrait.user.category.tencent.movie.expireddate.member',
-        'kmVIP': 'portrait.user.category.cool.meow.vip.expireddate.member'
+        jyVIP: 'portrait.user.category.education.vip.expireddate.member',
+        sjyVIP: 'portrait.user.category.education.super.vip.expireddate.member',
+        djPlatform: 'portrait.user.category.premier.theater.expireddate.member',
+        cjyVIP: 'portrait.user.category.education.kids.vip.expireddate.member',
+        aqy: 'portrait.user.category.iqiyi.expireddate.member',
+        multAqy: 'portrait.user.category.mixed.source.iqiyi.expireddate.member',
+        fkGarden: 'portrait.user.category.4k.garden.expireddate.member',
+        phyVIP: 'portrait.user.category.sports.vip.expireddate.member',
+        tencent: 'portrait.user.category.tencent.movie.expireddate.member',
+        kmVIP: 'portrait.user.category.cool.meow.vip.expireddate.member'
       }
       this.$service.seeDevicePortraintCharts({ params: { type: typeWithSelectEnum[this.memberListType] }, id: this.currentCid }).then(data => {
         const [names, values] = [[], []]
@@ -633,16 +635,16 @@ export default {
     },
     getPayDetail () {
       const typeWithSelectEnum = {
-        'jyVIP': 'portrait.last.payment.education.vip',
-        'sjyVIP': 'portrait.last.payment.education.super.vip',
-        'djPlatform': 'portrait.last.payment.premier.theater',
-        'cjyVIP': 'portrait.last.payment.education.kids.vip',
-        'aqy': 'portrait.last.payment.iqiyi',
-        'multAqy': 'portrait.last.payment.mixed.source.iqiyi',
-        'fkGarden': 'portrait.last.payment.4k.garden',
-        'phyVIP': 'portrait.last.payment.sports.vip',
-        'tencent': 'portrait.last.payment.tencent.movie',
-        'kmVIP': 'portrait.last.payment.cool.meow.vip'
+        jyVIP: 'portrait.last.payment.education.vip',
+        sjyVIP: 'portrait.last.payment.education.super.vip',
+        djPlatform: 'portrait.last.payment.premier.theater',
+        cjyVIP: 'portrait.last.payment.education.kids.vip',
+        aqy: 'portrait.last.payment.iqiyi',
+        multAqy: 'portrait.last.payment.mixed.source.iqiyi',
+        fkGarden: 'portrait.last.payment.4k.garden',
+        phyVIP: 'portrait.last.payment.sports.vip',
+        tencent: 'portrait.last.payment.tencent.movie',
+        kmVIP: 'portrait.last.payment.cool.meow.vip'
       }
       this.$service.seeDevicePortraintCharts({ params: { type: typeWithSelectEnum[this.memberListByPay] }, id: this.currentCid }).then(data => {
         const [names, values] = [[], []]
@@ -698,10 +700,10 @@ export default {
     bubbleSort (arr) {
       // 冒泡排序
       const len = arr.length
-      for (var i = 0; i < len; i++) {
-        for (var j = 0; j < len - 1 - i; j++) {
+      for (let i = 0; i < len; i++) {
+        for (let j = 0; j < len - 1 - i; j++) {
           if (arr[j] > arr[j + 1]) {
-            var temp = arr[j + 1]
+            const temp = arr[j + 1]
             arr[j + 1] = arr[j]
             arr[j] = temp
           }

@@ -111,8 +111,8 @@ export default {
         disabledDate: (time) => {
           const day1 = 30 * 24 * 3600 * 1000
           // let maxTime = Date.now() - 1 * 24 * 3600 * 1000
-          let maxTime = Date.now()
-          let minTime = Date.now() - day1
+          const maxTime = Date.now()
+          const minTime = Date.now() - day1
           return time.getTime() > maxTime || time.getTime() < minTime
         }
       },
@@ -146,7 +146,7 @@ export default {
             // this.crowdForm.match = data.historyResMatch || []
             this.list = data.pageInfo.list || '暂无数据'
             if (this.list === undefined || this.list.length === 0) {
-              this.noneText = '该人群不存在'
+              this.noneText = '当前人群无命中记录'
             }
           })
         }
@@ -158,9 +158,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     setDateData () {

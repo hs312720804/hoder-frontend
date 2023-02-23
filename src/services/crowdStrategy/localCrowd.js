@@ -92,3 +92,29 @@ export function getCrowdFlowPath (params) {
     params
   })
 }
+
+// ES数据导出接口
+export function checkMackFileIsExist (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/macExport/checkMackFileIsExist',
+    params
+  })
+}
+
+// ES数据导出接口
+export function downloadMacFile (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/macExport/downloadMacFile',
+    params
+  })
+}
+// 本地人群发送神策
+export function sensorAnalysis (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/multiVersionCrowd/localCrowd/sensorAnalysis',
+    params
+  })
+}

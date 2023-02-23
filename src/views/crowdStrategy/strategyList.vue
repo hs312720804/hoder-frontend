@@ -12,11 +12,14 @@
           <div class="search-input">
             <el-input
               v-model="searchForm.policyName"
-              style="width: 350px"
               placeholder="支持按策略、人群、创建人、部门搜索"
               @keyup.enter.native="handleSearch"
-            ></el-input>
-            <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+              clearable
+              style="width: 350px"
+            >
+            <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+          </el-input>
+            <!-- <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
           </div>
         </div>
         <div class="header-right">
@@ -99,7 +102,9 @@
           <span class="checkbox--orange">紫色</span>为动态指标,
           <span class="checkbox--orange2">棕色</span>为组合标签,
           <span class="checkbox--cyan">青色</span>为行为标签,
-          <span class="checkbox--gray">灰色</span>为人群标签）
+          <span class="checkbox--gray">灰色</span>为人群标签,
+          <span class="checkbox--pink">粉色</span>为实时标签[大数据]）
+          )
         </template>
         <template slot-scope="scope">
           <span v-for="item in scope.row.tagsList"
@@ -145,6 +150,7 @@
           <span v-else> 否 </span>
         </template>
       </el-table-column>
+
       <el-table-column prop="past7Active" label="7日是否有请求" width="110">
         <template slot-scope="scope">
           <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
@@ -260,7 +266,7 @@
       v-if="addFormVisible"
       v-model="addFormVisible"
       :close-on-click-modal="false"
-      width="800px"
+      width="1000px"
     >
       <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
         <el-form-item label="策略名称" prop="policyName">
@@ -286,15 +292,16 @@
           <!--</el-tabs>-->
         <!--</el-form-item>-->
         <div class="tags-tips">
-          <!-- 1111注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
-          <span class="checkbox--red">红色为大数据标签</span>,
+          <!-- 注：红色为大数据标签,绿色为自定义/本地标签,蓝色为账号标签,黄色为实时标签,紫色为动态指标,棕色为组合标签,青色为行为标签 -->
+          注：<span class="checkbox--red">红色为大数据标签</span>,
           <span class="checkbox--green">绿色为自定义/本地标签</span>,
           <span class="checkbox--blue">蓝色为账号标签</span>,
           <span class="checkbox--yellow">黄色为实时标签</span>,
           <span class="checkbox--orange">紫色为动态指标</span>,
           <span class="checkbox--orange2">棕色为组合标签</span>,
           <span class="checkbox--cyan">青色为行为标签</span>,
-          <span class="checkbox--gray">灰色为人群标签</span>
+          <span class="checkbox--gray">灰色为人群标签</span>,
+          <span class="checkbox--pink">粉色为实时标签[大数据]</span>
         </div>
         <el-form-item label="策略维度" prop="conditionTagIds" >
           <el-tabs tab-position="top" style="height: 200px;">
@@ -314,7 +321,7 @@
             <el-button @click="resetSearch">重置</el-button>
             </div>
               <el-checkbox-group v-model="checkedList" class="checkList" v-if="conditionTagsFiltered != '' ">
-                <el-checkbox 
+                <el-checkbox
                   v-for="item in conditionTagsFiltered"
                   :class="dataSourceColorClassEnum[item.tDataSource]"
                   :label="item.tagId"
@@ -441,6 +448,8 @@
 import { cloneDeep } from 'lodash'
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import viewEffectDialog from '../launch/viewEffectDialog'
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
+
 export default {
   components: {
     LaunchToBusiness,
@@ -514,12 +523,12 @@ export default {
       searchValue: '',
       reloadHistory: true,
       placeHolderInputObject: {
-        'POLICY_NAME': '请输入策略名称',
-        'POLICY_ID': '请输入策略id',
-        'TAG_NAME': '请输入策略维度',
-        'CREATOR_NAME': '请输入创建人名称',
-        'OFFICE_NAME': '请输入创建人部门名称',
-        'CROWD_ID': '请输入人群ID'
+        POLICY_NAME: '请输入策略名称',
+        POLICY_ID: '请输入策略id',
+        TAG_NAME: '请输入策略维度',
+        CREATOR_NAME: '请输入创建人名称',
+        OFFICE_NAME: '请输入创建人部门名称',
+        CROWD_ID: '请输入人群ID'
       },
       recordId: undefined,
       tempPolicyAndCrowd: {},
@@ -527,28 +536,28 @@ export default {
       launchSource: 'strategy',
       checkList: [],
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorClassEnum: {
-        1: 'checkbox--green',
-        2: 'checkbox--red',
-        3: 'checkbox--blue',
-        5: 'checkbox--yellow',
-        6: 'checkbox--orange',
-        7: 'checkbox--orange2',
-        8: 'checkbox--cyan',
-        11: 'success',
-        12: 'gray'
-      },
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorClassEnum: {
+      //   1: 'checkbox--green',
+      //   2: 'checkbox--red',
+      //   3: 'checkbox--blue',
+      //   5: 'checkbox--yellow',
+      //   6: 'checkbox--orange',
+      //   7: 'checkbox--orange2',
+      //   8: 'checkbox--cyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       showAll: false,
       seeDetailData: {
         props: {
@@ -584,8 +593,10 @@ export default {
                     type: 'textarea',
                     rows: 8,
                     readonly: true,
-                    value: row.content
-                  }
+                    value: row.content,
+                    autosize: { minRows: 10, maxRows: 20 }
+                  },
+                  class: 'get-setting'
                 }),
                 h('el-button', {
                   props: {
@@ -606,6 +617,14 @@ export default {
         },
         currentId: null
       }
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   props: ['historyFilter', 'checkListFilter', 'parentSource', 'showAllParent'],
@@ -648,8 +667,8 @@ export default {
         }
       }
     },
-    tagList(val) {
-      this.checkedList = val.map(item => item.tagId)
+    tagList (val) {
+      this.checkedList = val ? val.map(item => String(item.tagId)) : []
     }
   },
   methods: {
@@ -722,19 +741,19 @@ export default {
       // this.tagList.forEach(item => {item.filter(item => item.tagId !== id)})
     },
     handleTagChange (flag, item) {
-      var arr = []
-      if (flag) { 
-        this.tagList.push(item) 
+      let arr = []
+      if (flag) {
+        this.tagList.push(item)
         if (item.tDataSource === 12) {
           // 人群标签 id 集合
-          this.addForm.crowdTagCrowdIds.push(item.tagId) 
+          this.addForm.crowdTagCrowdIds.push(item.tagId)
         } else {
           // 其他的标签 id 集合
-          this.addForm.conditionTagIds.push(item.tagId) 
+          this.addForm.conditionTagIds.push(item.tagId)
         }
       } else {
         arr = this.tagList
-        for (var i = arr.length - 1; i >= 0; i--) {
+        for (let i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
 
@@ -746,11 +765,10 @@ export default {
           this.addForm.conditionTagIds = this.addForm.conditionTagIds.filter(tagId => tagId !== item.tagId)
         }
       }
-      
     },
     resetSearch () {
       this.searchValue = ''
-      let currentTagsId = this.addForm.conditionTagIds
+      const currentTagsId = this.addForm.conditionTagIds
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
@@ -779,17 +797,30 @@ export default {
       // this.addForm.dataSource = row.dataSource.toString();
       this.searchValue = ''
       this.getTags()
-      this.tagList = Row.tagsList
-      this.addForm.conditionTagIds = Row.conditionTagIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        })
-      this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds && Row.crowdTagCrowdIds
-        .split(',')
-        .map(function (v) {
-          return parseInt(v)
-        }) || []
+      this.tagList = Row.tagsList || []
+
+      if (Row.conditionTagIds) {
+        this.addForm.conditionTagIds = Row.conditionTagIds
+          .split(',')
+          .map(function (v) {
+            // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.conditionTagIds = []
+      }
+
+      if (Row.crowdTagCrowdIds) {
+        this.addForm.crowdTagCrowdIds = Row.crowdTagCrowdIds
+          .split(',')
+          .map(function (v) {
+          // return parseInt(v)
+            return String(v)
+          })
+      } else {
+        this.addForm.crowdTagCrowdIds = []
+      }
+
       // this.addForm.conditionTagIds = []
       // this.addForm.crowdTagCrowdIds = []
 
@@ -809,7 +840,7 @@ export default {
       this.$emit('openSchemePage', row)
     },
     del (row) {
-      var id = row.policyId
+      const id = row.policyId
       this.$confirm('确定要删除吗?', '提示', {
         confirmButtonText: '确定',
         cancelButtonText: '取消',
@@ -857,8 +888,8 @@ export default {
         this.reloadHistory = false
       }
       // this.checkList = this.checkListFilter
-      this.criteria['pageNum'] = this.currentPage
-      this.criteria['pageSize'] = this.pageSize
+      this.criteria.pageNum = this.currentPage
+      this.criteria.pageSize = this.pageSize
 
       // 如果是【我的人群】模块进入
       if (!this.showAll) {
@@ -973,7 +1004,7 @@ export default {
       this.loadDetailList()
     },
     loadDetailList () {
-      let params = {
+      const params = {
         policyId: this.detailPagination.currentId,
         pageNum: this.detailPagination.pagination.currentPage,
         pageSize: this.detailPagination.pagination.pageSize
@@ -1026,8 +1057,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -1074,8 +1105,8 @@ export default {
     },
     setCircleEcharts (element, title, legend, data) {
       const _this = this
-      let echarts = require('echarts')
-      let myChart = echarts.init(this.$refs[element])
+      const echarts = require('echarts')
+      const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -1102,11 +1133,13 @@ export default {
             radius: ['50%', '70%'],
             avoidLabelOverlap: false,
             itemStyle: {
-              normal: { label: {
-                show: true,
-                formatter: '{b} : {c} ({d}%)'
+              normal: {
+                label: {
+                  show: true,
+                  formatter: '{b} : {c} ({d}%)'
+                },
+                labelLine: { show: true }
               },
-              labelLine: { show: true } },
               emphasis: {
                 label: {
                   show: true,
@@ -1175,9 +1208,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      let y = time.getFullYear() // 年份
-      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      let r = time.getDate().toString().padStart(2, '0') // 日子
+      const y = time.getFullYear() // 年份
+      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      const r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     launchDetail (pid) {
@@ -1319,33 +1352,7 @@ ul > li
   float none
   margin 0 3px
 .strategy-list
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 .header-left
   display flex
   align-items center
@@ -1359,15 +1366,15 @@ ul > li
       display: -ms-flex;
       align-items: stretch;
     }
-    .left{
+    .left {
       background: aqua;
     }
-    .right{
+    .right {
       margin-left: 110px;
       background: antiquewhite;
     }
 </style>
 <style lang="stylus">
-.el-textarea__inner
+.get-setting .el-textarea__inner
   min-height 400px !important
 </style>

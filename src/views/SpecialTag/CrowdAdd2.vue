@@ -151,19 +151,19 @@ export default {
         // limitLaunchCount: [
         //   { required: true, message: '请输入大于0小于10万的限制数量', trigger: 'blur' }
         // ]
-      },
-      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
       }
+      // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // }
     }
   },
   props: ['value', 'propPrefix', 'initTagList'],
@@ -522,7 +522,7 @@ export default {
       return this.recordId
     },
     setSeq () {
-      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         // if (e.dynamicPolicyJson) {
@@ -561,8 +561,8 @@ export default {
     //   const startDay = item.startDay
     //   const endDay = item.endDay
     //   if (this.checkNumMostFour(endDay)) {
-    //     if (parseInt(startDay) >= parseInt(endDay)) {
-    //       this.$message.error('第二个值必须大于第一个值')
+    //     if (parseInt(startDay) > parseInt(endDay)) {
+    //       this.$message.error('第二个值不能小于第一个值')
     //     } else {
     //       item.value = startDay + '-' + endDay
     //     }
@@ -640,9 +640,9 @@ export default {
     // this.form.limitLaunch = policyData.limitLaunch
     // this.form.limitLaunchCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
     // this.currentLaunchLimitCount = policyData.limitLaunch ? policyData.limitLaunchCount : undefined
-    var cacheIds = []
+    const cacheIds = []
     if (detail.rulesJson) {
-      let ruleJsonData = JSON.parse(detail.rulesJson)
+      const ruleJsonData = JSON.parse(detail.rulesJson)
       ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
         itemParent.rules.forEach(item => {
           if (item.tagType === 'string' || item.tagType === 'collect') {
@@ -874,41 +874,7 @@ i {
 }
 
 .el-collapse {
-  >>> .el-tag--warningOrange {
-    color: #512DA8;
-    background-color: rgba(119, 81, 200, 0.4);
-    border-color: rgba(81, 45, 168, 0.45);
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningOrange2 {
-    color: #795548;
-    background-color: rgba(167, 130, 117, 0.5);
-    border-color: #7955488c;
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-  >>> .el-tag--warningCyan {
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  }
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 }
 
 .flex-item {

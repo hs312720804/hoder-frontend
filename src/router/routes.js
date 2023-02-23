@@ -46,17 +46,22 @@ import AddMoreCrowds from '@/views/crowdStrategy/AddMoreCrowds'
 import anomalyEcharts from '@/views/launch/anomaly'
 import crowdCirculationTrack from '@/views/crowdStrategy/crowdCirculationTrack'
 import homepageReleaseRecord from '@/views/crowdStrategy/HomepageReleaseRecord'
+import DynamicReport from '@/views/launch/launchAnalysis/DynamicReport'
 import myPolicy from '@/views/MyPolicy/Index'
 import redirectList from '@/views/crowdStrategy/redirect/List'
 import redirectAdd from '@/views/crowdStrategy/redirect/Add'
 import groupImageInsight from '@/views/GroupImageInsight/Index'
 import userTagsSearch from '@/views/launch/userTagsSearch'
 import hitSearch from '@/views/launch/hitSearch'
-import labelSquare from '@/views/LabelSquare/Index'
 import specialTag from '@/views/SpecialTag/Index'
 import resendCommand from '@/views/launch/resendCommand'
 import launchStatus from '@/views/launch/LaunchStatus'
 import hitQuery from '@/views/launch/hitQuery'
+import StoryLine from '@/views/storyLine/Index'
+import operationHelper from '@/views/operationHelper/Index'
+
+import labelSquare from '@/views/LabelSquare/Index'
+import crowdCompute from '@/views/crowdCompute/Index'
 
 const children = [
   // {
@@ -169,6 +174,16 @@ const children = [
     meta: {
       tagId: 'labelSquare',
       title: '标签广场',
+      icon: 'el-icon-cc-file'
+    }
+  },
+  {
+    name: 'crowdCompute',
+    path: '/crowdCompute',
+    component: crowdCompute,
+    meta: {
+      tagId: 'crowdCompute',
+      title: '人群计算',
       icon: 'el-icon-cc-file'
     }
   },
@@ -793,6 +808,39 @@ const children = [
     meta: {
       title: '组合标签',
       tagId: 'specialTag',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'dynamicReport',
+    path: 'dynamicReport',
+    component: DynamicReport,
+    meta: {
+      title: '动态实验报告',
+      tagId: 'DynamicReport',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'storyLine',
+    path: 'storyLine',
+    component: StoryLine,
+    meta: {
+      title: '故事运营',
+      tagId: 'storyLine',
+      hideInMenu: true,
+      isCache: false
+    }
+  },
+  {
+    name: 'operationHelper',
+    path: 'operationHelper',
+    component: operationHelper,
+    meta: {
+      title: '人群运营助手',
+      tagId: 'operationHelper',
       hideInMenu: true,
       isCache: false
     }

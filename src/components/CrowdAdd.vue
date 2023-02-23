@@ -30,7 +30,7 @@
                   @click="handleConditionChange(crowd)"
                   round
                   :key="i+'condition'"
-                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }} 111111111111
+                >{{ (crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
                 </el-button>
 
               <!-- {{ (crowd.behaviorRulesJson.link || crowd.behaviorRulesJson.link) === 'OR' ? '或' : '且' }}
@@ -96,7 +96,7 @@
                       </div>
                     </el-tooltip>
                   </div>
-                  <div v-if="!crowd.referCrowdId"><el-button @click="handleEstimate(crowd)">估算</el-button></div>
+                  <!-- <div v-if="!crowd.referCrowdId"><el-button @click="handleEstimate(crowd)">估算</el-button></div> -->
                 </div>
                 <div class="collapse-title" style="justify-content: center" v-if="crowd.total0 != undefined">
                   <div>圈定设备数量：{{crowd.total0}} <span class="count-tips">（当人群条件有变化，请重新点击估算）</span></div>
@@ -177,8 +177,54 @@
                 </el-form-item>
 
                 <el-form-item label="投放数量" prop="limitLaunchCount" v-if="crowd.limitLaunch">
-                  <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount"></el-input-number>
+                  <el-input-number size="medium" placeholder="不能大于1,000,000" :max="1000000" :min="1" v-model="crowd.limitLaunchCount" style="width: 220px;"></el-input-number>
+                  <span class="tip-text">命中的设备数量上限</span>
                 </el-form-item>
+
+                <el-form-item label="人群黑名单" prop="blackFlag">
+                  <el-radio-group v-model="crowd.blackFlag">
+                    <el-radio :label="0">否</el-radio>
+                    <el-radio :label="1">是</el-radio>
+                  </el-radio-group>
+                </el-form-item>
+
+                <template v-if="crowd.blackFlag === 1">
+                  <div
+                    class="filed-row"
+                    v-for="(item, index) in crowd.blackList"
+                    :key="index"
+                    style="margin-left: 130px"
+                  >
+                    <el-form-item
+                      :prop="propPrefix + i + '.blackList.' + index + '.value'"
+                      :rules="[
+                        { required: true, message: '不能为空', trigger: 'blur' },
+                        { validator: checkBlackName, trigger: ['blur'] }
+                      ]">
+                      <el-input
+                        v-model="item.value"
+                        placeholder="请输入要屏蔽的MAC地址"
+                        clearable
+                        style="width: 250px"
+                        maxlength="12"
+                        show-word-limit>
+                      </el-input>
+
+                      <el-button
+                        v-if="crowd.blackList.length > 1"
+                        type="text"
+                        icon="el-icon-remove-outline"
+                        class="delete-btn"
+                        @click="handleDeleteBlack(index, crowd)"
+                      >
+                      </el-button>
+                    </el-form-item>
+                  </div>
+
+                  <div class="filed-row" style="margin-left: 130px">
+                    <el-button @click="handleAddBlack(crowd)" icon="el-icon-plus" class="add-btn">添加</el-button>
+                  </div>
+                </template>
 
                 <el-form-item label="备注" :prop="formProp('remark')">
                   <el-input v-model="crowd.remark" placeholder="备注"></el-input>
@@ -328,6 +374,28 @@ export default {
     }
   },
   methods: {
+    checkBlackName (rule, value, callback) {
+      console.warn('checkBlackName')
+      const reg = /^[a-fA-F0-9]{12}$/
+      // const reg = /^[\w]{12}$/
+
+      if (!reg.test(value)) {
+        callback(new Error('mac 格式为大小写的 a-f 和数字的 12 位字符组合'))
+      } else {
+        callback()
+      }
+    },
+    handleDeleteBlack (index, crowd) {
+      crowd.blackList.splice(index, 1)
+    },
+    // 添加字段
+    handleAddBlack (crowd) {
+      if (crowd.blackList.length < 100) { // 黑名单数量上限为 100
+        crowd.blackList.push({
+          value: ''
+        })
+      }
+    },
     // 取消
     handleCancel () {
       this.linkDialogVisible = false
@@ -358,34 +426,62 @@ export default {
       return (this.propPrefix || '') + key
     },
 
-    // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 满足1、2其中一条就显示,默认值为 是，反之隐藏；
+    // 1、行为标签选择【动态周期】;
+    // 2、选择了以下标签：【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
+    // hasMoveBehaviorTagRule () {
+    //   this.inputValue.forEach((crowd) => {
+    //     const behaviorRules = crowd.behaviorRulesJson.rules
+    //     let hasBehaviorRule = false
+    //     let hasMoveRule = false
+    //     let hasFullTag = false // 是否有下面的标签，有的话就展示；【应用状态 (BAV0009)】，【会员状态 (BAV0001)】，【购买行为 (BAV0003)】，【用户活跃 (BAV0010)】，【优惠券行为(BAV0016)】 ;
+    //     const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010', 'BAV0016']
+
+    //     if (behaviorRules.length > 0) {
+    //       hasBehaviorRule = true
+    //       for (let x = 0; x < behaviorRules.length; x++) {
+    //         const rule = behaviorRules[x]
+    //         for (let y = 0; y < rule.rules.length; y++) {
+    //           const item = rule.rules[y]
+    //           if (item.bav && item.bav.rangeType === 'move') {
+    //             hasMoveRule = true
+    //             break
+    //           }
+    //           if (fullTagList.includes(item.tagCode)) {
+    //             hasFullTag = true
+    //             break
+    //           }
+    //         }
+    //       }
+    //     }
+
+    //     if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
+    //       // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
+    //       if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+    //         crowd.autoVersion = true
+    //       }
+    //       crowd.isShowAutoVersion = true
+    //     } else {
+    //       crowd.isShowAutoVersion = false
+    //       crowd.autoVersion = false
+    //     }
+    //   })
+    //   console.log('this.inputValue==>', this.inputValue)
+    // },
+
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
     hasMoveBehaviorTagRule () {
       this.inputValue.forEach((crowd) => {
         const behaviorRules = crowd.behaviorRulesJson.rules
         let hasBehaviorRule = false
-        let hasMoveRule = false
-        let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
-        const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
 
         if (behaviorRules.length > 0) {
           hasBehaviorRule = true
-          for (let x = 0; x < behaviorRules.length; x++) {
-            let rule = behaviorRules[x]
-            for (let y = 0; y < rule.rules.length; y++) {
-              let item = rule.rules[y]
-              if (item.bav && item.bav.rangeType === 'move') {
-                hasMoveRule = true
-                break
-              }
-              if (fullTagList.includes(item.tagCode)) {
-                hasFullTag = true
-                break
-              }
-            }
-          }
         }
 
-        if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
+        if (hasBehaviorRule) { // 展示勾选“是否每日更新”
           // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
           if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
             crowd.autoVersion = true
@@ -396,7 +492,6 @@ export default {
           crowd.autoVersion = false
         }
       })
-      console.log('this.inputValue==>', this.inputValue)
     },
 
     setInputValue (val) {
@@ -412,23 +507,23 @@ export default {
           // 人群规则初始值
           this.inputValue.push(
             {
-              'recordId': this.getRecordId(),
-              'tempCrowdId': undefined,
-              'crowdName': undefined,
-              'tagIds': [],
-              'purpose': undefined,
-              'remark': undefined,
-              'crowdOrder': 1,
-              'rulesJson': {
+              recordId: this.getRecordId(),
+              tempCrowdId: undefined,
+              crowdName: undefined,
+              tagIds: [],
+              purpose: undefined,
+              remark: undefined,
+              crowdOrder: 1,
+              rulesJson: {
                 condition: 'OR',
                 rules: []
               },
-              'behaviorRulesJson': {
+              behaviorRulesJson: {
                 link: 'AND',
                 condition: 'OR',
                 rules: []
               },
-              'dynamicPolicyJson': {
+              dynamicPolicyJson: {
                 link: 'AND',
                 condition: 'AND',
                 rules: []
@@ -437,7 +532,12 @@ export default {
               isShowAutoVersion: false,
               limitLaunch: false,
               limitLaunchCount: undefined,
-              total0: undefined
+              total0: undefined,
+              blackFlag: 0, // 黑名单
+              blacks: '',
+              blackList: [{ // 前端数据，不需要传给后端
+                value: ''
+              }]
             }
           )
           // this.setSeq()
@@ -494,7 +594,7 @@ export default {
         const copyName = this.getCopyIndex(0, copyCrowdData.crowdName)
         this.inputValue.push({
           ...copyCrowdData,
-          'crowdName': copyName
+          crowdName: copyName
         })
       } else { // 添加普通人群、引用其他人群
         const crowdName = linkCrowd ? `${linkCrowd.crowdName}（引用人群）` : undefined
@@ -502,32 +602,38 @@ export default {
           {
             referCrowdId: linkCrowd ? linkCrowd.crowdId : null,
             isLink: !!linkCrowd,
-            'recordId': this.getRecordId(),
-            'tempCrowdId': undefined,
-            'crowdName': crowdName,
-            'tagIds': [],
-            'purpose': undefined,
-            'remark': undefined,
-            'crowdOrder': length + 1,
-            'rulesJson': {
+            recordId: this.getRecordId(),
+            tempCrowdId: undefined,
+            crowdName: crowdName,
+            tagIds: [],
+            purpose: undefined,
+            remark: undefined,
+            crowdOrder: length + 1,
+            rulesJson: {
               condition: 'OR',
               rules: []
             },
-            'behaviorRulesJson': {
+            behaviorRulesJson: {
               link: 'AND',
               condition: 'OR',
               rules: []
             },
-            'dynamicPolicyJson': {
+            dynamicPolicyJson: {
               link: 'AND',
               condition: 'OR',
               rules: []
             },
-            'autoVersion': false,
-            'isShowAutoVersion': false,
-            'limitLaunch': false,
-            'limitLaunchCount': undefined,
-            total0: undefined
+            autoVersion: false,
+            isShowAutoVersion: false,
+            limitLaunch: false,
+            limitLaunchCount: undefined,
+            total0: undefined,
+            blackFlag: 0, // 黑名单
+            blacks: '',
+            blackList: [{ // 前端数据，不需要传给后端
+              value: ''
+            }]
+
           }
         )
       }
@@ -537,7 +643,7 @@ export default {
       return this.recordId
     },
     setSeq () {
-      let inputValue = JSON.parse(JSON.stringify(this.inputValue))
+      const inputValue = JSON.parse(JSON.stringify(this.inputValue))
       this.inputValue = inputValue.map((e, index) => {
         e.crowdOrder = index + 1
         return e
@@ -690,34 +796,7 @@ i
   align-items center
   justify-content center
 .el-collapse
-  >>> .el-tag--warningOrange
-    color #512DA8
-    background-color rgba(119, 81, 200, .4)
-    border-color rgba(81, 45, 168, .45)
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningOrange2
-    color: #795548;
-    background-color: rgba(167, 130, 117, .5);
-    border-color: #7955488c;
-    .el-tag__close
-      color #512DA8
-  >>> .el-tag--warningCyan {
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  }
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 .crowd-content
   width 100%
   display inline-block
