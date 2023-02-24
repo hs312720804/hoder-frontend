@@ -41,7 +41,7 @@
               <!-- 【会员状态】、【优惠券行为】不需要周期范围的所有下拉框选项 -->
               <!-- 【购买行为】 不需要星期范围 时间区间 -->
               <div v-if="childItem.dataSource === 8" class="behavior-label">
-                <div v-if="childItem.tagCode !== 'BAV0016' && childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
+                <div v-if="childItem.tagCode !== 'BAV0001' && childItem.tagCode !== 'BAV0009' && childItem.tagCode !== 'BAV0010'" style="display: flex; flex-direction: row;" >
                   <!-- 查看模式 -->
                   <Range
                     ref="range"
@@ -754,7 +754,7 @@ export default {
   methods: {
     getRangeType (tagCode) {
       let type = ['range', 'week', 'time']
-      if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') {
+      if (tagCode === 'BAV0003' || tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015' || tagCode === 'BAV0016') {
         type = ['range']
       }
       return type
