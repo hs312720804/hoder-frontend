@@ -204,16 +204,17 @@
         <div class="set-start">
           <template v-if="entryList.length > 0" >
             {{ checkList }}
-            <el-button type="text" @click="copyRules(entryList)">复制</el-button>
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <el-button type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
           </template>
-          <el-button type="text" @click="pasteRules" style="float: right">粘贴条件</el-button>
+          <el-button type="text" @click="pasteRules('entry')" style="float: right">粘贴条件</el-button>
 
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
             <!-- 暂时木有内容呀～～ -->
           </div>
 
-          <el-checkbox-group v-model="checkList">
+          <el-checkbox-group v-model="checkList" @change="checkListChange('entry')">
           <div v-for="entry in entryList" :key="entry.id" class="info-class">
             <el-checkbox :label="entry.id" :key="entry.id">
             </el-checkbox>
@@ -379,17 +380,22 @@
       <div>
         <div class="title2">服务终止条件（可选）</div>
         <div class="set-end">
+          <template v-if="exportList.length > 0">
+            {{ exportCheckList }}
+            <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
+            <el-button type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
+          </template>
+          <el-button type="text" @click="pasteRules('export')" style="float: right">粘贴条件</el-button>
+
           <div v-if="exportList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
             <!-- 暂时木有内容呀～～ -->
           </div>
+          <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
           <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
-            <!-- <div class="border-line">
-              <div>{{ item.rulesJson }}</div>
-              <br/>
-              <div>{{ item.behaviorRulesJson }}</div>
-            </div> -->
-            <div class="item-id">{{ exportItem.id }}</div>
+            <el-checkbox :label="exportItem.id" :key="exportItem.id">
+            </el-checkbox>
+            <!-- <div class="item-id">{{ exportItem.id }}</div> -->
             <div class="border-line"  style="position: relative;">
               <div class="outer-and">
                 <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
@@ -497,6 +503,7 @@
             </div>
 
           </div>
+          </el-checkbox-group>
           <div class="box-fotter" v-if="selectedServicer.id">
             <!-- <el-button>添加</el-button> -->
             <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
@@ -618,7 +625,7 @@ export default {
 
         val.forEach(item => {
           const ruleArr = JSON.parse(item.rulesJson).rules
-          console.log('rulesJson-->', ruleArr)
+          // console.log('rulesJson-->', ruleArr)
 
           ruleArr.forEach(z1Item => {
             z1Item.rules.forEach(z2Item => {
@@ -647,7 +654,11 @@ export default {
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
         this.targetValue = val.indicators || ''// 绩效指标
-        this.checkList = [] // 置空
+
+        // 入口多选 置空
+        this.clearEntry()
+        // 出口多选 置空
+        this.clearExport()
 
         // 清空绩效图表
         this.allChartData = {}
@@ -696,6 +707,11 @@ export default {
   data () {
     return {
       checkList: [],
+      exportCheckList: [],
+      checkAll: false,
+      isIndeterminate: false,
+      checkAll2: false,
+      isIndeterminate2: false,
       popoverVisible: '',
       recommendLoading: false,
       getGoalDataLoading: false,
@@ -821,13 +837,61 @@ export default {
     })
   },
   methods: {
+    // 入口全选
+    handleCheckAllChange (val) {
+      // 出口多选 置空
+      this.clearExport()
+
+      const allIds = this.entryList.map(item => item.id)
+      this.checkList = val ? allIds : []
+      this.isIndeterminate = false
+    },
+    // 出口全选
+    handleCheckAllChange2 (val) {
+      // 入口多选 置空
+      this.clearEntry()
+
+      const allIds = this.exportList.map(item => item.id)
+      this.exportCheckList = val ? allIds : []
+      this.isIndeterminate2 = false
+    },
+    clearEntry () {
+      this.checkList = [] // 入口多选 置空
+      this.isIndeterminate = false // 入口多选 置空
+      this.checkAll = false // 出口多选 置空
+    },
+    clearExport () {
+      this.exportCheckList = [] // 出口多选 置空
+      this.isIndeterminate2 = false // 出口多选 置空
+      this.checkAll2 = false // 出口多选 置空
+    },
+    // 选项框选择： 入口 和 出口多选是互斥的,
+    checkListChange (type) {
+      if (type === 'entry') {
+        // 出口多选 置空
+        this.clearExport()
+
+        const checkedCount = this.checkList.length
+
+        this.checkAll = checkedCount === this.entryList.length
+        this.isIndeterminate = checkedCount > 0 && checkedCount < this.entryList.length
+      } else if (type === 'export') {
+        // 入口多选 置空
+        this.clearEntry()
+
+        const checkedCount = this.exportCheckList.length
+
+        this.checkAll2 = checkedCount === this.exportList.length
+        this.isIndeterminate2 = checkedCount > 0 && checkedCount < this.exportList.length
+      }
+    },
     // 复制条件
-    copyRules (allRules) {
-      if (this.checkList.length > 0) {
+    copyRules (allRules, type = '') {
+      if (this.checkList.length > 0 || this.exportCheckList.length > 0) {
         const parmas = {
-          type: '',
-          selectedIds: this.checkList,
-          allRules
+          selectedIds: type === 'entry' ? this.checkList : this.exportCheckList,
+          allRules,
+          type
         }
         this.$store.commit('SET_COPY_ENTRY_ID', parmas)
         this.$message.success('复制成功')
@@ -836,18 +900,29 @@ export default {
       }
     },
     // 粘贴条件
-    pasteRules () {
+    pasteRules (pasteType) {
       console.log('this.$store.state.copyEntry--->', this.$store.state.configScheme.copyServiceRules)
       const { type, selectedIds, allRules } = this.$store.state.configScheme.copyServiceRules
-
-      selectedIds.forEach(id => {
-        const objData = allRules.find(ruleData => ruleData.id === id)
-        objData && this.savePasteRule(objData)
-      })
+      if (type === pasteType) {
+        const arr = []
+        selectedIds.forEach(id => {
+          const objData = allRules.find(ruleData => ruleData.id === id)
+          // objData && this.savePasteRule(objData, type)
+          if (objData) {
+            arr.push(objData)
+          }
+        })
+        Promise.all(arr.map((item) => this.savePasteRule(item, type))).then(res => {
+          console.log('1234res-->', res)
+          this.$message.success('粘贴成功')
+        })
+      } else {
+        this.$message.error('入口条件、出口条件不允许混用')
+      }
       // console.log('this.entryList', this.entryList)
     },
     // 保存到后端
-    savePasteRule (data) {
+    savePasteRule (data, type) {
       const params = {
         sceneId: this.selectedScene.id,
         policyId: this.selectedScene.policyId,
@@ -858,12 +933,22 @@ export default {
         flowCondition: data.flowCondition, // 流转指标
         delFlag: 1,
         link: data.link
+        // stopType,
+        // nextId
       }
-      this.$service.addEntry(params).then(res => {
-        // 刷新列表
-        this.$emit('updataEntryList')
-      })
+      if (type === 'entry') {
+        this.$service.addEntry(params).then(res => {
+          // 刷新列表
+          this.$emit('updataEntryList')
+        })
+      } else if (type === 'export') {
+        this.$service.addExport(params).then(res => {
+          // 刷新列表
+          this.$emit('updataExportList')
+        })
+      }
     },
+
     // handleCopy () {
     //   const range = document.createRange() // 创建range对象
     //   range.selectNode(document.getElementById('copycode')) // 获取复制内容的 id 选择器
