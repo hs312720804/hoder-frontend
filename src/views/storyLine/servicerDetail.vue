@@ -202,12 +202,22 @@
       <div>
         <div class="title2">服务对象选择（可选）</div>
         <div class="set-start">
+          <template v-if="entryList.length > 0" >
+            {{ checkList }}
+            <el-button type="text" @click="copyRules(entryList)">复制</el-button>
+          </template>
+          <el-button type="text" @click="pasteRules" style="float: right">粘贴条件</el-button>
+
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
             <!-- 暂时木有内容呀～～ -->
           </div>
+
+          <el-checkbox-group v-model="checkList">
           <div v-for="entry in entryList" :key="entry.id" class="info-class">
-            <div class="item-id">{{ entry.id }}</div>
+            <el-checkbox :label="entry.id" :key="entry.id">
+            </el-checkbox>
+            <!-- <div class="item-id">{{ entry.id }}</div> -->
             <div class="border-line"  style="position: relative;">
               <div class="outer-and">
                 <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
@@ -310,6 +320,7 @@
             </div>
 
           </div>
+          </el-checkbox-group>
 
           <!-- 没有选择接待员时隐藏 -->
           <div class="box-fotter" v-if="selectedServicer.id">
@@ -636,6 +647,7 @@ export default {
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
         this.targetValue = val.indicators || ''// 绩效指标
+        this.checkList = [] // 置空
 
         // 清空绩效图表
         this.allChartData = {}
@@ -683,6 +695,7 @@ export default {
   },
   data () {
     return {
+      checkList: [],
       popoverVisible: '',
       recommendLoading: false,
       getGoalDataLoading: false,
@@ -808,6 +821,49 @@ export default {
     })
   },
   methods: {
+    // 复制条件
+    copyRules (allRules) {
+      if (this.checkList.length > 0) {
+        const parmas = {
+          type: '',
+          selectedIds: this.checkList,
+          allRules
+        }
+        this.$store.commit('SET_COPY_ENTRY_ID', parmas)
+        this.$message.success('复制成功')
+      } else {
+        this.$message.info('请勾选需要复制条件')
+      }
+    },
+    // 粘贴条件
+    pasteRules () {
+      console.log('this.$store.state.copyEntry--->', this.$store.state.configScheme.copyServiceRules)
+      const { type, selectedIds, allRules } = this.$store.state.configScheme.copyServiceRules
+
+      selectedIds.forEach(id => {
+        const objData = allRules.find(ruleData => ruleData.id === id)
+        objData && this.savePasteRule(objData)
+      })
+      // console.log('this.entryList', this.entryList)
+    },
+    // 保存到后端
+    savePasteRule (data) {
+      const params = {
+        sceneId: this.selectedScene.id,
+        policyId: this.selectedScene.policyId,
+        receptionistId: this.selectedServicer.id,
+        tagIds: data.tagIds,
+        rulesJson: data.rulesJson,
+        behaviorRulesJson: data.behaviorRulesJson,
+        flowCondition: data.flowCondition, // 流转指标
+        delFlag: 1,
+        link: data.link
+      }
+      this.$service.addEntry(params).then(res => {
+        // 刷新列表
+        this.$emit('updataEntryList')
+      })
+    },
     // handleCopy () {
     //   const range = document.createRange() // 创建range对象
     //   range.selectNode(document.getElementById('copycode')) // 获取复制内容的 id 选择器
