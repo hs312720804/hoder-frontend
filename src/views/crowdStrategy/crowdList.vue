@@ -2514,13 +2514,13 @@ export default {
           this.loadData()
 
           if (res.code === '3000') {
-            this.$notify({
+            this.$message({
               title: '提示',
               type: 'warning',
               message: res.msg
             })
           } else {
-            this.$notify({
+            this.$message({
               title: '操作成功',
               type: 'success',
               message: '提交估算成功'
