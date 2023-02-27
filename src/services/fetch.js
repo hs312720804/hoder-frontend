@@ -20,7 +20,7 @@ axios.interceptors.response.use((response) => {
     // location.href = lo
     // // router.replace('/login')
     console.log('token 失效啦')
-    // Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+    Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
     // router.replace('/login').catch(() => {})
     // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
   }
