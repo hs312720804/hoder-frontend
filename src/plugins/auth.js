@@ -23,7 +23,7 @@ Vue.prototype.$isLoggedIn = async function () {
       })
       this.$appState.menus = res.menus
     }).catch(err => {
-      console.log('errData==>', err)
+      console.log('getInitData errData==>', err)
       // token 失效，接口报401
       Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
 

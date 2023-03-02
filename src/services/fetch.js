@@ -18,7 +18,6 @@ axios.interceptors.response.use((response) => {
     // location.href = lo
     // // router.replace('/login')
     // console.log('token 失效啦')
-    // Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
     // window.location = '/login'
     // window.location.reload()
     // NProgress.done()
@@ -26,6 +25,7 @@ axios.interceptors.response.use((response) => {
     // console.log('location.href--->', location.href)
     // router.replace('/login').catch(() => {})
     // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
+    return Promise.reject(new Error('error: 401'))
   }
   return Promise.reject(error)
 })
@@ -94,9 +94,11 @@ export default function fetch ({
     .catch(err => {
       console.log('errData==>', err)
       // Error: Network Error
-      // 异常时，跳转至登录页
-      // location.href = location.origin + location.pathname + '#/login'
       NProgress.done()
+      // 异常时，跳转至登录页
+      if (err.indexOf('401') > -1) {
+        location.href = location.origin + location.pathname + '#/login'
+      }
       throw err
     })
 }
