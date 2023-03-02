@@ -61,6 +61,24 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+
+                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
+                  <el-select
+                    v-model="crowdForm.packageName"
+                    placeholder="请选择投放应用"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in pushPackageList"
+                      :key="item.id"
+                      :label="item.appName"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+
                 <el-form-item label="数据来源" prop="dataSource">
                     <input type="hidden" value="2" v-model="crowdForm.dataSource">
                     <el-input size="small" readonly value="大数据"></el-input>
@@ -243,7 +261,8 @@ export default {
           push: false
         },
         calType: ['0'],
-        crowdType: 0
+        crowdType: 0,
+        packageName: ''
       },
       rulesData: {
         launchMode: [{
@@ -265,6 +284,9 @@ export default {
         ],
         autoLaunchTime: [
           { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
+        ],
+        packageName: [
+          { required: true, message: '请选择投放应用', trigger: 'blur' }
         ]
       },
       Platforms: [],
@@ -280,10 +302,20 @@ export default {
       pullFail: false,
       pushFail: false,
       pullSuccessPushFail: false,
-      behaviorCrowdList: []
+      behaviorCrowdList: [],
+      pushPackageList: []
     }
   },
   methods: {
+    getPushPackageList () {
+      const parmas = {
+        pageNum: 0,
+        pageSize: 200
+      }
+      this.$service.getPushPackageList(parmas).then(res => {
+        this.pushPackageList = res.rows || []
+      })
+    },
     handelBehaviorCrowdSelectChange (e, selectedV, list) {
       const policyCrowdIds = selectedV.split('_')[1]
       // item.policyIds+'_'+item.policyCrowdIds
@@ -471,7 +503,7 @@ export default {
         }
       }).catch(e => {
         this.pullFail = true
-        this.$message.error(e)
+        // this.$message.error(e)
       })
     },
     reParamsData () {
@@ -530,7 +562,7 @@ export default {
     },
     handlePushError (e) {
       this.pushFail = true
-      this.$message.error(e)
+      // this.$message.error(e)
       if (this.crowdForm.launchMode.pull && !this.pullFail) {
         // pull成功 push异常,把pull去掉勾选且禁选
         this.crowdForm.launchMode.pull = false
@@ -636,6 +668,7 @@ export default {
     this.getCountDataEnum()
     this.handleGetCurrentPolicy()
     this.getCrowdInitList()
+    this.getPushPackageList() // 获取pushAPP接口
   }
 }
 </script>

@@ -66,6 +66,24 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+
+                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
+                  <el-select
+                    v-model="crowdForm.packageName"
+                    placeholder="请选择投放应用"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in pushPackageList"
+                      :key="item.id"
+                      :label="item.appName"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+
                 <el-form-item label="数据来源" prop="dataSource">
                     <input type="hidden" value="2" v-model="crowdForm.dataSource">
                     <el-input size="small" readonly value="大数据"></el-input>
@@ -182,7 +200,8 @@ export default {
           pull: true,
           push: false
         },
-        calType: ['0']
+        calType: ['0'],
+        packageName: ''
       },
       rulesData: {
         launchMode: [{
@@ -204,6 +223,9 @@ export default {
         ],
         autoLaunchTime: [
           { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
+        ],
+        packageName: [
+          { required: true, message: '请选择投放应用', trigger: 'blur' }
         ]
       },
       Platforms: [],
@@ -215,13 +237,24 @@ export default {
       strategyPlatform: [],
       effectTimeList: [],
       crowdData: [],
-      estimateItems: []
+      estimateItems: [],
+      pushPackageList: []
+
     }
   },
   computed: {
     ...mapGetters(['policyName'])
   },
   methods: {
+    getPushPackageList () {
+      const parmas = {
+        pageNum: 0,
+        pageSize: 200
+      }
+      this.$service.getPushPackageList(parmas).then(res => {
+        this.pushPackageList = res.rows || []
+      })
+    },
     /*
                 行为人群和普通人群不能混用；
                 行为人群只能选择一个；
@@ -347,7 +380,8 @@ export default {
               launchName: crowdForm.launchName,
               policyCrowdIds: crowdForm.policyCrowdIds,
               calType: crowdForm.calType,
-              remark: crowdForm.remark
+              remark: crowdForm.remark,
+              packageName: crowdForm.packageName
             } : undefined
           }
           // 动态人群的保存 只能pull
@@ -525,6 +559,7 @@ export default {
     this.getCountDataEnum()
     this.handleGetCurrentPolicy()
     this.getCrowdInitList()
+    this.getPushPackageList() // 获取pushAPP接口
   }
 }
 </script>

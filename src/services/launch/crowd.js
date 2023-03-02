@@ -411,3 +411,11 @@ export function dynamicCrowdMonitoring (params) {
     params
   })
 }
+// 获取 pushAPP 接口
+export function getPushPackageList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/pushpackage/list',
+    params
+  })
+}
