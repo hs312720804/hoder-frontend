@@ -2,8 +2,9 @@
     <div>
         <div class="title">查询指定MAC的命中情况</div>
         <el-form :model="form" ref="form" :rules="rules" :inline="true">
+          <!-- crowdId: 12045 -->
             <el-form-item label="人群id：" prop="crowdId">
-                <el-input v-model="form.crowdId" clearable></el-input>
+                <el-input v-model="form.crowdId" clearable @keydown.enter.native="handleSearch"></el-input>
             </el-form-item>
                <!-- <el-form-item label="设备信息：" prop="mac"> -->
             <el-form-item label="MAC地址" prop="mac">
@@ -58,6 +59,7 @@
                 <div>
                     命中情况：
                     总条数： {{this.pagination.total}}
+                    <el-button type="text" @click="exportToTempLabel" class="export-to-temp">导出为临时标签</el-button>
                 </div>
                 <div class="result">
                     <div v-for="(item,index) in list" :key="index" class="result-item">
@@ -79,6 +81,19 @@
             </div>
             <div v-else>{{ noneText }}</div>
         </div>
+
+      <!-- 导出命中数据为临时标签 -->
+      <el-dialog :visible.sync="dialogVisible" title="导出命中数据为临时标签" width="550px">
+        <el-form :model="exportForm" ref="formRef" label-width="80px">
+          <el-form-item label="标签名：" prop="sceneId" required>
+            <el-input v-model="exportForm.sceneId" clearable></el-input>
+          </el-form-item>
+        </el-form>
+        <span slot="footer" class="dialog-footer">
+          <el-button @click="dialogVisible = false">取 消</el-button>
+          <el-button type="primary" @click="comfirmExport">确 定</el-button>
+        </span>
+      </el-dialog>
     </div>
 </template>
 
@@ -117,10 +132,30 @@ export default {
         }
       },
       list: [],
-      noneText: ''
+      noneText: '',
+      dialogVisible: false,
+      exportForm: {
+        id: '',
+        sceneId: ''
+      }
     }
   },
   methods: {
+    exportToTempLabel () {
+      this.dialogVisible = true
+    },
+    comfirmExport () {
+      this.$refs.formRef.validate((valid) => {
+        if (valid) {
+          alert(JSON.stringify(this.exportForm))
+          // this.$service.copyServicer(this.copyForm, '复制成功').then(res => {
+          //   // 刷新列表
+          //   this.getServiceList()
+          //   this.copyDialogVisible = false
+          // })
+        }
+      })
+    },
     handelGo (url) {
       window.open(url, '_blank')
     },
@@ -180,16 +215,18 @@ export default {
 
 <style lang="stylus" scoped>
 .result
-    border 1px dashed #333
-    padding 0 20px
-    margin 20px
-    overflow auto
-    .result-item
-        margin 20px 0
+  border 1px dashed #333
+  padding 0 20px
+  margin 20px
+  overflow auto
+  .result-item
+      margin 20px 0
 .red--text
-    color red
+  color red
 .title
-    margin-bottom 20px
+  margin-bottom 20px
 .no-result
-    margin 20px
+  margin 20px
+.export-to-temp
+  margin-left 10px
 </style>
