@@ -15,7 +15,18 @@
             <div class="detail-name-border"></div>
           </span>
           <div class="d-info" >
-            <template>
+            <!-- 复用的接待员 -->
+            <template v-if="isCopiedServicer">
+              <div style="white-space: nowrap;grid-column-start: 1;grid-column-end: 3;display: grid;">如需修改，请跳转到被复用的接待员处编辑</div>
+              <div>复用自：</div>
+              <div>{{ selectedServicer.userName || '-'}}</div>
+              <div>复用时间：</div>
+              <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
+              <div>擅长(可选)：</div>
+              <div>{{ selectedServicer.userName || '-'}}</div>
+            </template>
+
+            <template v-else>
               <div>创建人：</div>
               <div>{{ selectedServicer.userName || '-'}}</div>
               <div>创建时间：</div>
@@ -88,29 +99,36 @@
 
           </div>
         </div>
-        <div class="aaa"></div>
+        <div class="servicer-img"></div>
         <div class="detail-header-column">
           <div class="target">我的任务（可选）</div>
           <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
           <div class="flex-content">
             <div class="target-img"></div>
-            <div v-if="!isEdit" @click="editTarget" class="target-text">
-              <span>{{ target }}</span>
-              <span v-if="selectedServicer.id" class="text-over"></span>
-            </div>
-            <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-            <el-input
-              v-else
-              ref="inputPriority"
-              :autosize="{ minRows: 2, maxRows: 4}"
-              type="textarea"
-              placeholder="请输入内容"
-              @blur="editStatuChange"
-              v-model="target"
-              maxlength="200"
-              show-word-limit>
-            </el-input>
+
+            <!-- 复用的接待员 -->
+            <template v-if="isCopiedServicer">
+              复用的接待员任务...(待改)
+            </template>
+            <template v-else>
+              <div v-if="!isEdit" @click="editTarget" class="target-text">
+                <span>{{ target }}</span>
+                <span v-if="selectedServicer.id" class="text-over"></span>
+              </div>
+              <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+              <el-input
+                v-else
+                ref="inputPriority"
+                :autosize="{ minRows: 2, maxRows: 4}"
+                type="textarea"
+                placeholder="请输入内容"
+                @blur="editStatuChange"
+                v-model="target"
+                maxlength="200"
+                show-word-limit>
+              </el-input>
+            </template>
           </div>
           <!-- targetKeyId: {{targetKeyId}}
           <br/>
@@ -205,7 +223,7 @@
           <template v-if="entryList.length > 0" >
             {{ checkList }}
             <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-            <el-button type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
+            <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
           </template>
           <el-button type="text" @click="pasteRules('entry')" style="float: right">粘贴条件</el-button>
 
@@ -383,7 +401,7 @@
           <template v-if="exportList.length > 0">
             {{ exportCheckList }}
             <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
-            <el-button type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
+            <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
           </template>
           <el-button type="text" @click="pasteRules('export')" style="float: right">粘贴条件</el-button>
 
@@ -619,13 +637,11 @@ export default {
   },
   watch: {
     entryList (val) {
-      console.log('entryList--->', val)
       if (val.length > 0) {
         const returnArr = []
 
         val.forEach(item => {
           const ruleArr = JSON.parse(item.rulesJson).rules
-          // console.log('rulesJson-->', ruleArr)
 
           ruleArr.forEach(z1Item => {
             z1Item.rules.forEach(z2Item => {
@@ -650,7 +666,6 @@ export default {
     selectedServicer: {
       handler (val) {
         // 选择接待员时，更新接待员详情数据
-        console.log('val------>', val)
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
         this.targetValue = val.indicators || ''// 绩效指标
@@ -706,6 +721,7 @@ export default {
   },
   data () {
     return {
+      isCopiedServicer: true,
       checkList: [],
       exportCheckList: [],
       checkAll: false,
@@ -836,6 +852,7 @@ export default {
       }
     })
   },
+
   methods: {
     // 入口全选
     handleCheckAllChange (val) {
@@ -901,7 +918,6 @@ export default {
     },
     // 粘贴条件
     pasteRules (pasteType) {
-      console.log('this.$store.state.copyEntry--->', this.$store.state.configScheme.copyServiceRules)
       const { type, selectedIds, allRules } = this.$store.state.configScheme.copyServiceRules
       if (type === pasteType) {
         const arr = []
@@ -913,13 +929,11 @@ export default {
           }
         })
         Promise.all(arr.map((item) => this.savePasteRule(item, type))).then(res => {
-          console.log('1234res-->', res)
           this.$message.success('粘贴成功')
         })
       } else {
         this.$message.error('入口条件、出口条件不允许混用')
       }
-      // console.log('this.entryList', this.entryList)
     },
     // 保存到后端
     savePasteRule (data, type) {
@@ -979,7 +993,6 @@ export default {
     },
     getKeyName (key) {
       const obj = this.tagCodeList.find(item => Number(item.tagCode) === Number(key))
-      console.log('obj--->', obj)
       return obj ? obj.tagCnName : ''
     },
     getUptmRecommendResourceList () {
@@ -993,7 +1006,6 @@ export default {
           tagCodes
         }
         this.$service.getTopRecommendResourceList(params).then(res => {
-          console.log('res--->', res)
           this.recommendResourceList = res || []
           this.recommendLoading = false
         }).catch(() => {
@@ -1216,7 +1228,6 @@ export default {
     },
     // 编辑入口
     editEntry (row) {
-      console.log('editClientRow---->', row)
       this.editClientRow = row
       this.clientDialogVisible = true
     },
@@ -1250,7 +1261,6 @@ export default {
     },
     // 编辑出口
     editExport (row) {
-      console.log('editClientRow---->', row)
       this.editExportRow = row
       this.exportDialogVisible = true
     },
@@ -1275,8 +1285,6 @@ export default {
     },
     // 服务员选择技能
     async selectSkill (e) {
-      console.log('selectSkill----', e)
-
       // 先判断是否是选择了已有的ID
       // const existIdArr = this.skillOptions.filter(item => item.id === e)
       // if (existIdArr.length > 0) {
@@ -1307,7 +1315,6 @@ export default {
         sceneId: this.selectedScene.id
       }
       return this.$service.getSceneSkillList(parmas).then(res => {
-        console.log('rs-->', res)
         this.skillOptions = res || []
         return res
       })
@@ -1393,8 +1400,6 @@ export default {
     getPerformanceGoalData () {
       this.allChartData = {}
       this.overview = {}
-      // console.log('selectedScene---', this.selectedScene)
-      // console.log('selectedServicer---', this.selectedServicer)/
       const params = {
         // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
         dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
@@ -1407,7 +1412,6 @@ export default {
       //   crowdId: 14331, // 接待员id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
-      console.log('this.selectedServicer.crowdId---->', this.selectedServicer.crowdId)
       this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
         // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
@@ -1434,7 +1438,6 @@ export default {
     //  折线图
     showLine (data, chartID) {
       const hasY2 = false
-      // console.log('showLine======111>>>', ...arguments)
       if (data && data.xaxis && data.xaxis.length > 0) {
         const series = data.series || []
         const legendData = series.map((key) => {
@@ -1454,9 +1457,6 @@ export default {
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
-      // console.log('setBarEchart======111>>>', this.$refs)
-      // console.log('setBarEchart======111>>>', element)
-      // console.log('setBarEchart======111>>>', this.$refs[element])
       const chartElement = document.getElementById(element)
       if (!chartElement) return
 
@@ -1599,7 +1599,6 @@ export default {
           }
         })
       }
-      console.log('option===>', option)
 
       const myChart = echarts.init(chartElement)
       myChart.setOption(option, true)

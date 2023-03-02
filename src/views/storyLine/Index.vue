@@ -144,7 +144,7 @@
                         . . .
                       </span>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item class="clearfix" :command="['rename', item]">
+                        <el-dropdown-item :disabled="isCopiedServicer" class="clearfix" :command="['rename', item]" >
 
                           <el-popover placement="top" trigger="click" ref="pop">
                             <div slot="reference">重命名</div>
@@ -172,6 +172,9 @@
                         </el-dropdown-item>
                         <el-dropdown-item class="clearfix" :command="['copy', item]">
                           复制
+                        </el-dropdown-item>
+                        <el-dropdown-item class="clearfix" :command="['copyUse', item]">
+                          复用
                         </el-dropdown-item>
                         <el-dropdown-item class="clearfix" :command="['deleteService', item]">
                           删除
@@ -268,7 +271,7 @@
       </el-dialog>
 
       <!-- 复制接待员 -->
-      <el-dialog :visible.sync="copyDialogVisible" title="将接待员复制到以下场景" width="550px">
+      <el-dialog :visible.sync="copyDialogVisible" :title="`将接待员${copyType === 'copyUse' ? '复用' : '复制'}到以下场景`" width="550px">
         <el-form :model="copyForm" ref="copyFormRef">
           <el-form-item label="选择场景" prop="sceneId" required>
             <el-select v-model="copyForm.sceneId" clearable>
@@ -304,6 +307,9 @@ export default {
   },
   data () {
     return {
+      tipMsg: '当前接待员出口下一步不可为空',
+      isCopiedServicer: true,
+      copyType: '',
       copyForm: {
         id: '',
         sceneId: ''
@@ -360,7 +366,6 @@ export default {
   watch: {
     '$route.params': {
       handler (val) {
-        console.log('val--->', val)
         // if (val.sceneId) {
         this.getSceneList()
         // }
@@ -373,8 +378,88 @@ export default {
 
     this.getPolicyList()
   },
+  mounted () {
+    window.addEventListener('visibilitychange', this.handleVisiable)
+    // window.addEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
+    window.addEventListener('beforeunload', this.aaaa)
+    // window.addEventListener('unload', this.updateHandler)
+    console.log('window-->', window)
+    console.log('docment-->', document)
+    console.log('docment-->', document === window.document)
+  },
+  destroyed () {
+    window.removeEventListener('visibilitychange', this.handleVisiable)
+    // window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
+    window.removeEventListener('beforeunload', this.aaaa)
+    // window.removeEventListener('unload', this.updateHandler)
+  },
+  beforeRouteLeave (to, from, next) {
+    // 导航离开该组件的对应路由时调用
+    // 可以访问组件实例 `this`
+    // if (to.name === 'detail') { // 若要跳到详情页，则将分页和筛选信息存在Storage
+    //   window.sessionStorage.setItem('pageInfo', JSON.stringify(this.pageInfo))
+    // } else { // 若不是详情页，则清楚分页信息
+    //   window.sessionStorage.removeItem('pageInfo')
+    // }
+    const bool = this.getIsAllSetNextId()
+    if (bool) {
+      // 执行路由跳转
+      next()
+    } else {
+      alert(this.tipMsg)
+    }
+  },
   methods: {
-
+    aaaa () {
+      alert('aaaa')
+    },
+    beforeunloadHandler (e) {
+      alert('123')
+      // console.log('e-->', e)
+      e = e || window.event
+      if (e) {
+        e.returnValue = '关闭提示123'
+      }
+      return true
+    },
+    updateHandler () {
+      alert('updateHandler')
+      // fetch('url', {
+      //     method: 'POST',
+      //     body:'参数'
+      //     headers: {'Content-Type': 'application/json'},
+      //     keepalive: true
+      // });
+    },
+    getIsAllSetNextId () {
+      console.log('exportList--->', this.exportList)
+      const length = this.exportList.length
+      const isAllSet = length > 0 && this.exportList.every(item => !!item.stopType)
+      if (isAllSet || (length === 0)) { // 全部已经设置了出口-下一步
+        return true
+      } else {
+        return false
+      }
+    },
+    handleVisiable (e) {
+      switch (e.target.visibilityState) {
+        case 'prerender':
+          console.log('网页预渲染，内容不可见')
+          break
+        case 'hidden': {
+          console.log('内容不可见，处理后台、最小化、锁屏状态')
+          // alert('当前接待员出口下一步不可为空')
+          const bool = this.getIsAllSetNextId()
+          if (!bool) {
+            alert(this.tipMsg)
+          }
+          break
+        }
+        case 'visible':
+          console.log('处于正常打开')
+          break
+      }
+    },
     mergeSameAttribute  (arr) {
       const dataInfo = {}
       arr.forEach((item, index) => {
@@ -397,8 +482,6 @@ export default {
         }
         this.noGroupService = JSON.parse(JSON.stringify(this.servicer))
         this.$service.getListGroup(params).then(res => {
-          console.log('res--------->', res)
-
           if (res && res.length > 0) {
             this.groupData = res.map(item => {
               const list = item.list.map(obj => {
@@ -428,7 +511,6 @@ export default {
             }]
           }
         })
-        console.log('this.groupData--->', this.groupData)
         resolve(this.groupData)
       })
     },
@@ -445,7 +527,6 @@ export default {
     addServicerGroup () {
       const parmas = []
       this.groupData.forEach(group => {
-        console.log('group---->', group)
         if (group.list.length > 0) {
           parmas.push(
             {
@@ -507,22 +588,29 @@ export default {
         this.deleteService(row)
       } else if (type === 'copy') {
         this.copyService(row)
+      } else if (type === 'copyUse') {
+        this.copyService(row, 'copyUse')
       }
     },
-    copyService (item) {
+    copyService (item, type = 'copy') {
+      this.copyType = type
       this.copyForm.id = item.id
       this.copyDialogVisible = true
     },
     comfirmCopy () {
-      this.$refs.copyFormRef.validate((valid) => {
-        if (valid) {
-          this.$service.copyServicer(this.copyForm, '复制成功').then(res => {
-            // 刷新列表
-            this.getServiceList()
-            this.copyDialogVisible = false
-          })
-        }
-      })
+      if (this.copyType === 'copyUse') {
+        console.log('提交保存复用')
+      } else {
+        this.$refs.copyFormRef.validate((valid) => {
+          if (valid) {
+            this.$service.copyServicer(this.copyForm, '复制成功').then(res => {
+              // 刷新列表
+              this.getServiceList()
+              this.copyDialogVisible = false
+            })
+          }
+        })
+      }
     },
     handleSceneCommand (scope) {
       const type = scope[0]
@@ -595,25 +683,36 @@ export default {
 
     // 选择场景
     selectScene (id) {
-      this.activeIndex = id
+      const bool = this.getIsAllSetNextId()
+      if (bool) {
+        this.activeIndex = id
 
-      // this.selectedScene = this.sceneList[index] || {}
-      const obj = this.sceneList.find(item => item.id === id)
-      this.selectedScene = obj || {}
+        // this.selectedScene = this.sceneList[index] || {}
+        const obj = this.sceneList.find(item => item.id === id)
+        this.selectedScene = obj || {}
 
-      this.searchServicer = '' // 接待员的搜索条件置空
-      this.getServiceList()
+        this.searchServicer = '' // 接待员的搜索条件置空
+        this.getServiceList()
+      } else {
+        alert(this.tipMsg)
+      }
     },
     // 选择服务员
     selectServicer (id) {
-      this.activeIndex2Id = id
-      const obj = this.servicer.find(item => item.id === id)
-      this.selectedServicer = obj || {}
+      const bool = this.getIsAllSetNextId()
+      if (bool) {
+        // 跳转
+        this.activeIndex2Id = id
+        const obj = this.servicer.find(item => item.id === id)
+        this.selectedServicer = obj || {}
 
-      // 入口列表
-      this.getEntryListByReceptionistId()
-      // 出口列表
-      this.getExportListByReceptionistId()
+        // 入口列表
+        this.getEntryListByReceptionistId()
+        // 出口列表
+        this.getExportListByReceptionistId()
+      } else {
+        alert(this.tipMsg)
+      }
     },
 
     // 服务员列表
@@ -655,7 +754,6 @@ export default {
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
         this.sceneList = res.data || []
-        console.log('this.activeIndex---》', this.activeIndex)
         if (this.sceneList.length > 0) {
           // 获取从动态人群跳转过来的场景ID，并选中
           const id = this.$route.params.sceneId || this.activeIndex
@@ -714,7 +812,6 @@ export default {
     handelClosePop () {
       const pops = this.$refs.pop
       pops.forEach(item => {
-        console.log('item-----', item)
         item.doClose()
       })
     },
