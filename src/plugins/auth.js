@@ -1,4 +1,6 @@
 import Vue from 'vue'
+import { Message } from 'element-ui'
+
 function getInitData (app) {
   return app.$service.service.getConstants({ token: app.$service.service.state.token })
 }
@@ -20,6 +22,12 @@ Vue.prototype.$isLoggedIn = async function () {
         this.$appState.permissions[item] = item
       })
       this.$appState.menus = res.menus
+    }).catch(err => {
+      console.log('errData==>', err)
+      // token 失效，接口报401
+      Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+
+      throw err
     })
   }
   throw {}

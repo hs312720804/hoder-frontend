@@ -4,7 +4,6 @@ function wrapService (service) {
     service
   }
   Object.keys(service).forEach((key) => {
-    console.log('key', key)
     if (typeof service[key] === 'function') {
       $service[key] = async (args, message) => {
         return service[key](args)

@@ -2,7 +2,8 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { Message } from 'element-ui'
+// import { Message } from 'element-ui'
+// import router from '@/router'
 
 // 响应拦截器, 401 状态码时，跳转至登录页
 axios.interceptors.response.use((response) => {
@@ -10,17 +11,19 @@ axios.interceptors.response.use((response) => {
   return response
 }, function (error) {
   if (error.response && error.response.status === 401) {
-    // window.location = '/login'
-    // window.location.reload()
-    // // location.href = location.origin + location.pathname + '#/login'
     // const lo = location.origin + location.pathname + '#/login'
     // console.log('router--->', router)
     // console.log('location--->', lo)
     // // window.location = lo
     // location.href = lo
     // // router.replace('/login')
-    console.log('token 失效啦')
-    Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+    // console.log('token 失效啦')
+    // Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+    // window.location = '/login'
+    // window.location.reload()
+    // NProgress.done()
+    // window.location = location.origin + location.pathname + '#/login'
+    // console.log('location.href--->', location.href)
     // router.replace('/login').catch(() => {})
     // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
   }
@@ -62,6 +65,7 @@ export default function fetch ({
       if (isFileStream) {
         return isReturnAllInfor ? data : data.data
       }
+      // 3000 - 警告
       if (codeFormat === 0 || codeFormat === 1000 || codeFormat === 3000) {
         // return isReturnAllInfor ? data : data.data
         if (isReturnAllInfor) {
@@ -87,12 +91,12 @@ export default function fetch ({
         }
       }
     })
-    .catch(e => {
-      console.log('errData==>', e)
+    .catch(err => {
+      console.log('errData==>', err)
       // Error: Network Error
       // 异常时，跳转至登录页
       // location.href = location.origin + location.pathname + '#/login'
       NProgress.done()
-      throw e
+      throw err
     })
 }
