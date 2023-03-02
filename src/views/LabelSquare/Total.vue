@@ -308,7 +308,6 @@ export default {
             // console.log(xIndex)
             // console.log(xData)
             const sourceName = xData[xIndex]
-            // alert(1)
             _this.onSubmit(sourceName)
             // console.log('current--------->', sourceName)
           }
