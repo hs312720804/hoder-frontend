@@ -96,7 +96,7 @@ export default function fetch ({
       // Error: Network Error
       NProgress.done()
       // 异常时，跳转至登录页
-      if (err.indexOf('401') > -1) {
+      if (typeof err === 'string' && err.indexOf('401') > -1) {
         location.href = location.origin + location.pathname + '#/login'
       }
       throw err

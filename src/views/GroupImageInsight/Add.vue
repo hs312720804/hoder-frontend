@@ -115,7 +115,7 @@ export default {
             this.form.originFileName = data.originalFilename
           })
           .catch(e => {
-            this.$message.error(e)
+            // this.$message.error(e)
             this.resetFormFile()
           })
       }
