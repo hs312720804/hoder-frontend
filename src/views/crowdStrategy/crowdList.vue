@@ -203,9 +203,9 @@
                   <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
                   >看主页数据</el-dropdown-item> -->
-                  <!-- <el-dropdown-item
+                  <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item> -->
+                  >预约投后分析</el-dropdown-item>
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -368,9 +368,9 @@
                   <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
                   >看主页数据</el-dropdown-item> -->
-                  <!-- <el-dropdown-item
+                  <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item> -->
+                  >预约投后分析</el-dropdown-item>
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -704,9 +704,9 @@
                 <!-- <el-dropdown-item
                   :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                <el-dropdown-item
                   :command="['appointment',scope.row]"
-                >预约投后分析</el-dropdown-item> -->
+                >预约投后分析</el-dropdown-item>
 
                 <!-- 动态人群才展示 -->
                 <el-dropdown-item
@@ -1152,8 +1152,8 @@
             <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
-                    <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
-                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
+                    <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button> -->
+                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
                     <el-button type="text" @click="handleShenCeAnalysis(scope.row, 'AB')">神策分析</el-button>
                 </template>
             </el-table-column>
@@ -1199,7 +1199,7 @@
             <el-table-column label="操作" width="160">
               <template slot-scope="scope">
                 <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
-                <!-- <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
+                <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
               </template>
             </el-table-column>
             <el-table-column label="状态" width="150">
