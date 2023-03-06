@@ -307,7 +307,7 @@ export default {
   },
   data () {
     return {
-      tipMsg: '当前接待员出口下一步不可为空',
+      tipMsg: '请完善当前接待员服务终止条件中的处理操作',
       isCopiedServicer: true,
       copyType: '',
       copyForm: {
