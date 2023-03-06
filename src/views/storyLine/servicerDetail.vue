@@ -1408,14 +1408,21 @@ export default {
       }
       // const params = {
       //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
-      //   dynamicRuleId: 292,
-      //   crowdId: 14331, // 接待员id
+      //   dynamicRuleId: 447,
+      //   crowdId: 16549, // 接待员id
+      //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
+      // }
+      // const params = {
+      //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
+      //   dynamicRuleId: 333,
+      //   crowdId: 15230, // 接待员id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
       this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
         // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
-        if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
+        // if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
+        if (res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
           const tableData = res.data || {}
           this.allChartData = tableData || {}
           this.overview = tableData.overview ? tableData.overview.data : {}
