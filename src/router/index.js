@@ -3,19 +3,25 @@ import Router from 'vue-router'
 import routes from './routes'
 Vue.use(Router)
 function beforeEach (to, from, next) {
-  const app = this.app
-  app.$isLoggedIn().then(() => {
-    next(to.name !== 'login'
-      ? undefined
-      : { name: 'dashboard' }
-    )
-  }).catch(() => {
-    if (to.name === 'login') {
-      next()
-    } else {
-      next({ name: 'login', query: { redirect: to.fullPath } })
-    }
-  })
+  if (to.name === 'login') { // 跳转到登录页的时候不需要进行验证
+    next()
+  } else {
+    const app = this.app
+    app.$isLoggedIn().then(() => {
+      debugger
+      next(to.name !== 'login'
+        ? undefined
+        : { name: 'dashboard' }
+      )
+    }).catch(() => {
+      debugger
+      if (to.name === 'login') {
+        next()
+      } else {
+        next({ name: 'login', query: { redirect: to.fullPath } })
+      }
+    })
+  }
 }
 function afterEach (to) {
   const app = this.app

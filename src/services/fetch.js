@@ -10,23 +10,25 @@ axios.interceptors.response.use((response) => {
   // console.log('response===', response)
   return response
 }, function (error) {
-  if (error.response && error.response.status === 401) {
-    // const lo = location.origin + location.pathname + '#/login'
-    // console.log('router--->', router)
-    // console.log('location--->', lo)
-    // // window.location = lo
-    // location.href = lo
-    // // router.replace('/login')
-    // console.log('token 失效啦')
-    // window.location = '/login'
-    // window.location.reload()
-    // NProgress.done()
-    // window.location = location.origin + location.pathname + '#/login'
-    // console.log('location.href--->', location.href)
-    // router.replace('/login').catch(() => {})
-    // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
-    return Promise.reject(new Error('error: 401'))
-  }
+  // if (error.response && error.response.status === 401) {
+  //   // const lo = location.origin + location.pathname + '#/login'
+  //   // console.log('router--->', router)
+  //   // console.log('location--->', lo)
+  //   // // window.location = lo
+  //   // location.href = lo
+  //   // // router.replace('/login')
+  //   // console.log('token 失效啦')
+  //   // window.location = '/login'
+  //   // window.location.reload()
+  //   // NProgress.done()
+  //   // window.location = location.origin + location.pathname + '#/login'
+  //   // console.log('location.href--->', location.href)
+  //   // router.replace('/login').catch(() => {})
+  //   // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
+  //   return Promise.reject({
+  //     code: 41
+  //   })
+  // }
   return Promise.reject(error)
 })
 
@@ -96,9 +98,12 @@ export default function fetch ({
       // Error: Network Error
       NProgress.done()
       // 异常时，跳转至登录页
-      if (typeof err === 'string' && err.indexOf('401') > -1) {
-        location.href = location.origin + location.pathname + '#/login'
-      }
+      // if (errString && (errString.indexOf('401') > -1 || errString.code.indexOf('401') > -1)) {
+      // if (errString && errString.code && (errString.code.indexOf('401') > -1)) {
+      //   Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+      //   location.href = location.origin + location.pathname + '#/login'
+      //   return
+      // }
       throw err
     })
 }
