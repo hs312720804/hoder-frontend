@@ -1,6 +1,6 @@
 <template>
 <div class="content detail">
-  {{ selectedServicer }}
+  <!-- {{ selectedServicer }} -->
   <!-- {{selectedScene}} -->
   <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
     <div class="title">接待员详情</div>
