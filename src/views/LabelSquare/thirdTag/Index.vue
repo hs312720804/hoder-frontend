@@ -1,10 +1,11 @@
 <template>
   <div class="my-collect">
-    <div class="search-input">
+    <!-- 标签分类搜索 -->
+    <!-- <div class="search-input">
       <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="filter.tagName"
         @keyup.enter.native="fetchData"></el-input>
       <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-    </div>
+    </div> -->
     <!-- {{showTypeTab}} -->
     <!-- v-if="showTypeTab" -->
     <el-tabs v-model="activeName" @tab-click="handleTabChange" class="label-content-wrap">
