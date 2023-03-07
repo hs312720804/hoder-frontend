@@ -1,6 +1,6 @@
 <template>
 <div class="content detail">
-  <!-- {{ selectedServicer }} -->
+  {{ selectedServicer }}
   <!-- {{selectedScene}} -->
   <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
     <div class="title">接待员详情</div>
@@ -23,7 +23,7 @@
               <div>复用时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
               <div>擅长(可选)：</div>
-              <div>{{ selectedServicer.userName || '-'}}</div>
+              <div>{{ skillValue || '-'}}</div>
             </template>
 
             <template v-else>
@@ -109,7 +109,7 @@
 
             <!-- 复用的接待员 -->
             <template v-if="isCopiedServicer">
-              复用的接待员任务...(待改)
+              {{ target }}
             </template>
             <template v-else>
               <div v-if="!isEdit" @click="editTarget" class="target-text">
@@ -225,7 +225,7 @@
             <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
             <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
           </template>
-          <el-button type="text" @click="pasteRules('entry')" style="float: right">粘贴条件</el-button>
+          <el-button v-if="!isCopiedServicer" type="text" @click="pasteRules('entry')" style="float: right">粘贴条件</el-button>
 
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -320,7 +320,7 @@
               <!-- <div>{{item.behaviorRulesJson}}</div> -->
             </div>
 
-            <div class="drop-class">
+            <div v-if="!isCopiedServicer" class="drop-class" >
               <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
                 <span class="el-dropdown-link" >
                   <span>.</span>
@@ -341,8 +341,8 @@
           </div>
           </el-checkbox-group>
 
-          <!-- 没有选择接待员时隐藏 -->
-          <div class="box-fotter" v-if="selectedServicer.id">
+          <!-- 选择了接待员时 且 不是复用的  显示-->
+          <div class="box-fotter" v-if="selectedServicer.id && !isCopiedServicer">
             <!-- <el-button>添加</el-button> -->
             <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
           </div>
@@ -403,7 +403,7 @@
             <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
             <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
           </template>
-          <el-button type="text" @click="pasteRules('export')" style="float: right">粘贴条件</el-button>
+          <el-button v-if="!isCopiedServicer" type="text" @click="pasteRules('export')" style="float: right">粘贴条件</el-button>
 
           <div v-if="exportList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -522,7 +522,7 @@
 
           </div>
           </el-checkbox-group>
-          <div class="box-fotter" v-if="selectedServicer.id">
+          <div class="box-fotter" v-if="selectedServicer.id && !isCopiedServicer">
             <!-- <el-button>添加</el-button> -->
             <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
           </div>
@@ -704,6 +704,9 @@ export default {
     }
   },
   computed: {
+    isCopiedServicer () {
+      return !!this.selectedServicer.referenceId
+    },
     // 过滤掉除了自己的其他接待员 （同一场景）
     servicerListFilterSelect () {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
@@ -721,7 +724,7 @@ export default {
   },
   data () {
     return {
-      isCopiedServicer: true,
+      // isCopiedServicer: false,
       checkList: [],
       exportCheckList: [],
       checkAll: false,

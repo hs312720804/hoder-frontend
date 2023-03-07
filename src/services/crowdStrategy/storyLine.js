@@ -249,3 +249,12 @@ export function getSourceList (params) {
     params
   })
 }
+// 复用接待员接口
+export function reuseReceptionist (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/reuse',
+    data,
+    isJSON: true
+  })
+}

@@ -144,7 +144,7 @@
                         . . .
                       </span>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item :disabled="isCopiedServicer" class="clearfix" :command="['rename', item]" >
+                        <el-dropdown-item :disabled="!!item.referenceId" class="clearfix" :command="['rename', item]" >
 
                           <el-popover placement="top" trigger="click" ref="pop">
                             <div slot="reference">重命名</div>
@@ -308,7 +308,7 @@ export default {
   data () {
     return {
       tipMsg: '请完善当前接待员服务终止条件中的处理操作',
-      isCopiedServicer: true,
+      isCopiedServicer: false,
       copyType: '',
       copyForm: {
         id: '',
@@ -338,8 +338,8 @@ export default {
       },
       dialogVisible: false,
       dialogVisible2: false,
-      activeIndex: 0,
-      activeIndex2Id: '',
+      activeIndex: 0, // 当前所选场景
+      activeIndex2Id: '', // 当前所选接待员
       sceneList: [],
       servicer: [],
       skillList: [],
@@ -600,6 +600,15 @@ export default {
     comfirmCopy () {
       if (this.copyType === 'copyUse') {
         console.log('提交保存复用')
+        this.$refs.copyFormRef.validate((valid) => {
+          if (valid) {
+            this.$service.reuseReceptionist(this.copyForm, '复用成功').then(res => {
+              // 刷新列表
+              this.getServiceList()
+              this.copyDialogVisible = false
+            })
+          }
+        })
       } else {
         this.$refs.copyFormRef.validate((valid) => {
           if (valid) {
