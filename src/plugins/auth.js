@@ -24,12 +24,13 @@ Vue.prototype.$isLoggedIn = async function () {
       this.$appState.menus = res.menus
     }).catch(err => {
       console.log('getInitData errData==>', err)
-      // token 失效，接口报401
-      // Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
-      throw err
+      // throw err
+      return Promise.reject(new Error(err))
     })
+  } else {
+    return Promise.reject(new Error())
   }
-  throw {}
+  // throw {}
 }
 Vue.prototype.$login = async function (data) {
   return this.$service.login(data).then((res) => {

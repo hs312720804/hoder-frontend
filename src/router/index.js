@@ -3,7 +3,8 @@ import Router from 'vue-router'
 import routes from './routes'
 Vue.use(Router)
 function beforeEach (to, from, next) {
-  if (to.name === 'login') { // 跳转到登录页的时候不需要进行验证
+  const filterRoutes = ['/login']
+  if (filterRoutes.indexOf(to.path) !== -1) { // 不需要登录验证
     next()
   } else {
     const app = this.app
