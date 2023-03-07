@@ -23,7 +23,24 @@
               <div>复用时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
               <div>擅长(可选)：</div>
-              <div>{{ skillValue || '-'}}</div>
+              <div>
+                <el-select
+                  ref="selectObj"
+                  v-model="skillValue"
+                  placeholder="选择技能"
+                  @change="selectSkill"
+                  disabled
+                >
+                  <div class="options-wrap">
+                    <el-option
+                      v-for="item in skillOptions"
+                      :key="item.id"
+                      :label="item.name"
+                      :value="item.id">
+                    </el-option>
+                  </div>
+                </el-select>
+              </div>
             </template>
 
             <template v-else>
