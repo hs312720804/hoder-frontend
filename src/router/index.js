@@ -9,7 +9,6 @@ function beforeEach (to, from, next) {
   } else {
     const app = this.app
     app.$isLoggedIn().then(() => {
-      debugger
       next(to.name !== 'login'
         ? undefined
         : { name: 'dashboard' }

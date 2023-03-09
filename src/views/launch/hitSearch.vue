@@ -85,8 +85,8 @@
       <!-- 导出命中数据为临时标签 -->
       <el-dialog :visible.sync="dialogVisible" title="导出命中数据为临时标签" width="550px">
         <el-form :model="exportForm" ref="formRef" label-width="80px">
-          <el-form-item label="标签名：" prop="sceneId" required>
-            <el-input v-model="exportForm.sceneId" clearable></el-input>
+          <el-form-item label="标签名：" prop="tagName" required>
+            <el-input v-model="exportForm.tagName" clearable></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
@@ -135,8 +135,7 @@ export default {
       noneText: '',
       dialogVisible: false,
       exportForm: {
-        id: '',
-        sceneId: ''
+        tagName: ''
       }
     }
   },
@@ -147,12 +146,14 @@ export default {
     comfirmExport () {
       this.$refs.formRef.validate((valid) => {
         if (valid) {
-          alert(JSON.stringify(this.exportForm))
-          // this.$service.copyServicer(this.copyForm, '复制成功').then(res => {
-          //   // 刷新列表
-          //   this.getServiceList()
-          //   this.copyDialogVisible = false
-          // })
+          const params = {
+            ...this.exportForm,
+            ...this.form
+          }
+          this.$service.exportHitDataToTmpCrowd(params, '导出成功').then(res => {
+            // 刷新列表
+            this.dialogVisible = false
+          })
         }
       })
     },
