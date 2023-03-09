@@ -205,6 +205,7 @@
           :styleType="styleType"
           @updataEntryList="getEntryListByReceptionistId"
           @updataExportList="getExportListByReceptionistId"
+          @selectScene="selectScene"
           @selectServicer="selectServicer"
           @editReceptionist="editReceptionist"
         ></servicerDetail>
@@ -381,7 +382,7 @@ export default {
   mounted () {
     window.addEventListener('visibilitychange', this.handleVisiable)
     // window.addEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
-    window.addEventListener('beforeunload', this.aaaa)
+    // window.addEventListener('beforeunload', this.aaaa)
     // window.addEventListener('unload', this.updateHandler)
     console.log('window-->', window)
     console.log('docment-->', document)
@@ -390,7 +391,7 @@ export default {
   destroyed () {
     window.removeEventListener('visibilitychange', this.handleVisiable)
     // window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
-    window.removeEventListener('beforeunload', this.aaaa)
+    // window.removeEventListener('beforeunload', this.aaaa)
     // window.removeEventListener('unload', this.updateHandler)
   },
   beforeRouteLeave (to, from, next) {
@@ -410,27 +411,29 @@ export default {
     }
   },
   methods: {
-    aaaa () {
-      alert('aaaa')
-    },
-    beforeunloadHandler (e) {
-      alert('123')
-      // console.log('e-->', e)
-      e = e || window.event
-      if (e) {
-        e.returnValue = '关闭提示123'
-      }
-      return true
-    },
-    updateHandler () {
-      alert('updateHandler')
-      // fetch('url', {
-      //     method: 'POST',
-      //     body:'参数'
-      //     headers: {'Content-Type': 'application/json'},
-      //     keepalive: true
-      // });
-    },
+    // aaaa () {
+    //   alert('aaaa')
+    // },
+    // beforeunloadHandler (e) {
+    //   alert('123')
+    //   // console.log('e-->', e)
+    //   e = e || window.event
+    //   if (e) {
+    //     e.returnValue = '关闭提示123'
+    //   }
+    //   return true
+    // },
+    // updateHandler () {
+    //   alert('updateHandler')
+    //   // fetch('url', {
+    //   //     method: 'POST',
+    //   //     body:'参数'
+    //   //     headers: {'Content-Type': 'application/json'},
+    //   //     keepalive: true
+    //   // });
+    // },
+
+    // 判断是否已经设置了出口条件的下一步
     getIsAllSetNextId () {
       console.log('exportList--->', this.exportList)
       const length = this.exportList.length
@@ -691,7 +694,7 @@ export default {
     },
 
     // 选择场景
-    selectScene (id) {
+    selectScene (id, selectServicerId) {
       const bool = this.getIsAllSetNextId()
       if (bool) {
         this.activeIndex = id
@@ -701,7 +704,7 @@ export default {
         this.selectedScene = obj || {}
 
         this.searchServicer = '' // 接待员的搜索条件置空
-        this.getServiceList()
+        this.getServiceList('list', selectServicerId)
       } else {
         alert(this.tipMsg)
       }
@@ -725,7 +728,7 @@ export default {
     },
 
     // 服务员列表
-    getServiceList (type = 'list') {
+    getServiceList (type = 'list', selectServicerId) {
       const parmas = {
         sceneId: this.selectedScene.id,
         keywords: this.searchServicer,
@@ -739,6 +742,7 @@ export default {
         this.entryList = []
         this.exportList = []
         if (this.servicer.length > 0) {
+          if (selectServicerId) this.activeIndex2Id = selectServicerId
           const obj = this.servicer.find(item => item.id === this.activeIndex2Id)
 
           this.activeIndex2Id = obj ? obj.id : this.servicer[0].id

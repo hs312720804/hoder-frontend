@@ -19,7 +19,7 @@
             <template v-if="isCopiedServicer">
               <div style="white-space: nowrap;grid-column-start: 1;grid-column-end: 3;display: grid;">如需修改，请跳转到被复用的接待员处编辑</div>
               <div>复用自：</div>
-              <div>{{ selectedServicer.userName || '-'}}</div>
+              <el-button type="text" @click="redirctToScene(selectedServicer.refSceneId, selectedServicer.referenceId)" style="text-align: left;">{{ selectedServicer.refSceneName }} - {{ selectedServicer.receptionist }}</el-button>
               <div>复用时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
               <div>擅长(可选)：</div>
@@ -874,6 +874,9 @@ export default {
   },
 
   methods: {
+    redirctToScene (sceneId, servicerId) {
+      this.$emit('selectScene', sceneId, servicerId)
+    },
     // 入口全选
     handleCheckAllChange (val) {
       // 出口多选 置空
