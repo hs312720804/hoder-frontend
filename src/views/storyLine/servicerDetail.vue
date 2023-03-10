@@ -519,7 +519,7 @@
               <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
             </div>
             <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-            <div class="drop-class">
+            <div v-if="!isCopiedServicer || exportItem.stopType === 1" class="drop-class">
               <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                 <span class="el-dropdown-link" >
                   <span>.</span>
@@ -530,7 +530,7 @@
                   <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
                     编辑
                   </el-dropdown-item>
-                  <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
+                  <el-dropdown-item v-if="!isCopiedServicer" class="clearfix" :command="['deleteExport', exportItem]">
                     删除
                   </el-dropdown-item>
                 </el-dropdown-menu>
@@ -554,7 +554,7 @@
     width="1200px"
     v-if="clientDialogVisible"
   >
-    <createClientDialog ref="createClientDialog" :editRow="editClientRow"></createClientDialog>
+    <createClientDialog ref="createClientDialog" :editRow="editClientRow" :options="options"></createClientDialog>
     <span slot="footer" class="dialog-footer">
       <el-button @click="clientDialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="addOrEditEntryRule">确 定</el-button>
@@ -572,10 +572,56 @@
       :editRow="editExportRow"
       type="export"
       :servicerListFilterSelect="servicerListFilterSelect"
+      :options="options"
     ></createClientDialog>
     <span slot="footer" class="dialog-footer">
       <el-button @click="exportDialogVisible = false">取 消</el-button>
       <el-button type="primary" @click="addOrEditExportRule">确 定</el-button>
+    </span>
+  </el-dialog>
+
+  <el-dialog
+    title="编辑复用服务终止条件"
+    :visible.sync="reuseExportDialogVisible"
+    width="700px"
+    v-if="reuseExportDialogVisible"
+  >
+    <el-form
+      :model="reuseForm"
+      :rules="reuseFormRules"
+      ref="form"
+      label-width="100px"
+    >
+      <!-- 只有出口条件选择 -->
+      <el-form-item label="处理操作" prop="stopType" class="inline-form-item">
+        <el-select v-model="reuseForm.stopType" clearable @change="handleStopTypeChange">
+          <el-option
+            v-for="item in options"
+            :label="item.label"
+            :value="item.value"
+            :key="item.value">
+            {{ item.label }}
+          </el-option>
+        </el-select>
+      </el-form-item>
+
+        <!-- 正确，下一步  选择同一场景下其他接待员 -->
+      <el-form-item v-if="reuseForm.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -100px;">
+        <el-select v-model="reuseForm.nextId" clearable placeholder="请选择流转接待员">
+          <el-option
+            v-for="item in servicerListFilterSelect"
+            :label="item.receptionist"
+            :value="item.crowdId"
+            :key="item.crowdId">
+            {{ item.receptionist }}
+          </el-option>
+        </el-select>
+      </el-form-item>
+
+    </el-form>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="reuseExportDialogVisible = false">取 消</el-button>
+      <el-button type="primary" @click="reuseExportRule">确 定</el-button>
     </span>
   </el-dialog>
 
@@ -741,6 +787,28 @@ export default {
   },
   data () {
     return {
+      reuseExportDialogVisible: false,
+      reuseForm: {
+        stopType: '',
+        nextId: ''
+      },
+      reuseFormRules: {
+        stopType: [{ required: true, message: '请选择', trigger: 'change' }],
+        nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
+      },
+      options: [{
+        value: 1,
+        label: '正确，继续种草，下一步'
+      }, {
+        value: 2,
+        label: '正确，直接转化'
+      }, {
+        value: 3,
+        label: '不正确，继续观察'
+      }, {
+        value: 4,
+        label: '不喜欢切换方案'
+      }],
       // isCopiedServicer: false,
       checkList: [],
       exportCheckList: [],
@@ -874,6 +942,30 @@ export default {
   },
 
   methods: {
+    reuseExportRule () {
+      // this.editExportRow = row
+      // if (this.isCopiedServicer) {
+      //   this.reuseForm.stopType = row.stopType
+      //   this.reuseForm.nextId = row.nextId || ''
+      console.log('reuseForm--->', this.reuseForm)
+      console.log('selectedServicer--->', this.selectedServicer)
+      console.log('editExportRow--->', this.editExportRow)
+      const parmas = {
+        nId: this.selectedServicer.id,
+        oId: this.selectedServicer.referenceId,
+        exportId: this.editExportRow.id,
+        ...this.reuseForm
+      }
+      this.$service.updateExport(parmas).then(res => {
+        // 刷新列表
+        this.$emit('updataExportList')
+        this.reuseExportDialogVisible = false
+      })
+    },
+    handleStopTypeChange () {
+      // 切换处理操作时，清空选择的流转接待员 ID
+      this.form.nextId = ''
+    },
     redirctToScene (sceneId, servicerId) {
       this.$emit('selectScene', sceneId, servicerId)
     },
@@ -942,6 +1034,9 @@ export default {
     // 粘贴条件
     pasteRules (pasteType) {
       const { type, selectedIds, allRules } = this.$store.state.configScheme.copyServiceRules
+      if (selectedIds.length === 0) {
+        return this.$message.error('请先复制条件')
+      }
       if (type === pasteType) {
         const arr = []
         selectedIds.forEach(id => {
@@ -1285,7 +1380,13 @@ export default {
     // 编辑出口
     editExport (row) {
       this.editExportRow = row
-      this.exportDialogVisible = true
+      if (this.isCopiedServicer) { // 编辑复用接待员的
+        this.reuseForm.stopType = row.stopType
+        this.reuseForm.nextId = row.nextId || ''
+        this.reuseExportDialogVisible = true
+      } else {
+        this.exportDialogVisible = true
+      }
     },
     // 删除出口
     deleteExport (row) {
@@ -1678,4 +1779,10 @@ export default {
     border-color: #67c23a;
   }
 }
+.inline-form-item {
+  display: inline-block;
+  margin-right: 10px
+  vertical-align: top;
+}
+
 </style>

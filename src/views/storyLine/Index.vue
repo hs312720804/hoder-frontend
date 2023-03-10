@@ -437,7 +437,7 @@ export default {
     getIsAllSetNextId () {
       console.log('exportList--->', this.exportList)
       const length = this.exportList.length
-      const isAllSet = length > 0 && this.exportList.every(item => !!item.stopType)
+      const isAllSet = length > 0 && this.exportList.every(item => (!!item.stopType && item.stopType !== 1) || (item.stopType === 1 && item.nextId))
       if (isAllSet || (length === 0)) { // 全部已经设置了出口-下一步
         return true
       } else {
@@ -568,9 +568,20 @@ export default {
       this.handelClosePop()
     },
     deleteService (item) {
-      this.editReceptionist({
-        id: item.id,
-        delFlag: 2
+      this.$confirm('此操作将永久删除该接待员, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.editReceptionist({
+          id: item.id,
+          delFlag: 2
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
     offSetService (item) {
@@ -668,9 +679,20 @@ export default {
       })
     },
     deleteScene (item) {
-      this.editScene({
-        ...item,
-        delFlag: 2
+      this.$confirm('此操作将永久删除该场景, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.editScene({
+          ...item,
+          delFlag: 2
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
       })
     },
 
