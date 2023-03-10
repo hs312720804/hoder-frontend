@@ -258,3 +258,12 @@ export function reuseReceptionist (data) {
     isJSON: true
   })
 }
+// 复用接待员 - 修改处理方式接口
+export function updateExport (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/updateExport',
+    data,
+    isJSON: true
+  })
+}
