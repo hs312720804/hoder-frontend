@@ -2,8 +2,22 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-// import { Message } from 'element-ui'
-// import router from '@/router'
+import Vue from 'vue'
+
+// http request拦截
+axios.interceptors.request.use(
+  config => {
+    // 添加断开请求的方法---------------------这里为重点-----------------------------
+    config.cancelToken = new axios.CancelToken((cancel) => {
+      Vue.$httpRequestList.push(cancel) // 存储cancle
+    })
+
+    return config
+  },
+  error => {
+    return Promise.reject(error)
+  }
+)
 
 // 响应拦截器, 401 状态码时，跳转至登录页
 axios.interceptors.response.use((response) => {

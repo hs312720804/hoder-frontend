@@ -13,6 +13,9 @@ import pagination from './../components/pagination.vue'
 import moment from 'moment'
 import VCharts from 'v-charts'
 import VueI18n from 'vue-i18n'
+
+Vue.$httpRequestList = [] // 在 main.js文件中挂载：请求中的接口
+
 Vue.use(VueI18n)
 Vue.use(VCharts)
 Vue.use(AdminToolkit)
@@ -171,3 +174,15 @@ Vue.directive('dragscroll', function (el) {
     }
   }
 })
+Vue.prototype.clearHttpRequestingList = function () {
+  // 判断是否有存储的cancle
+  console.log('Vue.$httpRequestList-->', Vue.$httpRequestList)
+  if (Vue.$httpRequestList.length > 0) {
+    Vue.$httpRequestList.forEach(item => {
+    // 给个标志，中断请求
+      item()
+      console.log('中断请求', item)
+    })
+    Vue.$httpRequestList = []
+  }
+}
