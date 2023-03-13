@@ -27,19 +27,29 @@ function wrapService (service) {
               })
               return Promise.reject(error)
             } else { // 网络错误
-              Notification.error({
-                // title: '操作失败',
-                message: error.message
-              })
-              // location.href = location.origin + location.pathname + '#/login'
-              // router.push({ name: '/login', query: { redirect: location.pathname } })
-              console.log('location.pathname123141241----', JSON.parse(JSON.stringify(location)))
-              console.log('location.pathname123141241----', JSON.parse(JSON.stringify(location)))
-              console.log('this----', this)
-              const hash = location.hash.split('#')
+              let message = error.message
+              // 是否为 token 失效
+              const tokenFailure = typeof error.message === 'string' && error.message.indexOf('401') > -1
 
-              // router.push({ name: 'login', query: { redirect: hash && hash[1] ? hash[1] : '/' } })
-              router.push({ name: 'login' })
+              console.log('tokenFailure--->', tokenFailure)
+              console.log('errormessage--->', message)
+
+              if (tokenFailure) {
+                message = '登录超时，请重新登录'
+              }
+              if (message) {
+                Notification.error({
+                  message: message
+                })
+              }
+              if (tokenFailure) router.push({ name: 'login' })
+              // // location.href = location.origin + location.pathname + '#/login'
+              // // router.push({ name: '/login', query: { redirect: location.pathname } })
+              // console.log('location.pathname123141241----', JSON.parse(JSON.stringify(location)))
+              // console.log('location.pathname123141241----', JSON.parse(JSON.stringify(location)))
+              // console.log('this----', this)
+              // const hash = location.hash.split('#')
+              // // router.push({ name: 'login', query: { redirect: hash && hash[1] ? hash[1] : '/' } })
             }
           })
       }
