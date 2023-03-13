@@ -238,7 +238,7 @@
         <div class="title2">服务对象选择（可选）</div>
         <div class="set-start">
           <template v-if="entryList.length > 0" >
-            {{ checkList }}
+            <!-- {{ checkList }} -->
             <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
             <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
           </template>
@@ -416,7 +416,7 @@
         <div class="title2">服务终止条件（可选）</div>
         <div class="set-end">
           <template v-if="exportList.length > 0">
-            {{ exportCheckList }}
+            <!-- {{ exportCheckList }} -->
             <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
             <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
           </template>
@@ -1064,8 +1064,8 @@ export default {
         behaviorRulesJson: data.behaviorRulesJson,
         flowCondition: data.flowCondition, // 流转指标
         delFlag: 1,
-        link: data.link
-        // stopType,
+        link: data.link,
+        stopType: data.stopType
         // nextId
       }
       if (type === 'entry') {
@@ -1546,7 +1546,7 @@ export default {
       this.$service.getPerformanceGoalData(params).then(res => {
         // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
         // if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
-        if (res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
+        if (res && res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
           const tableData = res.data || {}
           this.allChartData = tableData || {}
           this.overview = tableData.overview ? tableData.overview.data : {}
