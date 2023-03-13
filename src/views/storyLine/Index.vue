@@ -275,7 +275,7 @@
       <el-dialog :visible.sync="copyDialogVisible" :title="`${copyType === 'copyUse' ? '复用接待员到场景' : '将接待员复制到以下场景'}`" width="550px">
         <el-form :model="copyForm" ref="copyFormRef" :rules="copyFormRule">
           <el-form-item label="选择场景：" prop="sceneId">
-            <el-select v-model="copyForm.sceneId" clearable>
+            <el-select v-model="copyForm.sceneId" clearable filterable>
               <el-option
                 v-for="item in sceneList"
                 :key="item.id"
