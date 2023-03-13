@@ -271,10 +271,10 @@
         ></LaunchToBusiness>
       </el-dialog>
 
-      <!-- 复制接待员 -->
-      <el-dialog :visible.sync="copyDialogVisible" :title="`将接待员${copyType === 'copyUse' ? '复用' : '复制'}到以下场景`" width="550px">
-        <el-form :model="copyForm" ref="copyFormRef">
-          <el-form-item label="选择场景" prop="sceneId" required>
+      <!-- 复制/复用 接待员 -->
+      <el-dialog :visible.sync="copyDialogVisible" :title="`${copyType === 'copyUse' ? '复用接待员到场景' : '将接待员复制到以下场景'}`" width="550px">
+        <el-form :model="copyForm" ref="copyFormRef" :rules="copyFormRule">
+          <el-form-item label="选择场景：" prop="sceneId">
             <el-select v-model="copyForm.sceneId" clearable>
               <el-option
                 v-for="item in sceneList"
@@ -308,6 +308,11 @@ export default {
   },
   data () {
     return {
+      copyFormRule: {
+        sceneId: [
+          { required: true, message: '请选择场景', trigger: 'change' }
+        ]
+      },
       tipMsg: '请完善当前接待员服务终止条件中的处理操作',
       isCopiedServicer: false,
       copyType: '',
@@ -610,6 +615,10 @@ export default {
       this.copyType = type
       this.copyForm.id = item.id
       this.copyDialogVisible = true
+      // 初始化数据
+      this.$nextTick(res => {
+        this.$refs.copyFormRef.resetFields()
+      })
     },
     comfirmCopy () {
       if (this.copyType === 'copyUse') {
@@ -758,6 +767,8 @@ export default {
         pageSize: 1000
       }
       this.servicer = []
+      // 再次点击详情时中断之前的详情请求，防止数据被之前接口数据所覆盖·
+      this.clearHttpRequestingList()
       this.$service.getReceptionistList(parmas).then(res => {
         this.servicer = res.data || []
         this.selectedServicer = {}
