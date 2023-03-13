@@ -594,7 +594,7 @@
     >
       <!-- 只有出口条件选择 -->
       <el-form-item label="处理操作" prop="stopType" class="inline-form-item">
-        <el-select v-model="reuseForm.stopType" clearable @change="handleStopTypeChange">
+        <el-select v-model="reuseForm.stopType" clearable @change="handleStopTypeChange" disabled>
           <el-option
             v-for="item in options"
             :label="item.label"
