@@ -275,7 +275,17 @@
       <el-dialog :visible.sync="copyDialogVisible" :title="`${copyType === 'copyUse' ? '复用接待员到场景' : '将接待员复制到以下场景'}`" width="550px">
         <el-form :model="copyForm" ref="copyFormRef" :rules="copyFormRule">
           <el-form-item label="选择场景：" prop="sceneId">
-            <el-select v-model="copyForm.sceneId" clearable filterable>
+            <!-- 复用 -->
+            <el-select v-if="copyType === 'copyUse'" v-model="copyForm.sceneId" clearable filterable>
+              <el-option
+                v-for="item in sceneListFilterSelect"
+                :key="item.id"
+                :label="item.sceneName"
+                :value="item.id">
+              </el-option>
+            </el-select>
+            <!-- 复制 -->
+            <el-select v-else v-model="copyForm.sceneId" clearable filterable>
               <el-option
                 v-for="item in sceneList"
                 :key="item.id"
@@ -367,6 +377,10 @@ export default {
     servicerListFilterSelect () {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
       return data
+    },
+    // 过滤掉当前选择接待员，获得其他接待员
+    sceneListFilterSelect () {
+      return this.sceneList.filter(item => item.id !== this.activeIndex)
     }
   },
   watch: {
