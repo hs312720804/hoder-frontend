@@ -537,6 +537,11 @@
               </el-dropdown>
             </div>
 
+            <div v-if="exportItem.stopType === 1 && !exportItem.nextId" style="color: red;">
+              <i class="el-icon-warning"></i>
+              <span style="font-size: 12px; margin-left: 5px">待完善</span>
+            </div>
+
           </div>
           </el-checkbox-group>
           <div class="box-fotter" v-if="selectedServicer.id && !isCopiedServicer">
@@ -1744,45 +1749,5 @@ export default {
 @import './sty/common.styl'
 @import './sty/dark.styl'
 @import './sty/light.styl'
-.chart-div{
-  height: 130px
-}
-.load-place {
-  position absolute
-  right 10px
-  top 10px
-  font-size 18px
-}
-.recommend-list {
-  padding: 10px 0;
-}
-.recommend-list + .recommend-list {
-  border-top: 1px dashed #4a4a4a;
-  // border-top: 1px dashed #f3f3f3
-}
-.select-source-sty :deep(.el-input__inner) {
-  background-color: rgb(255 0 0 / 0%);
-  color: #606266;
-}
-.film-btn {
-  color: #67c23a;
-  background: #f0f9eb;
-  border: 1px solid #c2e7b0;
-  font-size: 12px;
-  border-radius: 3px;
-  padding: 5px 12px;
-  display inline-block
-  margin: 3px
-  &:hover {
-    color: #fff;
-    background-color: #67c23a;
-    border-color: #67c23a;
-  }
-}
-.inline-form-item {
-  display: inline-block;
-  margin-right: 10px
-  vertical-align: top;
-}
 
 </style>
