@@ -3,25 +3,31 @@ import Router from 'vue-router'
 import routes from './routes'
 Vue.use(Router)
 function beforeEach (to, from, next) {
-  const filterRoutes = ['/login']
-  if (filterRoutes.indexOf(to.path) !== -1) { // 不需要登录验证
-    next()
-  } else {
-    const app = this.app
-    app.$isLoggedIn().then(() => {
-      next(to.name !== 'login'
-        ? undefined
-        : { name: 'dashboard' }
-      )
-    }).catch(() => {
-      debugger
-      if (to.name === 'login') {
-        next()
-      } else {
-        next({ name: 'login', query: { redirect: to.fullPath } })
-      }
-    })
-  }
+  // const filterRoutes = ['/login']
+  // if (filterRoutes.indexOf(to.path) !== -1) { // 不需要登录验证
+  //   next()
+  // } else {
+  const app = this.app
+  app.$isLoggedIn().then(() => {
+    debugger
+    // next(to.name !== 'login'
+    //   ? undefined
+    //   : { path: '/' }
+    // )
+    if (to.name === 'login') {
+      next({ path: '/' })
+    } else {
+      next()
+    }
+  }).catch(() => {
+    debugger
+    if (to.name === 'login') {
+      next()
+    } else {
+      next({ name: 'login', query: { redirect: to.fullPath } })
+    }
+  })
+  // }
 }
 function afterEach (to) {
   const app = this.app

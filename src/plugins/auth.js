@@ -1,17 +1,18 @@
 import Vue from 'vue'
-import { Message } from 'element-ui'
+// import { Message } from 'element-ui'
 
 function getInitData (app) {
   return app.$service.service.getConstants({ token: app.$service.service.state.token })
 }
 Vue.prototype.$isLoggedIn = async function () {
+  debugger
   const $appState = this.$appState
   // memory
-  if ($appState.user) {
-    return
-  }
+  // if ($appState.user) {
+  //   return
+  // }
   // storage
-  const user = $appState.$get('user')
+  const user = $appState.user || $appState.$get('user')
   if (user) {
     // try login
     this.$service.service.state = user
