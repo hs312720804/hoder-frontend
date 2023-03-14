@@ -178,10 +178,10 @@ Vue.prototype.clearHttpRequestingList = function () {
   // 判断是否有存储的cancle
   console.log('Vue.$httpRequestList-->', Vue.$httpRequestList)
   if (Vue.$httpRequestList.length > 0) {
-    Vue.$httpRequestList.forEach(item => {
+    Vue.$httpRequestList.forEach(cancel => {
     // 给个标志，中断请求
-      item()
-      console.log('中断请求', item)
+      cancel()
+      console.log('中断请求', cancel)
     })
     Vue.$httpRequestList = []
   }
