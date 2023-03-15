@@ -10,6 +10,7 @@ function beforeEach (to, from, next) {
   //   next()
   // } else {
   const app = this.app
+  console.log('from-->', from)
   app.$isLoggedIn().then(() => {
     debugger
     // next(to.name !== 'login'
@@ -23,10 +24,13 @@ function beforeEach (to, from, next) {
     }
   }).catch(() => {
     debugger
-    // 提示权限过期
-    Notification.error({
-      message: '登录超时，请重新登录'
-    })
+    // 当前路由已经是登录页，就不提示了
+    if (from.path !== '/' && from.name !== 'login') {
+      // 提示权限过期
+      Notification.error({
+        message: '登录超时，请重新登录'
+      })
+    }
     if (to.name === 'login') {
       next()
     } else {
