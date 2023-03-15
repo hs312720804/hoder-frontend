@@ -173,7 +173,7 @@
                         <el-dropdown-item class="clearfix" :command="['copy', item]">
                           复制
                         </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['copyUse', item]">
+                        <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId">
                           复用
                         </el-dropdown-item>
                         <el-dropdown-item class="clearfix" :command="['deleteService', item]">
