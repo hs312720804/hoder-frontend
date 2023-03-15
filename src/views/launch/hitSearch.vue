@@ -147,6 +147,7 @@ export default {
   methods: {
     exportToTempLabel () {
       this.dialogVisible = true
+      this.$refs.formRef.resetFields()
     },
     comfirmExport () {
       this.$refs.formRef.validate((valid) => {
