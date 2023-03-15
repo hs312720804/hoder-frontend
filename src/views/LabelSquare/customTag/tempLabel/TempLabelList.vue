@@ -121,6 +121,8 @@
         </el-table-column>
         <el-table-column label="操作" width="120" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
+            <!-- {{ crowdType }}
+            {{ scope.row.launchName.indexOf('命中导出_') > -1 }} -->
             <el-button-group>
               <!--<el-button-->
               <!--type="text"-->
@@ -128,7 +130,8 @@
               <!--&gt;-->
               <!--计算-->
               <!--</el-button>-->
-              <el-button v-if="crowdType !== 4" type="text" @click="condition(scope.row)">
+              <!-- 导出的临时标签，不能操作，操作按钮禁用 -->
+              <el-button v-if="crowdType !== 4" :disabled="scope.row.launchName.indexOf('命中导出_') > -1" type="text" @click="condition(scope.row)">
                 标签条件
               </el-button>
               <!--<el-button-->
@@ -137,7 +140,7 @@
               <!--&gt;-->
               <!--监控-->
               <!--</el-button>-->
-              <el-dropdown @command="handleCommandOpreate">
+              <el-dropdown @command="handleCommandOpreate" :disabled="scope.row.launchName.indexOf('命中导出_') > -1">
                 <el-button size="small" type="text">
                   操作
                 </el-button>

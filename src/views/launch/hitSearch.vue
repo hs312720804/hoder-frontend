@@ -86,7 +86,7 @@
       <el-dialog :visible.sync="dialogVisible" title="导出命中数据为临时标签" width="550px">
         <el-form :model="exportForm" ref="formRef" label-width="80px">
           <el-form-item label="标签名：" prop="tagName" required>
-            <el-input v-model="exportForm.tagName" clearable></el-input>
+            <el-input v-model="exportForm.tagName" clearable maxlength="45" show-word-limit></el-input>
           </el-form-item>
         </el-form>
         <span slot="footer" class="dialog-footer">
