@@ -215,9 +215,9 @@
         :visible.sync="dialogVisible"
         width="30%"
         >
-        <el-form :model="formScene">
-          <el-form-item label="场景名：" label-width="70px">
-            <el-input v-model="formScene.name" autocomplete="off"></el-input>
+        <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef">
+          <el-form-item label="场景名：" label-width="90px" prop="name">
+            <el-input v-model="formScene.name" autocomplete="off" clearable></el-input>
           </el-form-item>
         </el-form>
 
@@ -231,9 +231,9 @@
         :visible.sync="dialogVisible2"
         width="30%"
         >
-        <el-form :model="formServicer">
-          <el-form-item label="接待员名：" label-width="90px">
-            <el-input v-model="formServicer.name" autocomplete="off"></el-input>
+        <el-form :model="formServicer" :rules="formServicerRules" ref="formServicerRef">
+          <el-form-item label="接待员名：" label-width="100px" prop="name">
+            <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input>
           </el-form-item>
         </el-form>
 
@@ -318,6 +318,16 @@ export default {
   },
   data () {
     return {
+      formServicerRules: {
+        name: [
+          { required: true, message: '不能为空', trigger: 'change' }
+        ]
+      },
+      formSceneRules: {
+        name: [
+          { required: true, message: '不能为空', trigger: 'change' }
+        ]
+      },
       copyFormRule: {
         sceneId: [
           { required: true, message: '请选择场景', trigger: 'change' }
@@ -884,31 +894,39 @@ export default {
     },
     confirmAddScene () {
       // console.log('this.formScene.length--------', this.sceneList.length)
-      const parmas = {
-        sceneName: this.formScene.name
-        // id: this.sceneList.length + 1
-      }
+      this.$refs.formSceneRef.validate(valid => {
+        if (valid) {
+          const parmas = {
+            sceneName: this.formScene.name
+            // id: this.sceneList.length + 1
+          }
 
-      this.$service.addScene(parmas).then(res => {
-        // this.sceneList.push(item)
-        // const _this = this
-        this.getSceneList('add')
-        this.dialogVisible = false
+          this.$service.addScene(parmas).then(res => {
+            // this.sceneList.push(item)
+            // const _this = this
+            this.getSceneList('add')
+            this.dialogVisible = false
+          })
+        }
       })
     },
     // 确定添加服务员
     confirmAddServicer () {
-      const parmas = {
-        sceneId: this.selectedScene.id,
-        policyId: this.selectedScene.policyId,
-        receptionist: this.formServicer.name
-        // id: this.sceneList.length + 1
-      }
+      this.$refs.formServicerRef.validate(valid => {
+        if (valid) {
+          const parmas = {
+            sceneId: this.selectedScene.id,
+            policyId: this.selectedScene.policyId,
+            receptionist: this.formServicer.name
+            // id: this.sceneList.length + 1
+          }
 
-      this.$service.addReceptionist(parmas).then(res => {
-        // this.sceneList.push(item)
-        this.getServiceList('add')
-        this.dialogVisible2 = false
+          this.$service.addReceptionist(parmas).then(res => {
+            // this.sceneList.push(item)
+            this.getServiceList('add')
+            this.dialogVisible2 = false
+          })
+        }
       })
     }
 
