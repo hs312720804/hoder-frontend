@@ -84,8 +84,8 @@
 
       <!-- 导出命中数据为临时标签 -->
       <el-dialog :visible.sync="dialogVisible" title="导出命中数据为临时标签" width="550px">
-        <el-form :model="exportForm" ref="formRef" label-width="80px">
-          <el-form-item label="标签名：" prop="tagName" required>
+        <el-form :model="exportForm" ref="formRef" label-width="80px" :rules="exportFormRules">
+          <el-form-item label="标签名：" prop="tagName">
             <el-input v-model="exportForm.tagName" clearable maxlength="45" show-word-limit></el-input>
           </el-form-item>
         </el-form>
@@ -102,6 +102,11 @@ export default {
   name: 'CrowdValidateAA',
   data () {
     return {
+      exportFormRules: {
+        tagName: [
+          { required: true, message: '不可为空', trigger: 'blur' }
+        ]
+      },
       form: {
         mac: '',
         crowdId: '',
