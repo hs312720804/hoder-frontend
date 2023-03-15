@@ -539,7 +539,7 @@
 
             <div v-if="exportItem.stopType === 1 && !exportItem.nextId" style="color: red;">
               <i class="el-icon-warning"></i>
-              <span style="font-size: 12px; margin-left: 5px">待完善</span>
+              <span style="font-size: 12px; margin-left: 5px">下一步不可为空</span>
             </div>
 
           </div>
