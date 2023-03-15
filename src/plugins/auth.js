@@ -3,6 +3,8 @@ import Vue from 'vue'
 
 function getInitData (app) {
   return app.$service.service.getConstants({ token: app.$service.service.state.token })
+  // const user = JSON.parse(localStorage.getItem('HODER//user'))
+  // return app.$service.service.getConstants({ token: user.token })
 }
 Vue.prototype.$isLoggedIn = async function () {
   debugger

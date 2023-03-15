@@ -72,7 +72,8 @@ export default function fetch ({
     }
   }
   if (url !== '/api/login') option.headers = { Authorization: this.state.token }
-  // if (url !== '/api/login') option.headers = { Authorization: 'this.state.token' }
+  // const user = JSON.parse(localStorage.getItem('HODER//user'))
+  // if (url !== '/api/login') option.headers = { Authorization: user.token }
   if (option.contentType) option.headers['Content-Type'] = option.contentType
   return axios(option)
     .then(function ({ data }) {

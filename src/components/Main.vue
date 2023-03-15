@@ -321,7 +321,7 @@ export default {
     handleDropdownCommand (command) {
       if (command === 'logout') {
         this.$logout().then(() => {
-          this.$router.push({ name: 'login' })
+          this.$router.push({ name: 'login', params: { logout: true } })
         })
       }
     },

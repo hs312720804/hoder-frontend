@@ -45,9 +45,7 @@ function wrapService (service) {
                 })
               }
               if (tokenFailure) { // token 失效退出登录
-                Vue.$logout().then(() => {
-                  router.push({ name: 'login' })
-                })
+                router.push({ name: 'login' })
               }
               // // location.href = location.origin + location.pathname + '#/login'
               // // router.push({ name: '/login', query: { redirect: location.pathname } })

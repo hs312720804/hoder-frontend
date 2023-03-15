@@ -9,8 +9,10 @@ function beforeEach (to, from, next) {
   // if (filterRoutes.indexOf(to.path) !== -1) { // 不需要登录验证
   //   next()
   // } else {
+  console.log('from==========>', from)
+  console.log('to==========>', to)
+
   const app = this.app
-  console.log('from-->', from)
   app.$isLoggedIn().then(() => {
     debugger
     // next(to.name !== 'login'
@@ -24,11 +26,13 @@ function beforeEach (to, from, next) {
     }
   }).catch(() => {
     debugger
-    // 当前路由已经是登录页，就不提示了
-    if (from.path !== '/' && from.name !== 'login') {
+    // catch 中 从别的页面跳转至登录页，被认为是 token 失效
+    if (from.path !== '/' && from.name !== 'login' && to.name === 'login' && !to.params.logout) {
       // 提示权限过期
       Notification.error({
+        title: '提示',
         message: '登录超时，请重新登录'
+        // duration: 0
       })
     }
     if (to.name === 'login') {
