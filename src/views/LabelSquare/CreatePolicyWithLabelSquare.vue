@@ -12,8 +12,11 @@
     </el-input> -->
     <div class="search-all-input">
       <el-input v-model="searchAllVal" clearable placeholder="支持按标签名、Code、描述全局搜索" @keyup.enter.native="handleSearch" style="width: 350px">
-        <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+        <el-button type="primary" slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
       </el-input>
+      <el-button plain @click="handleReset" style="margin-left: 10px" >
+        重置
+      </el-button>
     </div>
 
     <!-- 全局搜索 -->
@@ -200,6 +203,10 @@ export default {
     }
   },
   methods: {
+    handleReset () {
+      this.searchAllVal = ''
+      this.handleSearch()
+    },
     handleSizeChange (val) {
       this.pagination.pageSize = val
       this.handleSearch()
