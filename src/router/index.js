@@ -1,6 +1,8 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
+import { Notification } from 'element-ui'
+
 Vue.use(Router)
 function beforeEach (to, from, next) {
   // const filterRoutes = ['/login']
@@ -21,6 +23,10 @@ function beforeEach (to, from, next) {
     }
   }).catch(() => {
     debugger
+    // 提示权限过期
+    Notification.error({
+      message: '登录超时，请重新登录'
+    })
     if (to.name === 'login') {
       next()
     } else {

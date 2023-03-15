@@ -36,7 +36,8 @@ function wrapService (service) {
               console.log('errormessage--->', message)
 
               if (tokenFailure) {
-                message = '登录超时，请重新登录'
+                // message = '登录超时，请重新登录'
+                message = null
               }
               if (message) {
                 Notification.error({
