@@ -14,6 +14,7 @@
  *     - revert: 回滚到上一个版本
  *     - style: 代码格式修改, 注意不是 css 修改
  *     - test: 测试用例修改
+ *     - eslint: 格式化代码
  *   - scope：一个可选的修改范围。用于标识此次提交主要涉及到代码中哪个模块。
  *   - Subject：一句话描述此次提交的主要内容，做到言简意赅
  */
@@ -23,7 +24,7 @@ module.exports = {
     'type-enum': [
       2,
       'always',
-      ['ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'build', 'chore', 'revert', 'style', 'test']
+      ['ci', 'docs', 'feat', 'fix', 'perf', 'refactor', 'build', 'chore', 'revert', 'style', 'test', 'eslint']
     ],
     'type-empty': [2, 'never'], // <type> 不能为空
     // 'type-case': [2, 'always', 'lower-case'], // <type>格式小写
