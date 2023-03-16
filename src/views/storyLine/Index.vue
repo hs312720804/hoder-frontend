@@ -94,6 +94,9 @@
                         <!-- putway : 1 - 上架中； 2 - 下架中 -->
                         {{ item.putway === 1 ? '下架' : '上架' }}
                       </el-dropdown-item>
+                      <el-dropdown-item :command="['detail',item]">
+                        查看配置
+                      </el-dropdown-item>
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
                         删除
                       </el-dropdown-item>
@@ -110,7 +113,7 @@
       </div>
 
       <div class="box">
-        <div class="content">
+        <div class="content" >
           <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
             <div class="title">
               接待员
@@ -122,9 +125,14 @@
                 <el-button slot="append" icon="el-icon-search" @click="getServiceList"></el-button>
               </el-input>
             </div>
-            <div class="sceneList-wrap" >
+            <div
+            class="sceneList-wrap"
+            v-loading="getServicerLoading"
+            element-loading-text="拼命加载中"
+            element-loading-spinner="el-icon-loading"
+            element-loading-background="rgba(0, 0, 0, 0.5)">
               <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
-                <div v-if="servicer.length === 0" class="no-data-wrap">
+                <div v-if="servicer.length === 0 && !getServicerLoading" class="no-data-wrap">
                   暂时木有内容呀～～
                 </div>
                 <div
@@ -170,7 +178,7 @@
                         <el-dropdown-item class="clearfix" :command="['offSet', item]">
                           {{ item.putway === 1 ? '下架' : '上架' }}
                         </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['copy', item]">
+                        <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId">
                           复制
                         </el-dropdown-item>
                         <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId">
@@ -301,6 +309,21 @@
         </span>
       </el-dialog>
 
+      <!-- 查看配置弹窗-->
+      <el-dialog title="查看配置" :visible.sync="showConfiguration">
+        <c-content-wrapper
+          :pagination="detailPagination.pagination"
+          @filter-change="handleFilterChange"
+        >
+          <c-table
+            :data="seeDetailData.data"
+            :props="seeDetailData.props"
+            :header="seeDetailData.header"
+          >
+          </c-table>
+        </c-content-wrapper>
+        <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
+      </el-dialog>
    </div>
   </div>
 </template>
@@ -318,6 +341,66 @@ export default {
   },
   data () {
     return {
+      getServicerLoading: false,
+      showConfiguration: false,
+      seeDetailData: {
+        props: {
+          border: true
+        },
+        data: [],
+        header: [
+          {
+            label: '版本号',
+            prop: 'versionId'
+          },
+          {
+            label: '文件名称',
+            prop: 'fileName'
+          },
+          {
+            label: '创建时间',
+            prop: 'createTime'
+          },
+          {
+            label: '操作',
+            width: '100px',
+            render: (h, { row }) => {
+              return h('el-popover', {
+                attrs: {
+                  placement: 'left',
+                  width: '600',
+                  trigger: 'click'
+                }
+              }, [
+                h('el-input', {
+                  props: {
+                    type: 'textarea',
+                    rows: 8,
+                    readonly: true,
+                    value: row.content,
+                    autosize: { minRows: 10, maxRows: 20 }
+                  },
+                  class: 'get-setting'
+                }),
+                h('el-button', {
+                  props: {
+                    type: 'text'
+                  },
+                  slot: 'reference'
+                }, '查看配置')])
+            }
+          }
+        ]
+      },
+      detailPagination: {
+        filter: {},
+        pagination: {
+          pageSize: 10,
+          currentPage: 1,
+          total: 0
+        },
+        currentId: null
+      },
       formServicerRules: {
         name: [
           { required: true, message: '不能为空', trigger: 'change' }
@@ -440,6 +523,26 @@ export default {
     }
   },
   methods: {
+    seeDevDetail (row) {
+      this.showConfiguration = true
+      this.detailPagination.currentId = row.policyId
+      this.loadDetailList()
+    },
+    loadDetailList () {
+      const params = {
+        policyId: this.detailPagination.currentId,
+        pageNum: this.detailPagination.pagination.currentPage,
+        pageSize: this.detailPagination.pagination.pageSize
+      }
+      this.$service.seeDevFileList(params).then((data) => {
+        this.seeDetailData.data = data.rows
+        this.detailPagination.pagination.total = data.total
+      })
+    },
+    // 查看配置分页
+    handleFilterChange () {
+      this.loadDetailList(this.detailPagination.currentId)
+    },
     // aaaa () {
     //   alert('aaaa')
     // },
@@ -679,6 +782,8 @@ export default {
         this.offSetScene(row)
       } else if (type === 'deleteScene') {
         this.deleteScene(row)
+      } else if (type === 'detail') {
+        this.seeDevDetail(row)
       }
     },
     returnCrowd () {
@@ -793,11 +898,13 @@ export default {
       this.servicer = []
       // 再次点击详情时中断之前的详情请求，防止数据被之前接口数据所覆盖·
       this.clearHttpRequestingList()
+      this.getServicerLoading = true
       this.$service.getReceptionistList(parmas).then(res => {
         this.servicer = res.data || []
         this.selectedServicer = {}
         this.entryList = []
         this.exportList = []
+        this.getServicerLoading = false
         if (this.servicer.length > 0) {
           if (selectServicerId) this.activeIndex2Id = selectServicerId
           const obj = this.servicer.find(item => item.id === this.activeIndex2Id)
