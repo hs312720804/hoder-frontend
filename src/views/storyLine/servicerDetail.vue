@@ -411,7 +411,7 @@
             <!-- 暂时木有内容呀～～ -->
           </div>
           <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
-          <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class">
+          <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class" :id="exportItem.id"  ref="exportRef">
             <el-checkbox :label="exportItem.id" :key="exportItem.id">
             </el-checkbox>
             <!-- <div class="item-id">{{ exportItem.id }}</div> -->
@@ -1023,6 +1023,11 @@ export default {
     // 粘贴条件
     pasteRules (pasteType) {
       const { type, selectedIds, allRules } = this.$store.state.configScheme.copyServiceRules
+
+      if ((pasteType === 'export' && this.exportList.length === 10) || (pasteType === 'entry' && this.entryList.length === 10)) {
+        return this.$message.error('最多只能创建 10 条，请删除条件后再粘贴')
+      }
+
       if (selectedIds.length === 0) {
         return this.$message.error('请先复制条件')
       }

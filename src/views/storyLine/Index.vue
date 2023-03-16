@@ -204,6 +204,7 @@
       <div class="box">
         <!-- 接待员详情 -->
         <servicerDetail
+          ref="servicerDetailRef"
           :servicer="servicer"
           :selectedScene="selectedScene"
           :selectedServicer="selectedServicer"
@@ -569,10 +570,24 @@ export default {
     getIsAllSetNextId () {
       console.log('exportList--->', this.exportList)
       const length = this.exportList.length
-      const isAllSet = length > 0 && this.exportList.every(item => (!!item.stopType && item.stopType !== 1) || (item.stopType === 1 && item.nextId))
-      if (isAllSet || (length === 0)) { // 全部已经设置了出口-下一步
+
+      // 查找未填写完整的索引
+      const incompleteIndex = this.exportList.findIndex(exItem => exItem.stopType && exItem.stopType === 1 && !exItem.nextId)
+      // const isAllSet = length > 0 && this.exportList.every(item => (!!item.stopType && item.stopType !== 1) || (item.stopType === 1 && item.nextId))
+      const isAllSet = (length > 0 && incompleteIndex === -1) || (length === 0)
+
+      if (isAllSet) { // 全部已经设置了出口 -下一步
         return true
       } else {
+        const servicerDetailRef = this.$refs.servicerDetailRef.$refs.exportRef
+
+        for (const [key, item] of Object.entries(servicerDetailRef)) {
+          if (Number(incompleteIndex) === Number(key)) { // 判断选中的dom为要滑动的dom
+            item.scrollIntoView({ behavior: 'instant' }) // 滑动到可视区域
+            break
+          }
+        }
+
         return false
       }
     },
