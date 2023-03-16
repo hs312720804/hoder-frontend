@@ -268,7 +268,7 @@
       :close-on-click-modal="false"
       width="1000px"
     >
-      <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+      <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px" @submit.native.prevent>
         <el-form-item label="策略名称" prop="policyName">
           <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
         </el-form-item>

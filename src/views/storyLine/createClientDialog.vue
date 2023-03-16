@@ -1,16 +1,17 @@
 <template>
   <div>
     <!-- {{tagList}} -->
-    <el-form :model="addForm" ref="addForm" label-width="100px">
+    <el-form :model="addForm" ref="addForm" label-width="100px" @submit.native.prevent>
       <el-form-item label="添加标签：" prop="conditionTagIds" class="add-tag-form-item" :style="{ height: collapseAddTagsFlag ? '270px' : '0px' }">
         <div class="strategy-search">
-          <el-input aria-placeholder="请输入标签关键字进行搜索"
+          <el-input
+            aria-placeholder="请输入标签关键字进行搜索"
             v-model="searchValue"
             class="strategy-search--input"
-            @keyup.enter.native="getTags()"
+            @keyup.enter.native="getTags"
           >
           </el-input>
-          <el-button type="primary" @click="getTags()">查询</el-button>
+          <el-button type="primary" @click="getTags">查询</el-button>
           <el-button @click="resetSearch">重置</el-button>
         </div>
 
