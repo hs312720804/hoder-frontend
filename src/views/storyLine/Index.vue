@@ -417,7 +417,8 @@ export default {
           { required: true, message: '请选择场景', trigger: 'change' }
         ]
       },
-      tipMsg: '请完善当前接待员服务终止条件中的处理操作',
+      tipMsg: '下一步不可为空',
+      // tipMsg: '请完善当前接待员服务终止条件中的处理操作',
       isCopiedServicer: false,
       copyType: '',
       copyForm: {
