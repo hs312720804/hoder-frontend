@@ -224,7 +224,7 @@
         :visible.sync="dialogVisible"
         width="30%"
         >
-        <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef">
+        <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef" @submit.native.prevent>
           <el-form-item label="场景名：" label-width="90px" prop="name">
             <el-input v-model="formScene.name" autocomplete="off" clearable></el-input>
           </el-form-item>
@@ -240,7 +240,7 @@
         :visible.sync="dialogVisible2"
         width="30%"
         >
-        <el-form :model="formServicer" :rules="formServicerRules" ref="formServicerRef">
+        <el-form :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent>
           <el-form-item label="接待员名：" label-width="100px" prop="name">
             <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input>
           </el-form-item>
@@ -333,6 +333,7 @@
 import LaunchToBusiness from '../launch/StrategyPutIn'
 import drag from './drag.vue'
 import servicerDetail from './servicerDetail.vue'
+import { removePendingRequest } from '@/services/cancelFetch'
 
 export default {
   components: {
@@ -913,7 +914,10 @@ export default {
       }
       this.servicer = []
       // 再次点击详情时中断之前的详情请求，防止数据被之前接口数据所覆盖·
-      this.clearHttpRequestingList()
+      removePendingRequest({
+        method: 'get',
+        url: '/api/receptionist/list'
+      })
       this.getServicerLoading = true
       this.$service.getReceptionistList(parmas).then(res => {
         this.servicer = res.data || []

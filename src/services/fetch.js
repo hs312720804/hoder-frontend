@@ -2,16 +2,16 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import Vue from 'vue'
+import { addPendingRequest } from './cancelFetch'
 
 // http request拦截
 axios.interceptors.request.use(
   config => {
-    // 添加断开请求的方法---------------------这里为重点-----------------------------
-    config.cancelToken = new axios.CancelToken((cancel) => {
-      Vue.$httpRequestList.push(cancel) // 存储cancle
-    })
-
+    // // 添加断开请求的方法---------------------这里为重点-----------------------------
+    // config.cancelToken = new axios.CancelToken((cancel) => {
+    //   Vue.$httpRequestList.push(cancel) // 存储cancle
+    // })
+    addPendingRequest(config) // 把当前请求信息添加到pendingRequest对象中
     return config
   },
   error => {
