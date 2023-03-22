@@ -5,6 +5,8 @@
 
     <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
       <div class="title">接待员详情</div>
+      <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
+
       <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
         <div
         style="display: grid; grid-template-columns:2fr auto; grid-template-rows: auto; gap: 16px;"
@@ -24,7 +26,7 @@
                 <!-- <div class="target-img"></div> -->
 
                 <!-- 复用的接待员 -->
-                <template v-if="isCopiedServicer">
+                <template v-if="isCopiedServicer || !selectedServicer.id">
                   {{ target }}
                 </template>
                 <template v-else>
@@ -133,7 +135,6 @@
               <div class="detail-name" style="height: 25px">
                 <span>
                   {{ selectedServicer.receptionist }}
-                  <div v-if="isCopiedServicer" style="font-size: 12px; white-space: nowrap;">如需修改，请跳转到被复用的接待员处编辑</div>
                 </span>
                 <!-- <span style="font-size: 14px; font-size: 14px;position: absolute;right: 0;display: flex; top: 0;gap: 5px;">
                   <span class="border-style">{{ selectedServicer.userName || '-'}}</span>
@@ -1582,8 +1583,8 @@ export default {
         // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
         // if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
         // 待改
-        // if (res && res.data && res.data.overview) {
-        if (res && res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
+        if (res && res.data && res.data.overview) {
+        // if (res && res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
           const tableData = res.data || {}
           this.allChartData = tableData || {}
           this.overview = tableData.overview ? tableData.overview.data : {}
