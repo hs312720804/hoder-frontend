@@ -5,17 +5,17 @@
       【{{$route.params.sceneId}}】
       【{{selectedScene.id}}】
     </div> -->
-    <div class='row-wrap' >
+    <!-- {{ selectedScene }} -->
+    <div class='row-wrap' :style="{'grid-template-columns': isShowDetailName ? '200px 200px minmax(0, 1fr)': '32px 200px minmax(0, 1fr)'}">
       <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
         继续编辑
       </el-button>
 
       <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
-      <div class="box">
+      <div class="box" v-if="isShowDetailName" style="position: relative">
+        <!-- <i class="el-icon-arrow-left arrow-close" @click="openShowDetailName" ></i> -->
         <div class="content">
-
             <div class="title">场景</div>
-
             <div class="search">
               <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
@@ -111,8 +111,14 @@
             </div>
         </div>
       </div>
+      <div v-else style="position: relative">
+        <el-button plain @click="openShowDetailName">场景 <br/>
+          <i class="el-icon-arrow-right " ></i>
+        </el-button>
+      </div>
 
       <div class="box">
+        <!-- <div class="title" v-if="!isShowDetailName">选择场景：{{ selectedScene.sceneName }}</div> -->
         <div class="content" >
           <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
             <div class="title">
@@ -343,6 +349,7 @@ export default {
   },
   data () {
     return {
+      isShowDetailName: true,
       getServicerLoading: false,
       showConfiguration: false,
       seeDetailData: {
@@ -428,7 +435,7 @@ export default {
       },
       copyDialogVisible: false,
       noGroupService: [],
-      styleType: true,
+      styleType: false,
       groupData: [{
         list: [],
         groupName: '组1'
@@ -526,6 +533,9 @@ export default {
     }
   },
   methods: {
+    openShowDetailName () {
+      this.isShowDetailName = !this.isShowDetailName
+    },
     seeDevDetail (row) {
       this.showConfiguration = true
       this.detailPagination.currentId = row.policyId
@@ -1091,5 +1101,15 @@ export default {
   border-left: 29px solid #fff;
   border-right: 29px solid #fff;
   box-sizing: border-box;
+}
+.arrow-close {
+  position: absolute;
+  top: 50%;
+  z-index: 99;
+  right: -14px;
+  height: 50px;
+  line-height: 50px;
+  background: #fff;
+  border-radius: 0 6px 6px 0;
 }
 </style>
