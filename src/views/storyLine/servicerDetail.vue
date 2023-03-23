@@ -5,7 +5,6 @@
 
     <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
       <div class="title">接待员详情</div>
-      <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
 
       <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
         <div
@@ -134,7 +133,8 @@
             </div>
           </div>
           <div class="detail-box" v-if="isShowDetailName">
-            <el-button type="text" @click="openShowDetailName" style="position: absolute; right: 10px; top: 10px; z-index: 9;">收起</el-button >
+            <!-- <el-button type="text" @click="openShowDetailName" style="position: absolute; right: 10px; top: 10px; z-index: 9;">收起</el-button > -->
+            <i @click="openShowDetailName" class="el-icon-arrow-up fold position-right"></i>
             <div>
               <div class="detail-name" style="height: 25px">
                 <span>
@@ -274,7 +274,7 @@
             <template v-if="entryList.length > 0" >
               <!-- {{ checkList }} -->
               <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-              <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
+              <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 15px">复制</el-button>
             </template>
 
             <div v-if="entryList.length === 0" class="no-data-wrap">
@@ -453,7 +453,7 @@
             <template v-if="exportList.length > 0">
               <!-- {{ exportCheckList }} -->
               <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
-              <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
+              <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 15px">复制</el-button>
             </template>
 
             <div v-if="exportList.length === 0" class="no-data-wrap">
@@ -462,7 +462,7 @@
             </div>
             <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
             <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class" :id="exportItem.id"  ref="exportRef">
-              <el-checkbox :label="exportItem.id" :key="exportItem.id">
+              <el-checkbox :label="exportItem.id" :key="exportItem.id" >
               </el-checkbox>
               <!-- <div class="item-id">{{ exportItem.id }}</div> -->
               <div class="border-line"  style="position: relative;">

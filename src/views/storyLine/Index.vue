@@ -1,5 +1,6 @@
 <template>
   <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
+    <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
     <!-- {{groupServicer}} -->
     <!-- <div style="color: red; position: absolute; z-index: 999">
       【{{$route.params.sceneId}}】
@@ -11,7 +12,9 @@
         继续编辑
       </el-button>
 
-      <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button>
+      <!-- <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button> -->
+      <i :class="styleType ? 'el-icon-moon' : 'el-icon-sunny'" class="position-right change-style-btn "  @click="changeStyle"></i>
+
       <div class="box" v-if="isShowDetailName" style="position: relative">
         <!-- <i class="el-icon-arrow-left arrow-close" @click="openShowDetailName" ></i> -->
         <div class="content">
@@ -440,7 +443,6 @@ export default {
       },
       tipMsg: '下一步不可为空',
       // tipMsg: '请完善当前接待员服务终止条件中的处理操作',
-      isCopiedServicer: false,
       copyType: '',
       copyForm: {
         id: '',
@@ -481,6 +483,9 @@ export default {
   },
 
   computed: {
+    isCopiedServicer () {
+      return !!this.selectedServicer.referenceId
+    },
     // 接待员分组数据
     groupServicer () {
       const arr = this.mergeSameAttribute(this.servicer)
