@@ -244,13 +244,26 @@
       <el-dialog
         title="添加接待员"
         :visible.sync="dialogVisible2"
-        width="30%"
+        :width="createType === 0 ?'30%': '100%'"
+        :fullscreen="createType === 0 ? false : true"
+        :close-on-press-escape="false"
+        :show-close="false"
         >
-        <el-form :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent>
+        <div class="create-type-sty">
+          创建方式：
+          <el-radio v-model="createType" :label="0">逐个创建</el-radio>
+          <el-radio v-model="createType" :label="1">批量创建</el-radio>
+        </div>
+
+        <!-- 单个创建 -->
+        <el-form v-if="createType === 0" :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent>
           <el-form-item label="接待员名：" label-width="100px" prop="name">
             <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input>
           </el-form-item>
         </el-form>
+
+        <!-- 批量创建 -->
+        <MultiAdd v-else></MultiAdd>
 
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible2 = false">取 消</el-button>
@@ -340,15 +353,18 @@ import LaunchToBusiness from '../launch/StrategyPutIn'
 import drag from './drag.vue'
 import servicerDetail from './servicerDetail.vue'
 import { removePendingRequest } from '@/services/cancelFetch'
+import MultiAdd from './multiAdd/Index'
 
 export default {
   components: {
     LaunchToBusiness,
     drag,
-    servicerDetail
+    servicerDetail,
+    MultiAdd
   },
   data () {
     return {
+      createType: 0, // 0-单个创建； 1-批量创建
       isShowDetailName: true,
       getServicerLoading: false,
       showConfiguration: false,
@@ -1111,5 +1127,8 @@ export default {
   line-height: 50px;
   background: #fff;
   border-radius: 0 6px 6px 0;
+}
+.create-type-sty {
+  padding 0 0 30px 57px
 }
 </style>

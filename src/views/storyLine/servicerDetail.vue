@@ -59,7 +59,11 @@
               overview： {{overview}} -->
               <div class="kpi-wrap">
                   <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
-                <div>绩效目标（可选）</div>
+                <div>
+                  绩效目标（可选）
+                  <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
+                  <el-radio v-model="radio1" label="2">按分组统计</el-radio>
+                </div>
                 <i v-if="selectedServicer.id" @click="editTargetKey" class="el-icon-edit position-right" ></i>
                 <div class="detail-kpi">
                   <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
@@ -145,6 +149,22 @@
 
               </div>
               <div class="d-info" >
+                <div class="d-info-box">
+                  <div class="box-title">接待员类型</div>
+                  <div class="box-line">
+                    <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
+                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio>
+                  </div>
+                </div>
+                <div class="d-info-box">
+                  <div class="box-title">兜底方式</div>
+                  <div class="box-line">
+                    <el-radio v-model="radio1" label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio>
+                    <el-radio v-model="radio1" label="2">无合适接待员则先随机完再兜底</el-radio>
+                    <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
+                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
+                  </div>
+                </div>
                 <!-- 复用的接待员 -->
                 <template v-if="isCopiedServicer">
                   <div class="d-info-box">
@@ -249,13 +269,13 @@
         </div>
         <div class="detail-box">
           <div class="title2">服务对象选择（可选）</div>
+          <el-button v-if="!isCopiedServicer && selectedServicer.id" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div class="set-start">
             <template v-if="entryList.length > 0" >
               <!-- {{ checkList }} -->
               <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
               <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 20px">复制</el-button>
             </template>
-            <el-button v-if="!isCopiedServicer" type="text" @click="pasteRules('entry')" style="float: right">粘贴条件</el-button>
 
             <div v-if="entryList.length === 0" class="no-data-wrap">
               <div class="noData"></div>
@@ -372,9 +392,10 @@
             </el-checkbox-group>
 
             <!-- 选择了接待员时 且 不是复用的  显示-->
-            <div class="box-fotter" v-if="selectedServicer.id && !isCopiedServicer">
+            <div class="box-fotter addRule" v-if="selectedServicer.id && !isCopiedServicer">
               <!-- <el-button>添加</el-button> -->
-              <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
+              <!-- <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button> -->
+              <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象选择</el-button>
             </div>
           </div>
         </div>
@@ -427,13 +448,13 @@
 
         <div class="detail-box">
           <div class="title2">服务终止条件（可选）</div>
+          <el-button v-if="!isCopiedServicer && selectedServicer.id" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div class="set-end">
             <template v-if="exportList.length > 0">
               <!-- {{ exportCheckList }} -->
               <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
               <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 20px">复制</el-button>
             </template>
-            <el-button v-if="!isCopiedServicer" type="text" @click="pasteRules('export')" style="float: right">粘贴条件</el-button>
 
             <div v-if="exportList.length === 0" class="no-data-wrap">
               <div class="noData"></div>
@@ -557,9 +578,9 @@
 
             </div>
             </el-checkbox-group>
-            <div class="box-fotter" v-if="selectedServicer.id && !isCopiedServicer">
+            <div class="box-fotter addRule" v-if="selectedServicer.id && !isCopiedServicer">
               <!-- <el-button>添加</el-button> -->
-              <el-button type="text" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
             </div>
           </div>
         </div>
@@ -674,6 +695,7 @@ import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexF
 import ShowFlowConditionRule from './ShowFlowConditionRule.vue'
 import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
 import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
+import { options } from './utils'
 
 export default {
   components: {
@@ -814,6 +836,8 @@ export default {
   },
   data () {
     return {
+      options: options,
+      radio1: '1',
       isShowDetailName: true,
       reuseExportDialogVisible: false,
       reuseForm: {
@@ -824,19 +848,6 @@ export default {
         stopType: [{ required: true, message: '请选择', trigger: 'change' }],
         nextId: [{ required: true, message: '请选择流转接待员', trigger: 'change' }]
       },
-      options: [{
-        value: 1,
-        label: '正确，继续种草，下一步'
-      }, {
-        value: 2,
-        label: '正确，直接转化'
-      }, {
-        value: 3,
-        label: '不正确，继续观察'
-      }, {
-        value: 4,
-        label: '不喜欢切换方案'
-      }],
       // isCopiedServicer: false,
       checkList: [],
       exportCheckList: [],
