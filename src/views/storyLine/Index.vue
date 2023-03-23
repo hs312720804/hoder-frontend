@@ -228,24 +228,24 @@
       <el-dialog
         title="添加场景"
         :visible.sync="dialogVisible"
-        width="30%"
-        >
-        <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef" @submit.native.prevent>
+        width="95%"
+      >
+        <!-- <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef" @submit.native.prevent>
           <el-form-item label="场景名：" label-width="90px" prop="name">
             <el-input v-model="formScene.name" autocomplete="off" clearable></el-input>
           </el-form-item>
-        </el-form>
-
+        </el-form> -->
+        <OneDrop></OneDrop>
         <span slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible = false">取 消</el-button>
           <el-button type="primary" @click="confirmAddScene">确 定</el-button>
         </span>
       </el-dialog>
+      <!-- :fullscreen="createType === 0 ? false : true" -->
       <el-dialog
         title="添加接待员"
         :visible.sync="dialogVisible2"
-        :width="createType === 0 ?'30%': '100%'"
-        :fullscreen="createType === 0 ? false : true"
+        :width="createType === 0 ?'30%': '95%'"
         :close-on-press-escape="false"
         :show-close="false"
         >
@@ -354,13 +354,15 @@ import drag from './drag.vue'
 import servicerDetail from './servicerDetail.vue'
 import { removePendingRequest } from '@/services/cancelFetch'
 import MultiAdd from './multiAdd/Index'
+import OneDrop from './oneDrop/Index'
 
 export default {
   components: {
     LaunchToBusiness,
     drag,
     servicerDetail,
-    MultiAdd
+    MultiAdd,
+    OneDrop
   },
   data () {
     return {
@@ -431,11 +433,6 @@ export default {
           { required: true, message: '不能为空', trigger: 'change' }
         ]
       },
-      formSceneRules: {
-        name: [
-          { required: true, message: '不能为空', trigger: 'change' }
-        ]
-      },
       copyFormRule: {
         sceneId: [
           { required: true, message: '请选择场景', trigger: 'change' }
@@ -465,9 +462,6 @@ export default {
       searchScene: '',
       searchServicer: '',
       renameVisible: false,
-      formScene: {
-        name: ''
-      },
       formServicer: {
         name: ''
       },

@@ -16,7 +16,6 @@ export function addPendingRequest (config) {
   const requestKey = generateReqKey(config)
   config.cancelToken = config.cancelToken || new axios.CancelToken((cancel) => {
     if (pendingRequest.has(requestKey)) {
-      debugger
       const list = pendingRequest.get(requestKey)
       const cancelTokenList = [...list, cancel]
       pendingRequest.set(requestKey, cancelTokenList)

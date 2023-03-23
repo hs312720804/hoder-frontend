@@ -1,5 +1,6 @@
 <template>
-<div class="single-set-wrap">
+<!-- 设置所有接待员的条件 -->
+<div class="single-set-wrap div-class">
   <!-- 接待员列表 -->
   <div class="single-set-left">
     <div class="search">
@@ -137,6 +138,6 @@ export default {
   }
 }
 </script>
-<style lang="stylus">
+<style lang="stylus" scoped>
 @import './index.styl'
 </style>

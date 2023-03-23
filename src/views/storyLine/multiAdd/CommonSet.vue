@@ -1,59 +1,62 @@
 <template>
+  <!-- 批量设置接待员 -->
   <div>
-
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm">
-      <el-form-item label="选择标签：" prop="type">
-        <el-checkbox-group v-model="ruleForm.type">
-          <el-checkbox label="影视模型" name="type"></el-checkbox>
-        </el-checkbox-group>
-      </el-form-item>
+      <div class="div-class">
 
-      <el-form-item label="选择维度：" prop="name">
-        <el-transfer
-          filterable
-          :filter-method="filterMethod"
-          filter-placeholder="请输入城市拼音"
-          v-model="value"
-          :data="data">
-        </el-transfer>
-      </el-form-item>
-      <el-form-item label="接待员命名：" prop="name">
-        <el-input v-model="ruleForm.name" style="width: 100px"></el-input>
-        <span class="red-tip">所选维度</span>
-        <el-input v-model="ruleForm.name" clearable style="width: 100px"></el-input>
-      </el-form-item>
-      <el-form-item label="服务对象选择：" prop="entry">
-        <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
-          <createClientDialog
-            ref="createClientDialog"
-            :options="options">
-          </createClientDialog>
-          <i class="el-icon-delete" @click="deleteEntry(index)"></i>
-        </div>
-        <div class="box-fotter addRule">
-          <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
-        </div>
+        <el-form-item label="选择标签：" prop="type">
+          <el-checkbox-group v-model="ruleForm.type">
+            <el-checkbox label="影视模型" name="type"></el-checkbox>
+          </el-checkbox-group>
+        </el-form-item>
 
-      </el-form-item>
+        <el-form-item label="选择维度：" prop="name">
+          <el-transfer
+            filterable
+            :filter-method="filterMethod"
+            filter-placeholder="请输入城市拼音"
+            v-model="value"
+            :data="data">
+          </el-transfer>
+        </el-form-item>
+        <el-form-item label="接待员命名：" prop="name">
+          <el-input v-model="ruleForm.name" style="width: 100px"></el-input>
+          <span class="red-tip">所选维度</span>
+          <el-input v-model="ruleForm.name" clearable style="width: 100px"></el-input>
+        </el-form-item>
+        <el-form-item label="服务对象选择：" prop="entry">
+          <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
+            <createClientDialog
+              ref="createClientDialog"
+              :options="options">
+            </createClientDialog>
+            <i class="el-icon-delete" @click="deleteEntry(index)"></i>
+          </div>
+          <div class="box-fotter addRule">
+            <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
+          </div>
 
-      <el-form-item label="服务终止条件：" prop="export">
+        </el-form-item>
 
-        <div class="create-client-border" v-for="(item, index) in exportList" :key="index">
-          <createClientDialog
-            ref="exportClientDialog"
-            type="export"
-            :servicerListFilterSelect="servicerListFilterSelect"
-            :options="options"
-          ></createClientDialog>
-        <i class="el-icon-delete" @click="deleteExport(index)"></i>
+        <el-form-item label="服务终止条件：" prop="export">
 
-        </div>
+          <div class="create-client-border" v-for="(item, index) in exportList" :key="index">
+            <createClientDialog
+              ref="exportClientDialog"
+              type="export"
+              :servicerListFilterSelect="servicerListFilterSelect"
+              :options="options"
+            ></createClientDialog>
+          <i class="el-icon-delete" @click="deleteExport(index)"></i>
 
-        <div class="box-fotter addRule">
-          <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务对象筛选</el-button>
-        </div>
+          </div>
 
-      </el-form-item>
+          <div class="box-fotter addRule">
+            <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务对象筛选</el-button>
+          </div>
+
+        </el-form-item>
+      </div>
 
     </el-form>
   </div>
