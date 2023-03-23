@@ -2,6 +2,7 @@
   <div class="content detail">
     <!-- {{ selectedServicer }} -->
     <!-- {{selectedScene}} -->
+    canUse：{{canUse}}
 
     <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
       <div class="title">接待员详情</div>
@@ -18,17 +19,12 @@
           >
             <div class="detail-box">
               <div class="target">我的任务（可选）</div>
-              <i v-if="!isEdit && selectedServicer.id && !isCopiedServicer" @click="editTarget"  class="el-icon-edit position-right" ></i>
+              <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" ></i>
               <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
               <div class="flex-content">
-                <!-- <div class="target-img"></div> -->
-
                 <!-- 复用的接待员 -->
-                <template v-if="isCopiedServicer || !selectedServicer.id">
-                  {{ target }}
-                </template>
-                <template v-else>
+                <template v-if="havePermissionsToUse">
                   <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
                     <div>{{ target }}</div>
                     <!-- <textarea name="description" v-model="target"></textarea> -->
@@ -49,6 +45,9 @@
                     style="font-size: 14px; ">
                   </el-input>
                 </template>
+                <template v-else>
+                  {{ target }}
+                </template>
               </div>
             </div>
 
@@ -63,7 +62,7 @@
                   <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
                   <el-radio v-model="radio1" label="2">按分组统计</el-radio>
                 </div>
-                <i v-if="selectedServicer.id" @click="editTargetKey" class="el-icon-edit position-right" ></i>
+                <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" ></i>
                 <div class="detail-kpi">
                   <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
                   <!-- <el-descriptions title="" column="2">
@@ -89,7 +88,7 @@
 
                           <span v-if="!isEditValue" @click="editTargetValue">
                             <span>{{ targetValue }}</span>
-                            <span v-if="selectedServicer.id" class="text-over"></span>
+                            <i v-if="selectedServicer.id && canUse" class="el-icon-edit text-over"></i>
                           </span>
                           <el-input
                             v-else
@@ -200,6 +199,7 @@
                         placeholder="选择技能"
                         @change="selectSkill"
                         :popper-append-to-body="false"
+                        :disabled="!canUse"
                       >
                         <!-- @blur="addOption"
                         @keyup.enter.native="addOption" -->
@@ -247,6 +247,7 @@
                       </el-select>
                     </div>
                     <div v-else class="box-line" >-</div>
+
                   </div>
                 </template>
                 <div class="d-info-box">
@@ -269,7 +270,7 @@
         </div>
         <div class="detail-box">
           <div class="title2">服务对象选择（可选）</div>
-          <el-button v-if="!isCopiedServicer && selectedServicer.id" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+          <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div class="set-start">
             <template v-if="entryList.length > 0" >
               <!-- {{ checkList }} -->
@@ -370,7 +371,7 @@
                 <!-- <div>{{item.behaviorRulesJson}}</div> -->
               </div>
 
-              <div v-if="!isCopiedServicer" class="drop-class" >
+              <div v-if="havePermissionsToUse" class="drop-class" >
                 <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
                   <span class="el-dropdown-link" >
                     <span>.</span>
@@ -391,11 +392,11 @@
             </div>
             </el-checkbox-group>
 
-            <!-- 选择了接待员时 且 不是复用的  显示-->
-            <div class="box-fotter addRule" v-if="selectedServicer.id && !isCopiedServicer">
+            <!-- 选择了接待员时 且 不是复用的 且 有权限 显示-->
+            <div class="box-fotter addRule" v-if="havePermissionsToUse">
               <!-- <el-button>添加</el-button> -->
               <!-- <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button> -->
-              <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象选择</el-button>
+              <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
             </div>
           </div>
         </div>
@@ -448,7 +449,7 @@
 
         <div class="detail-box">
           <div class="title2">服务终止条件（可选）</div>
-          <el-button v-if="!isCopiedServicer && selectedServicer.id" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+          <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div class="set-end">
             <template v-if="exportList.length > 0">
               <!-- {{ exportCheckList }} -->
@@ -553,7 +554,7 @@
                 <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
               </div>
               <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-              <div v-if="!isCopiedServicer || exportItem.stopType === 1" class="drop-class">
+              <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse" class="drop-class">
                 <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                   <span class="el-dropdown-link" >
                     <span>.</span>
@@ -578,7 +579,7 @@
 
             </div>
             </el-checkbox-group>
-            <div class="box-fotter addRule" v-if="selectedServicer.id && !isCopiedServicer">
+            <div class="box-fotter addRule" v-if="havePermissionsToUse" >
               <!-- <el-button>添加</el-button> -->
               <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
             </div>
@@ -796,6 +797,9 @@ export default {
 
         // 根据接待员 ID 获取绩效目标
         this.getTargetById()
+
+        // 判断是否有权限
+        this.getCanReuse()
         // const obj = this.targetKeyList.find(item => {
         //   return this.selectedServicer.indicatorsType === item.id
         // })
@@ -832,6 +836,9 @@ export default {
           resourceName: item.sourceName
         }
       })
+    },
+    havePermissionsToUse () {
+      return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
     }
   },
   data () {
@@ -959,7 +966,8 @@ export default {
       sourceList: [], // 内容源
       selectSourceCode: 'tencent', // 所选内容源
       recommendResourceList: [], // 推荐影片
-      tagCodeList: []
+      tagCodeList: [],
+      canUse: false // 当前接待员是否有权限操作
     }
   },
   created () {
@@ -981,6 +989,16 @@ export default {
   },
 
   methods: {
+    getCanReuse () {
+      if (this.selectedServicer.id) {
+        const params = {
+          id: this.selectedServicer.id
+        }
+        this.$service.getCanReuse(params).then(res => {
+          this.canUse = res || false
+        })
+      }
+    },
     openShowDetailName () {
       this.isShowDetailName = !this.isShowDetailName
     },

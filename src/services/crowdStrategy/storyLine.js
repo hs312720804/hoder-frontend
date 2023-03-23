@@ -267,3 +267,11 @@ export function updateExport (data) {
     isJSON: true
   })
 }
+// 判断一个接待员是否编辑权限接口
+export function getCanReuse (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/canReuse',
+    params
+  })
+}

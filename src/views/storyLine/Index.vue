@@ -156,46 +156,70 @@
                       {{ item.receptionist }}
                     </span>
                     <span class="item-index">{{ item.id }}</span>
-                    <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleServiceCommand">
+                    <el-dropdown
+                      trigger="hover"
+                      class="el-dropdown"
+                      :hide-on-click="false"
+                      placement="bottom"
+                      @command="handleServiceCommand"
+                      @visible-change="e => visibleChange(e, item.id)"
+                    >
                       <span class="el-dropdown-link">
                         . . .
                       </span>
                       <el-dropdown-menu slot="dropdown">
-                        <el-dropdown-item :disabled="!!item.referenceId" class="clearfix" :command="['rename', item]" >
+                        <!-- canUse：{{ canUse }} -->
 
-                          <el-popover placement="top" trigger="click" ref="pop">
-                            <div slot="reference">重命名</div>
-                            <div style="display: flex">
+                        <div
+                          v-if="dropDownLoading"
+                          v-loading="dropDownLoading"
+                          element-loading-spinner="el-icon-loading"
+                          element-loading-background="rgba(0, 0, 0, 0.8)">
+                        </div>
+                        <!--
+                          referenceId - 复用接待员
+                            - 是：禁用【重命名】、【复制】、【复用】
+                          canUse - 有权限
+                            - 没有权限： 禁用 【重命名】、【下架】、【删除】
+                        -->
+                        <template v-else>
+                          <el-dropdown-item class="clearfix" :command="['rename', item]" :disabled="!!item.referenceId || !canUse" >
 
-                                <el-input
-                                  type="text"
-                                  placeholder="请输入内容"
-                                  v-model="rename2"
-                                  maxlength="50"
-                                  show-word-limit
-                                  clearable
-                                  style="width: 250px"
-                                >
-                                </el-input>
+                            <el-popover placement="top" trigger="click" ref="pop">
+                              <div slot="reference">重命名</div>
+                              <div style="display: flex">
 
-                              <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                              <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
-                            </div>
-                          </el-popover>
+                                  <el-input
+                                    type="text"
+                                    placeholder="请输入内容"
+                                    v-model="rename2"
+                                    maxlength="50"
+                                    show-word-limit
+                                    clearable
+                                    style="width: 250px"
+                                  >
+                                  </el-input>
 
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['offSet', item]">
-                          {{ item.putway === 1 ? '下架' : '上架' }}
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId">
-                          复制
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId">
-                          复用
-                        </el-dropdown-item>
-                        <el-dropdown-item class="clearfix" :command="['deleteService', item]">
-                          删除
-                        </el-dropdown-item>
+                                <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                                <el-button type="primary" size="mini" @click="handelRename2(item)">确定</el-button>
+                              </div>
+                            </el-popover>
+
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['offSet', item]" :disabled="!canUse">
+                            {{ item.putway === 1 ? '下架' : '上架' }}
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId">
+                            复制
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId">
+                            复用
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['deleteService', item]" :disabled="!canUse">
+                            删除
+                          </el-dropdown-item>
+                        </template>
+
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
@@ -369,6 +393,8 @@ export default {
   },
   data () {
     return {
+      dropDownLoading: true,
+      canUse: false, // 当前接待员是否有权限操作
       createType: 0, // 0-单个创建； 1-批量创建
       isShowDetailName: true,
       getServicerLoading: false,
@@ -548,6 +574,19 @@ export default {
     }
   },
   methods: {
+    visibleChange (val, id) {
+      console.log(val, id)
+      if (val && id) {
+        this.dropDownLoading = true
+        const params = {
+          id
+        }
+        this.$service.getCanReuse(params).then(res => {
+          this.dropDownLoading = false
+          this.canUse = res || false
+        })
+      }
+    },
     openShowDetailName () {
       this.isShowDetailName = !this.isShowDetailName
     },
@@ -575,11 +614,10 @@ export default {
     //   alert('aaaa')
     // },
     // beforeunloadHandler (e) {
-    //   alert('123')
     //   // console.log('e-->', e)
     //   e = e || window.event
     //   if (e) {
-    //     e.returnValue = '关闭提示123'
+    //     e.returnValue = '关闭提示'
     //   }
     //   return true
     // },
@@ -595,7 +633,6 @@ export default {
 
     // 判断是否已经设置了出口条件的下一步
     getIsAllSetNextId () {
-      console.log('exportList--->', this.exportList)
       const length = this.exportList.length
 
       // 查找未填写完整的索引
