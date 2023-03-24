@@ -2,7 +2,24 @@
   <div class="content detail">
     <!-- {{ selectedServicer }} -->
     <!-- {{selectedScene}} -->
-    canUse：{{canUse}}
+    <!-- canUse：{{canUse}} -->
+    <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
+      【我的任务】、
+      【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【服务终止条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【擅长】、
+      接待员dropdown: 【重命名】、【复用】、【复制】
+    -->
+
+    <!-- 没有权限的（ canUse：false ）不允许编辑：
+      【我的任务】、
+      【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【服务终止条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【擅长】、
+      接待员dropdown：【重命名】、【下架】、【删除】
+      场景dropdown：【重命名】、【下架】、【投放】、【删除】
+      【绩效目标】所有编辑功能
+    -->
 
     <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
       <div class="title">接待员详情</div>
@@ -554,9 +571,9 @@
                 <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
               </div>
               <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-              <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse" class="drop-class">
+              <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class">
                 <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
-                  <span class="el-dropdown-link" >
+                  <span class="el-dropdown-link">
                     <span>.</span>
                     <span>.</span>
                     <span>.</span>
@@ -565,7 +582,7 @@
                     <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
                       编辑
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="!isCopiedServicer" class="clearfix" :command="['deleteExport', exportItem]">
+                    <el-dropdown-item v-if="canUse" class="clearfix" :command="['deleteExport', exportItem]">
                       删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
