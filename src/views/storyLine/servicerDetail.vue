@@ -20,15 +20,44 @@
       场景dropdown：【重命名】、【下架】、【投放】、【删除】
       【绩效目标】所有编辑功能
     -->
+    <!-- <div class="detail-box top-div">
+      <span class="detail-name">
+        <span>
+          {{ selectedServicer.receptionist }}
+        </span>
+      </span>
 
-    <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
-      <div class="title">接待员详情</div>
+      <template v-if="isCopiedServicer">
+        <div class="top-box">
+          <div class="top-box-title">复用自</div>
+          <el-button class="top-line" type="text" @click="redirctToScene(selectedServicer.refSceneId, selectedServicer.referenceId)" style="text-align: left; color: #66b1ff">{{ selectedServicer.refSceneName }} - {{ selectedServicer.receptionist }}</el-button>
+        </div>
+        <div class="top-box">
+          <div class="top-box-title">复用时间</div>
+          <div class="top-line"><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
+        </div>
 
+      </template>
+
+      <template v-else>
+        <div class="top-box">
+          <div class="top-box-title">创建人</div>
+          <div class="top-line" ><span class="border-style">{{ selectedServicer.userName || '-'}}</span></div>
+        </div>
+        <div class="top-box">
+          <div class="top-box-title">创建时间</div>
+          <div class="top-line" ><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
+        </div>
+      </template>
+      <div class="top-box">
+        <div class="top-box-title">业务范围</div>
+        <div class="top-line" ><span class="border-style">方案： {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}</span></div>
+      </div>
+    </div> -->
+
+    <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
       <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
-        <div
-        style="display: grid; grid-template-columns:2fr auto; grid-template-rows: auto; gap: 16px;"
-        >
-
+        <div style="display: grid; grid-template-columns:2fr auto; grid-template-rows: auto; gap: 16px;">
           <!-- <div class="servicer-img"></div> -->
           <div
             style="display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto;gap: 16px;"
@@ -156,11 +185,6 @@
                 <span>
                   {{ selectedServicer.receptionist }}
                 </span>
-                <!-- <span style="font-size: 14px; font-size: 14px;position: absolute;right: 0;display: flex; top: 0;gap: 5px;">
-                  <span class="border-style">{{ selectedServicer.userName || '-'}}</span>
-                  <span class="border-style">{{ selectedServicer.createTime || '-'}}</span>
-                  <span class="border-style">方案： {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}</span>
-                </span> -->
                 <div class="detail-name-border"></div>
 
               </div>
