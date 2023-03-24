@@ -14,7 +14,8 @@
           <el-transfer
             filterable
             :filter-method="filterMethod"
-            filter-placeholder="请输入城市拼音"
+            filter-placeholder="搜索接待员"
+            :titles="['待选维度', '已选维度']"
             v-model="value"
             :data="data">
           </el-transfer>
@@ -59,6 +60,7 @@
       </div>
 
     </el-form>
+    <el-button @click="aaa">获取数据</el-button>
   </div>
   </template>
 <script>
@@ -72,13 +74,11 @@ export default {
   data () {
     const generateData = _ => {
       const data = []
-      const cities = ['上海', '北京', '广州', '深圳', '南京', '西安', '成都']
-      const pinyin = ['shanghai', 'beijing', 'guangzhou', 'shenzhen', 'nanjing', 'xian', 'chengdu']
-      cities.forEach((city, index) => {
+      const list = ['剧情', '都市', '武侠', '科幻', '言情', '悬疑', '警匪']
+      list.forEach((city, index) => {
         data.push({
           label: city,
-          key: index,
-          pinyin: pinyin[index]
+          key: index
         })
       })
       return data
@@ -91,7 +91,7 @@ export default {
       data: generateData(),
       value: [],
       filterMethod (query, item) {
-        return item.pinyin.indexOf(query) > -1
+        return item.label.indexOf(query) > -1
       },
       ruleForm: {
         name: '',
@@ -104,7 +104,7 @@ export default {
           { type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change' }
         ],
         name: [
-          { required: true, message: '请输入接待员命名', trigger: 'blur' }
+          { required: true, message: '请选择维度', trigger: 'blur' }
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
         ]
 
@@ -112,7 +112,22 @@ export default {
     }
   },
   methods: {
+    aaa () {
+      debugger
+      console.log('this--->', this)
+      const dialogRefArr = this.$refs.createClientDialog
 
+      dialogRefArr.forEach(dialogRef => {
+        const rulesJson = dialogRef.rulesJson
+        const behaviorRulesJson = dialogRef.behaviorRulesJson
+        const flowCondition = dialogRef.flowCondition
+
+        console.log('rulesJson', rulesJson)
+        console.log('behaviorRulesJson', behaviorRulesJson)
+        console.log('flowCondition', flowCondition)
+      })
+      // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit, flowCondition)
+    },
     // 新建服务对象筛选
     createClient () {
       this.entryList.push({ id: 1 })
