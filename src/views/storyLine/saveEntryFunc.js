@@ -1,3 +1,4 @@
+// 保存普通标签、行为标签、流转规则 的统一封装方法
 import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
@@ -58,6 +59,8 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   //     }
   //   })
   // })
+
+  // ---------------------------- 行为标签的数据 进行重组 --------------------------------
   behaviorRules.forEach(function (item) {
     item.rules.forEach(function (rulesItem) {
       if (tagIds.indexOf(rulesItem.tagId) === -1) {
@@ -97,13 +100,14 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
       }
     })
   })
+  // ---------------------------- 行为标签的数据 进行重组 end--------------------------------
 
   const data = {
     rulesJson: JSON.stringify(ruleJson),
     behaviorRulesJson: JSON.stringify(behaviorRulesJson)
   }
 
-  // 获取到组件中的form  校验必填项
+  // ----------------------- 校验行为标签： 收集需校验的ref-----------------------------
   // 周期范围
   const rangeFormList = []
   const rangeRefList = _this.$refs.multipleActionTagSelect && _this.$refs.multipleActionTagSelect.$refs.range ? _this.$refs.multipleActionTagSelect.$refs.range : []
@@ -131,8 +135,9 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   })
 
   const allList = rangeFormList.concat(typeFormList, bavFormList)
+  // ----------------------- 校验行为标签： 收集需校验的ref  end -----------------------------
 
-  // 选择了属性为空的 time 类型的标签, 需要提示
+  //  选择了属性为空的 time 类型的标签, 需要提示
   if (timeTagKongList.length > 0) {
     const tip = timeTagKongList.join(',')
     const h = _this.$createElement
@@ -186,6 +191,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   }
 }
 
+// 校验普通标签规则 (包括行为标签里面的大数据标签规则)
 function validateForm (rules, behaviorRules = [], _this) {
   timeTagKongList = []
   // 判断设置标签里是否有未填写的项
