@@ -753,6 +753,16 @@
               @click="handleOpenTestDialog(scope.row)"
             >投前测试
             </el-button> -->
+
+            <!-- 投放后的人群才可选择“命中监控”，否则为灰色 -->
+            <el-button
+              :disabled="!scope.row.launchTime"
+              size="small"
+              type="text"
+              @click="hitMonitoring(scope.row)">
+              命中监控
+            </el-button>
+
             <el-dropdown @command="handleCommandOpreate">
               <el-button size="small" type="text">
                 更多
@@ -1542,6 +1552,43 @@
     <el-dialog title="流转链路分析" :visible.sync="showFlowLinkAnalysisDialog" :fullscreen="true">
       <LinkAnalysis v-if="showFlowLinkAnalysisDialog" :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></LinkAnalysis>
     </el-dialog>
+
+    <!--命中监控-->
+    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="630px">
+      <el-form :model="hitForm" :rules="hitRules" ref="policyCopyForm" label-position="right" label-width="180px">
+        <el-form-item label="监控时间：" prop="time">
+          <el-date-picker
+            v-model="hitForm.time"
+            type="datetime"
+            placeholder="选择监控时间"
+            value-format="yyyy-MM-dd HH:mm:ss"
+  >
+          </el-date-picker>
+        </el-form-item>
+
+        <el-form-item label="如果命中设备量(去重)：" prop="value">
+
+          <el-select v-model="hitForm.operator" style="width: 105px">
+            <el-option value="="></el-option>
+            <el-option value=">="></el-option>
+            <el-option value="<="></el-option>
+            <el-option value=">"></el-option>
+            <el-option value="<"></el-option>
+          </el-select>
+
+          <el-input v-model="hitForm.value" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+
+          则告警到飞书
+
+        </el-form-item>
+
+      </el-form>
+      <span slot="footer" class="dialog-footer">
+        <el-button @click="showHitDialog=false">取 消</el-button>
+        <el-button type="primary" @click="handlOpenHit">确定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -1567,6 +1614,16 @@ export default {
   },
   data () {
     return {
+      showHitDialog: false,
+      hitForm: {
+        time: '',
+        operator: '',
+        value: ''
+      },
+      hitRules: {
+        // time: [{ required: true, message: '请选择监控时间', trigger: 'blur' }]
+        time: [{ type: 'string', required: true, message: '请选择监控时间', trigger: 'change' }]
+      },
       analysisTableData: [],
       showFlowLinkAnalysisDialog: false,
       linkProps: {},
@@ -1921,6 +1978,14 @@ export default {
     // }
   },
   methods: {
+    hitMonitoring (row) {
+      console.log('row-->', row)
+      this.showHitDialog = true
+    },
+    handlOpenHit () {
+      console.log('hitForm--->', this.hitForm)
+      // this.showHitDialog = false
+    },
     pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
       let _minTime = null
       let _maxTime = null
