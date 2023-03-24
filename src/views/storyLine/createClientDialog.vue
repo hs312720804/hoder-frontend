@@ -59,7 +59,9 @@
           icon="el-icon-search"
           @click="collapseAddTags()">
           添加标签
-      </el-button>
+          <i v-if="collapseAddTagsFlag" class="el-icon-arrow-down" style="font-size: 14px"></i>
+          <i v-else class="el-icon-arrow-up" style="font-size: 14px" ></i>
+        </el-button>
 
       </el-form-item>
     </el-form>
@@ -123,7 +125,8 @@
             <div style="position: relative">
               <!-- 且、或 切换 -->
               <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
-              <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)">
+              <!-- <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)"> -->
+              <div class="outer-and" v-if="tags.length > 0 && actionTags.length > 0  && hasBehaviorTag">
                 <el-button
                   type="danger"
                   @click="handleConditionChange()"
@@ -158,12 +161,13 @@
                   :dynamicPolicyJson="dynamicPolicyJson"
                 ></MultipleSelect>
               </el-form-item> -->
-              <el-form-item label="流转条件" v-if="editRow">
+
+              <!-- <el-form-item label="流转条件" v-if="editRow">
                 <SetCirculationConditionsCom
                   ref="setCirculationRef"
                   :storyLineCirculationRulesJson.sync="flowCondition">
                 </SetCirculationConditionsCom>
-              </el-form-item>
+              </el-form-item> -->
             </div>
           </el-form>
         </el-col>
