@@ -9,12 +9,12 @@
       </el-input>
     </div>
     <div >
-      <div v-for="item in cities" :key="item" class="single-set-list" @click="selectServicer(item)" :class="{active: activeItem === item}">
+      <div v-for="(item, index) in servicerList" :key="item" class="single-set-list" @click="selectServicer(item)" :class="{active: activeItem === item}">
         <!-- <i class="icon el-icon-user"></i> -->
         <span class="item-content">
           {{ item }}
         </span>
-        <i class="el-icon-delete"></i>
+        <i class="el-icon-delete" @click="deleteServicer(index)"></i>
       </div>
     </div>
   </div>
@@ -73,7 +73,7 @@ export default {
       entryList: [{ id: 1 }],
       exportList: [{ id: 1 }],
       searchServicer: '',
-      cities: ['接待员1', '接待员2', '接待员3', '接待员4', '南京', '西安', '成都'],
+      servicerList: ['接待员1', '接待员2', '接待员3', '接待员4', '南京', '西安', '成都'],
       activeItem: '西安', // 当前所选接待员
       servicerListFilterSelect: [],
       options: options,
@@ -100,6 +100,19 @@ export default {
     }
   },
   methods: {
+    deleteServicer (index) {
+      this.$confirm('此操作将永久删除该接待员, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.servicerList.splice(index, 1)
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
+      })
+    },
     // 新建服务对象筛选
     createClient () {
       this.entryList.push({ id: 1 })
