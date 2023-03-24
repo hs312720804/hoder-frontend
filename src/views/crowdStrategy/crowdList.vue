@@ -1983,8 +1983,12 @@ export default {
       this.showHitDialog = true
     },
     handlOpenHit () {
-      console.log('hitForm--->', this.hitForm)
-      // this.showHitDialog = false
+      this.$refs.policyCopyForm.validate(valid => {
+        if (valid) {
+          console.log('hitForm--->', this.hitForm)
+          // this.showHitDialog = false
+        }
+      })
     },
     pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
       let _minTime = null
