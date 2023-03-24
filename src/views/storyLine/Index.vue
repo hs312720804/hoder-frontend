@@ -290,11 +290,25 @@
         </el-form>
 
         <!-- 批量创建 -->
-        <MultiAdd v-else></MultiAdd>
+        <MultiAdd v-else-if="dialogVisible2" v-model="multiAddStep">
 
-        <span slot="footer" class="dialog-footer">
+        </MultiAdd>
+        <span v-if="createType === 0" slot="footer" class="dialog-footer">
           <el-button @click="dialogVisible2 = false">取 消</el-button>
           <el-button type="primary" @click="confirmAddServicer">确 定</el-button>
+        </span>
+
+        <span v-else-if="createType === 1" slot="footer" class="dialog-footer">
+          multiAddStep: {{ multiAddStep }}
+
+          <el-button @click="dialogVisible2 = false">取 消</el-button>
+
+          <el-button v-if="multiAddStep === 0" type="primary" @click="multiAddStep= multiAddStep + 1">下一步</el-button>
+
+          <template v-else>
+            <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button>
+            <el-button  type="primary" @click="confirmAddServicer">确 定</el-button>
+          </template>
         </span>
       </el-dialog>
 
@@ -393,6 +407,7 @@ export default {
   },
   data () {
     return {
+      multiAddStep: 0,
       dropDownLoading: true,
       canUse: false, // 当前接待员是否有权限操作
       createType: 0, // 0-单个创建； 1-批量创建
