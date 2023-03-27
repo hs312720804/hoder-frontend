@@ -290,7 +290,7 @@
         </el-form>
 
         <!-- 批量创建 -->
-        <MultiAdd v-else-if="dialogVisible2" v-model="multiAddStep">
+        <MultiAdd v-else-if="dialogVisible2" v-model="multiAddStep" ref="multiAddRef">
 
         </MultiAdd>
         <span v-if="createType === 0" slot="footer" class="dialog-footer">
@@ -303,7 +303,7 @@
 
           <el-button @click="dialogVisible2 = false">取 消</el-button>
 
-          <el-button v-if="multiAddStep === 0" type="primary" @click="multiAddStep= multiAddStep + 1">下一步</el-button>
+          <el-button v-if="multiAddStep === 0" type="primary" @click="multiAddNextStep">下一步</el-button>
 
           <template v-else>
             <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button>
@@ -396,6 +396,8 @@ import servicerDetail from './servicerDetail.vue'
 import { removePendingRequest } from '@/services/cancelFetch'
 import MultiAdd from './multiAdd/Index'
 import OneDrop from './oneDrop/Index'
+// 校验规则
+import { validateRule } from './validateRuleData.js'
 
 export default {
   components: {
@@ -589,6 +591,98 @@ export default {
     }
   },
   methods: {
+    multiAddNextStep () {
+      const commonSetRef = this.$refs.multiAddRef.$refs.commonSetRef
+      const ruleForm = commonSetRef.$refs.ruleForm
+      const createClientDialogRef = commonSetRef.$refs.createClientDialogRef // 入口条件，是个数组
+      const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
+
+      console.log('333ruleForm--->', commonSetRef)
+      const entryValidPromise = []
+      const exportValidPromise = []
+      const allEntryRules = {
+        rulesJsonArr: [],
+        behaviorRulesJsonArr: []
+      }
+      const allExportRules = {
+        rulesJsonArr: [],
+        behaviorRulesJsonArr: []
+      }
+
+      ruleForm.validate(valid => {
+        if (valid) {
+          // 入口条件
+          createClientDialogRef.forEach(dialogRef => {
+            const rulesJson = dialogRef.rulesJson
+            const behaviorRulesJson = dialogRef.behaviorRulesJson
+            const flowCondition = dialogRef.flowCondition
+
+            console.log('---------------入口条件 start------------------------------')
+            console.log('rulesJson', rulesJson)
+            console.log('behaviorRulesJson', behaviorRulesJson)
+            console.log('flowCondition', flowCondition)
+            console.log('---------------入口条件 end------------------------------')
+
+            // 存数据
+            allEntryRules.rulesJsonArr.push(rulesJson)
+            allEntryRules.behaviorRulesJsonArr.push(behaviorRulesJson)
+
+            // 校验规则
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+            entryValidPromise.push(p)
+          })
+
+          // 出口条件
+          exportClientDialogRef.forEach(dialogRef => {
+            const rulesJson = dialogRef.rulesJson
+            const behaviorRulesJson = dialogRef.behaviorRulesJson
+            const flowCondition = dialogRef.flowCondition
+
+            console.log('-----------------出口条件 start----------------------------')
+            console.log('rulesJson', rulesJson)
+            console.log('behaviorRulesJson', behaviorRulesJson)
+            console.log('flowCondition', flowCondition)
+            console.log('-----------------出口条件 end----------------------------')
+
+            // 存数据
+            allExportRules.rulesJsonArr.push(rulesJson)
+            allExportRules.behaviorRulesJsonArr.push(behaviorRulesJson)
+
+            // 校验规则
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+            exportValidPromise.push(p)
+          })
+
+          console.log('==========allEntryRules==>', allEntryRules)
+          console.log('==========allExportRules==>', allExportRules)
+
+          // Promise.all(entryValidPromise).then(res => {
+          //   console.log('val--->', res)
+
+          //   this.$message.success('所有入口条件都已经通过')
+          // }).catch(() => {
+          //   this.$message.error('入口条件没有通过')
+          // })
+
+          // Promise.all(exportValidPromise).then(res => {
+          //   this.$message.success('所有入口条件都已经通过')
+          // }).catch(() => {
+          //   setTimeout(() => {
+          //     this.$message.error('出口条件没有通过')
+          //   }, 3000)
+          // })
+          Promise.all([...entryValidPromise, ...exportValidPromise]).then(res => {
+            console.log('val--->', res)
+
+            this.$message.success('所有条件都已经通过')
+            // 下一步
+            this.multiAddStep = this.multiAddStep + 1
+          }).catch(() => {
+            this.$message.error('没有通过')
+          })
+        }
+      })
+    },
     visibleChange (val, id) {
       console.log(val, id)
       if (val && id) {

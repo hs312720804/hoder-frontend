@@ -230,7 +230,11 @@
 
     <!-- 影视模型 -->
     <template v-if="childItem.tagKey === 'filmModelTag'">
-      <FilmModelTagValueSelect :childItem="childItem" :index="index" :n="n" v-model="filmModelTagValue"></FilmModelTagValueSelect>
+      <!-- {{ childItem }} -->
+      <!-- 公共属性，只需要展示“所选维度”四个字就行 -->
+      <span v-if="childItem.isCommonAttr" class="red-tip">所选维度</span>
+      <!-- 不是公共属性，正常下拉选择 -->
+      <FilmModelTagValueSelect v-else :childItem="childItem" :index="index" :n="n" v-model="filmModelTagValue"></FilmModelTagValueSelect>
 
       <!-- 选择 operator -->
       <Operator :childItem="childItem" :index="index" :n="n"></Operator>
@@ -384,4 +388,14 @@ export default {
 // .form-item-styl {
 //   margin-top: 4px
 // }
+.red-tip {
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
+  background #fff
+  padding: 0 15px;
+  height: 32px;
+  line-height: 32px;
+  width: 200px
+  text-align center
+}
 </style>

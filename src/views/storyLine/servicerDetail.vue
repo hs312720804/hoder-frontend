@@ -636,6 +636,7 @@
       width="1200px"
       v-if="clientDialogVisible"
     >
+    <!-- {{ editClientRow }} -->
       <createClientDialog ref="createClientDialog" :editRow="editClientRow" :options="options"></createClientDialog>
       <span slot="footer" class="dialog-footer">
         <el-button @click="clientDialogVisible = false">取 消</el-button>
@@ -730,7 +731,8 @@
   </template>
 
 <script>
-import { handleSave as saveFunc } from './saveEntryFunc.js'
+// 校验规则
+import { validateRule } from './validateRuleData.js'
 
 import createClientDialog from './createClientDialog.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
@@ -1335,11 +1337,19 @@ export default {
     // 新增/编辑入口条件
     addOrEditEntryRule () {
       const dialogRef = this.$refs.createClientDialog
+      // 普通标签规则
       const rulesJson = dialogRef.rulesJson
+      // 行为标签规则
       const behaviorRulesJson = dialogRef.behaviorRulesJson
+      // 流转条件规则
       const flowCondition = dialogRef.flowCondition
 
-      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit, flowCondition)
+      // 校验规则
+      const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+
+      validPromise.then(data => {
+        this.fetchAddOrEdit(data)
+      })
     },
     fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
@@ -1386,11 +1396,21 @@ export default {
     // 新增、编辑出口条件
     addOrEditExportRule () {
       const dialogRef = this.$refs.exportClientDialog
+      // 普通标签规则
       const rulesJson = dialogRef.rulesJson
+      // 行为标签规则
       const behaviorRulesJson = dialogRef.behaviorRulesJson
+      // 流转条件规则
       const flowCondition = dialogRef.flowCondition
 
-      saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
+      // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
+
+      // 校验规则
+      const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+
+      validPromise.then(data => {
+        this.fetchAddOrEdit2(data)
+      })
     },
     fetchAddOrEdit2 (data) {
       const dialogRef = this.$refs.exportClientDialog

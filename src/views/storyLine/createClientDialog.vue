@@ -340,6 +340,10 @@ export default {
     options: {
       type: Array,
       default: () => []
+    },
+    defaultData: {
+      type: Object,
+      default: () => {}
     }
   },
   methods: {
@@ -963,6 +967,13 @@ export default {
         console.log('this.bavAttrList==>', this.bavAttrList)
         // })
       })
+    },
+
+    // 设置默认数据
+    setDefaultData () {
+      const ruleJsonData = this.defaultData.rulesJson
+
+      this.rulesJson = ruleJsonData
     }
   },
   async created () {
@@ -974,6 +985,7 @@ export default {
       this.reviewEditData()
     } else {
       this.sortTag() // 初始化所选标签
+      if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
     }
 
     // this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]

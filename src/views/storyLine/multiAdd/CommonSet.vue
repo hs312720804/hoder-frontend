@@ -9,29 +9,39 @@
             <el-checkbox label="影视模型" name="type"></el-checkbox>
           </el-checkbox-group>
         </el-form-item>
-
-        <el-form-item label="选择维度：" prop="name">
+        <el-form-item label="选择维度：" prop="resource">
           <el-transfer
             filterable
             :filter-method="filterMethod"
             filter-placeholder="搜索接待员"
             :titles="['待选维度', '已选维度']"
-            v-model="value"
+            v-model="ruleForm.resource"
             :data="data">
           </el-transfer>
         </el-form-item>
-        <el-form-item label="接待员命名：" prop="name">
-          <el-input v-model="ruleForm.name" style="width: 100px"></el-input>
+        <el-form-item label="接待员命名：" prop="prependName">
+          <el-input v-model="ruleForm.prependName" style="width: 200px"></el-input>
           <span class="red-tip">所选维度</span>
-          <el-input v-model="ruleForm.name" clearable style="width: 100px"></el-input>
+          <el-input v-model="ruleForm.appendName" clearable style="width: 200px"></el-input>
         </el-form-item>
         <el-form-item label="服务对象选择：" prop="entry">
           <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
-            <createClientDialog
-              ref="createClientDialog"
-              :options="options">
-            </createClientDialog>
-            <i class="el-icon-delete" @click="deleteEntry(index)"></i>
+            <template v-if="index === 0">
+
+              <createClientDialog
+                ref="createClientDialogRef"
+                :options="options"
+                :defaultData="defaultData">
+              </createClientDialog>
+            </template>
+
+            <template v-else>
+              <createClientDialog
+                ref="createClientDialogRef"
+                :options="options">
+              </createClientDialog>
+              <i class="el-icon-delete" @click="deleteEntry(index)"></i>
+            </template>
           </div>
           <div class="box-fotter addRule">
             <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
@@ -43,7 +53,7 @@
 
           <div class="create-client-border" v-for="(item, index) in exportList" :key="index">
             <createClientDialog
-              ref="exportClientDialog"
+              ref="exportClientDialogRef"
               type="export"
               :servicerListFilterSelect="servicerListFilterSelect"
               :options="options"
@@ -89,33 +99,61 @@ export default {
       servicerListFilterSelect: [],
       options: options,
       data: generateData(),
-      value: [],
       filterMethod (query, item) {
         return item.label.indexOf(query) > -1
       },
       ruleForm: {
-        name: '',
-        type: [],
-        resource: '',
-        desc: ''
+        type: ['影视模型'],
+        resource: ['剧情', '都市'], // 维度
+        prependName: '测试批量创建',
+        appendName: ''
       },
       rules: {
         type: [
           { type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change' }
         ],
-        name: [
-          { required: true, message: '请选择维度', trigger: 'blur' }
+        resource: [
+          { type: 'array', required: true, message: '请选择维度', trigger: 'change' }
+        ],
+        prependName: [
+          { required: true, message: '请输入接待员命名', trigger: 'blur' }
           // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        ],
+        appendName: [
+          { required: true, message: '请输入接待员命名', trigger: 'blur' }
         ]
 
+      },
+      defaultData: {
+        rulesJson: {
+          condition: 'OR',
+          rules: [{
+            condition: 'AND',
+            rules: [{
+              tagId: 12,
+              tagKey: 'filmModelTag',
+              tagName: '影视模型',
+              tagType: 'int',
+              dataSource: 20,
+              labelType: 0,
+              createTime: '2022-12-13T00:00:04',
+              operator: '>',
+              sourceSign: '',
+              value: 1,
+              tagCode: '',
+              isCommonAttr: true
+            }]
+          }]
+        }
       }
+
     }
   },
   methods: {
     aaa () {
       debugger
       console.log('this--->', this)
-      const dialogRefArr = this.$refs.createClientDialog
+      const dialogRefArr = this.$refs.createClientDialogRef
 
       dialogRefArr.forEach(dialogRef => {
         const rulesJson = dialogRef.rulesJson

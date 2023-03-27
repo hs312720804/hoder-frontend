@@ -1,17 +1,17 @@
-// 保存普通标签、行为标签、流转规则 的统一封装方法
+// 校验普通标签、行为标签、流转规则 的统一封装方法
 import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
-async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAddOrEdit, flowCondition) {
-  // 校验form 表单： 普通标签规则、行为标签规则
+async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCondition) {
+  // 校验整体大表单：【处理操作】、【流转接待员】
   const valid1 = await new Promise((resolve, reject) => {
     return _this.$refs.form.validate(async valid => {
       resolve(valid)
     })
   })
-
-  // 校验流转指标
+  console.log('flowCondition--->', flowCondition)
+  // 校验【流转指标】
   const valid2 = flowCondition && flowCondition.rules.length > 0
     ? await new Promise((resolve, reject) => {
       return _this.$refs.setCirculationRef.$refs.ruleForm.validate((valid) => {
@@ -20,14 +20,14 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
     })
     : true
 
-  // 校验普通标签里面的流转指标
+  // 校验【普通标签】里面的【流转指标】
   const valid3 = await new Promise((resolve, reject) => {
     return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
       resolve(valid)
     })
   })
 
-  if (!valid1 || !valid2 || !valid3) return
+  if (!valid1 || !valid2 || !valid3) return Promise.reject()
 
   // const form = JSON.parse(JSON.stringify(thisForm))
   const tagIds = []
@@ -38,11 +38,12 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
 
   const behaviorRules = behaviorRulesJson.rules
 
+  // 校验【普通标签】规则 (包括行为标签里面的大数据标签规则)
   if (!validateForm(rules, behaviorRules, _this)) {
-    return
+    return Promise.reject()
   }
 
-  // 添加tagIds
+  // 添加 tagIds
   rules.forEach(function (item) {
     item.rules.forEach(function (childItem) {
       if (tagIds.indexOf(childItem.tagId) === -1) {
@@ -52,15 +53,8 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
       // delete childItem.endDay
     })
   })
-  // dynamicPolicyRules.forEach(function (item) {
-  //   item.rules.forEach(function (childItem) {
-  //     if (tagIds.indexOf(childItem.tagId) === -1) {
-  //       tagIds.push(childItem.tagId)
-  //     }
-  //   })
-  // })
 
-  // ---------------------------- 行为标签的数据 进行重组 --------------------------------
+  // ---------------------------- 行为标签的数据 进行重组  start--------------------------------
   behaviorRules.forEach(function (item) {
     item.rules.forEach(function (rulesItem) {
       if (tagIds.indexOf(rulesItem.tagId) === -1) {
@@ -100,14 +94,14 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
       }
     })
   })
-  // ---------------------------- 行为标签的数据 进行重组 end--------------------------------
+  // ---------------------------- 行为标签的数据 进行重组  end--------------------------------
 
   const data = {
     rulesJson: JSON.stringify(ruleJson),
     behaviorRulesJson: JSON.stringify(behaviorRulesJson)
   }
 
-  // ----------------------- 校验行为标签： 收集需校验的ref-----------------------------
+  // ----------------------- 校验【行为标签】： 收集需校验的ref   start-----------------------------
   // 周期范围
   const rangeFormList = []
   const rangeRefList = _this.$refs.multipleActionTagSelect && _this.$refs.multipleActionTagSelect.$refs.range ? _this.$refs.multipleActionTagSelect.$refs.range : []
@@ -135,60 +129,70 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   })
 
   const allList = rangeFormList.concat(typeFormList, bavFormList)
-  // ----------------------- 校验行为标签： 收集需校验的ref  end -----------------------------
+  // ----------------------- 校验【行为标签】： 收集需校验的ref   end -----------------------------
 
-  //  选择了属性为空的 time 类型的标签, 需要提示
-  if (timeTagKongList.length > 0) {
-    const tip = timeTagKongList.join(',')
-    const h = _this.$createElement
-    _this.$msgbox({
-      title: '配置提醒',
-      message: h('p', null, [
-        h('span', null, `${tip}`),
-        h('span', null, '标签的属性为空，请确认是否继续?'),
-        h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
-      ]),
-      showCancelButton: true,
-      confirmButtonText: '继续',
-      cancelButtonText: '取消'
-    }).then(() => {
+  return new Promise((resolve, reject) => {
+    //  选择了属性为空的 time 类型的标签, 需要提示
+    if (timeTagKongList.length > 0) {
+      const tip = timeTagKongList.join(',')
+      const h = _this.$createElement
+      _this.$msgbox({
+        title: '配置提醒',
+        message: h('p', null, [
+          h('span', null, `${tip}`),
+          h('span', null, '标签的属性为空，请确认是否继续?'),
+          h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
+        ]),
+        showCancelButton: true,
+        confirmButtonText: '继续',
+        cancelButtonText: '取消'
+      }).then(() => {
+        if (allList.length > 0) { // 有行为标签的
+          // 使用Promise.all去校验结果
+          Promise.all(allList.map(getFormPromise)).then(res => {
+            const validateResult = res.every(item => !!item)
+            if (validateResult) {
+              // 新增或编辑
+              // fetchAddOrEdit(data)
+              resolve(data)
+            } else {
+              _this.$message.error('请输入必填项')
+              reject()
+            }
+          }).catch(() => {
+            _this.$message.error('请至少设置一个行为标签规则')
+            reject()
+          })
+        } else { // 没有行为标签的
+          // 新增或编辑
+          // fetchAddOrEdit(data)
+          resolve(data)
+        }
+      })
+    } else {
       if (allList.length > 0) { // 有行为标签的
         // 使用Promise.all去校验结果
         Promise.all(allList.map(getFormPromise)).then(res => {
           const validateResult = res.every(item => !!item)
           if (validateResult) {
             // 新增或编辑
-            fetchAddOrEdit(data)
+            // fetchAddOrEdit(data)
+            resolve(data)
           } else {
             _this.$message.error('请输入必填项')
+            reject()
           }
         }).catch(() => {
           _this.$message.error('请至少设置一个行为标签规则')
+          reject()
         })
       } else { // 没有行为标签的
         // 新增或编辑
-        fetchAddOrEdit(data)
+        // fetchAddOrEdit(data)
+        resolve(data)
       }
-    })
-  } else {
-    if (allList.length > 0) { // 有行为标签的
-      // 使用Promise.all去校验结果
-      Promise.all(allList.map(getFormPromise)).then(res => {
-        const validateResult = res.every(item => !!item)
-        if (validateResult) {
-          // 新增或编辑
-          fetchAddOrEdit(data)
-        } else {
-          _this.$message.error('请输入必填项')
-        }
-      }).catch(() => {
-        _this.$message.error('请至少设置一个行为标签规则')
-      })
-    } else { // 没有行为标签的
-      // 新增或编辑
-      fetchAddOrEdit(data)
     }
-  }
+  })
 }
 
 // 校验普通标签规则 (包括行为标签里面的大数据标签规则)
@@ -380,4 +384,4 @@ function validateForm (rules, behaviorRules = [], _this) {
   return rulesFlag
 }
 
-export { handleSave }
+export { validateRule }

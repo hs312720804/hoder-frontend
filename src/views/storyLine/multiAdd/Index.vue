@@ -5,7 +5,7 @@
       <el-step title="配置单独属性"></el-step>
     </el-steps>
 
-    <CommonSet v-if="activeStep === 0"></CommonSet>
+    <CommonSet v-if="activeStep === 0" ref="commonSetRef"></CommonSet>
     <AllPerSet v-else-if="activeStep === 1"></AllPerSet>
 
     <!-- <span slot="footer" class="dialog-footer">
