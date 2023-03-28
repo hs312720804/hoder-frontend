@@ -2,9 +2,9 @@
   <div class="content detail">
     <!-- {{ selectedServicer }} -->
     <!-- {{selectedScene}} -->
-    canUse：{{canUse}}
+    <!-- canUse：{{canUse}}
     <br/>
-    havePermissionsToUse: {{ havePermissionsToUse}}
+    havePermissionsToUse: {{ havePermissionsToUse}} -->
     <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
       【我的任务】、
       【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
@@ -338,8 +338,8 @@
               </el-checkbox>
               <!-- <div class="item-id">{{ entry.id }}</div> -->
               <div class="border-line"  style="position: relative;">
-                <div class="outer-and">
-                  <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''">
+                <div class="outer-and" v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0 && entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                  <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''" >
                   {{ entry.link === 'OR' ? '或' : '且' }}
                   </span>
                 </div>
@@ -525,7 +525,7 @@
               </el-checkbox>
               <!-- <div class="item-id">{{ exportItem.id }}</div> -->
               <div class="border-line"  style="position: relative;">
-                <div class="outer-and">
+                <div class="outer-and" v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0 && exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
                   <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
                   {{ exportItem.link === 'OR' ? '或' : '且' }}
                   </span>
@@ -1449,6 +1449,7 @@ export default {
       // const rulesJson = JSON.stringify(dialogRef.rulesJson)
       // const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
       const { rulesJson, behaviorRulesJson } = data
+
       const stopType = dialogRef.form.stopType // 处理操作
       const nextId = dialogRef.form.nextId // 流转接待员
 
