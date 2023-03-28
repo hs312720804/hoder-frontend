@@ -389,13 +389,15 @@ export default {
 //   margin-top: 4px
 // }
 .red-tip {
-  border-radius: 4px;
+  background-color: #F5F7FA;
+  color: #909399;
+  vertical-align: middle;
+  position: relative;
   border: 1px solid #DCDFE6;
-  background #fff
-  padding: 0 15px;
-  height: 32px;
-  line-height: 32px;
+  border-radius: 4px;
+  white-space: nowrap;
   width: 200px
   text-align center
+  font-size 12px
 }
 </style>

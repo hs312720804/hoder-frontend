@@ -20,9 +20,19 @@
           </el-transfer>
         </el-form-item>
         <el-form-item label="接待员命名：" prop="prependName">
-          <el-input v-model="ruleForm.prependName" style="width: 200px"></el-input>
-          <span class="red-tip">所选维度</span>
-          <el-input v-model="ruleForm.appendName" clearable style="width: 200px"></el-input>
+          <div class="compound-input">
+
+            <el-input v-model="ruleForm.prependName" class="prepend-input" clearable>
+            </el-input>
+            <!-- <span class="red-tip">所选维度</span> -->
+            <el-input v-model="ruleForm.appendName" clearable class="append-input" >
+              <template slot="prepend">所选维度</template>
+            </el-input>
+          </div>
+
+          <!-- <el-input placeholder="请输入内容" v-model="input1">
+            <template slot="prepend">Http://</template>
+          </el-input> -->
         </el-form-item>
         <el-form-item label="服务对象选择：" prop="entry">
           <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
