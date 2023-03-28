@@ -310,7 +310,7 @@
 
           <template v-else>
             <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button>
-            <el-button  type="primary" @click="confirmAddServicer">确 定</el-button>
+            <el-button  type="primary" @click="confirmMultiAddServicer">确 定</el-button>
           </template>
         </span>
       </el-dialog>
@@ -594,6 +594,75 @@ export default {
     }
   },
   methods: {
+    // 确认 - 批量创建接待员
+    confirmMultiAddServicer () {
+      const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
+      const ruleForm = allPerSetRef.$refs.ruleForm
+      const createClientDialogRef = allPerSetRef.$refs.createClientDialogRef // 入口条件，是个数组
+      const exportClientDialogRef = allPerSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
+
+      const entryValidPromise = []
+      const exportValidPromise = []
+      let allEntryArr = []
+      let allExportArr = []
+
+      ruleForm.validate(valid => {
+        if (valid) {
+          // 入口条件
+          createClientDialogRef.forEach(dialogRef => {
+            const rulesJson = dialogRef.rulesJson
+            const behaviorRulesJson = dialogRef.behaviorRulesJson
+            const flowCondition = dialogRef.flowCondition
+
+            const returnDefaultData = {
+              type: 'entry',
+              link: dialogRef.totalLink,
+              tagIds: dialogRef.checkedList.join(',')
+            }
+
+            // 校验规则
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData })
+            entryValidPromise.push(p)
+          })
+
+          // 出口条件
+          exportClientDialogRef.forEach(dialogRef => {
+            const rulesJson = dialogRef.rulesJson
+            const behaviorRulesJson = dialogRef.behaviorRulesJson
+            const flowCondition = dialogRef.flowCondition
+
+            const returnDefaultData = {
+              type: 'export',
+              link: dialogRef.totalLink,
+              stopType: dialogRef.form.stopType,
+              nextId: dialogRef.form.nextId,
+              tagIds: dialogRef.checkedList.join(',')
+            }
+            // 校验规则
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData })
+            exportValidPromise.push(p)
+          })
+
+          // 所有的入口和出口
+          Promise.all([...entryValidPromise, ...exportValidPromise]).then(res => {
+            console.log('start===============最终数据============>')
+            console.log(res)
+            console.log('end=================最终数据==========')
+
+            allEntryArr = res.filter(item => item.type === 'entry')
+            allExportArr = res.filter(item => item.type === 'export')
+            console.log('')
+            console.log('allEntryArr===========================>', allEntryArr)
+            console.log('')
+            console.log('allExportArr===========================>', allExportArr)
+
+            this.$message.success('确认提交数据')
+          }).catch(() => {
+            this.$message.error('没有通过')
+          })
+        }
+      })
+    },
     multiAddNextStep () {
       const commonSetRef = this.$refs.multiAddRef.$refs.commonSetRef
       const ruleForm = commonSetRef.$refs.ruleForm
@@ -601,6 +670,7 @@ export default {
       const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
 
       console.log('333ruleForm--->', commonSetRef)
+
       const entryValidPromise = []
       const exportValidPromise = []
       let allEntryArr = []
@@ -699,7 +769,7 @@ export default {
 
             this.$message.success('所有条件都已经通过')
             // 下一步
-            // this.multiAddStep = this.multiAddStep + 1
+            this.multiAddStep = this.multiAddStep + 1
           }).catch(() => {
             this.$message.error('没有通过')
           })

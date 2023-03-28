@@ -27,7 +27,7 @@
     <el-form-item label="服务对象选择：" prop="entry">
       <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
         <createClientDialog
-          ref="createClientDialog"
+          ref="createClientDialogRef"
           :options="options">
         </createClientDialog>
         <i class="el-icon-delete" @click="deleteEntry(index)"></i>
@@ -42,7 +42,7 @@
 
       <div class="create-client-border" v-for="(item, index) in exportList" :key="index">
         <createClientDialog
-          ref="exportClientDialog"
+          ref="exportClientDialogRef"
           type="export"
           :servicerListFilterSelect="servicerListFilterSelect"
           :options="options"

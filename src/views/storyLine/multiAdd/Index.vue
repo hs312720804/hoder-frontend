@@ -6,7 +6,7 @@
     </el-steps>
 
     <CommonSet v-if="activeStep === 0" ref="commonSetRef"></CommonSet>
-    <AllPerSet v-else-if="activeStep === 1"></AllPerSet>
+    <AllPerSet v-else-if="activeStep === 1" ref="allPerSetRef"></AllPerSet>
 
     <!-- <span slot="footer" class="dialog-footer">
       <el-button @click="activeStep= activeStep - 1">上一步</el-button>
