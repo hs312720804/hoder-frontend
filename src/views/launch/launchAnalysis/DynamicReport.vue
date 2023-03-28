@@ -5,8 +5,10 @@
 <script>
 import CrowdReport from './dynamicReportCom/CrowdReport.vue'
 import ErrorReport from './dynamicReportCom/ErrorReport.vue'
+import StoryReport from './dynamicReportCom/StoryReport.vue'
+
 export default {
-  components: { CrowdReport, ErrorReport },
+  components: { CrowdReport, ErrorReport, StoryReport },
   created () {
     console.log('val ---> created', this.$route.query.crowdId)
     console.log('val ---> created', this.$route.query.error)
@@ -26,6 +28,8 @@ export default {
         // }
         if (this.$route.query.error) {
           this.componentTag = 'ErrorReport'
+        } else if (this.$route.query.componentName) {
+          this.componentTag = this.$route.query.componentName
         } else {
           this.componentTag = 'CrowdReport'
         }

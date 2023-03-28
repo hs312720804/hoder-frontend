@@ -103,6 +103,9 @@
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
                         删除
                       </el-dropdown-item>
+                      <el-dropdown-item :command="['report',item]">
+                        投放报告
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </div>
@@ -972,8 +975,17 @@ export default {
         this.deleteScene(row)
       } else if (type === 'detail') {
         this.seeDevDetail(row)
+      } else if (type === 'report') {
+        this.goToDynamicCrowdReport(row)
       }
     },
+
+    // 跳转投后报告页面
+    goToDynamicCrowdReport ({ crowdId, crowdName }) {
+      const componentName = 'storyReport'
+      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, componentName } })
+    },
+
     returnCrowd () {
       this.$router.push({ name: 'strategyList' })
     },
