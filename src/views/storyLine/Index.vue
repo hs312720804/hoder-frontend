@@ -770,10 +770,10 @@ export default {
     handleVisiable (e) {
       switch (e.target.visibilityState) {
         case 'prerender':
-          console.log('网页预渲染，内容不可见')
+          // console.log('网页预渲染，内容不可见')
           break
         case 'hidden': {
-          console.log('内容不可见，处理后台、最小化、锁屏状态')
+          // console.log('内容不可见，处理后台、最小化、锁屏状态')
           // alert('当前接待员出口下一步不可为空')
           const bool = this.getIsAllSetNextId()
           if (!bool) {
