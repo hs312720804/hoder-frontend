@@ -2,7 +2,9 @@
   <div class="content detail">
     <!-- {{ selectedServicer }} -->
     <!-- {{selectedScene}} -->
-    <!-- canUse：{{canUse}} -->
+    <!-- canUse：{{canUse}}
+    <br/>
+    havePermissionsToUse: {{ havePermissionsToUse}} -->
     <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
       【我的任务】、
       【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
@@ -70,7 +72,9 @@
 
               <div class="flex-content">
                 <!-- 复用的接待员 -->
+                <!-- 有权限的情况 -->
                 <template v-if="havePermissionsToUse">
+                  <!-- 显示模式 -->
                   <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
                     <div>{{ target }}</div>
                     <!-- <textarea name="description" v-model="target"></textarea> -->
@@ -78,6 +82,7 @@
                   <!-- <textarea> </textarea> -->
                   <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
                   <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                  <!-- 编辑模式 -->
                   <el-input
                     v-else
                     ref="inputPriority"
@@ -91,6 +96,7 @@
                     style="font-size: 14px; ">
                   </el-input>
                 </template>
+                <!-- 没有权限的情况 -->
                 <template v-else>
                   {{ target }}
                 </template>
@@ -196,11 +202,11 @@
                     <el-radio v-model="radio1" label="2">兜底接待员</el-radio>
                   </div>
                 </div>
-                <div class="d-info-box">
+                <div class="d-info-box" v-if="radio1 === '2'">
                   <div class="box-title">兜底方式</div>
                   <div class="box-line">
-                    <el-radio v-model="radio1" label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio>
-                    <el-radio v-model="radio1" label="2">无合适接待员则先随机完再兜底</el-radio>
+                    <el-radio v-model="radio2" label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio>
+                    <el-radio v-model="radio2" label="2">无合适接待员则先随机完再兜底</el-radio>
                     <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
                     <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
                   </div>
@@ -309,7 +315,9 @@
             {{ selectedServicer.receptionist ? selectedServicer.receptionist.substring(0, 2) : '' }}
           </div>
         </div>
-        <div class="detail-box">
+
+        <!-- 当选择兜底接待员时，不展示服务对象选择和推荐绑定内容 -->
+        <div v-if="radio1 === '1'" class="detail-box">
           <div class="title2">服务对象选择（可选）</div>
           <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div v-if="entryList.length > 0" class="position-left">
@@ -442,10 +450,9 @@
           </div>
         </div>
 
+        <!-- 当选择兜底接待员时，不展示服务对象选择和推荐绑定内容 -->
         <!-- 推荐绑定内容 -->
-        <div class="detail-box"
-          v-if="entryList && entryList.length > 0 && tagCodeList.length > 0"
-        >
+        <div v-if="radio1 === '1' &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
           <div class="title2">推荐绑定内容</div>
           <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
 
@@ -894,6 +901,7 @@ export default {
     return {
       options: options,
       radio1: '1',
+      radio2: '1',
       isShowDetailName: true,
       reuseExportDialogVisible: false,
       reuseForm: {
@@ -946,7 +954,7 @@ export default {
       },
       overview: {},
       clientDialogVisible: false,
-      target: '请输入接待员的目标',
+      target: '我的任务是...',
       targetValue: '',
       skillValue: '',
       isEdit: false,
