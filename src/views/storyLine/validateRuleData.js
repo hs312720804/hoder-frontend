@@ -1,33 +1,43 @@
-// 校验普通标签、行为标签、流转规则 的统一封装方法
+import { MessageBox, Message } from 'element-ui'
 import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
-async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCondition) {
-  // 校验整体大表单：【处理操作】、【流转接待员】
-  const valid1 = await new Promise((resolve, reject) => {
-    return _this.$refs.form.validate(async valid => {
-      resolve(valid)
-    })
-  })
-  console.log('flowCondition--->', flowCondition)
-  // 校验【流转指标】
-  const valid2 = flowCondition && flowCondition.rules.length > 0
-    ? await new Promise((resolve, reject) => {
-      return _this.$refs.setCirculationRef.$refs.ruleForm.validate((valid) => {
+/** 校验普通标签、行为标签、流转规则 的统一封装方法
+ * @param {Object} subAttr 附属属性
+ *                 - returnDefaultData： 默认需要返回的数据
+ *                 - isNeedValidate: 是否需要验证 true-是  false-否  默认为 true
+ */
+async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCondition, subAttr = { returnDefaultData: {}, isNeedValidate: true }) {
+  // 是否需要校验数据，若不需要校验数据，则只需要处理数据格式即可
+  const isNeedValidate = subAttr.isNeedValidate === undefined ? true : subAttr.isNeedValidate
+
+  if (isNeedValidate) {
+    // 校验整体大表单：【处理操作】、【流转接待员】
+    const valid1 = await new Promise((resolve, reject) => {
+      return _this.$refs.form.validate(async valid => {
         resolve(valid)
       })
     })
-    : true
+    console.log('flowCondition--->', flowCondition)
+    // 校验【流转指标】
+    const valid2 = flowCondition && flowCondition.rules.length > 0
+      ? await new Promise((resolve, reject) => {
+        return _this.$refs.setCirculationRef.$refs.ruleForm.validate((valid) => {
+          resolve(valid)
+        })
+      })
+      : true
 
-  // 校验【普通标签】里面的【流转指标】
-  const valid3 = await new Promise((resolve, reject) => {
-    return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
-      resolve(valid)
+    // 校验【普通标签】里面的【流转指标】
+    const valid3 = await new Promise((resolve, reject) => {
+      return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
+        resolve(valid)
+      })
     })
-  })
 
-  if (!valid1 || !valid2 || !valid3) return Promise.reject()
+    if (!valid1 || !valid2 || !valid3) return Promise.reject()
+  }
 
   // const form = JSON.parse(JSON.stringify(thisForm))
   const tagIds = []
@@ -39,7 +49,7 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   const behaviorRules = behaviorRulesJson.rules
 
   // 校验【普通标签】规则 (包括行为标签里面的大数据标签规则)
-  if (!validateForm(rules, behaviorRules, _this)) {
+  if (!validateForm(rules, behaviorRules, _this, isNeedValidate) && isNeedValidate) {
     return Promise.reject()
   }
 
@@ -98,7 +108,8 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
 
   const data = {
     rulesJson: JSON.stringify(ruleJson),
-    behaviorRulesJson: JSON.stringify(behaviorRulesJson)
+    behaviorRulesJson: JSON.stringify(behaviorRulesJson),
+    ...subAttr.returnDefaultData || undefined // 一些默认返回数据
   }
 
   // ----------------------- 校验【行为标签】： 收集需校验的ref   start-----------------------------
@@ -131,22 +142,47 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   const allList = rangeFormList.concat(typeFormList, bavFormList)
   // ----------------------- 校验【行为标签】： 收集需校验的ref   end -----------------------------
 
-  return new Promise((resolve, reject) => {
-    //  选择了属性为空的 time 类型的标签, 需要提示
-    if (timeTagKongList.length > 0) {
-      const tip = timeTagKongList.join(',')
-      const h = _this.$createElement
-      _this.$msgbox({
-        title: '配置提醒',
-        message: h('p', null, [
-          h('span', null, `${tip}`),
-          h('span', null, '标签的属性为空，请确认是否继续?'),
-          h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
-        ]),
-        showCancelButton: true,
-        confirmButtonText: '继续',
-        cancelButtonText: '取消'
-      }).then(() => {
+  // 需要验证时
+  if (isNeedValidate) {
+    return new Promise((resolve, reject) => {
+      //  选择了属性为空的 time 类型的标签, 需要提示
+      if (timeTagKongList.length > 0) {
+        const tip = timeTagKongList.join(',')
+        const h = _this.$createElement
+        MessageBox({
+          title: '配置提醒',
+          message: h('p', null, [
+            h('span', null, `${tip}`),
+            h('span', null, '标签的属性为空，请确认是否继续?'),
+            h('div', { style: 'color: red' }, 'PS：标签为空代表要圈出该属性为空的人群')
+          ]),
+          showCancelButton: true,
+          confirmButtonText: '继续',
+          cancelButtonText: '取消'
+        }).then(() => {
+          if (allList.length > 0) { // 有行为标签的
+            // 使用Promise.all去校验结果
+            Promise.all(allList.map(getFormPromise)).then(res => {
+              const validateResult = res.every(item => !!item)
+              if (validateResult) {
+                // 新增或编辑
+                // fetchAddOrEdit(data)
+                resolve(data)
+              } else {
+                Message.error('请输入必填项')
+                reject()
+              }
+            }).catch(() => {
+              Message.error('请至少设置一个行为标签规则')
+              reject()
+            })
+          } else { // 没有行为标签的
+            // 新增或编辑
+            // fetchAddOrEdit(data)
+            resolve(data)
+          }
+        })
+      } else {
         if (allList.length > 0) { // 有行为标签的
           // 使用Promise.all去校验结果
           Promise.all(allList.map(getFormPromise)).then(res => {
@@ -156,11 +192,11 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
               // fetchAddOrEdit(data)
               resolve(data)
             } else {
-              _this.$message.error('请输入必填项')
+              Message.error('请输入必填项')
               reject()
             }
           }).catch(() => {
-            _this.$message.error('请至少设置一个行为标签规则')
+            Message.error('请至少设置一个行为标签规则')
             reject()
           })
         } else { // 没有行为标签的
@@ -168,35 +204,15 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
           // fetchAddOrEdit(data)
           resolve(data)
         }
-      })
-    } else {
-      if (allList.length > 0) { // 有行为标签的
-        // 使用Promise.all去校验结果
-        Promise.all(allList.map(getFormPromise)).then(res => {
-          const validateResult = res.every(item => !!item)
-          if (validateResult) {
-            // 新增或编辑
-            // fetchAddOrEdit(data)
-            resolve(data)
-          } else {
-            _this.$message.error('请输入必填项')
-            reject()
-          }
-        }).catch(() => {
-          _this.$message.error('请至少设置一个行为标签规则')
-          reject()
-        })
-      } else { // 没有行为标签的
-        // 新增或编辑
-        // fetchAddOrEdit(data)
-        resolve(data)
       }
-    }
-  })
+    })
+  } else { // 不需要验证时
+    return Promise.resolve(data)
+  }
 }
 
 // 校验普通标签规则 (包括行为标签里面的大数据标签规则)
-function validateForm (rules, behaviorRules = [], _this) {
+function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   timeTagKongList = []
   // 判断设置标签里是否有未填写的项
   let i
@@ -238,26 +254,32 @@ function validateForm (rules, behaviorRules = [], _this) {
               ) {
                 rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
               } else {
-                _this.$message.error(
+                // 需要验证时，才进行提示
+                if (isNeedValidate) {
+                  Message.error(
+                    '第' +
+                      (i + 1) +
+                      '设置标签块里面的第' +
+                      (j + 1) +
+                      '行的天数值后面的值必须大于前面的'
+                  )
+                  rulesFlag = false
+                  break
+                }
+              }
+            } else {
+              // 需要验证时，才进行提示
+              if (isNeedValidate) {
+                Message.error(
                   '第' +
                     (i + 1) +
                     '设置标签块里面的第' +
                     (j + 1) +
-                    '行的天数值后面的值必须大于前面的'
+                    '行的值是大于等于0的整数且不能超过4位数'
                 )
                 rulesFlag = false
                 break
               }
-            } else {
-              _this.$message.error(
-                '第' +
-                  (i + 1) +
-                  '设置标签块里面的第' +
-                  (j + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
-              )
-              rulesFlag = false
-              break
             }
           }
         } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
@@ -265,8 +287,9 @@ function validateForm (rules, behaviorRules = [], _this) {
         }
         // ------ 处理数据格式 end  -----
 
-        if ('value' in rulesItem && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-          _this.$message.error(
+        // 需要验证时，才进行提示
+        if ('value' in rulesItem && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
+          Message.error(
             '请正确填写第' +
               (i + 1) +
               '设置标签块里面的第' +
@@ -295,9 +318,9 @@ function validateForm (rules, behaviorRules = [], _this) {
   for (x = 0; x < behaviorRulesLength; x++) {
     for (y = 0; y < behaviorRules[x].rules.length; y++) {
       const rulesItem = behaviorRules[x].rules[y]
-
-      if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
-        _this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
+      // 需要验证时，才进行提示
+      if (rulesItem.isOldversion && isNeedValidate) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
+        Message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
         rulesFlag = false
         break
       }
@@ -307,8 +330,9 @@ function validateForm (rules, behaviorRules = [], _this) {
         if (!timeTagKongList.includes(rulesItem.tagName)) {
           timeTagKongList.push(rulesItem.tagName)
         }
-      } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-        _this.$message.error(
+        // 需要验证时，才进行提示
+      } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
+        Message.error(
           '请正确填写第' +
             (x + 1) +
             '行为标签块里面的第' +
@@ -334,26 +358,32 @@ function validateForm (rules, behaviorRules = [], _this) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
             } else {
-              _this.$message.error(
+              // 需要验证时，才进行提示
+              if (isNeedValidate) {
+                Message.error(
+                  '第' +
+                    (x + 1) +
+                    '行为标签块里面的第' +
+                    (y + 1) +
+                    '行的天数值后面的值必须大于前面的'
+                )
+                rulesFlag = false
+                break
+              }
+            }
+          } else {
+            // 需要验证时，才进行提示
+            if (isNeedValidate) {
+              Message.error(
                 '第' +
                   (x + 1) +
                   '行为标签块里面的第' +
                   (y + 1) +
-                  '行的天数值后面的值必须大于前面的'
+                  '行的值是大于等于0的整数且不能超过4位数'
               )
               rulesFlag = false
               break
             }
-          } else {
-            _this.$message.error(
-              '第' +
-                (x + 1) +
-                '行为标签块里面的第' +
-                (y + 1) +
-                '行的值是大于等于0的整数且不能超过4位数'
-            )
-            rulesFlag = false
-            break
           }
         }
       }
@@ -366,7 +396,7 @@ function validateForm (rules, behaviorRules = [], _this) {
   //   for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
   //     const rulesItem = dynamicPolicyRules[i].rules[j]
   //     if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-  //       _this.$message.error(
+  //       Message.error(
   //         '请正确填写第' +
   //           (i + 1) +
   //           '动态因子里面的第' +

@@ -20,7 +20,7 @@
         <div class="content">
             <div class="title">场景</div>
             <div class="search">
-              <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select">
+              <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select" @keyup.enter.native="getSceneList">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
               </el-input>
             </div>
@@ -133,7 +133,7 @@
             </div>
 
             <div class="search">
-              <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select">
+              <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select" @keyup.enter.native="getServiceList">
                 <el-button slot="append" icon="el-icon-search" @click="getServiceList"></el-button>
               </el-input>
             </div>
@@ -603,14 +603,8 @@ export default {
       console.log('333ruleForm--->', commonSetRef)
       const entryValidPromise = []
       const exportValidPromise = []
-      const allEntryRules = {
-        rulesJsonArr: [],
-        behaviorRulesJsonArr: []
-      }
-      const allExportRules = {
-        rulesJsonArr: [],
-        behaviorRulesJsonArr: []
-      }
+      let allEntryArr = []
+      let allExportArr = []
 
       ruleForm.validate(valid => {
         if (valid) {
@@ -620,18 +614,22 @@ export default {
             const behaviorRulesJson = dialogRef.behaviorRulesJson
             const flowCondition = dialogRef.flowCondition
 
-            console.log('---------------入口条件 start------------------------------')
-            console.log('rulesJson', rulesJson)
-            console.log('behaviorRulesJson', behaviorRulesJson)
-            console.log('flowCondition', flowCondition)
-            console.log('---------------入口条件 end------------------------------')
+            // console.log('---------------入口条件 start------------------------------')
+            // console.log('rulesJson', rulesJson)
+            // console.log('behaviorRulesJson', behaviorRulesJson)
+            // console.log('flowCondition', flowCondition)
+            // console.log('---------------入口条件 end------------------------------')
 
             // 存数据
-            allEntryRules.rulesJsonArr.push(rulesJson)
-            allEntryRules.behaviorRulesJsonArr.push(behaviorRulesJson)
+            // allEntryArr.push({ rulesJson, behaviorRulesJson })
+            const returnDefaultData = {
+              type: 'entry',
+              link: dialogRef.totalLink,
+              tagIds: dialogRef.checkedList.join(',')
+            }
 
             // 校验规则
-            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData, isNeedValidate: false })
             entryValidPromise.push(p)
           })
 
@@ -641,45 +639,67 @@ export default {
             const behaviorRulesJson = dialogRef.behaviorRulesJson
             const flowCondition = dialogRef.flowCondition
 
-            console.log('-----------------出口条件 start----------------------------')
-            console.log('rulesJson', rulesJson)
-            console.log('behaviorRulesJson', behaviorRulesJson)
-            console.log('flowCondition', flowCondition)
-            console.log('-----------------出口条件 end----------------------------')
+            // console.log('-----------------出口条件 start----------------------------')
+            // console.log('rulesJson', rulesJson)
+            // console.log('behaviorRulesJson', behaviorRulesJson)
+            // console.log('flowCondition', flowCondition)
+            // console.log('-----------------出口条件 end----------------------------')
+
+            // const stopType = dialogRef.form.stopType // 处理操作
+            // const nextId = dialogRef.form.nextId // 流转接待员
+            // console.log('stopType--->', stopType)
+            // console.log('nextId--->', nextId)
 
             // 存数据
-            allExportRules.rulesJsonArr.push(rulesJson)
-            allExportRules.behaviorRulesJsonArr.push(behaviorRulesJson)
-
+            // allExportArr.push({ rulesJson, behaviorRulesJson })
+            const returnDefaultData = {
+              type: 'export',
+              link: dialogRef.totalLink,
+              stopType: dialogRef.form.stopType,
+              nextId: dialogRef.form.nextId,
+              tagIds: dialogRef.checkedList.join(',')
+            }
             // 校验规则
-            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+            const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData, isNeedValidate: false })
             exportValidPromise.push(p)
           })
 
-          console.log('==========allEntryRules==>', allEntryRules)
-          console.log('==========allExportRules==>', allExportRules)
-
+          // // 所有的入口
           // Promise.all(entryValidPromise).then(res => {
-          //   console.log('val--->', res)
-
-          //   this.$message.success('所有入口条件都已经通过')
-          // }).catch(() => {
-          //   this.$message.error('入口条件没有通过')
+          //   console.log('allEntryArr--->', res)
+          //   // 存数据
+          //   console.log('最终数据==========allEntryArr==>')
+          //   allEntryArr = res
+          //   console.log(allEntryArr)
+          //   console.log('最终数据==========allEntryArr==>', allEntryArr)
           // })
 
+          // // 所有的出口
           // Promise.all(exportValidPromise).then(res => {
-          //   this.$message.success('所有入口条件都已经通过')
-          // }).catch(() => {
-          //   setTimeout(() => {
-          //     this.$message.error('出口条件没有通过')
-          //   }, 3000)
+          //   console.log('allExportArr--->', res)
+          //   // 存数据
+          //   console.log('最终数据==========allExportArr==>')
+          //   allExportArr = res
+          //   console.log(allExportArr)
+          //   console.log('最终数据==========allExportArr==>', allExportArr)
           // })
+
+          // 所有的入口和出口
           Promise.all([...entryValidPromise, ...exportValidPromise]).then(res => {
-            console.log('val--->', res)
+            console.log('start===============最终数据============>')
+            console.log(res)
+            console.log('end=================最终数据==========')
+
+            allEntryArr = res.filter(item => item.type === 'entry')
+            allExportArr = res.filter(item => item.type === 'export')
+            console.log('')
+            console.log('allEntryArr===========================>', allEntryArr)
+            console.log('')
+            console.log('allExportArr===========================>', allExportArr)
 
             this.$message.success('所有条件都已经通过')
             // 下一步
-            this.multiAddStep = this.multiAddStep + 1
+            // this.multiAddStep = this.multiAddStep + 1
           }).catch(() => {
             this.$message.error('没有通过')
           })
