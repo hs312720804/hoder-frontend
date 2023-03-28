@@ -115,10 +115,10 @@ export default {
         resource: [
           { type: 'array', required: true, message: '请选择维度', trigger: 'change' }
         ],
-        prependName: [
-          { required: true, message: '请输入接待员命名', trigger: 'blur' }
-          // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
-        ],
+        // prependName: [
+        //   { required: true, message: '请输入接待员命名', trigger: 'blur' }
+        //   // { min: 3, max: 5, message: '长度在 3 到 5 个字符', trigger: 'blur' }
+        // ],
         appendName: [
           { required: true, message: '请输入接待员命名', trigger: 'blur' }
         ]

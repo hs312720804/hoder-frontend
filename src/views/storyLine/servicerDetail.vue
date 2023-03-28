@@ -312,12 +312,12 @@
         <div class="detail-box">
           <div class="title2">服务对象选择（可选）</div>
           <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+          <div v-if="entryList.length > 0" class="position-left">
+            <!-- {{ checkList }} -->
+            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+            <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 15px">复制</el-button>
+          </div>
           <div class="set-start">
-            <template v-if="entryList.length > 0" >
-              <!-- {{ checkList }} -->
-              <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-              <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 15px">复制</el-button>
-            </template>
 
             <div v-if="entryList.length === 0" class="no-data-wrap">
               <div class="noData"></div>
@@ -472,14 +472,19 @@
                   title="双击复制"
                   @dblclick="copyText(film.id + '-' + film.title)"
                 >
-                  <el-popover
+                  <!-- <el-popover
                     placement="top"
                     width="150px"
                     trigger="manual"
                     content="复制成功"
                     :value="popoverVisible === film.id + '-' + film.title">
                     <span slot="reference">{{ film.id }} - {{ film.title }}</span>
-                  </el-popover>
+                  </el-popover> -->
+                  <span>{{ film.id }} - {{ film.title }}</span>
+                  <div class="tip" v-if="popoverVisible === film.id + '-' + film.title">
+                    <div class="tip-trangle-bottom"></div>
+                    复制成功
+                  </div>
                 </span>
               </template>
               <span v-else class="no-data-text">暂无推荐</span>
@@ -491,13 +496,12 @@
         <div class="detail-box">
           <div class="title2">服务终止条件（可选）</div>
           <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+          <div v-if="exportList.length > 0" class="position-left">
+            <!-- {{ exportCheckList }} -->
+            <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
+            <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 15px">复制</el-button>
+          </div>
           <div class="set-end">
-            <template v-if="exportList.length > 0">
-              <!-- {{ exportCheckList }} -->
-              <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
-              <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 15px">复制</el-button>
-            </template>
-
             <div v-if="exportList.length === 0" class="no-data-wrap">
               <div class="noData"></div>
               <!-- 暂时木有内容呀～～ -->
@@ -881,6 +885,8 @@ export default {
       })
     },
     havePermissionsToUse () {
+      // canUse - 当前登录用户对于该接待员是否有权限
+      // isCopiedServicer - 是否为复用的接待员 true-是  false-否
       return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
     }
   },
@@ -1033,6 +1039,7 @@ export default {
 
   methods: {
     getCanReuse () {
+      this.canUse = false
       if (this.selectedServicer.id) {
         const params = {
           id: this.selectedServicer.id
@@ -1209,9 +1216,11 @@ export default {
       document.execCommand('copy')
       input.remove()
 
+      // 2 秒后消失
       setTimeout(() => {
         this.popoverVisible = ''
-      }, 3000)
+      }, 2000)
+
       // this.$message({
       //   message: '复制成功',
       //   type: 'success'

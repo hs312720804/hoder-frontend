@@ -71,6 +71,16 @@
     background rgb(243, 243, 243)
   }
 }
+.position-left {
+  position absolute
+  left: 12px;
+  top: 10px;
+  cursor pointer
+  /deep/ .el-checkbox__label {
+    font-size 12px
+    margin-right 5px
+  }
+}
 .change-style-btn
   position: absolute;
   right: 0;
@@ -365,6 +375,7 @@
 }
 
 .film-btn {
+  position relative
   color: #67c23a;
   background: #f0f9eb;
   border: 1px solid #c2e7b0;
@@ -399,4 +410,31 @@
 .fold {
   z-index: 9;
   font-size 20px
+}
+/*提示框容器*/
+.tip {
+  position: absolute;
+  width: 54px;
+  background: black;
+  padding: 10px;
+  border-radius: 5px;
+  top: -42px;
+  text-align: center;
+  left: 30%;
+  &:hover {
+    color: #fff;
+    background-color: black
+    border-color: black;
+  }
+}
+/*提示框-下三角*/
+.tip-trangle-bottom {
+  position: absolute;
+  bottom: -5px;
+  left: 27px;
+  width: 0;
+  height: 0;
+  border-left: 8px solid transparent;
+  border-right: 8px solid transparent;
+  border-top: 8px solid black;
 }
