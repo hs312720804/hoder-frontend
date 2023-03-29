@@ -1828,7 +1828,7 @@ export default {
             }
           }
         },
-        color: ['#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+        color: ['#37A2DA', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
         legend: {
           // show: false,
           data: legend,
@@ -1877,13 +1877,29 @@ export default {
         series: yData.map(item => {
           return {
             ...item,
-            stack: 'Total',
+            // stack: 'Total',
             // smooth: true,
-            lineStyle: {
-              width: 0
+            // lineStyle: {
+            //   width: 0
+            // },
+            // showSymbol: false,
+            label: {
+              show: true,
+              position: 'top',
+              color: '#000'
             },
-            showSymbol: false,
             areaStyle: {
+              // opacity: 0.8,
+              // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+              //   {
+              //     offset: 0,
+              //     color: 'rgb(0, 221, 255, 0.5)'
+              //   },
+              //   {
+              //     offset: 1,
+              //     color: 'rgba(77, 119, 255, 0)'
+              //   }
+              // ])
               opacity: 0.8,
               color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
                 {
