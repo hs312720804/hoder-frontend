@@ -141,9 +141,9 @@ export function addScenedynamic (data) {
 export function addGroup (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/scene/addGroup',
+    url: `/api/scene/addGroup/${data.sceneType}`,
     isJSON: true,
-    data
+    data: data.list
   })
 }
 

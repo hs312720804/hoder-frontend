@@ -324,6 +324,12 @@
       </el-dialog>
       <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
         <!-- {{ groupData }} -->
+        <div class="scene-type-class">
+          分组类型：
+          <el-radio v-model="sceneType" :label="1">跨平台分组</el-radio>
+          <el-radio v-model="sceneType" :label="2">同平台分组</el-radio>
+        </div>
+
         <drag
           :list="noGroupService"
           :groupData.sync="groupData"
@@ -412,6 +418,7 @@ export default {
   },
   data () {
     return {
+      sceneType: 1,
       multiAddStep: 0,
       dropDownLoading: true,
       canUse: false, // 当前接待员是否有权限操作
@@ -941,10 +948,10 @@ export default {
     },
     // 添加接待员分组
     addServicerGroup () {
-      const parmas = []
+      const list = []
       this.groupData.forEach(group => {
         if (group.list.length > 0) {
-          parmas.push(
+          list.push(
             {
               ...group,
               sceneId: this.selectedScene.id
@@ -952,8 +959,11 @@ export default {
           )
         }
       })
-
-      this.$service.addGroup(parmas).then(res => {
+      const params = {
+        list,
+        sceneType: this.sceneType
+      }
+      this.$service.addGroup(params).then(res => {
         // 刷新列表
         this.getServiceList()
         this.showDragVisible = false
@@ -1377,5 +1387,8 @@ export default {
 }
 .create-type-sty {
   padding 0 0 30px 57px
+}
+.scene-type-class {
+  margin -10px 20px 20px
 }
 </style>
