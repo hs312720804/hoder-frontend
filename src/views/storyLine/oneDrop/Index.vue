@@ -7,8 +7,8 @@
   <el-steps :active="activeStep" class="step-sty">
     <el-step title="添加场景"></el-step>
     <el-step title="选择创建方式"></el-step>
-    <el-step :title="radio1 === 1 ? '批量创建接待员': '创建接待员'"></el-step>
-    <el-step title="配置接待员"></el-step>
+    <el-step :title="radio1 === 0 ? '创建接待员': '配置公共属性'"></el-step>
+    <el-step :title="radio1 === 0 ? '配置接待员': '配置单独属性'"></el-step>
     <el-step title="投放"></el-step>
   </el-steps>
 
