@@ -10,13 +10,18 @@
           </el-checkbox-group>
         </el-form-item>
         <el-form-item label="选择维度：" prop="resource">
+          <!-- filterable
+          :filter-method="filterMethod"
+          filter-placeholder="搜索接待员" -->
           <el-transfer
-            filterable
-            :filter-method="filterMethod"
-            filter-placeholder="搜索接待员"
             :titles="['待选维度', '已选维度']"
             v-model="ruleForm.resource"
-            :data="data">
+            :data="uptmList"
+            :props="{
+              key: 'id',
+              label: 'tagCnName'
+            }">
+             <span slot-scope="{ option }">{{ option.id }} - {{ option.tagCnName }}</span>
           </el-transfer>
         </el-form-item>
         <el-form-item label="接待员命名：" prop="prependName">
@@ -92,29 +97,19 @@ export default {
     createClientDialog
   },
   data () {
-    const generateData = _ => {
-      const data = []
-      const list = ['剧情', '都市', '武侠', '科幻', '言情', '悬疑', '警匪']
-      list.forEach((city, index) => {
-        data.push({
-          label: city,
-          key: index
-        })
-      })
-      return data
-    }
     return {
       entryList: [{ id: 1 }],
       exportList: [{ id: 1 }],
       servicerListFilterSelect: [],
       options: options,
-      data: generateData(),
+      // data: generateData(),
+      uptmList: [],
       filterMethod (query, item) {
-        return item.label.indexOf(query) > -1
+        // return item.label.indexOf(query) > -1
       },
       ruleForm: {
         type: ['影视模型'],
-        resource: ['剧情', '都市'], // 维度
+        resource: [], // 维度
         prependName: '测试批量创建',
         appendName: ''
       },
@@ -134,6 +129,7 @@ export default {
         ]
 
       },
+      // 写死的传参数据，不要随意更改
       defaultData: {
         rulesJson: {
           condition: 'OR',
@@ -150,8 +146,10 @@ export default {
               operator: '>',
               sourceSign: '',
               value: 1,
-              tagCode: '',
-              isCommonAttr: true
+              isCommonAttr: true,
+              tagCode: '19491001',
+              tagCnName: 'tagCnName_coocaa',
+              pathName: 'pathName_coocaa'
             }]
           }]
         }
@@ -202,7 +200,16 @@ export default {
     },
     resetForm (formName) {
       this.$refs[formName].resetFields()
+    },
+    getBatchUptm () {
+      this.$service.getBatchUptm().then(res => {
+        console.log('维度--》', res)
+        this.uptmList = res
+      })
     }
+  },
+  created () {
+    this.getBatchUptm()
   }
 }
 </script>

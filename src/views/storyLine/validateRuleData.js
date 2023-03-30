@@ -107,9 +107,9 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   // ---------------------------- 行为标签的数据 进行重组  end--------------------------------
 
   const data = {
+    ...subAttr.returnDefaultData || undefined, // 一些默认返回数据
     rulesJson: JSON.stringify(ruleJson),
-    behaviorRulesJson: JSON.stringify(behaviorRulesJson),
-    ...subAttr.returnDefaultData || undefined // 一些默认返回数据
+    behaviorRulesJson: JSON.stringify(behaviorRulesJson)
   }
 
   // ----------------------- 校验【行为标签】： 收集需校验的ref   start-----------------------------

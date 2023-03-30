@@ -4,9 +4,9 @@
       <el-step title="配置公共属性"></el-step>
       <el-step title="配置单独属性"></el-step>
     </el-steps>
-
+    <!-- batchId：{{batchId}} -->
     <CommonSet v-if="activeStep === 0" ref="commonSetRef"></CommonSet>
-    <AllPerSet v-else-if="activeStep === 1" ref="allPerSetRef"></AllPerSet>
+    <AllPerSet v-else-if="activeStep === 1" ref="allPerSetRef" :batchId="batchId"></AllPerSet>
 
     <!-- <span slot="footer" class="dialog-footer">
       <el-button @click="activeStep= activeStep - 1">上一步</el-button>
@@ -23,6 +23,10 @@ export default {
     value: {
       type: Number,
       default: 0
+    },
+    batchId: {
+      type: [String, Number],
+      default: ''
     }
   },
   watch: {
