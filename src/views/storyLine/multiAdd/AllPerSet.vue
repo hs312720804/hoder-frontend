@@ -55,7 +55,7 @@
         </el-form-item>
 
         <el-form-item label="服务终止条件：" prop="export">
-          <div class="create-client-border" v-for="(item, index) in ruleForm.exportConditions" :key="item.id + item.entryIndex">
+          <div class="create-client-border" v-for="(item, index) in ruleForm.exportConditions" :key="item.id + item.exportIndex">
             <createClientDialog
               ref="exportClientDialogRef"
               type="export"
@@ -198,7 +198,7 @@ export default {
     },
     // 新建服务终止条件：
     createExport (formItem) {
-      formItem.entryConditions.push({
+      formItem.exportConditions.push({
         // sceneId: 309,
         // policyId: 5327,
         id: '',
@@ -215,7 +215,7 @@ export default {
       })
     },
     deleteExport (formItem, index) {
-      formItem.entryConditions.splice(index, 1)
+      formItem.exportConditions.splice(index, 1)
     },
     getServiceList () {
 
