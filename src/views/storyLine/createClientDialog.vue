@@ -179,13 +179,13 @@
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
-import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
+// import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
 import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 export default {
   components: {
     MultipleSelect,
-    MultipleActionTagSelect,
-    SetCirculationConditionsCom
+    MultipleActionTagSelect
+    // SetCirculationConditionsCom
   },
   provide () {
     return {
@@ -310,6 +310,31 @@ export default {
         this.checkedList = val.map(item => item.tagId)
         this.sortTag()
       }
+    },
+    circulationTagDataListProp: {
+      handler (val) {
+        console.log('val===>', val)
+        this.circulationTagDataList = val
+      },
+      immediate: true
+    },
+    soureceSignListProp: {
+      handler (val) {
+        this.soureceSignList = val
+      },
+      immediate: true
+    },
+    conditionTagsFilteredProp: {
+      handler (val) {
+        this.conditionTagsFiltered = val
+      },
+      immediate: true
+    },
+    selectTagTagsListTotalProp: {
+      handler (val) {
+        this.selectTagTagsListTotal = val
+      },
+      immediate: true
     }
 
   },
@@ -344,6 +369,22 @@ export default {
     defaultData: {
       type: Object,
       default: () => {}
+    },
+    circulationTagDataListProp: {
+      type: Array,
+      default: () => []
+    },
+    soureceSignListProp: {
+      type: Array,
+      default: () => []
+    },
+    conditionTagsFilteredProp: {
+      type: Array,
+      default: () => []
+    },
+    selectTagTagsListTotalProp: {
+      type: Number,
+      default: 0
     }
   },
   methods: {
@@ -977,8 +1018,14 @@ export default {
     }
   },
   async created () {
-    this.getTags() // 获取所有的标签列表
-    await this.getCirculationTag() // 获取流转标签
+    if (this.conditionTagsFilteredProp.length === 0) {
+      this.getTags() // 获取所有的标签列表
+    }
+
+    // 有传入的参数就不需要调用接口了
+    if (this.circulationTagDataListProp.length === 0 && this.soureceSignListProp.length === 0) {
+      await this.getCirculationTag() // 获取流转标签
+    }
 
     // 编辑 回显
     if (this.editRow) {
