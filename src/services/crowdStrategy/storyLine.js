@@ -275,3 +275,40 @@ export function getCanReuse (params) {
     params
   })
 }
+// 维度接口
+export function getBatchUptm (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batch/uptm',
+    params
+  })
+}
+
+// 第一步保存
+export function batchSaveFirst (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batch/saveFirst',
+    data,
+    isJSON: true
+  })
+}
+
+// 第二步获取接待员列表
+export function getBatchList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batch/list',
+    params
+  })
+}
+
+// 第二步保存
+export function batchSaveSecond (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/apireceptionist/batch/saveSecond',
+    data,
+    isJSON: true
+  })
+}
