@@ -385,6 +385,14 @@ export default {
     selectTagTagsListTotalProp: {
       type: Number,
       default: 0
+    },
+    receptionistId: {
+      type: [String, Number],
+      default: ''
+    },
+    delFlag: {
+      type: [String, Number],
+      default: ''
     }
   },
   methods: {

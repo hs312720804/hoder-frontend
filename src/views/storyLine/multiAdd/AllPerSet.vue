@@ -34,7 +34,7 @@
         <!-- {{ruleForm.entryConditions}} -->
 
         <el-form-item label="服务对象选择：" prop="entry">
-          <div class="create-client-border" v-for="(item, index) in ruleForm.entryConditions" :key="item.id + item.entryIndex">
+          <div class="create-client-border" v-for="(item, index) in ruleForm.entryConditions" :key="item.entryIndex ? (item.id + item.entryIndex) : item.id">
             <!-- {{item.id + index}} -->
             <createClientDialog
               ref="createClientDialogRef"
@@ -44,6 +44,8 @@
               :soureceSignListProp="soureceSignList"
               :conditionTagsFilteredProp="conditionTagsFiltered"
               :selectTagTagsListTotalProp="selectTagTagsListTotal"
+              :receptionistId="item.receptionistId"
+              :delFlag="item.delFlag"
             >
             </createClientDialog>
             <i class="el-icon-delete" @click="deleteEntry(ruleForm, index)"></i>
@@ -55,7 +57,8 @@
         </el-form-item>
 
         <el-form-item label="服务终止条件：" prop="export">
-          <div class="create-client-border" v-for="(item, index) in ruleForm.exportConditions" :key="item.id + item.exportIndex">
+          <div class="create-client-border" v-for="(item, index) in ruleForm.exportConditions" :key="item.exportIndex ? (item.id + item.exportIndex) : item.id">
+            {{ item.id}}--{{  item.exportIndex }}
             <createClientDialog
               ref="exportClientDialogRef"
               type="export"
@@ -66,6 +69,8 @@
               :soureceSignListProp="soureceSignList"
               :conditionTagsFilteredProp="conditionTagsFiltered"
               :selectTagTagsListTotalProp="selectTagTagsListTotal"
+              :receptionistId="item.receptionistId"
+              :delFlag="item.delFlag"
             ></createClientDialog>
             <i class="el-icon-delete" @click="deleteExport(ruleForm, index)"></i>
 
@@ -92,6 +97,10 @@ export default {
   },
   props: {
     batchId: {
+      type: [String, Number],
+      default: ''
+    },
+    sceneId: {
       type: [String, Number],
       default: ''
     }
@@ -183,7 +192,7 @@ export default {
         // sceneId: 309,
         // policyId: 5327,
         id: '',
-        receptionistId: formItem.id,
+        receptionistId: formItem.id, // 所属接待员ID，必填
         tagIds: '',
         rulesJson: '',
         behaviorRulesJson: '',
@@ -194,7 +203,8 @@ export default {
       })
     },
     deleteEntry (formItem, index) {
-      formItem.entryConditions.splice(index, 1)
+      // formItem.entryConditions.splice(index, 1)
+      formItem.entryConditions[index].delFlag = 2
     },
     // 新建服务终止条件：
     createExport (formItem) {
@@ -202,7 +212,7 @@ export default {
         // sceneId: 309,
         // policyId: 5327,
         id: '',
-        receptionistId: formItem.id,
+        receptionistId: formItem.id, // 所属接待员ID，必填
         tagIds: '',
         rulesJson: '',
         behaviorRulesJson: '',
@@ -215,7 +225,8 @@ export default {
       })
     },
     deleteExport (formItem, index) {
-      formItem.exportConditions.splice(index, 1)
+      // formItem.exportConditions.splice(index, 1)
+      formItem.exportConditions[index].delFlag = 2
     },
     getServiceList () {
 
@@ -261,13 +272,25 @@ export default {
     }
   },
   created () {
-    const parmas = {
-      id: this.batchId
+    // 一键投放的
+    if (this.sceneId) {
+      const parmas = {
+        sceneId: this.sceneId
+      }
+      this.$service.getListbySceneId(parmas).then(res => {
+        this.allRuleForm = res
+        this.activeId = res[0].id
+      })
+      // 批量创建接待员的
+    } else if (this.batchId) {
+      const parmas = {
+        id: this.batchId
+      }
+      this.$service.getBatchList(parmas).then(res => {
+        this.allRuleForm = res
+        this.activeId = res[0].id
+      })
     }
-    this.$service.getBatchList(parmas).then(res => {
-      this.allRuleForm = res
-      this.activeId = res[0].id
-    })
 
     this.getTags() // 获取所有的标签列表
 

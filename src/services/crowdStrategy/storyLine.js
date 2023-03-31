@@ -307,8 +307,107 @@ export function getBatchList (params) {
 export function batchSaveSecond (data) {
   return this.fetch({
     method: 'post',
-    url: '/apireceptionist/batch/saveSecond',
+    url: '/api/receptionist/batch/saveSecond',
     data,
     isJSON: true
   })
 }
+
+// --------------- 一键投放相关接口  start------------------------
+
+/// 1：场景 - 跳过保存
+export function sceneSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/sceneSkip',
+    data,
+    isJSON: true
+  })
+}
+// 1：场景 - 下一步
+export function sceneNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/sceneNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 每个步骤公用的：获取当前场景详情
+export function getSceneDetail (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getSceneDetail',
+    params
+  })
+}
+
+// 2： 创建方式 - 跳过保存
+export function createTypeSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/createTypeSkip',
+    data,
+    isJSON: true
+  })
+}
+// 2：创建方式 - 下一步
+export function createTypeNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/createTypeNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 查询接待员列表
+export function getListbySceneId (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getListbySceneId',
+    params
+  })
+}
+
+// 3： 逐个创建名称 - 跳过保存
+export function oneByOneListSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/oneByOneListSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 逐个创建名称 - 下一步
+export function oneByOneListNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/oneByOneListNext',
+    data,
+    isJSON: true
+  })
+}
+// 4： 统一配置 - 跳过保存
+export function batchListSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchListSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 4： 统一配置 - 下一步
+export function batchListNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchListNext',
+    data,
+    isJSON: true
+  })
+}
+
+// --------------- 一键投放相关接口  end------------------------

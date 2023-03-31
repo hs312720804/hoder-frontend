@@ -4,11 +4,16 @@
       <el-step title="1.配置公共属性" icon="el-icon-edit"></el-step>
       <el-step title="第二步：圈出人群" icon="el-icon-edit"></el-step>
   </el-steps> -->
+  <!-- sceneId --- {{ sceneId }}
+  <br/>
+  sceneDetail --- {{ sceneDetail }}
+  <br/>
+  receptionistList --- {{ receptionistList }} -->
   <el-steps :active="activeStep" class="step-sty">
     <el-step title="添加场景"></el-step>
     <el-step title="选择创建方式"></el-step>
-    <el-step :title="radio1 === 0 ? '创建接待员': '配置公共属性'"></el-step>
-    <el-step :title="radio1 === 0 ? '配置接待员': '配置单独属性'"></el-step>
+    <el-step :title="createType === 1 ? '创建接待员': '配置公共属性'"></el-step>
+    <el-step :title="createType === 1 ? '配置接待员': '配置单独属性'"></el-step>
     <el-step title="投放"></el-step>
   </el-steps>
 
@@ -27,18 +32,21 @@
     <div class="div-class">
 
       <el-form-item label=" 创建方式：" label-width="90px">
-        <el-radio v-model="radio1" :label="0" style="margin-right: 15px">逐个创建</el-radio>
-        <el-radio v-model="radio1" :label="1">批量创建</el-radio>
+        <el-radio v-model="createType" :label="1" style="margin-right: 15px">逐个创建</el-radio>
+        <el-radio v-model="createType" :label="2">批量创建</el-radio>
       </el-form-item>
     </div>
   </el-form>
 
   <!-- 第三步 -->
-  <OneByOneAdd v-if="activeStep === 2 && radio1 === 0"></OneByOneAdd>
-  <CommonSet v-else-if="activeStep === 2 && radio1 === 1"></CommonSet>
+  <OneByOneAdd
+    v-if="activeStep === 2 && createType === 1"
+    v-model="receptionistList"
+  ></OneByOneAdd>
+  <CommonSet v-else-if="activeStep === 2 && createType === 2"></CommonSet>
 
   <!-- 第四步 -->
-  <AllPerSet v-else-if="activeStep === 3"></AllPerSet>
+  <AllPerSet v-else-if="activeStep === 3" :sceneId="sceneId" ></AllPerSet>
 
   <!-- 第五步 -->
   <LaunchToBusiness
@@ -47,9 +55,19 @@
     :tempPolicyAndCrowd="tempPolicyAndCrowd"
   ></LaunchToBusiness>
 
-  <div style="float: right">
-    <el-button @click="activeStep= activeStep - 1">上一步</el-button>
-    <el-button @click="activeStep= activeStep + 1">下一步</el-button>
+  <div class="el-dialog__footer">
+    <!-- 第一步 -->
+    <template v-if="activeStep === 0">
+      <el-button type="info" @click="cancel">取消</el-button>
+      <el-button type="warning" @click="skipSave">跳过保存</el-button>
+      <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
+    </template>
+    <!-- 第二步 -->
+    <template v-else>
+      <el-button type="primary" @click="backStep">上一步</el-button>
+      <el-button type="warning" @click="skipSave">跳过保存</el-button>
+      <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
+    </template>
   </div>
 </div>
 </template>
@@ -68,22 +86,256 @@ export default {
   },
   data () {
     return {
+      receptionistList: [],
+      sceneId: '',
       recordId: 5305,
       tempPolicyAndCrowd: { policyId: 5305, policyName: 'test detail', createTime: '2023-03-21 15:17:51', creator: 160, status: 1, department: '平台组', launchPolicyId: null, creatorName: '黄珊', departmentName: null, tagsList: null, useStatus: '未投放', conditionTagIds: null, delFlag: 1, updator: null, myCollect: true, launchedBi: null, bypass: null, smart: false, isBehavior: null, past7Active: 0, past7Req: 0, lastActiveTime: null, lastReqTime: null },
       activeStep: 0,
-      radio1: 0,
+      createType: 1,
       formSceneRules: {
         name: [
           { required: true, message: '不能为空', trigger: 'change' }
         ]
       },
       formScene: {
-        name: ''
-      }
+        name: 'test 一键投放场景'
+      },
+      sceneDetail: {}
+    }
+  },
+  watch: {
+    // sceneName: this.formScene.name,
+    // createType: this.createType
+    'this.formScene.name' (val) {
+      this.sceneDetail.sceneName = val
+    },
+    createType (val) {
+      this.sceneDetail.createType = val
     }
   },
   methods: {
+    // 上一步
+    backStep () {
+      debugger
+      switch (this.activeStep) {
+        // 当前为第二步
+        case 1:
+          this.getSceneDetail()
+          this.cutActiveStep()
+          break
+        // 当前为第三步
+        case 2:
+          this.getSceneDetail()
+          this.cutActiveStep()
+          break
+        // 当前为第四步
+        case 3:
+          this.getListbySceneId()
+          this.cutActiveStep()
+          break
+        default:
+          break
+      }
+    },
+    // 跳过保存
+    skipSave () {
+      switch (this.activeStep) {
+        // 当前为第一步
+        case 0:
+          this.sceneSkip()
+          break
+        // 当前为第二步
+        case 1:
+          this.createTypeSkip()
+          break
+          // 当前为第三步
+        case 2:
+          this.oneByOneListSkip()
+          break
+        // 当前为第 4 步
+        case 3:
+          this.batchListSkip()
+          break
+        default:
+          break
+      }
+    },
+    // 下一步
+    oneDropNextStep () {
+      switch (this.activeStep) {
+        // 当前为第 1 步
+        case 0:
+          this.sceneNext()
+          break
+        // 当前为第 2 步
+        case 1:
+          this.createTypeNext()
+          break
+        // 当前为第 3 步
+        case 2:
+          this.oneByOneListNext()
+          break
+        // 当前为第 4 步
+        case 3:
+          this.batchListNext()
+          break
+        default:
+          break
+      }
+    },
 
+    cutActiveStep () {
+      this.activeStep = this.activeStep - 1
+    },
+    addActiveStep () {
+      this.activeStep = this.activeStep + 1
+    },
+    async getListbySceneId () {
+      const parmas = {
+        sceneId: this.sceneId
+      }
+      await this.$service.getListbySceneId(parmas).then(res => {
+        // this.cutActiveStep()
+        this.receptionistList = res
+      })
+    },
+    async getSceneDetail () {
+      const parmas = {
+        sceneId: this.sceneId
+      }
+      await this.$service.getSceneDetail(parmas).then(res => {
+        // this.cutActiveStep()
+        this.sceneDetail = res
+
+        this.formScene.name = res.sceneName // 场景名
+        this.createType = res.createType // 创建类型
+      })
+    },
+
+    // 4： 统一配置  - 跳过保存
+    batchListSkip () {
+      const parmas = {
+        sceneId: this.sceneId,
+        receptionists: this.receptionistList
+      }
+      this.$service.batchListSkip(parmas).then(res => {
+        // 更新场景列表
+        this.$emit('updateSceneList')
+        // 关闭弹窗
+        this.$emit('closeDialog')
+      })
+    },
+    // 4： 统一配置  - 下一步
+    batchListNext () {
+      const parmas = {
+        sceneId: this.sceneId,
+        receptionists: this.receptionistList
+      }
+      this.$service.batchListNext(parmas).then(res => {
+        this.addActiveStep()
+      })
+    },
+    // 3： 逐个创建名称 - 跳过保存
+    oneByOneListSkip () {
+      const parmas = {
+        sceneId: this.sceneId,
+        receptionists: this.receptionistList
+      }
+      this.$service.oneByOneListSkip(parmas).then(res => {
+        // 更新场景列表
+        this.$emit('updateSceneList')
+        // 关闭弹窗
+        this.$emit('closeDialog')
+      })
+    },
+    // 3： 逐个创建名称 - 下一步
+    oneByOneListNext () {
+      const parmas = {
+        sceneId: this.sceneId,
+        receptionists: this.receptionistList
+        // sceneName: this.formScene.name,
+        // createType: this.createType
+      }
+      this.$service.oneByOneListNext(parmas).then(res => {
+        this.addActiveStep()
+      })
+    },
+    // 2: 创建方式 - 跳过保存
+    createTypeSkip () {
+      const parmas = {
+        sceneName: this.formScene.name,
+        createType: this.createType
+      }
+      this.$service.createTypeSkip(parmas).then(res => {
+        // 更新场景列表
+        this.$emit('updateSceneList')
+        // 关闭弹窗
+        this.$emit('closeDialog')
+      })
+    },
+    // 2： 创建方式 - 下一步
+    createTypeNext () {
+      const parmas = {
+        ...this.sceneDetail
+        // sceneName: this.formScene.name,
+        // createType: this.createType
+      }
+      this.$service.createTypeNext(parmas).then(res => {
+        this.addActiveStep()
+      })
+    },
+    // 1： 场景 - 跳过保存
+    sceneSkip () {
+      this.$refs.formSceneRef.validate(valid => {
+        if (valid) {
+          const parmas = {
+            sceneName: this.formScene.name
+          }
+
+          this.$service.sceneSkip(parmas).then(res => {
+            // 更新场景列表
+            this.$emit('updateSceneList')
+            // 关闭弹窗
+            this.$emit('closeDialog')
+          })
+        }
+      })
+    },
+    // 1： 场景 - 下一步
+    sceneNext () {
+      this.$refs.formSceneRef.validate(valid => {
+        if (valid) {
+          const parmas = {
+            sceneName: this.formScene.name
+          }
+
+          this.$service.sceneNext(parmas).then(res => {
+            this.sceneId = res
+            this.addActiveStep()
+            this.getSceneDetail()
+          })
+        }
+      })
+    },
+    cancel () {
+      // 关闭弹窗
+      this.$emit('closeDialog')
+    }
+    // confirmAddScene () {
+    //   // console.log('this.formScene.length--------', this.sceneList.length)
+    //   this.$refs.formSceneRef.validate(valid => {
+    //     if (valid) {
+    //       const parmas = {
+    //         sceneName: this.formScene.name
+    //         // id: this.sceneList.length + 1
+    //       }
+
+    //       this.$service.addScene(parmas).then(res => {
+    //         this.getSceneList('add')
+    //       })
+    //     }
+    //   })
+    // }
   }
 }
 </script>
