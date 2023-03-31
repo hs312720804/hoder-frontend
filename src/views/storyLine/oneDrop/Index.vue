@@ -4,11 +4,17 @@
       <el-step title="1.配置公共属性" icon="el-icon-edit"></el-step>
       <el-step title="第二步：圈出人群" icon="el-icon-edit"></el-step>
   </el-steps> -->
-  <!-- sceneId --- {{ sceneId }}
-  <br/>
-  sceneDetail --- {{ sceneDetail }}
-  <br/>
-  receptionistList --- {{ receptionistList }} -->
+  <!-- <div style="color: red">
+
+    sceneId --- {{ sceneId }}
+    <br/>
+    sceneDetail --- {{ sceneDetail }}
+    <br/>
+    receptionistList --- {{ receptionistList }}
+    <br/>
+    formScene --- {{ formScene }}
+  </div> -->
+
   <el-steps :active="activeStep" class="step-sty">
     <el-step title="添加场景"></el-step>
     <el-step title="选择创建方式"></el-step>
@@ -43,10 +49,19 @@
     v-if="activeStep === 2 && createType === 1"
     v-model="receptionistList"
   ></OneByOneAdd>
-  <CommonSet v-else-if="activeStep === 2 && createType === 2"></CommonSet>
+
+  <CommonSet
+    v-else-if="activeStep === 2 && createType === 2"
+    ref="commonSetRef"
+  ></CommonSet>
 
   <!-- 第四步 -->
-  <AllPerSet v-else-if="activeStep === 3" :sceneId="sceneId" ></AllPerSet>
+  <AllPerSet
+    v-else-if="activeStep === 3"
+    ref="allPerSetRef"
+    :sceneId="sceneId"
+  >
+  </AllPerSet>
 
   <!-- 第五步 -->
   <LaunchToBusiness
@@ -64,7 +79,7 @@
     </template>
     <!-- 第二步 -->
     <template v-else>
-      <el-button type="primary" @click="backStep">上一步</el-button>
+      <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
       <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
     </template>
@@ -76,6 +91,7 @@ import CommonSet from '../multiAdd/CommonSet.vue'
 import AllPerSet from '../multiAdd/AllPerSet.vue'
 import OneByOneAdd from './OneByOneAdd.vue'
 import LaunchToBusiness from '@/views/launch/StrategyPutIn.vue'
+import { confirmMultiAddServicerFn, multiAddNextStepFn } from '../multiAdd/func.js'
 
 export default {
   components: {
@@ -118,39 +134,55 @@ export default {
     backStep () {
       debugger
       switch (this.activeStep) {
-        // 当前为第二步
+        // 当前为第 2 步
         case 1:
           this.getSceneDetail()
-          this.cutActiveStep()
+
           break
-        // 当前为第三步
+        // 当前为第 3 步
         case 2:
           this.getSceneDetail()
-          this.cutActiveStep()
           break
-        // 当前为第四步
+        // 当前为第 4 步
         case 3:
+          // 逐个创建
+          if (this.createType === 1) {
+            this.getListbySceneId()
+          } else {
+          // 批量创建
+            this.batchSetLast()
+          }
+
+          break
+        // 当前为第 5 步
+        case 4:
           this.getListbySceneId()
-          this.cutActiveStep()
           break
         default:
           break
       }
+      this.cutActiveStep()
     },
     // 跳过保存
     skipSave () {
       switch (this.activeStep) {
-        // 当前为第一步
+        // 当前为第 1 步
         case 0:
           this.sceneSkip()
           break
-        // 当前为第二步
+        // 当前为第 2 步
         case 1:
           this.createTypeSkip()
           break
-          // 当前为第三步
+          // 当前为第 3 步
         case 2:
-          this.oneByOneListSkip()
+          // 逐个创建
+          if (this.createType === 1) {
+            this.oneByOneListSkip()
+          } else {
+          // 批量创建
+            this.batchSetSkip()
+          }
           break
         // 当前为第 4 步
         case 3:
@@ -173,7 +205,13 @@ export default {
           break
         // 当前为第 3 步
         case 2:
-          this.oneByOneListNext()
+          // 逐个创建
+          if (this.createType === 1) {
+            this.oneByOneListNext()
+          } else {
+          // 批量创建
+            this.batchSetNext()
+          }
           break
         // 当前为第 4 步
         case 3:
@@ -190,6 +228,17 @@ export default {
     addActiveStep () {
       this.activeStep = this.activeStep + 1
     },
+    // 查询批量公共属性
+    async batchSetLast () {
+      const parmas = {
+        sceneId: this.sceneId
+      }
+      await this.$service.batchSetLast(parmas).then(res => {
+        // this.cutActiveStep()
+        this.receptionistList = res
+      })
+    },
+    // 获取接待员列表
     async getListbySceneId () {
       const parmas = {
         sceneId: this.sceneId
@@ -214,25 +263,75 @@ export default {
 
     // 4： 统一配置  - 跳过保存
     batchListSkip () {
-      const parmas = {
-        sceneId: this.sceneId,
-        receptionists: this.receptionistList
-      }
-      this.$service.batchListSkip(parmas).then(res => {
-        // 更新场景列表
-        this.$emit('updateSceneList')
-        // 关闭弹窗
-        this.$emit('closeDialog')
+      const allPerSetRef = this.$refs.allPerSetRef
+      const p = confirmMultiAddServicerFn({ allPerSetRef })
+      console.log('a--->', p)
+
+      p.then(receptionists => {
+        console.log('receptionists===>', receptionists)
+
+        const parmas = {
+          sceneId: this.sceneId,
+          receptionists
+        }
+        this.$service.batchListSkip(parmas).then(res => {
+          // 更新场景列表
+          this.$emit('updateSceneList')
+          // 关闭弹窗
+          this.$emit('closeDialog')
+        })
       })
     },
     // 4： 统一配置  - 下一步
     batchListNext () {
+      const allPerSetRef = this.$refs.allPerSetRef
+      const p = confirmMultiAddServicerFn({ allPerSetRef })
+      console.log('a--->', p)
+
+      p.then(receptionists => {
+        console.log('receptionists===>', receptionists)
+
+        const parmas = {
+          sceneId: this.sceneId,
+          receptionists
+        }
+        this.$service.batchListNext(parmas).then(res => {
+          this.addActiveStep()
+        })
+      })
+    },
+    // 3： 批量创建 - 跳过保存
+    batchSetSkip () {
+      const commonSetRef = this.$refs.commonSetRef
+      const p = multiAddNextStepFn({ commonSetRef })
+      p.then(res => {
+        const { allEntryArr, allExportArr, ruleFormData } = res
+        this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData }, 'batchSetSkip')
+      })
+    },
+    batchSaveFirst ({ allEntryArr, allExportArr, ruleFormData }, api) {
+      console.log('ruleFormData--->', ruleFormData)
+
       const parmas = {
         sceneId: this.sceneId,
-        receptionists: this.receptionistList
+        // policyId: this.selectedScene.policyId,
+        namePre: ruleFormData.prependName,
+        nameSuf: ruleFormData.appendName,
+        tagIds: ruleFormData.resource,
+        entry: allEntryArr,
+        export: allExportArr
       }
-      this.$service.batchListNext(parmas).then(res => {
+      this.$service[api](parmas).then(res => {
         this.addActiveStep()
+      })
+    },
+    // 3： 批量创建 - 下一步
+    batchSetNext () {
+      const commonSetRef = this.$refs.commonSetRef
+      const p = multiAddNextStepFn({ commonSetRef })
+      p.then(res => {
+        const { allEntryArr, allExportArr, ruleFormData } = res
+        this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData }, 'batchSetNext')
       })
     },
     // 3： 逐个创建名称 - 跳过保存

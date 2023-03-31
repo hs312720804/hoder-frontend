@@ -370,6 +370,14 @@ export function getListbySceneId (params) {
     params
   })
 }
+// 查询批量公共属性
+export function batchSetLast (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batchSetLast',
+    params
+  })
+}
 
 // 3： 逐个创建名称 - 跳过保存
 export function oneByOneListSkip (data) {
@@ -386,6 +394,26 @@ export function oneByOneListNext (data) {
   return this.fetch({
     method: 'post',
     url: '/api/receptionist/oneByOneListNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 批量创建 - 跳过保存
+export function batchSetSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchSetSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 批量创建 - 下一步
+export function batchSetNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchSetNext',
     data,
     isJSON: true
   })

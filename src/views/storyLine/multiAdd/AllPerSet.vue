@@ -1,6 +1,7 @@
 <template>
 <!-- 设置所有接待员的条件 -->
 <div class="single-set-wrap div-class">
+  <!-- allRuleForm --- {{ allRuleForm }} -->
   <!-- 接待员列表 -->
   <div class="single-set-left">
     <div class="search">
@@ -198,7 +199,7 @@ export default {
         behaviorRulesJson: '',
         behaviorTempCrowdId: null,
         link: 'OR',
-        delFlag: 3,
+        delFlag: 1,
         entryIndex: this.entryIndex++
       })
     },
@@ -218,7 +219,7 @@ export default {
         behaviorRulesJson: '',
         behaviorTempCrowdId: null,
         link: 'OR',
-        delFlag: 3,
+        delFlag: 1,
         nextId: '',
         stopType: '',
         exportIndex: this.exportIndex++

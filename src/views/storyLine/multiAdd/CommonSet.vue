@@ -46,14 +46,17 @@
               <createClientDialog
                 ref="createClientDialogRef"
                 :options="options"
-                :defaultData="defaultData">
+                :defaultData="defaultData"
+              >
               </createClientDialog>
             </template>
 
             <template v-else>
               <createClientDialog
                 ref="createClientDialogRef"
-                :options="options">
+                :options="options"
+                :editRow="item.id ? item : undefined"
+              >
               </createClientDialog>
               <i class="el-icon-delete" @click="deleteEntry(index)"></i>
             </template>
@@ -72,6 +75,7 @@
               type="export"
               :servicerListFilterSelect="servicerListFilterSelect"
               :options="options"
+              :editRow="item.id ? item : undefined"
             ></createClientDialog>
           <i class="el-icon-delete" @click="deleteExport(index)"></i>
 
@@ -96,10 +100,17 @@ export default {
   components: {
     createClientDialog
   },
+  props: {
+    // 一键投放的
+    sceneId: {
+      type: [String, Number],
+      default: ''
+    }
+  },
   data () {
     return {
-      entryList: [{ id: 1 }],
-      exportList: [{ id: 1 }],
+      entryList: [],
+      exportList: [],
       servicerListFilterSelect: [],
       options: options,
       // data: generateData(),
@@ -153,7 +164,9 @@ export default {
             }]
           }]
         }
-      }
+      },
+      entryIndex: 0,
+      exportIndex: 0
 
     }
   },
@@ -176,17 +189,38 @@ export default {
     },
     // 新建服务对象筛选
     createClient () {
-      this.entryList.push({ id: 1 })
+      this.entryList.push({
+        id: '',
+        tagIds: '',
+        rulesJson: '',
+        behaviorRulesJson: '',
+        behaviorTempCrowdId: null,
+        link: 'OR',
+        delFlag: 1,
+        entryIndex: this.entryIndex++
+      })
     },
     deleteEntry (index) {
-      this.entryList.splice(index, 1)
+      // this.entryList.splice(index, 1)
+      this.entryList[index].delFlag = 2
     },
     // 新建服务终止条件：
     createExport () {
-      this.exportList.push({ id: 1 })
+      this.exportList.push({
+        id: '',
+        tagIds: '',
+        rulesJson: '',
+        behaviorRulesJson: '',
+        behaviorTempCrowdId: null,
+        link: 'OR',
+        delFlag: 1,
+        nextId: '',
+        stopType: '',
+        exportIndex: this.exportIndex++
+      })
     },
     deleteExport (index) {
-      this.exportList.splice(index, 1)
+      this.exportList[index].delFlag = 2
     },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
@@ -209,7 +243,32 @@ export default {
     }
   },
   created () {
+    // 维度列表
     this.getBatchUptm()
+
+    // 初始化，默认展示一条入口条件 和 一条出口条件
+    this.createClient()
+    this.createExport()
+
+    // 一键投放的
+    if (this.sceneId) {
+      const parmas = {
+        sceneId: this.sceneId
+      }
+      // 获取统一属性详情, 初始化
+      this.$service.batchSetLast(parmas).then(res => {
+        const detail = res
+        this.ruleForm = {
+          type: ['影视模型'],
+          resource: detail.tagIds, // 维度
+          prependName: detail.namePre,
+          appendName: detail.nameSuf
+        }
+
+        this.entryList = detail.entry
+        this.exportList = detail.export
+      })
+    }
   }
 }
 </script>

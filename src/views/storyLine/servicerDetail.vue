@@ -111,8 +111,9 @@
                   <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
                 <div>
                   绩效目标（可选）
-                  <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
-                  <el-radio v-model="radio1" label="2">按分组统计</el-radio>
+                  <!-- <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
+                  <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
+                  <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span>
                 </div>
                 <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" ></i>
                 <div class="detail-kpi">

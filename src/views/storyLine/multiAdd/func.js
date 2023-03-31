@@ -3,13 +3,11 @@ import { validateRule } from '../validateRuleData.js'
 
 // 批量创建接待员 - 确认
 function confirmMultiAddServicerFn ({ allPerSetRef }) {
-  debugger
   // const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
-  debugger
   return new Promise((resolve) => {
-    const ruleFormArr = allPerSetRef.$refs.ruleForm // 此时为一个数组，因为是循环出来的
-    const createClientDialogRef = allPerSetRef.$refs.createClientDialogRef // 入口条件，是个数组
-    const exportClientDialogRef = allPerSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
+    const ruleFormArr = allPerSetRef.$refs.ruleForm || []// 此时为一个数组，因为是循环出来的
+    const createClientDialogRef = allPerSetRef.$refs.createClientDialogRef || []// 入口条件，是个数组
+    const exportClientDialogRef = allPerSetRef.$refs.exportClientDialogRef || []// 出口条件，是个数组
 
     const entryValidPromise = []
     const exportValidPromise = []
