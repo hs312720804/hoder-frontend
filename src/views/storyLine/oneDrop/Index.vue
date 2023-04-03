@@ -430,7 +430,7 @@ export default {
     // 2: 创建方式 - 跳过保存
     createTypeSkip () {
       const parmas = {
-        sceneName: this.formScene.name,
+        ...this.sceneDetail,
         createType: this.createType
       }
       this.$service.createTypeSkip(parmas).then(res => {

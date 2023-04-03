@@ -40,25 +40,28 @@
           </el-input> -->
         </el-form-item>
         <el-form-item label="服务对象选择：" prop="entry">
-          <div class="create-client-border" v-for="(item, index) in entryList" :key="index">
-            <template v-if="index === 0">
+          <div v-for="(item, index) in entryList" :key="index">
+            <template v-if="item.delFlag !== 2">
+              <div class="create-client-border">
+                <template v-if="index === 0">
+                  <createClientDialog
+                    ref="createClientDialogRef"
+                    :options="options"
+                    :defaultData="defaultData"
+                  >
+                  </createClientDialog>
+                </template>
 
-              <createClientDialog
-                ref="createClientDialogRef"
-                :options="options"
-                :defaultData="defaultData"
-              >
-              </createClientDialog>
-            </template>
-
-            <template v-else>
-              <createClientDialog
-                ref="createClientDialogRef"
-                :options="options"
-                :editRow="item.id ? item : undefined"
-              >
-              </createClientDialog>
-              <i class="el-icon-delete" @click="deleteEntry(index)"></i>
+                <template v-else>
+                  <createClientDialog
+                    ref="createClientDialogRef"
+                    :options="options"
+                    :editRow="item.id ? item : undefined"
+                  >
+                  </createClientDialog>
+                  <i class="el-icon-delete" @click="deleteEntry(index)"></i>
+                </template>
+              </div>
             </template>
           </div>
           <div class="box-fotter addRule">
@@ -69,15 +72,19 @@
 
         <el-form-item label="服务终止条件：" prop="export">
 
-          <div class="create-client-border" v-for="(item, index) in exportList" :key="index">
-            <createClientDialog
-              ref="exportClientDialogRef"
-              type="export"
-              :servicerListFilterSelect="servicerListFilterSelect"
-              :options="options"
-              :editRow="item.id ? item : undefined"
-            ></createClientDialog>
-          <i class="el-icon-delete" @click="deleteExport(index)"></i>
+          <div v-for="(item, index) in exportList" :key="index">
+            <template v-if="item.delFlag !== 2">
+              <div class="create-client-border" >
+                <createClientDialog
+                  ref="exportClientDialogRef"
+                  type="export"
+                  :servicerListFilterSelect="servicerListFilterSelect"
+                  :options="options"
+                  :editRow="item.id ? item : undefined"
+                ></createClientDialog>
+                <i class="el-icon-delete" @click="deleteExport(index)"></i>
+              </div>
+            </template>
 
           </div>
 

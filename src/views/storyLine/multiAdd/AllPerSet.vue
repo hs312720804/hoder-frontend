@@ -11,12 +11,16 @@
     </div>
     <!-- 接待员列表 -->
     <div >
-      <div v-for="(item, index) in allRuleForm" :key="item.id" class="single-set-list" @click="selectServicer(item)" :class="{active: activeId === item.id}">
+      <div v-for="(item, index) in allRuleForm" :key="item.id" @click="selectServicer(item)" :class="{active: activeId === item.id}">
         <!-- <i class="icon el-icon-user"></i> -->
-        <span class="item-content">
-          {{ item.receptionist }}
-        </span>
-        <i class="el-icon-delete" @click="deleteServicer(index.id)"></i>
+        <template v-if="item.delFlag !== 2">
+          <div class="single-set-list" >
+            <span class="item-content">
+              {{ item.receptionist }}
+            </span>
+            <i class="el-icon-delete" @click="deleteServicer(index)"></i>
+          </div>
+        </template>
       </div>
     </div>
   </div>
@@ -35,21 +39,25 @@
         <!-- {{ruleForm.entryConditions}} -->
 
         <el-form-item label="服务对象选择：" prop="entry">
-          <div class="create-client-border" v-for="(item, index) in ruleForm.entryConditions" :key="item.entryIndex ? (item.id + item.entryIndex) : item.id">
+          <div v-for="(item, index) in ruleForm.entryConditions" :key="item.entryIndex ? (item.id + item.entryIndex) : item.id">
             <!-- {{item.id + index}} -->
-            <createClientDialog
-              ref="createClientDialogRef"
-              :options="options"
-              :editRow="item.id ? item : undefined"
-              :circulationTagDataListProp="circulationTagDataList"
-              :soureceSignListProp="soureceSignList"
-              :conditionTagsFilteredProp="conditionTagsFiltered"
-              :selectTagTagsListTotalProp="selectTagTagsListTotal"
-              :receptionistId="item.receptionistId"
-              :delFlag="item.delFlag"
-            >
-            </createClientDialog>
-            <i class="el-icon-delete" @click="deleteEntry(ruleForm, index)"></i>
+            <template v-if="item.delFlag !== 2">
+              <div class="create-client-border">
+                <createClientDialog
+                  ref="createClientDialogRef"
+                  :options="options"
+                  :editRow="item.id ? item : undefined"
+                  :circulationTagDataListProp="circulationTagDataList"
+                  :soureceSignListProp="soureceSignList"
+                  :conditionTagsFilteredProp="conditionTagsFiltered"
+                  :selectTagTagsListTotalProp="selectTagTagsListTotal"
+                  :receptionistId="item.receptionistId"
+                  :delFlag="item.delFlag"
+                >
+                </createClientDialog>
+                <i class="el-icon-delete" @click="deleteEntry(ruleForm, index)"></i>
+              </div>
+            </template>
           </div>
           <div class="box-fotter addRule">
             <el-button type="primary" icon="el-icon-plus" @click="createClient(ruleForm)">新建服务对象筛选</el-button>
@@ -58,22 +66,26 @@
         </el-form-item>
 
         <el-form-item label="服务终止条件：" prop="export">
-          <div class="create-client-border" v-for="(item, index) in ruleForm.exportConditions" :key="item.exportIndex ? (item.id + item.exportIndex) : item.id">
-            {{ item.id}}--{{  item.exportIndex }}
-            <createClientDialog
-              ref="exportClientDialogRef"
-              type="export"
-              :servicerListFilterSelect="servicerListFilterSelect"
-              :options="options"
-              :editRow="item.id ? item : undefined"
-              :circulationTagDataListProp="circulationTagDataList"
-              :soureceSignListProp="soureceSignList"
-              :conditionTagsFilteredProp="conditionTagsFiltered"
-              :selectTagTagsListTotalProp="selectTagTagsListTotal"
-              :receptionistId="item.receptionistId"
-              :delFlag="item.delFlag"
-            ></createClientDialog>
-            <i class="el-icon-delete" @click="deleteExport(ruleForm, index)"></i>
+          <div v-for="(item, index) in ruleForm.exportConditions" :key="item.exportIndex ? (item.id + item.exportIndex) : item.id">
+            <!-- {{ item.id}}--{{  item.exportIndex }} -->
+            <template v-if="item.delFlag !== 2">
+              <div class="create-client-border">
+                <createClientDialog
+                  ref="exportClientDialogRef"
+                  type="export"
+                  :servicerListFilterSelect="servicerListFilterSelect"
+                  :options="options"
+                  :editRow="item.id ? item : undefined"
+                  :circulationTagDataListProp="circulationTagDataList"
+                  :soureceSignListProp="soureceSignList"
+                  :conditionTagsFilteredProp="conditionTagsFiltered"
+                  :selectTagTagsListTotalProp="selectTagTagsListTotal"
+                  :receptionistId="item.receptionistId"
+                  :delFlag="item.delFlag"
+                ></createClientDialog>
+                <i class="el-icon-delete" @click="deleteExport(ruleForm, index)"></i>
+              </div>
+            </template>
 
           </div>
 
@@ -108,6 +120,7 @@ export default {
   },
   data () {
     return {
+      // filterAllRuleForm: [],
       // entryList: [{ id: 1 }],
       // exportList: [{ id: 1 }],
       searchServicer: '',
@@ -125,8 +138,7 @@ export default {
         resource: '',
         desc: ''
       },
-      allRuleForm: [
-      ],
+      allRuleForm: [],
       rules: {
         // type: [
         //   { type: 'array', required: true, message: '请至少选择一个标签', trigger: 'change' }
@@ -180,11 +192,12 @@ export default {
         cancelButtonText: '取消',
         type: 'warning'
       }).then(() => {
-        // this.servicerList.splice(index, 1)
-        // this.$message({
-        //   type: 'success',
-        //   message: '删除成功!'
-        // })
+        this.allRuleForm[index].delFlag = 2
+        this.activeId = this.allRuleForm.find(item => item.delFlag !== 2).id
+        this.$message({
+          type: 'success',
+          message: '删除成功!'
+        })
       })
     },
     // 新建服务对象筛选
@@ -230,7 +243,7 @@ export default {
       formItem.exportConditions[index].delFlag = 2
     },
     getServiceList () {
-
+      // this.filterAllRuleForm = this.allRuleForm.filter(item => item.receptionist.indexOf(this.searchServicer) > -1)
     },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {
