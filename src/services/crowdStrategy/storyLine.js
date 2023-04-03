@@ -437,5 +437,23 @@ export function batchListNext (data) {
     isJSON: true
   })
 }
+// 5： 投放 - 跳过保存
+export function putInDraft (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/draft',
+    data,
+    isJSON: true
+  })
+}
+// 5： 投放 - 确认
+export function putInRelease (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/release',
+    data,
+    isJSON: true
+  })
+}
 
 // --------------- 一键投放相关接口  end------------------------

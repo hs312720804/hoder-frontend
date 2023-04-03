@@ -13,6 +13,9 @@
     receptionistList --- {{ receptionistList }}
     <br/>
     formScene --- {{ formScene }}
+    <br/>
+    policyId --- {{ policyId }}
+
   </div> -->
 
   <el-steps :active="activeStep" class="step-sty">
@@ -65,19 +68,27 @@
 
   <!-- 第五步 -->
   <LaunchToBusiness
+    ref="launchToBusinessRef"
     v-else-if="activeStep === 4"
-    :recordId="recordId"
+    :recordId="policyId"
     :tempPolicyAndCrowd="tempPolicyAndCrowd"
+    :fromStoryline="true"
   ></LaunchToBusiness>
 
   <div class="el-dialog__footer">
-    <!-- 第一步 -->
+    <!-- 第 1 步 -->
     <template v-if="activeStep === 0">
       <el-button type="info" @click="cancel">取消</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
       <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
     </template>
-    <!-- 第二步 -->
+    <!-- 第 5 步 -->
+    <template v-else-if="activeStep === 4">
+      <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
+      <el-button type="warning" @click="skipSave">跳过保存</el-button>
+      <el-button type="primary" @click="oneDropNextStep">确认</el-button>
+    </template>
+    <!-- 第 2 步 -->
     <template v-else>
       <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
@@ -104,8 +115,6 @@ export default {
     return {
       receptionistList: [],
       sceneId: '',
-      recordId: 5305,
-      tempPolicyAndCrowd: { policyId: 5305, policyName: 'test detail', createTime: '2023-03-21 15:17:51', creator: 160, status: 1, department: '平台组', launchPolicyId: null, creatorName: '黄珊', departmentName: null, tagsList: null, useStatus: '未投放', conditionTagIds: null, delFlag: 1, updator: null, myCollect: true, launchedBi: null, bypass: null, smart: false, isBehavior: null, past7Active: 0, past7Req: 0, lastActiveTime: null, lastReqTime: null },
       activeStep: 0,
       createType: 1,
       formSceneRules: {
@@ -127,6 +136,19 @@ export default {
     },
     createType (val) {
       this.sceneDetail.createType = val
+    }
+  },
+  computed: {
+    policyId () {
+      return this.sceneDetail.policyId
+    },
+    tempPolicyAndCrowd () {
+      console.log('sceneDetail-->', this.sceneDetail)
+      return {
+        policyId: this.sceneDetail.policyId,
+        policyName: this.sceneDetail.sceneName,
+        smart: true
+      }
     }
   },
   methods: {
@@ -188,6 +210,10 @@ export default {
         case 3:
           this.batchListSkip()
           break
+        // 当前为第 5 步
+        case 4:
+          this.putInDraft()
+          break
         default:
           break
       }
@@ -216,6 +242,10 @@ export default {
         // 当前为第 4 步
         case 3:
           this.batchListNext()
+          break
+        // 当前为第 5 步
+        case 4:
+          this.putInRelease()
           break
         default:
           break
@@ -261,6 +291,44 @@ export default {
       })
     },
 
+    // 5: 投放  - putInDraft
+    putInDraft () {
+      const launchToBusinessRef = this.$refs.launchToBusinessRef
+
+      launchToBusinessRef.$refs.crowdForm.validate((valid) => {
+        if (valid) {
+          const parmas = {
+            id: this.sceneId
+          }
+          this.$service.putInDraft(parmas).then(res => {
+            // 更新场景列表
+            this.$emit('updateSceneList')
+            // 关闭弹窗
+            this.$emit('closeDialog')
+          })
+        }
+      })
+    },
+    // 5: 投放  - 下一步
+    putInRelease () {
+      const launchToBusinessRef = this.$refs.launchToBusinessRef
+
+      launchToBusinessRef.$refs.crowdForm.validate((valid) => {
+        if (valid) {
+          const parmas = {
+            sceneId: this.sceneId,
+            biIds: launchToBusinessRef.crowdForm.biIdsPull,
+            policyIds: [this.policyId]
+          }
+          this.$service.putInRelease(parmas).then(res => {
+            // 更新场景列表
+            this.$emit('updateSceneList')
+            // 关闭弹窗
+            this.$emit('closeDialog')
+          })
+        }
+      })
+    },
     // 4： 统一配置  - 跳过保存
     batchListSkip () {
       const allPerSetRef = this.$refs.allPerSetRef
@@ -314,7 +382,7 @@ export default {
 
       const parmas = {
         sceneId: this.sceneId,
-        // policyId: this.selectedScene.policyId,
+        // policyId: this.policyId,
         namePre: ruleFormData.prependName,
         nameSuf: ruleFormData.appendName,
         tagIds: ruleFormData.resource,

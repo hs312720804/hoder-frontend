@@ -1,5 +1,6 @@
 <template>
     <div class="launchToBusiness">
+      <!-- {{ crowdForm }} -->
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="110px">
             <el-form-item v-if="!tempPolicyAndCrowd.smart" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull" :disabled="pullSuccessPushFail">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
@@ -228,7 +229,8 @@
                 </el-form-item>
                 <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
             </div>
-            <el-form-item>
+            <!-- 一键投放故事线场景，不需要展示下面的 -->
+            <el-form-item v-if="!fromStoryline">
                 <el-button type="info" @click="handleCancel">取消</el-button>
                 <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
             </el-form-item>
@@ -239,7 +241,7 @@
 <script>
 export default {
   name: 'StrategyPutIn',
-  props: ['recordId', 'tempPolicyAndCrowd'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'fromStoryline'],
   data () {
     return {
       crowdForm: {
