@@ -118,3 +118,28 @@ export function sensorAnalysis (params) {
     params
   })
 }
+// 人群命中监测接口
+export function queryCrowdHitAlertList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/crowd/queryCrowdHitAlertList',
+    params
+  })
+}
+// 增加或修改监测数据
+export function addOrUpdateCrowdHitAlert (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/crowd/addOrUpdateCrowdHitAlert',
+    data,
+    isJSON: true
+  })
+}
+// 删除监测数据
+export function deleteCrowdHitAlert (params) {
+  return this.fetch({
+    method: 'delete',
+    url: '/api/crowd/deleteCrowdHitAlert',
+    params
+  })
+}

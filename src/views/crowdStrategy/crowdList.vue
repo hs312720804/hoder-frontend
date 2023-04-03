@@ -1554,11 +1554,14 @@
     </el-dialog>
 
     <!--命中监控-->
-    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="630px">
-      <el-form :model="hitForm" :rules="hitRules" ref="policyCopyForm" label-position="right" label-width="180px">
-        <el-form-item label="监控时间：" prop="time">
+    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="920px">
+      <div class="title">
+        添加监控：
+      </div>
+      <el-form :model="hitForm" :rules="hitRules" ref="hitForm" :inline="true">
+        <el-form-item label="监控时间：" prop="alertTime">
           <el-date-picker
-            v-model="hitForm.time"
+            v-model="hitForm.alertTime"
             type="datetime"
             placeholder="选择监控时间"
             value-format="yyyy-MM-dd HH:mm:ss"
@@ -1566,9 +1569,9 @@
           </el-date-picker>
         </el-form-item>
 
-        <el-form-item label="如果命中设备量(去重)：" prop="value">
+        <el-form-item label="如果命中设备量(去重)：" prop="compareType">
 
-          <el-select v-model="hitForm.operator" style="width: 105px">
+          <el-select v-model="hitForm.compareType" style="width: 105px">
             <el-option value="="></el-option>
             <el-option value=">="></el-option>
             <el-option value="<="></el-option>
@@ -1576,16 +1579,29 @@
             <el-option value="<"></el-option>
           </el-select>
 
-          <el-input v-model="hitForm.value" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+          <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
 
           则告警到飞书
 
         </el-form-item>
-
+        <el-form-item>
+          <el-button type="primary" @click="handlOpenHit">确定</el-button>
+        </el-form-item>
       </el-form>
+
+      <div class="title" style="margin-top: 45px;">
+        已添加监控：
+      </div>
+
+      <c-table
+        :props="queryCrowdHitAlertListTable.props"
+        :header="queryCrowdHitAlertListTable.header"
+        :data="queryCrowdHitAlertListTable.data"
+        :default-sort = "{prop: 'date', order: 'descending'}"
+      ></c-table>
+
       <span slot="footer" class="dialog-footer">
         <el-button @click="showHitDialog=false">取 消</el-button>
-        <el-button type="primary" @click="handlOpenHit">确定</el-button>
       </span>
     </el-dialog>
 
@@ -1614,15 +1630,56 @@ export default {
   },
   data () {
     return {
+      queryCrowdHitAlertListTable: {
+        props: {},
+        header: [
+          {
+            label: 'ID',
+            prop: 'id'
+          },
+          {
+            label: '监控时间',
+            prop: 'alertTime',
+            sortable: true
+          },
+          {
+            label: '期望设备量',
+            prop: 'hitSize',
+            render: (h, params) => {
+              return params.row.compareType + '  ' + params.row.hitSize
+            }
+          },
+          {
+            label: '状态',
+            render: (h, params) => {
+              return h('div', {}, [
+                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+              ])
+            }
+          },
+          {
+            label: '创建人',
+            prop: 'creator'
+          },
+          {
+            label: '操作',
+            render: this.$c_utils.component.createOperationRender(this, {
+              handleDeleteHitAlert: '删除'
+            })
+          }
+
+        ],
+        data: []
+      },
       showHitDialog: false,
       hitForm: {
-        time: '',
-        operator: '',
-        value: ''
+        alertTime: '',
+        hitSize: 0,
+        compareType: '='
       },
       hitRules: {
-        // time: [{ required: true, message: '请选择监控时间', trigger: 'blur' }]
-        time: [{ type: 'string', required: true, message: '请选择监控时间', trigger: 'change' }]
+        hitSize: [{ required: true, message: '请输入命中设备量', trigger: 'blur' }],
+        alertTime: [{ type: 'string', required: true, message: '请选择监控时间', trigger: 'change' }]
       },
       analysisTableData: [],
       showFlowLinkAnalysisDialog: false,
@@ -1978,17 +2035,44 @@ export default {
     // }
   },
   methods: {
+    handleDeleteHitAlert ({ row }) {
+      console.log('row--->', row)
+      const params = { id: row.id }
+      this.$service.deleteCrowdHitAlert(params, '删除成功').then(() => {
+        this.queryCrowdHitAlertList()
+      })
+    },
+    // 获取当前接待员命中监控
+    queryCrowdHitAlertList () {
+      const params = {
+        crowdId: this.currentTag.crowdId
+      }
+      this.$service.queryCrowdHitAlertList(params).then(data => {
+        this.queryCrowdHitAlertListTable.data = data || []
+      })
+    },
     hitMonitoring (row) {
       console.log('row-->', row)
+      this.currentTag = row // 当前所选人群
+      // 获取监控列表
+      this.queryCrowdHitAlertList()
       this.showHitDialog = true
     },
-    handlOpenHit () {
-      this.$refs.policyCopyForm.validate(valid => {
-        if (valid) {
-          console.log('hitForm--->', this.hitForm)
-          // this.showHitDialog = false
+    async handlOpenHit () {
+      const valid = await this.$refs.hitForm.validate()
+      if (valid) {
+        console.log('hitForm--->', this.hitForm)
+        const params = {
+          ...this.hitForm,
+          crowdId: this.currentTag.crowdId,
+          // alertTime: '2023-03-12 20:00:00',
+          hitSize: Number(this.hitForm.hitSize)
+          // compareType: '>'
         }
-      })
+        this.$service.addOrUpdateCrowdHitAlert(params, '添加成功').then(res => {
+          this.queryCrowdHitAlertList()
+        })
+      }
     },
     pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
       let _minTime = null
@@ -2033,103 +2117,103 @@ export default {
         dynamicRuleId: row.id // 分组 ID
         // dynamicRuleId: 77, // 分组 ID
       }
-      const data = [{
-        arup: 59.48,
-        payUv: 964,
-        path: 11679,
-        price: 57334.00,
-        payRate: 0.01,
-        dynamicRuleName: '分组1',
-        child: [{
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          nowCrowdName: '方案1',
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }, {
-          nowCrowdName: '方案2',
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }, {
-          nowCrowdName: '方案2',
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }]
+      // const data = [{
+      //   arup: 59.48,
+      //   payUv: 964,
+      //   path: 11679,
+      //   price: 57334.00,
+      //   payRate: 0.01,
+      //   dynamicRuleName: '分组1',
+      //   child: [{
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     nowCrowdName: '方案1',
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }, {
+      //     nowCrowdName: '方案2',
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }, {
+      //     nowCrowdName: '方案2',
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }]
 
-      }]
+      // }]
 
       this.linkProps = {
         // name: 'dynamicRuleName',
@@ -4442,4 +4526,11 @@ fieldset>div
   font-weight 800
 
 @import '~@/assets/tag.styl'
+.title {
+  color: rgba(0,0,0,0.9);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom 15px
+}
 </style>
