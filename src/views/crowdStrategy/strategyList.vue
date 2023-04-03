@@ -146,14 +146,14 @@
 
       <el-table-column prop="past7Active" label="7日是否有命中" width="110">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
+          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 &nbsp;&nbsp;{{ scope.row.past7ActiveSize }}</span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
 
       <el-table-column prop="past7Active" label="7日是否有请求" width="110">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
+          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 &nbsp;&nbsp;{{ scope.row.past7ReqSize }}</span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
