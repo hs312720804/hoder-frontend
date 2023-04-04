@@ -314,7 +314,7 @@
           <el-button v-if="multiAddStep === 0" type="primary" @click="multiAddNextStep">下一步</el-button>
 
           <template v-else>
-            <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button>
+            <!-- <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button> -->
             <el-button  type="primary" @click="confirmMultiAddServicer">确 定</el-button>
           </template>
         </span>
