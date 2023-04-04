@@ -184,7 +184,7 @@
                             - 是：禁用【重命名】、【复制】、【复用】
                           canUse - 有权限
                             - 没有权限： 禁用 【重命名】、【下架】、【删除】
-                          selectedServicer.type === 1  - 兜底接待员
+                          isDoudi  - 兜底接待员
                             - 禁用【复制】、【复用】
                         -->
                         <template v-else>
@@ -212,10 +212,10 @@
                           <el-dropdown-item class="clearfix" :command="['offSet', item]" :disabled="!canUse">
                             {{ item.putway === 1 ? '下架' : '上架' }}
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId || selectedServicer.type === 1">
+                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId || isDoudi">
                             复制
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId || selectedServicer.type === 1">
+                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId || isDoudi">
                             复用
                           </el-dropdown-item>
                           <el-dropdown-item class="clearfix" :command="['deleteService', item]" :disabled="!canUse">
@@ -291,19 +291,19 @@
         </div>
 
         <!-- 单个创建 -->
-        <el-form v-if="createType === 0" :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent>
-          <el-form-item label="接待员名：" label-width="100px" prop="receptionist">
+        <el-form v-if="createType === 0" :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent label-width="100px" >
+          <el-form-item label="接待员名：" prop="receptionist">
             <el-input v-model="formServicer.receptionist" autocomplete="off" clearable></el-input>
           </el-form-item>
-          <el-form-item label="" label-width="100px" v-if="!currentSceneHasDoudi">
+          <el-form-item label=""  v-if="!currentSceneHasDoudi">
             <!-- <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input> -->
             <el-checkbox v-model="formServicer.type">设为兜底接待员</el-checkbox>
           </el-form-item>
-          <el-form-item label="" label-width="100px" v-else>
+          <el-form-item label="" v-else>
             <span class="tip-text">仅支持创建一个兜底, 当前已有兜底接待员</span>
           </el-form-item>
 
-          <el-form-item v-if="formServicer.type" label="兜底方式：" label-width="100px">
+          <el-form-item v-if="formServicer.type" label="兜底方式：" >
             <el-radio v-model="formServicer.planc" :label="1">直接兜底</el-radio>
             <el-radio v-model="formServicer.planc" :label="2">随机再兜底</el-radio>
           </el-form-item>
@@ -558,6 +558,9 @@ export default {
   },
 
   computed: {
+    isDoudi () {
+      return this.selectedServicer.type === 1
+    },
     isCopiedServicer () {
       return !!this.selectedServicer.referenceId
     },

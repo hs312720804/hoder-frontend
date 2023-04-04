@@ -130,6 +130,7 @@
                         {{ indicatorsTypelabel }}
                       </span>
                       <span style="flex: 1; text-align: center;">
+                        <!-- {{ targetKeyId }} -->
                         <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
                         <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
                       </span>
@@ -199,19 +200,19 @@
                 <div class="d-info-box">
                   <div class="box-title">
                     接待员类型
-                    <span class="tip-text">仅支持创建一个兜底</span>
+                    <span v-if="isDoudi" class="tip-text">仅支持创建一个兜底</span>
                   </div>
                   <div class="box-line">
                     <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
                     <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
                     <span class="border-style">
-                      <!-- selectedServicer.type === 1 代表为兜底接待员  -->
-                      {{ selectedServicer.type === 1 ? '兜底接待员' : '普通接待员'}}
+                      <!-- isDoudi 代表为兜底接待员  -->
+                      {{ isDoudi ? '兜底接待员' : '普通接待员'}}
                     </span>
 
                   </div>
                 </div>
-                <div class="d-info-box" v-if="selectedServicer.type === 1">
+                <div class="d-info-box" v-if="isDoudi">
                   <div class="box-title">兜底方式</div>
                   <div class="box-line">
                     <el-radio-group v-model="radio2" @input="handleTypeChange">
@@ -900,6 +901,9 @@ export default {
     }
   },
   computed: {
+    isDoudi () {
+      return this.selectedServicer.type === 1
+    },
     isCopiedServicer () {
       return !!this.selectedServicer.referenceId
     },
