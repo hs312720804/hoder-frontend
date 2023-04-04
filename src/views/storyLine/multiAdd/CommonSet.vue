@@ -276,7 +276,7 @@ export default {
           appendName: detail.nameSuf
         }
 
-        this.entryList = detail.extry
+        this.entryList = detail.entry
         this.exportList = detail.export
 
         console.log('this.entryList===>', this.entryList)
