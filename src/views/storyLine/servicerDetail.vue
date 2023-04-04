@@ -130,8 +130,8 @@
                         {{ indicatorsTypelabel }}
                       </span>
                       <span style="flex: 1; text-align: center;">
-                        <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) || '-' }}</span>
-                        <span class="kpi-value" v-else>{{ overview[targetKeyId] || '-' }}</span>
+                        <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
+                        <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
                       </span>
                     </div>
                     <div>
