@@ -5,15 +5,17 @@
   <!-- 接待员列表 -->
   <div class="single-set-left">
     <div class="search">
-      <el-input placeholder="接待员/创建人" v-model="searchServicer" class="input-with-select">
+      <el-input placeholder="接待员/创建人" v-model="searchServicer" clearable class="input-with-select">
         <el-button slot="append" icon="el-icon-search" @click="getServiceList"></el-button>
       </el-input>
     </div>
     <!-- 接待员列表 -->
+    <!-- allRuleForm--{{ allRuleForm }} -->
     <div >
       <div v-for="(item, index) in allRuleForm" :key="item.id" @click="selectServicer(item)" :class="{active: activeId === item.id}">
         <!-- <i class="icon el-icon-user"></i> -->
-        <template v-if="item.delFlag !== 2">
+
+        <template v-if="item.delFlag !== 2 && !item.hidden">
           <div class="single-set-list" >
             <span class="item-content">
               {{ item.receptionist }}
@@ -193,7 +195,9 @@ export default {
         type: 'warning'
       }).then(() => {
         this.allRuleForm[index].delFlag = 2
-        this.activeId = this.allRuleForm.find(item => item.delFlag !== 2).id
+        const oneItem = this.allRuleForm.find(item => item.delFlag !== 2 && !item.hidden)
+        this.activeId = oneItem.id || 0
+
         this.$message({
           type: 'success',
           message: '删除成功!'
@@ -244,6 +248,18 @@ export default {
     },
     getServiceList () {
       // this.filterAllRuleForm = this.allRuleForm.filter(item => item.receptionist.indexOf(this.searchServicer) > -1)
+      this.allRuleForm = this.allRuleForm.map(item => {
+        return {
+          ...item,
+          hidden: item.receptionist.indexOf(this.searchServicer) === -1
+        }
+      })
+      const oneItem = this.allRuleForm.find(item => item.delFlag !== 2 && !item.hidden)
+      this.activeId = oneItem.id || 0
+      // this.$message({
+      //   type: 'success',
+      //   message: '删除成功!'
+      // })
     },
     submitForm (formName) {
       this.$refs[formName].validate((valid) => {

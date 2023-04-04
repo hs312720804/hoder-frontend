@@ -1,6 +1,7 @@
 <template>
   <!-- 批量设置接待员 -->
   <div>
+    <!-- ruleForm:{{ ruleForm }} -->
     <el-form :model="ruleForm" :rules="rules" ref="ruleForm" label-width="140px" class="demo-ruleForm">
       <div class="div-class">
 
@@ -39,6 +40,7 @@
             <template slot="prepend">Http://</template>
           </el-input> -->
         </el-form-item>
+        <!-- entryList: {{ entryList }} -->
         <el-form-item label="服务对象选择：" prop="entry">
           <div v-for="(item, index) in entryList" :key="index">
             <template v-if="item.delFlag !== 2">
@@ -48,6 +50,7 @@
                     ref="createClientDialogRef"
                     :options="options"
                     :defaultData="defaultData"
+                    :editRow="item.id ? item : undefined"
                   >
                   </createClientDialog>
                 </template>
@@ -265,15 +268,19 @@ export default {
       // 获取统一属性详情, 初始化
       this.$service.batchSetLast(parmas).then(res => {
         const detail = res
+        const resource = detail.tagId.split(',').map(item => Number(item))
         this.ruleForm = {
           type: ['影视模型'],
-          resource: detail.tagIds, // 维度
+          resource, // 维度
           prependName: detail.namePre,
           appendName: detail.nameSuf
         }
 
-        this.entryList = detail.entry
+        this.entryList = detail.extry
         this.exportList = detail.export
+
+        console.log('this.entryList===>', this.entryList)
+        console.log('this.exportList===>', this.exportList)
       })
     }
   }

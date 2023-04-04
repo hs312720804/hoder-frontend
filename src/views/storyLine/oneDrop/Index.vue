@@ -56,6 +56,7 @@
   <CommonSet
     v-else-if="activeStep === 2 && createType === 2"
     ref="commonSetRef"
+    :sceneId="sceneId"
   ></CommonSet>
 
   <!-- 第四步 -->
