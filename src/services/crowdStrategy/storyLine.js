@@ -457,3 +457,22 @@ export function putInRelease (data) {
 }
 
 // --------------- 一键投放相关接口  end------------------------
+
+// 判断场景是否有兜底接待员
+export function getReceptionistType (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getType',
+    params
+  })
+}
+
+// 列表里面编辑兜底方式
+export function setReceptionistType (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/setType',
+    data,
+    isJSON: true
+  })
+}

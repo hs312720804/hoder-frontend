@@ -197,17 +197,28 @@
               </div>
               <div class="d-info" >
                 <div class="d-info-box">
-                  <div class="box-title">接待员类型</div>
+                  <div class="box-title">
+                    接待员类型
+                    <span class="tip-text">仅支持创建一个兜底</span>
+                  </div>
                   <div class="box-line">
-                    <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
-                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio>
+                    <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
+                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
+                    <span class="border-style">
+                      <!-- selectedServicer.type === 1 代表为兜底接待员  -->
+                      {{ selectedServicer.type === 1 ? '兜底接待员' : '普通接待员'}}
+                    </span>
+
                   </div>
                 </div>
-                <div class="d-info-box" v-if="radio1 === '2'">
+                <div class="d-info-box" v-if="selectedServicer.type === 1">
                   <div class="box-title">兜底方式</div>
                   <div class="box-line">
-                    <el-radio v-model="radio2" label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio>
-                    <el-radio v-model="radio2" label="2">无合适接待员则先随机完再兜底</el-radio>
+                    <el-radio-group v-model="radio2" @input="handleTypeChange">
+                      <div><el-radio :label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
+                      <div><el-radio :label="2">无合适接待员则先随机完再兜底</el-radio></div>
+                    </el-radio-group>
+
                     <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
                     <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
                   </div>
@@ -317,8 +328,8 @@
           </div>
         </div>
 
-        <!-- 当选择兜底接待员时，不展示服务对象选择和推荐绑定内容 -->
-        <div v-if="radio1 === '1'" class="detail-box">
+        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
+        <div v-if="selectedServicer.type !== 1" class="detail-box">
           <div class="title2">服务对象选择（可选）</div>
           <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div v-if="entryList.length > 0" class="position-left">
@@ -457,9 +468,9 @@
           </div>
         </div>
 
-        <!-- 当选择兜底接待员时，不展示服务对象选择和推荐绑定内容 -->
+        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
         <!-- 推荐绑定内容 -->
-        <div v-if="radio1 === '1' &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
+        <div v-if="selectedServicer.type !== 1 &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
           <div class="title2">推荐绑定内容</div>
           <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
 
@@ -507,7 +518,8 @@
           </div>
         </div>
 
-        <div class="detail-box">
+        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
+        <div v-if="selectedServicer.type !== 1" class="detail-box">
           <div class="title2">服务终止条件（可选）</div>
           <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
           <div v-if="exportList.length > 0" class="position-left">
@@ -850,7 +862,7 @@ export default {
         this.skillValue = val.skillId // 技能
         this.target = val.myTask || '我的任务是...'// 任务
         this.targetValue = val.indicators || ''// 绩效指标
-
+        this.radio2 = this.selectedServicer.planc
         // 入口多选 置空
         this.clearEntry()
         // 出口多选 置空
@@ -910,12 +922,13 @@ export default {
       // isCopiedServicer - 是否为复用的接待员 true-是  false-否
       return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
     }
+
   },
   data () {
     return {
       options: options,
-      radio1: '1',
-      radio2: '1',
+      // radio1: '1',
+      radio2: 0,
       isShowDetailName: true,
       reuseExportDialogVisible: false,
       reuseForm: {
@@ -1060,6 +1073,15 @@ export default {
   },
 
   methods: {
+    handleTypeChange () {
+      const params = {
+        id: this.selectedServicer.id, // 接待员ID
+        type: 1, // 0 普通接待员 1 兜底接待员
+        planc: this.radio2 // 1 直接兜底 2,随机兜底
+      }
+      // 切换接待员类型
+      this.$service.setReceptionistType(params)
+    },
     getCanReuse () {
       this.canUse = false
       if (this.selectedServicer.id) {

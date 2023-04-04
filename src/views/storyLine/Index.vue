@@ -184,14 +184,14 @@
                             - 是：禁用【重命名】、【复制】、【复用】
                           canUse - 有权限
                             - 没有权限： 禁用 【重命名】、【下架】、【删除】
+                          selectedServicer.type === 1  - 兜底接待员
+                            - 禁用【复制】、【复用】
                         -->
                         <template v-else>
                           <el-dropdown-item class="clearfix" :command="['rename', item]" :disabled="!!item.referenceId || !canUse" >
-
                             <el-popover placement="top" trigger="click" ref="pop">
                               <div slot="reference">重命名</div>
                               <div style="display: flex">
-
                                   <el-input
                                     type="text"
                                     placeholder="请输入内容"
@@ -212,10 +212,10 @@
                           <el-dropdown-item class="clearfix" :command="['offSet', item]" :disabled="!canUse">
                             {{ item.putway === 1 ? '下架' : '上架' }}
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId">
+                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId || selectedServicer.type === 1">
                             复制
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId">
+                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId || selectedServicer.type === 1">
                             复用
                           </el-dropdown-item>
                           <el-dropdown-item class="clearfix" :command="['deleteService', item]" :disabled="!canUse">
@@ -292,8 +292,20 @@
 
         <!-- 单个创建 -->
         <el-form v-if="createType === 0" :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent>
-          <el-form-item label="接待员名：" label-width="100px" prop="name">
-            <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input>
+          <el-form-item label="接待员名：" label-width="100px" prop="receptionist">
+            <el-input v-model="formServicer.receptionist" autocomplete="off" clearable></el-input>
+          </el-form-item>
+          <el-form-item label="" label-width="100px" v-if="!currentSceneHasDoudi">
+            <!-- <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input> -->
+            <el-checkbox v-model="formServicer.type">设为兜底接待员</el-checkbox>
+          </el-form-item>
+          <el-form-item label="" label-width="100px" v-else>
+            <span class="tip-text">仅支持创建一个兜底, 当前已有兜底接待员</span>
+          </el-form-item>
+
+          <el-form-item v-if="formServicer.type" label="兜底方式：" label-width="100px">
+            <el-radio v-model="formServicer.planc" :label="1">直接兜底</el-radio>
+            <el-radio v-model="formServicer.planc" :label="2">随机再兜底</el-radio>
           </el-form-item>
         </el-form>
 
@@ -354,7 +366,7 @@
         ></LaunchToBusiness>
       </el-dialog>
 
-      <!-- 复制/复用 接待员 -->
+      <!-- 复制 / 复用 接待员 -->
       <el-dialog :visible.sync="copyDialogVisible" :title="`${copyType === 'copyUse' ? '复用接待员到场景' : '将接待员复制到以下场景'}`" width="550px">
         <el-form :model="copyForm" ref="copyFormRef" :rules="copyFormRule">
           <el-form-item label="选择场景：" prop="sceneId">
@@ -424,6 +436,7 @@ export default {
   },
   data () {
     return {
+      currentSceneHasDoudi: false,
       batchId: '',
       sceneType: 1,
       multiAddStep: 0,
@@ -492,7 +505,7 @@ export default {
         currentId: null
       },
       formServicerRules: {
-        name: [
+        receptionist: [
           { required: true, message: '不能为空', trigger: 'change' }
         ]
       },
@@ -525,7 +538,9 @@ export default {
       searchServicer: '',
       renameVisible: false,
       formServicer: {
-        name: ''
+        receptionist: '',
+        type: false,
+        planc: 1
       },
       dialogVisible: false,
       dialogVisible2: false,
@@ -1162,9 +1177,23 @@ export default {
       this.dialogVisible = true
     },
     addServicer () {
-      this.formServicer.name = ''
       this.multiAddStep = 0 // 批量创建的步骤重置为 第一步
       this.dialogVisible2 = true
+
+      // 判断场景是否有兜底接待员
+      this.getType()
+      this.$nextTick(() => {
+        this.formServicer.type = false
+        this.$refs.formServicerRef.resetFields()
+      })
+    },
+    getType () {
+      const params = {
+        sceneId: this.selectedScene.id
+      }
+      this.$service.getReceptionistType(params).then(res => {
+        this.currentSceneHasDoudi = res || false
+      })
     },
     confirmAddScene () {
       // console.log('this.formScene.length--------', this.sceneList.length)
@@ -1191,8 +1220,10 @@ export default {
           const parmas = {
             sceneId: this.selectedScene.id,
             policyId: this.selectedScene.policyId,
-            receptionist: this.formServicer.name
-            // id: this.sceneList.length + 1
+            // receptionist: this.formServicer.name
+            // id: this.sceneList.length + 1,
+            ...this.formServicer,
+            type: this.formServicer.type ? 1 : 0
           }
 
           this.$service.addReceptionist(parmas).then(res => {
