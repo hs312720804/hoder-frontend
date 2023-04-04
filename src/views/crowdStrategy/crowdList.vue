@@ -1554,7 +1554,7 @@
     </el-dialog>
 
     <!--命中监控-->
-    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="920px">
+    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="930px">
       <div class="title">
         添加监控：
       </div>
@@ -1578,10 +1578,10 @@
             <el-option value=">"></el-option>
             <el-option value="<"></el-option>
           </el-select>
-
-          <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
-
-          则告警到飞书
+          <el-form-item label="" prop="hitSize">
+            <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+            则告警到飞书
+          </el-form-item>
 
         </el-form-item>
         <el-form-item>
@@ -1651,10 +1651,13 @@ export default {
           },
           {
             label: '状态',
+            prop: 'statusName',
             render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
+              if (params.row.statusName === '监控中') {
+                return h('span', { class: 'green' }, params.row.statusName)
+              } else {
+                return h('span', params.row.statusName)
+              }
             }
           },
           {
@@ -2054,9 +2057,14 @@ export default {
     hitMonitoring (row) {
       console.log('row-->', row)
       this.currentTag = row // 当前所选人群
+
       // 获取监控列表
       this.queryCrowdHitAlertList()
       this.showHitDialog = true
+      // 清空表单
+      this.$nextTick(() => {
+        this.$refs.hitForm.resetFields()
+      })
     },
     async handlOpenHit () {
       const valid = await this.$refs.hitForm.validate()
@@ -2069,7 +2077,7 @@ export default {
           hitSize: Number(this.hitForm.hitSize)
           // compareType: '>'
         }
-        this.$service.addOrUpdateCrowdHitAlert(params, '添加成功').then(res => {
+        this.$service.addCrowdHitAlert(params, '添加成功').then(res => {
           this.queryCrowdHitAlertList()
         })
       }
@@ -4532,5 +4540,8 @@ fieldset>div
   font-weight: 600;
   text-align: left;
   margin-bottom 15px
+}
+::v-deep .green {
+  color: #67C23A
 }
 </style>

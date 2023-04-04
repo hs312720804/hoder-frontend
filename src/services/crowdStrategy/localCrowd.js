@@ -127,10 +127,10 @@ export function queryCrowdHitAlertList (params) {
   })
 }
 // 增加或修改监测数据
-export function addOrUpdateCrowdHitAlert (data) {
+export function addCrowdHitAlert (data) {
   return this.fetch({
     method: 'post',
-    url: '/api/crowd/addOrUpdateCrowdHitAlert',
+    url: '/api/crowd/addCrowdHitAlert',
     data,
     isJSON: true
   })
