@@ -179,7 +179,7 @@ export default {
           break
         // 当前为第 5 步
         case 4:
-          this.getListbySceneId()
+          // this.getListbySceneId()
           break
         default:
           break
@@ -271,13 +271,15 @@ export default {
     },
     // 获取接待员列表
     async getListbySceneId () {
-      const parmas = {
-        sceneId: this.sceneId
+      if (this.sceneId) {
+        const parmas = {
+          sceneId: this.sceneId
+        }
+        await this.$service.getListbySceneId(parmas).then(res => {
+          // this.cutActiveStep()
+          this.receptionistList = res || []
+        })
       }
-      await this.$service.getListbySceneId(parmas).then(res => {
-        // this.cutActiveStep()
-        this.receptionistList = res
-      })
     },
     async getSceneDetail () {
       const parmas = {
@@ -449,6 +451,7 @@ export default {
         // createType: this.createType
       }
       this.$service.createTypeNext(parmas).then(res => {
+        this.getListbySceneId()
         this.addActiveStep()
       })
     },
@@ -474,6 +477,7 @@ export default {
       this.$refs.formSceneRef.validate(valid => {
         if (valid) {
           const parmas = {
+            ...this.sceneDetail,
             sceneName: this.formScene.name
           }
 
