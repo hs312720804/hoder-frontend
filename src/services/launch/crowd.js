@@ -419,3 +419,11 @@ export function getPushPackageList (params) {
     params
   })
 }
+// 接待员投后分析报告
+export function getContentDynamicCrowdReport (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getContentDynamicCrowdReport',
+    params
+  })
+}

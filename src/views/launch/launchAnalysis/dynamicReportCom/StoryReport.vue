@@ -28,7 +28,7 @@
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
-        <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
+        <el-button type="info" @click="handleBackTo" style="margin-right: 10px;">返回故事运营</el-button>
         <a :href="downloadUrl" download ref="download_Url"></a>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
@@ -36,18 +36,18 @@
       <div id='a1' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            实验分组概览 （reportPlans）
+            实验分组概览 （reportTotal）
             <!-- <span>共 0 个</span> -->
           </div>
         </div>
         <c-table
-          :props="allTableData.reportPlans.props"
-          :header="allTableData.reportPlans.header"
-          :data="allTableData.reportPlans.data"
+          :props="allTableData.reportTotal.props"
+          :header="allTableData.reportTotal.header"
+          :data="allTableData.reportTotal.data"
         ></c-table>
       </div>
 
-      <div id='a2' class="table-wrap">
+      <!-- <div id='a2' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
             实验效果汇总（reportTotal）
@@ -60,7 +60,7 @@
           :header="allTableData.reportTotal.header"
           :data="allTableData.reportTotal.data"
         ></c-table>
-      </div>
+      </div> -->
 
       <div id='a4' class="table-wrap">
         <div class="title-layout">
@@ -144,15 +144,13 @@ export default {
   },
   created () {
     console.log('val ---> created', this.$route.query.crowdId)
-
-    // this.initData()
   },
   watch: {
     $route: {
       handler () {
-        this.crowdId = this.$route.query.crowdId || ''
+        this.crowdId = this.$route.query.id || ''
         // this.crowdId = 12461
-        this.crowdName = this.$route.query.crowdName || ''
+        this.crowdName = this.$route.query.sceneName || ''
         if (this.crowdId !== '') {
           this.initData()
           this.$nextTick(() => {
@@ -177,14 +175,15 @@ export default {
     })
   },
   methods: {
-    handleBackToCrowdList () {
+    handleBackTo () {
       // 根据GlobalStrategySource判断是从哪里跳来的
-      const source = this.$appState.$get('GlobalStrategySource')
-      if (source) {
-        this.$router.push({ name: 'myPolicy' })
-      } else {
-        this.$router.push({ name: 'strategyList' })
-      }
+      // const source = this.$appState.$get('GlobalStrategySource')
+      // console.log('source--->', source)
+      // if (source) {
+      //   this.$router.push({ name: 'myPolicy' })
+      // } else {
+      // }
+      this.$router.push({ name: 'storyLine' })
     },
     //  导出估算画像数据
     handleDownload () {
@@ -241,7 +240,7 @@ export default {
       const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
     },
     initData () {
-      this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {
+      this.$service.getContentDynamicCrowdReport({ crowdId: this.crowdId }).then(res => {
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -262,11 +261,11 @@ export default {
         })
       })
 
-      this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
-        // this.getAllData = res
+      // this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
+      //   // this.getAllData = res
 
-        this.setTableData(res)
-      })
+      //   this.setTableData(res)
+      // })
       //
 
       // // 表头配置项
@@ -460,7 +459,7 @@ export default {
     },
     setTableData (res) {
       // // 实验分组概览
-      // this.table1.data = d.reportPlans.data
+      // this.table1.data = d.reportTotal.data
       // // 实验效果汇总
       // this.table2.data = d.reportTotal.data
 
@@ -645,7 +644,7 @@ export default {
         label: '智能'
       }],
       allTableData: {
-        reportPlans: {
+        reportTotal: {
           header: [{
             label: '流转ID',
             prop: 'id'
@@ -679,153 +678,153 @@ export default {
           }],
           data: []
         },
-        reportTotal: {
-          header: [{
-            label: '流转ID',
-            prop: 'dynamicRuleId'
-          }, {
-            label: '流转分组名',
-            prop: 'dynamicName'
-          }, {
-            label: '流转方式',
-            prop: 'dynamicType'
-          }, {
-            label: '命中流量占比',
-            // prop: 'dynamicHitRate',
-            render: (h, { row }) => {
-              return this.toPercent(row.dynamicHitRate)
-            }
-          }, {
-            label: '命中设备量',
-            prop: 'hitAmount',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.hitAmount)
-            }
-          }, {
-            label: '产品包页面曝光设备量',
-            prop: 'showMac',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.showMac)
-            }
-          }, {
-            label: '付费设备量',
-            prop: 'payMac',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.payMac)
-            }
-          }, {
-            label: '总营收(元)',
-            prop: 'priceTotal',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.priceTotal)
-            }
-          }, {
-            // label: '总营收（按比例转化后）',
-            renderHeader: (h, params) => {
-              return h('span', {
-              },
-              [
-                '总营收（按比例转化后）',
-                h('el-popover', {
-                  props: {
-                    placement: 'top',
-                    trigger: 'hover',
-                    class: 'popover-button',
-                    width: 400,
-                    content: '总营收（按比例转化后）= 总营收 / 命中流量占比'
-                  }
-                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-              ])
-            },
-            prop: 'priceTotalHitRate',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.priceTotalHitRate)
-            }
-          }, {
-            // label: '差异对比',
-            renderHeader: (h, params) => {
-              return h('span', {
-              },
-              [
-                '差异对比',
-                h('el-popover', {
-                  props: {
-                    placement: 'top',
-                    trigger: 'hover',
-                    class: 'popover-button',
-                    width: 400,
-                    content: '该处的差异对比公式为：动态人群_A的总营收差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-                  }
-                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-              ])
-            },
-            prop: 'priceDifference',
-            render: (h, { row }) => {
-              return this.toPercent(row.priceDifference)
-            }
-          }, {
-            label: '付费率',
-            prop: 'payRate',
-            render: (h, { row }) => {
-              return this.toPercent(row.payRate)
-            }
-          },
-          {
-            width: 100,
-            renderHeader: (h, params) => {
-              return h('span', {
-              },
-              [
-                '差异对比',
-                h('el-popover', {
-                  props: {
-                    placement: 'top',
-                    trigger: 'hover',
-                    class: 'popover-button',
-                    width: 400,
-                    content: '该处的差异对比公式为：动态人群_A的付费率差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-                  }
-                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-              ])
-            },
-            prop: 'payRateDifference',
-            render: (h, { row }) => {
-              return this.toPercent(row.payRateDifference)
-            }
-          }, {
-            label: '客单价(元)',
-            prop: 'arup',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.arup)
-            }
-          }, {
-            // label: '差异对比',
-            renderHeader: (h, params) => {
-              return h('span', {
-              },
-              [
-                '差异对比',
-                h('el-popover', {
-                  props: {
-                    placement: 'top',
-                    trigger: 'hover',
-                    class: 'popover-button',
-                    width: 400,
-                    content: '该处的差异对比公式为：动态人群_A的客单价差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-                  }
-                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-              ])
-            },
-            prop: 'arupDifference',
-            render: (h, { row }) => {
-              return this.toPercent(row.arupDifference)
-            }
-          }, {
-            label: '上架天数',
-            prop: 'onlineDay'
-          }],
-          data: []
-        },
+        // reportTotal: {
+        //   header: [{
+        //     label: '流转ID',
+        //     prop: 'dynamicRuleId'
+        //   }, {
+        //     label: '流转分组名',
+        //     prop: 'dynamicName'
+        //   }, {
+        //     label: '流转方式',
+        //     prop: 'dynamicType'
+        //   }, {
+        //     label: '命中流量占比',
+        //     // prop: 'dynamicHitRate',
+        //     render: (h, { row }) => {
+        //       return this.toPercent(row.dynamicHitRate)
+        //     }
+        //   }, {
+        //     label: '命中设备量',
+        //     prop: 'hitAmount',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.hitAmount)
+        //     }
+        //   }, {
+        //     label: '产品包页面曝光设备量',
+        //     prop: 'showMac',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.showMac)
+        //     }
+        //   }, {
+        //     label: '付费设备量',
+        //     prop: 'payMac',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.payMac)
+        //     }
+        //   }, {
+        //     label: '总营收(元)',
+        //     prop: 'priceTotal',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.priceTotal)
+        //     }
+        //   }, {
+        //     // label: '总营收（按比例转化后）',
+        //     renderHeader: (h, params) => {
+        //       return h('span', {
+        //       },
+        //       [
+        //         '总营收（按比例转化后）',
+        //         h('el-popover', {
+        //           props: {
+        //             placement: 'top',
+        //             trigger: 'hover',
+        //             class: 'popover-button',
+        //             width: 400,
+        //             content: '总营收（按比例转化后）= 总营收 / 命中流量占比'
+        //           }
+        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+        //       ])
+        //     },
+        //     prop: 'priceTotalHitRate',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.priceTotalHitRate)
+        //     }
+        //   }, {
+        //     // label: '差异对比',
+        //     renderHeader: (h, params) => {
+        //       return h('span', {
+        //       },
+        //       [
+        //         '差异对比',
+        //         h('el-popover', {
+        //           props: {
+        //             placement: 'top',
+        //             trigger: 'hover',
+        //             class: 'popover-button',
+        //             width: 400,
+        //             content: '该处的差异对比公式为：动态人群_A的总营收差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
+        //           }
+        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+        //       ])
+        //     },
+        //     prop: 'priceDifference',
+        //     render: (h, { row }) => {
+        //       return this.toPercent(row.priceDifference)
+        //     }
+        //   }, {
+        //     label: '付费率',
+        //     prop: 'payRate',
+        //     render: (h, { row }) => {
+        //       return this.toPercent(row.payRate)
+        //     }
+        //   },
+        //   {
+        //     width: 100,
+        //     renderHeader: (h, params) => {
+        //       return h('span', {
+        //       },
+        //       [
+        //         '差异对比',
+        //         h('el-popover', {
+        //           props: {
+        //             placement: 'top',
+        //             trigger: 'hover',
+        //             class: 'popover-button',
+        //             width: 400,
+        //             content: '该处的差异对比公式为：动态人群_A的付费率差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
+        //           }
+        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+        //       ])
+        //     },
+        //     prop: 'payRateDifference',
+        //     render: (h, { row }) => {
+        //       return this.toPercent(row.payRateDifference)
+        //     }
+        //   }, {
+        //     label: '客单价(元)',
+        //     prop: 'arup',
+        //     render: (h, { row }) => {
+        //       return this.cc_format_number(row.arup)
+        //     }
+        //   }, {
+        //     // label: '差异对比',
+        //     renderHeader: (h, params) => {
+        //       return h('span', {
+        //       },
+        //       [
+        //         '差异对比',
+        //         h('el-popover', {
+        //           props: {
+        //             placement: 'top',
+        //             trigger: 'hover',
+        //             class: 'popover-button',
+        //             width: 400,
+        //             content: '该处的差异对比公式为：动态人群_A的客单价差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
+        //           }
+        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+        //       ])
+        //     },
+        //     prop: 'arupDifference',
+        //     render: (h, { row }) => {
+        //       return this.toPercent(row.arupDifference)
+        //     }
+        //   }, {
+        //     label: '上架天数',
+        //     prop: 'onlineDay'
+        //   }],
+        //   data: []
+        // },
         reportDayDetail: { // 每日效果明细
           tableConfig: [ // 表头配置项
             {

@@ -962,9 +962,9 @@ export default {
     },
 
     // 跳转投后报告页面
-    goToDynamicCrowdReport ({ crowdId, crowdName }) {
+    goToDynamicCrowdReport ({ id, sceneName }) {
       const componentName = 'storyReport'
-      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, componentName } })
+      this.$router.push({ path: '/dynamicReport', query: { id, sceneName, componentName } })
     },
 
     returnCrowd () {
