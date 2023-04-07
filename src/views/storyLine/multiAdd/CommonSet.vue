@@ -21,8 +21,10 @@
             :props="{
               key: 'id',
               label: 'tagCnName'
-            }">
-             <span slot-scope="{ option }">{{ option.id }} - {{ option.tagCnName }}</span>
+            }"
+            filterable
+            >
+             <span slot-scope="{ option }">{{ option.tagCnName }}</span>
           </el-transfer>
         </el-form-item>
         <el-form-item label="接待员命名：" prop="prependName">
