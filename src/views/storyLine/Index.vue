@@ -43,6 +43,10 @@
                     {{ item.sceneName }}
                   </span>
                   <span class="item-index">{{ item.id }}</span>
+                  <span class="use-status-styl">
+                    <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
+                    <span v-else>未投放</span>
+                  </span>
                   <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
                     <span class="el-dropdown-link">
                       . . .
@@ -628,6 +632,12 @@ export default {
     }
   },
   methods: {
+    launchDetail (pid) {
+      this.showLaunch = true
+      this.$service.policyUseInBi({ policyId: pid }).then((data) => {
+        this.launchItems = data
+      })
+    },
     updateSceneList () {
       this.getSceneList('add')
     },
@@ -1290,5 +1300,13 @@ export default {
 }
 .scene-type-class {
   margin -10px 20px 20px
+}
+.use-status-styl {
+  position: absolute;
+  z-index: 99;
+  right: 2px;
+  font-size: 12px;
+  bottom: -3px;
+  color: #999;
 }
 </style>
