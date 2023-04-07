@@ -681,7 +681,7 @@ export default {
         // 下一步
         this.multiAddStep = this.multiAddStep + 1
       }).catch(() => {
-        this.multiAddStep = this.multiAddStep + 1
+        // this.multiAddStep = this.multiAddStep + 1
       })
     },
     visibleChange (val, id) {
