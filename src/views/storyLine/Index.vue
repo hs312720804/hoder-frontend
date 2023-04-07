@@ -103,6 +103,7 @@
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
                         删除
                       </el-dropdown-item>
+                      <!-- <el-dropdown-item v-if="item.planId" :command="['report',item]"> -->
                       <el-dropdown-item :command="['report',item]">
                         投放报告
                       </el-dropdown-item>
@@ -341,11 +342,12 @@
       </el-dialog>
       <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
         <!-- {{ groupData }} -->
-        <div class="scene-type-class">
+
+        <!-- <div class="scene-type-class">
           分组类型：
           <el-radio v-model="sceneType" :label="1">跨平台分组</el-radio>
           <el-radio v-model="sceneType" :label="2">同平台分组</el-radio>
-        </div>
+        </div> -->
 
         <drag
           :list="noGroupService"

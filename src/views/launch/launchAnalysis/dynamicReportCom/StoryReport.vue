@@ -5,7 +5,7 @@
     <br/>
     tableData: {{tableData}} -->
 
-    <div id="ul111">
+    <!-- <div id="ul111">
       <div class="icon-open-close" @click="changeView">
         <i v-if="showNav" class="el-icon-d-arrow-right"></i>
         <i v-else class="el-icon-d-arrow-left"></i>
@@ -19,10 +19,10 @@
         <div><a href="javascript:void(0)" to="a5" @click="goAnchor('#a5')" title="累计效果明细">累计效果明细</a></div>
         <div><a href="javascript:void(0)" to="a6" @click="goAnchor('#a6')" title="分组内各子人群收益明细">分组内各子人群收益明细</a></div>
         <div><a href="javascript:void(0)" to="a7" @click="goAnchor('#a7')" title="分组内各流转链路收益">分组内各流转链路收益</a></div>
-        <div><a href="javascript:void(0)" to="a8" @click="goAnchor('#a8')" title="各权益收益情况">各权益收益情况</a></div>
+        <div><a href="javascript:void(0)" to="a8" @click="goAnchor('#a8')" title="TOP10影片分析">各权益收益情况</a></div>
       </div>
 
-    </div>
+    </div> -->
     <div>
       <!-- <div class="title">crowdId: 12461 【亲子】亲子全量-同步01 - 动态实验报告</div> -->
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
@@ -32,7 +32,6 @@
         <a :href="downloadUrl" download ref="download_Url"></a>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
-
       <div id='a1' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
@@ -47,20 +46,20 @@
         ></c-table>
       </div>
 
-      <!-- <div id='a2' class="table-wrap">
+      <div id='a2' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            实验效果汇总（reportTotal）
+            实验效果汇总（experimentSummary）
             <span>目的：①了解各组动态人群整体汇总情况</span>
             <span>②通过CTR、点击起播率、起播付费率等目标指标差异对比，概括性分析本次实验效果情况</span>
           </div>
         </div>
         <c-table
-          :props="allTableData.reportTotal.props"
-          :header="allTableData.reportTotal.header"
-          :data="allTableData.reportTotal.data"
+          :props="allTableData.experimentSummary.props"
+          :header="allTableData.experimentSummary.header"
+          :data="allTableData.experimentSummary.data"
         ></c-table>
-      </div> -->
+      </div>
 
       <div id='a4' class="table-wrap">
         <div class="title-layout">
@@ -69,10 +68,10 @@
             <!-- <span>共 0 个</span> -->
           </div>
         </div>
-        <!-- {{ allTableData.reportDayDetail }} -->
+        <!-- {{ allTableData.everyDayDetail }} -->
         <dynamic-table
-          :table-data="allTableData.reportDayDetail.data"
-          :table-header="allTableData.reportDayDetail.tableConfig"
+          :table-data="allTableData.everyDayDetail.data"
+          :table-header="allTableData.everyDayDetail.tableConfig"
         ></dynamic-table>
       </div>
 
@@ -84,50 +83,50 @@
           </div>
         </div>
         <dynamic-table
-          :table-data="allTableData.reportSum.data"
-          :table-header="allTableData.reportSum.tableConfig"
+          :table-data="allTableData.totalDetail.data"
+          :table-header="allTableData.totalDetail.tableConfig"
         ></dynamic-table>
       </div>
 
       <div id='a6' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            分组内各子人群收益明细（reportGroupSum）
+            分组内各子人群收益明细（crowdIncomeDetail）
             <span>
               <span>目的：以各动态人群子人群情况分析，了解各组动态人群子人群方案情况，拆分下钻各组动态人群效果差异原因。</span>
             </span>
           </div>
         </div>
-        <dynamic-table
-          :table-data="allTableData.reportGroupSum.data"
-          :table-header="allTableData.reportGroupSum.tableConfig"
-        ></dynamic-table>
+        <c-table
+          :data="allTableData.crowdIncomeDetail.data"
+          :header="allTableData.crowdIncomeDetail.header"
+        ></c-table>
       </div>
 
       <div id='a7' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            分组内各流转链路收益（reportGroupPath）
+            分组内各流转链路收益（linkIncomeDetail）
 
           </div>
 
         </div>
         <c-table
-          :header="allTableData.reportGroupPath.header"
-          :data="allTableData.reportGroupPath.data"
+          :header="allTableData.linkIncomeDetail.header"
+          :data="allTableData.linkIncomeDetail.data"
         ></c-table>
       </div>
 
       <div id='a8' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            各权益收益情况（reportRights）
+            TOP10影片分析（top10FilmAnalyze）
           </div>
         </div>
-        <dynamic-table
-          :table-data="allTableData.reportRights.data"
-          :table-header="allTableData.reportRights.tableConfig"
-        ></dynamic-table>
+        <c-table
+          :header="allTableData.top10FilmAnalyze.header"
+          :data="allTableData.top10FilmAnalyze.data"
+        ></c-table>
       </div>
     </div>
   </div>
@@ -216,49 +215,27 @@ export default {
       })
     },
     high () {
-      // let highligthId// 需要高亮的id
-      // const windowHeight = this.ScrollContrainer.offsetHeight // 容器高度
-      // this.anchors.forEach(element => {
-      //   const id = element.hash.slice(1)
-      //   const target = document.getElementById(id)
-      //   if (target) {
-      //     const {
-      //       top
-      //     } = target.getBoundingClientRect()
-      //     // 当元素头部可见时
-      //     if (top < windowHeight) {
-      //       highligthId = id
-      //     }
-      //   }
-      // })
-      // if (highligthId) {
-      //   // 调用高亮方法
-      //   this.highLightAnchor(highligthId)
-      // }
-      // console.log('document.querySelector(ul)-------->', document.querySelector('#ul111'))
-      // console.log('document.querySelector(ul)-------->', document.querySelector('.el-main'))
       const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
     },
     initData () {
-      this.$service.getContentDynamicCrowdReport({ crowdId: this.crowdId }).then(res => {
+      this.$service.getContentDynamicCrowdReport({ crowdId: this.crowdId, sceneId: this.crowdId }).then(res => {
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
         this.setTableData(getAllData)
-        // 折线图数据
-        const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
-        const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
+        // // 折线图数据
+        // const vipPlay = this.getChartData(res.everyDayDetail.data, 'payRate')
+        // const vipPlayTrend = this.getChartData(res.everyDayDetail.data, 'arup')
 
-        console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
-        console.log('aaa---->', vipPlay)
-        this.allChartData = {
-          vipPlay,
-          vipPlayTrend
-        }
+        // console.log('aaa---->', vipPlay)
+        // this.allChartData = {
+        //   vipPlay,
+        //   vipPlayTrend
+        // }
 
-        this.$nextTick(() => {
-          this.drawChart()
-        })
+        // this.$nextTick(() => {
+        //   this.drawChart()
+        // })
       })
 
       // this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
@@ -275,102 +252,54 @@ export default {
     },
     formatData (res) {
       const result = JSON.parse(JSON.stringify(res))
-      const reportDayDetail = res.reportDayDetail.data // 每日效果明细
-      const reportSum = res.reportSum.data // 每日效果明细
-      const reportGroupSum = res.reportGroupSum.data // 每日效果明细
-      const reportRights = res.reportRights.data // 每日效果明细
+      const everyDayDetail = res.everyDayDetail.data // 每日效果明细
+      const totalDetail = res.totalDetail.data // 每日效果明细
 
-      const reportDayDetailReData = reportDayDetail.map(item => {
+      const reportDayDetailReData = everyDayDetail.map(item => {
         const obj = {
           date: item.date
         }
         obj.data = item.data.map(obj => {
           return {
             ...obj,
-            arup: this.cc_format_number(obj.arup),
-            priceTotalHitRate: this.cc_format_number(obj.priceTotalHitRate),
-            payRate: this.toPercent(obj.payRate),
-            priceTotal: this.cc_format_number(obj.priceTotal),
-            showMac: this.cc_format_number(obj.showMac)
+            showUv: this.cc_format_number(obj.showUv),
+            ctr: this.cc_format_number(obj.ctr),
+            clickPlayRate: this.toPercent(obj.clickPlayRate),
+            playRate: this.toPercent(obj.playRate),
+            payRate: this.toPercent(obj.payRate)
           }
         })
         return obj
       })
-
-      const reportSumReData = reportSum.map(item => {
+      const totalDetailReData = totalDetail.map(item => {
         const obj = {
-          day: item.day
+          date: item.date
         }
         obj.data = item.data.map(obj => {
           return {
             ...obj,
-            arup: this.cc_format_number(obj.arup),
-            priceTotalHitRate: this.cc_format_number(obj.priceTotalHitRate),
-            payRate: this.toPercent(obj.payRate),
-            priceTotal: this.cc_format_number(obj.priceTotal),
-            showMac: this.cc_format_number(obj.showMac)
+            showUv: this.cc_format_number(obj.showUv),
+            ctr: this.cc_format_number(obj.ctr),
+            clickPlayRate: this.toPercent(obj.clickPlayRate),
+            playRate: this.toPercent(obj.playRate),
+            payRate: this.toPercent(obj.payRate)
           }
         })
         return obj
       })
 
-      const reportGroupSumReData = reportGroupSum.map(obj => {
-        return {
-          ...obj,
-          arup: this.cc_format_number(obj.arup),
-          putongbaoyuePayPrice: this.cc_format_number(obj.putongbaoyuePayPrice),
-          baonianPayMacRate: this.toPercent(obj.baonianPayMacRate),
-          liaoxubaoyuePayMacRate: this.toPercent(obj.liaoxubaoyuePayMacRate),
-          payRate: this.toPercent(obj.payRate),
-          liaoxubaojiPayMacRate: this.toPercent(obj.liaoxubaojiPayMacRate),
-          liaoxubaoyuePayPrice: this.cc_format_number(obj.liaoxubaoyuePayPrice),
-          showMac: this.cc_format_number(obj.showMac),
-          payMac: this.cc_format_number(obj.payMac),
-          putongbaoyuePayMacRate: this.toPercent(obj.putongbaoyuePayMacRate),
-          hitAmount: this.cc_format_number(obj.hitAmount),
-          baojiPayMacRate: this.toPercent(obj.baojiPayMacRate),
-          priceTotal: this.cc_format_number(obj.priceTotal),
-          bannianPayPrice: this.cc_format_number(obj.bannianPayPrice),
-          baojiPayPrice: this.cc_format_number(obj.baojiPayPrice),
-          baonianPayPrice: this.cc_format_number(obj.baonianPayPrice),
-          liaoxubaojiPayPrice: this.cc_format_number(obj.liaoxubaojiPayPrice),
-          bannianPayMacRate: this.toPercent(obj.bannianPayMacRate)
-        }
-      })
-      const reportRightsReData = reportRights.map(obj => {
-        return {
-          ...obj,
-          yingshiMacRate: this.toPercent(obj.yingshiMacRate),
-          yingshiMac: this.cc_format_number(obj.yingshiMac),
-          aiqiyiMacRate: this.toPercent(obj.aiqiyiMacRate),
-          qinziMacRate: this.toPercent(obj.qinziMacRate),
-          qinziMac: this.cc_format_number(obj.qinziMac),
-          chuileiMacRate: this.toPercent(obj.chuileiMacRate),
-          otherMacRate: this.toPercent(obj.otherMacRate),
-          otherMac: this.cc_format_number(obj.otherMac),
-          aiqiyiMac: this.cc_format_number(obj.aiqiyiMac),
-          chuileiMac: this.cc_format_number(obj.chuileiMac)
-        }
-      })
-
-      result.reportDayDetail = {
-        name: res.reportDayDetail.name,
+      result.everyDayDetail = {
+        name: res.everyDayDetail.name,
         data: reportDayDetailReData,
-        title: res.reportDayDetail.title
+        title: res.everyDayDetail.title
       }
-      result.reportSum = {
-        name: res.reportSum.name,
-        data: reportSumReData,
-        title: res.reportSum.title
+
+      result.totalDetail = {
+        name: res.totalDetail.name,
+        data: totalDetailReData,
+        title: res.totalDetail.title
       }
-      result.reportGroupSum = {
-        name: reportGroupSum.name,
-        data: reportGroupSumReData
-      }
-      result.reportRights = {
-        name: reportRights.name,
-        data: reportRightsReData
-      }
+
       return result
     },
     getChartData (chartData, key) {
@@ -468,24 +397,22 @@ export default {
       for (const key in d) {
         const allData = res[key]
 
-        const data = d[key].data // 单个表格的数据
-        if (key === 'reportDayDetail' || key === 'reportSum') {
-          let mainkey
-          if (key === 'reportSum') {
-            mainkey = 'day'
-          } else {
-            mainkey = 'date'
-          }
+        const data = d[key].data || [] // 单个表格的数据
+        if (key === 'everyDayDetail' || key === 'totalDetail') {
+          const mainkey = 'date'
+
           const reutrnData = this.restoreData(key, data, mainkey, allData)
 
           this.allTableData[key].data = reutrnData.tableData
           this.allTableData[key].tableConfig = reutrnData.tableConfig
 
-          // console.log('this.allTableData.reportDayDetail-------->', this.allTableData.reportSum)
-        } else {
+          // console.log('this.allTableData.everyDayDetail-------->', this.allTableData.totalDetail)
+        } else if (this.allTableData[key]) {
           this.allTableData[key].data = data
         }
       }
+
+      console.log('allTableData-->', this.allTableData)
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
@@ -647,185 +574,151 @@ export default {
         reportTotal: {
           header: [{
             label: '流转ID',
-            prop: 'id'
+            prop: 'dynamicRuleId'
           }, {
             label: '流转分组名',
-            prop: 'name'
-          }, {
+            prop: 'dynamicName'
+          },
+          {
             label: '流转方式',
-            prop: 'mainArithmetic',
-            render: (h, { row }) => {
-              const obj = this.options.find(item => item.value == row.mainArithmetic)
-              return obj.label
-            }
-          }, {
-            label: '命中流量占比',
+            prop: 'dynamicType'
+          },
+          {
+            label: '命中流量占比 ？？？',
             prop: 'flowNum',
             render: (h, { row }) => {
               return (row.flowNum) + '%'
             }
           },
-          // {
-          //   label: '命中设备量',
-          //   prop: 'crowdNum',
-          //   render: (h, { row }) => {
-          //     return this.cc_format_number(row.crowdNum)
-          //   }
-          // },
           {
             label: '包含人群-ID',
             prop: 'cname'
           }],
           data: []
         },
-        // reportTotal: {
-        //   header: [{
-        //     label: '流转ID',
-        //     prop: 'dynamicRuleId'
-        //   }, {
-        //     label: '流转分组名',
-        //     prop: 'dynamicName'
-        //   }, {
-        //     label: '流转方式',
-        //     prop: 'dynamicType'
-        //   }, {
-        //     label: '命中流量占比',
-        //     // prop: 'dynamicHitRate',
-        //     render: (h, { row }) => {
-        //       return this.toPercent(row.dynamicHitRate)
-        //     }
-        //   }, {
-        //     label: '命中设备量',
-        //     prop: 'hitAmount',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.hitAmount)
-        //     }
-        //   }, {
-        //     label: '产品包页面曝光设备量',
-        //     prop: 'showMac',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.showMac)
-        //     }
-        //   }, {
-        //     label: '付费设备量',
-        //     prop: 'payMac',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.payMac)
-        //     }
-        //   }, {
-        //     label: '总营收(元)',
-        //     prop: 'priceTotal',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.priceTotal)
-        //     }
-        //   }, {
-        //     // label: '总营收（按比例转化后）',
-        //     renderHeader: (h, params) => {
-        //       return h('span', {
-        //       },
-        //       [
-        //         '总营收（按比例转化后）',
-        //         h('el-popover', {
-        //           props: {
-        //             placement: 'top',
-        //             trigger: 'hover',
-        //             class: 'popover-button',
-        //             width: 400,
-        //             content: '总营收（按比例转化后）= 总营收 / 命中流量占比'
-        //           }
-        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-        //       ])
-        //     },
-        //     prop: 'priceTotalHitRate',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.priceTotalHitRate)
-        //     }
-        //   }, {
-        //     // label: '差异对比',
-        //     renderHeader: (h, params) => {
-        //       return h('span', {
-        //       },
-        //       [
-        //         '差异对比',
-        //         h('el-popover', {
-        //           props: {
-        //             placement: 'top',
-        //             trigger: 'hover',
-        //             class: 'popover-button',
-        //             width: 400,
-        //             content: '该处的差异对比公式为：动态人群_A的总营收差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-        //           }
-        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-        //       ])
-        //     },
-        //     prop: 'priceDifference',
-        //     render: (h, { row }) => {
-        //       return this.toPercent(row.priceDifference)
-        //     }
-        //   }, {
-        //     label: '付费率',
-        //     prop: 'payRate',
-        //     render: (h, { row }) => {
-        //       return this.toPercent(row.payRate)
-        //     }
-        //   },
-        //   {
-        //     width: 100,
-        //     renderHeader: (h, params) => {
-        //       return h('span', {
-        //       },
-        //       [
-        //         '差异对比',
-        //         h('el-popover', {
-        //           props: {
-        //             placement: 'top',
-        //             trigger: 'hover',
-        //             class: 'popover-button',
-        //             width: 400,
-        //             content: '该处的差异对比公式为：动态人群_A的付费率差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-        //           }
-        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-        //       ])
-        //     },
-        //     prop: 'payRateDifference',
-        //     render: (h, { row }) => {
-        //       return this.toPercent(row.payRateDifference)
-        //     }
-        //   }, {
-        //     label: '客单价(元)',
-        //     prop: 'arup',
-        //     render: (h, { row }) => {
-        //       return this.cc_format_number(row.arup)
-        //     }
-        //   }, {
-        //     // label: '差异对比',
-        //     renderHeader: (h, params) => {
-        //       return h('span', {
-        //       },
-        //       [
-        //         '差异对比',
-        //         h('el-popover', {
-        //           props: {
-        //             placement: 'top',
-        //             trigger: 'hover',
-        //             class: 'popover-button',
-        //             width: 400,
-        //             content: '该处的差异对比公式为：动态人群_A的客单价差异对比=（动态人群_A-avg(动态人群_B+动态人群_C))/avg(动态人群_B+动态人群_C)'
-        //           }
-        //         }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-        //       ])
-        //     },
-        //     prop: 'arupDifference',
-        //     render: (h, { row }) => {
-        //       return this.toPercent(row.arupDifference)
-        //     }
-        //   }, {
-        //     label: '上架天数',
-        //     prop: 'onlineDay'
-        //   }],
-        //   data: []
-        // },
-        reportDayDetail: { // 每日效果明细
+        experimentSummary: {
+          header: [{
+            label: '流转ID',
+            prop: 'dynamicRuleId'
+          }, {
+            label: '流转分组名',
+            prop: 'dynamicName'
+          }, {
+            label: '流转方式',
+            prop: 'dynamicType'
+          }, {
+            label: '命中流量占比',
+            // prop: 'dynamicHitRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.dynamicHitRate)
+            }
+          }, {
+            label: '命中设备量',
+            prop: 'hitAmount',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.hitAmount)
+            }
+          }, {
+            label: '活跃用户（曝光）',
+            prop: 'showUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.showUv)
+            }
+          }, {
+            label: '点击用户',
+            prop: 'clickUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.clickUv)
+            }
+          }, {
+            label: 'CTR',
+            prop: 'ctr',
+            render: (h, { row }) => {
+              return this.toPercent(row.ctr)
+            }
+          }, {
+            label: '差异对比',
+            prop: 'ctrDifference',
+            render: (h, { row }) => {
+              return this.toPercent(row.ctrDifference)
+            }
+          }, {
+            // label: '总营收（按比例转化后）',
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '起播用户量',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '对应版块/版面/资源位的起播'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
+            prop: 'playUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.playUv)
+            }
+          },
+
+          {
+            label: '点击起播率（起播用户数/板块点击用户）',
+            prop: 'clickPlayRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.clickPlayRate)
+            }
+          }, {
+            label: '差异对比',
+            prop: 'clickPlayRateDifference',
+            render: (h, { row }) => {
+              return this.toPercent(row.clickPlayRateDifference)
+            }
+          }, {
+            renderHeader: (h, params) => {
+              return h('span', {
+              },
+              [
+                '付费用户量',
+                h('el-popover', {
+                  props: {
+                    placement: 'top',
+                    trigger: 'hover',
+                    class: 'popover-button',
+                    width: 400,
+                    content: '对应影片的付费'
+                  }
+                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
+              ])
+            },
+            prop: 'payUv',
+            render: (h, { row }) => {
+              return this.toPercent(row.payUv)
+            }
+          }, {
+            label: '起播付费率',
+            prop: 'payRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.payRate)
+            }
+          },
+          {
+            label: '差异对比',
+            prop: 'payRateDifference',
+            render: (h, { row }) => {
+              return this.toPercent(row.payRateDifference)
+            }
+          }, {
+            label: '上架天数',
+            prop: 'onlineDay'
+          }],
+          data: []
+        },
+        everyDayDetail: { // 每日效果明细
           tableConfig: [ // 表头配置项
             {
               id: 1,
@@ -834,109 +727,79 @@ export default {
             },
             {
               id: 2,
-              label: '产品包曝光量',
-              prop: 'showMac',
-              children: [
-
-              ]
+              label: '活跃用户',
+              prop: 'showUv',
+              children: []
             },
             {
               id: 3,
-              label: '支付率',
-              prop: 'payRate',
-              children: [
-
-              ]
+              label: 'CTR',
+              prop: 'ctr',
+              children: []
             },
             {
               id: 4,
-              label: '客单价',
-              prop: 'arup',
-              children: [
-                // {
-                //     id:303,
-                //     label:"动态人群_A",
-                //     prop:"priceDongA"
-                // },
-                // {
-                //     id:304,
-                //     label:"动态人群_B",
-                //     prop:"priceDongB"
-                // },
-                // {
-                //     id:305,
-                //     label:"动态人群_C",
-                //     prop:"priceDongC"
-                // },
-              ]
+              label: '点击起播率',
+              prop: 'clickPlayRate',
+              children: []
             },
             {
               id: 5,
-              label: '总营收(元)',
-              prop: 'priceTotal',
-              children: [
-              ]
+              label: '起播率',
+              prop: 'playRate',
+              children: []
             },
             {
               id: 6,
-              label: '总营收(元)【按命中流量比例换算】',
-              prop: 'priceTotalHitRate',
-              children: [
-              ]
+              label: '起播付费率',
+              prop: 'payRate',
+              children: []
             }
           ],
           data: []
         },
-        reportSum: { // 累计效果明细
+        totalDetail: { // 累计效果明细
           tableConfig: [ // 表头配置项
             {
               id: 1,
-              label: '上线天数',
-              prop: 'day'
+              label: '日期',
+              prop: 'date'
             },
             {
               id: 2,
-              label: '产品包曝光量',
-              prop: 'showMac',
-              children: [
-
-              ]
+              label: '活跃用户',
+              prop: 'showUv',
+              children: []
             },
             {
               id: 3,
-              label: '支付率',
-              prop: 'payRate',
-              children: [
-
-              ]
+              label: 'CTR',
+              prop: 'ctr',
+              children: []
             },
             {
               id: 4,
-              label: '客单价',
-              prop: 'arup',
-              children: [
-              ]
+              label: '点击起播率',
+              prop: 'clickPlayRate',
+              children: []
             },
             {
               id: 5,
-              label: '总营收(元)',
-              prop: 'priceTotal',
-              children: [
-              ]
+              label: '起播率',
+              prop: 'playRate',
+              children: []
             },
             {
               id: 6,
-              label: '总营收(元)【按命中流量比例换算】',
-              prop: 'priceTotalHitRate',
-              children: [
-              ]
+              label: '起播付费率',
+              prop: 'payRate',
+              children: []
             }
           ],
           data: []
         },
-        reportGroupSum: { // 分组内各子人群收益明细
-
-          tableConfig: [{
+        crowdIncomeDetail: { // 分组内各子人群收益明细
+          header: [{
             id: 1,
             label: '流转分组名',
             prop: 'dynamicName'
@@ -951,302 +814,151 @@ export default {
           }, {
             label: '命中设备量',
             prop: 'hitAmount'
-
           }, {
-            label: '曝光设备量',
-            prop: 'showMac'
-
+            label: '板块活跃用户数',
+            prop: 'showUv'
           }, {
-            label: '付费设备量',
-            prop: 'payMac'
-
+            label: 'CTR',
+            prop: 'ctr'
           }, {
-            label: '付费率',
-            prop: 'payRate'
-
+            label: '起播用户数',
+            prop: 'playUv'
           }, {
-            label: '客单价(元)',
-            prop: 'arup'
-
-          }, {
-            label: '总营收(元)',
-            prop: 'priceTotal'
-
-          }, {
-            label: '产品包购买金额',
-            prop: 'priceTotal',
-            children: [{
-              label: '连续包月',
-              prop: 'liaoxubaoyuePayPrice'
-
-            }, {
-              label: '包月',
-              prop: 'putongbaoyuePayPrice'
-
-            }, {
-              label: '连续包季',
-              prop: 'liaoxubaojiPayPrice'
-
-            }, {
-              label: '包季',
-              prop: 'baojiPayPrice'
-
-            }, {
-              label: '半年',
-              prop: 'bannianPayPrice'
-
-            }, {
-              label: '包年',
-              prop: 'baonianPayPrice'
-
-            }]
-
-          }, {
-            label: '产品包购买用户数占比（用户产品包购买偏好）',
-            prop: 'priceTotal',
-            children: [{
-              label: '连续包月',
-              prop: 'liaoxubaoyuePayMacRate'
-
-            }, {
-              label: '包月',
-              prop: 'putongbaoyuePayMacRate'
-
-            }, {
-              label: '连续包季',
-              prop: 'liaoxubaojiPayMacRate'
-
-            }, {
-              label: '包季',
-              prop: 'baojiPayMacRate'
-
-            }, {
-              label: '半年',
-              prop: 'bannianPayMacRate'
-
-            }, {
-              label: '包年',
-              prop: 'baonianPayMacRate'
-
-            }]
-
-          }],
-          data: []
-        },
-        reportRights: { // 各权益收益情况
-          tableConfig: [ // 表头配置项
-            {
-              id: 1,
-              label: '用户类型',
-              prop: 'dynamicName'
-            },
-            {
-              id: 2,
-              label: '付费用户量',
-              children: [{
-                label: '奇异果VIP',
-                prop: 'aiqiyiMac'
-              }, {
-                label: '影视VIP',
-                prop: 'yingshiMac'
-              }, {
-                label: '亲子VIP',
-                prop: 'qinziMac'
-              }, {
-                label: '垂类VIP',
-                prop: 'chuileiMac'
-              }, {
-                label: '其他类型（直播+多元）',
-                prop: 'otherMac'
-              }]
-            },
-            {
-              id: 3,
-              label: '付费用户占比',
-              children: [{
-                label: '奇异果VIP',
-                prop: 'aiqiyiMacRate'
-              }, {
-                label: '影视VIP',
-                prop: 'yingshiMacRate'
-              }, {
-                label: '亲子VIP',
-                prop: 'qinziMacRate'
-              }, {
-                label: '垂类VIP',
-                prop: 'chuileiMacRate'
-              }, {
-                label: '其他类型（直播+多元）',
-                prop: 'otherMacRate'
-              }]
-            }
-
-          ],
-          data: []
-        },
-        reportGroupPath: { // 分组内各流转链路收益
-          header: [{
-            label: '动态流转分组',
-            prop: 'planName'
-          }, {
-            // label: '路径',
-            renderHeader: (h, params) => {
-              return h('span', {
-              },
-              [
-                '路径',
-                h('el-popover', {
-                  props: {
-                    placement: 'top',
-                    trigger: 'hover',
-                    class: 'popover-button',
-                    width: 400,
-                    content: '流转路径为 0 代表该分组流入设备量的去重汇总'
-                  }
-                }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
-              ])
-            },
-            prop: 'path'
-          }, {
-            label: '流入设备量（命中设备量）',
-            prop: 'hitUv',
+            label: '点击起播率',
+            prop: 'clickPlayRate',
             render: (h, { row }) => {
-              return this.cc_format_number(row.hitUv)
+              return this.toPercent(row.clickPlayRate)
             }
           }, {
-            label: '曝光用户量',
-            prop: 'showUv',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.showUv)
-            }
+            label: '影片付费用户数',
+            prop: 'payUv'
           }, {
-            label: '下单用户量',
-            prop: 'xiadanUv',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.xiadanUv)
-            }
+            label: '影片总营收(元)',
+            prop: 'price'
           }, {
-            label: '付费用户量',
-            prop: 'payUv',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.payUv)
-            }
-          }, {
-            label: '付费总金额',
-            prop: 'price',
-            render: (h, { row }) => {
-              return this.cc_format_number(row.price)
-            }
-          }, {
-            label: '付费率',
+            label: '起播付费率',
             prop: 'payRate',
             render: (h, { row }) => {
               return this.toPercent(row.payRate)
             }
           }, {
-            label: '客单价',
-            prop: 'arup',
+            label: '影片吸金订单量',
+            prop: 'videoOrderNum'
+
+          }, {
+            label: '影片订单转化率',
+            prop: 'videoOrderRatio',
             render: (h, { row }) => {
-              return this.cc_format_number(row.arup)
+              return this.toPercent(row.videoOrderRatio)
             }
+          }, {
+            label: '影片订单均价',
+            prop: 'videoRerOrder'
+          }, {
+            label: '影片播放均价',
+            prop: 'videoAvgPlayPrice'
           }],
           data: []
         },
-        11: {
-          props: {
-
-          },
+        top10FilmAnalyze: { // 各权益收益情况
+          header: [ // 表头配置项
+            {
+              label: '流转分组名',
+              prop: 'dynamicName'
+            }, {
+              label: '影片名称',
+              prop: 'blockName'
+            }, {
+              label: '点击人数',
+              prop: 'clickUv'
+            }, {
+              label: 'CTR',
+              prop: 'ctr'
+            }, {
+              label: '点击起播率',
+              prop: 'clickPlayRate',
+              render: (h, { row }) => {
+                return this.toPercent(row.clickPlayRate)
+              }
+            }, {
+              label: '起播付费率',
+              prop: 'payRate',
+              render: (h, { row }) => {
+                return this.toPercent(row.payRate)
+              }
+            }, {
+              label: '点击人数排名',
+              prop: 'clickRank'
+            }
+          ],
+          data: []
+        },
+        linkIncomeDetail: { // 分组内各流转链路收益
           header: [{
+            label: '动态流转分组 ？？？',
+            prop: 'dynamicRuleId'
+          }, {
             label: '路径',
-            prop: 'id'
+            prop: 'path'
           }, {
-            label: '流入设备量（命中设备量）',
-            prop: 'name'
+            label: '命中用户数',
+            prop: 'hitUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.hitUv)
+            }
           }, {
-            label: '曝光用户量',
-            prop: 'way'
+            label: '曝光用户数',
+            prop: 'showUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.showUv)
+            }
           }, {
-            label: '下单用户量',
-            prop: 'id'
+            label: '点击用户数',
+            prop: 'clickUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.clickUv)
+            }
           }, {
-            label: '付费用户量',
-            prop: 'id'
+            label: 'CTR',
+            prop: 'ctr',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.ctr)
+            }
           }, {
-            label: '付费总金额',
-            prop: 'id'
+            label: '起播用户数',
+            prop: 'playUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.playUv)
+            }
           }, {
-            label: '付费率',
-            prop: 'id'
+            label: '点击起播率',
+            prop: 'clickPlayRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.clickPlayRate)
+            }
           }, {
-            label: '客单价',
-            prop: 'id'
+            label: '影片付费用户数',
+            prop: 'payUv',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.payUv)
+            }
+          }, {
+            label: '影片总营收',
+            prop: 'price',
+            render: (h, { row }) => {
+              return this.cc_format_number(row.price)
+            }
+          }, {
+            label: '起播付费率',
+            prop: 'payRate',
+            render: (h, { row }) => {
+              return this.toPercent(row.payRate)
+            }
           }],
-          data: [{
-            id: 1,
-            name: '实验组1',
-            way: '顺序'
-          }, {
-            id: 1,
-            name: '实验组1',
-            way: '顺序'
-          }]
+          data: []
         }
       },
 
-      // tableConfig: [],
-      // 表数据
-      // tableData: [],
-      // 模拟接口数据
-      // data: [
-      //   {
-      //     date: '2021-09-06',
-      //     dongA: {
-      //       name: '动态人群A',
-      //       show: 1, // 产品包曝光率 - 动态人群_A
-      //       payRate: 2, // 支付率 - 动态人群_A
-      //       price: 3 // 客单价 - 动态人群_A
-      //     },
-      //     dongB: {
-      //       name: '动态人群B',
-      //       show: 10, // 产品包曝光率 - 动态人群_B
-      //       payRate: 11, // 支付率 - 动态人群_B
-      //       price: 12 // 客单价 - 动态人群_B
-      //     },
-      //     dongC: {
-      //       name: '动态人群C',
-      //       show: 100, // 产品包曝光率 - 动态人群_C
-      //       payRate: 101, // 支付率 - 动态人群_C
-      //       price: 102 // 客单价 - 动态人群_C
-      //     },
-      //     dongD: {
-      //       name: '动态人群D',
-      //       show: 500, // 产品包曝光率 - 动态人群_C
-      //       payRate: 501, // 支付率 - 动态人群_C
-      //       price: 502 // 客单价 - 动态人群_C
-      //     }
-      //   },
-      //   {
-      //     date: '2021-09-07',
-      //     dongA: {
-      //       name: '动态人群A',
-      //       show: 2, // 产品包曝光率 - 动态人群_A
-      //       payRate: 2, // 支付率 - 动态人群_A
-      //       price: 2 // 客单价 - 动态人群_A
-      //     },
-      //     dongB: {
-      //       name: '动态人群B',
-      //       show: 20, // 产品包曝光率 - 动态人群_B
-      //       payRate: 21, // 支付率 - 动态人群_B
-      //       price: 22 // 客单价 - 动态人群_B
-      //     },
-      //     dongC: {
-      //       name: '动态人群C',
-      //       show: 200, // 产品包曝光率 - 动态人群_C
-      //       payRate: 201, // 支付率 - 动态人群_C
-      //       price: 202 // 客单价 - 动态人群_C
-      //     }
-      //   }
-      // ],
       getAllData: [],
       allChartData: {},
       rowObj2: [
