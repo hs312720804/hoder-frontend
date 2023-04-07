@@ -92,7 +92,7 @@
           </div>
 
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务对象筛选</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
           </div>
 
         </el-form-item>
