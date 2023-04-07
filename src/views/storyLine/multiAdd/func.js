@@ -241,7 +241,7 @@ function multiAddNextStepFn ({ commonSetRef }) {
           console.log('')
           console.log('allExportArr===========================>', allExportArr)
 
-          Message.success('所有条件都已经通过')
+          // Message.success('所有条件都已经通过')
           resolve({ allEntryArr, allExportArr, ruleFormData })
           // this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData })
         }).catch(() => {
