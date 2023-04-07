@@ -851,11 +851,8 @@ export default {
       }
     },
     styleType () {
-      for (const key of Object.keys(this.allCharts)) {
-        const chart = this.allCharts[key]
-        chart.dispose() // 销毁
-      }
-      this.drawChart()
+      // 刷新图表
+      this.refreshChart()
     },
     selectedServicer: {
       handler (val) {
@@ -1675,11 +1672,21 @@ export default {
         // eslint-disable-next-line vue/no-mutating-props
         this.selectedServicer.indicators = this.targetValue
         this.isEditValue = false
+
+        // 刷新图表
+        this.refreshChart()
       } else {
         this.$message.warning('请输入数字或百分比')
       }
     },
-
+    // 刷新图表
+    refreshChart () {
+      for (const key of Object.keys(this.allCharts)) {
+        const chart = this.allCharts[key]
+        chart.dispose() // 销毁
+      }
+      this.drawChart()
+    },
     // 设置绩效目标的 key 值
     // handleCommandTargetKey (val) {
     //   const obj = this.targetKeyList.find(item => {
@@ -1794,30 +1801,11 @@ export default {
         },
         splitLine: {
           show: true
-          // lineStyle: {
-          //   // color: this.styleType ? '#0E183A' : '#c2c2c7'
-          //   color: this.styleType ? 'rgba(255,255,255,0.1)' : '#c2c2c7'
-          // }
-
         }
-        // scale: true,
-        // axisLabel: {
-        //   color: this.styleType ? '#fff' : '#000',
-        //   // margin: 30,
-        //   formatter: function (value) {
-        //     if (value >= 100000000) {
-        //       value = value / 100000000 + '亿' + yunit
-        //     } else if (value >= 10000000) {
-        //       value = value / 10000000 + '千万' + yunit
-        //     } else if (value >= 10000 && value < 10000000) {
-        //       value = value / 10000 + '万' + yunit
-        //     } else {
-        //       value = value + yunit
-        //     }
-        //     return value
-        //   }
-        // }
+
       }
+      yAxisObj.max = Math.max(this.targetValue, ...yData[0].data)
+      yAxisObj.min = Math.min(this.targetValue, ...yData[0].data)
       // let myChart = echarts.init(this.$refs[element])
       const option = {
         backgroundColor: '', // rgba设置透明度0.1
@@ -1941,6 +1929,18 @@ export default {
             },
             emphasis: {
               focus: 'series'
+            },
+            // 目标
+            markLine: {
+              // silent: true,
+              lineStyle: {
+                color: '#333'
+              },
+              data: [
+                {
+                  yAxis: this.targetValue
+                }
+              ]
             }
           }
         })
