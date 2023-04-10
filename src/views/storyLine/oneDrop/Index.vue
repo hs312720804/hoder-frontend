@@ -89,7 +89,7 @@
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
       <el-button type="primary" @click="oneDropNextStep">确认</el-button>
     </template>
-    <!-- 第 2 步 -->
+    <!-- 第 2、3、4 步 -->
     <template v-else>
       <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
@@ -104,6 +104,7 @@ import AllPerSet from '../multiAdd/AllPerSet.vue'
 import OneByOneAdd from './OneByOneAdd.vue'
 import LaunchToBusiness from '@/views/launch/StrategyPutIn.vue'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from '../multiAdd/func.js'
+import { Loading } from 'element-ui'
 
 export default {
   components: {
@@ -303,7 +304,7 @@ export default {
           const parmas = {
             id: this.sceneId
           }
-          this.$service.putInDraft(parmas).then(res => {
+          this.$service.putInDraft(parmas, '保存成功').then(res => {
             // 更新场景列表
             this.$emit('updateSceneList')
             // 关闭弹窗
@@ -318,12 +319,22 @@ export default {
 
       launchToBusinessRef.$refs.crowdForm.validate((valid) => {
         if (valid) {
+          const loadingInstance = Loading.service({
+            fullscreen: true,
+            text: '投放中，请稍候',
+            background: 'rgba(0, 0, 0, 0.5)'
+          })
+
           const parmas = {
             sceneId: this.sceneId,
             biIds: launchToBusinessRef.crowdForm.biIdsPull,
             policyIds: [this.policyId]
           }
-          this.$service.putInRelease(parmas).then(res => {
+          this.$service.putInRelease(parmas).then(async res => {
+            const parmas = { policyId: this.policyId }
+            await this.$service.freshCache(parmas, '投放成功')
+            // this.fullscreenLoading = false
+            loadingInstance.close()
             // 更新场景列表
             this.$emit('updateSceneList')
             // 关闭弹窗
@@ -332,6 +343,7 @@ export default {
         }
       })
     },
+
     // 4： 统一配置  - 跳过保存
     batchListSkip () {
       const allPerSetRef = this.$refs.allPerSetRef

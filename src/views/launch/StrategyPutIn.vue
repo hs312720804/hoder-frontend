@@ -1,6 +1,7 @@
 <template>
     <div class="launchToBusiness">
       <!-- {{ crowdForm }} -->
+      <!-- {{ tempPolicyAndCrowd }} -->
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="110px">
             <el-form-item v-if="!tempPolicyAndCrowd.smart" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull" :disabled="pullSuccessPushFail">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
@@ -239,6 +240,8 @@
 </template>
 
 <script>
+import { Loading } from 'element-ui'
+
 export default {
   name: 'StrategyPutIn',
   props: ['recordId', 'tempPolicyAndCrowd', 'fromStoryline'],
@@ -609,8 +612,16 @@ export default {
     },
     // 手动同步策略和刷新策略列表页，关闭弹窗
     handleEnd () {
+      const loadingInstance = Loading.service({
+        fullscreen: true,
+        text: '同步策略中，请稍候',
+        background: 'rgba(0, 0, 0, 0.5)'
+      })
       this.$service.freshCache({ policyId: this.recordId }).then(() => {
+        loadingInstance.close()
+
         this.$emit('closeDialog')
+        this.$emit('refreshList')
         this.$root.$emit('stratege-list-refresh')
       })
     },

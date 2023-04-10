@@ -342,6 +342,7 @@
           :recordId="tempPolicyAndCrowd.policyId"
           :tempPolicyAndCrowd="tempPolicyAndCrowd"
           @closeDialog="handleCloseDialog"
+          @refreshList="getSceneList"
         ></LaunchToBusiness>
       </el-dialog>
       <el-dialog :visible.sync="showDragVisible" v-if="showDragVisible" title="添加分组" width="550px" :close-on-click-modal="false">
@@ -362,14 +363,6 @@
           <el-button @click="showDragVisible = false">取 消</el-button>
           <el-button type="primary" @click="addServicerGroup">确 定</el-button>
         </span>
-      </el-dialog>
-
-      <el-dialog :visible.sync="showLaunchToBusiness" v-if="showLaunchToBusiness">
-        <LaunchToBusiness
-          :recordId="tempPolicyAndCrowd.policyId"
-          :tempPolicyAndCrowd="tempPolicyAndCrowd"
-          @closeDialog="handleCloseDialog"
-        ></LaunchToBusiness>
       </el-dialog>
 
       <!-- 复制 / 复用 接待员 -->

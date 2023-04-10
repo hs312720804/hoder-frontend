@@ -434,9 +434,9 @@
     </el-dialog>
     <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
       <LaunchToBusiness
-              :recordId="recordId"
-              :tempPolicyAndCrowd="tempPolicyAndCrowd"
-              @closeDialog="handleCloseDialog"
+        :recordId="recordId"
+        :tempPolicyAndCrowd="tempPolicyAndCrowd"
+        @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
     <el-dialog :visible.sync="showViewEffect" width="80%">
