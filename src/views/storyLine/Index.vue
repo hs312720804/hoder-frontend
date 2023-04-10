@@ -47,74 +47,78 @@
                     <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
                     <span v-else>未投放</span>
                   </span>
-                  <el-dropdown trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" @command="handleSceneCommand">
+                  <el-dropdown
+                    trigger="hover"
+                    class="el-dropdown"
+                    :hide-on-click="false"
+                    placement="bottom"
+                    @command="handleSceneCommand"
+                    @visible-change="e => sceneVisibleChange(e, item.id)"
+                  >
                     <span class="el-dropdown-link">
                       . . .
                     </span>
                     <el-dropdown-menu slot="dropdown">
-                      <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]">
-                        <!-- <el-popover
-                          placement="top"
-                          width="160"
-                          v-model="renameVisible"
-                          trigger="manual"
-                        > -->
-                          <!-- <div slot="reference">重命名</div> -->
-                          <!-- <template #reference>
-                            <span @click="renameVisible = true">重命名</span>
-                          </template>
-                          <p>这是一段内容这是一段内容确定删除吗？</p> -->
-                          <!-- <div style="text-align: right; margin: 0">
-                            <el-button size="mini" type="text" @click="renameVisible = false">取消</el-button>
-                            <el-button type="primary" size="mini" @click="renameVisible = false">确定</el-button>
-                          </div> -->
+                      <div
+                        v-if="sceneDropDownLoading"
+                        v-loading="sceneDropDownLoading"
+                        element-loading-spinner="el-icon-loading"
+                        element-loading-background="rgba(0, 0, 0, 0.8)">
+                      </div>
+                      <!--
+                          sceneDropDownCanUse - 有权限
+                            - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
+                        -->
+                      <template v-else>
+                        <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!sceneDropDownCanUse">
+                          <el-popover placement="top" trigger="click" ref="pop" >
+                            <div slot="reference">重命名</div>
+                            <div style="display: flex">
+                              <el-input
+                                class="re-name-input"
+                                type="text"
+                                placeholder="请输入内容"
+                                v-model="rename"
+                                maxlength="50"
+                                show-word-limit
+                                clearable
+                                style="width: 250px"
+                              >
+                              </el-input>
 
-                        <!-- </el-popover> -->
-                        <el-popover placement="top" trigger="click" ref="pop" >
-                          <div slot="reference">重命名</div>
-                          <div style="display: flex">
-                            <el-input
-                              class="re-name-input"
-                              type="text"
-                              placeholder="请输入内容"
-                              v-model="rename"
-                              maxlength="50"
-                              show-word-limit
-                              clearable
-                              style="width: 250px"
-                            >
-                            </el-input>
+                              <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                              <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                            </div>
+                          </el-popover>
 
-                            <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                            <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
-                          </div>
-                        </el-popover>
+                        </el-dropdown-item>
 
-                      </el-dropdown-item>
+                        <!-- 场景的 planId 为 null, 才展示按钮 -->
+                        <!-- :disabled="servicer.length === 0" -->
+                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse">
+                          投放
+                        </el-dropdown-item>
+                        <el-dropdown-item :command="['freshCache',item]">
+                          <span v-if="item.status === 1">未同步</span>
+                          <span v-if="item.status === 2">已同步</span>
+                        </el-dropdown-item>
+                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
+                          <!-- putway : 1 - 上架中； 2 - 下架中 -->
+                          {{ item.putway === 1 ? '下架' : '上架' }}
+                        </el-dropdown-item>
 
-                      <!-- 场景的 planId 为 null, 才展示按钮 -->
-                      <!-- :disabled="servicer.length === 0" -->
-                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" >
-                        投放
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]">
-                        <!-- putway : 1 - 上架中； 2 - 下架中 -->
-                        {{ item.putway === 1 ? '下架' : '上架' }}
-                      </el-dropdown-item>
-                      <el-dropdown-item :command="['detail',item]">
-                        查看配置
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
-                        删除
-                      </el-dropdown-item>
-                      <el-dropdown-item v-if="item.planId" :command="['report',item]">
-                      <!-- <el-dropdown-item :command="['report',item]"> -->
-                        投放报告
-                      </el-dropdown-item>
-                      <el-dropdown-item :command="['freshCache',item]">
-                        <span v-if="item.status === 1">未同步</span>
-                        <span v-if="item.status === 2">已同步</span>
-                      </el-dropdown-item>
+                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
+                          删除
+                        </el-dropdown-item>
+                        <el-dropdown-item v-if="item.planId" :command="['report',item]">
+                        <!-- <el-dropdown-item :command="['report',item]"> -->
+                          投放报告
+                        </el-dropdown-item>
+                        <el-dropdown-item :command="['detail',item]">
+                          查看配置
+                        </el-dropdown-item>
+                      </template>
+
                     </el-dropdown-menu>
                   </el-dropdown>
                 </div>
@@ -241,7 +245,7 @@
             </div>
             <div class="box-fotter">
               <!-- <el-button>添加</el-button> -->
-              <el-button type="primary" icon="el-icon-plus" @click="addServicer">添加</el-button>
+              <el-button :disabled="!sceneCanReuse" type="primary" icon="el-icon-plus" @click="addServicer">添加</el-button>
             </div>
           </el-scrollbar>
         </div>
@@ -439,12 +443,15 @@ export default {
   },
   data () {
     return {
+      sceneCanReuse: false,
       currentSceneHasDoudi: false,
       batchId: '',
       sceneType: 1,
       multiAddStep: 0,
       dropDownLoading: true,
-      canUse: false, // 当前接待员是否有权限操作
+      canUse: false, // 下拉框的接待员是否有权限操作
+      sceneDropDownLoading: true,
+      sceneDropDownCanUse: false, // 下拉框的接待员是否有权限操作
       createType: 0, // 0-单个创建； 1-批量创建
       isShowDetailName: true,
       getServicerLoading: false,
@@ -709,6 +716,18 @@ export default {
         this.$service.getCanReuse(params).then(res => {
           this.dropDownLoading = false
           this.canUse = res || false
+        })
+      }
+    },
+    sceneVisibleChange (val, id) {
+      if (val && id) {
+        this.sceneDropDownLoading = true
+        const params = {
+          id
+        }
+        this.$service.getCanReuse(params).then(res => {
+          this.sceneDropDownLoading = false
+          this.sceneDropDownCanUse = res || false
         })
       }
     },
@@ -1080,6 +1099,8 @@ export default {
 
         this.searchServicer = '' // 接待员的搜索条件置空
         this.getServiceList('list', selectServicerId)
+        // 判断当前所选场景是否有权限
+        this.getSceneCanReuse()
       } else {
         alert(this.tipMsg)
       }
@@ -1175,7 +1196,18 @@ export default {
         // this.getServiceList()
       })
     },
-
+    // 判断当前所选场景是否有权限
+    getSceneCanReuse () {
+      this.sceneCanReuse = false
+      if (this.selectedScene.id) {
+        const params = {
+          id: this.selectedScene.id
+        }
+        this.$service.getSceneCanReuse(params).then(res => {
+          this.sceneCanReuse = res || false
+        })
+      }
+    },
     handelRename (item) {
       if (!this.rename) {
         return this.$message.error('请输入名称')

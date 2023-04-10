@@ -276,6 +276,14 @@ export function getCanReuse (params) {
     params
   })
 }
+// 判断一个接待员是否编辑权限接口
+export function getSceneCanReuse (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/scene/getAccess',
+    params
+  })
+}
 // 维度接口
 export function getBatchUptm (params) {
   return this.fetch({
