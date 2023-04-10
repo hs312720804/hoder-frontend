@@ -12,8 +12,9 @@
         继续编辑
       </el-button>
 
+      <!-- 切换样式 -->
       <!-- <el-button type="text" @click="changeStyle" class="change-style-btn">{{ styleType ? '深色版' : '浅色版' }}</el-button> -->
-      <i :class="styleType ? 'el-icon-moon' : 'el-icon-sunny'" class="position-right change-style-btn "  @click="changeStyle"></i>
+      <!-- <i :class="styleType ? 'el-icon-moon' : 'el-icon-sunny'" class="position-right change-style-btn "  @click="changeStyle"></i> -->
 
       <div class="box" v-if="isShowDetailName" style="position: relative">
         <!-- <i class="el-icon-arrow-left arrow-close" @click="openShowDetailName" ></i> -->
