@@ -427,3 +427,11 @@ export function getContentDynamicCrowdReport (params) {
     params
   })
 }
+// 接待员投后分析报告 - 导出接口
+export function downloadContentDynamicCrowdReport (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/downloadContentDynamicCrowdReport',
+    params
+  })
+}

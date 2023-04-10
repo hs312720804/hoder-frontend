@@ -28,6 +28,10 @@
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
+        <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
+          <el-radio :label="0">产品包</el-radio>
+          <el-radio :label="1">内容运营</el-radio>
+        </el-radio-group>
         <el-button type="info" @click="handleBackTo" style="margin-right: 10px;">返回故事运营</el-button>
         <a :href="downloadUrl" download ref="download_Url"></a>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
@@ -150,6 +154,7 @@ export default {
         this.crowdId = this.$route.query.id || ''
         // this.crowdId = 12461
         this.crowdName = this.$route.query.sceneName || ''
+        this.pageType = this.$route.query.type || ''
         if (this.crowdId !== '') {
           this.initData()
           this.$nextTick(() => {
@@ -174,6 +179,21 @@ export default {
     })
   },
   methods: {
+    handleRadioChange (val) {
+      console.log('1=================>', val)
+      const type = this.pageType
+      // 人群
+      if (val === 0) {
+        const crowdId = this.crowdId
+        const crowdName = this.crowdName
+        this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, type } })
+      } else if (val === 1) {
+        const componentName = 'storyReport'
+        const id = this.crowdId
+        const sceneName = this.crowdName
+        this.$router.push({ path: '/dynamicReport', query: { id, sceneName, componentName, type } })
+      }
+    },
     handleBackTo () {
       // 根据GlobalStrategySource判断是从哪里跳来的
       // const source = this.$appState.$get('GlobalStrategySource')
@@ -184,9 +204,13 @@ export default {
       // }
       this.$router.push({ name: 'storyLine' })
     },
-    //  导出估算画像数据
+    //  导出
     handleDownload () {
-      this.downloadUrl = '/api/chart/dynamicCrowdReportDownload?crowdId=' + this.crowdId
+      if (this.pageType === 'story') {
+        this.downloadUrl = '/api/chart/downloadContentDynamicCrowdReport?sceneId=' + this.crowdId
+      } else {
+        this.downloadUrl = '/api/chart/downloadContentDynamicCrowdReport?crowdId=' + this.crowdId
+      }
       this.$nextTick(() => {
         this.$refs.download_Url.click()
       })
@@ -218,7 +242,13 @@ export default {
       const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
     },
     initData () {
-      this.$service.getContentDynamicCrowdReport({ crowdId: this.crowdId, sceneId: this.crowdId }).then(res => {
+      let params = {}
+      if (this.pageType === 'story') {
+        params = { sceneId: this.crowdId }
+      } else {
+        params = { crowdId: this.crowdId }
+      }
+      this.$service.getContentDynamicCrowdReport(params).then(res => {
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -547,6 +577,8 @@ export default {
   },
   data () {
     return {
+      pageType: '',
+      pageRadio: 1,
       downloadUrl: undefined,
       options: [{
         value: 6,
@@ -584,10 +616,10 @@ export default {
             prop: 'dynamicType'
           },
           {
-            label: '命中流量占比 ？？？',
-            prop: 'flowNum',
+            label: '命中流量占比',
+            prop: 'dynamicHitRate',
             render: (h, { row }) => {
-              return (row.flowNum) + '%'
+              return (row.dynamicHitRate) + '%'
             }
           },
           {
