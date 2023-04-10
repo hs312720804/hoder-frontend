@@ -4,7 +4,9 @@
     <!-- {{selectedScene}} -->
     <!-- canUse：{{canUse}}
     <br/>
+
     havePermissionsToUse: {{ havePermissionsToUse}} -->
+
     <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
       【我的任务】、
       【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
@@ -22,6 +24,7 @@
       场景dropdown：【重命名】、【下架】、【投放】、【删除】
       【绩效目标】所有编辑功能
     -->
+
     <!-- <div class="detail-box top-div">
       <span class="detail-name">
         <span>
@@ -67,7 +70,7 @@
           >
             <div class="detail-box">
               <div class="target">我的任务（可选）</div>
-              <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" ></i>
+              <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
               <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
               <div class="flex-content">
@@ -115,7 +118,8 @@
                   <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
                   <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span>
                 </div>
-                <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" text="asdasd" ></i>
+                <!-- {{ canUse }} -->
+                <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i>
                 <div class="detail-kpi">
                   <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
                   <!-- <el-descriptions title="" column="2">
@@ -139,6 +143,7 @@
                       <span class="kpi-label">目标</span>
                       <span class="kpi-value">
                         <!-- {{ targetValue }} -->
+                        <!-- {{ parseInt(this.targetValue) }} -->
 
                           <span v-if="!isEditValue" @click="editTargetValue">
                             <span>{{ targetValue }}</span>
@@ -1771,9 +1776,13 @@ export default {
         const legendData = series.map((key) => {
           return key.name
         })
+        // 需要转为百分比的 key 值
+        const ratioMap = ['orderRatio', 'payRate']
         const linesData = series.map((key) => {
-          if (data.yunit === '%') {
-            const arr = key.value.map(v => v * 100)
+          // if (data.yunit === '%') {
+          if (ratioMap.includes(this.targetKeyId)) {
+            const arr = key.value.map(v => Number(v * 100).toFixed(2))
+            data.yunit = '%'
             return { name: key.name, data: arr, type: 'line' }
           } else {
             return { name: key.name, data: key.value, type: 'line' }
@@ -1805,11 +1814,26 @@ export default {
         },
         splitLine: {
           show: true
+        },
+        axisLabel: {
+          interval: 'auto',
+          formatter: function (value) {
+            if (value >= 100000000) {
+              value = value / 100000000 + '亿' + yunit
+            } else if (value >= 10000000) {
+              value = value / 10000000 + '千万' + yunit
+            } else if (value >= 10000 && value < 10000000) {
+              value = value / 10000 + '万' + yunit
+            } else {
+              value = value + yunit
+            }
+            return value
+          }
         }
-
       }
-      yAxisObj.max = Math.max(this.targetValue, ...yData[0].data)
-      yAxisObj.min = Math.min(this.targetValue, ...yData[0].data)
+      const markLineTargetValue = this.targetValue.includes('%') ? this.targetValue.replace('%', '') : this.targetValue
+      yAxisObj.max = Math.max(markLineTargetValue, ...yData[0].data)
+      yAxisObj.min = Math.min(markLineTargetValue, ...yData[0].data)
       // let myChart = echarts.init(this.$refs[element])
       const option = {
         backgroundColor: '', // rgba设置透明度0.1
@@ -1840,6 +1864,16 @@ export default {
         // },
         tooltip: {
           trigger: 'axis',
+          // formatter: '{a} <br/>{b} : {c} %',
+          formatter: function (parmas) {
+            let str = parmas[0].name + '<br/>'
+            // let str = ''
+            for (const item of parmas) {
+              str = str + parmas[0].marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit
+            }
+            // return _this.cc_format_number(a.data)
+            return str
+          },
           axisPointer: {
             type: 'cross',
             label: {
@@ -1905,6 +1939,9 @@ export default {
             label: {
               show: true,
               position: 'top',
+              formatter: function (data) {
+                return `${data.value}${yunit}`
+              },
               color: '#000'
             },
             areaStyle: {
@@ -1942,7 +1979,7 @@ export default {
               },
               data: [
                 {
-                  yAxis: this.targetValue
+                  yAxis: markLineTargetValue
                 }
               ]
             }
