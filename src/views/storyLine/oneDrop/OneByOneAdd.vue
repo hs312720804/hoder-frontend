@@ -17,7 +17,7 @@
             :key="key"
           >
               <el-input
-                v-model="field.receptionist"
+                v-model.trim="field.receptionist"
                 placeholder="接待员名称"
                 clearable>
               </el-input>

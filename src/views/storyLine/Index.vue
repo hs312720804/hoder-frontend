@@ -298,7 +298,7 @@
         <!-- 单个创建 -->
         <el-form v-if="createType === 0" :model="formServicer" :rules="formServicerRules" ref="formServicerRef" @submit.native.prevent label-width="100px" >
           <el-form-item label="接待员名：" prop="receptionist">
-            <el-input v-model="formServicer.receptionist" autocomplete="off" clearable></el-input>
+            <el-input v-model.trim="formServicer.receptionist" autocomplete="off" clearable></el-input>
           </el-form-item>
           <el-form-item label=""  v-if="!currentSceneHasDoudi">
             <!-- <el-input v-model="formServicer.name" autocomplete="off" clearable></el-input> -->

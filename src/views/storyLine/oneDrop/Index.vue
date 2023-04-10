@@ -31,7 +31,7 @@
     <div class="div-class">
 
       <el-form-item label="场景名：" label-width="90px" prop="name">
-        <el-input v-model="formScene.name" autocomplete="off" clearable></el-input>
+        <el-input v-model.trim="formScene.name" autocomplete="off" clearable></el-input>
       </el-form-item>
     </div>
   </el-form>
