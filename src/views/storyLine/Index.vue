@@ -726,7 +726,7 @@ export default {
         const params = {
           id
         }
-        this.$service.getCanReuse(params).then(res => {
+        this.$service.getSceneCanReuse(params).then(res => {
           this.sceneDropDownLoading = false
           this.sceneDropDownCanUse = res || false
         })
