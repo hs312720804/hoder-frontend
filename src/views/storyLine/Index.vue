@@ -107,8 +107,8 @@
                       <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]">
                         删除
                       </el-dropdown-item>
-                      <!-- <el-dropdown-item v-if="item.planId" :command="['report',item]"> -->
-                      <el-dropdown-item :command="['report',item]">
+                      <el-dropdown-item v-if="item.planId" :command="['report',item]">
+                      <!-- <el-dropdown-item :command="['report',item]"> -->
                         投放报告
                       </el-dropdown-item>
                     </el-dropdown-menu>
