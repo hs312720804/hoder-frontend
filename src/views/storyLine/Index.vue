@@ -111,6 +111,10 @@
                       <!-- <el-dropdown-item :command="['report',item]"> -->
                         投放报告
                       </el-dropdown-item>
+                      <el-dropdown-item :command="['freshCache',item]">
+                        <span v-if="item.status === 1">未同步</span>
+                        <span v-if="item.status === 2">已同步</span>
+                      </el-dropdown-item>
                     </el-dropdown-menu>
                   </el-dropdown>
                 </div>
@@ -563,6 +567,11 @@ export default {
     isCopiedServicer () {
       return !!this.selectedServicer.referenceId
     },
+    havePermissionsToUse () {
+      // canUse - 当前登录用户对于该接待员是否有权限
+      // isCopiedServicer - 是否为复用的接待员 true-是  false-否
+      return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
+    },
     // 接待员分组数据
     groupServicer () {
       const arr = this.mergeSameAttribute(this.servicer)
@@ -617,7 +626,8 @@ export default {
     //   window.sessionStorage.removeItem('pageInfo')
     // }
     const bool = this.getIsAllSetNextId()
-    if (bool) {
+    // 当没有权限时，不需要要校验
+    if (bool || !this.havePermissionsToUse) {
       // 执行路由跳转
       next()
     } else {
@@ -759,7 +769,8 @@ export default {
           // console.log('内容不可见，处理后台、最小化、锁屏状态')
           // alert('当前接待员出口下一步不可为空')
           const bool = this.getIsAllSetNextId()
-          if (!bool) {
+          // 当没有权限时，不需要要校验
+          if (!(bool || !this.havePermissionsToUse)) {
             alert(this.tipMsg)
           }
           break
@@ -963,9 +974,26 @@ export default {
         this.seeDevDetail(row)
       } else if (type === 'report') {
         this.goToDynamicCrowdReport(row)
+      } else if (type === 'freshCache') {
+        this.freshCache(row)
       }
     },
-
+    freshCache (row) {
+      this.$confirm('新建的人群策略将实时生效，旧的策略更新需要延时2小时生效', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      })
+        .then(() => {
+          this.$service.freshCache({ policyId: row.policyId }).then(data => {
+            this.getSceneList()
+            this.$message({
+              type: 'info',
+              message: data
+            })
+          })
+        })
+    },
     // 跳转投后报告页面
     goToDynamicCrowdReport ({ id, sceneName }) {
       const componentName = 'storyReport'
@@ -1042,7 +1070,8 @@ export default {
     // 选择场景
     selectScene (id, selectServicerId) {
       const bool = this.getIsAllSetNextId()
-      if (bool) {
+      // 当没有权限时，不需要要校验
+      if (bool || !this.havePermissionsToUse) {
         this.activeIndex = id
 
         // this.selectedScene = this.sceneList[index] || {}
@@ -1057,8 +1086,10 @@ export default {
     },
     // 选择服务员
     selectServicer (id) {
+      console.log('havePermissionsToUse===>', this.havePermissionsToUse)
       const bool = this.getIsAllSetNextId()
-      if (bool) {
+      // 当没有权限时，不需要要校验
+      if (bool || !this.havePermissionsToUse) {
         // 跳转
         this.activeIndex2Id = id
         const obj = this.servicer.find(item => item.id === id)

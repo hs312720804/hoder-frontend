@@ -85,13 +85,13 @@
     </template>
     <!-- 第 5 步 -->
     <template v-else-if="activeStep === 4">
-      <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
+      <el-button type="primary" @click="backStep">上一步</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
       <el-button type="primary" @click="oneDropNextStep">确认</el-button>
     </template>
     <!-- 第 2、3、4 步 -->
     <template v-else>
-      <el-button type="primary" @click="backStep">上一步{{ activeStep }}</el-button>
+      <el-button type="primary" @click="backStep">上一步</el-button>
       <el-button type="warning" @click="skipSave">跳过保存</el-button>
       <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
     </template>

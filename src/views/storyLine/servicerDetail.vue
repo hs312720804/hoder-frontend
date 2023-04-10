@@ -633,7 +633,8 @@
                 <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
               </div>
               <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-              <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class">
+              <div v-if="havePermissionsToUse" class="drop-class">
+              <!-- <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class"> -->
                 <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                   <span class="el-dropdown-link">
                     <span>.</span>
@@ -644,7 +645,7 @@
                     <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
                       编辑
                     </el-dropdown-item>
-                    <el-dropdown-item v-if="canUse" class="clearfix" :command="['deleteExport', exportItem]">
+                    <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
                       删除
                     </el-dropdown-item>
                   </el-dropdown-menu>
@@ -1626,10 +1627,13 @@ export default {
     },
 
     editTargetValue () {
-      this.isEditValue = true
-      this.$nextTick(() => {
-        this.$refs.inputValue.focus()
-      })
+      // 有权限才能操作
+      if (this.havePermissionsToUse) {
+        this.isEditValue = true
+        this.$nextTick(() => {
+          this.$refs.inputValue.focus()
+        })
+      }
     },
     editTarget () {
       this.isEdit = true
