@@ -293,7 +293,7 @@ export default {
           return {
             ...obj,
             showUv: this.cc_format_number(obj.showUv),
-            ctr: this.cc_format_number(obj.ctr),
+            ctr: this.toPercent(obj.ctr),
             clickPlayRate: this.toPercent(obj.clickPlayRate),
             playRate: this.toPercent(obj.playRate),
             payRate: this.toPercent(obj.payRate)
@@ -309,7 +309,7 @@ export default {
           return {
             ...obj,
             showUv: this.cc_format_number(obj.showUv),
-            ctr: this.cc_format_number(obj.ctr),
+            ctr: this.toPercent(obj.ctr),
             clickPlayRate: this.toPercent(obj.clickPlayRate),
             playRate: this.toPercent(obj.playRate),
             payRate: this.toPercent(obj.payRate)
@@ -623,7 +623,7 @@ export default {
             }
           },
           {
-            label: '包含人群-ID',
+            label: '包含接待员-ID',
             prop: 'cname'
           }],
           data: []
@@ -686,7 +686,7 @@ export default {
                     placement: 'top',
                     trigger: 'hover',
                     class: 'popover-button',
-                    width: 400,
+                    width: 40,
                     content: '对应版块/版面/资源位的起播'
                   }
                 }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
@@ -701,6 +701,7 @@ export default {
           {
             label: '点击起播率（起播用户数/板块点击用户）',
             prop: 'clickPlayRate',
+            // width: 90,
             render: (h, { row }) => {
               return this.toPercent(row.clickPlayRate)
             }
@@ -721,7 +722,7 @@ export default {
                     placement: 'top',
                     trigger: 'hover',
                     class: 'popover-button',
-                    width: 400,
+                    width: 30,
                     content: '对应影片的付费'
                   }
                 }, [h('span', { slot: 'reference', class: 'priority-tip' }, '!')])
@@ -729,7 +730,7 @@ export default {
             },
             prop: 'payUv',
             render: (h, { row }) => {
-              return this.toPercent(row.payUv)
+              return this.cc_format_number(row.payUv)
             }
           }, {
             label: '起播付费率',
@@ -851,7 +852,10 @@ export default {
             prop: 'showUv'
           }, {
             label: 'CTR',
-            prop: 'ctr'
+            prop: 'ctr',
+            render: (h, { row }) => {
+              return this.toPercent(row.ctr)
+            }
           }, {
             label: '起播用户数',
             prop: 'playUv'
@@ -905,7 +909,10 @@ export default {
               prop: 'clickUv'
             }, {
               label: 'CTR',
-              prop: 'ctr'
+              prop: 'ctr',
+              render: (h, { row }) => {
+                return this.toPercent(row.ctr)
+              }
             }, {
               label: '点击起播率',
               prop: 'clickPlayRate',
@@ -954,7 +961,7 @@ export default {
             label: 'CTR',
             prop: 'ctr',
             render: (h, { row }) => {
-              return this.cc_format_number(row.ctr)
+              return this.toPercent(row.ctr)
             }
           }, {
             label: '起播用户数',
