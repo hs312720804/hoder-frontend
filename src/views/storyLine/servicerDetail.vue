@@ -638,7 +638,7 @@
                 <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
               </div>
               <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-              <div v-if="havePermissionsToUse" class="drop-class">
+              <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse"  class="drop-class">
               <!-- <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class"> -->
                 <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                   <span class="el-dropdown-link">
@@ -650,7 +650,7 @@
                     <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
                       编辑
                     </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]">
+                    <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]" v-if="havePermissionsToUse">
                       删除
                     </el-dropdown-item>
                   </el-dropdown-menu>

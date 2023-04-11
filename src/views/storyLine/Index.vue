@@ -574,10 +574,11 @@ export default {
     isCopiedServicer () {
       return !!this.selectedServicer.referenceId
     },
-    havePermissionsToUse () {
+    havePermissionsToCheck () {
       // sceneCanReuse - 当前登录用户对于该场景是否有权限
       // isCopiedServicer - 是否为复用的接待员 true-是  false-否
-      return this.selectedServicer.id && !this.isCopiedServicer && this.sceneCanReuse
+      // return this.selectedServicer.id && !this.isCopiedServicer && this.sceneCanReuse
+      return this.selectedServicer.id && this.sceneCanReuse
     },
     // 接待员分组数据
     groupServicer () {
@@ -634,7 +635,7 @@ export default {
     // }
     const bool = this.getIsAllSetNextId()
     // 当没有权限时，不需要要校验
-    if (bool || !this.havePermissionsToUse) {
+    if (bool || !this.havePermissionsToCheck) {
       // 执行路由跳转
       next()
     } else {
@@ -789,7 +790,7 @@ export default {
           // alert('当前接待员出口下一步不可为空')
           const bool = this.getIsAllSetNextId()
           // 当没有权限时，不需要要校验
-          if (!(bool || !this.havePermissionsToUse)) {
+          if (!(bool || !this.havePermissionsToCheck)) {
             alert(this.tipMsg)
           }
           break
@@ -1090,7 +1091,7 @@ export default {
     selectScene (id, selectServicerId) {
       const bool = this.getIsAllSetNextId()
       // 当没有权限时，不需要要校验
-      if (bool || !this.havePermissionsToUse) {
+      if (bool || !this.havePermissionsToCheck) {
         this.activeIndex = id
 
         // this.selectedScene = this.sceneList[index] || {}
@@ -1108,10 +1109,10 @@ export default {
     },
     // 选择服务员
     selectServicer (id) {
-      console.log('havePermissionsToUse===>', this.havePermissionsToUse)
+      console.log('havePermissionsToCheck===>', this.havePermissionsToCheck)
       const bool = this.getIsAllSetNextId()
       // 当没有权限时，不需要要校验
-      if (bool || !this.havePermissionsToUse) {
+      if (bool || !this.havePermissionsToCheck) {
         // 跳转
         this.activeIndex2Id = id
         const obj = this.servicer.find(item => item.id === id)
