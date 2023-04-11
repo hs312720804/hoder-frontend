@@ -257,7 +257,7 @@
                   </div>
                   <div class="d-info-box">
                     <div class="box-title">擅长(可选)</div>
-                    <div v-if="selectedServicer.receptionist" class="box-line" >
+                    <div v-if="selectedServicer.id" class="box-line" >
                       <el-select
                         ref="selectObj"
                         v-model="skillValue"
@@ -265,6 +265,7 @@
                         @change="selectSkill"
                         :popper-append-to-body="false"
                         :disabled="!canUse"
+                        @visible-change="skillValueSelectVisibleChange"
                       >
                         <!-- @blur="addOption"
                         @keyup.enter.native="addOption" -->
@@ -279,7 +280,7 @@
                         </div>
 
                         <div class="operate-wrap">
-                          <el-form :inline="true" :model="formInline" >
+                          <el-form ref="formInlineRef" :model="formInline" :rules="formInlineRule">
                             <el-form-item prop="skillName">
                               <el-input
                                 v-model="formInline.skillName"
@@ -287,16 +288,15 @@
                                 @keyup.enter.native="addOption"
                                 clearable
                                 >
+                                <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
                               </el-input>
                             </el-form-item>
 
                           </el-form>
-
-                          <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
                         </div>
 
                         <div slot="empty" class="operate-wrap">
-                          <el-form :inline="true" :model="formInline">
+                          <el-form ref="formInlineClearRef" :model="formInline" :rules="formInlineRule">
                             <el-form-item prop="skillName">
                               <el-input
                                 v-model="formInline.skillName"
@@ -304,10 +304,10 @@
                                 @keyup.enter.native="addOption"
                                 clearable
                                 >
+                                <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
                               </el-input>
                             </el-form-item>
                           </el-form>
-                          <el-button type="text" @click="addOption" icon="el-icon-plus">添加技能分类</el-button>
                         </div>
                       </el-select>
                     </div>
@@ -972,6 +972,9 @@ export default {
       formInline: {
         skillName: ''
       },
+      formInlineRule: {
+        skillName: [{ required: true, message: '请输入', trigger: 'blur' }]
+      },
       skillOptions: [],
 
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
@@ -1084,6 +1087,11 @@ export default {
   },
 
   methods: {
+    skillValueSelectVisibleChange () {
+      const ref = this.$refs.formInlineClearRef || this.$refs.formInlineRef
+      console.log('ref--->', ref)
+      ref && this.$refs.formInlineRef.resetFields()
+    },
     handleTypeChange () {
       const params = {
         id: this.selectedServicer.id, // 接待员ID
@@ -1610,18 +1618,30 @@ export default {
     },
 
     addOption () {
-      if (this.formInline.skillName === '') {
-        return this.$message.error('请输入技能分类')
-      }
-      // // 创建新技能，并选中
-      const parmas = {
-        sceneId: this.selectedScene.id,
-        name: this.formInline.skillName
-      }
+      // if (this.formInline.skillName === '') {
+      //   return this.$message.error('请输入技能分类')
+      // }
+      // console.log(this)
+      // console.log(this.$refs)
+      // console.log(this.$refs.formInlineRef)
+      const ref = this.$refs.formInlineClearRef || this.$refs.formInlineRef
 
-      this.$service.addSceneSkill(parmas, '添加成功').then(async res => {
-        this.formInline.skillName = ''
-        this.getSkillListBySceneId()
+      // console.log('ref--------->', ref)
+
+      // ref.validate(valid => {
+      ref.validate(valid => {
+        if (valid) {
+          // // 创建新技能，并选中
+          const parmas = {
+            sceneId: this.selectedScene.id,
+            name: this.formInline.skillName
+          }
+
+          this.$service.addSceneSkill(parmas, '添加成功').then(async res => {
+            this.formInline.skillName = ''
+            this.getSkillListBySceneId()
+          })
+        }
       })
     },
     // 根据场景ID获取技能列表
