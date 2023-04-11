@@ -825,6 +825,10 @@ export default {
     styleType: {
       type: Boolean,
       default: true
+    },
+    canUse: { // 当前场景是否有权限
+      type: Boolean,
+      default: false
     }
   },
   watch: {
@@ -882,8 +886,8 @@ export default {
         // 根据接待员 ID 获取绩效目标
         this.getTargetById()
 
-        // 判断是否有权限
-        this.getCanReuse()
+        // // 判断是否有权限  现在不需要了，直接用场景的权限就可以了
+        // this.getCanReuse()
         // const obj = this.targetKeyList.find(item => {
         //   return this.selectedServicer.indicatorsType === item.id
         // })
@@ -925,7 +929,7 @@ export default {
       })
     },
     havePermissionsToUse () {
-      // canUse - 当前登录用户对于该接待员是否有权限
+      // canUse - 该场景是否有权限
       // isCopiedServicer - 是否为复用的接待员 true-是  false-否
       return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
     }
@@ -1057,8 +1061,8 @@ export default {
       sourceList: [], // 内容源
       selectSourceCode: 'tencent', // 所选内容源
       recommendResourceList: [], // 推荐影片
-      tagCodeList: [],
-      canUse: false // 当前接待员是否有权限操作
+      tagCodeList: []
+      // canUse: false // 当前接待员是否有权限操作
     }
   },
   created () {
@@ -1089,17 +1093,17 @@ export default {
       // 切换接待员类型
       this.$service.setReceptionistType(params)
     },
-    getCanReuse () {
-      this.canUse = false
-      if (this.selectedServicer.id) {
-        const params = {
-          id: this.selectedServicer.id
-        }
-        this.$service.getCanReuse(params).then(res => {
-          this.canUse = res || false
-        })
-      }
-    },
+    // getCanReuse () {
+    //   this.canUse = false
+    //   if (this.selectedServicer.id) {
+    //     const params = {
+    //       id: this.selectedServicer.id
+    //     }
+    //     this.$service.getCanReuse(params).then(res => {
+    //       this.canUse = res || false
+    //     })
+    //   }
+    // },
     openShowDetailName () {
       this.isShowDetailName = !this.isShowDetailName
     },

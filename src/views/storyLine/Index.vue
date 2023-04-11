@@ -179,30 +179,30 @@
                       :hide-on-click="false"
                       placement="bottom"
                       @command="handleServiceCommand"
-                      @visible-change="e => visibleChange(e, item.id)"
                     >
+                      <!-- @visible-change="e => visibleChange(e, item.id)" -->
                       <span class="el-dropdown-link">
                         . . .
                       </span>
                       <el-dropdown-menu slot="dropdown">
                         <!-- canUse：{{ canUse }} -->
 
-                        <div
+                        <!-- <div
                           v-if="dropDownLoading"
                           v-loading="dropDownLoading"
                           element-loading-spinner="el-icon-loading"
                           element-loading-background="rgba(0, 0, 0, 0.8)">
-                        </div>
+                        </div> -->
                         <!--
                           referenceId - 复用接待员
                             - 是：禁用【重命名】、【复制】、【复用】
                           canUse - 有权限
                             - 没有权限： 禁用 【重命名】、【下架】、【删除】
-                          isDoudi  - 兜底接待员
+                          item.type === 1  - 兜底接待员
                             - 禁用【复制】、【复用】
                         -->
-                        <template v-else>
-                          <el-dropdown-item class="clearfix" :command="['rename', item]" :disabled="!!item.referenceId || !canUse" >
+                        <!-- <template v-else> -->
+                          <el-dropdown-item class="clearfix" :command="['rename', item]" :disabled="!!item.referenceId || !sceneCanReuse" >
                             <el-popover placement="top" trigger="click" ref="pop">
                               <div slot="reference">重命名</div>
                               <div style="display: flex">
@@ -223,19 +223,20 @@
                             </el-popover>
 
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['offSet', item]" :disabled="!canUse">
+                          <!-- {{ item }} -->
+                          <el-dropdown-item class="clearfix" :command="['offSet', item]" :disabled="!sceneCanReuse">
                             {{ item.putway === 1 ? '下架' : '上架' }}
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId || isDoudi">
+                          <el-dropdown-item class="clearfix" :command="['copy', item]" :disabled="!!item.referenceId || item.type === 1">
                             复制
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId || isDoudi">
+                          <el-dropdown-item class="clearfix" :command="['copyUse', item]" :disabled="!!item.referenceId || item.type === 1">
                             复用
                           </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['deleteService', item]" :disabled="!canUse">
+                          <el-dropdown-item class="clearfix" :command="['deleteService', item]" :disabled="!sceneCanReuse">
                             删除
                           </el-dropdown-item>
-                        </template>
+                        <!-- </template> -->
 
                       </el-dropdown-menu>
                     </el-dropdown>
@@ -255,6 +256,7 @@
         <!-- 接待员详情 -->
         <servicerDetail
           ref="servicerDetailRef"
+          :canUse="sceneCanReuse"
           :servicer="servicer"
           :selectedScene="selectedScene"
           :selectedServicer="selectedServicer"
@@ -444,15 +446,15 @@ export default {
   },
   data () {
     return {
-      sceneCanReuse: false,
+      sceneCanReuse: false, // 当前场景是否有权限
+      // canUse: false, // 下拉框的接待员是否有权限操作
+      sceneDropDownLoading: true,
+      sceneDropDownCanUse: false, // 下拉框的接待员是否有权限操作
       currentSceneHasDoudi: false,
       batchId: '',
       sceneType: 1,
       multiAddStep: 0,
       dropDownLoading: true,
-      canUse: false, // 下拉框的接待员是否有权限操作
-      sceneDropDownLoading: true,
-      sceneDropDownCanUse: false, // 下拉框的接待员是否有权限操作
       createType: 0, // 0-单个创建； 1-批量创建
       isShowDetailName: true,
       getServicerLoading: false,
@@ -569,16 +571,13 @@ export default {
   },
 
   computed: {
-    isDoudi () {
-      return this.selectedServicer.type === 1
-    },
     isCopiedServicer () {
       return !!this.selectedServicer.referenceId
     },
     havePermissionsToUse () {
-      // canUse - 当前登录用户对于该接待员是否有权限
+      // sceneCanReuse - 当前登录用户对于该场景是否有权限
       // isCopiedServicer - 是否为复用的接待员 true-是  false-否
-      return this.selectedServicer.id && !this.isCopiedServicer && this.canUse
+      return this.selectedServicer.id && !this.isCopiedServicer && this.sceneCanReuse
     },
     // 接待员分组数据
     groupServicer () {
@@ -707,19 +706,19 @@ export default {
         // this.multiAddStep = this.multiAddStep + 1
       })
     },
-    visibleChange (val, id) {
-      console.log(val, id)
-      if (val && id) {
-        this.dropDownLoading = true
-        const params = {
-          id
-        }
-        this.$service.getCanReuse(params).then(res => {
-          this.dropDownLoading = false
-          this.canUse = res || false
-        })
-      }
-    },
+    // visibleChange (val, id) {
+    //   console.log(val, id)
+    //   if (val && id) {
+    //     this.dropDownLoading = true
+    //     const params = {
+    //       id
+    //     }
+    //     this.$service.getCanReuse(params).then(res => {
+    //       this.dropDownLoading = false
+    //       this.canUse = res || false
+    //     })
+    //   }
+    // },
     sceneVisibleChange (val, id) {
       if (val && id) {
         this.sceneDropDownLoading = true
@@ -1099,9 +1098,10 @@ export default {
         this.selectedScene = obj || {}
 
         this.searchServicer = '' // 接待员的搜索条件置空
-        this.getServiceList('list', selectServicerId)
         // 判断当前所选场景是否有权限
         this.getSceneCanReuse()
+
+        this.getServiceList('list', selectServicerId)
       } else {
         alert(this.tipMsg)
       }
