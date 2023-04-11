@@ -109,6 +109,7 @@ import { options } from '../utils'
 import createClientDialog from '../createClientDialog.vue'
 
 export default {
+  inject: ['_this'],
   components: {
     createClientDialog
   },
@@ -123,7 +124,6 @@ export default {
     return {
       entryList: [],
       exportList: [],
-      servicerListFilterSelect: [],
       options: options,
       // data: generateData(),
       uptmList: [],
@@ -180,6 +180,21 @@ export default {
       entryIndex: 0,
       exportIndex: 0
 
+    }
+  },
+  computed: {
+    // 当前场景下的接待员，不用过滤掉所选的，因为这是新建接待员场景
+    servicerListFilterSelect () {
+      let data = []
+      // 批量创建接待员弹窗
+      if (this._this.dialogVisible2) {
+        data = this._this.servicer
+
+        // 一键投放弹窗
+      } else {
+        data = []
+      }
+      return data
     }
   },
   methods: {

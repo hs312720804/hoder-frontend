@@ -128,7 +128,6 @@ export default {
       searchServicer: '',
       // servicerList: ['接待员1', '接待员2', '接待员3', '接待员4', '南京', '西安', '成都'],
       activeId: '', // 当前所选接待员
-      servicerListFilterSelect: [],
       options: options,
       value: [],
       filterMethod (query, item) {
@@ -174,6 +173,11 @@ export default {
     // }
   },
   computed: {
+    // 下一跳接待员，只能选择除了本身之外的
+    servicerListFilterSelect () {
+      const data = this.allRuleForm.filter(item => item.id !== this.activeId) || []
+      return data
+    }
     // allRuleForm () {
     //   // const len = this.servicerList.length
     //   const list = this.servicerList.map(item => {

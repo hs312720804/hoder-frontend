@@ -444,6 +444,12 @@ export default {
     MultiAdd,
     OneDrop
   },
+
+  provide () {
+    return {
+      _this: this
+    }
+  },
   data () {
     return {
       sceneCanReuse: false, // 当前场景是否有权限
@@ -668,11 +674,10 @@ export default {
           receptionists
         }
         // 第二步保存
-        this.$service.batchSaveSecond(params).then(res => {
-        // 刷新接待员列表
-          this.getSceneList('add')
+        this.$service.batchSaveSecond(params, '成功保存').then(res => {
+          // 刷新接待员列表
+          this.getServiceList('add')
           this.dialogVisible2 = false
-          this.$message.success('成功保存提交数据')
         })
       })
     },
@@ -1200,6 +1205,12 @@ export default {
     },
     // 判断当前所选场景是否有权限
     getSceneCanReuse () {
+      // 再次点击详情时中断之前的请求，防止数据被之前接口数据所覆盖·
+      removePendingRequest({
+        method: 'get',
+        url: '/api/scene/getAccess'
+      })
+
       this.sceneCanReuse = false
       if (this.selectedScene.id) {
         const params = {
