@@ -1629,6 +1629,18 @@ export default {
     LinkAnalysis
   },
   data () {
+    const checkFinanceCode = (rule, value, callback) => {
+      if (value) {
+        const reg = /^\d+$/
+        if (reg.test(value) === false) {
+          callback(new Error('请输入正整数或0'))
+        } else {
+          callback()
+        }
+      } else {
+        callback()
+      }
+    }
     return {
       queryCrowdHitAlertListTable: {
         props: {},
@@ -1681,7 +1693,10 @@ export default {
         compareType: '='
       },
       hitRules: {
-        hitSize: [{ required: true, message: '请输入命中设备量', trigger: 'blur' }],
+        hitSize: [
+          { required: true, message: '请输入命中设备量', trigger: 'blur' },
+          { required: true, trigger: 'blur', validator: checkFinanceCode } // 自定义正则
+        ],
         alertTime: [{ type: 'string', required: true, message: '请选择监控时间', trigger: 'change' }]
       },
       analysisTableData: [],
