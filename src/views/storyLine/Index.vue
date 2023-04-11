@@ -320,8 +320,8 @@
           </el-form-item>
 
           <el-form-item v-if="formServicer.type" label="兜底方式：" >
-            <el-radio v-model="formServicer.planc" :label="1">直接兜底</el-radio>
-            <el-radio v-model="formServicer.planc" :label="2">随机再兜底</el-radio>
+            <el-radio v-model="formServicer.planc" :label="0">直接兜底</el-radio>
+            <el-radio v-model="formServicer.planc" :label="1">随机再兜底</el-radio>
           </el-form-item>
         </el-form>
 
@@ -553,7 +553,7 @@ export default {
       formServicer: {
         receptionist: '',
         type: false,
-        planc: 1
+        planc: 0
       },
       dialogVisible: false,
       dialogVisible2: false,

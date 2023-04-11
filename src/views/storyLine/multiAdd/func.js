@@ -86,7 +86,7 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
         //   Message.success('成功保存提交数据')
         // })
       }).catch(() => {
-        Message.error('没有通过')
+        Message.error('请完善条件')
       })
     })
   })
@@ -245,7 +245,7 @@ function multiAddNextStepFn ({ commonSetRef }) {
           resolve({ allEntryArr, allExportArr, ruleFormData })
           // this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData })
         }).catch(() => {
-          Message.error('没有通过')
+          Message.error('请完善条件')
         })
       }
     })

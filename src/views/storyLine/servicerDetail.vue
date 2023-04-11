@@ -221,8 +221,8 @@
                   <div class="box-title">兜底方式</div>
                   <div class="box-line">
                     <el-radio-group v-model="radio2" @input="handleTypeChange">
-                      <div><el-radio :label="1" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
-                      <div><el-radio :label="2">无合适接待员则先随机完再兜底</el-radio></div>
+                      <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
+                      <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
                     </el-radio-group>
 
                     <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
@@ -1096,7 +1096,7 @@ export default {
       const params = {
         id: this.selectedServicer.id, // 接待员ID
         type: 1, // 0 普通接待员 1 兜底接待员
-        planc: this.radio2 // 1 直接兜底 2,随机兜底
+        planc: this.radio2 // 0 直接兜底 1,随机兜底
       }
       // 切换接待员类型
       this.$service.setReceptionistType(params)
