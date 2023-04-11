@@ -125,7 +125,7 @@ export default {
         ]
       },
       formScene: {
-        name: 'test 一键投放场景'
+        name: ''
       },
       sceneDetail: {}
     }
@@ -278,7 +278,7 @@ export default {
         }
         await this.$service.getListbySceneId(parmas).then(res => {
           // this.cutActiveStep()
-          this.receptionistList = res || []
+          this.receptionistList = res.length === 0 ? [{ receptionist: '' }] : res
         })
       }
     },

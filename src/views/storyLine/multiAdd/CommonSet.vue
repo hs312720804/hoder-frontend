@@ -133,7 +133,7 @@ export default {
       ruleForm: {
         type: ['影视模型'],
         resource: [], // 维度
-        prependName: '测试批量创建',
+        prependName: '',
         appendName: ''
       },
       rules: {

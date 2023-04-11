@@ -272,7 +272,7 @@
         ></servicerDetail>
       </div>
       <el-dialog
-        title="添加场景"
+        title="一键投放"
         :visible.sync="dialogVisible"
         width="95%"
       >
@@ -1088,7 +1088,7 @@ export default {
     },
 
     // 选择场景
-    selectScene (id, selectServicerId) {
+    async selectScene (id, selectServicerId) {
       const bool = this.getIsAllSetNextId()
       // 当没有权限时，不需要要校验
       if (bool || !this.havePermissionsToCheck) {
@@ -1100,7 +1100,7 @@ export default {
 
         this.searchServicer = '' // 接待员的搜索条件置空
         // 判断当前所选场景是否有权限
-        this.getSceneCanReuse()
+        await this.getSceneCanReuse()
 
         this.getServiceList('list', selectServicerId)
       } else {
@@ -1205,7 +1205,7 @@ export default {
         const params = {
           id: this.selectedScene.id
         }
-        this.$service.getSceneCanReuse(params).then(res => {
+        return this.$service.getSceneCanReuse(params).then(res => {
           this.sceneCanReuse = res || false
         })
       }
