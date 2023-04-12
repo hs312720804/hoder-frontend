@@ -785,6 +785,8 @@ import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
 import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
 import { options } from './utils'
 
+import { removePendingRequest } from '@/services/cancelFetch'
+
 export default {
   components: {
     createClientDialog,
@@ -1746,6 +1748,11 @@ export default {
 
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
+      // 中断之前的详情请求，防止数据被之前接口数据所覆盖·
+      removePendingRequest({
+        method: 'get',
+        url: '/api/getPerformanceGoalData'
+      })
       this.allChartData = {}
       this.overview = {}
       const params = {
@@ -1768,11 +1775,8 @@ export default {
       // }
       this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
-        // if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
         // 待改
         if (res && res.data && res.data.overview) {
-        // if (res && res.data && res.data.overview && res.data.overview.data.crowdId === this.selectedServicer.crowdId) {
           const tableData = res.data || {}
           this.allChartData = tableData || {}
           this.overview = tableData.overview ? tableData.overview.data : {}
