@@ -139,7 +139,7 @@
 
 <script>
 import DynamicTable from '../dynamicTable/Index.vue'
-import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
+// import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 
 export default {
   components: {
@@ -167,7 +167,7 @@ export default {
     }
   },
   mounted () {
-    this.high() // 锚点侧边栏
+    // this.high() // 锚点侧边栏
 
     // chart5
     // 图表自适应
@@ -238,9 +238,9 @@ export default {
         behavior: 'smooth'
       })
     },
-    high () {
-      const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
-    },
+    // high () {
+    //   const high = new AutoHighLightAnchor(document.querySelector('#ul111'), document.querySelector('.el-main'), 'type3')
+    // },
     initData () {
       let params = {}
       if (this.pageType === 'story') {
