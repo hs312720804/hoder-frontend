@@ -243,8 +243,6 @@ export default {
             width: '320px',
             render: (h, { row }) => {
               const list = row.binds || []
-              console.log('params-->', row)
-              console.log('list-->', list)
               const group = []
               list.forEach(item => {
                 if (!!item.resourceName && !!item.crowdName) {
@@ -362,10 +360,21 @@ export default {
     }
   },
   methods: {
-    // 查看配置分页
-    handleFilterChange () {
-      this.loadDetailList(this.detailPagination.currentId)
-    },
+    // handleFilterChange (type, pagination) {
+    //   if (pagination) {
+    //     this.pagination = pagination
+    //   }
+    //   if (type === 'query') {
+    //     if (this.pagination) {
+    //       this.pagination.currentPage = 1
+    //     }
+    //   }
+    //   this.fetchData()
+    // },
+    // // 查看配置分页
+    // handleFilterChange () {
+    //   this.loadDetailList(this.detailPagination.currentId)
+    // },
     seeDevDetail ({ row }) {
       this.showConfiguration = true
       this.detailPagination.taskCode = row.taskCode
@@ -400,7 +409,6 @@ export default {
       this.showViewEffect = true
     },
     tableRowClassName ({ row }) {
-      console.log('row--->', row)
       if (row.putway === 2) { return 'gray-row' }
     },
     initFormData () {
@@ -421,7 +429,6 @@ export default {
     },
     // 下架任务
     handleOffSet ({ row }) {
-      console.log('row--->', row)
       const params = {
         id: row.id,
         putway: row.putway === 1 ? 2 : 1 // 1 上架 2 下架
@@ -520,17 +527,6 @@ export default {
           this.fetchData()
         })
       })
-    },
-    handleFilterChange (type, pagination) {
-      if (pagination) {
-        this.pagination = pagination
-      }
-      if (type === 'query') {
-        if (this.pagination) {
-          this.pagination.currentPage = 1
-        }
-      }
-      this.fetchData()
     },
 
     // parseFilter () {

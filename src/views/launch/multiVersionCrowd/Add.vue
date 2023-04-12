@@ -235,6 +235,23 @@
                         账号关联去重
                     </el-checkbox>
                 </el-form-item>
+
+                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
+                  <el-select
+                    v-model="crowdForm.packageName"
+                    placeholder="请选择投放应用"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in pushPackageList"
+                      :key="item.id"
+                      :label="item.appName"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
                 <!--<el-form-item label="数据来源" prop="dataSource" class="form-width">-->
                     <!--<input type="hidden" value="2" v-model="crowdForm.dataSource">-->
                     <!--<el-input size="small" readonly value="大数据"></el-input>-->
@@ -655,7 +672,8 @@ export default {
         autoLaunchTime: undefined,
         setCalculate: false, // ，当投放平台只有消息触达时，设置账号关联相关
         crowdType: 0,
-        tempCrowdId: undefined
+        tempCrowdId: undefined,
+        packageName: ''
       },
       // 新增自定义人群
       crowdDefineForm: {
@@ -703,6 +721,9 @@ export default {
         ],
         tempCrowdId: [
           { required: true, message: '请选择人群', trigger: 'blur' }
+        ],
+        packageName: [
+          { required: true, message: '请选择投放应用', trigger: 'blur' }
         ]
       },
       crowdDefineFormRules: {
@@ -778,7 +799,8 @@ export default {
         pageSize: 30
       },
       behaviorCrowdListpages: 0,
-      loading: false
+      loading: false,
+      pushPackageList: []
     }
   },
   props: ['editLaunchCrowdId', 'model', 'editStatus', 'parentSource', 'showAllParent'],
@@ -816,6 +838,15 @@ export default {
   },
 
   methods: {
+    getPushPackageList () {
+      const parmas = {
+        pageNum: 0,
+        pageSize: 200
+      }
+      this.$service.getPushPackageList(parmas).then(res => {
+        this.pushPackageList = res.rows || []
+      })
+    },
     // 滚动加载
     handelLoadmore () {
       const crowdType = this.crowdForm.crowdType
@@ -1455,6 +1486,7 @@ export default {
             if (this.crowdForm.biIds.join(',') === '7') {
               this.showAccountRelative = true
             }
+            this.crowdForm.packageName = Number(row.packageName) // 投放应用
             this.crowdForm.setCalculate = row.setCalculate
             this.status = this.editStatus
             // if (row.tempCrowdId) {
@@ -1531,6 +1563,7 @@ export default {
     this.getBehaviorPolicyList() // 行为人群 - 策略列表
     this.getBehaviorCrowdList() // 行为人群 - 人群列表
     this.handleGetVideoList() // 人群圈定 视频源枚举
+    this.getPushPackageList() // 获取pushAPP接口
   }
 }
 </script>

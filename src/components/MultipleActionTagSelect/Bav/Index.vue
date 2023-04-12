@@ -979,9 +979,50 @@
                       v-else 里面就是旧版本的数据格式
                   -->
                   <template v-if="item2.perCountValue">
+                    <!-- <Bav0012 v-if="!!item2.mapName" :aaa="item"></Bav0012>
+                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type> -->
+                    <div class="flex-column" >
+                      <el-select
+                        v-if="!!item2.mapName"
+                        v-model="item2.childCheckedVal"
+                        style="width: 100px"
+                        name="oxve"
+                        class="input-inline"
+                        multiple
+                        @change="handelChildBehavirSelectChange({
+                          childItem: item2,
+                          level: 2,
+                          extra: {listMapName: item2.mapName},
+                          selectPropKeyValue: 'name'
+                        })"
+                      >
+                        <template v-for="attrChildItem in getBehaviorAttrList(2, {listMapName: item2.mapName})">
+                          <el-option
+                            :value="attrChildItem.name"
+                            :label="attrChildItem.name"
+                            :key="attrChildItem.name"
+                          ></el-option>
+                        </template>
+                      </el-select>
 
-                    <Bav0012 v-if="!!item2.mapName" :aaa="item"></Bav0012>
-                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      <span
+                        v-for="(item3, index) in item2.child"
+                        :key="index"
+                        class="flex-row child-attr-wrap"
+
+                      >
+                        <span v-if="item3.name" class="w100" >{{ item3.name }}</span>
+
+                        <!-- 兼容之前的数据格式 -->
+                        <!-- <Type v-if="!childItem.bav.reverseSelect && item2.perCountValue" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type> -->
+                        <!-- 现有的数据格式 -->
+                        <Type v-if="!childItem.bav.reverseSelect && item3.perCountValue" ref="typeRef" :item3="item3.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                        <!-- 兼容之前的数据格式 -->
+                        <Type v-else-if="!childItem.bav.reverseSelect && !item2.mapName" ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                      </span>
+
+                    </div>
+
                   </template>
 
                   <template v-else>

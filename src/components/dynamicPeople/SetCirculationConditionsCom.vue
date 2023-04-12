@@ -96,7 +96,14 @@
 import RuleCom from './ruleComs/RuleCom.vue'
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
-  props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule', 'storyLineCirculationRulesJson'],
+  props: [
+    'isDynamicPeople',
+    'crowdId',
+    'graph',
+    'dynamicMode',
+    'allCrowdRule',
+    'storyLineCirculationRulesJson'
+  ],
   // inject: ['graphData'],
   // computed: {
   //   computedGraphData () {
@@ -377,8 +384,8 @@ export default {
 
 .label-item .txt {
   text-align: right;
-  flex 0 0 110px;
-  margin-right: 10px;
+  flex 0 0 150px;
+  margin-right: 20px;
   line-height: 32px;
 }
 .rule-wrap {

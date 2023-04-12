@@ -1,16 +1,17 @@
 <template>
   <div>
     <!-- {{tagList}} -->
-    <el-form :model="addForm" ref="addForm" label-width="100px">
+    <el-form :model="addForm" ref="addForm" label-width="100px" @submit.native.prevent>
       <el-form-item label="添加标签：" prop="conditionTagIds" class="add-tag-form-item" :style="{ height: collapseAddTagsFlag ? '270px' : '0px' }">
         <div class="strategy-search">
-          <el-input aria-placeholder="请输入标签关键字进行搜索"
+          <el-input
+            aria-placeholder="请输入标签关键字进行搜索"
             v-model="searchValue"
             class="strategy-search--input"
-            @keyup.enter.native="getTags()"
+            @keyup.enter.native="getTags"
           >
           </el-input>
-          <el-button type="primary" @click="getTags()">查询</el-button>
+          <el-button type="primary" @click="getTags">查询</el-button>
           <el-button @click="resetSearch">重置</el-button>
         </div>
 
@@ -58,7 +59,9 @@
           icon="el-icon-search"
           @click="collapseAddTags()">
           添加标签
-      </el-button>
+          <i v-if="collapseAddTagsFlag" class="el-icon-arrow-down" style="font-size: 14px"></i>
+          <i v-else class="el-icon-arrow-up" style="font-size: 14px" ></i>
+        </el-button>
 
       </el-form-item>
     </el-form>
@@ -122,7 +125,8 @@
             <div style="position: relative">
               <!-- 且、或 切换 -->
               <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
-              <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)">
+              <!-- <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)"> -->
+              <div class="outer-and" v-if="tags.length > 0 && actionTags.length > 0  && hasBehaviorTag">
                 <el-button
                   type="danger"
                   @click="handleConditionChange()"
@@ -157,12 +161,13 @@
                   :dynamicPolicyJson="dynamicPolicyJson"
                 ></MultipleSelect>
               </el-form-item> -->
-              <el-form-item label="流转条件" v-if="editRow">
+
+              <!-- <el-form-item label="流转条件" v-if="editRow">
                 <SetCirculationConditionsCom
                   ref="setCirculationRef"
                   :storyLineCirculationRulesJson.sync="flowCondition">
                 </SetCirculationConditionsCom>
-              </el-form-item>
+              </el-form-item> -->
             </div>
           </el-form>
         </el-col>
@@ -174,13 +179,13 @@
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
-import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
+// import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
 import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 export default {
   components: {
     MultipleSelect,
-    MultipleActionTagSelect,
-    SetCirculationConditionsCom
+    MultipleActionTagSelect
+    // SetCirculationConditionsCom
   },
   provide () {
     return {
@@ -189,19 +194,7 @@ export default {
   },
   data () {
     return {
-      options: [{
-        value: 1,
-        label: '正确，继续种草，下一步'
-      }, {
-        value: 2,
-        label: '正确，直接转化'
-      }, {
-        value: 3,
-        label: '不正确，继续观察'
-      }, {
-        value: 4,
-        label: '不喜欢切换方案'
-      }],
+
       // options2: [],
       totalLink: 'OR',
       tagList: [],
@@ -317,6 +310,31 @@ export default {
         this.checkedList = val.map(item => item.tagId)
         this.sortTag()
       }
+    },
+    circulationTagDataListProp: {
+      handler (val) {
+        console.log('val===>', val)
+        this.circulationTagDataList = val
+      },
+      immediate: true
+    },
+    soureceSignListProp: {
+      handler (val) {
+        this.soureceSignList = val
+      },
+      immediate: true
+    },
+    conditionTagsFilteredProp: {
+      handler (val) {
+        this.conditionTagsFiltered = val
+      },
+      immediate: true
+    },
+    selectTagTagsListTotalProp: {
+      handler (val) {
+        this.selectTagTagsListTotal = val
+      },
+      immediate: true
     }
 
   },
@@ -343,6 +361,38 @@ export default {
     servicerListFilterSelect: {
       type: Array,
       default: () => []
+    },
+    options: {
+      type: Array,
+      default: () => []
+    },
+    defaultData: {
+      type: Object,
+      default: () => {}
+    },
+    circulationTagDataListProp: {
+      type: Array,
+      default: () => []
+    },
+    soureceSignListProp: {
+      type: Array,
+      default: () => []
+    },
+    conditionTagsFilteredProp: {
+      type: Array,
+      default: () => []
+    },
+    selectTagTagsListTotalProp: {
+      type: Number,
+      default: 0
+    },
+    receptionistId: {
+      type: [String, Number],
+      default: ''
+    },
+    delFlag: {
+      type: [String, Number],
+      default: ''
     }
   },
   methods: {
@@ -966,17 +1016,31 @@ export default {
         console.log('this.bavAttrList==>', this.bavAttrList)
         // })
       })
+    },
+
+    // 设置默认数据
+    setDefaultData () {
+      const ruleJsonData = this.defaultData.rulesJson
+
+      this.rulesJson = ruleJsonData
     }
   },
   async created () {
-    this.getTags() // 获取所有的标签列表
-    await this.getCirculationTag() // 获取流转标签
+    if (this.conditionTagsFilteredProp.length === 0) {
+      this.getTags() // 获取所有的标签列表
+    }
+
+    // 有传入的参数就不需要调用接口了
+    if (this.circulationTagDataListProp.length === 0 && this.soureceSignListProp.length === 0) {
+      await this.getCirculationTag() // 获取流转标签
+    }
 
     // 编辑 回显
     if (this.editRow) {
       this.reviewEditData()
     } else {
       this.sortTag() // 初始化所选标签
+      if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
     }
 
     // this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]

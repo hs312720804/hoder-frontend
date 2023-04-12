@@ -5,7 +5,12 @@ const configScheme = {
     policyName: undefined, // 方案名称
     policyInfo: {}, // 编辑策略人群时需要携带的数据
     smartDetail: {}, // 获取流程图数据
-    isSmartEdit: false // 是否处于编辑逻辑
+    isSmartEdit: false, // 是否处于编辑逻辑
+    copyServiceRules: {
+      type: '',
+      selectedIds: [],
+      allRules: []
+    }
   },
   mutations: {
     // 设置方案id
@@ -28,6 +33,11 @@ const configScheme = {
     setSchemeConfigNull (state) {
       state.policyId = undefined
       state.isSmartEdit = false
+    },
+    SET_COPY_ENTRY_ID (state, data) {
+      state.copyServiceRules = {
+        ...data
+      }
     }
   },
   actions: {

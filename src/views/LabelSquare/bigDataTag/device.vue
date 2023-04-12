@@ -3,11 +3,12 @@
     <div class="header">
       <div></div>
 
-      <div class="search-input">
+      <!-- 标签分类搜索 -->
+      <!-- <div class="search-input">
         <el-input v-model="searchVal" placeholder="支持按标签名、Code、描述搜索" @keyup.enter.native="handleSearch">
         </el-input>
         <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
-      </div>
+      </div> -->
 
     </div>
     <div v-if="filter.tagName === undefined || filter.tagName === ''">

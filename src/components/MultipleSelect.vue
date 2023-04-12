@@ -382,11 +382,17 @@
                 </template>
 
                 <!-- number 类型 -->
-                <el-input-number v-else-if="childItem.tagType === 'number'"
-                  :key="index + 'input'"
-                  v-model="childItem.value"
-                  placeholder="请输入内容"
-                ></el-input-number>
+                <template v-else-if="childItem.tagType === 'number'">
+                  <el-input-number
+                    :key="index + 'input'"
+                    v-model="childItem.value"
+                    placeholder="请输入内容"
+                  ></el-input-number>
+                  <!-- 给【主页版本】标签增加提示 -->
+                  <span v-if="childItem.tagName.includes('主页版本')" style="color: gray; font-size: 12px;">
+                    例如：7470000
+                  </span>
+                </template>
 
                 <!-- 其他 -->
                 <el-select v-else
@@ -498,19 +504,19 @@
               </span>
             </template>
           </div>
-            <div class="label-add">
-              <div class="optional-condition">
-                <el-tag
-                  class="oc-item"
-                  v-for="tagItem in tags"
-                  :key="tagItem.tagItem"
-                  @click.native="handleAddChildRule(item, tagItem)"
-                  :type="dataSourceColorEnum[tagItem.dataSource]"
-                  >{{ tagItem.tagName }}
-                </el-tag>
-              </div>
+          <div class="label-add">
+            <div class="optional-condition">
+              <el-tag
+                class="oc-item"
+                v-for="tagItem in tags"
+                :key="tagItem.tagItem"
+                @click.native="handleAddChildRule(item, tagItem)"
+                :type="dataSourceColorEnum[tagItem.dataSource]"
+                >{{ tagItem.tagName }}
+              </el-tag>
             </div>
           </div>
+        </div>
       </div>
       </template>
       <div class="label-or">

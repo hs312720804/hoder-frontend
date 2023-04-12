@@ -5,6 +5,7 @@ import VCharts from 'v-charts'
 // import store from 'cseed-frame/store/_index'
 
 export default function install (Vue) {
+  Vue.$httpRequestList = new Map() // 在 main.js文件中挂载：请求中的接口
   Vue.use(VCharts)
   Vue.use(AppState)
   Vue.component('pagination', pagination)

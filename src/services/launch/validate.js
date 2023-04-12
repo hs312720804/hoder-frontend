@@ -30,3 +30,12 @@ export function newLaunchHelpCrowdIndex (params) {
     isJSON: true
   })
 }
+
+export function exportHitDataToTmpCrowd (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/exportHitDataToTmpCrowd',
+    params,
+    isJSON: true
+  })
+}

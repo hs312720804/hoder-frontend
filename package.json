@@ -9,7 +9,8 @@
     "build102": "vue-cli-service build && c-web-cli deploy",
     "lint": "vue-cli-service lint",
     "i18n:report": "vue-cli-service i18n:report --src './src/**/*.?(js|vue)' --locales './src/locales/**/*.json'",
-    "analyzer": "use_analyzer=true"
+    "analyzer": "use_analyzer=true",
+    "prepare": "husky install"
   },
   "dependencies": {
     "@antv/x6": "^1.18.1",
@@ -47,6 +48,8 @@
     "@antv/g6": "~3.2.10",
     "@babel/core": "^7.12.16",
     "@babel/eslint-parser": "^7.12.16",
+    "@commitlint/cli": "^17.4.4",
+    "@commitlint/config-conventional": "^17.4.4",
     "@intlify/vue-i18n-loader": "^1.0.0",
     "@vue/cli-plugin-babel": "~5.0.6",
     "@vue/cli-plugin-eslint": "~5.0.6",
@@ -58,7 +61,8 @@
     "eslint-plugin-import": "^2.25.3",
     "eslint-plugin-node": "^11.1.0",
     "eslint-plugin-promise": "^5.1.0",
-    "eslint-plugin-vue": "^9.0.0",
+    "eslint-plugin-vue": "^8.0.3",
+    "husky": "^8.0.0",
     "lint-staged": "^11.1.2",
     "sass": "^1.54.1",
     "sass-loader": "^7.3.1",

@@ -33,6 +33,10 @@
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
+        <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
+          <el-radio :label="0">产品包</el-radio>
+          <el-radio :label="1">内容运营</el-radio>
+        </el-radio-group>
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
@@ -199,6 +203,7 @@ export default {
         this.crowdId = this.$route.query.crowdId || ''
         // this.crowdId = 12461
         this.crowdName = this.$route.query.crowdName || ''
+        this.pageType = this.$route.query.type || ''
         if (this.crowdId !== '') {
           this.initData()
           this.$nextTick(() => {
@@ -223,6 +228,24 @@ export default {
     })
   },
   methods: {
+    handleRadioChange (val) {
+      console.log('1=================>', val)
+      const type = this.pageType
+      // 人群
+      if (val === 0) {
+        const crowdId = this.crowdId
+        const crowdName = this.crowdName
+        // this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, type } })
+        this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport',  crowdId, crowdName, type } })
+
+      } else if (val === 1) {
+        const componentName = 'storyReport'
+        const id = this.crowdId
+        const sceneName = this.crowdName
+        // this.$router.push({ path: '/dynamicReport', query: { id, sceneName, componentName, type } })
+        this.$router.push({ path: '/operate', query: { comName: 'dynamicCrowdReport', id, sceneName, componentName, type } })
+      }
+    },
     handleBackToCrowdList () {
       // 根据GlobalStrategySource判断是从哪里跳来的
       const source = this.$appState.$get('GlobalStrategySource')
@@ -234,9 +257,16 @@ export default {
     },
     //  导出估算画像数据
     handleDownload () {
-      this.$service.exportFile({
-        url:  `/api/chart/dynamicCrowdReportDownload?crowdId=${this.crowdId}`
-      })
+      if (this.pageType === 'story') {
+        this.$service.exportFile({
+          url:  `/api/chart/dynamicCrowdReportDownload?sceneId=${this.crowdId}`
+        })
+      } else {
+        this.$service.exportFile({
+          url:  `/api/chart/dynamicCrowdReportDownload?crowdId=${this.crowdId}`
+        })
+      }
+
     },
     changeView () {
       this.showNav = !this.showNav
@@ -286,7 +316,13 @@ export default {
       const high = new AutoHighLightAnchor(document.querySelector('#ul111'),  document.querySelector('.app-wrapper').querySelector('.el-scrollbar__wrap'), 'type3')
     },
     initData () {
-      this.$service.getDynamicCrowdReportA({ crowdId: this.crowdId }).then(res => {
+      let params = {}
+      if (this.pageType === 'story') {
+        params = { sceneId: this.crowdId }
+      } else {
+        params = { crowdId: this.crowdId }
+      }
+      this.$service.getDynamicCrowdReportA(params).then(res => {
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -306,8 +342,13 @@ export default {
           this.drawChart()
         })
       })
-
-      this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
+      let params2 = {}
+      if (this.pageType === 'story') {
+        params2 = { sceneId: this.crowdId }
+      } else {
+        params2 = { crowdId: this.crowdId }
+      }
+      this.$service.getDynamicCrowdReportB(params2).then(res => {
         // this.getAllData = res
 
         this.setTableData(res)
@@ -666,6 +707,8 @@ export default {
   },
   data () {
     return {
+      pageType: '',
+      pageRadio: 0,
       downloadUrl: undefined,
       options: [{
         value: 6,

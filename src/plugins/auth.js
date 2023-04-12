@@ -1,15 +1,20 @@
 import Vue from 'vue'
+// import { Message } from 'element-ui'
+
 function getInitData (app) {
   return app.$service.service.getConstants({ token: app.$service.service.state.token })
+  // const user = JSON.parse(localStorage.getItem('HODER//user'))
+  // return app.$service.service.getConstants({ token: user.token })
 }
 Vue.prototype.$isLoggedIn = async function () {
+  debugger
   const $appState = this.$appState
   // memory
-  if ($appState.user) {
-    return
-  }
+  // if ($appState.user) {
+  //   return
+  // }
   // storage
-  const user = $appState.$get('user')
+  const user = $appState.user || $appState.$get('user')
   if (user) {
     // try login
     this.$service.service.state = user
@@ -20,9 +25,15 @@ Vue.prototype.$isLoggedIn = async function () {
         this.$appState.permissions[item] = item
       })
       this.$appState.menus = res.menus
+    }).catch(err => {
+      console.log('getInitData errData==>', err)
+      // throw err
+      return Promise.reject(new Error(err))
     })
+  } else {
+    return Promise.reject(new Error())
   }
-  throw {}
+  // throw {}
 }
 Vue.prototype.$login = async function (data) {
   return this.$service.login(data).then((res) => {
