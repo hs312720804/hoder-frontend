@@ -935,7 +935,7 @@ export default {
         linkIncomeDetail: { // 分组内各流转链路收益
           header: [{
             label: '动态流转分组',
-            prop: 'dynamicRuleId'
+            prop: 'dynamicName'
           }, {
             label: '路径',
             prop: 'path'
