@@ -1,5 +1,7 @@
 <template>
 <div class="content detail">
+  <!-- {{ selectedServicer }} -->
+  <!-- {{selectedScene}} -->
   <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
     <div class="title">接待员详情</div>
 
@@ -18,7 +20,7 @@
               <div>{{ selectedServicer.userName || '-'}}</div>
               <div>创建时间：</div>
               <div style="white-space: nowrap;">{{ selectedServicer.createTime || '-'}}</div>
-              <div>擅长：</div>
+              <div>擅长(可选)：</div>
               <div v-if="selectedServicer.receptionist">
                 <el-select
                   ref="selectObj"
@@ -88,7 +90,7 @@
         </div>
         <div class="aaa"></div>
         <div class="detail-header-column">
-          <div class="target">我的任务</div>
+          <div class="target">我的任务（可选）</div>
           <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
           <div class="flex-content">
@@ -110,10 +112,13 @@
               show-word-limit>
             </el-input>
           </div>
-
+          <!-- targetKeyId: {{targetKeyId}}
+          <br/>
+          overview： {{overview}} -->
           <div class="kpi-wrap">
-            <div>绩效目标</div>
+            <div>绩效目标(可选)</div>
             <div class="detail-kpi">
+              <i class="el-icon-loading load-place" v-if="getGoalDataLoading"></i>
               <!-- <el-descriptions title="" column="2">
                 <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
                 <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
@@ -121,20 +126,27 @@
                 <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
               </el-descriptions> -->
               <div class="detail-kpi-table">
-                <div>
-                  <span class="kpi-label">
+                <div style="display: flex;">
+                  <span class="kpi-label" style="display: grid">
 
-                    <el-dropdown @command="handleCommandTargetKey">
+                    <!-- <el-dropdown @command="handleCommandTargetKey">
                       <span class="el-dropdown-link">
                         {{ targetKey === '' ? '请选择' : targetKey }}<i class="el-icon-arrow-down el-icon--right"></i>：
                       </span>
                       <el-dropdown-menu slot="dropdown">
                         <el-dropdown-item v-for="(item, index) in targetKeyList" :key="index.id" :command="item.id">{{ item.lable }}</el-dropdown-item>
                       </el-dropdown-menu>
-                    </el-dropdown>
+                    </el-dropdown> -->
+                    <span style="font-size: 16px;" v-if="indicatorsTypelabel">{{ indicatorsTypelabel }}：</span>
+                    <span v-if="selectedServicer.id">
+                      <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button>
+                    </span>
+
                   </span>
-                  <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
-                  <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
+                  <span style="flex: 1; text-align: center;">
+                    <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) || '-' }}</span>
+                    <span class="kpi-value" v-else>{{ overview[targetKeyId] || '-' }}</span>
+                  </span>
                 </div>
                 <div>
                   <span class="kpi-label">接待用户数：</span>
@@ -171,7 +183,7 @@
 
               <div >
                 <!-- {{ allChartData }} -->
-                <div v-if="showChart && allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
+                <div v-if="allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
                   <!-- <el-empty description="暂无数据"></el-empty> -->
                 <div v-else class="chart-empty"></div>
               </div>
@@ -188,7 +200,7 @@
       </div>
 
       <div>
-        <div class="title2">服务对象选择</div>
+        <div class="title2">服务对象选择（可选）</div>
         <div class="set-start">
           <div v-if="entryList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -203,6 +215,7 @@
                 </span>
               </div>
               <!-- {{entry.rulesJson}} -->
+              <!-- {{ JSON.parse(entry.rulesJson).rules }} -->
               <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
               <span class="border-title">普通标签</span>
               <div class="rule-string" >
@@ -221,14 +234,27 @@
                       >
                       <!-- {{childItem}} -->
                         <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.categoryName }}</span>
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
+
+                        <!-- 流转标签 -->
+                        <template v-if="(childItem.dataSource === 20)">
+                          <ShowFlowConditionRuleItem
+                            :childItem="childItem"
+                            :soureceSignList="soureceSignList"
+                            >
+                          </ShowFlowConditionRuleItem>
+                        </template>
+
+                        <template v-else>
+                          <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                          <span class="in">
+                            <span >{{ childItem.value }}</span>
+                          </span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        </template>
+
                       </div>)
                     </div>
                   </div>
@@ -253,52 +279,12 @@
               <div class="rule-string">
                 <div v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
                   <!-- {{entry.flowCondition}} -->
-                  <div
-                    v-for="(item, index) in JSON.parse(entry.flowCondition).rules"
-                    :key="index"
-                    class="rule-detail"
-                  >
-                    <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.flowCondition).condition] }}</div>
-                    <!-- {{ item }} -->
-                    <div class="label-ground">
-                      (
-                      <div
-                        v-for="(childItem, childItemIndex) in item.rules"
-                        :key="childItem.tagId+childItemIndex"
-                        class="label-item"
-                      >
-                        <!-- {{ childItem }} -->
-                        <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.tagName }}</span>，
+                  <ShowFlowConditionRule
+                    :flowCondition="JSON.parse(entry.flowCondition)"
+                    :conditionEnum="conditionEnum"
+                    :soureceSignList="soureceSignList"
+                  ></ShowFlowConditionRule>
 
-                        <!-- 模块活跃 -->
-                        <template v-if="childItem.tagKey=== 'moduleActive'" >
-                          <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                          <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                          <span class="txt">{{ childItem.locationId || '' }}</span>，
-                          <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                        </template>
-
-                        <!-- 优惠券活跃 -->
-                        <template v-if="childItem.tagKey=== 'couponsActive'">
-                          <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                        </template>
-
-                        <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                        <!-- 产品包下单 -->
-                        <template v-if="childItem.tagKey=== 'productOrder'">
-                          ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                        </template>
-
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                      </div>
-                      )
-                    </div>
-                  </div>
                 </div>
                 <div v-else class="no-data-text">暂无</div>
               </div>
@@ -332,8 +318,55 @@
           </div>
         </div>
       </div>
+
+      <!-- 推荐绑定内容 -->
+      <div
+        v-if="entryList && entryList.length > 0 && tagCodeList.length > 0"
+      >
+        <div class="title2">推荐绑定内容</div>
+        <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
+
+          <div class="bav-wrap" style="overflow: hidden;">
+            内容源：
+            <el-select v-model="selectSourceCode" @change="getUptmRecommendResourceList" class="select-source-sty">
+              <el-option
+                v-for="item in sourceList"
+                :label="item.sourceTitle"
+                :value="item.sourceCode"
+                :key="item.sourceCode">
+              </el-option>
+            </el-select>
+          </div>
+
+          <div v-for="(arr, key) in recommendResourceList" :key="key" class="recommend-list" >
+            <span class="border-title" >{{ getKeyName(key) }}：</span>
+            <!-- {{ arr }} -->
+            <template v-if="arr && arr.length > 0">
+              <span
+                v-for="film in arr"
+                :key="film.id"
+                class="film-btn"
+                title="双击复制"
+                @dblclick="copyText(film.id + '-' + film.title)"
+              >
+                <el-popover
+                  placement="top"
+                  width="150px"
+                  trigger="manual"
+                  content="复制成功"
+                  :value="popoverVisible === film.id + '-' + film.title">
+                  <span slot="reference">{{ film.id }} - {{ film.title }}</span>
+                </el-popover>
+              </span>
+            </template>
+            <span v-else class="no-data-text">暂无推荐</span>
+          </div>
+          <!-- {{ recommendResourceList }} -->
+        </div>
+      </div>
+
       <div>
-        <div class="title2">服务终止条件</div>
+        <div class="title2">服务终止条件（可选）</div>
         <div class="set-end">
           <div v-if="exportList.length === 0" class="no-data-wrap">
             <div class="noData"></div>
@@ -371,14 +404,27 @@
                       >
                       <!-- {{childItem}} -->
                         <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.categoryName }}</span>
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                        <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
+
+                        <!-- 流转标签 -->
+                        <template v-if="(childItem.dataSource === 20)">
+                          <ShowFlowConditionRuleItem
+                            :childItem="childItem"
+                            :soureceSignList="soureceSignList"
+                            >
+                          </ShowFlowConditionRuleItem>
+                        </template>
+
+                        <template v-else>
+                          <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                          <span class="in">
+                            <span >{{ childItem.value }}</span>
+                          </span>
+                          <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                        </template>
+
                       </div>)
                     </div>
                   </div>
@@ -403,52 +449,12 @@
               <div class="rule-string">
                 <div v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
                   <!-- {{exportItem.flowCondition}} -->
-                  <div
-                    v-for="(item, index) in JSON.parse(exportItem.flowCondition).rules"
-                    :key="index"
-                    class="rule-detail"
-                  >
-                    <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.flowCondition).condition] }}</div>
-                    <!-- {{ item }} -->
-                    <div class="label-ground">
-                      (
-                      <div
-                        v-for="(childItem, childItemIndex) in item.rules"
-                        :key="childItem.tagId+childItemIndex"
-                        class="label-item"
-                      >
-                        <!-- {{ childItem }} -->
-                        <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                        <span class="txt">{{ childItem.tagName }}</span>，
+                  <ShowFlowConditionRule
+                    :flowCondition="JSON.parse(exportItem.flowCondition)"
+                    :conditionEnum="conditionEnum"
+                    :soureceSignList="soureceSignList"
+                  ></ShowFlowConditionRule>
 
-                        <!-- 模块活跃 -->
-                        <template v-if="childItem.tagKey=== 'moduleActive'" >
-                          <span class="txt">{{ getName(actionOptions, childItem.action) }}</span>，
-                          <span class="txt">{{ getName(locationTypeOptions, childItem.locationType) || '' }}</span>，
-                          <span class="txt">{{ childItem.locationId || '' }}</span>，
-                          <span class="txt">{{ getName(countOptions, childItem.count) || '' }}</span>
-                        </template>
-
-                        <!-- 优惠券活跃 -->
-                        <template v-if="childItem.tagKey=== 'couponsActive'">
-                          <span class="txt">{{ getName(couponOptions, childItem.coupon) }}</span>，
-                        </template>
-
-                        <span v-if="childItem.tagKey !== 'moduleActive'" class="txt">{{ getsourceSignName(childItem.sourceSign) }}</span>
-
-                        <!-- 产品包下单 -->
-                        <template v-if="childItem.tagKey=== 'productOrder'">
-                          ，<span class="txt">{{ getName(productCountOptions, childItem.count) }}</span>
-                        </template>
-
-                        <span class="sel">&nbsp;&nbsp;{{ childItem.operator || '' }}&nbsp;&nbsp;</span>
-                        <span class="in">
-                          <span >{{ childItem.value }}</span>
-                        </span>
-                      </div>
-                      )
-                    </div>
-                  </div>
                 </div>
                 <div v-else class="no-data-text">暂无</div>
               </div>
@@ -460,8 +466,9 @@
               转
               <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
             </div>
+            <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
             <div class="drop-class">
-              <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
+              <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                 <span class="el-dropdown-link" >
                   <span>.</span>
                   <span>.</span>
@@ -518,6 +525,26 @@
       <el-button type="primary" @click="addOrEditExportRule">确 定</el-button>
     </span>
   </el-dialog>
+
+  <el-dialog
+    title="编辑绩效目标"
+    :visible.sync="editTargetKeyVisible"
+    width="700px"
+  >
+  <!-- {{ targetKeyFormParent }} -->
+    <EditTargetKeyDialog
+      ref="editTargetKeyDialogRef"
+      v-if="editTargetKeyVisible"
+      :selectedServicer="selectedServicer"
+      :indicatorsOptions="indicatorsOptions"
+      :soureceSignListOptions="soureceSignListOptions"
+      :targetKeyFormParent.sync="targetKeyFormParent"
+    ></EditTargetKeyDialog>
+    <span slot="footer" class="dialog-footer">
+      <el-button @click="editTargetKeyVisible = false">取 消</el-button>
+      <el-button type="primary" @click="comfirmEditTargetKey">确 定</el-button>
+    </span>
+  </el-dialog>
 </div>
 </template>
 
@@ -526,11 +553,17 @@ import { handleSave as saveFunc } from './saveEntryFunc.js'
 
 import createClientDialog from './createClientDialog.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
+import ShowFlowConditionRule from './ShowFlowConditionRule.vue'
+import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
+import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
 
 export default {
   components: {
     createClientDialog,
-    MultipleActionTagSelect
+    MultipleActionTagSelect,
+    ShowFlowConditionRule,
+    ShowFlowConditionRuleItem,
+    EditTargetKeyDialog
   },
   props: {
     servicer: {
@@ -567,6 +600,28 @@ export default {
     }
   },
   watch: {
+    entryList (val) {
+      console.log('entryList--->', val)
+      if (val.length > 0) {
+        const returnArr = []
+
+        val.forEach(item => {
+          const ruleArr = JSON.parse(item.rulesJson).rules
+          console.log('rulesJson-->', ruleArr)
+
+          ruleArr.forEach(z1Item => {
+            z1Item.rules.forEach(z2Item => {
+              if (z2Item.tagKey === 'filmModelTag' && returnArr.findIndex(reItem => reItem.tagCode === z2Item.tagCode) === -1) {
+                returnArr.push(z2Item)
+              }
+            })
+          })
+        })
+
+        this.tagCodeList = returnArr
+        this.getUptmRecommendResourceList()
+      }
+    },
     styleType () {
       for (const key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
@@ -589,17 +644,19 @@ export default {
           chart.clear()
         }
 
-        const obj = this.targetKeyList.find(item => {
-          return this.selectedServicer.indicatorsType === item.id
-        })
+        // 根据接待员 ID 获取绩效目标
+        this.getTargetById()
+        // const obj = this.targetKeyList.find(item => {
+        //   return this.selectedServicer.indicatorsType === item.id
+        // })
 
-        this.targetKey = obj ? obj.lable : '' // 目标指标
-        this.targetKeyId = obj ? obj.key : ''
+        // this.targetKey = obj ? obj.lable : '' // 目标指标
+        // this.targetKeyId = obj ? obj.key : ''
 
-        if (obj) {
-          // 曲线图
-          this.getPerformanceGoalData()
-        }
+        // if (obj) {
+        //   // 曲线图
+        //   this.getPerformanceGoalData()
+        // }
       }
     },
     'selectedScene.id': {
@@ -613,10 +670,31 @@ export default {
     servicerListFilterSelect () {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
       return data
+    },
+    // 编辑绩效目标，下拉框数据
+    soureceSignListOptions () {
+      return this.soureceSignList.map(item => {
+        return {
+          resourceId: item.sourceSign,
+          resourceName: item.sourceName
+        }
+      })
     }
   },
   data () {
     return {
+      popoverVisible: '',
+      recommendLoading: false,
+      getGoalDataLoading: false,
+      targetKeyFormParent: {
+        id: '', // 接待员ID
+        indicatorsType: '', // 1 会员付费率，2 会员成交单数 3 会员成交金额 4 会员客单价 5会员付费设备量 6 内容影片吸金订单量 7 订单转换率 8 订单均价 9 影片播放均价
+        resource: [],
+        videoSource: ''
+      },
+
+      indicatorsTypelabel: '',
+
       formInline: {
         skillName: ''
       },
@@ -624,12 +702,16 @@ export default {
 
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
 
-      showChart: true,
       rowObj: {
-        arup: { type: 'line', title: '客单价' },
-        payNum: { type: 'line', title: '付费单量' },
-        payRate: { type: 'line', title: '付费率' },
-        price: { type: 'line', title: '付费金额' }
+        arup: { type: 'line', title: '会员 - 客单价', targetKeyId: 4 },
+        avgPlayPrice: { type: 'line', title: '内容 - 影片播放均价', targetKeyId: 9 },
+        orderNum: { type: 'line', title: '内容 - 影片吸金订单量', targetKeyId: 6 },
+        orderRatio: { type: 'line', title: '内容 - 影片订单转换率', targetKeyId: 7 },
+        payNum: { type: 'line', title: '会员 - 付费单数', targetKeyId: 2 },
+        payRate: { type: 'line', title: '会员 - 付费率', targetKeyId: 1 },
+        payUv: { type: 'line', title: '会员 - 付费设备量', targetKeyId: 5 },
+        perOrder: { type: 'line', title: '内容 - 影片订单均价', targetKeyId: 8 },
+        price: { type: 'line', title: '会员 - 付费金额', targetKeyId: 3 }
       },
       allCharts: {},
       allChartData: {
@@ -641,45 +723,7 @@ export default {
       skillValue: '',
       isEdit: false,
       isEditValue: false,
-      couponOptions: [{
-        label: '曝光',
-        value: 'couponShowPv'
-      }, {
-        label: '领用',
-        value: 'couponCreatePv'
-      }, {
-        label: '使用',
-        value: 'couponUsePv'
-      }],
-      actionOptions: [{
-        label: '曝光',
-        value: 'show'
-      },
-      {
-        label: '点击',
-        value: 'click'
-      }],
-      locationTypeOptions: [{
-        label: '板块位',
-        value: 1
-      }, {
-        label: '推荐位',
-        value: 2
-      }],
-      countOptions: [{
-        label: '次数',
-        value: 'pv'
-      }, {
-        label: '天数',
-        value: 'days'
-      }],
-      productCountOptions: [{
-        label: '下单次数',
-        value: 'orderNum'
-      }, {
-        label: '下单天数',
-        value: 'orderDays'
-      }],
+
       conditionEnum: {
         AND: '且',
         OR: '或'
@@ -707,12 +751,52 @@ export default {
       }],
       targetKey: '付费率（%）',
       targetKeyId: '',
-      soureceSignList: []
+      soureceSignList: [],
+      editTargetKeyVisible: false,
+      indicatorsOptions: [
+        {
+          indicatorsType: 6,
+          label: '内容 - 影片吸金订单量'
+        }, {
+          indicatorsType: 7,
+          label: '内容 - 影片订单转换率'
+        }, {
+          indicatorsType: 8,
+          label: '内容 - 影片订单均价'
+        }, {
+          indicatorsType: 9,
+          label: '内容 - 影片播放均价'
+        },
+        {
+          indicatorsType: 1,
+          label: '会员 - 付费率'
+        }, {
+          indicatorsType: 2,
+          label: '会员 - 付费单数'
+        }, {
+          indicatorsType: 3,
+          label: '会员 - 付费金额'
+        }, {
+          indicatorsType: 4,
+          label: '会员 - 客单价'
+        }, {
+          indicatorsType: 5,
+          label: '会员 - 付费设备量'
+        }
+      ],
+      sourceList: [], // 内容源
+      selectSourceCode: 'tencent', // 所选内容源
+      recommendResourceList: [], // 推荐影片
+      tagCodeList: []
     }
   },
   created () {
     this.$service.getSourceSign().then(res => {
       this.soureceSignList = res
+    })
+
+    this.$service.getSourceList().then(res => {
+      this.sourceList = res
     })
   },
   mounted () {
@@ -724,101 +808,142 @@ export default {
     })
   },
   methods: {
+    // handleCopy () {
+    //   const range = document.createRange() // 创建range对象
+    //   range.selectNode(document.getElementById('copycode')) // 获取复制内容的 id 选择器
+    //   const selection = window.getSelection() // 创建 selection对象
+    //   if (selection.rangeCount > 0) selection.removeAllRanges() // 如果页面已经有选取了的话，会自动删除这个选区，没有选区的话，会把这个选取加入选区
+    //   selection.addRange(range) // 将range对象添加到selection选区当中，会高亮文本块
+    //   document.execCommand('copy') // 复制选中的文字到剪贴板
+    //   this.$toast('复制成功')
+    //   selection.removeRange(range) // 移除选中的元素
+    // },
+    copyText (str) {
+      const input = document.createElement('input')
+      const body = document.querySelector('body')
+      body.append(input)
+      input.value = str
+      this.popoverVisible = str
+      input.select()
+      document.execCommand('copy')
+      input.remove()
+
+      setTimeout(() => {
+        this.popoverVisible = ''
+      }, 3000)
+      // this.$message({
+      //   message: '复制成功',
+      //   type: 'success'
+      // })
+    },
+    getKeyName (key) {
+      const obj = this.tagCodeList.find(item => Number(item.tagCode) === Number(key))
+      console.log('obj--->', obj)
+      return obj ? obj.tagCnName : ''
+    },
+    getUptmRecommendResourceList () {
+      this.recommendLoading = true
+      this.recommendResourceList = []
+      const tagCodeList = this.tagCodeList
+      if (tagCodeList.length > 0) {
+        const tagCodes = tagCodeList.map(item => item.tagCode).join(',')
+        const params = {
+          source: this.selectSourceCode,
+          tagCodes
+        }
+        this.$service.getTopRecommendResourceList(params).then(res => {
+          console.log('res--->', res)
+          this.recommendResourceList = res || []
+          this.recommendLoading = false
+        }).catch(() => {
+          this.recommendResourceList = []
+          this.recommendLoading = false
+        })
+      }
+    },
+    getStopTypeName (val) {
+      if (val === 2) {
+        return '直接转化'
+      } else if (val === 3) {
+        return '继续观察'
+      } else if (val === 4) {
+        return '不喜欢'
+      }
+    },
+    getName (val, list) {
+      const obj = list.find(item => item.indicatorsType === val)
+      return obj ? obj.label : ''
+    },
+
+    // 根据接待员ID获取绩效目标
+    getTargetById () {
+      // 清空
+      this.indicatorsTypelabel = ''
+      this.targetKeyId = ''
+
+      const parmas = {
+        id: this.selectedServicer.id
+      }
+      if (!parmas.id) return
+
+      this.$service.getTargetById(parmas).then(res => {
+        for (const key in this.rowObj) {
+          if (this.rowObj[key].targetKeyId === res.indicatorsType) {
+            this.targetKeyId = key
+          }
+        }
+        this.indicatorsTypelabel = this.getName(res.indicatorsType, this.indicatorsOptions)
+        // 曲线图
+        this.getPerformanceGoalData()
+      })
+    },
+
+    comfirmEditTargetKey () {
+      if (!this.targetKeyFormParent.indicatorsType) {
+        return this.$message.error('请选择指标')
+      }
+      this.$refs.editTargetKeyDialogRef.$refs.targetKeyFormRef.validate((valid) => {
+        if (valid) {
+          let resource = []
+
+          // 会员
+          if (this.targetKeyFormParent.indicatorsType < 6) {
+            resource = [this.targetKeyFormParent.resource]
+          } else { // 内容
+            resource = this.targetKeyFormParent.resource && this.targetKeyFormParent.resource.map(item => {
+              return {
+                ...item,
+                videoSource: this.targetKeyFormParent.videoSource
+              }
+            })
+          }
+
+          const parmas = {
+            ...this.targetKeyFormParent,
+            resource: JSON.stringify(resource),
+            id: this.selectedServicer.id // 接待员ID
+          }
+
+          this.$service.saveEditIndicator(parmas, '操作成功').then(res => {
+            // 刷新数据
+            this.getTargetById()
+            this.editTargetKeyVisible = false
+          })
+        }
+      })
+    },
+
+    editTargetKey () {
+      this.getTargetById()
+      this.editTargetKeyVisible = true
+    },
     toPercent (point) {
       if (!point) return ''
       let str = Number(point * 100).toFixed(2)
       str += '%'
       return str
     },
-    // selectTemplate () {
 
-    // },
-    // visibleChange (visible, refName, type) {
-    //   if (visible) {
-    //     const ref = this.$refs[refName]
-    //     let popper = ref.$refs.popper
-
-    //     console.log('popper--->', popper)
-    //     if (popper.$el) popper = popper.$el
-    //     if (!Array.from(popper.children).some(v => v.className === 'el-template-menu__list')) {
-    //       // const el = document.createElement('ul')
-    //       // el.className = 'el-template-menu__list'
-    //       // el.style = 'border-top:2px solid rgb(219 225 241); padding:0; color:rgb(64 158 255);font-size: 13px'
-    //       // el.innerHTML = `
-    //       // <li class="el-cascader-node text-center" style="height:37px;line-height: 50px">
-    //       //   <span><i class="font-blue el-icon-plus"></i>添加技能分类</span>
-    //       // </li>`
-    //       // popper.appendChild(el)
-
-    //       const el = document.createElement('ul')
-    //       el.className = 'el-template-menu__list'
-    //       popper.appendChild(el)
-
-    //       // this.$nextTick(() => {
-    //       // console.log('h--->', h)
-    //       const Profile = Vue.extend({
-    //         render: h => {
-    //           const button = h(
-    //             'span',
-    //             {
-    //               class: 'el-cascader-node text-center'
-    //             },
-    //             h('el-button',
-    //               {
-
-    //               },
-    //               '12313')
-    //           )
-
-    //           return h('div', {},
-    //             [
-    //               h('el-input', {
-    //                 props: {
-    //                   type: 'text'
-    //                 }
-    //               }),
-    //               h('el-button', {
-    //                 props: {
-    //                   type: 'text'
-    //                 }
-    //               }, '查看配置')]
-    //           )
-    //         }
-    //       })
-    //       console.log('Profile--->', Profile)
-    //       new Profile().$mount('.el-template-menu__list')
-    //       // })
-
-    //       // console.log('tabCmp--->', tabCmp)
-    //       // popper.appendChild(tabCmp.$el)
-
-    //       // el.onclick = () => {
-    //       //   if (type === 'Ship') {
-    //       //     this.showShipTemplate(null, false)
-    //       //   } else {
-    //       //     this.showReturnTemplate(null, false)
-    //       //   }
-    //       //   if (ref.toggleDropDownVisible) {
-    //       //     ref.toggleDropDownVisible(false)
-    //       //   } else {
-    //       //     ref.visible = false
-    //       //   }
-    //       // }
-    //     }
-    //   }
-    // },
-    getName (list, key) {
-      const obj = list.find(item => {
-        return key === item.value
-      })
-      return obj ? obj.label : ''
-    },
-    getsourceSignName (key) {
-      const obj = this.soureceSignList.find(item => {
-        return key === item.sourceSign
-      })
-      return obj ? obj.sourceName : ''
-    },
     redirctByNextId (id) {
       const servicer = this.getServicerBynextId(id)
       // 选择接待员
@@ -1035,80 +1160,6 @@ export default {
         this.getSkillListBySceneId()
       })
     },
-
-    // 服务员选择技能
-    // async selectSkill111 (e) {
-    //   console.log('selectSkill----', e)
-
-    //   // 先判断是否是选择了已有的ID
-    //   const existIdArr = this.skillOptions.filter(item => item.id === e)
-    //   if (existIdArr.length > 0) {
-    //     this.$emit('editReceptionist', {
-    //       id: this.selectedServicer.id,
-    //       skillId: e
-    //     })
-    //     return
-    //   }
-
-    //   // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中
-    //   const { query } = this.$refs.selectObj
-    //   // console.log('query----', query)
-
-    //   if (query === null || query === undefined) return
-
-    //   const existArr = this.skillOptions.filter(item => item.name === query)
-
-    //   // console.log('existArr----', existArr)
-
-    //   if (existArr.length === 0) {
-    //     this.addOption()
-    //   }
-    //   // 判断是否选择的是现有的选项，如果不是的话需要先创建，再选中  --end
-
-    //   // this.editReceptionist({
-    //   //   id: this.selectedServicer.id,
-    //   //   skillId: e
-    //   // }, 'no-refresh-list')
-    // },
-
-    // addOption111 () {
-    //   console.log('addOption')
-    //   const { query } = this.$refs.selectObj
-    //   console.log('query--->', query)
-
-    //   if (!query) return
-
-    //   // 选择原有的
-    //   const existArr = this.skillOptions.filter(item => item.name === query)
-    //   // console.log('existArr--->', existArr)
-    //   if (existArr.length > 0) {
-    //     this.skillValue = existArr[0].id
-    //     // 选中
-    //     this.selectSkill(this.skillValue)
-    //     return
-    //   }
-
-    //   // 创建新技能，并选中
-    //   const parmas = {
-    //     sceneId: this.selectedScene.id,
-    //     name: query
-    //   }
-
-    //   this.$service.addSceneSkill(parmas).then(async res => {
-    //     const aaa = await this.getSkillListBySceneId()
-    //     console.log('aaa--->', aaa)
-
-    //     const existArr = this.skillOptions.filter(item => item.name === query)
-    //     // console.log('existArr--->', existArr)
-    //     if (existArr.length > 0) {
-    //       this.skillValue = existArr[0].id
-    //       // 选中
-    //       this.selectSkill(this.skillValue)
-    //       // console.log('this.skillValue--->', this.skillValue)
-    //     }
-    //   })
-    // },
-
     // 根据场景ID获取技能列表
     getSkillListBySceneId () {
       const parmas = {
@@ -1174,30 +1225,33 @@ export default {
     },
 
     // 设置绩效目标的 key 值
-    handleCommandTargetKey (val) {
-      const obj = this.targetKeyList.find(item => {
-        return val === item.id
-      })
-      this.$emit('editReceptionist', {
-        id: this.selectedServicer.id,
-        indicatorsType: obj.id
-      }, 'no-refresh-list')
+    // handleCommandTargetKey (val) {
+    //   const obj = this.targetKeyList.find(item => {
+    //     return val === item.id
+    //   })
+    //   this.$emit('editReceptionist', {
+    //     id: this.selectedServicer.id,
+    //     indicatorsType: obj.id
+    //   }, 'no-refresh-list')
 
-      // this.editReceptionist({
-      //   id: this.selectedServicer.id,
-      //   indicatorsType: obj.id
-      // }, 'no-refresh-list')
+    //   // this.editReceptionist({
+    //   //   id: this.selectedServicer.id,
+    //   //   indicatorsType: obj.id
+    //   // }, 'no-refresh-list')
 
-      this.targetKey = obj ? obj.lable : ''
-      this.targetKeyId = obj ? obj.key : ''
+    //   this.targetKey = obj ? obj.lable : ''
+    //   this.targetKeyId = obj ? obj.key : ''
 
-      // eslint-disable-next-line vue/no-mutating-props
-      this.selectedServicer.indicatorsType = obj ? obj.id : ''
-      // 曲线图
-      this.getPerformanceGoalData()
-    },
+    //   // eslint-disable-next-line vue/no-mutating-props
+    //   this.selectedServicer.indicatorsType = obj ? obj.id : ''
+    //   // 曲线图
+    //   this.getPerformanceGoalData()
+    // },
+
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
+      this.allChartData = {}
+      this.overview = {}
       // console.log('selectedScene---', this.selectedScene)
       // console.log('selectedServicer---', this.selectedServicer)/
       const params = {
@@ -1208,18 +1262,23 @@ export default {
       }
       // const params = {
       //   // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的 dynamicRuleId 传【场景id】
-      //   dynamicRuleId: 225,
-      //   crowdId: 13352, // 接待员id
+      //   dynamicRuleId: 292,
+      //   crowdId: 14331, // 接待员id
       //   isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       // }
+      console.log('this.selectedServicer.crowdId---->', this.selectedServicer.crowdId)
+      this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        const tableData = res.data || {}
-        console.log('tableData----', tableData)
-        this.allChartData = tableData || {}
-        this.overview = tableData.overview ? tableData.overview.data : {}
-        this.$nextTick(() => {
-          this.drawChart()
-        })
+        // 下面 if 判断是因为接口太慢，避免渲染了上个接口的数据
+        if (res.overview && res.overview.data && res.overview.data.crowdId === this.selectedServicer.crowdId) {
+          const tableData = res.data || {}
+          this.allChartData = tableData || {}
+          this.overview = tableData.overview ? tableData.overview.data : {}
+          this.$nextTick(() => {
+            this.drawChart()
+          })
+        }
+        this.getGoalDataLoading = false
       })
     },
     drawChart () {
@@ -1416,5 +1475,37 @@ export default {
 @import './sty/light.styl'
 .chart-div{
   height: 130px
+}
+.load-place {
+  position absolute
+  right 10px
+  top 10px
+  font-size 18px
+}
+.recommend-list {
+  padding: 10px 0;
+}
+.recommend-list + .recommend-list {
+  border-top: 1px dashed #4a4a4a;
+  // border-top: 1px dashed #f3f3f3
+}
+.select-source-sty :deep(.el-input__inner) {
+  background-color: rgb(255 0 0 / 0%);
+  color: #606266;
+}
+.film-btn {
+  color: #67c23a;
+  background: #f0f9eb;
+  border: 1px solid #c2e7b0;
+  font-size: 12px;
+  border-radius: 3px;
+  padding: 5px 12px;
+  display inline-block
+  margin: 3px
+  &:hover {
+    color: #fff;
+    background-color: #67c23a;
+    border-color: #67c23a;
+  }
 }
 </style>

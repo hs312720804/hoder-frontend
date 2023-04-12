@@ -132,8 +132,9 @@
               </div>
 
               <div v-if="tags.length > 0">
-                <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
+                <el-form-item label="设置标签" class="multipleSelect" >
                   <MultipleSelect
+                    ref="MultipleSelectRef"
                     :tags="tags"
                     :rulesJson="rulesJson"
                   ></MultipleSelect>
@@ -156,7 +157,7 @@
                   :dynamicPolicyJson="dynamicPolicyJson"
                 ></MultipleSelect>
               </el-form-item> -->
-              <el-form-item label="流转条件">
+              <el-form-item label="流转条件" v-if="editRow">
                 <SetCirculationConditionsCom
                   ref="setCirculationRef"
                   :storyLineCirculationRulesJson.sync="flowCondition">
@@ -174,12 +175,17 @@
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
 import SetCirculationConditionsCom from '@/components/dynamicPeople/SetCirculationConditionsCom.vue'
-
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 export default {
   components: {
     MultipleSelect,
     MultipleActionTagSelect,
     SetCirculationConditionsCom
+  },
+  provide () {
+    return {
+      _this: this
+    }
   },
   data () {
     return {
@@ -205,17 +211,17 @@ export default {
         // 以上为表单提交的参数
       },
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorClassEnum: {
-        1: 'checkbox--green',
-        2: 'checkbox--red',
-        3: 'checkbox--blue',
-        5: 'checkbox--yellow',
-        6: 'checkbox--orange',
-        7: 'checkbox--orange2',
-        8: 'checkbox--cyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorClassEnum: {
+      //   1: 'checkbox--green',
+      //   2: 'checkbox--red',
+      //   3: 'checkbox--blue',
+      //   5: 'checkbox--yellow',
+      //   6: 'checkbox--orange',
+      //   7: 'checkbox--orange2',
+      //   8: 'checkbox--cyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       checkedList: [],
       searchValue: '',
       selectTagInitPageSize: 500,
@@ -278,22 +284,24 @@ export default {
       },
       currentLaunchLimitCount: undefined,
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan',
-        11: 'success',
-        12: 'gray'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan',
+      //   11: 'success',
+      //   12: 'gray'
+      // },
       cityData: [],
       provinceValueList: [],
       timeTagKongList: [],
       conditionTagsFiltered: [],
-      collapseAddTagsFlag: false
+      collapseAddTagsFlag: false,
+      circulationTagDataList: [],
+      soureceSignList: []
     }
   },
   watch: {
@@ -303,14 +311,24 @@ export default {
     //   },
     //   deep: true
     // }
-    tagList (val) {
-      this.checkedList = val.map(item => item.tagId)
-      this.sortTag()
+    tagList: {
+      handler (val) {
+        console.log('watch:tagList')
+        this.checkedList = val.map(item => item.tagId)
+        this.sortTag()
+      }
     }
+
   },
   computed: {
     hasBehaviorTag () {
       return this.actionTags.some(item => item.dataSource === 8)
+    },
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   props: {
@@ -328,6 +346,15 @@ export default {
     }
   },
   methods: {
+    // 获取流转标签
+    async getCirculationTag () {
+      await this.$service.getRuleIndicators().then(res => {
+        this.circulationTagDataList = res
+      })
+      this.$service.getSourceSign().then(res => {
+        this.soureceSignList = res
+      })
+    },
     handleStopTypeChange () {
       // 切换处理操作时，清空选择的流转接待员 ID
       this.form.nextId = ''
@@ -350,7 +377,6 @@ export default {
               dataSource: item.tDataSource
             }
           })
-
           this.selectTagTagsListTotal = data.pageInfo.total
         })
     },
@@ -405,157 +431,6 @@ export default {
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
-    // 判断是否有动态的时间周期的行为标签，有则展示勾选“是否每日更新”
-    // hasMoveBehaviorTagRule () {
-    //   const crowd = this.form
-    //   const behaviorRules = this.behaviorRulesJson.rules
-
-    //   let hasBehaviorRule = false // 是否有行为标签
-    //   let hasMoveRule = false // 是否有动态周期
-    //   let hasFullTag = false // 是否有下面的标签，有的话就展示；应用状态 (BAV0009)，会员状态 (BAV0001)，购买行为 (BAV0003)，用户活跃 (BAV0010)
-    //   const fullTagList = ['BAV0009', 'BAV0001', 'BAV0003', 'BAV0010']
-
-    //   if (behaviorRules.length > 0) {
-    //     hasBehaviorRule = true
-    //     for (let x = 0; x < behaviorRules.length; x++) {
-    //       const rule = behaviorRules[x]
-    //       for (let y = 0; y < rule.rules.length; y++) {
-    //         const item = rule.rules[y]
-    //         if (item.bav && item.bav.rangeType === 'move') {
-    //           hasMoveRule = true
-    //           break
-    //         }
-    //         if (fullTagList.includes(item.tagCode)) {
-    //           hasFullTag = true
-    //           break
-    //         }
-    //       }
-    //     }
-    //   }
-
-    //   if (hasBehaviorRule && (hasMoveRule || hasFullTag)) { // 展示勾选“是否每日更新”
-    //     // 当有isShowAutoVersion并且 为 false的时候，初始默认选择是。否则不限制选择
-    //     if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
-    //       crowd.autoVersion = true
-    //     }
-    //     crowd.isShowAutoVersion = true
-    //   } else {
-    //     crowd.isShowAutoVersion = false
-    //     crowd.autoVersion = false
-    //   }
-    // },
-
-    // citySelectChange (val, childRule, cityList) {
-    //   if (childRule.tagType === 'mix') {
-    //     const matchCity = cityList.find(item => {
-    //       return val === item.attrName
-    //     })
-    //     childRule.specialCondition = matchCity.rulesJson
-    //     childRule.errorMsg = matchCity.rulesJson
-    //       ? ''
-    //       : '标签未配置，请先配置再使用'
-    //     // console.log('inputValue=====', this.inputValue)
-    //   }
-    // },
-    // 根据省id获取市列表
-    // areaSelectChange (val, tagCode, childItem) {
-    //   // this.provinceValueList[index] = val
-    //   // console.log(this.provinceValueList==='', this.provinceValueList)
-    //   if (childItem) childItem.value = ''
-    //   if (tagCode === 'mix_area') {
-    //     const params = {
-    //       id: val
-    //     }
-    //     return this.$service.specialTagChild(params).then(data => {
-    //       const cityData = data.slice().map(item => {
-    //         return {
-    //           attrValue: item.specialTagName,
-    //           attrName: item.specialTagName,
-    //           attrId: item.specialTagId,
-    //           rulesJson: item.rulesJson
-    //         }
-    //       })
-    //       this.$set(this.cityData, val, cityData)
-    //       // console.log('this.cityData===', this.cityData)
-    //     })
-    //   }
-    // },
-    // changeTimeWays (childItem) {
-    //   childItem.value = ''
-    //   if (childItem.isDynamicTime) {
-    //     childItem.isDynamicTime = childItem.isDynamicTime === 2 ? 1 : 2
-    //   } else {
-    //     this.$set(childItem, 'isDynamicTime', 2)
-    //   }
-    // },
-    // handleRemoveRule (rule, childRule) {
-    //   const rulesJson = this.rulesJson
-    //   rule.rules.splice(rule.rules.indexOf(childRule), 1)
-    //   if (rule.rules.length === 0) {
-    //     rulesJson.rules = rulesJson.rules.filter(function (item) {
-    //       return item !== rule
-    //     })
-    //   }
-    // },
-    // handleRemoveSpecialRule (rule, childRule) {
-    //   const rulesJson = this.dynamicPolicyJson
-    //   rule.rules.splice(rule.rules.indexOf(childRule), 1)
-    //   if (rule.rules.length === 0) {
-    //     rulesJson.rules = rulesJson.rules.filter(function (item) {
-    //       return item !== rule
-    //     })
-    //   }
-    // },
-
-    // handleCheckboxOk () {
-    //   this.currentChildItem.value = this.checkboxValue
-    //   this.showMoreTags = false
-    // },
-    // handleSelectMore (child) {
-    //   this.checkboxValue = ''
-    //   this.formInline.attrName = ''
-    //   this.currentChildItem = child
-    //   // this.showMoreTags = true
-    //   this.$service
-    //     .getTagAttr({
-    //       tagId: child.tagId,
-    //       pageSize: this.initPageSize,
-    //       pageNum: this.initCurrentPage
-    //     })
-    //     .then(data => {
-    //       this.showMoreTags = true
-    //       this.tagList = data.pageInfo.list
-    //       this.tagsListTotal = data.pageInfo.total
-    //     })
-    // },
-    // handleCurrentChange (index) {
-    //   this.initCurrentPage = index
-    //   this.$service
-    //     .getTagAttr({
-    //       tagId: this.currentChildItem.tagId,
-    //       pageSize: this.initPageSize,
-    //       pageNum: index
-    //     })
-    //     .then(data => {
-    //       this.tagList = data.pageInfo.list
-    //     })
-    // },
-    // onSubmit () {
-    //   this.$service
-    //     .getTagAttr({
-    //       tagId: this.currentChildItem.tagId,
-    //       pageSize: this.initPageSize,
-    //       pageNum: 1,
-    //       attrName: this.formInline.attrName
-    //     })
-    //     .then(data => {
-    //       this.tagList = data.pageInfo.list
-    //       this.tagsListTotal = data.pageInfo.total
-    //     })
-    // },
-    // getDefaultOperator () {
-    //   return '='
-    // },
 
     // 给 behaviorRulesJson 中的table 添加序号
     putBehaviorRulesJsonTableIndex (val) {
@@ -897,7 +772,7 @@ export default {
       // if (this.crowd && this.crowd.isUsedAsTag === 1) {
       //   normalTags = normalTags.filter(item => item.dataSource !== 12)
       // }
-      this.tags = normalTags
+      this.tags = [...this.circulationTagDataList, ...normalTags]
       this.actionTags = actionTags
       this.specialTags = specialTags
       console.log('this.tags------------->', this.tags)
@@ -1093,12 +968,15 @@ export default {
       })
     }
   },
-  created () {
+  async created () {
     this.getTags() // 获取所有的标签列表
+    await this.getCirculationTag() // 获取流转标签
 
     // 编辑 回显
-    if (this.editRow != null) {
+    if (this.editRow) {
       this.reviewEditData()
+    } else {
+      this.sortTag() // 初始化所选标签
     }
 
     // this.tags = [{ thirdPartyApiId: '', tagId: '8303', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010125', tagName: '芯片型号', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }, { thirdPartyApiId: '', tagId: '8304', tagType: 'string', thirdPartyCode: '', inputType: null, tagKey: 'T010126', tagName: '存储', dataSource: 2, initValue: '0', thirdPartyField: '', child: [] }]
@@ -1143,42 +1021,7 @@ i {
 }
 
 .add {
-  >>> .el-tag--warningOrange {
-    color: #512DA8;
-    background-color: rgba(119, 81, 200, 0.4);
-    border-color: rgba(81, 45, 168, 0.45);
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningOrange2 {
-    color: #795548;
-    background-color: rgba(167, 130, 117, 0.5);
-    border-color: #7955488c;
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningCyan {
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  }
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 }
 
 .outer-and {
@@ -1225,42 +1068,7 @@ i {
   font-size: 26px;
   float right
 .selected-tags {
-  >>> .el-tag--warningOrange {
-    color: #512DA8;
-    background-color: rgba(119, 81, 200, 0.4);
-    border-color: rgba(81, 45, 168, 0.45);
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningOrange2 {
-    color: #795548;
-    background-color: rgba(167, 130, 117, 0.5);
-    border-color: #7955488c;
-
-    .el-tag__close {
-      color: #512DA8;
-    }
-  }
-
-  >>> .el-tag--warningCyan {
-    color: #00bcd4;
-    background-color: rgba(0, 189, 214, .1);
-    border-color: #00bcd42b
-  }
-  >>> .el-tag--gray {
-    color: #fff;
-    background-color: rgba(165,155,149, 1);
-    border-color: rgba(165,155,149, 1);
-    .el-tag__close {
-      color #fff
-      &:hover{
-        background-color: #666
-      }
-    }
-  }
+  @import '~@/assets/tag.styl'
 }
 .inline-form-item {
   display: inline-block;

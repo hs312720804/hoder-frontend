@@ -1,4 +1,5 @@
 <template>
+  <!-- 使用于： 动态人群流转条件 和 故事线设置出入口条件中的【流转条件】的组件，不包括混入【普通标签】的 -->
   <el-form :model="rulesJson" ref="ruleForm" >
     <div v-if="tags && tags.length > 0" class="label-container">
         <div
@@ -268,7 +269,8 @@ export default {
           ...tag,
           operator: '>',
           sourceSign: '',
-          value: ''
+          value: '',
+          tagCode: ''
         }]
       })
     },
@@ -277,7 +279,8 @@ export default {
         ...tag,
         operator: '>',
         sourceSign: '',
-        value: ''
+        value: '',
+        tagCode: ''
       })
     },
     handleRulesConditionChange (item) {
@@ -358,7 +361,6 @@ export default {
 .label-item {
   display: flex;
   position: relative;
-  line-height: 40px
 }
 
 .paddingTop {
@@ -377,6 +379,7 @@ export default {
   text-align: right;
   flex 0 0 110px;
   margin-right: 10px;
+  line-height: 32px;
 }
 .rule-wrap {
   flex: auto
@@ -470,6 +473,7 @@ i {
 .label-container {
   position: relative;
   z-index: 1;
+  margin-bottom 20px
 }
 
 .label-or-space {

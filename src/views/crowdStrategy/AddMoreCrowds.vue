@@ -561,7 +561,7 @@ export default {
               }).flat()
             }
 
-            if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+            if (rulesItem.tagCode === 'BAV0016' || rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
               const rData = []
               const showBehaviorValue = rulesItem.bav.showBehaviorValue
               const countValue = JSON.parse(JSON.stringify(rulesItem.bav.countValue))
@@ -585,6 +585,15 @@ export default {
         // e.crowdValidFrom = form.crowdExp[0]
         // e.crowdValidTo = form.crowdExp[1]
         e.limitLaunchCount = e.limitLaunch ? e.limitLaunchCount : undefined
+
+        // 黑名单
+        if (e.blackFlag === 1) {
+          const list = e.blackList.map(item => {
+            return item.value
+          })
+          e.blacks = list.join(',')
+        }
+
         return e
       })
 
@@ -677,6 +686,18 @@ export default {
             })
           })
           e.isShowAutoVersion = false
+
+          // 黑名单 回显数据
+          e.blackFlag = e.blackFlag ? e.blackFlag : 0
+          e.blacks = e.blacks ? e.blacks : ''
+          e.blackList = [{ value: '' }]
+          if (e.blackFlag === 1) {
+            e.blackList = e.blacks.split(',').map(item => {
+              return {
+                value: item
+              }
+            })
+          }
 
           return e
         })

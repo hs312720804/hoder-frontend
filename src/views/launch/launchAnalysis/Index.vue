@@ -22,21 +22,25 @@
           <!-- :picker-options="pickerOptions" -->
     </el-form-item>
     <el-form-item style="margin-left: 15px;">
-      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">    清除缓存 </el-checkbox>
+      <el-checkbox v-model="formInline.isDelCache" :true-label="1" :false-label="0">清除历史记录 </el-checkbox>
+    </el-form-item>
+    <el-form-item style="margin-left: 15px;">
+      <el-button type="text" @click="resetForm('ruleForm')">重置查询</el-button>
     </el-form-item>
     <br/>
     <el-form-item label="业务范围:" prop="sourceNameList" style="max-width: 70%; white-space: nowrap;">
-      <!-- <el-checkbox-group v-model="formInline.sourceNameList">
-        <el-checkbox :label="0" name="type">全选</el-checkbox>
-        <el-checkbox :label="影视VIP" name="type">影视VIP</el-checkbox>
-        <el-checkbox :label="奇异果VIP" name="type">奇异果VIP</el-checkbox>
-      </el-checkbox-group> -->
 
       <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
       <!-- <div style="margin: 15px 0;"></div> -->
-      <el-checkbox-group v-model="formInline.sourceNameList" @change="handleCheckedCitiesChange" style="white-space: break-spaces;">
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
         <el-checkbox v-for="city in cities" :label="city" :key="city">{{city}}</el-checkbox>
       </el-checkbox-group>
+
+      <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">广电直播</el-checkbox>
+      <el-checkbox-group v-model="formInline.sourceNameList" style="white-space: break-spaces;">
+        <el-checkbox v-for="city in cities2" :label="city" :key="city">{{city}}</el-checkbox>
+      </el-checkbox-group>
+
     </el-form-item>
     <el-form-item style="margin-left: 136px">
       <el-button type="primary" @click="onSubmit" :loading="loading">{{ loading ? '分析中' : '分析'}}</el-button>
@@ -63,7 +67,10 @@
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">主页活跃人数</div>
+              <div class="title-one">
+                主页活跃人数
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ cc_format_number(overview.homepageActiveUv) }}
               </div>
@@ -78,7 +85,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">起播活跃率</div>
+              <div class="title-one">起播活跃率
+                <span class="remark">（根据圈定量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPlayRate) }}
               </div>
@@ -99,7 +108,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">产品包曝光率</div>
+              <div class="title-one">产品包曝光率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgShowRate) }}
               </div>
@@ -120,7 +131,9 @@
           <el-row :gutter="20">
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">下单率</div>
+              <div class="title-one">下单率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgXiadanRate) }}
               </div>
@@ -137,7 +150,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费率</div>
+              <div class="title-one">付费率
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two">
                 {{ toPercent(overview.totalPkgPayRate) }}
               </div>
@@ -154,7 +169,9 @@
             </div></el-col>
 
             <el-col :span="8"><div class="ibox">
-              <div class="title-one">付费金额</div>
+              <div class="title-one">付费金额
+                <span class="remark">（根据命中量统计）</span>
+              </div>
               <div class="text-two" style="height: 70px">
                 {{ cc_format_number(overview.totalPrice) }}
               </div>
@@ -318,7 +335,8 @@
 </template>
 
 <script>
-const cityOptions = ['影视VIP', '酷奇异果VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '埋堆堆VIP', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '1905', '欢喜', '广电直播', '亲子VIP', '音乐K歌会员', '电竞VIP', '家庭影院VIP']
+const cityOptions = ['腾讯影视VIP', '爱奇艺影视VIP', '酷喵VIP', '芒果TV大屏VIP', '芒果全屏VIP', '港剧VIP', '欢喜', '亲子VIP', '音乐K歌会员', '家庭影院VIP', '画报屏保', '4K花园', '戏曲VIP', '健身VIP', '炫舞广场', '电竞VIP', '1905']
+const cityOptions2 = ['湖南', '河北', '贵州', '四川', '重庆', '云南', '江西', '河南', '安徽', '山西', '湖北', '甘肃', '广西', '江苏', '新疆', '山东', '辽宁', '陕西', '海南']
 export default {
   components: {},
   data () {
@@ -334,9 +352,12 @@ export default {
       historysCondition: '',
       drawer: false,
       checkAll: false,
+      checkAll2: false,
       checkedCities: [],
       cities: cityOptions,
+      cities2: cityOptions2,
       isIndeterminate: false,
+      isIndeterminate2: false,
       // allData: {},
       overview: {},
       formInline: {
@@ -431,8 +452,25 @@ export default {
       }
     })
 
+    // 设置初始化展示数据
+    this.setDefaultData()
+
     // 历史搜索记录
     this.handleGetRightsInterestsSearchRecord()
+  },
+  watch: {
+    'formInline.sourceNameList': {
+      handler (val) {
+        const checkedCount = val.length
+        const allCount = cityOptions.concat(cityOptions2).length
+
+        this.checkAll = checkedCount === allCount
+        this.isIndeterminate = checkedCount > 0 && checkedCount < allCount
+
+        this.checkAll2 = cityOptions2.every(item => val.indexOf(item) > -1)
+        this.isIndeterminate2 = cityOptions2.some(item => val.indexOf(item) > -1) && !this.checkAll2
+      }
+    }
   },
   beforeDestroy () {
     // 销毁定时器
@@ -450,6 +488,15 @@ export default {
     console.log('deactivated - setTimeOutVal------->', this.setTimeOutVal)
   },
   methods: {
+    resetForm (formName) {
+      // 重置数据
+      this.pageStatus = 0
+      this.crowdName = ''
+      this.checkAll = false
+      this.$nextTick(() => {
+        this.$refs[formName].resetFields()
+      })
+    },
     // 删除历史
     deleteHistory (id) {
       this.$service.delRightsInterestsSearchRecord({ id }, '删除成功').then(res => {
@@ -494,13 +541,10 @@ export default {
       })
     },
     handleCheckAllChange (val) {
-      this.formInline.sourceNameList = val ? cityOptions : []
-      this.isIndeterminate = false
+      this.formInline.sourceNameList = val ? cityOptions.concat(cityOptions2) : []
     },
-    handleCheckedCitiesChange (value) {
-      const checkedCount = value.length
-      this.checkAll = checkedCount === this.cities.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.cities.length
+    handleCheckAllChange2 (val) {
+      this.formInline.sourceNameList = val ? this.formInline.sourceNameList.concat(cityOptions2) : this.formInline.sourceNameList.filter(item => cityOptions2.indexOf(item) === -1)
     },
     handleClick (tab, event) {
       this.$nextTick(() => {
@@ -617,7 +661,22 @@ export default {
       str += '%'
       return str
     },
-    // 分析
+
+    // 设置初始化展示数据
+    setDefaultData () {
+      // 默认展示的数据参数
+      this.formInline = {
+        crowdId: '14123',
+        sourceNameList: ['音乐K歌会员'],
+        timeRange: ['2022-11-25', '2022-12-01'],
+        isDelCache: 0
+      }
+      this.$nextTick(() => {
+        this.onSubmit()
+      })
+    },
+
+    // 点击分析 或者 点击柱状图 触发
     onSubmit (sourceName) {
       // console.log('submit!')
       // this.formInline.crowdId = 10013
@@ -645,7 +704,8 @@ export default {
       }
       this.initChart()
     },
-    // 手动点击分析 或者 点击历史记录分析 执行函数
+
+    // 手动点击分析调用 或者 点击历史记录分析调用
     initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
@@ -676,6 +736,8 @@ export default {
         this.loading = false
       })
     },
+
+    // 查询图表数据
     fetchAllData (sourceName) {
       this.loading = true
       const originParams = this.formInline
@@ -874,8 +936,6 @@ export default {
           // trigger: 'item',
           trigger: 'axis',
           formatter: function (parmas) {
-            // console.log('parmas------------->', parmas)
-
             let str = parmas[0].marker + parmas[0].name + '<br/>'
             // let str = ''
             for (const item of parmas) {
@@ -1204,26 +1264,13 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+@import url('~@/assets/overview.styl')
 // .ibox {
 //   border-radius: 4px;
 //   min-height: 36px;
 //   background red
 // }
-.wrap-div{
-  display: flex;
-  justify-content: space-between;
-}
-.ibox {
-  margin-bottom: 25px;
-  background-color: #fff;
-  // border: 1px solid #e7eaec;
-  border-radius: 4px;
-  padding: 15px 20px 20px 20px;
-  height: 139px;
-  display: flex;
-  flex-direction: column;
-  justify-content: space-between;
-}
+
 .big-title{
   color rgb(103, 106, 108)
   font-family "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif
@@ -1231,49 +1278,24 @@ export default {
   font-weight 100
   margin 10px 0
 }
-.overview-table{
+.overview-table {
   flex: 1 0 730px
   color rgb(103, 106, 108)
 }
-.title-one{
-  // margin-top: 5px;
-  // margin-bottom: 20px;
-  font-size 12px
-  font-weight 600
-}
-.text-two{
-  font-size 24px
-  // margin-bottom 15px
-  // margin-top 5px
-  color rgb(26, 179, 148)
-  text-align: center;
-}
-.small-box {
-  display flex
-  justify-content: end
-  flex-direction: column;
-}
-.small{
-  display inline
-  font-size 13.3333px
-  display flex
-  justify-content: space-between
-  align-content: space-around
-  margin-top: 15px
-}
+
 // .small:nth-child(1) {
 //   margin-bottom 10px
 // }
 .chart-wrap {
   flex: 0.8 0 550px;
 }
-.chart-1{
+.chart-1 {
   width: 550px;
   height: 360px;
   margin: 0 auto;
 }
 
-.launch-statistics{
+.launch-statistics {
   // overflow hidden
   // position: relative;
   // height: 100%;
@@ -1287,24 +1309,15 @@ export default {
   background: #fff
   padding-bottom 20px
 }
-.chart-div{
+.chart-div {
   height: 436px
 }
 
 .unit-box {
   // margin-bottom: 0;
   background-color: #fff;
-  // border: 1px solid #ddd;
-  border-radius: 4px;
-  height: 100%;
-  // -webkit-box-shadow: 0 1px 1px rgb(0 0 0 / 5%);
 }
-.unit-header {
-  border-bottom: 1px solid #e7eaec
-  line-height: 56px;
-  padding: 0 15px;
-  font-size: 14px;
-}
+
 .search-text {
   font-size: 12px;
   border-radius: 10px;
@@ -1381,8 +1394,9 @@ export default {
   height: 40px
   border-top: 1px dashed #e7e7e7;
 }
-.hoder-pages {
-  background: #f3f4fa;
-  padding: 20px;
+.remark {
+  font-size: 12px;
+  color: #C0C4CC;
+  font-weight 400
 }
 </style>

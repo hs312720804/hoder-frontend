@@ -5,6 +5,8 @@
     {{ tagIds }}
     <hr>
     {{ selectModelGroupValue }} -->
+
+    <!-- 动态人群 - 智能人群 - 设置入口条件 -->
     <el-row>
       <el-col :span="4" class="row-title">
       选择入口标签：
@@ -163,6 +165,7 @@
 </template>
 
 <script>
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   // props: ['recordId', 'tempPolicyAndCrowd', 'routeSource'],
   props: ['isDynamicPeople', 'crowdId', 'graph', 'dynamicMode', 'allCrowdRule'],
@@ -174,15 +177,15 @@ export default {
   // },
   data () {
     return {
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       tags: [],
       rulesJson: {
         condition: 'OR',
@@ -203,6 +206,11 @@ export default {
       tagIds: [] // 设置规则的 tagkey 集合
     }
   },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    }
+  },
   watch: {
     crowdId: {
       handler (val) {
@@ -211,10 +219,7 @@ export default {
     }
   },
   created () {
-    // 获取标签
-    // this.$service.getRuleIndicators().then(res => {
-    //   this.tags = res
-    // })
+
   },
   mounted () {
     this.fetchData()

@@ -83,6 +83,7 @@
 </template>
 
 <script>
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 export default {
   name: 'CreatePolicy',
   props: ['recordId', 'initTagList'],
@@ -102,20 +103,28 @@ export default {
       initPageSize: 50,
       tagsListTotal: 0,
       initCurrentPage: 1,
-      currentTagParent: 0,
+      currentTagParent: 0
       // {1: "自定义", 2: "大数据", 3: "第三方接口数据", 5: "设备实时标签"}
-      dataSourceColorClassEnum: {
-        1: 'checkbox--green',
-        2: 'checkbox--red',
-        3: 'checkbox--blue',
-        5: 'checkbox--yellow'
-      },
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning'
-      }
+      // dataSourceColorClassEnum: {
+      //   1: 'checkbox--green',
+      //   2: 'checkbox--red',
+      //   3: 'checkbox--blue',
+      //   5: 'checkbox--yellow'
+      // }
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning'
+      // }
+    }
+  },
+  computed: {
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   methods: {
@@ -151,15 +160,15 @@ export default {
     },
     resetSearch () {
       this.searchValue = ''
-      let currentTagsId = this.addForm.conditionTagIds
+      const currentTagsId = this.addForm.conditionTagIds
       this.getTags()
       this.addForm.conditionTagIds = currentTagsId
     },
     handleTagChange (flag, item) {
-      var arr = []
+      let arr = []
       if (flag) { this.tagList.push(item) } else {
         arr = this.tagList
-        for (var i = arr.length - 1; i >= 0; i--) {
+        for (let i = arr.length - 1; i >= 0; i--) {
           if (arr[i].tagId == item.tagId) { arr.splice(i, 1) }
         }
       }
@@ -223,7 +232,7 @@ export default {
               })
             }
           } else {
-            let oldFormData = {
+            const oldFormData = {
               policyName: addForm.policyName,
               conditionTagIds: addForm.conditionTagIds
             }

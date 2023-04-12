@@ -19,6 +19,8 @@
         <!-- <hr> -->
         <!-- groupCheckIndex::{{groupCheckIndex}} -->
       <!-- </div> -->
+      <!-- {{ this.currentGroup }} -->
+
       <div class="top">
       <!-- <div> -->
         <el-tabs
@@ -142,7 +144,7 @@
         </div>
         <!-- --------{{currentGroup}} -->
         <div v-if="radioType === 6" class="aaa">
-          <el-button type="primary" size="large" @click="$router.push({ name: 'storyLine', params: { sceneId: currentGroup.sceneId } })">配置故事运营</el-button>
+          <el-button type="primary" size="large" @click="storySetting">配置故事运营</el-button>
         </div>
         <div style="position: relative" v-else>
           <!-- 拓扑图 -->
@@ -230,7 +232,7 @@ import antvGraph from '@antvGraph/Index.vue'
 import eventBus from '@antvGraph/utils/eventBus'
 import DragSortMultiSelect from './DragSortMultiSelect'
 import CreateNodesAndEdges from '@/components/antvGraph/src/createNodesAndEdges'
-
+import { dataSourceColorEnum } from '@/utils/tags.js'
 export default {
   components: {
     antvGraph,
@@ -243,15 +245,15 @@ export default {
       initDynamicGroupId: this.crowdIndexThis.dynamicGroupId,
       groupCheckIndex: undefined,
       radioType: 0,
-      dataSourceColorEnum: {
-        1: 'success',
-        2: 'danger',
-        3: '',
-        5: 'warning',
-        6: 'warningOrange',
-        7: 'warningOrange2',
-        8: 'warningCyan'
-      },
+      // dataSourceColorEnum: {
+      //   1: 'success',
+      //   2: 'danger',
+      //   3: '',
+      //   5: 'warning',
+      //   6: 'warningOrange',
+      //   7: 'warningOrange2',
+      //   8: 'warningCyan'
+      // },
       tags: [],
       rulesJson: {
         condition: 'OR',
@@ -374,6 +376,9 @@ export default {
   computed: {
     height () {
       return document.documentElement.clientHeight - 225
+    },
+    dataSourceColorEnum () {
+      return dataSourceColorEnum
     }
   },
   created () {
@@ -394,6 +399,11 @@ export default {
     eventBus.$off()
   },
   methods: {
+    storySetting () {
+      // 先保存，再跳转页面
+      this.handleSave('justSave')
+      this.$router.push({ name: 'storyLine', params: { sceneId: this.currentGroup.sceneId } })
+    },
     fullScreen () {
       // const element = document.documentElement // 若要全屏页面中div，var element= document.getElementById("divID");
       const element = document.getElementById('step2') // 若要全屏页面中div，var element= document.getElementById("divID");
@@ -547,9 +557,6 @@ export default {
           params.flowChart = flowChart
 
           this.$service.addDynamic2Plan(params, '新建分组成功').then(res => {
-            this.allGroupList.push(res)
-            this.groupCheckIndex = (this.allGroupList.length - 1).toString()
-
             if (this.form.mainArithmetic === 6) { // 创建故事线
               console.log('form', this.form)
               const crowdNames = this.form.cid.map(id => {
@@ -562,10 +569,17 @@ export default {
                 sceneName: this.form.name, // 方案组名称
                 crowdNames: crowdNames.join(',') // 创建方案组选择的小人群名称
               }
-              this.$service.addScenedynamic(params).then(res => {
-                console.log('id===========', res)
+              this.$service.addScenedynamic(params).then(sceneId => {
+                this.allGroupList.push({
+                  ...res,
+                  sceneId
+                })
+                this.groupCheckIndex = (this.allGroupList.length - 1).toString()
                 // this.$router.push({ name: 'storyLine', params: { sceneId: res } })
               })
+            } else {
+              this.allGroupList.push(res)
+              this.groupCheckIndex = (this.allGroupList.length - 1).toString()
             }
             this.dialogFormVisible = false
             // this.getDynamic2PlanList('add')
@@ -725,7 +739,7 @@ export default {
       rulesJson.rules.splice(index, 1)
     },
 
-    handleSave () {
+    handleSave (type = '') {
       // 获取当前图表的graph数据，并保存
       const currentGroupChartJson = this.getChartJson()
       if (currentGroupChartJson) {
@@ -738,7 +752,9 @@ export default {
 
       this.$service.saveDynamic2Plan(parmas, '操作成功').then(res => {
         // this.$emit('goBackCrowdListPage')
-        this.$emit('crowdNextStep', 2)
+        if (type !== 'justSave') {
+          this.$emit('crowdNextStep', 2)
+        }
       })
     },
 

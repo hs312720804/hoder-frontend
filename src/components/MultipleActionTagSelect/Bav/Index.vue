@@ -48,6 +48,7 @@
                 style="width: 120px"
                 name="oxve"
                 class="input-inline"
+                filterable
                 @change="handelChildBehavirSelectChange({
                   childItem: item,
                   level: 2,
@@ -405,6 +406,7 @@
                       style="width: 110px"
                       name="asdq"
                       class="input-inline"
+                      filterable
                       @change="handelChildBehavirSelectChange({
                         childItem: item2,
                         hasChild: false,
@@ -533,7 +535,7 @@
                                       <!-- 价格区间 -->
                                       <span v-if="item4.childCheckedVal == 1" class="flex-row" style="width: 300px; height: 31px">
                                         <el-input-number :value="item5.value1" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value1')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
-                                      —<el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
+                                      ~ <el-input-number :value="item5.value2" :min="1" :max="5000" @input="handelInputBetween($event, item5, 'value2')" @blur="handelInputBlur(item5)" controls-position="right"></el-input-number>
                                       </span>
 
                                       <!-- 产品包ID -->
@@ -786,7 +788,6 @@
               name="oxve"
               class="input-inline"
               @change="handelBehavirSelectChange({
-                hasChild: true,
                 reverseSelectAttr: true
               })"
             >
@@ -799,7 +800,7 @@
               </template>
             </el-select>
           </el-form-item>
-
+          <!-- @change="ReverseSelect($event, childItem.bav.behaviorValue)" -->
           <el-checkbox
             class="reverse-check"
             v-model="childItem.bav.reverseSelect"
@@ -816,7 +817,18 @@
             class="flex-row child-attr-wrap"
           >
             <span class="w100">{{ item.name }}</span>
-            <span class="flex-column">
+            <!-- perCountValue 是后期新增的字段，因此需要兼容之前的数据
+                 v-else 里面就是旧版本的数据格式
+            -->
+            <template v-if="item.perCountValue">
+
+              <Bav0012 v-if="!!item.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012>
+
+              <!-- 次数、天数 -->
+              <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+            </template>
+
+            <span v-else class="flex-column">
               <!-- 第二级 -->
               <span
                 v-for="(item2, index) in item.child"
@@ -827,6 +839,7 @@
                 <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
               </span>
             </span>
+
           </div>
         </div>
       </span>
@@ -961,14 +974,25 @@
 
                 </span>
 
-                <span v-else class="flex-column">
-                  <span
-                    v-for="(item3, index) in item2.child"
-                    :key="index"
-                    class="flex-row child"
-                  >
-                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
-                  </span>
+                <span v-else class="flex-row">
+                  <!-- perCountValue 是后期新增的字段，因此需要兼容之前的数据
+                      v-else 里面就是旧版本的数据格式
+                  -->
+                  <template v-if="item2.perCountValue">
+
+                    <Bav0012 v-if="!!item2.mapName" :aaa="item"></Bav0012>
+                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                  </template>
+
+                  <template v-else>
+                    <span
+                      v-for="(item3, index) in item2.child"
+                      :key="index"
+                      class="flex-row child"
+                    >
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item3" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+                    </span>
+                  </template>
                 </span>
 
               </div>
@@ -1190,7 +1214,7 @@
                             :value="attrChildItem.value">
                           </el-option>
                         </el-select>
-                        <!-- 天数次数等 11111111111111111111111111111 -->
+                        <!-- 天数次数等  -->
                         <span v-if="!childItem.bav.reverseSelect">
                           <span
                             v-for="(item6, index) in item5.child"
@@ -1229,20 +1253,32 @@
                                 style="max-width: 100px; min-width: 100px;"
                                 name="oxve"
                                 class="input-inline"
+                                @change="handleOperatorChange(item7)"
                               >
                                 <el-option value="="></el-option>
                                 <el-option value=">="></el-option>
                                 <el-option value="<="></el-option>
                                 <el-option value=">"></el-option>
                                 <el-option value="<"></el-option>
+                                <el-option value="between" label="位于区间"></el-option>
+
                               </el-select>
-                              <el-input
-                                placeholder="请输入"
-                                v-model="item7.value"
-                                clearable
-                                style="max-width: 100px; min-width: 100px;"
-                              >
-                              </el-input>
+
+                              <template>
+                                <span v-if="item7.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                                  <el-input-number :value="item7.value1" @input="handelInputBetween($event, item7, 'value1')" @blur="handelInputBlur(item7)" controls-position="right"></el-input-number>
+                                ~ <el-input-number :value="item7.value2" @input="handelInputBetween($event, item7, 'value2')" @blur="handelInputBlur(item7)" controls-position="right"></el-input-number>
+                                </span>
+
+                                <el-input
+                                  v-else
+                                  placeholder="请输入"
+                                  v-model="item7.value"
+                                  clearable
+                                  style="max-width: 100px; min-width: 100px;"
+                                >
+                                </el-input>
+                              </template>
                             </span>
                           </span>
                         </span>
@@ -1262,6 +1298,7 @@
                           level: 6
                         })"
                       >
+
                         <el-option
                           v-for="(tv, index) in qiBoCollectionOptions"
                           :key="tv.value + index"
@@ -1360,20 +1397,32 @@
                                   style="max-width: 100px; min-width: 100px;"
                                   name="oxve"
                                   class="input-inline"
+                                  @change="handleOperatorChange(item8)"
                                 >
                                   <el-option value="="></el-option>
                                   <el-option value=">="></el-option>
                                   <el-option value="<="></el-option>
                                   <el-option value=">"></el-option>
                                   <el-option value="<"></el-option>
+                                  <el-option value="between" label="位于区间"></el-option>
                                 </el-select>
-                                <el-input
-                                  placeholder="请输入"
-                                  v-model="item8.value"
-                                  clearable
-                                  style="max-width: 100px; min-width: 100px;"
-                                >
-                                </el-input>
+
+                                <template>
+                                  <span v-if="item8.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                                    <el-input-number :value="item8.value1" @input="handelInputBetween($event, item8, 'value1')" @blur="handelInputBlur(item8)" controls-position="right"></el-input-number>
+                                  ~ <el-input-number :value="item8.value2" @input="handelInputBetween($event, item8, 'value2')" @blur="handelInputBlur(item8)" controls-position="right"></el-input-number>
+                                  </span>
+
+                                  <el-input
+                                    v-else
+                                    placeholder="请输入"
+                                    v-model="item8.value"
+                                    clearable
+                                    style="max-width: 100px; min-width: 100px;"
+                                  >
+                                  </el-input>
+                                </template>
+
                               </span>
                             </span>
                           </span>
@@ -1426,21 +1475,33 @@
                           style="max-width: 100px; min-width: 100px;"
                           name="oxve"
                           class="input-inline"
+                          @change="handleOperatorChange(item6)"
                         >
                           <el-option value="="></el-option>
                           <el-option value=">="></el-option>
                           <el-option value="<="></el-option>
                           <el-option value=">"></el-option>
                           <el-option value="<"></el-option>
+                          <el-option value="between" label="位于区间"></el-option>
                         </el-select>
-                        <el-input
-                          v-if="index === 0"
-                          placeholder="请输入"
-                          v-model="item6.value"
-                          clearable
-                          style="max-width: 100px; min-width: 100px;"
-                        >
-                        </el-input>
+
+                        <template>
+
+                          <span v-if="item6.operator == 'between'" class="flex-row" style="width: 300px; height: 31px">
+                            <el-input-number :value="item6.value1" @input="handelInputBetween($event, item6, 'value1')" @blur="handelInputBlur(item6)" controls-position="right"></el-input-number>
+                          ~ <el-input-number :value="item6.value2" @input="handelInputBetween($event, item6, 'value2')" @blur="handelInputBlur(item6)" controls-position="right"></el-input-number>
+                          </span>
+
+                          <el-input
+                            v-else-if="index === 0"
+                            placeholder="请输入"
+                            v-model="item6.value"
+                            clearable
+                            style="max-width: 100px; min-width: 100px;"
+                          >
+                          </el-input>
+                        </template>
+
                       </span>
                     </span>
                   </span>
@@ -2126,6 +2187,7 @@
       </span>
 
       <!-- 起播活跃 三期-->
+      <!-- 起播活跃的数据特殊处理 使用 showBehaviorValue 而不是 behaviorValue-->
       <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0011'">
         <!-- 第一级 -->
         <el-form-item prop="bav.value">
@@ -3159,6 +3221,7 @@
             style="width: 120px"
             name="oxve"
             class="input-inline"
+            filterable
             @change="handelBehavirSelectChange()"
           >
             <template v-for="item in getBehaviorAttrList(1)">
@@ -3261,6 +3324,179 @@
           </div>
         </div>
       </span>
+
+      <!-- 优惠券行为 -->
+      <span class="flex-row" v-else-if="childItem.tagCode === 'BAV0016'">
+        <!-- 第一级 -->
+        <el-form-item prop="bav.value">
+          <el-select
+            v-model="childItem.bav.value"
+            style="width: 120px"
+            name="oxve"
+            class="input-inline"
+            filterable
+            @change="handelBehavirSelectChange()"
+          >
+            <template v-for="item in getBehaviorAttrList(1)">
+              <el-option
+                :value="item.value"
+                :label="item.name"
+                :key="item.value"
+              ></el-option>
+            </template>
+          </el-select>
+        </el-form-item>
+
+        <!-- {{ childItem.bav.showBehaviorValue }} -->
+
+        <span
+          v-for="(item, index) in childItem.bav.showBehaviorValue"
+          :key="item.value"
+          class="flex-row"
+        >
+          <!-- <el-form-item
+            :prop="`bav.behaviorValue[${index}].childCheckedVal[0]`"
+            :rules="{ required: true, message: '请选择', trigger: 'change' }"
+          > -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[0]"
+              placeholder="请选择"
+              style="width: 110px"
+              name="asdq"
+              class="input-inline"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                extra: {type: childItem.bav.value},
+              })"
+            >
+              <template v-for="attrChildItem in getBehaviorAttrList(2, {type: childItem.bav.value})" >
+                <el-option
+                  :value="attrChildItem.name"
+                  :label="attrChildItem.name"
+                  :key="attrChildItem.name"
+                >
+                </el-option>
+              </template>
+            </el-select>
+
+            <span
+              v-for="(item2, index2) in item.child"
+              :key="index2"
+              style="margin-right: 0;"
+            >
+              <Bav0012 v-if="item.childCheckedVal[0] === item2.value && !!item2.mapName" :aaa="item"></Bav0012>
+            </span>
+          </span>
+
+          <!-- </el-form-item> -->
+
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[1]"
+              placeholder="卡种"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 3,
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(3)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+          </span>
+
+          <!-- 用券行为  有子级 -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[2]"
+              placeholder="用券行为"
+              style="width: 100px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 4,
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(4)"
+                :key="follow.value"
+                :label="follow.name"
+                :value="follow.value">
+              </el-option>
+            </el-select>
+            <span
+              v-for="(item2, index2) in item.child"
+              :key="index2"
+              style="margin-right: 0;"
+            >
+              <Bav0012 v-if="item.childCheckedVal[2] === item2.value && !!item2.mapName" :aaa="item"></Bav0012>
+            </span>
+          </span>
+
+          <!-- 券方式 -->
+          <span class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              placeholder="券方式"
+              style="width: 120px"
+              clearable
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 5,
+                selectPropKeyValue: 'name'
+              })"
+            >
+              <el-option
+                v-for="follow in getBehaviorAttrList(5)"
+                :key="follow.name"
+                :label="follow.name"
+                :value="follow.name">
+              </el-option>
+            </el-select>
+
+            <span class="flex-row" >
+              <span
+                v-for="(item2, index2) in item.child"
+                :key="index2"
+                style="margin-right: 0;"
+              >
+              <!-- 【{{ item2.name }}】 -->
+                <template v-if="item.childCheckedVal[3] === item2.name">
+                  <!-- 券金额 -->
+                  <span v-if="item.childCheckedVal[3] == '劵金额'" class="flex-row" style="width: 300px; height: 31px">
+                    <el-input-number :value="item2.value1" :min="1" :max="5000" @input="handelInputBetween($event, item2, 'value1')" @blur="handelInputBlur(item2)" controls-position="right"></el-input-number>
+                  ~ <el-input-number :value="item2.value2" :min="1" :max="5000" @input="handelInputBetween($event, item2, 'value2')" @blur="handelInputBlur(item2)" controls-position="right"></el-input-number>
+                  </span>
+
+                  <!-- 产品包 ID -->
+                  <span v-if="item.childCheckedVal[3] == '优惠券ID'" class="flex-row" style="min-width: 150px">
+                    <el-input
+                      placeholder="请输入优惠券ID"
+                      v-model="item2.value"
+                      clearable
+                    >
+                    </el-input>
+
+                  </span>
+                </template>
+
+              </span>
+            </span>
+          </span>
+
+          <Type ref="typeRef" :item3="childItem.bav.countValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type>
+
+        </span>
+
+      </span>
+
       <!-- 111111111111111111111111111 -->
       <!-- <div>{{ childItem }}</div> -->
     </div>
@@ -3268,17 +3504,9 @@
 </template>
 
 <script>
-// import Type from '../Type.vue'
-// import ConditionLine from '../ConditionLine.vue'
-// import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
-// import Bav0012 from './Bav0012.vue'
-// import _ from 'lodash'
-// import { v4 as uuidv4 } from 'uuid'
-// todo.vue
 
 import Type from '../Type.vue'
 import ConditionLine from '../ConditionLine.vue'
-import LabelZone from '../../../views/LabelSquare/LabelZone.vue'
 import Bav0012 from './Bav0012.vue'
 import myMinix from './minix'
 export default {
@@ -3287,7 +3515,6 @@ export default {
   components: {
     Type,
     ConditionLine,
-    LabelZone,
     Bav0012
   },
   props: {
@@ -3306,7 +3533,6 @@ export default {
   },
   computed: {
     isView () {
-      debugger
       return this._this && this._this.isView ? this._this.isView : false
     }
   }

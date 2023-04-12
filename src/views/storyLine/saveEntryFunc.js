@@ -1,4 +1,4 @@
-import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
+import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
@@ -11,7 +11,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
   })
 
   // 校验流转指标
-  const valid2 = flowCondition
+  const valid2 = flowCondition && flowCondition.rules.length > 0
     ? await new Promise((resolve, reject) => {
       return _this.$refs.setCirculationRef.$refs.ruleForm.validate((valid) => {
         resolve(valid)
@@ -19,9 +19,15 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
     })
     : true
 
-  if (!valid1 || !valid2) return
+  // 校验普通标签里面的流转指标
+  const valid3 = await new Promise((resolve, reject) => {
+    return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
+      resolve(valid)
+    })
+  })
 
-  console.log('aa--->', valid2)
+  if (!valid1 || !valid2 || !valid3) return
+
   // const form = JSON.parse(JSON.stringify(thisForm))
   const tagIds = []
   const ruleJson = JSON.parse(JSON.stringify(thisRulesJson))
@@ -76,7 +82,7 @@ async function handleSave (_this, thisRulesJson, thisBehaviorRulesJson, fetchAdd
         }).flat()
       }
 
-      if (rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
+      if (rulesItem.tagCode === 'BAV0016' || rulesItem.tagCode === 'BAV0012' || rulesItem.tagCode === 'BAV0011') { // 【综合起播】数据需要重组  showBehaviorValue => behaviorValue
         const rData = []
         const showBehaviorValue = rulesItem.bav.showBehaviorValue
         showBehaviorValue.forEach(item => {
@@ -312,8 +318,8 @@ function validateForm (rules, behaviorRules = [], _this) {
           rulesItem.value = startDay + '~' + endDay
         } else { // 一期
           if (
-            this.checkNum(rulesItem.startDay) &&
-            this.checkNum(rulesItem.endDay)
+            checkNum(rulesItem.startDay) &&
+            checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay

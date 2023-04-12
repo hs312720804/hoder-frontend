@@ -171,3 +171,81 @@ export function getPerformanceGoalData (params) {
     params
   })
 }
+// 接待员复制接口
+export function copyServicer (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/copy',
+    isJSON: true,
+    data
+  })
+}
+
+// 查询影片接口
+export function getReceptionistVideo (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getVideo',
+    params
+  })
+}
+// 获取内容源接口
+export function getReceptionistVideoSource (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getVideoSource',
+    params
+  })
+}
+// 保存绩效指标接口
+export function saveEditIndicator (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/editIndicator',
+    isJSON: true,
+    data
+  })
+}
+
+// 获取内容源接口
+export function getTargetById (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getReceptionistById',
+    params
+  })
+}
+// 动态人群新增影视模型标签
+export function getUptmTree (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/tree',
+    params
+  })
+}
+
+// 动态人群新增影视模型标签
+export function getUptmTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getTag',
+    params
+  })
+}
+
+// 获取某内容源推荐影片接口
+export function getTopRecommendResourceList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getTopRecommendResourceList',
+    params
+  })
+}
+// 获取内容源列表接口
+export function getSourceList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/uptm/getSourceList',
+    params
+  })
+}

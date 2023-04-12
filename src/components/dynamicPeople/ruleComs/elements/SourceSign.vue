@@ -21,7 +21,7 @@
           v-for="item in soureceSignList"
           :value="item.sourceSign"
           :key="item.sourceSign"
-          :label="item.sourceName">
+          :label="item.sourceName + '（'+ item.sourceSign + '）'">
         </el-option>
       </template>
 
@@ -67,7 +67,7 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
-.form-item-styl {
-  margin-top: 4px
-}
+// .form-item-styl {
+//   margin-top: 4px
+// }
 </style>

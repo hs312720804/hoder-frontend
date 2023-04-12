@@ -12,6 +12,7 @@ axios.interceptors.response.use((response) => {
     // window.location = '/login'
     // window.location.reload()
     console.log('token 失效啦')
+    // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
   } else {
     return Promise.reject(error)
   }
@@ -28,7 +29,7 @@ export default function fetch ({
   contentType
 }) {
   NProgress.start()
-  let option = {
+  const option = {
     method,
     url,
     data: data instanceof FormData
@@ -57,7 +58,7 @@ export default function fetch ({
         if (isReturnAllInfor) {
           return data
         } else if (!data.data && data.result) {
-          return {data: data.result}
+          return { data: data.result }
         } else {
           return data.data
         }
@@ -67,7 +68,7 @@ export default function fetch ({
         console.log('errData==>', data)
         if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {
           console.log('401==>', data)
-          var currentUrl = window.location.href
+          const currentUrl = window.location.href
           window.location.href = currentUrl
           return
         }
