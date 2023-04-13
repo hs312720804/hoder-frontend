@@ -281,7 +281,8 @@ export function getSceneCanReuse (params) {
   return this.fetch({
     method: 'get',
     url: '/api/scene/getAccess',
-    params
+    params,
+    loadingShow: false
   })
 }
 // 维度接口
