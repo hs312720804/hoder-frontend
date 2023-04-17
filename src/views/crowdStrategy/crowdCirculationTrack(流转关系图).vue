@@ -42,7 +42,7 @@
     </el-form>
     <div>
 
-      <el-empty v-if="list.length === 0" description="暂无数据"></el-empty>
+      <!-- <el-empty v-if="list.length === 0" description="暂无数据"></el-empty> -->
       <div :id="pageId" class="graph-container" style="position: relative;"></div>
       <!-- <Flow></Flow> -->
     </div>
@@ -57,8 +57,8 @@ export default {
   data () {
     return {
       form: {
-        policyId: '',
-        mac: '',
+        crowdId: 'crowdIdcrowdId',
+        mac: 'crowdId',
         sourceSign: '',
         // policyId: 124,
         // mac: 'E56D2070F97D',
@@ -87,7 +87,7 @@ export default {
       graph: null,
       dialogVisible: false,
       allCrowdRule: [],
-      len: 10, // 模拟数据个数
+      len: 13, // 模拟数据个数
       soureceSignList: []
 
     }
@@ -145,7 +145,7 @@ export default {
     init () {
       const width = document.getElementById('graph-container').scrollWidth
       // const height = document.getElementById('graph-container').scrollHeight || 800
-      const height = this.list.length < 20 ? 400 : this.list.length / 15 * 250
+      const height = this.list.length < 20 ? 800 : this.list.length / 15 * 250
       // const height = this.len < 20 ? 400 : this.len / 15 * 250
       // const height = 150 * 16
 
@@ -154,8 +154,13 @@ export default {
         width,
         height,
         layout: {
-          type: 'fruchterman',
+          // type: 'fruchterman', // 推荐
+          type: 'force', // 推荐
+          // type: 'circular',
+          // type: 'concentric',
+          // workerEnabled: true,
           begin: [20, 20],
+          nodeSize: 100,
           width: width - 20,
           height: height - 20,
           preventOverlap: true
@@ -198,7 +203,7 @@ export default {
         },
         modes: {
           // 支持的 behavior
-          default: ['drag-node']
+          default: ['drag-node', 'zoom-canvas', 'drag-canvas']
         },
         nodeStateStyles: {
           // 鼠标hover状态下的配置
@@ -251,12 +256,19 @@ export default {
       // -- 模拟数据 --
       let num = this.len
       for (let i = 1; i < this.len; i++) {
-        nodes.push({
+        const obj = {
           id: i,
           label: '【双旦测试】爱奇艺所有用户',
           cluster: num--,
           date: '2022-05-16 16:35:30'
-        })
+
+        }
+        if (i === 1) {
+          obj.style = {
+            fill: '#000'
+          }
+        }
+        nodes.push(obj)
       }
       // --模拟数据 end--
       console.log('节点============', nodes)

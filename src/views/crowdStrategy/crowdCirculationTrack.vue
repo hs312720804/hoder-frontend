@@ -1,508 +1,326 @@
 <template>
-  <div>
-    <div class="title">查询指定Mac的流转轨迹</div>
-    <el-form :model="form" ref="form" :rules="rules" :inline="true">
-      <el-form-item label="主人群ID：" prop="crowdId">
-        <el-input v-model="form.crowdId" clearable></el-input>
-      </el-form-item>
-      <el-form-item label="MAC地址" prop="mac">
-        <el-input v-model="form.mac" clearable></el-input>
-      </el-form-item>
-      <!-- <el-form-item label="产品包" prop="sourceSign">
-        <el-select
-          placeholder="请选择产品包"
-          clearable
-          style="width: 180px"
-          name="oxve"
-          v-model="form.sourceSign"
-          class="input-inline"
-        >
-          <template>
-            <el-option v-for="item in soureceSignList" :value="item.sourceSign" :key="item.sourceSign" :label="item.sourceName"></el-option>
-          </template>
-
-        </el-select>
-
-      </el-form-item> -->
-      <el-form-item label="日期：" prop="date">
-        <el-date-picker
-          v-model="dateRange"
-          type="daterange"
-          value-format="yyyy-MM-dd"
-          start-placeholder="开始日期"
-          range-separator="至"
-          end-placeholder="结束日期"
-          clearable
-          :picker-options="pickerOptions">
-        </el-date-picker>
-      </el-form-item>
-      <el-form-item>
-        <el-button type="primary" @click="handleSearch">查询</el-button>
-      </el-form-item>
-    </el-form>
-    <div>
-
-      <el-empty v-if="list.length === 0" description="暂无数据"></el-empty>
-      <div :id="pageId" class="graph-container" style="position: relative;"></div>
-      <!-- <Flow></Flow> -->
+  <div class="main">
+    <ul class="main-left">
+      <li v-for="item in menuList" :key="item.id" :draggable="true" @dragend="handleDragend($event, item)">{{item.label}}</li>
+    </ul>
+    <div class="main-right" @dragover.prevent ref="efContainerRef" id="efContainer">
+      <div v-for="(item, index) in nodeList" :key="item.nodeId" class="node-info flow-node-drag"
+        :style="item.nodeContainerStyle" :id="item.nodeId" :ref="el => nodeRef[index] = el"
+        @mouseup="handleMouseup($event, item)">
+        <div class="node-info-label">{{item.label}}</div>
+        <span class="node-drag"></span>
+      </div>
     </div>
   </div>
 </template>
 
 <script>
-import G6 from '@antv/g6/build/g6'
-import Flow from '@antvGraph/components/Flow'
+import { jsPlumb } from 'jsplumb'
+
 export default {
-  name: 'crowdCirculationTrackAA',
   data () {
     return {
-      form: {
-        policyId: '',
-        mac: '',
-        sourceSign: '',
-        // policyId: 124,
-        // mac: 'E56D2070F97D',
-        // sourceSign: 1,
-        beginTime: '',
-        endTime: ''
-      },
-      dateRange: [],
-      dateList: [],
-      rules: {
-        crowdId: { required: true, message: '请输入策略id', trigger: 'blur' },
-        mac: { required: true, message: '请输入mac', trigger: 'blur' }
-        // sourceSign: { required: true, message: '请输入sourceSign', trigger: 'blur' }
-      },
-      pickerOptions: { // 策略投放后到今天的日期都可以选
-        disabledDate: (time) => {
-          // const day1 = 30 * 24 * 3600 * 1000
-          const maxTime = Date.now()
-          // let minTime = Date.now() - day1
-          return time.getTime() > maxTime
-        }
-      },
-      list: [],
-      noneText: '暂无数据',
-      pageId: 'graph-container',
-      graph: null,
-      dialogVisible: false,
-      allCrowdRule: [],
-      len: 10, // 模拟数据个数
-      soureceSignList: []
-
+      plumbIns: '',
+      nodeList: [],
+      efContainerRef: '',
+      nodeRef: [],
+      deff: {},
+      menuList: []
     }
-  },
-  components: {
-    Flow
-  },
-  created () {
-    this.$service.getSourceSign().then(res => {
-      this.soureceSignList = res
-    })
-    // 扩展内置的 【circle】 shape
-    const defaultNodeConf = {
-      afterDraw (cfg, group) {
-        // console.log('cfg===', cfg)
-        // console.log('group===', group)
-        const height = parseInt(cfg.size)
-        group.addShape('text', {
-          // attrs: {
-          //   x: 0,
-          //   y: height / 2 + 20,
-          //   // cursor: 'pointer',
-          //   textAlign: 'center',
-          //   text: `${cfg.id}`,
-          //   fill: 'red'
-          // }
-          attrs: {
-            x: 0,
-            y: height / 2 + 20,
-            text: `${cfg.date}`,
-            // fill: '#87adfb',
-            fill: '#87adfb',
-            fontWeight: 400,
-            // shadowOffsetX: 10,
-            // shadowOffsetY: 10,
-            // shadowColor: '#999',
-            // shadowBlur: 10,
-            textAlign: 'center',
-            fontSize: 12
-          }
-        })
-      }
-    }
-    G6.registerNode(
-      'circle-node',
-      defaultNodeConf,
-      // 注意这里继承了 'single-shape'
-      'circle'
-    )
   },
   mounted () {
-    // this.init()
+    this.menuList = [{ label: 'abc', id: '1' }, { label: 'bcd', id: '2' }, { label: 'cde', id: '3' }, { label: 'def', id: '4' }]
+
+    this.deff = {
+      jsplumbSetting: {
+        // 动态锚点、位置自适应
+        Anchors: ['Right', 'Left'],
+        anchor: ['Right', 'Left'],
+        // 容器ID
+        Container: 'efContainer',
+        // 连线的样式，直线或者曲线等，可选值:  StateMachine、Flowchart，Bezier、Straight
+        // Connector: ['Bezier', {curviness: 100}],
+        // Connector: ['Straight', { stub: 20, gap: 1 }],
+        Connector: ['Flowchart', { stub: 30, gap: 1, alwaysRespectStubs: false, midpoint: 0.5, cornerRadius: 10 }],
+        // Connector: ['StateMachine', {margin: 5, curviness: 10, proximityLimit: 80}],
+        // 鼠标不能拖动删除线
+        ConnectionsDetachable: false,
+        // 删除线的时候节点不删除
+        DeleteEndpointsOnDetach: false,
+        /**
+         * 连线的两端端点类型：圆形
+         * radius: 圆的半径，越大圆越大
+         */
+        // Endpoint: ['Dot', { radius: 5, cssClass: 'ef-dot', hoverClass: 'ef-dot-hover' }],
+        /**
+         * 连线的两端端点类型：矩形
+         * height: 矩形的高
+         * width: 矩形的宽
+         */
+        // Endpoint: ['Rectangle', {height: 20, width: 20, cssClass: 'ef-rectangle', hoverClass: 'ef-rectangle-hover'}],
+        /**
+         * 图像端点
+         */
+        // Endpoint: ['Image', {src: 'https://www.easyicon.net/api/resizeApi.php?id=1181776&size=32', cssClass: 'ef-img', hoverClass: 'ef-img-hover'}],
+        /**
+         * 空白端点
+         */
+        Endpoint: ['Blank', { Overlays: '' }],
+        // Endpoints: [['Dot', {radius: 5, cssClass: 'ef-dot', hoverClass: 'ef-dot-hover'}], ['Rectangle', {height: 20, width: 20, cssClass: 'ef-rectangle', hoverClass: 'ef-rectangle-hover'}]],
+        /**
+         * 连线的两端端点样式
+         * fill: 颜色值，如：#12aabb，为空不显示
+         * outlineWidth: 外边线宽度
+         */
+        EndpointStyle: { fill: '#1879ffa1', outlineWidth: 1 },
+        // 是否打开jsPlumb的内部日志记录
+        LogEnabled: true,
+        /**
+         * 连线的样式
+         */
+        PaintStyle: {
+          // 线的颜色
+          stroke: '#E0E3E7',
+          // 线的粗细，值越大线越粗
+          strokeWidth: 1,
+          // 设置外边线的颜色，默认设置透明，这样别人就看不见了，点击线的时候可以不用精确点击，参考 https://blog.csdn.net/roymno2/article/details/72717101
+          outlineStroke: 'transparent',
+          // 线外边的宽，值越大，线的点击范围越大
+          outlineWidth: 10
+        },
+        DragOptions: { cursor: 'pointer', zIndex: 2000 },
+        ConnectionOverlays: [
+          ['Custom', {
+            create () {
+              const el = document.createElement('div')
+              // el.innerHTML = '<select id=\'myDropDown\'><option value=\'foo\'>foo</option><option value=\'bar\'>bar</option></select>'
+              return el
+            },
+            location: 0.7,
+            id: 'customOverlay'
+          }]
+        ],
+        /**
+         *  叠加 参考： https://www.jianshu.com/p/d9e9918fd928
+         */
+        Overlays: [
+          // 箭头叠加
+          ['Arrow', {
+            width: 10, // 箭头尾部的宽度
+            length: 8, // 从箭头的尾部到头部的距离
+            location: 1, // 位置，建议使用0～1之间
+            direction: 1, // 方向，默认值为1（表示向前），可选-1（表示向后）
+            foldback: 0.623 // 折回，也就是尾翼的角度，默认0.623，当为1时，为正三角
+          }],
+          // ['Diamond', {        //     events: {        //         dblclick: function (diamondOverlay, originalEvent) {        //             console.log('double click on diamond overlay for : ' + diamondOverlay.component)        //         }        //     }        // }],
+          ['Label', { label: '', location: 0.1, cssClass: 'aLabel' }]
+
+        ],
+        // 绘制图的模式 svg、canvas
+        RenderMode: 'canvas',
+        // 鼠标滑过线的样式
+        HoverPaintStyle: { stroke: '#b0b2b5', strokeWidth: 1 },
+        // 滑过锚点效果
+        // EndpointHoverStyle: {fill: 'red'}
+        Scope: 'jsPlumb_DefaultScope' // 范围，具有相同scope的点才可连接
+      },
+      /**
+     * 连线参数
+     */
+      jsplumbConnectOptions: {
+        isSource: true,
+        isTarget: true,
+        // 动态锚点、提供了4个方向 Continuous、AutoDefault
+        // anchor: 'Continuous',
+        // anchor: ['Continuous', { faces: ['left', 'right'] }],
+        // 设置连线上面的label样式
+        labelStyle: {
+          cssClass: 'flowLabel'
+        }
+        // overlays: [
+        //   ['Custom', {
+        //     create(component) {
+        //       const el = document.createElement('div')
+        //       el.innerHTML = '<select id=\'myDropDown\'><option value=\'foo\'>foo</option><option value=\'bar\'>bar</option></select>'
+        //       return el
+        //     },
+        //     location: 0.7,
+        //     id: 'customOverlay',
+        //   }],
+        // ],
+      },
+      /**
+     * 源点配置参数
+     */
+      jsplumbSourceOptions: {
+        // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
+        filter: '.node-drag',
+        filterExclude: false,
+        anchor: ['Continuous', { faces: ['right'] }],
+        // 是否允许自己连接自己
+        allowLoopback: false,
+        maxConnections: -1
+      },
+      // 参考 https://www.cnblogs.com/mq0036/p/7942139.html
+      jsplumbSourceOptions2: {
+        // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
+        filter: '.node-drag',
+        filterExclude: false,
+        // anchor: 'Continuous',
+        // 是否允许自己连接自己
+        allowLoopback: true,
+        connector: ['Flowchart', { curviness: 50 }],
+        connectorStyle: {
+          // 线的颜色
+          stroke: 'red',
+          // 线的粗细，值越大线越粗
+          strokeWidth: 1,
+          // 设置外边线的颜色，默认设置透明，这样别人就看不见了，点击线的时候可以不用精确点击，参考 https://blog.csdn.net/roymno2/article/details/72717101
+          outlineStroke: 'transparent',
+          // 线外边的宽，值越大，线的点击范围越大
+          outlineWidth: 10
+        },
+        connectorHoverStyle: { stroke: 'red', strokeWidth: 2 }
+      },
+      jsplumbTargetOptions: {
+        // 设置可以拖拽的类名，只要鼠标移动到该类名上的DOM，就可以拖拽连线
+        filter: '.node-drag',
+        filterExclude: false,
+        // 是否允许自己连接自己
+        anchor: ['Continuous', { faces: ['left'] }],
+        allowLoopback: false,
+        dropOptions: { hoverClass: 'ef-drop-hover' }
+      }
+    }
+
+    // const nodeList = ref([])
+    // const efContainerRef = ref()
+    // const nodeRef = ref([])
+
+    this.plumbIns = jsPlumb.getInstance()
+    this.jsPlumbInit()
   },
   methods: {
-    init () {
-      const width = document.getElementById('graph-container').scrollWidth
-      // const height = document.getElementById('graph-container').scrollHeight || 800
-      const height = this.list.length < 20 ? 400 : this.list.length / 15 * 250
-      // const height = this.len < 20 ? 400 : this.len / 15 * 250
-      // const height = 150 * 16
+    jsPlumbInit () {
+      this.plumbIns.importDefaults(this.deff.jsplumbSetting)
+    },
 
-      this.graph = new G6.Graph({
-        container: 'graph-container',
-        width,
-        height,
-        layout: {
-          type: 'grid',
-          begin: [20, 20],
-          width: width - 20,
-          height: height - 20,
-          sortBy: 'cluster'
-        },
-        defaultNode: {
-          shape: 'circle-node',
-          size: 70,
-          style: {
-            fill: '#DEE9FF',
-            stroke: '#5B8FF9'
-          },
-          nodeStateStyles: {
-            // 鼠标hover状态下的配置
-            hover: {
-              fillOpacity: 0.8
-            },
-            // 选中节点状态下的配置
-            selected: {
-              lineWidth: 5
-            }
-          },
-          labelCfg: {
-            position: 'top',
-            offset: 10,
-            style: {
-            // ... 文本样式的配置
-            }
-          }
+    handleDragend (ev, node) {
+      const deff = this.deff
+      const plumbIns = this.plumbIns
 
-        },
-        defaultEdge: {
-          // shape: 'polyline',
-          style: {
-            radius: 20,
-            offset: 30,
-            endArrow: true,
-            stroke: '#F6BD16'
-          }
-        },
-        modes: {
-          // 支持的 behavior
-          default: ['drag-node']
-        },
-        nodeStateStyles: {
-          // 鼠标hover状态下的配置
-          hover: {
-            fillOpacity: 0.8
-          },
-          // 选中节点状态下的配置
-          selected: {
-            lineWidth: 5
-          }
+      // 拖拽进来相对于地址栏偏移量
+      const evClientX = ev.clientX
+      const evClientY = ev.clientY
+      const efContainer = this.efContainerRef
+      // const containerRect = efContainer.getBoundingClientRect()
+      let left = evClientX - efContainer.offsetLeft
+      let top = evClientY - efContainer.offsetTop
+      // 居中
+      left -= 51
+      top -= 19
+      const nodeId = `${node.id}_${Date.now()}`
+      const nodeInfo = {
+        label: node.label,
+        id: nodeId,
+        nodeId,
+        nodeContainerStyle: {
+          left: left + 'px',
+          top: top + 'px'
         }
-      })
-
-      // graph.read(data)
-      this.readOrClearData()
-
-      this.graph.on('node:mouseenter', evt => {
-        const { item } = evt
-        this.graph.setItemState(item, 'hover', true)
-      })
-      this.graph.on('node:mouseleave', evt => {
-        const { item } = evt
-        this.graph.setItemState(item, 'hover', false)
-      })
-      // this.graph.on('node:click', evt => {
-      //   const { item } = evt
-      //   this.graph.setItemState(item, 'selected', true)
-      // })
-    },
-    // 重构成图表所需数据格式
-    reconstructData  (data) {
-      console.log('aaaaaa=======', data)
-      // --------------构造所需数据结构--------------------
-      const nodes = []
-      const edges = []
-
-      // -- 真实数据 --
-      let len = data.length
-      data.map((item, index) => {
-        nodes.push({
-          id: index + 1,
-          crowdId: item.crowdId,
-          label: item.crowdName,
-          cluster: len--,
-          date: item.hitDate
-        })
-      })
-      // --真实数据 end--
-
-      // -- 模拟数据 --
-      // let num = this.len
-      // for (let i = 1; i < this.len; i++) {
-      //   nodes.push({
-      //     id: i,
-      //     label: '【双旦测试】爱奇艺所有用户',
-      //     cluster: num--,
-      //     date: '2022-05-16 16:35:30'
-      //   })
-      // }
-      // --模拟数据 end--
-      console.log('节点============', nodes)
-
-      nodes.reduce((current, item) => {
-        edges.push({
-          source: current.id.toString(),
-          target: item.id.toString()
-        })
-        return item
-      }, nodes[0])
-
-      edges.shift()
-      console.log('箭头============', edges)
-
-      return {
-        nodes,
-        edges
       }
-      // -------------- 构造所需数据结构- end-------------------
+      this.nodeList.push(nodeInfo)
+      this.$nextTick(() => {
+        plumbIns.makeSource(nodeId, deff.jsplumbSourceOptions)
+        plumbIns.makeTarget(nodeId, deff.jsplumbTargetOptions)
+        plumbIns.draggable(nodeId)
+      })
     },
-    // 渲染 或者 清空图表
-    readOrClearData () {
-      // 清空图表
-      if (this.list.length === 0) {
-        this.graph && this.graph.clear()
-        this.graph.read({})
-        return
-      }
-      // 渲染图表
-      const data = this.reconstructData(this.list)
-      if (data && data.nodes.length > 0) {
-        // read 方法的功能相当于 data 和 render 方法的结合。
-        this.graph.read(data)
-      }
-    },
-    getFilter () {
-      const filter = {
-        crowdId: this.form.crowdId,
-        mac: this.form.mac,
-        sourceSign: this.form.sourceSign,
-        beginTime: this.dateRange[0],
-        endTime: this.dateRange[1]
-      }
-      return filter
-    },
-    handleSearch () {
-      // 清空数据、清空图表
-      this.list = []
-      console.log('this.graph====', this.graph)
-      // this.graph && this.graph.clear() && this.graph.read({})
-      this.graph && this.graph._cfg && this.graph.destroy() // 若有图表，则销毁
 
-      this.$refs.form.validate(valid => {
-        if (valid) {
-          const filter = this.getFilter()
-          // this.$service.launchHelpCrowdIndex(filter).then(data => {
-          this.$service.dynamicCrowdHitLink(filter).then(data => {
-            console.log('data=====>', data)
-            // 链路数据
-            this.list = data || []
-
-            // 生成链路图
-            this.init()
-          })
+    handleMouseup (ev, data) { // 在图表中拖拽节点时，设置他的新的位置
+      this.nodeRef.forEach(node => {
+        if (node.id === data.nodeId) {
+          data.nodeContainerStyle.left = node.style.left
+          data.nodeContainerStyle.top = node.style.top
         }
       })
     }
-
-    // formatDate (d) {
-    //   const time = new Date(d)
-    //   let y = time.getFullYear() // 年份
-    //   let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-    //   let r = time.getDate().toString().padStart(2, '0') // 日子
-    //   return `${y}-${m}-${r}`
-    // },
-    // setDateData () {
-    //   const a = []
-    //   for (let i = 0; i < 5; i++) {
-    //     a.push(this.formatDate((new Date()).setTime((new Date()).getTime() - 3600 * 1000 * 24 * i)))
-    //   }
-    //   this.dateList = a
-    //   this.form.date = a[1]
-    // },
-    // initaaa () {
-    //   G6.registerEdge('line-arrow', {
-    //     options: {
-    //       style: {
-    //         stroke: '#ccc'
-    //       }
-    //     },
-    //     draw: function draw (cfg, group) {
-    //       const startPoint = cfg.startPoint
-    //       const endPoint = cfg.endPoint
-
-    //       const stroke = cfg.style && cfg.style.stroke || this.options.style.stroke
-
-    //       const keyShape = group.addShape('path', {
-    //         attrs: {
-    //           path: [[ 'M', startPoint.x, startPoint.y ], [ 'L', endPoint.x / 3 + 2 / 3 * startPoint.x, startPoint.y ], [ 'L', endPoint.x / 3 + 2 / 3 * startPoint.x, endPoint.y ], [ 'L', endPoint.x, endPoint.y ]],
-    //           stroke,
-    //           lineWidth: 1,
-    //           // startArrow: {
-    //           //   path: 'M 6,0 L -6,-6 L -3,0 L -6,6 Z',
-    //           //   d: 6
-    //           // },
-    //           endArrow: {
-    //             path: 'M 6,0 L -6,-6 L -3,0 L -6,6 Z',
-    //             d: 6
-    //           },
-    //           className: 'edge-shape'
-    //         }
-    //       })
-    //       return keyShape
-    //     }
-    //   })
-
-    //   const data = {
-    //     nodes: [
-    //       {
-    //         id: '1',
-    //         label: 'node1',
-    //         // x: 150,
-    //         // y: 100,
-    //         size: 40
-    //         // anchorPoints: [[ 1, 0.5 ], [ 1, 0 ]]
-    //       }, {
-    //         id: '2',
-    //         label: 'node2',
-    //         // x: 150,
-    //         // y: 100,
-    //         size: 40
-    //         // anchorPoints: [[ 1, 0.5 ], [ 1, 0 ]]
-    //       }, {
-    //         id: '3',
-    //         label: 'node3',
-    //         // x: 150,
-    //         // y: 100,
-    //         size: 40
-    //         // anchorPoints: [[ 1, 0.5 ], [ 1, 0 ]]
-    //       }, {
-    //         id: '4',
-    //         label: 'node4',
-    //         // x: 150,
-    //         // y: 100,
-    //         size: 40
-    //         // anchorPoints: [[ 1, 0.5 ], [ 1, 0 ]]
-    //       }, {
-    //         id: '7',
-    //         label: 'node7',
-    //         // x: 150,
-    //         // y: 100,
-    //         size: 40
-    //         // anchorPoints: [[ 1, 0.5 ], [ 1, 0 ]]
-    //       }, {
-    //         id: '8',
-    //         label: 'node8',
-    //         // x: 300,
-    //         // y: 200,
-    //         size: 40
-    //         // anchorPoints: [[ 0, 0.5 ], [ 0, 1 ]]
-    //       }],
-    //     edges: [
-    //       {
-    //         source: '1',
-    //         target: '2'
-    //         // sourceAnchor: 0,
-    //         // targetAnchor: 0
-    //       }, {
-    //         source: '2',
-    //         target: '3'
-    //         // sourceAnchor: 0,
-    //         // targetAnchor: 0
-    //       },
-    //       {
-    //         source: '3',
-    //         target: '4'
-    //         // sourceAnchor: 0,
-    //         // targetAnchor: 0
-    //       }]
-    //   }
-
-    //   const width = document.getElementById('graph-container').scrollWidth
-    //   const height = document.getElementById('graph-container').scrollHeight || 500
-    //   const graph = new G6.Graph({
-    //     container: 'graph-container',
-    //     width,
-    //     height,
-    //     layout: {
-    //       type: 'grid',
-    //       begin: [ 20, 20 ]
-    //     },
-    //     modes: {
-    //       // 支持的 behavior
-    //       default: [ 'drag-node', 'drag-canvas' ]
-    //     },
-    //     defaultNode: {
-    //       shape: 'circle',
-    //       style: {
-    //         fill: '#DEE9FF',
-    //         stroke: '#5B8FF9'
-    //       }
-    //       // linkPoints: {
-    //       //   left: true,
-    //       //   right: true,
-    //       //   fill: '#fff',
-    //       //   stroke: '#1890FF',
-    //       //   size: 3
-    //       // }
-    //     },
-    //     defaultEdge: {
-    //       shape: 'polyline',
-    //       style: {
-    //         radius: 10,
-    //         offset: 30,
-    //         endArrow: true,
-    //         stroke: '#F6BD16'
-    //       }
-    //     }
-    //     // defaultEdge: {
-    //     //   shape: 'line-arrow',
-    //     //   style: {
-    //     //     stroke: '#F6BD16'
-    //     //   }
-    //     // }
-    //   })
-
-    //   graph.data(data)
-    //   graph.render()
-    // },
   }
-
 }
+
+// onMounted(() => {
+//   plumbIns = jsPlumb.getInstance()
+//   jsPlumbInit()
+// })
+
 </script>
 
-<style lang="stylus" scoped>
-.result
-    border 1px dashed #333
-    padding 0 20px
-    margin 20px
-    overflow auto
-    .result-item
-        margin 20px 0
-.red--text
-    color red
-.title
-    margin-bottom 20px
-.no-result
-    margin 20px
+<style scoped lang="stylus">
+/* body {
+  margin: 0;
+} */
+  .item {
+    width: 150px;
+    height: 50px
+  }
+  #source {
+    border: 2px solid red;
+  }
+  #target {
+    border: 2px solid blue;
+  }
+  .main {
+    display: flex;
+  }
+  ul {
+    list-style: none;
+    padding-left: 0;
+    width: 120px;
+    background: #eee;
+    text-align: center;
+  }
+  ul > li {
+    height: 40px;
+    line-height: 40px;
+  }
+  .main-right {
+    border: 1px solid #ccc;
+    flex: 1;
+    margin-left: 15px;
+    position: relative;
+    background: #f4f4f4;
+  }
+  .node-info {
+    position: absolute;
+  }
+  .node-info-label {
+    width: 100px;
+    height: 36px;
+    line-height: 36px;
+    text-align: center;
+    border: 1px solid #e5e7eb;
+    background: #fff;
+    border-radius: 4px;
+  }
+  .node-info-label:hover {
+    cursor: pointer;
+    background: #f4eded;
+  }
+  .node-info-label:hover + .node-drag {
+    /* background: red; */
+    display: inline-block;
+  }
+  .node-drag {
+    display: none;
+    width: 6px;
+    height: 6px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    position: absolute;
+    right: -7px;
+    top: 14px;
+  }
+  .node-drag:hover {
+    display: inline-block;
+  }
 </style>
