@@ -41,6 +41,11 @@
         <a :href="downloadUrl" download ref="download_Url"></a>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
+      <!-- <span style="font-size: 12px; color: gray; float: right;">
+        投后报告解释：<br/>
+        内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/>
+        产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
+      </span> -->
 
       <div id='a1' class="table-wrap">
         <div class="title-layout">
