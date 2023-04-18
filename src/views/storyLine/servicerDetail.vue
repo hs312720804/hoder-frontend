@@ -62,7 +62,7 @@
 
     <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
       <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
-        <div style="display: grid; grid-template-columns:2fr auto; grid-template-rows: auto; gap: 16px;">
+        <div style="display: grid; grid-template-columns:2fr 310px; grid-template-rows: auto; gap: 16px;">
           <!-- <div class="servicer-img"></div> -->
           <div
             style="display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto;gap: 16px;"
@@ -194,7 +194,7 @@
             <!-- <el-button type="text" @click="openShowDetailName" style="position: absolute; right: 10px; top: 10px; z-index: 9;">收起</el-button > -->
             <i @click="openShowDetailName" class="el-icon-arrow-up fold position-right"></i>
             <div>
-              <div class="detail-name" style="height: 25px">
+              <div class="detail-name" >
                 <span>
                   {{ selectedServicer.receptionist }}
                 </span>
