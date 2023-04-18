@@ -263,9 +263,18 @@ export default {
       this.$refs[formName].resetFields()
     },
     getBatchUptm () {
-      this.$service.getBatchUptm().then(res => {
-        console.log('维度--》', res)
-        this.uptmList = res
+      // this.$service.getBatchUptm().then(res => {
+      //   console.log('维度--》', res)
+      //   this.uptmList = res
+      // })
+
+      const params = {
+        pageNum: 1,
+        pageSize: 5000,
+        keywords: ''
+      }
+      this.$service.getUptmTag(params).then(res => {
+        this.uptmList = res.row
       })
     }
   },
