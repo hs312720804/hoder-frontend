@@ -818,6 +818,12 @@ export default {
     }
   },
   methods: {
+    // 计算
+    calculate (row) {
+      this.$service.calculateTempCrowd({ launchCrowdId: row.launchCrowdId, calType: row.calType }, '成功计算中').then(() => {
+        this.loadData()
+      })
+    },
     genDefaultDivideForm (preset) {
       return {
         launchCrowdId: undefined,

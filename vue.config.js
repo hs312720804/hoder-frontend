@@ -1,5 +1,7 @@
 const ENV = process.env.NODE_ENV
 const BACKEND = process.env.BACKEND || '172.20.151.205:8011'
+// const BACKEND = process.env.BACKEND || '172.20.148.34:8011'
+// const BACKEND = process.env.BACKEND || '172.20.150.209:8011'
 // const BACKEND = process.env.BACKEND || 'beta-mgr-hoder.skysrt.com/api'
 // const BACKEND = process.env.BACKEND || 'mgr-hoder.skysrt.com/api'
 // const BACKEND = process.env.BACKEND || 'demo-api-hoder.skysrt.com'
