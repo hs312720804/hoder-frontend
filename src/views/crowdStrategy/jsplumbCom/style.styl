@@ -1,0 +1,173 @@
+// $enterColor = #0cb683
+// .red {
+//   background: #F56C6C !important;
+// }
+// .green {
+//   background: #67C23A !important;
+// }
+// .yellow {
+//   background: #ffdc2f85 !important;
+// }
+// .purple {
+//   background: #b09cdb !important;
+// }
+$enterColor = #54CCA8
+$red = #F89898
+$green = #94D475
+$yellow = #FFF3B3
+$purple = #F89898
+
+
+.w {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  line-height: 40px;
+  border: 1px solid #000;
+  font-size: 12px;
+  border-radius: 50%;
+  text-align: center;
+  // background-color: WhiteSmoke;
+  background-color: $enterColor;
+  // opacity: 0.7;
+  color: black;
+  cursor: move;
+  z-index: 1
+}
+.w:hover {
+  background-color: #629f8d;
+  // border: 1px solid #000;
+}
+
+/* .item-container, .group-container {
+  float: left;
+  margin: 10px
+} */
+.item-container {
+  float: left;
+  padding: 10px;
+
+  /* position: absolute; */
+  /* width: 200px;
+  height: 200px; */
+  border-radius: 12px;
+  /* background-color: WhiteSmoke; */
+  font-size: 12px;
+  cursor: move;
+}
+.group-container {
+  float: left;
+  /* position: absolute; */
+  width: 425px;
+  /* height: 320px; */
+  border-radius: 12px;
+  /* background-color: #f1f1f1; */
+  font-size: 12px;
+  cursor: move;
+  /* z-index: 10; */
+  border: 3px dashed #d7d7d7
+}
+
+.item-container ul {
+  margin-left: 25px;
+  padding: 0;
+}
+
+.item-container ul li {
+  list-style-type: circle;
+  margin-bottom: 7px;
+}
+
+.large {
+  width: 600px;
+  height: 600px;
+}
+
+.item-container.collapsed {
+  height: 40px;
+}
+
+.title {
+  background-color: #abc1bb;
+  padding-right: 16px;
+  font-size: 13px;
+  height: 30px;
+}
+
+
+.jtk-connector path {
+  stroke-width: 1;
+}
+
+
+.jtk-drag-hover {
+  outline: 4px solid cornflowerblue;
+}
+
+#canvas{
+  width: 100%;
+  height: 100vh;
+  // min-height: 200px;
+  position: relative; /*一定加上这句，否则连线位置发生错乱*/
+
+  // 放大缩小，拖拽画布，需要下面的样式
+  display: inline-block;
+  left: 0;
+  top: 0;
+  transform: translate(0, 0);
+}
+
+.e-list-sty {
+  /* white-space: nowrap; */
+  display: flex;
+  justify-content: center;
+}
+.jtk-drag-hover {
+  outline: 4px solid cornflowerblue;
+}
+>>>.jtk-connector {
+  z-index 9
+}
+
+
+.connect-line-wrap{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 30px;
+  position: relative;
+  &::after {
+    display inline-block
+    content: '';
+    background-color: #a9a9a9;
+    width: 2px;
+    position: absolute;
+    height: 55px;
+    top: -12px;
+  }
+}
+
+.e-list-sty {
+  /* white-space: nowrap; */
+  display: flex;
+  justify-content: center;
+}
+.connect-name {
+  background-color: #000;
+  display: inline-block;
+  color: #000;
+  z-index: 9;
+}
+
+.red {
+  background: $red;
+}
+.green {
+  background: $green;
+}
+.yellow {
+  background: $yellow;
+}
+.purple {
+  background: $purple;
+}
