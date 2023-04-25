@@ -68,44 +68,57 @@
             style="display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto;gap: 16px;"
             :style="{'grid-template-columns': isShowDetailName ? '1fr' : '1fr' }"
           >
-            <div class="detail-box">
-              <div class="target">我的任务（可选）</div>
-              <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
-              <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
+            <div
+              style="display: grid; grid-template-columns: auto 300px; grid-template-rows:1fr;gap: 16px;"
+            >
+              <div class="detail-box">
+                <div class="target">我的任务（可选）</div>
+                <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
+                <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
-              <div class="flex-content">
-                <!-- 复用的接待员 -->
-                <!-- 有权限的情况 -->
-                <template v-if="havePermissionsToUse">
-                  <!-- 显示模式 -->
-                  <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
-                    <div>{{ target }}</div>
-                    <!-- <textarea name="description" v-model="target"></textarea> -->
-                  </div>
-                  <!-- <textarea> </textarea> -->
-                  <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
-                  <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-                  <!-- 编辑模式 -->
-                  <el-input
-                    v-else
-                    ref="inputPriority"
-                    :autosize="{ minRows: 6}"
-                    type="textarea"
-                    placeholder="请输入内容"
-                    @blur="editStatuChange"
-                    v-model="target"
-                    maxlength="200"
-                    show-word-limit
-                    style="font-size: 14px; ">
-                  </el-input>
-                </template>
-                <!-- 没有权限的情况 -->
-                <template v-else>
-                  {{ target }}
-                </template>
+                <div class="flex-content">
+                  <!-- 复用的接待员 -->
+                  <!-- 有权限的情况 -->
+                  <template v-if="havePermissionsToUse">
+                    <!-- 显示模式 -->
+                    <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
+                      <div>{{ target }}</div>
+                      <!-- <textarea name="description" v-model="target"></textarea> -->
+                    </div>
+                    <!-- <textarea> </textarea> -->
+                    <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
+                    <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                    <!-- 编辑模式 -->
+                    <el-input
+                      v-else
+                      ref="inputPriority"
+                      :autosize="{ minRows: 6}"
+                      type="textarea"
+                      placeholder="请输入内容"
+                      @blur="editStatuChange"
+                      v-model="target"
+                      maxlength="200"
+                      show-word-limit
+                      style="font-size: 14px; ">
+                    </el-input>
+                  </template>
+                  <!-- 没有权限的情况 -->
+                  <template v-else>
+                    {{ target }}
+                  </template>
+                </div>
+              </div>
+              <div class="detail-box" id="servicer-map">
+                <div class="target">流转关系</div>
+                <ServicerMap
+                  v-if="isShowServicerChartData && servicerChartData.nodes && servicerChartData.nodes.length > 0"
+                  :chartData="servicerChartData"
+                  :selectedServicerId="selectedServicer.id"
+                  style="margin: 0 -10px">
+                </ServicerMap>
+                <el-empty v-else></el-empty>
               </div>
             </div>
-
             <div class="detail-box">
               <!-- targetKeyId: {{targetKeyId}}
               <br/>
@@ -787,13 +800,16 @@ import { options } from './utils'
 
 import { removePendingRequest } from '@/services/cancelFetch'
 
+import ServicerMap from './mapShow/servicerMap.vue'
+
 export default {
   components: {
     createClientDialog,
     MultipleActionTagSelect,
     ShowFlowConditionRule,
     ShowFlowConditionRuleItem,
-    EditTargetKeyDialog
+    EditTargetKeyDialog,
+    ServicerMap
   },
   props: {
     servicer: {
@@ -888,6 +904,9 @@ export default {
         // 根据接待员 ID 获取绩效目标
         this.getTargetById()
 
+        // 流转关系图
+        this.getFlowChart()
+
         // // 判断是否有权限  现在不需要了，直接用场景的权限就可以了
         // this.getCanReuse()
         // const obj = this.targetKeyList.find(item => {
@@ -906,6 +925,14 @@ export default {
     'selectedScene.id': {
       handler () {
         this.getSkillListBySceneId()
+      }
+    },
+    'selectedServicer.id': {
+      handler () {
+        this.isShowServicerChartData = false
+        this.$nextTick(() => {
+          this.isShowServicerChartData = true
+        })
       }
     }
   },
@@ -939,6 +966,8 @@ export default {
   },
   data () {
     return {
+      isShowServicerChartData: true,
+      servicerChartData: {},
       options: options,
       // radio1: '1',
       radio2: 0,
@@ -1089,6 +1118,14 @@ export default {
   },
 
   methods: {
+    getFlowChart () {
+      const params = {
+        id: this.selectedServicer.id // 接待员ID
+      }
+      this.$service.receptionistFlowChart(params).then(res => {
+        this.servicerChartData = res
+      })
+    },
     skillValueSelectVisibleChange () {
       const ref = this.$refs.formInlineClearRef || this.$refs.formInlineRef
       console.log('ref--->', ref)

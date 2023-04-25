@@ -106,7 +106,8 @@ $purple = #F89898
 
 #canvas{
   width: 100%;
-  height: 100vh;
+  // height: calc(100vh - 300px);
+  height: calc(100vh - 200px);
   // min-height: 200px;
   position: relative; /*一定加上这句，否则连线位置发生错乱*/
 
@@ -134,15 +135,15 @@ $purple = #F89898
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 30px;
+  height: 73px;
   position: relative;
   &::after {
     display inline-block
     content: '';
     background-color: #a9a9a9;
-    width: 2px;
+    width: 3px;
     position: absolute;
-    height: 55px;
+    height: 92px;
     top: -12px;
   }
 }
@@ -153,10 +154,13 @@ $purple = #F89898
   justify-content: center;
 }
 .connect-name {
-  background-color: #000;
+  background-color: #fff;
   display: inline-block;
   color: #000;
   z-index: 9;
+  // padding: 5px;
+  // border-radius: 7px;
+  // border: 2px solid #a9a9a9;
 }
 
 .red {
@@ -170,4 +174,63 @@ $purple = #F89898
 }
 .purple {
   background: $purple;
+}
+
+.top-wrap {
+  font-size 14px;
+  font-weight: 600;
+}
+.scene-name {
+  font-size 18px;
+  font-weight: 600;
+  margin-right 20px
+}
+.legend-wrap {
+  position: absolute;
+  border: 1px solid #d9d9d9;
+  display: inline-block;
+  padding: 0px 2px;
+  text-align: center;
+  font-size: 12px;
+  background: #fff;
+  z-index: 999;
+  // bottom: 15px;
+  top: 20%
+  cursor: move;
+
+  .legend-wrap-title {
+    font-size: 14px;
+    font-weight: 600;
+    background: #f9f9f9;
+    padding: 6px;
+  }
+  .legend-wrap-item {
+    margin-bottom 20px
+  }
+  .circle {
+    display: inline-block;
+    width: 20px;
+    height: 20px;
+    border-radius: 50%;
+    z-index: 1;
+  }
+  .enter {
+    background-color: $enterColor;
+  }
+  .dashed-box {
+    display: inline-block;
+    width: 50px;
+    height: 20px;
+    // border: 2px dashed #000;
+    border: 3px dashed #d7d7d7;
+    border-radius: 7px;
+  }
+  .arrow {
+    font-size 26px
+  }
+}
+#wrap {
+  background #fff
+  border-radius: 10px;
+  overflow auto
 }

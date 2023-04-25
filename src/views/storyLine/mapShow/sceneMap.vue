@@ -52,6 +52,12 @@ import JsplumbCom from './jsplumbCom/Index.vue'
 export default {
   name: 'crowdCirculationTrack',
   components: { JsplumbCom },
+  props: {
+    chartData: {
+      type: Object,
+      default: () => {}
+    }
+  },
   data () {
     return {
       groupServicer: [],
@@ -64,127 +70,140 @@ export default {
       ]
     }
   },
-  created () {
-    this.groupServicer = [
-      {
-        groupId: 194,
-        child: [{
-          id: 2226,
-          receptionist: '1_学习能力',
-          entryList: [{
-            id: '0_in'
-          }, {
-            id: '0_i89n_2'
-          }, {
-            id: '0_in_322333'
-          }, {
-            id: '0_in99_4'
-          }],
-          exportList: [{
-            type: 0,
-            id: '0_out'
-          }, {
-            type: 1,
-            id: '0_out_2'
-          }]
-        }, {
-          id: 2225,
-          receptionist: '学习能力',
-          entryList: [{
-            id: '1_in1231313'
-          }, {
-            id: '0_i56n_2'
-          }, {
-            id: '0_in_3444'
-          }, {
-            id: '0_in434_4'
-          }, {
-            id: '5_in_8'
-          }, {
-            id: '0_in45_2'
-          }, {
-            id: '0_in_3555'
-          }, {
-            id: '0_in1221_4'
-          }],
-          exportList: [{
-            type: 0,
-            id: '2_out'
-          }, {
-            type: 1,
-            id: '0_out_2'
-          }]
-        }, {
-          id: 2221235,
-          receptionist: '搞笑',
-          entryList: [{
-            id: '1_in1231231314'
-          }, {
-            id: '0_56'
-          }, {
-            id: '0_123123'
-          }, {
-            id: '0_45in_4'
-          }, {
-            id: '1_i123n'
-          }, {
-            id: '0_in_8'
-          }, {
-            id: '7_in_9'
-          }, {
-            id: '0_in_01'
-          }],
-          exportList: [{
-            type: 3,
-            id: '2_out'
-          }, {
-            type: 1,
-            id: '0_out_212313'
-          }]
-        }]
+  watch: {
+    chartData: {
+      handler (val) {
+        debugger
+        this.groupServicer = val.groupServicer || []
+        this.relations = val.relations || []
+
+        console.log('this.groupServicer--->', this.groupServicer)
+        console.log('this.relations--->', this.relations)
       },
-      {
-        id: 2017,
-        receptionist: '搞笑',
-        entryList: [{
-          id: '0_in'
-        }, {
-          id: '0_in_2'
-        }, {
-          id: '0_in456_3'
-        }, {
-          id: '0_in_454'
-        }, {
-          id: '0_in_455'
-        }],
-        exportList: [{
-          type: 0,
-          id: '0_out'
-        }, {
-          type: 3,
-          id: '0_out_2rrr'
-        }]
-      }, {
-        id: 2016,
-        receptionist: '亲子',
-        entryList: [{
-          id: '0_in'
-        }, {
-          id: '0_in_2'
-        }, {
-          id: '0_in_3111'
-        }, {
-          id: '0_34in_4'
-        }],
-        exportList: [{
-          type: 0,
-          id: '0_out'
-        }, {
-          type: 2,
-          id: '0_out_2'
-        }]
-      }
-    ]
+      immediate: true
+    }
+  },
+  created () {
+    // this.groupServicer = [
+    //   {
+    //     groupId: 194,
+    //     child: [{
+    //       id: 2226,
+    //       receptionist: '1_学习能力',
+    //       entryList: [{
+    //         id: '0_in'
+    //       }, {
+    //         id: '0_i89n_2'
+    //       }, {
+    //         id: '0_in_322333'
+    //       }, {
+    //         id: '0_in99_4'
+    //       }],
+    //       exportList: [{
+    //         type: 0,
+    //         id: '0_out'
+    //       }, {
+    //         type: 1,
+    //         id: '0_out_2'
+    //       }]
+    //     }, {
+    //       id: 2225,
+    //       receptionist: '学习能力',
+    //       entryList: [{
+    //         id: '1_in1231313'
+    //       }, {
+    //         id: '0_i56n_2'
+    //       }, {
+    //         id: '0_in_3444'
+    //       }, {
+    //         id: '0_in434_4'
+    //       }, {
+    //         id: '5_in_8'
+    //       }, {
+    //         id: '0_in45_2'
+    //       }, {
+    //         id: '0_in_3555'
+    //       }, {
+    //         id: '0_in1221_4'
+    //       }],
+    //       exportList: [{
+    //         type: 0,
+    //         id: '2_out'
+    //       }, {
+    //         type: 1,
+    //         id: '0_out_2'
+    //       }]
+    //     }, {
+    //       id: 2221235,
+    //       receptionist: '搞笑',
+    //       entryList: [{
+    //         id: '1_in1231231314'
+    //       }, {
+    //         id: '0_56'
+    //       }, {
+    //         id: '0_123123'
+    //       }, {
+    //         id: '0_45in_4'
+    //       }, {
+    //         id: '1_i123n'
+    //       }, {
+    //         id: '0_in_8'
+    //       }, {
+    //         id: '7_in_9'
+    //       }, {
+    //         id: '0_in_01'
+    //       }],
+    //       exportList: [{
+    //         type: 3,
+    //         id: '2_out'
+    //       }, {
+    //         type: 1,
+    //         id: '0_out_212313'
+    //       }]
+    //     }]
+    //   },
+    //   {
+    //     id: 2017,
+    //     receptionist: '搞笑',
+    //     entryList: [{
+    //       id: '0_in'
+    //     }, {
+    //       id: '0_in_2'
+    //     }, {
+    //       id: '0_in456_3'
+    //     }, {
+    //       id: '0_in_454'
+    //     }, {
+    //       id: '0_in_455'
+    //     }],
+    //     exportList: [{
+    //       type: 0,
+    //       id: '0_out'
+    //     }, {
+    //       type: 3,
+    //       id: '0_out_2rrr'
+    //     }]
+    //   }, {
+    //     id: 2016,
+    //     receptionist: '亲子',
+    //     entryList: [{
+    //       id: '0_in'
+    //     }, {
+    //       id: '0_in_2'
+    //     }, {
+    //       id: '0_in_3111'
+    //     }, {
+    //       id: '0_34in_4'
+    //     }],
+    //     exportList: [{
+    //       type: 0,
+    //       id: '0_out'
+    //     }, {
+    //       type: 2,
+    //       id: '0_out_2'
+    //     }]
+    //   }
+    // ]
     // this.groupServicer = [
     //   {
     //     groupId: 19114,
@@ -529,58 +548,6 @@ export default {
 }
 </script>
 <style lang="stylus" scoped>
-@import '~@/views/crowdStrategy/jsplumbCom/style.styl'
-.top-wrap {
-  font-size 14px;
-  font-weight: 600;
-}
-.scene-name {
-  font-size 18px;
-  font-weight: 600;
-  margin-right 20px
-}
-.legend-wrap {
-  position: absolute;
-  border: 1px solid #d9d9d9;
-  display: inline-block;
-  padding: 0px 2px;
-  text-align: center;
-  font-size: 12px;
-  background: #fff;
-  z-index: 999;
-  // bottom: 15px;
-  top: 30%
-  cursor: move;
+@import './jsplumbCom/style.styl'
 
-  .legend-wrap-title {
-    font-size: 14px;
-    font-weight: 600;
-    background: #f9f9f9;
-    padding: 6px;
-  }
-  .legend-wrap-item {
-    margin-bottom 20px
-  }
-  .circle {
-    display: inline-block;
-    width: 20px;
-    height: 20px;
-    border-radius: 50%;
-    z-index: 1;
-  }
-  .enter {
-    background-color: $enterColor;
-  }
-  .dashed-box {
-    display: inline-block;
-    width: 50px;
-    height: 20px;
-    // border: 2px dashed #000;
-    border: 3px dashed #d7d7d7;
-    border-radius: 7px;
-  }
-  .arrow {
-    font-size 26px
-  }
-}
 </style>

@@ -7,7 +7,9 @@
       【{{selectedScene.id}}】
     </div> -->
     <!-- {{ selectedScene }} -->
-    <div class='row-wrap' :style="{'grid-template-columns': isShowDetailName ? '200px 200px minmax(0, 1fr)': '32px 200px minmax(0, 1fr)'}">
+    <div class='row-wrap'
+      :style="{'grid-template-columns': viewType ? '200px 200px minmax(0, 1fr)': '200px minmax(0, 1fr)'}"
+    >
       <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
         继续编辑
       </el-button>
@@ -19,7 +21,17 @@
       <div class="box" v-if="isShowDetailName" style="position: relative">
         <!-- <i class="el-icon-arrow-left arrow-close" @click="openShowDetailName" ></i> -->
         <div class="content">
-            <div class="title">场景</div>
+            <div class="title">
+              场景
+              <el-button
+                type="text"
+                style="position: absolute; right: 14px; top: 6px;"
+                size="mini"
+                @click="changeView">
+                流转视图
+              </el-button>
+            </div>
+
             <div class="search">
               <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select" @keyup.enter.native="getSceneList">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
@@ -131,13 +143,13 @@
             </div>
         </div>
       </div>
-      <div v-else style="position: relative">
+      <!-- <div v-else style="position: relative">
         <el-button plain @click="openShowDetailName">场景 <br/>
           <i class="el-icon-arrow-right " ></i>
         </el-button>
-      </div>
+      </div> -->
 
-      <div class="box">
+      <div v-show="viewType" class="box" >
         <!-- <div class="title" v-if="!isShowDetailName">选择场景：{{ selectedScene.sceneName }}</div> -->
         <div class="content" >
           <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
@@ -252,7 +264,7 @@
           </el-scrollbar>
         </div>
       </div>
-      <div class="box">
+      <div v-show="viewType" class="box">
         <!-- 接待员详情 -->
         <servicerDetail
           ref="servicerDetailRef"
@@ -271,6 +283,15 @@
           @editReceptionist="editReceptionist"
         ></servicerDetail>
       </div>
+
+      <template v-if="!viewType && isShowSceneChartData">
+        <div class="box" v-loading="getSceneFlowChartLoading">
+          <SceneMap
+            :chartData="sceneChartData"
+          ></SceneMap>
+        </div>
+      </template>
+
       <el-dialog
         title="一键投放"
         :visible.sync="dialogVisible"
@@ -436,13 +457,16 @@ import OneDrop from './oneDrop/Index'
 // import { validateRule } from './validateRuleData.js'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
+import SceneMap from './mapShow/sceneMap.vue'
+
 export default {
   components: {
     LaunchToBusiness,
     drag,
     servicerDetail,
     MultiAdd,
-    OneDrop
+    OneDrop,
+    SceneMap
   },
 
   provide () {
@@ -452,6 +476,10 @@ export default {
   },
   data () {
     return {
+      getSceneFlowChartLoading: false,
+      isShowSceneChartData: true,
+      sceneChartData: {},
+      viewType: true,
       sceneCanReuse: false, // 当前场景是否有权限
       // canUse: false, // 下拉框的接待员是否有权限操作
       sceneDropDownLoading: true,
@@ -649,6 +677,22 @@ export default {
     }
   },
   methods: {
+    changeView () {
+      this.viewType = !this.viewType
+      this.getSceneFlowChart()
+    },
+    getSceneFlowChart () {
+      const params = {
+        id: this.selectedScene.id
+      }
+      this.getSceneFlowChartLoading = true
+      this.$service.sceneFlowChart(params).then(res => {
+        console.log('', 'res--->', res)
+        this.getSceneFlowChartLoading = false
+        this.sceneChartData = res
+        this.isShowSceneChartData = true
+      })
+    },
     launchDetail (pid) {
       this.showLaunch = true
       this.$service.policyUseInBi({ policyId: pid }).then((data) => {
@@ -737,9 +781,9 @@ export default {
         })
       }
     },
-    openShowDetailName () {
-      this.isShowDetailName = !this.isShowDetailName
-    },
+    // openShowDetailName () {
+    //   this.isShowDetailName = !this.isShowDetailName
+    // },
     seeDevDetail (row) {
       this.showConfiguration = true
       this.detailPagination.currentId = row.policyId
@@ -1108,6 +1152,10 @@ export default {
         await this.getSceneCanReuse()
 
         this.getServiceList('list', selectServicerId)
+
+        // 查看拓扑图
+        this.isShowSceneChartData = false
+        this.getSceneFlowChart()
       } else {
         alert(this.tipMsg)
       }
