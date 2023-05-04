@@ -288,6 +288,7 @@
         <div class="box" v-loading="getSceneFlowChartLoading">
           <SceneMap
             :chartData="sceneChartData"
+            :selectedScene="selectedScene"
           ></SceneMap>
         </div>
       </template>
