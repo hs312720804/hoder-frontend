@@ -7,7 +7,7 @@ function getInitData (app) {
   // return app.$service.service.getConstants({ token: user.token })
 }
 Vue.prototype.$isLoggedIn = async function () {
-  debugger
+  // debugger
   const $appState = this.$appState
   // memory
   // if ($appState.user) {
