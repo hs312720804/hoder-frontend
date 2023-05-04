@@ -107,6 +107,32 @@
         ></c-table>
       </div>
 
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <div id='a7' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
@@ -139,6 +165,8 @@
 
 <script>
 import DynamicTable from '../dynamicTable/Index.vue'
+import { crowdData } from './crowdData2.js'
+import { setBarEchart } from './chart/bar.js'
 // import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 
 export default {
@@ -248,37 +276,37 @@ export default {
       } else {
         params = { crowdId: this.crowdId }
       }
-      this.$service.getContentDynamicCrowdReport(params).then(res => {
-        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+      // this.$service.getContentDynamicCrowdReport(params).then(res => {
+      const res = crowdData
 
-        // 表格
-        this.setTableData(getAllData)
-        // // 折线图数据
-        // const vipPlay = this.getChartData(res.everyDayDetail.data, 'payRate')
-        // const vipPlayTrend = this.getChartData(res.everyDayDetail.data, 'arup')
+      const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
-        // console.log('aaa---->', vipPlay)
-        // this.allChartData = {
-        //   vipPlay,
-        //   vipPlayTrend
-        // }
-
-        // this.$nextTick(() => {
-        //   this.drawChart()
-        // })
-      })
-
-      // this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
-      //   // this.getAllData = res
-
-      //   this.setTableData(res)
+      // 表格
+      this.setTableData(getAllData)
+      // 图表
+      this.setChartData(res)
       // })
-      //
+    },
+    setChartData (res) {
+      // 折线图数据
+      const ctr = this.getChartData2(res.crowdIncomeDetail.data, 'ctr')
+      const clickPlayRate = this.getChartData2(res.crowdIncomeDetail.data, 'clickPlayRate')
+      const payRate = this.getChartData2(res.crowdIncomeDetail.data, 'payRate')
 
-      // // 表头配置项
+      // console.log('vipPlay---->', vipPlay)
+      // console.log('vipPlayTrend---->', vipPlayTrend)
+      // console.log('reportGroupSumArup---->', reportGroupSumArup)
+      // console.log('reportGroupSumPriceTotal---->', reportGroupSumPriceTotal)
 
-      // console.log('reObj====', this.tableData)
-      // console.log('tableConfig====', this.tableConfig)
+      this.allChartData = {
+        ctr,
+        clickPlayRate,
+        payRate
+      }
+
+      this.$nextTick(() => {
+        this.drawChart(this.rowObj)
+      })
     },
     formatData (res) {
       const result = JSON.parse(JSON.stringify(res))
@@ -340,7 +368,7 @@ export default {
         title: '',
         xunit: ''
       }
-      if (key === 'payRate') { // 支付率，数据转为百分比
+      if (key === 'payRate' || key === 'ctr') { // 支付率/ctr，数据转为百分比
         reObj.yunit = '%'
       }
       reObj.series = chartData.reduce((result, current, index) => {
@@ -364,17 +392,58 @@ export default {
 
       return reObj
     },
+    getChartData2 (chartData, key) {
+      const reObj = {
+        xaxis: [],
+        yunit: '',
+        series: [],
+        title: '',
+        xunit: ''
+      }
+      if (key === 'payRate' || key === 'ctr') { // 支付率/ctr，数据转为百分比
+        reObj.yunit = '%'
+      }
+      // const
+      chartData.forEach((item, index) => {
+        reObj.xaxis.push(`${item.dynamicName}-${item.crowdId}`)
+        const valueNum = item[key]
+        reObj.series.push(valueNum)
+      })
+
+      // return result
+      // })
+
+      return reObj
+    },
     // echart 图表渲染
-    drawChart () {
-      const rowObj2 = this.rowObj2
-      rowObj2.forEach(item => {
+    drawChart (rowObj) {
+      rowObj.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
           if (item[key].type === 'line') {
             this.showLine(this.allChartData[key], key)
+          } else if (item[key].type === 'bar') {
+            this.showBar(this.allChartData[key], key)
           }
         }
       })
+    },
+    //  柱状图
+    showBar (data, chartID) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        if (data.yunit === '%') {
+          data.series = data.series.map(v => Number(v * 100).toFixed(2))
+        }
+        const element = chartID
+        // console.log('23333=========>', data)
+        const chartElement = document.getElementById(element)
+        if (!chartElement) return
+        const options = setBarEchart('', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
+        const echarts = require('echarts')
+        const myChart = echarts.init(chartElement)
+        myChart.setOption(options, true)
+        this.allCharts[element] = myChart
+      }
     },
     //  折线图
     showLine (data, chartID) {
@@ -1000,10 +1069,11 @@ export default {
 
       getAllData: [],
       allChartData: {},
-      rowObj2: [
+      rowObj: [
         {
-          vipPlay: { type: 'line', title: '每组动态人群每日曝光支付率数据', span: 12 },
-          vipPlayTrend: { type: 'line', title: '每组动态人群每日曝光客单价数据', span: 12 }
+          ctr: { type: 'bar', title: '分组内各子人群（接待员）CTR对比', span: 8 },
+          clickPlayRate: { type: 'bar', title: '分组内各子人群（接待员）点击起播率对比', span: 8 },
+          payRate: { type: 'bar', title: '分组内各子人群（接待员）起播付费率对比', span: 8 }
         }
       ],
       allCharts: {},
