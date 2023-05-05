@@ -1,6 +1,6 @@
 <template>
   <div>
-    {{ selectedServicerId }}
+    <!-- {{ selectedServicerId }} -->
     <div :id="pageId" class="graph-container" style="position: relative;"></div>
   </div>
 </template>
@@ -181,10 +181,25 @@ export default {
         const { item } = evt
         this.graph.setItemState(item, 'hover', false)
       })
+      // 单击
       // this.graph.on('node:click', evt => {
       //   const { item } = evt
-      //   this.graph.setItemState(item, 'selected', true)
+      //   console.log('item------->', item)
+      //   // this.graph.setItemState(item, 'selected', true)
       // })
+      // 双击
+      this.graph.on('node:dblclick', evt => {
+        const { item } = evt
+        this.dblClick(item)
+        // this.graph.setItemState(item, 'selected', true)
+      })
+    },
+    dblClick (item) {
+      console.log('item------->', item._cfg.id)
+      const servicerId = item._cfg.id
+
+      // 选择接待员
+      this.$emit('selectServicer', servicerId)
     },
     // 重构成图表所需数据格式
     reconstructData  (data) {
@@ -218,7 +233,7 @@ export default {
         }
         if (i === 1) {
           obj.style = {
-            fill: '#000'
+            fill: 'gary'
           }
         }
         nodes.push(obj)
@@ -257,7 +272,8 @@ export default {
       cloneData.nodes && cloneData.nodes.forEach(item => {
         if (item.id == this.selectedServicerId) {
           item.style = {
-            fill: '#000'
+            stroke: '#000',
+            fill: '#999'
           }
         }
       })

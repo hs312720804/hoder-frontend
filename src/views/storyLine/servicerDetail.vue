@@ -114,7 +114,9 @@
                   v-if="isShowServicerChartData && servicerChartData.nodes && servicerChartData.nodes.length > 0"
                   :chartData="servicerChartData"
                   :selectedServicerId="selectedServicer.id"
-                  style="margin: 0 -10px">
+                  style="margin: 0 -10px"
+                  @selectServicer="(id) => $emit('selectServicer', id)"
+                  >
                 </ServicerMap>
                 <el-empty v-else></el-empty>
               </div>
@@ -936,15 +938,15 @@ export default {
       handler () {
         this.getSkillListBySceneId()
       }
-    },
-    'selectedServicer.id': {
-      handler () {
-        this.isShowServicerChartData = false
-        this.$nextTick(() => {
-          this.isShowServicerChartData = true
-        })
-      }
     }
+    // 'selectedServicer.id': {
+    //   handler () {
+    //     // this.isShowServicerChartData = false
+    //     // this.$nextTick(() => {
+    //     //   this.isShowServicerChartData = true
+    //     // })
+    //   }
+    // }
   },
   computed: {
     isDoudi () {
@@ -1129,11 +1131,15 @@ export default {
 
   methods: {
     getFlowChart () {
+      this.isShowServicerChartData = false
       const params = {
         id: this.selectedServicer.id // 接待员ID
       }
       this.$service.receptionistFlowChart(params).then(res => {
         this.servicerChartData = res
+        this.$nextTick(() => {
+          this.isShowServicerChartData = true
+        })
       })
     },
     skillValueSelectVisibleChange () {
