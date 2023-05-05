@@ -447,12 +447,12 @@
       @sort-change="handleSortChange"
     >
       <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
-      <el-table-column v-if="showByPassColumn" label="分流占比">
+      <el-table-column v-if="showByPassColumn" label="分流占比" width="120px">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
           <div v-if="scope.row.bypassName !== '未分组'">
-            <div>分流id:{{scope.row.bypassId}}</div>
-            <div>{{scope.row.ratio}}%</div>
+            <div>分流id：{{ scope.row.bypassId }}</div>
+            <div>占比：{{ scope.row.ratio }}%</div>
             <div>
               <el-button type="text" @click="handleEditBypass">编辑</el-button>
               <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
@@ -2828,8 +2828,8 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
-        // this.showByPassColumn = data.bypass === 1
-        this.showByPassColumn = data.policy.smart
+        this.showByPassColumn = data.bypass === 1 // 是否分流
+        // this.showByPassColumn = data.policy.smart
         // if (loadType !== 'sort') {
         //   this.initExpandCrowd = []
         //   if (this.tableData.length > 0) {
@@ -2837,7 +2837,7 @@ export default {
         //   }
         // }
         // 再插入一项
-        this.tableMerge[0] = this.tableMerge[0] + 1
+        // this.tableMerge[0] = this.tableMerge[0] + 1
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
