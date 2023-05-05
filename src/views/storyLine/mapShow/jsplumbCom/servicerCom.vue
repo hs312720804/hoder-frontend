@@ -13,7 +13,7 @@
           class="w"
           @dblclick="openDetail(eItem)"
         >
-          {{ eItem.id }}
+          <!-- {{ eItem.id }} -->
         </span>
       </template>
       <div v-else class="branch-img">
@@ -36,7 +36,7 @@
           :class="getClass(eItem.stopType)"
           @dblclick="openDetail(eItem)"
         >
-          {{ eItem.id }}
+          <!-- {{ eItem.id }} -->
         </span>
       </template>
       <div v-else class="branch-img" style="transform: rotate(180deg); margin-left: -17px; margin-top: -15px;">

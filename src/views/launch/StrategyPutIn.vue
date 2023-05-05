@@ -43,6 +43,19 @@
                         <!--</el-option>-->
                     </el-select>
                 </el-form-item>
+                <!-- 只有故事线的才展示下面的 -->
+                <el-form-item label="投放有效期" v-if="fromStoryline" >
+                  <el-date-picker
+                    v-model="value1"
+                    type="datetimerange"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    format="yyyy-MM-dd HH:mm:ss"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :clearable="false">
+                  </el-date-picker>
+                </el-form-item>
             </div>
             <div class="border" v-if="crowdForm.launchMode.push">
                 <div class="tips">投放模式（push）:针对消息、微信</div>
@@ -231,9 +244,9 @@
                 <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
             </div>
             <!-- 一键投放故事线场景，不需要展示下面的 -->
-            <el-form-item v-if="!fromStoryline">
-                <el-button type="info" @click="handleCancel">取消</el-button>
-                <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
+            <el-form-item v-if="!hiddenButton">
+              <el-button type="info" @click="handleCancel">取消</el-button>
+              <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
             </el-form-item>
         </el-form>
     </div>
@@ -244,9 +257,10 @@ import { Loading } from 'element-ui'
 
 export default {
   name: 'StrategyPutIn',
-  props: ['recordId', 'tempPolicyAndCrowd', 'fromStoryline'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'fromStoryline', 'hiddenButton'],
   data () {
     return {
+      value1: [],
       crowdForm: {
         biIdsPull: [],
         policyIdsPull: [],
@@ -499,6 +513,10 @@ export default {
         biIds: this.crowdForm.biIdsPull,
         policyIds: this.crowdForm.policyIdsPull
       }
+      if (this.fromStoryline) {
+        formData.startTime = this.value1[0] || undefined
+        formData.endTime = this.value1[1] || undefined
+      }
       this.$service.saveAddCrowdData(formData, 'pull投放成功').then(() => {
         if (this.crowdForm.launchMode.push) {
           this.savePullDataSuccess = true
@@ -682,6 +700,9 @@ export default {
     this.handleGetCurrentPolicy()
     this.getCrowdInitList()
     this.getPushPackageList() // 获取pushAPP接口
+
+    // 默认时间
+    this.value1 = [this.$moment().format('YYYY-MM-DD HH:mm:ss'), this.$moment().add(20, 'years').format('YYYY-MM-DD HH:mm:ss')]
   }
 }
 </script>

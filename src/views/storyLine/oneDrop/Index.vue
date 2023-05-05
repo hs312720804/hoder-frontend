@@ -74,6 +74,7 @@
     :recordId="policyId"
     :tempPolicyAndCrowd="tempPolicyAndCrowd"
     :fromStoryline="true"
+    :hiddenButton="true"
   ></LaunchToBusiness>
 
   <div class="el-dialog__footer">
@@ -302,7 +303,9 @@ export default {
       launchToBusinessRef.$refs.crowdForm.validate((valid) => {
         if (valid) {
           const parmas = {
-            id: this.sceneId
+            id: this.sceneId,
+            startTime: launchToBusinessRef.value1[0] || undefined,
+            endTime: launchToBusinessRef.value1[1] || undefined
           }
           this.$service.putInDraft(parmas, '保存成功').then(res => {
             // 更新场景列表
@@ -328,7 +331,9 @@ export default {
           const parmas = {
             sceneId: this.sceneId,
             biIds: launchToBusinessRef.crowdForm.biIdsPull,
-            policyIds: [this.policyId]
+            policyIds: [this.policyId],
+            startTime: launchToBusinessRef.value1[0] || undefined,
+            endTime: launchToBusinessRef.value1[1] || undefined
           }
           this.$service.putInRelease(parmas).then(async res => {
             const parmas = { policyId: this.policyId }

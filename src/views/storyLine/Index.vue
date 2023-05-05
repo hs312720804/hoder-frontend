@@ -374,6 +374,7 @@
         <LaunchToBusiness
           :recordId="tempPolicyAndCrowd.policyId"
           :tempPolicyAndCrowd="tempPolicyAndCrowd"
+          :fromStoryline="true"
           @closeDialog="handleCloseDialog"
           @refreshList="getSceneList"
         ></LaunchToBusiness>
