@@ -68,7 +68,7 @@
       <div id='a4' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            每日效果明细（reportDayDetail）
+            每日效果明细（everyDayDetail）
             <!-- <span>共 0 个</span> -->
           </div>
         </div>
@@ -82,7 +82,7 @@
       <div id='a5' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            累计效果明细（reportSum）
+            累计效果明细（totalDetail）
             <span>目的：针对累计数据情况，查看各组动态人群转化效果 </span>
           </div>
         </div>
