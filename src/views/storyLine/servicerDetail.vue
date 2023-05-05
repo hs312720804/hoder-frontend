@@ -381,7 +381,13 @@
                   <span class="border-title">普通标签</span>
                   <div class="rule-string">
                     <div>
-                      <div
+                      <ShowRule
+                        :rulesJson="JSON.parse(entry.rulesJson)"
+                        :conditionEnum="conditionEnum"
+                        :soureceSignList="soureceSignList"
+                      >
+                      </ShowRule>
+                      <!-- <div
                         v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
                         :key="index"
                         class="rule-detail"
@@ -393,11 +399,9 @@
                             :key="childItem.tagId+childItemIndex"
                             class="label-item"
                           >
-                          <!-- {{childItem}} -->
                             <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                             <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
 
-                            <!-- 流转标签 -->
                             <template v-if="(childItem.dataSource === 20)">
                               <ShowFlowConditionRuleItem
                                 :childItem="childItem"
@@ -418,9 +422,8 @@
 
                           </div>)
                         </div>
-                      </div>
+                      </div> -->
                     </div>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
                   </div>
                 </template>
 
@@ -567,8 +570,13 @@
                 <template v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
                   <span class="border-title">普通标签</span>
                   <div class="rule-string" >
-                    <div >
-                      <div
+                    <div>
+                      <ShowRule
+                        :rulesJson="JSON.parse(exportItem.rulesJson)"
+                        :soureceSignList="soureceSignList"
+                      >
+                      </ShowRule>
+                      <!-- <div
                         v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
                         :key="index"
                         class="rule-detail"
@@ -580,11 +588,9 @@
                             :key="childItem.tagId+childItemIndex"
                             class="label-item"
                           >
-                          <!-- {{childItem}} -->
                             <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                             <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
 
-                            <!-- 流转标签 -->
                             <template v-if="(childItem.dataSource === 20)">
                               <ShowFlowConditionRuleItem
                                 :childItem="childItem"
@@ -605,7 +611,8 @@
 
                           </div>)
                         </div>
-                      </div>
+                      </div> -->
+
                     </div>
                     <!-- <div v-else class="no-data-text">暂无</div> -->
                   </div>
@@ -793,8 +800,9 @@ import { validateRule } from './validateRuleData.js'
 
 import createClientDialog from './createClientDialog.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
-import ShowFlowConditionRule from './ShowFlowConditionRule.vue'
-import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
+import ShowFlowConditionRule from './com/ShowFlowConditionRule.vue'
+// import ShowFlowConditionRuleItem from './com/ShowFlowConditionRuleItem.vue'
+import ShowRule from './com/ShowRule.vue'
 import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
 import { options } from './utils'
 
@@ -807,10 +815,12 @@ export default {
     createClientDialog,
     MultipleActionTagSelect,
     ShowFlowConditionRule,
-    ShowFlowConditionRuleItem,
+    // ShowFlowConditionRuleItem,
     EditTargetKeyDialog,
-    ServicerMap
+    ServicerMap,
+    ShowRule
   },
+
   props: {
     servicer: {
       type: Array,
