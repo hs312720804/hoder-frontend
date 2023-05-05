@@ -33,6 +33,7 @@ $purple = #b09cdb
   color: black;
   cursor: move;
   z-index: 1
+  margin 2px
 }
 .w:hover {
   background-color: #629f8d;
@@ -96,7 +97,8 @@ $purple = #b09cdb
 
 
 .jtk-connector path {
-  stroke-width: 1;
+  // stroke-width: 1;
+  cursor: pointer;
 }
 
 
@@ -158,9 +160,9 @@ $purple = #b09cdb
   display: inline-block;
   color: #000;
   z-index: 9;
-  // padding: 5px;
-  // border-radius: 7px;
-  // border: 2px solid #a9a9a9;
+  padding: 5px;
+  border-radius: 7px;
+  border: 2px solid #a9a9a9;
 }
 
 .red {
@@ -234,3 +236,15 @@ $purple = #b09cdb
   border-radius: 10px;
   overflow auto
 }
+
+.aLabel.jtk-hover,
+.jtk-source-hover,
+.jtk-target-hover {
+  background-color: #1e8151;
+  color: white;
+}
+
+// path,
+// .jtk-endpoint {
+//   cursor: pointer;
+// }
