@@ -89,27 +89,19 @@ export default {
           })
         }
         this.groupServicer = AA || []
-        // this.relations = val.relations || []
+        this.relations = val.relations || []
 
-        this.relations = [
-          [
-            '641',
-            '649'
-          ],
-          [
-            '641',
-            '844'
-          ],
-          [
-            '641',
-            '694'
-          ],
-          [
-            '844',
-            '641'
-          ]
+        // this.relations = [
+        //   [
+        //     '366',
+        //     '245'
+        //   ],
+        //   [
+        //     '405',
+        //     '517'
+        //   ]
 
-        ]
+        // ]
 
         console.log('this.groupServicer--->', this.groupServicer)
         console.log('this.relations--->', this.relations)
