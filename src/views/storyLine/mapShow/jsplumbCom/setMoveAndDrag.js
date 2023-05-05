@@ -92,9 +92,9 @@ export default function setMoveAndDrag (parent, current) {
     // }
     // 图片小于box大小时 图片不能拖出边框
     // else {
-    console.log('bottom=====', outerHeight - 50)
-    console.log('top=====', -innerHeight * (multiple) + 50)
-    console.log('multiple=====', multiple)
+    // console.log('bottom=====', outerHeight - 50)
+    // console.log('top=====', -innerHeight * (multiple) + 50)
+    // console.log('multiple=====', multiple)
 
     // transX = Math.max(Math.min(moveX, outerWidth - innerWidth * (multiple + 1) / 2 ), innerWidth * (multiple - 1) / 2)
     // transY = Math.max(Math.min(moveY, outerHeight - innerHeight * (multiple + 1) / 2 ), innerHeight * (multiple - 1) / 2)
