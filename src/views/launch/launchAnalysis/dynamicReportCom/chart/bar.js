@@ -28,7 +28,7 @@ export function setBarEchart (title, xData, yData, xunit = '', yunit = '') {
         let str = parmas[0].name + '<br/>'
         // let str = ''
         for (const item of parmas) {
-          console.log('item-->', item)
+          // console.log('item-->', item)
           str = str + item.marker + vm.cc_format_number(item.value) + yunit + '<br/>'
 
           // str = str + item.name + ': ' + vm.cc_format_number(item.value) + yunit + '<br/>'

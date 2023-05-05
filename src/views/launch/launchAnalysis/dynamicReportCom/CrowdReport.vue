@@ -180,6 +180,31 @@
           </div>
         </el-col>
       </el-row>
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj3" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
 
       <div id='a7' class="table-wrap">
         <div class="title-layout">
@@ -221,6 +246,7 @@ import DynamicTable from '../dynamicTable/Index.vue'
 import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 import { crowdData } from './crowdData.js'
 import { setBarEchart } from './chart/bar.js'
+import { drawTwoBarChart } from './chart/twoBar.js'
 
 export default {
   components: {
@@ -251,7 +277,6 @@ export default {
   },
   mounted () {
     this.high() // 锚点侧边栏
-
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
@@ -388,24 +413,27 @@ export default {
       const reportGroupSumArup = this.getChartData2(res.reportGroupSum.data, 'arup')
       const reportGroupSumPriceTotal = this.getChartData2(res.reportGroupSum.data, 'priceTotal')
       const reportGroupSumPayRate = this.getChartData2(res.reportGroupSum.data, 'payRate')
+      const reportGroupSumTwoWay = this.getChartData3(res.reportGroupSum.data)
 
       // console.log('vipPlay---->', vipPlay)
       // console.log('vipPlayTrend---->', vipPlayTrend)
       // console.log('reportGroupSumArup---->', reportGroupSumArup)
       // console.log('reportGroupSumPriceTotal---->', reportGroupSumPriceTotal)
-      console.log('reportGroupSumPayRate---->', reportGroupSumPayRate)
+      // console.log('reportGroupSumTwoWay---->', reportGroupSumTwoWay)
 
       this.allChartData = {
         vipPlay,
         vipPlayTrend,
         reportGroupSumArup, // /客单价
         reportGroupSumPriceTotal, // 总营收
-        reportGroupSumPayRate // 付费率
+        reportGroupSumPayRate,
+        reportGroupSumTwoWay
       }
 
       this.$nextTick(() => {
         this.drawChart(this.rowObj)
         this.drawChart(this.rowObj2)
+        this.drawChart(this.rowObj3)
       })
     },
     formatData (res) {
@@ -563,6 +591,77 @@ export default {
 
       return reObj
     },
+    getChartData3 (chartData) {
+      const reObj = {
+        xaxis: [],
+        yunit: '',
+        series: [],
+        title: '',
+        xunit: ''
+      }
+      // const seriesKey1 = ['liaoxubaoyuePayPrice', 'putongbaoyuePayPrice', 'liaoxubaojiPayPrice', 'baojiPayPrice', 'bannianPayPrice', 'baonianPayPrice']
+      // const seriesKey2 = ['liaoxubaoyuePayMacRate', 'putongbaoyuePayMacRate', 'liaoxubaojiPayMacRate', 'baojiPayMacRate', 'bannianPayMacRate', 'baonianPayMacRate']
+      const seriesKey1 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'payPrice').children
+      const seriesKey2 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'userRate').children
+
+      // console.log('seriesKey1--->', seriesKey1)
+      // console.log('seriesKey2--->', seriesKey2)
+      // console.log('chartData--->', chartData)
+
+      const seriesKey1Map = []
+      const seriesKey2Map = []
+
+      chartData.forEach((item, index) => {
+        reObj.xaxis.push(`${item.dynamicName}-${item.crowdId}`)
+
+        seriesKey1.forEach(propItem => {
+          const key = propItem.prop
+          const valueNum = item[key]
+          const obj = {
+            key,
+            name: propItem.label,
+            data: [valueNum],
+            type: 'bar'
+
+          }
+          const filerItem = seriesKey1Map.find(m => m.key === key)
+          if (filerItem) {
+            filerItem.data.push(valueNum)
+          } else {
+            seriesKey1Map.push(obj)
+          }
+        })
+        seriesKey2.forEach(propItem => {
+          const key = propItem.prop
+          const valueNum = item[key]
+          const obj = {
+            key,
+            name: propItem.label,
+            data: [valueNum],
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            type: 'bar',
+            yunit: '%'
+
+          }
+          const filerItem = seriesKey2Map.find(m => m.key === key)
+          if (filerItem) {
+            filerItem.data.push(valueNum)
+          } else {
+            seriesKey2Map.push(obj)
+          }
+        })
+      })
+
+      // console.log('seriesKey1Map------->', seriesKey1Map)
+      // console.log('seriesKey2Map------->', seriesKey2Map)
+
+      reObj.series = [...seriesKey1Map, ...seriesKey2Map]
+
+      // console.log('reObj------->', reObj)
+
+      return reObj
+    },
     // echart 图表渲染
     drawChart (rowObj) {
       rowObj.forEach(item => {
@@ -572,9 +671,29 @@ export default {
             this.showLine(this.allChartData[key], key)
           } else if (item[key].type === 'bar') {
             this.showBar(this.allChartData[key], key)
+          } else if (item[key].type === 'twoBar') {
+            this.showTwoBar(this.allChartData[key], key) // 双向柱状图
           }
         }
       })
+    },
+    //  双向柱状图
+    showTwoBar (data, chartID) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        // if (data.yunit === '%') {
+        //   data.series = data.series.map(v => Number(v * 100).toFixed(2))
+        // }
+        const element = chartID
+        // console.log('23333=========>', data)
+        const chartElement = document.getElementById(element)
+        if (!chartElement) return
+
+        const options = drawTwoBarChart({ title1: '购买金额', title2: '购买用户占比' }, data.xaxis, data.series, data.xunit, data.yunit)
+        const echarts = require('echarts')
+        const myChart = echarts.init(chartElement)
+        myChart.setOption(options, true)
+        this.allCharts[element] = myChart
+      }
     },
     //  柱状图
     showBar (data, chartID) {
@@ -1128,7 +1247,7 @@ export default {
 
           }, {
             label: '产品包购买金额',
-            prop: 'priceTotal',
+            prop: 'payPrice',
             children: [{
               label: '连续包月',
               prop: 'liaoxubaoyuePayPrice'
@@ -1157,7 +1276,7 @@ export default {
 
           }, {
             label: '产品包购买用户数占比（用户产品包购买偏好）',
-            prop: 'priceTotal',
+            prop: 'userRate',
             children: [{
               label: '连续包月',
               prop: 'liaoxubaoyuePayMacRate'
@@ -1414,6 +1533,11 @@ export default {
           reportGroupSumArup: { type: 'bar', title: '分组内各子人群（接待员）客单价', span: 8 },
           reportGroupSumPriceTotal: { type: 'bar', title: '分组内各子人群（接待员）总营收', span: 8 },
           reportGroupSumPayRate: { type: 'bar', title: '分组内各子人群（接待员）付费率', span: 8 }
+        }
+      ],
+      rowObj3: [
+        {
+          reportGroupSumTwoWay: { type: 'twoBar', title: '分组内各子人群（接待员）购买金额、购买用户占比', span: 24 }
         }
       ],
       allCharts: {},
