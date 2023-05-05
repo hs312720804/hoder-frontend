@@ -3,13 +3,12 @@
     id="canvas"
     class="jtk-demo-canvas canvas-wide flowchart-demo jtk-surface jtk-surface-nopan"
   >
-<!-- {{ relations }}
-{{ groupServicer }} -->
+
     <div
       v-for="(group, index) in groupServicer"
       :key="group.groupId ? group.groupId : group.id"
       class="item-container window"
-      :style="{left: positionObj[`${idPer}${index}`].x + 'px', top: positionObj[`${idPer}${index}`].y + 'px'}"
+      :style="{left: positionObj[`c${index}`].x + 'px', top: positionObj[`c${index}`].y + 'px'}"
       :id="idPer + index"
     >
       <!-- {{ positionObj[`c${index}`] }} -->
@@ -17,18 +16,16 @@
       <div v-if="group.groupId" class="group-container">
         <div v-for="item in group.child" :key="item.id">
           <!-- {{ item.receptionist }} -->
-          <!-- {{ item.id }} -->
           <servicerCom
             style="float: left; margin: 20px"
             :info="item"
-            :idPer="idPer"
           ></servicerCom>
         </div>
       </div>
 
       <div v-else >
-        <!-- {{ group.id }} -->
-        <servicerCom :info="group" :idPer="idPer"></servicerCom>
+        <!-- {{ group.receptionist }} -->
+        <servicerCom :info="group"></servicerCom>
       </div>
 
   </div>
@@ -62,25 +59,20 @@ export default {
   },
   data () {
     return {
-      idPer: 'ccc',
+      idPer: 'c',
       // jsPlumb 实例
       j: '',
       positionObj: {}, // 位置信息
       setJsplumbObj: {
         Container: 'canvas',
         // 连线的样式
-        Connector: 'StateMachine', // 直线
-        // DragOptions: { cursor: 'pointer', zIndex: 2000 },
-
-        // Connector: ['Bezier', { curviness: 50 }],
-        Endpoint: ['Dot', { radius: 2 }],
-        // Endpoint: 'Blank',
+        Connector: 'StateMachine',
+        // Endpoint: ['Dot', { radius: 3 }],
+        Endpoint: 'Blank',
         // 绘制连线
-        PaintStyle: { stroke: 'gray', strokeWidth: 2 },
-        // EndpointStyle: { radius: 5, fill: 'gray' },
+        PaintStyle: { stroke: '#000', strokeWidth: 2 },
         // hover 上去的样式
-        // HoverPaintStyle: { stroke: 'blue', strokeWidth: 2 },
-        HoverPaintStyle: { stroke: '#1e8151', strokeWidth: 2 },
+        HoverPaintStyle: { stroke: 'blue', strokeWidth: 2 },
         // 锚点
         Anchor: 'Center',
         // 箭头
@@ -112,29 +104,16 @@ export default {
       }
       this.$set(this.positionObj, id, obj)
     })
-
-    // console.log('groupServicer-->', this.groupServicer)
-    // console.log('relations-->', this.relations)
   },
   mounted () {
-    const _this = this
     jsPlumb.ready(() => {
       // 创建实例
       this.j = (window.j = jsPlumb.getInstance(this.setJsplumbObj))
       const j = this.j
 
-      j.registerConnectionType('basic', {
-        anchor: 'Continuous',
-        connector: 'StateMachine'
-      })
-
       j.batch(() => {
-        const windows = jsPlumb.getSelector('.flowchart-demo .window')
         // 可拖动
-        for (let i = 0; i < windows.length; i++) {
-          _this.initNode(windows[i], j)
-        }
-        // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
+        j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
 
         // 创建所有节点连接
         this.createConnections(this.relations)
@@ -150,40 +129,6 @@ export default {
     setMoveAndDrag('#wrap', '#canvas')
   },
   methods: {
-    initNode (el, instance) {
-      // initialise draggable elements.
-      instance.draggable(el)
-
-      instance.makeSource(el, {
-        filter: '.ep',
-        anchor: 'Continuous',
-        connectorStyle: {
-          stroke: '#5c96bc',
-          strokeWidth: 2,
-          outlineStroke: 'transparent',
-          outlineWidth: 0
-        },
-        connectionType: 'basic',
-        extract: {
-          action: 'the-action'
-        }
-        // maxConnections: 2,
-        // onMaxConnections (info, e) {
-        //   alert(`Maximum connections (${info.maxConnections}) reached`)
-        // }
-      })
-
-      instance.makeTarget(el, {
-        dropOptions: { hoverClass: 'dragHover' },
-        anchor: 'Continuous',
-        allowLoopback: true
-      })
-
-      // this is not part of the core demo functionality; it is a means for the Toolkit edition's wrapped
-      // version of this demo to find out about new nodes being added.
-      //
-      instance.fire('jsPlumbDemoNodeAdded', el)
-    },
     adjust () {
       // 获取元素位置
       this.groupServicer.forEach((item, index) => {
@@ -203,21 +148,13 @@ export default {
     },
     // 添加连线
     addconnect (source, target) {
-      // debugger
-      const sourceId = `${this.idPer}${source}`
-      const targetId = `${this.idPer}${target}`
-
-      const sourceDom = document.getElementById(sourceId)
-      const targetDom = document.getElementById(targetId)
-
-      console.log('sourceDom-->', sourceDom)
-      console.log('targetDom-->', targetDom)
-
-      this.j.connect({ source: sourceDom, target: targetDom, type: 'basic' })
+      const sourceDom = document.getElementById(source)
+      const targetDom = document.getElementById(target)
+      this.j.connect({ source: sourceDom, target: targetDom })
     },
     getXY (index) {
-      // debugger
-      const id = `${this.idPer}${index}`
+      debugger
+      const id = `c${index}`
       const dom = document.getElementById(id)
       const poOffsetLeft = dom.offsetLeft
       const poOffsetTop = dom.offsetTop
