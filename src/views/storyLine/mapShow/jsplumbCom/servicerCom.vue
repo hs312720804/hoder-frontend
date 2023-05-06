@@ -22,7 +22,7 @@
 
     <!-- 连线 -->
     <div class="connect-line-wrap">
-      <span class="connect-name" :id="`${idPer}${info.id}`">{{ info.id }}--{{info.receptionist }}</span>
+      <span @dblclick="$emit('selectServicer', info.id)" class="connect-name" :id="`${idPer}${info.id}`">{{ info.id }}--{{info.receptionist }}</span>
     </div>
 
     <!-- 出口 -->

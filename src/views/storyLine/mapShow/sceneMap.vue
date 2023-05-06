@@ -41,6 +41,7 @@
     <JsplumbCom
       :groupServicer="groupServicer"
       :relations="relations"
+      @selectServicer="id => $emit('selectServicer', id)"
     >
     </JsplumbCom>
   </div>

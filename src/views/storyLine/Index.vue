@@ -289,6 +289,7 @@
           <SceneMap
             :chartData="sceneChartData"
             :selectedScene="selectedScene"
+            @selectServicer="changeViewAndSelectServicer"
           ></SceneMap>
         </div>
       </template>
@@ -679,6 +680,10 @@ export default {
     }
   },
   methods: {
+    changeViewAndSelectServicer (id) {
+      this.viewType = !this.viewType
+      this.selectServicer(id)
+    },
     changeView () {
       this.viewType = !this.viewType
       this.getSceneFlowChart()
@@ -1169,8 +1174,8 @@ export default {
       // 当没有权限时，不需要要校验
       if (bool || !this.havePermissionsToCheck) {
         // 跳转
-        this.activeIndex2Id = id
-        const obj = this.servicer.find(item => item.id === id)
+        this.activeIndex2Id = Number(id)
+        const obj = this.servicer.find(item => Number(item.id) === Number(id))
         this.selectedServicer = obj || {}
 
         // 入口列表

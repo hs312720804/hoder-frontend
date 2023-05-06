@@ -22,13 +22,14 @@
             style="float: left; margin: 20px"
             :info="item"
             :idPer="idPer"
+            @selectServicer="id => $emit('selectServicer', id)"
           ></servicerCom>
         </div>
       </div>
 
       <div v-else >
         <!-- {{ group.id }} -->
-        <servicerCom :info="group" :idPer="idPer"></servicerCom>
+        <servicerCom @selectServicer="id => $emit('selectServicer', id)" :info="group" :idPer="idPer"></servicerCom>
       </div>
 
   </div>
