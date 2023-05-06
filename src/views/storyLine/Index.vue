@@ -294,6 +294,7 @@
           ></SceneMap>
           <div>
             <!-- {{ editClientRow }} -->
+            {{ editClientRow.id }}
             <showAllRule
               :entry="editClientRow"
               :conditionEnum="conditionEnum"
@@ -657,6 +658,9 @@ export default {
         // }
       },
       immediate: true
+    },
+    'selectedScene.id' () {
+      this.editClientRow = {}
     }
   },
   created () {

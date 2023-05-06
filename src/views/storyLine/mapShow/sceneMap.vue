@@ -37,14 +37,16 @@
         <div class="legend-title">分组</div>
       </div>
     </div>
-    <!-- {{ relations }} -->
+    <!-- {{ groupServicer }} -->
     <JsplumbCom
+      v-if="groupServicer && groupServicer.length > 0"
       :groupServicer="groupServicer"
       :relations="relations"
       @selectServicer="id => $emit('selectServicer', id)"
       @showRuleDetail="item => $emit('showRuleDetail', item)"
     >
     </JsplumbCom>
+    <el-empty v-else description="暂无数据，请先创建接待员"></el-empty>
   </div>
 </template>
 <script>
