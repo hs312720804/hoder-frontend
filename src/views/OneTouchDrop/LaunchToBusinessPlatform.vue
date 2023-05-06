@@ -116,9 +116,10 @@
                                     v-for="item in v.childs"
                                     :label="v.policyId+'_'+item.tempCrowdId"
                                     :key="item.tempCrowdId+''"
-                                    :disabled="item.canLaunch === false || item.isDisabledCrowd"
-                                >
-                                {{ item.crowdName }}
+                                    :disabled="item.canPush === false || item.isDisabledCrowd"
+                                  >
+                                    <!-- :disabled="item.canLaunch === false || item.isDisabledCrowd" -->
+                                  {{ item.crowdName }}
                                 </el-checkbox>
                             </el-checkbox-group>
                             <span style="color: red">单次仅可投放一个包含行为标签的人群</span>
