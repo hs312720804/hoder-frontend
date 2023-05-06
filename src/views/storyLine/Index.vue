@@ -290,7 +290,17 @@
             :chartData="sceneChartData"
             :selectedScene="selectedScene"
             @selectServicer="changeViewAndSelectServicer"
+            @showRuleDetail="item => editClientRow = item"
           ></SceneMap>
+          <div>
+            <!-- {{ editClientRow }} -->
+            <showAllRule
+              :entry="editClientRow"
+              :conditionEnum="conditionEnum"
+              :soureceSignList="soureceSignList"
+            >
+            </showAllRule>
+          </div>
         </div>
       </template>
 
@@ -461,6 +471,7 @@ import OneDrop from './oneDrop/Index'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
 import SceneMap from './mapShow/sceneMap.vue'
+import showAllRule from '@/views/storyLine/com/showAllRule.vue'
 
 export default {
   components: {
@@ -469,7 +480,8 @@ export default {
     servicerDetail,
     MultiAdd,
     OneDrop,
-    SceneMap
+    SceneMap,
+    showAllRule
   },
 
   provide () {
@@ -479,6 +491,11 @@ export default {
   },
   data () {
     return {
+      conditionEnum: {
+        AND: '且',
+        OR: '或'
+      },
+      soureceSignList: [],
       getSceneFlowChartLoading: false,
       isShowSceneChartData: true,
       sceneChartData: {},
@@ -646,6 +663,10 @@ export default {
     // this.getSceneList()
 
     this.getPolicyList()
+
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
   },
   mounted () {
     window.addEventListener('visibilitychange', this.handleVisiable)

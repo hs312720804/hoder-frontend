@@ -23,13 +23,20 @@
             :info="item"
             :idPer="idPer"
             @selectServicer="id => $emit('selectServicer', id)"
+            @showRuleDetail="item => $emit('showRuleDetail', item)"
           ></servicerCom>
         </div>
       </div>
 
       <div v-else >
         <!-- {{ group.id }} -->
-        <servicerCom @selectServicer="id => $emit('selectServicer', id)" :info="group" :idPer="idPer"></servicerCom>
+        <servicerCom
+          :info="group"
+          :idPer="idPer"
+          @selectServicer="id => $emit('selectServicer', id)"
+          @showRuleDetail="item => $emit('showRuleDetail', item)"
+        >
+        </servicerCom>
       </div>
 
   </div>

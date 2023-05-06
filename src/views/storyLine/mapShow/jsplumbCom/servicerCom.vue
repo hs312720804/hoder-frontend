@@ -115,8 +115,10 @@ export default {
   methods: {
 
     openDetail (item) {
-      this.drawer = true
-      this.editClientRow = item
+      // this.drawer = true
+      // this.editClientRow = item
+      // console.log('item--->', item)
+      this.$emit('showRuleDetail', item)
       // alert(item.id)
     },
     getClass (type) {
