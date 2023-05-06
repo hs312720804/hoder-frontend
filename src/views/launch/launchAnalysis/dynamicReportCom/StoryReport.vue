@@ -276,16 +276,16 @@ export default {
       } else {
         params = { crowdId: this.crowdId }
       }
-      // this.$service.getContentDynamicCrowdReport(params).then(res => {
-      const res = crowdData
+      this.$service.getContentDynamicCrowdReport(params).then(res => {
+        // const res = crowdData
 
-      const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
-      // 表格
-      this.setTableData(getAllData)
-      // 图表
-      this.setChartData(res)
-      // })
+        // 表格
+        this.setTableData(getAllData)
+        // 图表
+        this.setChartData(res)
+      })
     },
     setChartData (res) {
       // 折线图数据
