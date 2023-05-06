@@ -76,7 +76,7 @@ export default {
         Endpoint: ['Dot', { radius: 2 }],
         // Endpoint: 'Blank',
         // 绘制连线
-        PaintStyle: { stroke: 'gray', strokeWidth: 2 },
+        PaintStyle: { stroke: '#1890ff80', strokeWidth: 1 },
         // EndpointStyle: { radius: 5, fill: 'gray' },
         // hover 上去的样式
         // HoverPaintStyle: { stroke: 'blue', strokeWidth: 2 },
@@ -134,17 +134,17 @@ export default {
         for (let i = 0; i < windows.length; i++) {
           _this.initNode(windows[i], j)
         }
-        // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
-
-        // 创建所有节点连接
-        this.createConnections(this.relations)
 
         // j.repaintEverything()
       })
+      // 获取节点的位置, 然后将元素设为绝对定位元素
+      this.adjust()
+      this.$nextTick(() => {
+        // 创建所有节点连接
+        this.createConnections(this.relations)
+      })
     })
-
-    // 获取节点的位置, 然后将元素设为绝对定位元素
-    this.adjust()
+    // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
 
     // 设置画布可拖拽，滚动放大缩小
     setMoveAndDrag('#wrap', '#canvas')
@@ -221,9 +221,10 @@ export default {
       const dom = document.getElementById(id)
       const poOffsetLeft = dom.offsetLeft
       const poOffsetTop = dom.offsetTop
+      const initialPosition = [30, 50] // 起点位置
       const obj = {
-        x: poOffsetLeft,
-        y: poOffsetTop
+        x: poOffsetLeft + initialPosition[0],
+        y: poOffsetTop + initialPosition[1]
       }
       // this.$set(this.positionObj, id, obj)
       this.positionObj[id] = obj
