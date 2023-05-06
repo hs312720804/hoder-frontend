@@ -65,6 +65,32 @@
         ></c-table>
       </div>
 
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <div id='a4' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
@@ -276,22 +302,25 @@ export default {
       } else {
         params = { crowdId: this.crowdId }
       }
-      this.$service.getContentDynamicCrowdReport(params).then(res => {
-        // const res = crowdData
+      // this.$service.getContentDynamicCrowdReport(params).then(res => {
+      const res = crowdData
 
-        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+      const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
-        // 表格
-        this.setTableData(getAllData)
-        // 图表
-        this.setChartData(res)
-      })
+      // 表格
+      this.setTableData(getAllData)
+      // 图表
+      this.setChartData(res)
+      // })
     },
     setChartData (res) {
-      // 折线图数据
+      // 柱状图数据
       const ctr = this.getChartData2(res.crowdIncomeDetail.data, 'ctr')
       const clickPlayRate = this.getChartData2(res.crowdIncomeDetail.data, 'clickPlayRate')
       const payRate = this.getChartData2(res.crowdIncomeDetail.data, 'payRate')
+      // 折线图数据
+      const everyDayDetailCtr = this.getChartData(res.everyDayDetail.data, 'ctr')
+      const everyDayDetailClickPlayRate = this.getChartData(res.everyDayDetail.data, 'clickPlayRate')
 
       // console.log('vipPlay---->', vipPlay)
       // console.log('vipPlayTrend---->', vipPlayTrend)
@@ -301,11 +330,14 @@ export default {
       this.allChartData = {
         ctr,
         clickPlayRate,
-        payRate
+        payRate,
+        everyDayDetailCtr,
+        everyDayDetailClickPlayRate
       }
 
       this.$nextTick(() => {
         this.drawChart(this.rowObj)
+        this.drawChart(this.rowObj2)
       })
     },
     formatData (res) {
@@ -368,7 +400,8 @@ export default {
         title: '',
         xunit: ''
       }
-      if (key === 'payRate' || key === 'ctr') { // 支付率/ctr，数据转为百分比
+      const seriesNameKey = 'dynamicName'
+      if (key === 'payRate' || key === 'ctr' || key === 'clickPlayRate') { // 支付率/ctr，数据转为百分比
         reObj.yunit = '%'
       }
       reObj.series = chartData.reduce((result, current, index) => {
@@ -376,12 +409,12 @@ export default {
         const oneDateData = current.data
         oneDateData.forEach(dayObj => {
           const valueNum = dayObj[key]
-          const flag = result.find(i => i.name === dayObj.planName)
+          const flag = result.find(i => i.name === dayObj[seriesNameKey])
           if (flag) {
             flag.value.push(valueNum)
           } else {
             result.push({
-              name: dayObj.planName,
+              name: dayObj[seriesNameKey],
               value: [valueNum]
             })
           }
@@ -562,7 +595,7 @@ export default {
             // let str = parmas[0].marker + parmas[0].name + '<br/>'
             let str = parmas[0].name + '<br/>'
             for (const item of parmas) {
-              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + '<br/>'
+              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
             }
             // return _this.cc_format_number(a.data)
             return str
@@ -1074,6 +1107,12 @@ export default {
           ctr: { type: 'bar', title: '分组内各子人群（接待员）CTR对比', span: 8 },
           clickPlayRate: { type: 'bar', title: '分组内各子人群（接待员）点击起播率对比', span: 8 },
           payRate: { type: 'bar', title: '分组内各子人群（接待员）起播付费率对比', span: 8 }
+        }
+      ],
+      rowObj2: [
+        {
+          everyDayDetailCtr: { type: 'line', title: '各分组每日CTR趋势', span: 12 },
+          everyDayDetailClickPlayRate: { type: 'line', title: '各分组每日点击起播率', span: 12 }
         }
       ],
       allCharts: {},

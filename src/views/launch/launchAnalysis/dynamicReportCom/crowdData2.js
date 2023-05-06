@@ -329,7 +329,154 @@ export const crowdData = {
     name: 'top10影片分析'
   },
   everyDayDetail: {
-    data: [],
+    data: [
+      {
+        date: '2023-01-14',
+        data: [
+          {
+            policyId: '1234',
+            dynamicRuleId: '111',
+            dynamicName: '测试数据111',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5200',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          },
+          {
+            policyId: '1234',
+            dynamicRuleId: '112',
+            dynamicName: '测试数据112',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5000',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          }
+        ]
+      },
+      {
+        date: '2023-01-15',
+        data: [
+          {
+            policyId: '1234',
+            dynamicRuleId: '111',
+            dynamicName: '测试数据111',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5200',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          },
+          {
+            policyId: '1234',
+            dynamicRuleId: '112',
+            dynamicName: '测试数据112',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5000',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          }
+        ]
+      },
+      {
+        date: '2023-01-16',
+        data: [
+          {
+            policyId: '1234',
+            dynamicRuleId: '111',
+            dynamicName: '测试数据111',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5200',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          },
+          {
+            policyId: '1234',
+            dynamicRuleId: '112',
+            dynamicName: '测试数据112',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5000',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          }
+        ]
+      },
+      {
+        date: '2023-01-17',
+        data: [
+          {
+            policyId: '1234',
+            dynamicRuleId: '111',
+            dynamicName: '测试数据111',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5200',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          },
+          {
+            policyId: '1234',
+            dynamicRuleId: '112',
+            dynamicName: '测试数据112',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5000',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          }
+        ]
+      },
+      {
+        date: '2023-01-18',
+        data: [
+          {
+            policyId: '1234',
+            dynamicRuleId: '111',
+            dynamicName: '测试数据111',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5200',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          },
+          {
+            policyId: '1234',
+            dynamicRuleId: '112',
+            dynamicName: '测试数据112',
+            dynamicType: '故事线',
+            dynamicHitRate: '0.3',
+            showUv: '5000',
+            ctr: '0.25269',
+            clickPlayRate: '0.506849',
+            playRate: '0.12807692',
+            payRate: '0.099099'
+          }
+        ]
+      }
+
+    ],
     name: '每日效果明细',
     title: '不流转方式,【202303】功能测试实验'
   },
