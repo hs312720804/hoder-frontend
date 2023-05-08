@@ -113,9 +113,9 @@ export default function setMoveAndDrag (parent, current) {
     // 禁止选中文字/图片
     document.addEventListener('selectstart', e => { e.preventDefault() })
     // 鼠标按下事件
-    oDiv.addEventListener('mousedown', mouseDown)
+    oBox.addEventListener('mousedown', mouseDown)
     // 图片缩放
-    oDiv.addEventListener('wheel', zoom)
+    oBox.addEventListener('wheel', zoom)
   }
 
   init()
