@@ -2,7 +2,8 @@
   <div id="wrap">
     <div class="top-wrap">
       <span class="scene-name">{{ selectedScene.sceneName }}</span>
-      创建人：{{ selectedScene.userName }}   创建时间：{{ selectedScene.createTime }}
+      创建人：{{ selectedScene.userName }}
+      &nbsp;&nbsp;&nbsp;&nbsp;创建时间：{{ selectedScene.createTime }}
     </div>
     <div class="legend-wrap">
       <div class="legend-wrap-title">图例</div>

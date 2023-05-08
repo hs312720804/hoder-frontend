@@ -1,5 +1,10 @@
 <template>
   <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
+
+    <!-- 绝对定位元素 -->
+    <div v-if="selectedScene.startTime" class="copied-servicer-tip" style="left: 0; color: #000">
+      投放有效期：{{ selectedScene.startTime }} ~ {{ selectedScene.endTime }}
+    </div>
     <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
     <!-- {{groupServicer}} -->
     <!-- <div style="color: red; position: absolute; z-index: 999">
