@@ -108,7 +108,7 @@
 
                         <!-- 场景的 planId 为 null, 才展示按钮 -->
                         <!-- :disabled="servicer.length === 0" -->
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse">
+                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
                           投放
                         </el-dropdown-item>
                         <el-dropdown-item :command="['freshCache',item]">
