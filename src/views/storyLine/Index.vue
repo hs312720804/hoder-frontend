@@ -292,10 +292,11 @@
             @selectServicer="changeViewAndSelectServicer"
             @showRuleDetail="item => editClientRow = item"
           ></SceneMap>
-          <div>
+          <div style="display: grid; grid-template-columns: 50px auto; margin-top: 0px;">
             <!-- {{ editClientRow }} -->
             {{ editClientRow.id }}
             <showAllRule
+              v-if="editClientRow.id"
               :entry="editClientRow"
               :conditionEnum="conditionEnum"
               :soureceSignList="soureceSignList"

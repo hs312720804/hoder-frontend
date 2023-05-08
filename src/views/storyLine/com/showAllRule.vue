@@ -5,6 +5,10 @@
     {{ entry.link === 'OR' ? '或' : '且' }}
     </span>
   </div>
+  <div
+    v-else-if="(entry.rulesJson && JSON.parse(entry.rulesJson).rules.length === 0) && (entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length === 0)">
+    暂无数据
+  </div>
   <!-- {{ conditionEnum }}
   {{ soureceSignList }} -->
   <!-- {{entry.rulesJson}} -->
