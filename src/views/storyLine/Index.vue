@@ -138,7 +138,7 @@
                       </el-dropdown-menu>
                     </el-dropdown>
                   </div>
-                  <div v-if="selectedScene.id === item.id && selectedScene.startTime" style="    font-size: 12px;padding: 0 8px 4px;color: #666;">
+                  <div v-if="selectedScene.id === item.id && selectedScene.startTime" style="font-size: 12px; padding: 0 10px 4px; color: #666;">
                     有效期：{{ selectedScene.startTime }}
                     <span style="margin-left: 39px"> ~{{ selectedScene.endTime }}</span>
                   </div>
