@@ -111,7 +111,7 @@ export default function setMoveAndDrag (parent, current) {
 
   const init = () => {
     // 禁止选中文字/图片
-    document.addEventListener('selectstart', e => { e.preventDefault() })
+    // document.addEventListener('selectstart', e => { e.preventDefault() })
     // 鼠标按下事件
     oBox.addEventListener('mousedown', mouseDown)
     // 图片缩放

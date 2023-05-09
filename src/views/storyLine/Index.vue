@@ -2,9 +2,6 @@
   <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
 
     <!-- 绝对定位元素 -->
-    <div v-if="selectedScene.startTime" class="copied-servicer-tip" style="left: 0; color: #000">
-      投放有效期：{{ selectedScene.startTime }} ~ {{ selectedScene.endTime }}
-    </div>
     <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
     <!-- {{groupServicer}} -->
     <!-- <div style="color: red; position: absolute; z-index: 999">
@@ -54,91 +51,97 @@
                   :key="item.id"
                   @click="selectScene(item.id)"
                   :class="{active: activeIndex === item.id, 'gray-row': item.putway === 2}"
-                  class="lists-item">
-                  <!-- <i class="icon el-icon-video-camera-solid"></i> -->
-                  <i class="icon el-icon-monitor"></i>
-                  <span class="item-content">
-                    {{ item.sceneName }}
-                  </span>
-                  <span class="item-index">{{ item.id }}</span>
-                  <span class="use-status-styl">
-                    <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
-                    <span v-else>未投放</span>
-                  </span>
-                  <el-dropdown
-                    trigger="hover"
-                    class="el-dropdown"
-                    :hide-on-click="false"
-                    placement="bottom"
-                    @command="handleSceneCommand"
-                    @visible-change="e => sceneVisibleChange(e, item.id)"
                   >
-                    <span class="el-dropdown-link">
-                      . . .
+                  <!-- <i class="icon el-icon-video-camera-solid"></i> -->
+                  <div class="lists-item">
+                    <i class="icon el-icon-monitor"></i>
+                    <span class="item-content">
+                      {{ item.sceneName }}
                     </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <div
-                        v-if="sceneDropDownLoading"
-                        v-loading="sceneDropDownLoading"
-                        element-loading-spinner="el-icon-loading"
-                        element-loading-background="rgba(0, 0, 0, 0.8)">
-                      </div>
-                      <!--
-                          sceneDropDownCanUse - 有权限
-                            - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
-                        -->
-                      <template v-else>
-                        <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!sceneDropDownCanUse">
-                          <el-popover placement="top" trigger="click" ref="pop" >
-                            <div slot="reference">重命名</div>
-                            <div style="display: flex">
-                              <el-input
-                                class="re-name-input"
-                                type="text"
-                                placeholder="请输入内容"
-                                v-model="rename"
-                                maxlength="50"
-                                show-word-limit
-                                clearable
-                                style="width: 250px"
-                              >
-                              </el-input>
+                    <span class="item-index">{{ item.id }}</span>
+                    <span class="use-status-styl">
+                      <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
+                      <span v-else>未投放</span>
+                    </span>
+                    <el-dropdown
+                      trigger="hover"
+                      class="el-dropdown"
+                      :hide-on-click="false"
+                      placement="bottom"
+                      @command="handleSceneCommand"
+                      @visible-change="e => sceneVisibleChange(e, item.id)"
+                    >
+                      <span class="el-dropdown-link">
+                        . . .
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <div
+                          v-if="sceneDropDownLoading"
+                          v-loading="sceneDropDownLoading"
+                          element-loading-spinner="el-icon-loading"
+                          element-loading-background="rgba(0, 0, 0, 0.8)">
+                        </div>
+                        <!--
+                            sceneDropDownCanUse - 有权限
+                              - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
+                          -->
+                        <template v-else>
+                          <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!sceneDropDownCanUse">
+                            <el-popover placement="top" trigger="click" ref="pop" >
+                              <div slot="reference">重命名</div>
+                              <div style="display: flex">
+                                <el-input
+                                  class="re-name-input"
+                                  type="text"
+                                  placeholder="请输入内容"
+                                  v-model="rename"
+                                  maxlength="50"
+                                  show-word-limit
+                                  clearable
+                                  style="width: 250px"
+                                >
+                                </el-input>
 
-                              <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                              <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
-                            </div>
-                          </el-popover>
+                                <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                                <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                              </div>
+                            </el-popover>
 
-                        </el-dropdown-item>
+                          </el-dropdown-item>
 
-                        <!-- 场景的 planId 为 null, 才展示按钮 -->
-                        <!-- :disabled="servicer.length === 0" -->
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
-                          投放
-                        </el-dropdown-item>
-                        <el-dropdown-item :command="['freshCache',item]">
-                          <span v-if="item.status === 1">未同步</span>
-                          <span v-if="item.status === 2">已同步</span>
-                        </el-dropdown-item>
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
-                          <!-- putway : 1 - 上架中； 2 - 下架中 -->
-                          {{ item.putway === 1 ? '下架' : '上架' }}
-                        </el-dropdown-item>
+                          <!-- 场景的 planId 为 null, 才展示按钮 -->
+                          <!-- :disabled="servicer.length === 0" -->
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
+                            投放
+                          </el-dropdown-item>
+                          <el-dropdown-item :command="['freshCache',item]">
+                            <span v-if="item.status === 1">未同步</span>
+                            <span v-if="item.status === 2">已同步</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
+                            <!-- putway : 1 - 上架中； 2 - 下架中 -->
+                            {{ item.putway === 1 ? '下架' : '上架' }}
+                          </el-dropdown-item>
 
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
-                          删除
-                        </el-dropdown-item>
-                        <el-dropdown-item v-if="item.planId" :command="['report',item]">
-                        <!-- <el-dropdown-item :command="['report',item]"> -->
-                          投放报告
-                        </el-dropdown-item>
-                        <el-dropdown-item :command="['detail',item]">
-                          查看配置
-                        </el-dropdown-item>
-                      </template>
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
+                            删除
+                          </el-dropdown-item>
+                          <el-dropdown-item v-if="item.planId" :command="['report',item]">
+                          <!-- <el-dropdown-item :command="['report',item]"> -->
+                            投放报告
+                          </el-dropdown-item>
+                          <el-dropdown-item :command="['detail',item]">
+                            查看配置
+                          </el-dropdown-item>
+                        </template>
 
-                    </el-dropdown-menu>
-                  </el-dropdown>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
+                  <div v-if="selectedScene.id === item.id && selectedScene.startTime" style="    font-size: 12px;padding: 0 8px 4px;color: #666;">
+                    有效期：{{ selectedScene.startTime }} ~
+                    <span style="margin-left: 48px">{{ selectedScene.endTime }}</span>
+                  </div>
                 </div>
               </el-scrollbar>
             </div>
