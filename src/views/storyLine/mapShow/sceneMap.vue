@@ -144,19 +144,5 @@ export default {
 </script>
 <style lang="stylus" scoped>
 @import './jsplumbCom/style.styl'
-.operate-wrap {
-  font-size: 35px;
-  position: absolute;
-  font-weight: 800;
-  bottom: 77px;
-  right: 37px;
-  display: flex;
-  flex-direction: column;row-gap: 20px;
-  padding: 10px;
-  border-radius: 2px;
-  color #666
-  & i:hover {
-    background: #f3f3f3;
-  }
-}
+
 </style>
