@@ -3,7 +3,30 @@ import Vue from 'vue'
 export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', yunit = '') {
   const vm = new Vue()
   const colorList = ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc']
-
+  const seriesData = yData.map(item => {
+    return {
+      ...item,
+      label: {
+        show: true,
+        // rotate: 90,
+        position: item.xAxisIndex === 1 ? 'bottom' : 'top',
+        formatter: function (data) {
+          console.log('value----->', item)
+          // ${data.seriesName}
+          if (item.xAxisIndex === 1) {
+            return `${vm.cc_format_number(Number(data.value * 100).toFixed(2))}%`
+          } else {
+            return `${vm.cc_format_number(data.value)}`
+          }
+        },
+        color: '#000'
+      }
+    }
+  })
+  // 图例
+  const legendData = yData.map((key) => {
+    return key.name
+  })
   const defaultYAxisOption = {
     width: '50px',
     triggerEvent: true,
@@ -27,51 +50,52 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
   }
   const options = {
     color: colorList,
-    // tooltip: {
-    //   trigger: 'axis',
-    //   axisPointer: {
-    //     animation: false
-    //   }
-    // },
     tooltip: {
-      // trigger: 'item',
+      show: false,
       trigger: 'axis',
-      formatter: function (parmas) {
-        console.log('parmas--->', parmas)
-        // let str = parmas[0].marker + parmas[0].name + '<br/>'
-        let str = parmas[0].name + '<br/>'
-
-        // if (item.axisIndex === 1) {
-        //   str = str + '购买金额' + '<br/>'
-        // } else {
-
-        // }
-        // str = str + '购买用户占比' + '<br/>'
-        parmas.forEach((item, index) => {
-          if (item.axisIndex === 0) {
-            if (index === 0) {
-              str = str + '<br/>' + title1 + '<br/>'
-            }
-            str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(item.value) + '<br/>'
-            console.log('parmas[index + 1].axisIndex--->', parmas[index + 1])
-            if (parmas[index + 1] && parmas[index + 1].axisIndex === 1) {
-              str = str + '<br/>' + title2 + '<br/>'
-            }
-          } else {
-            // if (item.axisIndex === 1) {
-            //   str = '<br/>' + str + '购买用户占比' + '<br/>'
-            // }
-            str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(Number(item.value * 100).toFixed(2)) + '%' + '<br/>'
-          }
-        })
-        // for (const item of parmas) {
-        // }
-        return str
+      axisPointer: {
+        animation: false
       }
     },
-    // legend: {
-    //   data: ['入职', '离职']
+    // tooltip: {
+    //   // trigger: 'item',
+    //   trigger: 'axis',
+    //   formatter: function (parmas) {
+    //     console.log('parmas--->', parmas)
+    //     // let str = parmas[0].marker + parmas[0].name + '<br/>'
+    //     let str = parmas[0].name + '<br/>'
+
+    //     // if (item.axisIndex === 1) {
+    //     //   str = str + '购买金额' + '<br/>'
+    //     // } else {
+
+    //     // }
+    //     // str = str + '购买用户占比' + '<br/>'
+    //     parmas.forEach((item, index) => {
+    //       if (item.axisIndex === 0) {
+    //         if (index === 0) {
+    //           str = str + '<br/>' + title1 + '<br/>'
+    //         }
+    //         str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(item.value) + '<br/>'
+    //         // console.log('parmas[index + 1].axisIndex--->', parmas[index + 1])
+    //         if (parmas[index + 1] && parmas[index + 1].axisIndex === 1) {
+    //           str = str + '<br/>' + title2 + '<br/>'
+    //         }
+    //       } else {
+    //         // if (item.axisIndex === 1) {
+    //         //   str = '<br/>' + str + '购买用户占比' + '<br/>'
+    //         // }
+    //         str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(Number(item.value * 100).toFixed(2)) + '%' + '<br/>'
+    //       }
+    //     })
+    //     // for (const item of parmas) {
+    //     // }
+    //     return str
+    //   }
     // },
+    legend: {
+      data: legendData
+    },
     axisPointer: {
       link: { xAxisIndex: 'all' }
     },
@@ -114,7 +138,7 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
         ...defaultYAxisOption
       }
     ],
-    series: yData
+    series: seriesData
     //  [
     //   {
     //     name: '入职',
