@@ -202,62 +202,62 @@ export default {
       this.$emit('selectServicer', servicerId)
     },
     // 重构成图表所需数据格式
-    reconstructData  (data) {
-      console.log('aaaaaa=======', data)
-      // --------------构造所需数据结构--------------------
-      const nodes = []
-      const edges = []
+    // reconstructData  (data) {
+    //   console.log('aaaaaa=======', data)
+    //   // --------------构造所需数据结构--------------------
+    //   const nodes = []
+    //   const edges = []
 
-      // -- 真实数据 --
-      // let len = data.length
-      // data.map((item, index) => {
-      //   nodes.push({
-      //     id: index + 1,
-      //     crowdId: item.crowdId,
-      //     label: item.crowdName,
-      //     cluster: len--,
-      //     date: item.hitDate
-      //   })
-      // })
-      // --真实数据 end--
+    //   // -- 真实数据 --
+    //   // let len = data.length
+    //   // data.map((item, index) => {
+    //   //   nodes.push({
+    //   //     id: index + 1,
+    //   //     crowdId: item.crowdId,
+    //   //     label: item.crowdName,
+    //   //     cluster: len--,
+    //   //     date: item.hitDate
+    //   //   })
+    //   // })
+    //   // --真实数据 end--
 
-      // -- 模拟数据 --
-      let num = this.len
-      for (let i = 1; i < this.len; i++) {
-        const obj = {
-          id: i,
-          // label: '【双旦测试】爱奇艺所有用户',
-          cluster: num--,
-          date: '2022-05-16 16:35:30'
+    //   // -- 模拟数据 --
+    //   let num = this.len
+    //   for (let i = 1; i < this.len; i++) {
+    //     const obj = {
+    //       id: i,
+    //       // label: '【双旦测试】爱奇艺所有用户',
+    //       cluster: num--,
+    //       date: '2022-05-16 16:35:30'
 
-        }
-        if (i === 1) {
-          obj.style = {
-            fill: 'gary'
-          }
-        }
-        nodes.push(obj)
-      }
-      // --模拟数据 end--
-      console.log('节点============', nodes)
+    //     }
+    //     if (i === 1) {
+    //       obj.style = {
+    //         fill: 'gary'
+    //       }
+    //     }
+    //     nodes.push(obj)
+    //   }
+    //   // --模拟数据 end--
+    //   console.log('节点============', nodes)
 
-      nodes.reduce((current, item) => {
-        edges.push({
-          source: current.id.toString(),
-          target: item.id.toString()
-        })
-        return item
-      }, nodes[0])
+    //   nodes.reduce((current, item) => {
+    //     edges.push({
+    //       source: current.id.toString(),
+    //       target: item.id.toString()
+    //     })
+    //     return item
+    //   }, nodes[0])
 
-      edges.shift()
-      console.log('箭头============', edges)
+    //   edges.shift()
+    //   console.log('箭头============', edges)
 
-      return {
-        nodes,
-        edges
-      }
-      // -------------- 构造所需数据结构- end-------------------
-    },
+    //   return {
+    //     nodes,
+    //     edges
+    //   }
+    //   // -------------- 构造所需数据结构- end-------------------
+    // },
     // 渲染 或者 清空图表
     readOrClearData () {
       // 清空图表
@@ -269,15 +269,24 @@ export default {
       // 渲染图表
       // const data = this.reconstructData(this.list)
       const cloneData = JSON.parse(JSON.stringify(this.chartData))
-      cloneData.nodes && cloneData.nodes.forEach(item => {
-        if (item.id == this.selectedServicerId) {
-          item.style = {
-            stroke: '#000',
-            fill: '#999'
+      if (cloneData.nodes) {
+        const nodes = cloneData.nodes.map(item => {
+          return {
+            receptionist: item.receptionist,
+            id: item.id
           }
-        }
-      })
-      console.log('this.chartData=-===============>', this.chartData)
+        })
+        cloneData.nodes = nodes
+        cloneData.nodes.forEach(item => {
+          if (item.id == this.selectedServicerId) {
+            item.style = {
+              stroke: '#000',
+              fill: '#999'
+            }
+          }
+        })
+      }
+      console.log('this.chartData=-===============>', cloneData)
       const data = cloneData
 
       if (data && data.nodes.length > 0) {
