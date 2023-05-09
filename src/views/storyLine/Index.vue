@@ -29,8 +29,8 @@
                 type="text"
                 style="position: absolute; right: 14px; top: 6px;"
                 size="mini"
-                @click="changeView">
-                流转视图
+                @click="changeView"
+                v-text="viewType ? '流转视图': '列表视图'">
               </el-button>
             </div>
 

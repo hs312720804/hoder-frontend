@@ -1170,6 +1170,7 @@ export default {
     openShowDetailName () {
       this.isShowDetailName = !this.isShowDetailName
     },
+    // 编辑复用服务终止条件
     reuseExportRule () {
       // this.editExportRow = row
       // if (this.isCopiedServicer) {
@@ -1187,6 +1188,8 @@ export default {
       this.$service.updateExport(parmas).then(res => {
         // 刷新列表
         this.$emit('updataExportList')
+        // 流转关系图
+        this.getFlowChart()
         this.reuseExportDialogVisible = false
       })
     },
@@ -1539,6 +1542,7 @@ export default {
         this.fetchAddOrEdit2(data)
       })
     },
+    // 新增、编辑出口条件
     fetchAddOrEdit2 (data) {
       const dialogRef = this.$refs.exportClientDialog
 
@@ -1575,6 +1579,8 @@ export default {
       this.$service.addExport(params, '添加成功').then(res => {
         // 刷新列表
         this.$emit('updataExportList')
+        // 刷新流转关系图
+        this.getFlowChart()
         // this.getExportListByReceptionistId()
         this.exportDialogVisible = false
       })
@@ -1652,6 +1658,8 @@ export default {
         this.$service.addExport({ ...row, delFlag: 2 }, '删除成功').then(res => {
           // 刷新列表
           this.$emit('updataExportList')
+          // 刷新流转关系图
+          this.getFlowChart()
           // this.getExportListByReceptionistId()
         })
       }).catch(() => {
