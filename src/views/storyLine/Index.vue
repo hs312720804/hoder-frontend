@@ -720,6 +720,8 @@ export default {
     },
     changeView () {
       this.viewType = !this.viewType
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
       this.getSceneFlowChart()
     },
     getSceneFlowChart () {
@@ -1194,7 +1196,7 @@ export default {
 
         this.getServiceList('list', selectServicerId)
 
-        // 查看拓扑图
+        // 查看拓扑图, 卸载页面，获取数据后重新加载
         this.isShowSceneChartData = false
         this.getSceneFlowChart()
       } else {
