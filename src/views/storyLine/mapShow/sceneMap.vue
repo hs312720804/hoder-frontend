@@ -48,12 +48,17 @@
     >
     </JsplumbCom>
     <el-empty v-else description="暂无数据，请先创建接待员"></el-empty>
+    <div class="operate-wrap">
+      <i class="el-icon-plus" @click="zoomDom('add')"></i>
+      <i class="el-icon-minus" @click="zoomDom('cut')"></i>
+    </div>
   </div>
 </template>
 <script>
 import { jsPlumb } from 'jsplumb'
 
 import JsplumbCom from './jsplumbCom/Index.vue'
+import { zoom } from './jsplumbCom/setMoveAndDrag'
 
 export default {
   name: 'crowdCirculationTrack',
@@ -127,11 +132,31 @@ export default {
       // 可拖动
       j.draggable(jsPlumb.getSelector('.legend-wrap'))
     })
+  },
+  methods: {
+    zoomDom (type) {
+      // 设置画布可拖拽，滚动放大缩小
+      zoom('#wrap', '#canvas', type)
+    }
   }
 
 }
 </script>
 <style lang="stylus" scoped>
 @import './jsplumbCom/style.styl'
-
+.operate-wrap {
+  font-size: 35px;
+  position: absolute;
+  font-weight: 800;
+  bottom: 77px;
+  right: 37px;
+  display: flex;
+  flex-direction: column;row-gap: 20px;
+  padding: 10px;
+  border-radius: 2px;
+  color #666
+  & i:hover {
+    background: #f3f3f3;
+  }
+}
 </style>
