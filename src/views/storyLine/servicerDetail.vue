@@ -576,6 +576,7 @@
                       <ShowRule
                         :rulesJson="JSON.parse(exportItem.rulesJson)"
                         :soureceSignList="soureceSignList"
+                        :conditionEnum="conditionEnum"
                       >
                       </ShowRule>
                       <!-- <div

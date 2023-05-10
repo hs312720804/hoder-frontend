@@ -157,7 +157,6 @@ export default {
   methods: {
     // 上一步
     backStep () {
-      debugger
       switch (this.activeStep) {
         // 当前为第 2 步
         case 1:

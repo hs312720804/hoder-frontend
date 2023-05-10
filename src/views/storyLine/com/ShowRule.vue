@@ -1,7 +1,7 @@
 <template>
 <div>
   <div v-for="(item, index) in rulesJson.rules" :key="index" class="rule-detail">
-    <div v-if="index > 0" class="label-or-space">{{ conditionEnum[JrulesJson.condition] }}</div>
+    <div v-if="index > 0" class="label-or-space">{{ conditionEnum[rulesJson.condition] }}</div>
     <div class="label-ground">(
       <div v-for="(childItem, childItemIndex) in item.rules" :key="childItem.tagId + childItemIndex" class="label-item">
         <!-- {{childItem}} -->
