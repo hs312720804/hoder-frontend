@@ -52,11 +52,18 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
     color: colorList,
     tooltip: {
       show: false,
+      // trigger: 'axis',
+      // axisPointer: {
+      //   animation: false
+      // }
       trigger: 'axis',
       axisPointer: {
-        animation: false
+        type: 'cross'
       }
     },
+    // axisTick: {
+    //   inside: true
+    // },
     // tooltip: {
     //   // trigger: 'item',
     //   trigger: 'axis',
