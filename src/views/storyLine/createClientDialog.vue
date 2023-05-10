@@ -833,114 +833,124 @@ export default {
     reviewEditData () {
       // 编辑数据
       const policyData = this.editRow
-
       this.totalLink = policyData.link // 总运算符
       if (this.type === 'entry') { // 入口
-        this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
-          this.tagList = data || []
-          this.sortTag()
-        })
+        if (policyData.id) {
+          this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else {
+          this.sortTag() // 初始化所选标签
+          if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
+        }
       } else { // 出口
         this.form.stopType = policyData.stopType
         this.form.nextId = policyData.nextId
-
-        this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
-          this.tagList = data || []
-          this.sortTag()
-        })
+        if (policyData.id) {
+          this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else {
+          this.sortTag() // 初始化所选标签
+          if (this.defaultData) { this.setDefaultData() } // 设置初始默认数据, 【批量创建】会用到
+        }
       }
 
-      const ruleJsonData = JSON.parse(policyData.rulesJson)
       let cacheIds = []
-      const cacheActionIds = []
-      const cacheSpecialIds = []
-      ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
-        itemParent.rules.forEach(item => {
-          // 行为标签
-          if (item.dataSource === 8) {
-            cacheActionIds.push(item.tagCode)
-          } else if (item.tagType === 'string' || item.tagType === 'collect') {
-            cacheIds.push(item.tagId)
-          }
-          if (item.tagType === 'mix') {
-            cacheSpecialIds.push({
-              tagId: item.tagId,
-              tagCode: item.tagCode,
-              provinceValue: item.provinceValue
-            })
-          }
-          if (item.tagType === 'string' && item.value === 'nil') {
-            item.operator = 'null'
-          }
-          // 多选的值，回显的时候需要转成数组 2222
-          if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
-            item.value = item.value === '' ? [] : item.value.split(',')
-          }
-          if (item.version === 0) {
-            if (item.tagType === 'time' && item.isDynamicTime === 3) {
-              const value = item.value.split('-')
-              this.$set(item, 'startDay', value[0])
-              this.$set(item, 'endDay', value[1])
-            } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
-              this.$set(item, 'dateAreaType', '')
-              this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
-            }
-          }
-        })
-        return itemParent
-      })
-
-      this.rulesJson = ruleJsonData
-
-      this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
-
-      this.flowCondition = policyData.flowCondition ? JSON.parse(policyData.flowCondition) : { condition: 'OR', rules: [] }
-
       const defaultChild = [
         { name: '', value: '', filed: '', operator: '=', type: 'string', child: [] }
       ]
-
-      this.behaviorRulesJson.rules.forEach(ruleItem => {
-        ruleItem.rules.forEach(rulesEachItem => {
-          // 多选的值，回显的时候需要转成数组
-          if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
-            rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
-          }
-          // 手动构建数据 一期数据格式兼容二期
-          if (this.versionNum === 0) {
-            if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
-              const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
-              rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
-              rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
-              rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
-            } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
-              rulesEachItem.bav.behaviorValue.forEach(rule => {
-                const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
-                rule.child = JSON.parse(JSON.stringify(defaultChild))
-                rule.child[0].child = ruleCopy.child
-                rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
+      const cacheActionIds = []
+      const cacheSpecialIds = []
+      if (policyData.rulesJson) {
+        const ruleJsonData = JSON.parse(policyData.rulesJson)
+        ruleJsonData.rules = ruleJsonData.rules.map(itemParent => {
+          itemParent.rules.forEach(item => {
+            // 行为标签
+            if (item.dataSource === 8) {
+              cacheActionIds.push(item.tagCode)
+            } else if (item.tagType === 'string' || item.tagType === 'collect') {
+              cacheIds.push(item.tagId)
+            }
+            if (item.tagType === 'mix') {
+              cacheSpecialIds.push({
+                tagId: item.tagId,
+                tagCode: item.tagCode,
+                provinceValue: item.provinceValue
               })
-            } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
-              const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
-              if (matchIndex > -1) {
-                rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
-                rulesEachItem.bav.behaviorValue.forEach(rule => {
-                  if (rule.value === '产品页') {
-                    rule.value = '影视收银台'
-                    rule.name = '影视收银台'
-                  }
-                })
+            }
+            if (item.tagType === 'string' && item.value === 'nil') {
+              item.operator = 'null'
+            }
+            // 多选的值，回显的时候需要转成数组 2222
+            if (item.tagType === 'string' && item.operator !== 'null' && typeof (item.value) === 'string') {
+              item.value = item.value === '' ? [] : item.value.split(',')
+            }
+            if (item.version === 0) {
+              if (item.tagType === 'time' && item.isDynamicTime === 3) {
+                const value = item.value.split('-')
+                this.$set(item, 'startDay', value[0])
+                this.$set(item, 'endDay', value[1])
+              } else if (item.tagType === 'time' && item.isDynamicTime !== 3) {
+                this.$set(item, 'dateAreaType', '')
+                this.$set(item, 'dynamicTimeType', parseInt(item.dynamicTimeType))
               }
             }
-          }
-
-          if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
-            if (rulesEachItem.tagCode === 'BAV0011') {
-              rulesEachItem.isOldversion = true // 是否是旧版本
-            }
-          }
+          })
+          return itemParent
         })
-      })
+
+        this.rulesJson = ruleJsonData
+      }
+
+      if (policyData.behaviorRulesJson) {
+        this.behaviorRulesJson = JSON.parse(policyData.behaviorRulesJson)
+        this.behaviorRulesJson.rules.forEach(ruleItem => {
+          ruleItem.rules.forEach(rulesEachItem => {
+          // 多选的值，回显的时候需要转成数组
+            if (rulesEachItem.tagType === 'string' && rulesEachItem.operator !== 'null' && typeof (rulesEachItem.value) === 'string') {
+              rulesEachItem.value = rulesEachItem.value === '' ? [] : rulesEachItem.value.split(',')
+            }
+            // 手动构建数据 一期数据格式兼容二期
+            if (this.versionNum === 0) {
+              if (rulesEachItem.tagCode === 'BAV0001' || rulesEachItem.tagCode === 'BAV0003' || rulesEachItem.tagCode === 'BAV0004' || rulesEachItem.tagCode === 'BAV0006') { // 会员状态、购买行为、模块活跃、功能使用 添加第一级）
+                const ruleCopy = JSON.parse(JSON.stringify(rulesEachItem.bav)) // 原始数据
+                rulesEachItem.bav.behaviorValue = JSON.parse(JSON.stringify(defaultChild))
+                rulesEachItem.bav.behaviorValue[0].child = ruleCopy.behaviorValue
+                rulesEachItem.bav.behaviorValue[0].childCheckedVal = ruleCopy.value
+              } else if (rulesEachItem.tagCode === 'BAV0002') { // 应用活跃
+                rulesEachItem.bav.behaviorValue.forEach(rule => {
+                  const ruleCopy = JSON.parse(JSON.stringify(rule)) // 原始数据
+                  rule.child = JSON.parse(JSON.stringify(defaultChild))
+                  rule.child[0].child = ruleCopy.child
+                  rule.child[0].childCheckedVal = ruleCopy.childCheckedVal
+                })
+              } else if (rulesEachItem.tagCode === 'BAV0005') { // 页面活跃 第一级选项 产品包收银台 -> 影视收银台
+                const matchIndex = rulesEachItem.bav.value.findIndex(item => item === '产品页')
+                if (matchIndex > -1) {
+                  rulesEachItem.bav.value.splice(matchIndex, 1, '影视收银台')
+                  rulesEachItem.bav.behaviorValue.forEach(rule => {
+                    if (rule.value === '产品页') {
+                      rule.value = '影视收银台'
+                      rule.name = '影视收银台'
+                    }
+                  })
+                }
+              }
+            }
+
+            if (this.versionNum < 2) { // 【起播活跃】 三期兼容前面几期的
+              if (rulesEachItem.tagCode === 'BAV0011') {
+                rulesEachItem.isOldversion = true // 是否是旧版本
+              }
+            }
+          })
+        })
+      }
+
+      this.flowCondition = policyData.flowCondition ? JSON.parse(policyData.flowCondition) : { condition: 'OR', rules: [] }
 
       if (policyData.dynamicPolicyJson) {
         this.dynamicPolicyJson = JSON.parse(policyData.dynamicPolicyJson)

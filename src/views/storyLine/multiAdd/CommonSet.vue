@@ -52,8 +52,9 @@
                     ref="createClientDialogRef"
                     :options="options"
                     :defaultData="defaultData"
-                    :editRow="item.id ? item : undefined"
+                    :editRow="item"
                   >
+                    <!-- :editRow="item.id ? item : undefined" -->
                   </createClientDialog>
                 </template>
 
@@ -61,8 +62,9 @@
                   <createClientDialog
                     ref="createClientDialogRef"
                     :options="options"
-                    :editRow="item.id ? item : undefined"
+                    :editRow="item"
                   >
+                    <!-- :editRow="item.id ? item : undefined" -->
                   </createClientDialog>
                   <i class="el-icon-delete" @click="deleteEntry(index)"></i>
                 </template>
@@ -85,12 +87,12 @@
                   type="export"
                   :servicerListFilterSelect="servicerListFilterSelect"
                   :options="options"
-                  :editRow="item.id ? item : undefined"
+                  :editRow="item"
                 ></createClientDialog>
                 <i class="el-icon-delete" @click="deleteExport(index)"></i>
               </div>
             </template>
-
+            <!-- :editRow="item.id ? item : undefined" -->
           </div>
 
           <div class="box-fotter addRule">
@@ -282,10 +284,6 @@ export default {
     // 维度列表
     this.getBatchUptm()
 
-    // 初始化，默认展示一条入口条件 和 一条出口条件
-    this.createClient()
-    this.createExport()
-
     // 一键投放的
     if (this.sceneId) {
       const parmas = {
@@ -293,21 +291,28 @@ export default {
       }
       // 获取统一属性详情, 初始化
       this.$service.batchSetLast(parmas).then(res => {
-        const detail = res
-        const resource = detail.tagId.split(',').map(item => Number(item))
-        this.ruleForm = {
-          type: ['影视模型'],
-          resource, // 维度
-          prependName: detail.namePre,
-          appendName: detail.nameSuf
+        if (res) {
+          const detail = res
+          const resource = detail.tagId.split(',').map(item => Number(item))
+          this.ruleForm = {
+            type: ['影视模型'],
+            resource, // 维度
+            prependName: detail.namePre,
+            appendName: detail.nameSuf
+          }
+
+          this.entryList = detail.entry
+          this.exportList = detail.export
+        } else {
+          // 初始化，默认展示一条入口条件 和 一条出口条件
+          this.createClient()
+          this.createExport()
         }
-
-        this.entryList = detail.entry
-        this.exportList = detail.export
-
-        console.log('this.entryList===>', this.entryList)
-        console.log('this.exportList===>', this.exportList)
       })
+    } else {
+      // 初始化，默认展示一条入口条件 和 一条出口条件
+      this.createClient()
+      this.createExport()
     }
   }
 }
