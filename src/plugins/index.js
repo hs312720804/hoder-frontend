@@ -1,4 +1,7 @@
 import Vue from 'vue'
+import { TimePicker } from 'ant-design-vue'
+// import 'ant-design-vue/dist/antd.css'
+import 'ant-design-vue/lib/time-picker/style/css'
 
 import ElementUI from 'element-ui'
 import 'element-ui/lib/theme-chalk/index.css'
@@ -14,8 +17,6 @@ import moment from 'moment'
 import VCharts from 'v-charts'
 import VueI18n from 'vue-i18n'
 // import Antd from 'ant-design-vue'
-import { TimePicker } from 'ant-design-vue'
-import 'ant-design-vue/dist/antd.css'
 Vue.$httpRequestList = new Map() // 在 main.js文件中挂载：请求中的接口
 
 Vue.use(VueI18n)
