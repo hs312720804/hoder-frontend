@@ -12,13 +12,14 @@
     "prepare": "husky install"
   },
   "dependencies": {
-    "@antv/g6": "^3.2.10",
+    "@antv/g6": "3.2.10",
     "@antv/x6": "^1.18.1",
     "@ccms/cms-engine": "^0.1.7",
     "@ccprivate/admin-toolkit": "^1.2.9",
     "@stateform/element": "^0.1.14",
     "@tinymce/tinymce-vue": "^2.1.0",
     "@william17/vue-app-state": "^0.1.1",
+    "ant-design-vue": "^1.7.6",
     "async-validate": "^1.0.1",
     "axios": "^0.19.2",
     "echarts": "^4.9.0",

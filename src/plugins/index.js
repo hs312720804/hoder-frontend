@@ -13,7 +13,8 @@ import pagination from './../components/pagination.vue'
 import moment from 'moment'
 import VCharts from 'v-charts'
 import VueI18n from 'vue-i18n'
-
+import Antd from 'ant-design-vue'
+import 'ant-design-vue/dist/antd.css'
 Vue.$httpRequestList = new Map() // 在 main.js文件中挂载：请求中的接口
 
 Vue.use(VueI18n)
@@ -21,6 +22,8 @@ Vue.use(VCharts)
 Vue.use(AdminToolkit)
 Vue.use(ElementUI, { size: 'small', zIndex: 3000 })
 Vue.use(AppState)
+Vue.use(Antd)
+
 // Vue.component('GateSchemaForm', GateSchemaForm)
 Vue.component('pagination', pagination)
 Vue.prototype.$moment = moment

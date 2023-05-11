@@ -1571,7 +1571,7 @@
       <el-form :model="hitForm" :rules="hitRules" ref="hitForm" :inline="true">
         <el-form-item label="监控时间：" prop="alertTime">
           <el-date-picker
-            style="width: 130px"
+            style="width: 135px"
             v-model="hitForm.alertTime"
             type="date"
             placeholder="选择日期"
@@ -1582,7 +1582,7 @@
 
           <!-- {{hitForm.alertTime}} - {{value}} -->
 
-          <el-time-select
+          <!-- <el-time-select
             v-model="alertTimeValue"
             :picker-options="{
               start: '00:00',
@@ -1592,7 +1592,17 @@
             placeholder="选择时间"
             style="width: 115px"
           >
-          </el-time-select>
+          </el-time-select> -->
+          <a-time-picker
+            style="width: 105px"
+            v-model="alertTimeValue"
+            format="HH:mm"
+            valueFormat="HH:mm"
+            placeholder="选择时间"
+            :getPopupContainer="(triggerNode) => triggerNode.parentNode"
+            :minute-step="15"
+            @change="onChange">
+          </a-time-picker>
         </el-form-item>
 
         <el-form-item label="如果命中设备量(去重)：" prop="compareType">
@@ -2086,6 +2096,10 @@ export default {
     // }
   },
   methods: {
+    onChange (time) {
+      console.log(time)
+      this.alertTimeValue = time
+    },
     handleDeleteHitAlert ({ row }) {
       console.log('row--->', row)
       const params = { id: row.id }
@@ -4591,5 +4605,8 @@ fieldset>div
 }
 ::v-deep .green {
   color: #67C23A
+}
+::v-deep .ant-time-picker-panel-combobox {
+  display: flex !important
 }
 </style>
