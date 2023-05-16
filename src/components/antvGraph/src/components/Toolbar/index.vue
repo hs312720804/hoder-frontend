@@ -160,7 +160,6 @@ export default {
           height: height - 20
         })
       } else {
-        // alert(1)
         // this.graph.updateLayout({
         //   // type: 'grid' // 设置布局算法为 force
         //   type: 'fruchterman',

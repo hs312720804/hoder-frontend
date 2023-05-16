@@ -51,14 +51,24 @@
       <div class="header-right">
         <!-- form search -->
         <div class="search-input">
-          <el-input
+          <!-- <el-input
                   v-model="searchForm.crowdName"
                   style="width: 350px"
                   placeholder="请输入人群名称"
                   :clearable='true'
                   @keyup.enter.native="handleSearch"
           ></el-input>
-          <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
+
+          <el-input
+            v-model="searchForm.crowdName"
+            style="width: 350px"
+            placeholder="请输入人群名称"
+            :clearable='true'
+            @keyup.enter.native="handleSearch"
+          >
+            <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+          </el-input>
         </div>
         <!-- 普通人群 - 新增 -->
         <div v-if="smart">
@@ -203,9 +213,9 @@
                   <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
                   >看主页数据</el-dropdown-item> -->
-                  <!-- <el-dropdown-item
+                  <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item> -->
+                  >预约投后分析</el-dropdown-item>
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -368,9 +378,9 @@
                   <!-- <el-dropdown-item
                           :command="['homepageData',scope.row]"
                   >看主页数据</el-dropdown-item> -->
-                  <!-- <el-dropdown-item
+                  <el-dropdown-item
                           :command="['appointment',scope.row]"
-                  >预约投后分析</el-dropdown-item> -->
+                  >预约投后分析</el-dropdown-item>
                   <!--<el-dropdown-item-->
                   <!--:command="['redirectCrowd',scope.row]"-->
                   <!--&gt;重定向数据</el-dropdown-item>-->
@@ -437,12 +447,12 @@
       @sort-change="handleSortChange"
     >
       <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
-      <el-table-column v-if="showByPassColumn" label="分流占比">
+      <el-table-column v-if="showByPassColumn" label="分流占比" width="120px">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
           <div v-if="scope.row.bypassName !== '未分组'">
-            <div>分流id:{{scope.row.bypassId}}</div>
-            <div>{{scope.row.ratio}}%</div>
+            <div>分流id：{{ scope.row.bypassId }}</div>
+            <div>占比：{{ scope.row.ratio }}%</div>
             <div>
               <el-button type="text" @click="handleEditBypass">编辑</el-button>
               <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
@@ -704,9 +714,9 @@
                 <!-- <el-dropdown-item
                   :command="['homepageData',scope.row]"
                 >看主页数据</el-dropdown-item> -->
-                <!-- <el-dropdown-item
+                <el-dropdown-item
                   :command="['appointment',scope.row]"
-                >预约投后分析</el-dropdown-item> -->
+                >预约投后分析</el-dropdown-item>
 
                 <!-- 动态人群才展示 -->
                 <el-dropdown-item
@@ -753,6 +763,16 @@
               @click="handleOpenTestDialog(scope.row)"
             >投前测试
             </el-button> -->
+
+            <!-- 投放后的人群才可选择“命中监控”，否则为灰色 -->
+            <el-button
+              :disabled="!scope.row.launchTime"
+              size="small"
+              type="text"
+              @click="hitMonitoring(scope.row)">
+              命中监控
+            </el-button>
+
             <el-dropdown @command="handleCommandOpreate">
               <el-button size="small" type="text">
                 更多
@@ -1152,8 +1172,8 @@
             <el-table-column label="操作" width="300">
                 <template slot-scope="scope">
                     <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
-                    <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button>
-                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
+                    <!-- <el-button type="text" @click="handleSeeHomepageData(scope.row.crowdId, scope.row.crowdName)">看主页数据</el-button> -->
+                    <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
                     <el-button type="text" @click="handleShenCeAnalysis(scope.row, 'AB')">神策分析</el-button>
                 </template>
             </el-table-column>
@@ -1199,7 +1219,7 @@
             <el-table-column label="操作" width="160">
               <template slot-scope="scope">
                 <el-button type="text" @click="currentCid = scope.row.crowdId; showCrowdDetailDialog()">命中曝光分析</el-button>
-                <!-- <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button> -->
+                <el-button type="text" @click="showAppointmentDialog(scope.row.crowdId)">预约投后分析</el-button>
               </template>
             </el-table-column>
             <el-table-column label="状态" width="150">
@@ -1542,6 +1562,85 @@
     <el-dialog title="流转链路分析" :visible.sync="showFlowLinkAnalysisDialog" :fullscreen="true">
       <LinkAnalysis v-if="showFlowLinkAnalysisDialog" :tableData="analysisTableData" :linkProps="linkProps" :linkPropsName="linkPropsName" :linkPropsNameTip="linkPropsNameTip"></LinkAnalysis>
     </el-dialog>
+
+    <!--命中监控-->
+    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="955px">
+      <div class="title">
+        添加监控：
+      </div>
+      <el-form :model="hitForm" :rules="hitRules" ref="hitForm" :inline="true">
+        <el-form-item label="监控时间：" prop="alertTime">
+          <el-date-picker
+            style="width: 135px"
+            v-model="hitForm.alertTime"
+            type="date"
+            placeholder="选择日期"
+            :picker-options="pickerOptions"
+            value-format="yyyy-MM-dd"
+            >
+          </el-date-picker>
+
+          <!-- {{hitForm.alertTime}} - {{value}} -->
+
+          <!-- <el-time-select
+            v-model="alertTimeValue"
+            :picker-options="{
+              start: '00:00',
+              step: '00:15',
+              end: '23:45'
+            }"
+            placeholder="选择时间"
+            style="width: 115px"
+          >
+          </el-time-select> -->
+          <a-time-picker
+            style="width: 105px"
+            v-model="alertTimeValue"
+            format="HH:mm"
+            valueFormat="HH:mm"
+            placeholder="选择时间"
+            :getPopupContainer="(triggerNode) => triggerNode.parentNode"
+            :minute-step="15"
+            @change="onChange">
+          </a-time-picker>
+        </el-form-item>
+
+        <el-form-item label="如果命中设备量(去重)：" prop="compareType">
+
+          <el-select v-model="hitForm.compareType" style="width: 105px">
+            <el-option value="="></el-option>
+            <el-option value=">="></el-option>
+            <el-option value="<="></el-option>
+            <el-option value=">"></el-option>
+            <el-option value="<"></el-option>
+          </el-select>
+          <el-form-item label="" prop="hitSize">
+            <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+            则告警到飞书
+          </el-form-item>
+
+        </el-form-item>
+        <el-form-item>
+          <el-button type="primary" @click="handlOpenHit">添加</el-button>
+        </el-form-item>
+      </el-form>
+
+      <div class="title" style="margin-top: 45px;">
+        已添加监控：
+      </div>
+
+      <c-table
+        :props="queryCrowdHitAlertListTable.props"
+        :header="queryCrowdHitAlertListTable.header"
+        :data="queryCrowdHitAlertListTable.data"
+        :default-sort = "{prop: 'date', order: 'descending'}"
+      ></c-table>
+
+      <span slot="footer" class="dialog-footer">
+        <el-button type="primary" @click="showHitDialog=false">确定</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
@@ -1566,7 +1665,83 @@ export default {
     LinkAnalysis
   },
   data () {
+    const checkFinanceCode = (rule, value, callback) => {
+      if (value) {
+        const reg = /^\d+$/
+        if (reg.test(value) === false) {
+          callback(new Error('请输入正整数或0'))
+        } else {
+          callback()
+        }
+      } else {
+        callback()
+      }
+    }
     return {
+      alertTimeValue: '12:00',
+      queryCrowdHitAlertListTable: {
+        props: {},
+        header: [
+          {
+            label: 'ID',
+            prop: 'id'
+          },
+          {
+            label: '监控时间',
+            prop: 'alertTime',
+            sortable: true
+          },
+          {
+            label: '期望设备量',
+            prop: 'hitSize',
+            render: (h, params) => {
+              return params.row.compareType + '  ' + params.row.hitSize
+            }
+          },
+          {
+            label: '状态',
+            prop: 'statusName',
+            render: (h, params) => {
+              if (params.row.statusName === '监控中') {
+                return h('span', { class: 'green' }, params.row.statusName)
+              } else {
+                return h('span', params.row.statusName)
+              }
+            }
+          },
+          {
+            label: '创建人',
+            prop: 'creator'
+          },
+          {
+            label: '操作',
+            render: this.$c_utils.component.createOperationRender(this, {
+              handleDeleteHitAlert: '删除'
+            })
+          }
+
+        ],
+        data: []
+      },
+      showHitDialog: false,
+      hitForm: {
+        alertTime: '',
+        hitSize: 0,
+        compareType: '<'
+      },
+      hitRules: {
+        hitSize: [
+          { required: true, message: '请输入命中设备量', trigger: 'blur' },
+          { required: true, trigger: 'blur', validator: checkFinanceCode } // 自定义正则
+        ],
+        alertTime: [{ required: true, message: '请选择监控时间', trigger: 'change' }]
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          // // 设置可选时间为今天或今天之后的日期
+          return time.getTime() < Date.now() - 24 * 60 * 60 * 1000
+        }
+      },
       analysisTableData: [],
       showFlowLinkAnalysisDialog: false,
       linkProps: {},
@@ -1921,6 +2096,54 @@ export default {
     // }
   },
   methods: {
+    onChange (time) {
+      console.log(time)
+      this.alertTimeValue = time
+    },
+    handleDeleteHitAlert ({ row }) {
+      console.log('row--->', row)
+      const params = { id: row.id }
+      this.$service.deleteCrowdHitAlert(params, '删除成功').then(() => {
+        this.queryCrowdHitAlertList()
+      })
+    },
+    // 获取当前接待员命中监控
+    queryCrowdHitAlertList () {
+      const params = {
+        crowdId: this.currentTag.crowdId
+      }
+      this.$service.queryCrowdHitAlertList(params).then(data => {
+        this.queryCrowdHitAlertListTable.data = data || []
+      })
+    },
+    hitMonitoring (row) {
+      console.log('row-->', row)
+      this.currentTag = row // 当前所选人群
+
+      // 获取监控列表
+      this.queryCrowdHitAlertList()
+      this.showHitDialog = true
+      // 清空表单
+      this.$nextTick(() => {
+        this.$refs.hitForm.resetFields()
+      })
+    },
+    async handlOpenHit () {
+      const valid = await this.$refs.hitForm.validate()
+      if (valid) {
+        console.log('hitForm--->', this.hitForm)
+        const params = {
+          ...this.hitForm,
+          crowdId: this.currentTag.crowdId,
+          hitSize: Number(this.hitForm.hitSize),
+          alertTime: `${this.hitForm.alertTime} ${this.alertTimeValue}`
+          // compareType: '>'
+        }
+        this.$service.addCrowdHitAlert(params, '添加成功').then(res => {
+          this.queryCrowdHitAlertList()
+        })
+      }
+    },
     pickerShenCeOptionsDayinRange (day, startTime) { //   开始和结束不超 day天   startTime - 最早时间
       let _minTime = null
       let _maxTime = null
@@ -1964,103 +2187,103 @@ export default {
         dynamicRuleId: row.id // 分组 ID
         // dynamicRuleId: 77, // 分组 ID
       }
-      const data = [{
-        arup: 59.48,
-        payUv: 964,
-        path: 11679,
-        price: 57334.00,
-        payRate: 0.01,
-        dynamicRuleName: '分组1',
-        child: [{
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          nowCrowdName: '方案1',
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }, {
-          nowCrowdName: '方案2',
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }, {
-          nowCrowdName: '方案2',
-          arup: 56.86,
-          payUv: 42,
-          path: '11679_11680',
-          price: 2388.00,
-          payRate: 0.01,
-          hitUv: 151131,
-          child: [
-            {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-1'
-            }, {
-              arup: 0.00,
-              payUv: 0,
-              path: '11679_11680_11679',
-              price: 0.00,
-              payRate: 0.00,
-              child: [],
-              hitUv: 571,
-              nowCrowdName: '方案1-2'
-            }
-          ]
-        }]
+      // const data = [{
+      //   arup: 59.48,
+      //   payUv: 964,
+      //   path: 11679,
+      //   price: 57334.00,
+      //   payRate: 0.01,
+      //   dynamicRuleName: '分组1',
+      //   child: [{
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     nowCrowdName: '方案1',
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }, {
+      //     nowCrowdName: '方案2',
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }, {
+      //     nowCrowdName: '方案2',
+      //     arup: 56.86,
+      //     payUv: 42,
+      //     path: '11679_11680',
+      //     price: 2388.00,
+      //     payRate: 0.01,
+      //     hitUv: 151131,
+      //     child: [
+      //       {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-1'
+      //       }, {
+      //         arup: 0.00,
+      //         payUv: 0,
+      //         path: '11679_11680_11679',
+      //         price: 0.00,
+      //         payRate: 0.00,
+      //         child: [],
+      //         hitUv: 571,
+      //         nowCrowdName: '方案1-2'
+      //       }
+      //     ]
+      //   }]
 
-      }]
+      // }]
 
       this.linkProps = {
         // name: 'dynamicRuleName',
@@ -2514,13 +2737,13 @@ export default {
           this.loadData()
 
           if (res.code === '3000') {
-            this.$notify({
+            this.$message({
               title: '提示',
               type: 'warning',
               message: res.msg
             })
           } else {
-            this.$notify({
+            this.$message({
               title: '操作成功',
               type: 'success',
               message: '提交估算成功'
@@ -2619,8 +2842,8 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
-        // this.showByPassColumn = data.bypass === 1
-        this.showByPassColumn = data.policy.smart
+        this.showByPassColumn = data.bypass === 1 // 是否分流
+        // this.showByPassColumn = data.policy.smart
         // if (loadType !== 'sort') {
         //   this.initExpandCrowd = []
         //   if (this.tableData.length > 0) {
@@ -2628,7 +2851,7 @@ export default {
         //   }
         // }
         // 再插入一项
-        this.tableMerge[0] = this.tableMerge[0] + 1
+        // this.tableMerge[0] = this.tableMerge[0] + 1
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -4373,4 +4596,17 @@ fieldset>div
   font-weight 800
 
 @import '~@/assets/tag.styl'
+.title {
+  color: rgba(0,0,0,0.9);
+  font-size: 16px;
+  font-weight: 600;
+  text-align: left;
+  margin-bottom 15px
+}
+::v-deep .green {
+  color: #67C23A
+}
+::v-deep .ant-time-picker-panel-combobox {
+  display: flex !important
+}
 </style>

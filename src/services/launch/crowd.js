@@ -411,3 +411,27 @@ export function dynamicCrowdMonitoring (params) {
     params
   })
 }
+// 获取 pushAPP 接口
+export function getPushPackageList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/pushpackage/list',
+    params
+  })
+}
+// 接待员投后分析报告
+export function getContentDynamicCrowdReport (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/getContentDynamicCrowdReport',
+    params
+  })
+}
+// 接待员投后分析报告 - 导出接口
+export function downloadContentDynamicCrowdReport (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/chart/downloadContentDynamicCrowdReport',
+    params
+  })
+}

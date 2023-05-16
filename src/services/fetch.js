@@ -2,28 +2,47 @@ import qs from 'qs'
 import axios from 'axios'
 import NProgress from 'nprogress'
 import 'nprogress/nprogress.css'
-import { Message } from 'element-ui'
+import { addPendingRequest } from './cancelFetch'
+
+// http request拦截
+axios.interceptors.request.use(
+  config => {
+    // // 添加断开请求的方法---------------------这里为重点-----------------------------
+    // config.cancelToken = new axios.CancelToken((cancel) => {
+    //   Vue.$httpRequestList.push(cancel) // 存储cancle
+    // })
+    addPendingRequest(config) // 把当前请求信息添加到pendingRequest对象中
+    return config
+  },
+  error => {
+    return Promise.reject(error)
+  }
+)
 
 // 响应拦截器, 401 状态码时，跳转至登录页
 axios.interceptors.response.use((response) => {
   // console.log('response===', response)
   return response
 }, function (error) {
-  if (error.response && error.response.status === 401) {
-    // window.location = '/login'
-    // window.location.reload()
-    // // location.href = location.origin + location.pathname + '#/login'
-    // const lo = location.origin + location.pathname + '#/login'
-    // console.log('router--->', router)
-    // console.log('location--->', lo)
-    // // window.location = lo
-    // location.href = lo
-    // // router.replace('/login')
-    console.log('token 失效啦')
-    // Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
-    // router.replace('/login').catch(() => {})
-    // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
-  }
+  // if (error.response && error.response.status === 401) {
+  //   // const lo = location.origin + location.pathname + '#/login'
+  //   // console.log('router--->', router)
+  //   // console.log('location--->', lo)
+  //   // // window.location = lo
+  //   // location.href = lo
+  //   // // router.replace('/login')
+  //   // console.log('token 失效啦')
+  //   // window.location = '/login'
+  //   // window.location.reload()
+  //   // NProgress.done()
+  //   // window.location = location.origin + location.pathname + '#/login'
+  //   // console.log('location.href--->', location.href)
+  //   // router.replace('/login').catch(() => {})
+  //   // return new Promise(function () {}) // 空的Promise对象，没有机会执行catch，进而不做错误提示了
+  //   return Promise.reject({
+  //     code: 41
+  //   })
+  // }
   return Promise.reject(error)
 })
 
@@ -53,7 +72,8 @@ export default function fetch ({
     }
   }
   if (url !== '/api/login') option.headers = { Authorization: this.state.token }
-  // if (url !== '/api/login') option.headers = { Authorization: 'this.state.token' }
+  // const user = JSON.parse(localStorage.getItem('HODER//user'))
+  // if (url !== '/api/login') option.headers = { Authorization: user.token }
   if (option.contentType) option.headers['Content-Type'] = option.contentType
   return axios(option)
     .then(function ({ data }) {
@@ -62,6 +82,7 @@ export default function fetch ({
       if (isFileStream) {
         return isReturnAllInfor ? data : data.data
       }
+      // 3000 - 警告
       if (codeFormat === 0 || codeFormat === 1000 || codeFormat === 3000) {
         // return isReturnAllInfor ? data : data.data
         if (isReturnAllInfor) {
@@ -87,12 +108,17 @@ export default function fetch ({
         }
       }
     })
-    .catch(e => {
-      console.log('errData==>', e)
+    .catch(err => {
+      console.log('errData==>', err)
       // Error: Network Error
-      // 异常时，跳转至登录页
-      // location.href = location.origin + location.pathname + '#/login'
       NProgress.done()
-      throw e
+      // 异常时，跳转至登录页
+      // if (errString && (errString.indexOf('401') > -1 || errString.code.indexOf('401') > -1)) {
+      // if (errString && errString.code && (errString.code.indexOf('401') > -1)) {
+      //   Message.info({ type: 'danger', message: '身份已经过期，请重新登录' })
+      //   location.href = location.origin + location.pathname + '#/login'
+      //   return
+      // }
+      throw err
     })
 }

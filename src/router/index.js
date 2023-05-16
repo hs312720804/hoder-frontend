@@ -1,21 +1,45 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
+import { Notification } from 'element-ui'
+
 Vue.use(Router)
 function beforeEach (to, from, next) {
+  // const filterRoutes = ['/login']
+  // if (filterRoutes.indexOf(to.path) !== -1) { // 不需要登录验证
+  //   next()
+  // } else {
+  console.log('from==========>', from)
+  console.log('to==========>', to)
+
   const app = this.app
   app.$isLoggedIn().then(() => {
-    next(to.name !== 'login'
-      ? undefined
-      : { name: 'dashboard' }
-    )
+    // next(to.name !== 'login'
+    //   ? undefined
+    //   : { path: '/' }
+    // )
+    if (to.name === 'login') {
+      next({ path: '/' })
+    } else {
+      next()
+    }
   }).catch(() => {
+    // catch 中 从别的页面跳转至登录页，被认为是 token 失效
+    if (from.path !== '/' && from.name !== 'login' && to.name === 'login' && !to.params.logout) {
+      // 提示权限过期
+      Notification.error({
+        title: '提示',
+        message: '登录超时，请重新登录'
+        // duration: 0
+      })
+    }
     if (to.name === 'login') {
       next()
     } else {
       next({ name: 'login', query: { redirect: to.fullPath } })
     }
   })
+  // }
 }
 function afterEach (to) {
   const app = this.app

@@ -1,0 +1,72 @@
+.create-client-border {
+  border-radius: 4px;
+  border: 1px solid #DCDFE6;
+  background: aliceblue;
+  padding 10px
+  margin-bottom 10px
+  position: relative;
+  // margin-left: -109px;
+  // margin-top: 37px;
+  // margin-right: 20px;
+  .el-icon-delete {
+    position absolute
+    right -15px
+    top 50%
+  }
+}
+
+.box-fotter {
+  display: grid;
+}
+.single-set-wrap {
+  display flex
+  gap: 20px
+}
+.single-set-left {
+  flex: 0 0 200px;
+}
+.single-set-list {
+  border-radius: 4px;
+  font-size: 14px;
+  padding: 10px;
+  display: flex;
+  border-bottom: 1px dashed #f3f3f3;
+  align-items: baseline;
+  
+}
+.item-content {
+  flex: 1
+}
+.active {
+  background: #edefff;
+}
+.div-class{
+  padding: 20px 0;
+  background-color: rgba(249,249,249,0.85);
+  margin-bottom 20px
+}
+.step-sty {
+  margin: 0 auto 20px; 
+  width: 80%
+}
+.compound-input {
+  display: flex;
+  align-items: baseline;
+
+  .prepend-input { // 前面的
+    width: 150px
+    .el-input__inner {
+      border-radius: 4px 0px 0px 4px;
+    }
+  }
+  .append-input { // 后面的
+    width: 150px
+  }
+  .el-input-group__prepend { // 中间的
+    border-radius: 0;
+    border-left: 0;
+  }
+  .el-input__inner {
+    width: 150px;
+  }
+}

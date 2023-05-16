@@ -1,6 +1,53 @@
 <template>
   <div class="one-step-select-tag">
-    <el-tabs v-model="activeName" @tab-click="handleTabChange">
+
+    <!-- <el-input
+        v-model="searchForm.policyName"
+        placeholder="支持按策略、人群、创建人、部门搜索"
+        @keyup.enter.native="handleSearch"
+        clearable
+        style="width: 350px"
+      >
+      <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+    </el-input> -->
+    <div class="search-all-input">
+      <el-input v-model="searchAllVal" clearable placeholder="支持按标签名、Code、描述全局搜索" @keyup.enter.native="handleSearch" style="width: 350px">
+        <el-button type="primary" slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+      </el-input>
+      <el-button plain @click="handleReset" style="margin-left: 10px" >
+        重置
+      </el-button>
+    </div>
+
+    <!-- 全局搜索 -->
+    <div class="other-form" v-if="!!filter.tagName">
+      <tag-list
+        :data-list="dataList"
+        :data-source-enum="dataSourceEnum"
+        :type-enum="typeEnum"
+        :loading="loading"
+        :check-list-parent="checkList"
+        :show-selection="showSelection"
+        @change-checkList="handleCheckListChange"
+        @table-selected="handleGetTableSelectedData"
+        :current-selected-tags="tagList">
+      </tag-list>
+
+      <el-pagination
+        class="pagination"
+        :current-page="pagination.pageNum"
+        :page-size="pagination.pageSize"
+        :total="pagination.total"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+        :page-sizes="[10, 20, 50, 100]"
+        layout="total, sizes, prev, pager, next, jumper"
+      >
+      </el-pagination>
+    </div>
+
+    <!-- 分类 -->
+    <el-tabs v-else v-model="activeName" @tab-click="handleTabChange" style="padding-top: 15px;">
       <el-tab-pane label="我常用的" name="myTop">
         <MyTopMax30 :tagName="myCollectTagName" :checkList="checkList" :show-selection="showSelection"
           :currentSelectTag="tagList" @clear-search="handleClearSearch" @change-checkList="handleCheckListChange"
@@ -71,6 +118,7 @@ import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
 import { dataSourceColorEnum } from '@/utils/tags.js'
 import MyTopMax30 from './MyTopMax30'
+import tagList from './coms/TagList'
 
 export default {
   name: 'crowdCompute',
@@ -79,7 +127,8 @@ export default {
     BigDataTag,
     ThirdPartyTag,
     CustomTag,
-    MyTopMax30
+    MyTopMax30,
+    tagList
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
@@ -90,8 +139,25 @@ export default {
   },
   data () {
     return {
-      activeName: 'myTop',
+      dataList: [],
+      filter: {
+        // pageNum: 1,
+        // pageSize: 10,
+        groupId: undefined,
+        tagName: undefined
+      },
+      pagination: {
+        pageNum: 1,
+        pageSize: 10,
+        total: 0
+      },
+      dataSourceEnum: {},
+      typeEnum: {},
+      loading: true,
+      searchAllVal: '', // 全局搜素
+
       searchVal: '',
+      activeName: 'myTop',
       labelZoneTagName: undefined,
       myCollectTagName: undefined,
       checkList: [],
@@ -137,6 +203,37 @@ export default {
     }
   },
   methods: {
+    handleReset () {
+      this.searchAllVal = ''
+      this.handleSearch()
+    },
+    handleSizeChange (val) {
+      this.pagination.pageSize = val
+      this.handleSearch()
+    },
+    handleCurrentChange (val) {
+      this.pagination.pageNum = val
+      this.handleSearch()
+    },
+    handleSearch () {
+      const val = this.searchAllVal
+      this.filter.tagName = val
+
+      const filter = {
+        ...this.filter,
+        ...this.pagination,
+        groupId: 0
+      }
+
+      this.$service.getTagGroupTreeList(filter).then((data) => {
+        this.dataList = data.pageInfo.list
+        this.dataSourceEnum = data.lableDataSourceEnum
+        this.typeEnum = data.tagsTypeEnum
+        this.loading = false
+        this.pagination.total = data.pageInfo.total
+      })
+    },
+
     // 下一步
     saveAndNext (mode) {
       this.$refs.addForm.validate(valid => {
@@ -414,5 +511,14 @@ export default {
   width: calc(100% - 363px);
   height: 185px;
   overflow: auto;
-
+.search-all-input
+  position: absolute;
+  right: 0;
+  z-index: 9;
+  padding: 10px 0;
+.pagination
+  padding: 10px 0;
+  text-align: right;
+.other-form
+  padding-top: 55px;
 </style>

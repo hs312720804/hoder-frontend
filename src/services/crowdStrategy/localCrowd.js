@@ -50,14 +50,7 @@ export function getTempCrowd (params) {
     params
   })
 }
-// 临时人群计算
-export function calculateTempCrowd (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/tempCrowd/calculate',
-    params
-  })
-}
+
 // 获取标签树类型新接口
 export function getNewTreeList (params) {
   return this.fetch({
@@ -115,6 +108,31 @@ export function sensorAnalysis (params) {
   return this.fetch({
     method: 'get',
     url: '/api/multiVersionCrowd/localCrowd/sensorAnalysis',
+    params
+  })
+}
+// 人群命中监测接口
+export function queryCrowdHitAlertList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/crowd/queryCrowdHitAlertList',
+    params
+  })
+}
+// 增加或修改监测数据
+export function addCrowdHitAlert (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/crowd/addCrowdHitAlert',
+    data,
+    isJSON: true
+  })
+}
+// 删除监测数据
+export function deleteCrowdHitAlert (params) {
+  return this.fetch({
+    method: 'delete',
+    url: '/api/crowd/deleteCrowdHitAlert',
     params
   })
 }

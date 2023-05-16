@@ -7,11 +7,12 @@
         </el-button>
       </div>
       <div v-else></div>
-      <div class="search-input">
+      <!-- 标签分类搜索 -->
+      <!-- <div class="search-input">
         <el-input placeholder="支持按标签名、ID搜索" class="header-input" v-model="filter.tagName"
           @keyup.enter.native="fetchData"></el-input>
         <i class="el-icon-cc-search icon-fixed" @click="fetchData"></i>
-      </div>
+      </div> -->
     </div>
     <tag-list :data-list="dataList" :data-source-enum="dataSourceEnum" :type-enum="typeEnum"
       :check-list-parent="checkList" :current-selected-tags="currentSelectTag" :show-selection="showSelection"

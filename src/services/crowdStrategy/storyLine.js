@@ -141,9 +141,10 @@ export function addScenedynamic (data) {
 export function addGroup (data) {
   return this.fetch({
     method: 'post',
+    // url: `/api/scene/addGroup/${data.sceneType}`,
     url: '/api/scene/addGroup',
     isJSON: true,
-    data
+    data: data.list
   })
 }
 
@@ -247,5 +248,240 @@ export function getSourceList (params) {
     method: 'get',
     url: '/api/uptm/getSourceList',
     params
+  })
+}
+// 复用接待员接口
+export function reuseReceptionist (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/reuse',
+    data,
+    isJSON: true
+  })
+}
+// 复用接待员 - 修改处理方式接口
+export function updateExport (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/updateExport',
+    data,
+    isJSON: true
+  })
+}
+// 判断一个接待员是否编辑权限接口
+export function getCanReuse (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/canReuse',
+    params
+  })
+}
+// 判断一个接待员是否编辑权限接口
+export function getSceneCanReuse (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/scene/getAccess',
+    params
+  })
+}
+// 维度接口
+export function getBatchUptm (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batch/uptm',
+    params
+  })
+}
+
+// 第一步保存
+export function batchSaveFirst (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batch/saveFirst',
+    data,
+    isJSON: true
+  })
+}
+
+// 第二步获取接待员列表
+export function getBatchList (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batch/list',
+    params
+  })
+}
+
+// 第二步保存
+export function batchSaveSecond (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batch/saveSecond',
+    data,
+    isJSON: true
+  })
+}
+
+// --------------- 一键投放相关接口  start------------------------
+
+/// 1：场景 - 跳过保存
+export function sceneSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/sceneSkip',
+    data,
+    isJSON: true
+  })
+}
+// 1：场景 - 下一步
+export function sceneNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/sceneNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 每个步骤公用的：获取当前场景详情
+export function getSceneDetail (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getSceneDetail',
+    params
+  })
+}
+
+// 2： 创建方式 - 跳过保存
+export function createTypeSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/createTypeSkip',
+    data,
+    isJSON: true
+  })
+}
+// 2：创建方式 - 下一步
+export function createTypeNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/createTypeNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 查询接待员列表
+export function getListbySceneId (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getListbySceneId',
+    params
+  })
+}
+// 查询批量公共属性
+export function batchSetLast (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/batchSetLast',
+    params
+  })
+}
+
+// 3： 逐个创建名称 - 跳过保存
+export function oneByOneListSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/oneByOneListSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 逐个创建名称 - 下一步
+export function oneByOneListNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/oneByOneListNext',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 批量创建 - 跳过保存
+export function batchSetSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchSetSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 3： 批量创建 - 下一步
+export function batchSetNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchSetNext',
+    data,
+    isJSON: true
+  })
+}
+// 4： 统一配置 - 跳过保存
+export function batchListSkip (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchListSkip',
+    data,
+    isJSON: true
+  })
+}
+
+// 4： 统一配置 - 下一步
+export function batchListNext (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/batchListNext',
+    data,
+    isJSON: true
+  })
+}
+// 5： 投放 - 跳过保存
+export function putInDraft (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/draft',
+    data,
+    isJSON: true
+  })
+}
+// 5： 投放 - 确认
+export function putInRelease (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/release',
+    data,
+    isJSON: true
+  })
+}
+
+// --------------- 一键投放相关接口  end------------------------
+
+// 判断场景是否有兜底接待员
+export function getReceptionistType (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/getType',
+    params
+  })
+}
+
+// 列表里面编辑兜底方式
+export function setReceptionistType (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/receptionist/setType',
+    data,
+    isJSON: true
   })
 }

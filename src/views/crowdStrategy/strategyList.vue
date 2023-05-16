@@ -80,7 +80,7 @@
 
     </div>
     <!-- talbe -->
-    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border>
+    <el-table ref="myTable" :data="tableData" style="width: 100%;" stripe border @sort-change="handleSortChange">
       <el-table-column type="index" width="50"></el-table-column>
       <el-table-column prop="policyId" label="策略ID" width="70"></el-table-column>
       <el-table-column prop="policyName" label="策略名称" width="150"></el-table-column>
@@ -144,16 +144,16 @@
         </template>
       </el-table-column> -->
 
-      <el-table-column prop="past7Active" label="7日是否有命中" width="110">
+      <el-table-column prop="past7Active" label="7日是否有命中及命中次数" width="110" sortable="custom">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 </span>
+          <span v-if="scope.row.past7Active === 1" style="color: red"> 是 &nbsp;&nbsp;{{ cc_format_number(scope.row.past7ActiveSize) }}</span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
 
-      <el-table-column prop="past7Active" label="7日是否有请求" width="110">
+      <el-table-column prop="past7Req" label="7日是否有请求及请求次数" width="110" sortable="custom">
         <template slot-scope="scope">
-          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 </span>
+          <span v-if="scope.row.past7Req === 1" style="color: red"> 是 &nbsp;&nbsp;{{ cc_format_number(scope.row.past7ReqSize) }}</span>
           <span v-else> 否 </span>
         </template>
       </el-table-column>
@@ -268,7 +268,7 @@
       :close-on-click-modal="false"
       width="1000px"
     >
-      <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px">
+      <el-form :model="addForm" :rules="addFormRules" ref="addForm" label-width="100px" @submit.native.prevent>
         <el-form-item label="策略名称" prop="policyName">
           <el-input size="small" v-model="addForm.policyName" placeholder></el-input>
         </el-form-item>
@@ -434,9 +434,9 @@
     </el-dialog>
     <el-dialog :visible.sync="showLaunchToBusiness" :key="recordId">
       <LaunchToBusiness
-              :recordId="recordId"
-              :tempPolicyAndCrowd="tempPolicyAndCrowd"
-              @closeDialog="handleCloseDialog"
+        :recordId="recordId"
+        :tempPolicyAndCrowd="tempPolicyAndCrowd"
+        @closeDialog="handleCloseDialog"
       ></LaunchToBusiness>
     </el-dialog>
     <el-dialog :visible.sync="showViewEffect" width="80%">
@@ -672,6 +672,43 @@ export default {
     }
   },
   methods: {
+    handleSortChange (obj) {
+      console.log('column====', obj)
+
+      // orderType
+      // 0 按照命中量进行降序排序
+      // 1 按照命中量进行升序排序
+      // 2 按照请求量进行降序排序
+      // 3 按照请求量进行升序排序
+
+      const sortParams = {
+        orderType: ''
+      }
+      this.currentPage = 1 // 页码重置为 1
+
+      const columnProp = obj.prop // 点击的是哪一列的属性值
+      // 命中量
+      if (columnProp === 'past7Active') {
+        if (obj.order === 'descending') {
+          sortParams.orderType = 0
+        } else if (obj.order === 'ascending') {
+          sortParams.orderType = 1
+        } else {
+          sortParams.orderType = null
+        }
+      // 请求量
+      } else if (columnProp === 'past7Req') {
+        if (obj.order === 'descending') {
+          sortParams.orderType = 2
+        } else if (obj.order === 'ascending') {
+          sortParams.orderType = 3
+        } else {
+          sortParams.orderType = null
+        }
+      }
+      this.loadData(sortParams)
+    },
+
     freshService () {
       this.$service.freshService().then(data => {
         this.$message({
@@ -861,7 +898,7 @@ export default {
     //     }
     // },
     // 从服务器读取数据
-    loadData () {
+    loadData (sortParams) {
       this.$service.getListDimension({ type: 1 }).then(data => {
         if (data) {
           if (data.behaviorShow) {
@@ -891,6 +928,12 @@ export default {
       this.criteria.pageNum = this.currentPage
       this.criteria.pageSize = this.pageSize
 
+      if (sortParams) {
+        this.criteria = {
+          ...this.criteria,
+          ...sortParams
+        }
+      }
       // 如果是【我的人群】模块进入
       if (!this.showAll) {
         this.$service.getMyCrowdList(this.criteria).then(data => {

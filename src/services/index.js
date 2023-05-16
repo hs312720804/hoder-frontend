@@ -1,5 +1,6 @@
 import Vue from 'vue'
-import { utils } from '@ccprivate/admin-toolkit'
+// import { utils } from '@ccprivate/admin-toolkit'
+import wrapService from './wrapService'
 import fetch from './fetch'
 import login from './login'
 import getConstants from './getConstants'
@@ -68,6 +69,6 @@ const service = {
   ...storyLine,
   ...operationHelper
 }
-Vue.prototype.$service = utils.wrapService(service)
+Vue.prototype.$service = wrapService(service)
 
-export default utils.wrapService(service)
+export default wrapService(service)

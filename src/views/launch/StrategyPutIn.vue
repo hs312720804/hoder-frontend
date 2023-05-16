@@ -1,5 +1,7 @@
 <template>
     <div class="launchToBusiness">
+      <!-- {{ crowdForm }} -->
+      <!-- {{ tempPolicyAndCrowd }} -->
         <el-form :model="crowdForm" :rules="rulesData" ref="crowdForm" label-width="110px">
             <el-form-item v-if="!tempPolicyAndCrowd.smart" label="投放模式" prop="launchMode">
                 <el-checkbox v-model="crowdForm.launchMode.pull" :disabled="pullSuccessPushFail">pull模式（用于主页、产品包、广告、活动、弹窗、媒资）</el-checkbox>
@@ -41,6 +43,19 @@
                         <!--</el-option>-->
                     </el-select>
                 </el-form-item>
+                <!-- 只有故事线的才展示下面的 -->
+                <el-form-item label="投放有效期" v-if="fromStoryline" >
+                  <el-date-picker
+                    v-model="value1"
+                    type="datetimerange"
+                    value-format="yyyy-MM-dd HH:mm:ss"
+                    format="yyyy-MM-dd HH:mm:ss"
+                    range-separator="至"
+                    start-placeholder="开始日期"
+                    end-placeholder="结束日期"
+                    :clearable="false">
+                  </el-date-picker>
+                </el-form-item>
             </div>
             <div class="border" v-if="crowdForm.launchMode.push">
                 <div class="tips">投放模式（push）:针对消息、微信</div>
@@ -61,6 +76,24 @@
                         </el-option>
                     </el-select>
                 </el-form-item>
+
+                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
+                  <el-select
+                    v-model="crowdForm.packageName"
+                    placeholder="请选择投放应用"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in pushPackageList"
+                      :key="item.id"
+                      :label="item.appName"
+                      :value="item.id"
+                    >
+                    </el-option>
+                  </el-select>
+                </el-form-item>
+
                 <el-form-item label="数据来源" prop="dataSource">
                     <input type="hidden" value="2" v-model="crowdForm.dataSource">
                     <el-input size="small" readonly value="大数据"></el-input>
@@ -79,7 +112,7 @@
                       v-model="crowdForm.crowdType"
                     >
                       <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                      <el-radio :label="3">行为人群</el-radio>
+                      <!-- <el-radio :label="3">行为人群</el-radio> -->
                     </el-radio-group>
                 </el-form-item>
 
@@ -210,20 +243,24 @@
                 </el-form-item>
                 <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
             </div>
-            <el-form-item>
-                <el-button type="info" @click="handleCancel">取消</el-button>
-                <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
+            <!-- 一键投放故事线场景，不需要展示下面的 -->
+            <el-form-item v-if="!hiddenButton">
+              <el-button type="info" @click="handleCancel">取消</el-button>
+              <el-button type="primary" @click="submitForm('crowdForm')">投放</el-button>
             </el-form-item>
         </el-form>
     </div>
 </template>
 
 <script>
+import { Loading } from 'element-ui'
+
 export default {
   name: 'StrategyPutIn',
-  props: ['recordId', 'tempPolicyAndCrowd'],
+  props: ['recordId', 'tempPolicyAndCrowd', 'fromStoryline', 'hiddenButton'],
   data () {
     return {
+      value1: [],
       crowdForm: {
         biIdsPull: [],
         policyIdsPull: [],
@@ -243,7 +280,8 @@ export default {
           push: false
         },
         calType: ['0'],
-        crowdType: 0
+        crowdType: 0,
+        packageName: ''
       },
       rulesData: {
         launchMode: [{
@@ -265,6 +303,9 @@ export default {
         ],
         autoLaunchTime: [
           { required: true, message: '请选择每天更新时间点', trigger: 'blur' }
+        ],
+        packageName: [
+          { required: true, message: '请选择投放应用', trigger: 'blur' }
         ]
       },
       Platforms: [],
@@ -280,10 +321,20 @@ export default {
       pullFail: false,
       pushFail: false,
       pullSuccessPushFail: false,
-      behaviorCrowdList: []
+      behaviorCrowdList: [],
+      pushPackageList: []
     }
   },
   methods: {
+    getPushPackageList () {
+      const parmas = {
+        pageNum: 0,
+        pageSize: 200
+      }
+      this.$service.getPushPackageList(parmas).then(res => {
+        this.pushPackageList = res.rows || []
+      })
+    },
     handelBehaviorCrowdSelectChange (e, selectedV, list) {
       const policyCrowdIds = selectedV.split('_')[1]
       // item.policyIds+'_'+item.policyCrowdIds
@@ -462,6 +513,10 @@ export default {
         biIds: this.crowdForm.biIdsPull,
         policyIds: this.crowdForm.policyIdsPull
       }
+      if (this.fromStoryline) {
+        formData.startTime = this.value1[0] || undefined
+        formData.endTime = this.value1[1] || undefined
+      }
       this.$service.saveAddCrowdData(formData, 'pull投放成功').then(() => {
         if (this.crowdForm.launchMode.push) {
           this.savePullDataSuccess = true
@@ -471,7 +526,7 @@ export default {
         }
       }).catch(e => {
         this.pullFail = true
-        this.$message.error(e)
+        // this.$message.error(e)
       })
     },
     reParamsData () {
@@ -530,7 +585,7 @@ export default {
     },
     handlePushError (e) {
       this.pushFail = true
-      this.$message.error(e)
+      // this.$message.error(e)
       if (this.crowdForm.launchMode.pull && !this.pullFail) {
         // pull成功 push异常,把pull去掉勾选且禁选
         this.crowdForm.launchMode.pull = false
@@ -575,8 +630,16 @@ export default {
     },
     // 手动同步策略和刷新策略列表页，关闭弹窗
     handleEnd () {
+      const loadingInstance = Loading.service({
+        fullscreen: true,
+        text: '同步策略中，请稍候',
+        background: 'rgba(0, 0, 0, 0.5)'
+      })
       this.$service.freshCache({ policyId: this.recordId }).then(() => {
+        loadingInstance.close()
+
         this.$emit('closeDialog')
+        this.$emit('refreshList')
         this.$root.$emit('stratege-list-refresh')
       })
     },
@@ -636,6 +699,10 @@ export default {
     this.getCountDataEnum()
     this.handleGetCurrentPolicy()
     this.getCrowdInitList()
+    this.getPushPackageList() // 获取pushAPP接口
+
+    // 默认时间
+    this.value1 = [this.$moment().format('YYYY-MM-DD HH:mm:ss'), this.$moment().add(20, 'years').format('YYYY-MM-DD HH:mm:ss')]
   }
 }
 </script>

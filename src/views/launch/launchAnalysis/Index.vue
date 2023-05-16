@@ -663,9 +663,9 @@ export default {
     setDefaultData () {
       // 默认展示的数据参数
       this.formInline = {
-        crowdId: '14123',
-        sourceNameList: ['音乐K歌会员'],
-        timeRange: ['2022-11-25', '2022-12-01'],
+        crowdId: '18321',
+        sourceNameList: ['家庭影院VIP'],
+        timeRange: ['2023-04-25', '2023-04-30'],
         isDelCache: 0
       }
       this.$nextTick(() => {
@@ -1025,7 +1025,6 @@ export default {
             // console.log(xIndex)
             // console.log(xData)
             const sourceName = xData[xIndex]
-            // alert(1)
             _this.onSubmit(sourceName)
             // console.log('current--------->', sourceName)
           }
