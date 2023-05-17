@@ -203,6 +203,7 @@
 <script>
 // import DynamicTable from './dynamicTable/Index.vue'
 import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
+import { errData } from './errData.js'
 
 export default {
   components: {
@@ -320,7 +321,9 @@ export default {
         endDate: this.time0[1]
       }
       this.$service.dynamicCrowdMonitoring(parmas).then(dataObj => {
-        // 处理 dataObj 中的空对象
+      // 假数据
+      // const dataObj = errData
+      // 处理 dataObj 中的空对象
         const res = {}
         for (const key in dataObj) {
           res[key] = dataObj[key] || []
@@ -438,18 +441,20 @@ export default {
         xunit: ''
       }
       const crowdNameList = []
-      chartData || [].forEach(item => {
-        // 找到所有的日期
-        const flag = reObj.xaxis.find(i => i === item.dt)
-        if (!flag) {
-          reObj.xaxis.push(item.dt)
-        }
-        // 找到所有的人群
-        const flag2 = crowdNameList.find(i => i === item.crowdName)
-        if (!flag2) {
-          crowdNameList.push(item.crowdName)
-        }
-      })
+      if (chartData.length > 0) {
+        chartData.forEach(item => {
+          // 找到所有的日期，没有的就新增，有的就不管
+          const flag = reObj.xaxis.find(i => i === item.dt)
+          if (!flag) {
+            reObj.xaxis.push(item.dt)
+          }
+          // 找到所有的人群，没有的就新增，有的就不管
+          const flag2 = crowdNameList.find(i => i === item.crowdName)
+          if (!flag2) {
+            crowdNameList.push(item.crowdName)
+          }
+        })
+      }
 
       console.log('crowdName--->', crowdNameList)
       crowdNameList.forEach(name => {
