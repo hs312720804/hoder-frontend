@@ -35,7 +35,19 @@
       <div class="export-button">
         <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
           <el-radio :label="0">产品包</el-radio>
-          <el-radio :label="1">内容运营</el-radio>
+          <el-radio :label="1">
+            内容运营
+            <el-popover
+              placement="top"
+              width="400"
+              trigger="hover"
+             >
+              投后报告解释：<br/><br/>
+              内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/><br/>
+              产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
+              <span slot="reference" class="priority-tip">?</span>
+            </el-popover>
+          </el-radio>
         </el-radio-group>
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
         <a :href="downloadUrl" download ref="download_Url"></a>
