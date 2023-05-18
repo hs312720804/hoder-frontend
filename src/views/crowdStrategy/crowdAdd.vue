@@ -397,7 +397,7 @@ export default {
     // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
     hasMoveBehaviorTagRule () {
       const crowd = this.form
-      const behaviorRules = this.behaviorRulesJson.rules
+      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
 
       let hasBehaviorRule = false // 是否有行为标签
       if (behaviorRules.length > 0) {
