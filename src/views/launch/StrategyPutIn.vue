@@ -112,7 +112,7 @@
                       v-model="crowdForm.crowdType"
                     >
                       <el-radio :label="0">普通人群</el-radio> <!-- false -->
-                      <!-- <el-radio :label="3">行为人群</el-radio> -->
+                      <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
