@@ -208,6 +208,21 @@ export function addMyMultiVersionCrowd (params) {
     url: '/api/multiVersionCrowd/add/my/' + params
   })
 }
+export function getPushList (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/policy/getPush',
+    params
+  })
+}
+export function getPushPlatform (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/policy/getPushPlatform',
+    params
+  })
+}
+
 // 新增保存接口
 export function saveAddMultiVersionCrowd ({ model, data }) {
   return this.fetch({
