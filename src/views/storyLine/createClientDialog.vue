@@ -83,31 +83,7 @@
             ref="form"
             label-width="130px"
           >
-          <!-- 只有出口条件选择 -->
-            <el-form-item label="处理操作" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
-              <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
-                <el-option
-                  v-for="item in options"
-                  :label="item.label"
-                  :value="item.value"
-                  :key="item.value">
-                  {{ item.label }}
-                </el-option>
-              </el-select>
-            </el-form-item>
 
-              <!-- 正确，下一步  选择同一场景下其他接待员 -->
-            <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
-              <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
-                <el-option
-                  v-for="item in servicerListFilterSelect"
-                  :label="item.receptionist"
-                  :value="item.crowdId"
-                  :key="item.crowdId">
-                  {{ item.receptionist }}
-                </el-option>
-              </el-select>
-            </el-form-item>
             <!-- <el-form-item label="人群名称" prop="name">
               <el-input
                 size="small"
@@ -134,13 +110,15 @@
                   :key="'condition'"
                 >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
               </div>
-
               <div v-if="tags.length > 0">
                 <el-form-item label="设置标签" class="multipleSelect" >
                   <MultipleSelect
                     ref="MultipleSelectRef"
                     :tags="tags"
+                    :checkedList="checkedList"
+                    :allTagList="tagList"
                     :rulesJson="rulesJson"
+                    @emitTags="emitTags"
                   ></MultipleSelect>
                 </el-form-item>
               </div>
@@ -169,6 +147,38 @@
                 </SetCirculationConditionsCom>
               </el-form-item> -->
             </div>
+            <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新" prop="autoVersion" >
+              <el-radio-group v-model="form.autoVersion">
+                <el-radio :label="false">否</el-radio>
+                <el-radio :label="true">是</el-radio>
+              </el-radio-group>
+            </el-form-item>
+
+            <!-- 只有出口条件选择 -->
+            <el-form-item label="则视为：" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
+              <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
+                <el-option
+                  v-for="item in options"
+                  :label="item.label"
+                  :value="item.value"
+                  :key="item.value">
+                  {{ item.label }}
+                </el-option>
+              </el-select>
+
+            </el-form-item>
+            <!-- 正确，下一步  选择同一场景下其他接待员 -->
+            <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
+              <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
+                <el-option
+                  v-for="item in servicerListFilterSelect"
+                  :label="item.receptionist"
+                  :value="item.crowdId"
+                  :key="item.crowdId">
+                  {{ item.receptionist }}
+                </el-option>
+              </el-select>
+            </el-form-item>
           </el-form>
         </el-col>
       </el-row>
@@ -251,7 +261,9 @@ export default {
       priority: '',
       form: {
         stopType: '',
-        nextId: ''
+        nextId: '',
+        autoVersion: false,
+        isShowAutoVersion: false
       },
       formRules: {
         stopType: [{ required: true, message: '请选择', trigger: 'change' }],
@@ -298,12 +310,12 @@ export default {
     }
   },
   watch: {
-    // behaviorRulesJson: {
-    //   handler () {
-    //     this.hasMoveBehaviorTagRule()
-    //   },
-    //   deep: true
-    // }
+    behaviorRulesJson: {
+      handler () {
+        this.hasMoveBehaviorTagRule()
+      },
+      deep: true
+    },
     tagList: {
       handler (val) {
         console.log('watch:tagList')
@@ -396,6 +408,31 @@ export default {
     }
   },
   methods: {
+    emitTags (data) {
+      this.tagList = data
+    },
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
+    hasMoveBehaviorTagRule () {
+      const crowd = this.form
+      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
+
+      let hasBehaviorRule = false // 是否有行为标签
+      if (behaviorRules.length > 0) {
+        hasBehaviorRule = true
+      }
+
+      if (hasBehaviorRule) { // 展示勾选“是否每日更新”
+        // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
+        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+          crowd.autoVersion = true
+        }
+        crowd.isShowAutoVersion = true
+      } else {
+        crowd.isShowAutoVersion = false
+        crowd.autoVersion = false
+      }
+    },
     // 获取流转标签
     async getCirculationTag () {
       await this.$service.getRuleIndicators().then(res => {
@@ -508,188 +545,6 @@ export default {
           resolve(res)
         })
       })
-    },
-
-    validateForm (rules, dynamicPolicyRules, behaviorRules = []) {
-      this.timeTagKongList = []
-      // 判断设置标签里是否有未填写的项
-      let i
-      let j = 0
-      const ruleLength = rules.length
-      const dynamicPolicyRulesLength = dynamicPolicyRules.length
-      let rulesFlag = true
-
-      // ------------------- 普通标签规则校验 --------------------------
-      for (i = 0; i < ruleLength; i++) {
-        for (j = 0; j < rules[i].rules.length; j++) {
-          const rulesItem = rules[i].rules[j]
-
-          // 多选的值，保存的时候需要转成字符串 2222
-          if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
-            rulesItem.value = rulesItem.value.join(',')
-          }
-          // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
-          const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
-          if (isTimeTagKong) {
-            if (!this.timeTagKongList.includes(rulesItem.tagName)) {
-              this.timeTagKongList.push(rulesItem.tagName)
-            }
-          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-            this.$message.error(
-              '请正确填写第' +
-                (i + 1) +
-                '设置标签块里面的第' +
-                (j + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-            // 二期之后的
-            if (rulesItem.version > 0) {
-              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
-              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
-              rulesItem.value = startDay + '~' + endDay
-            } else { // 一期
-              if (
-                this.checkNumMostFour(rulesItem.startDay) &&
-                this.checkNumMostFour(rulesItem.endDay)
-              ) {
-                if (
-                  parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
-                ) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的天数值后面的值必须大于前面的'
-                  )
-                  rulesFlag = false
-                  break
-                }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                rulesFlag = false
-                break
-              }
-            }
-          } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-            rulesItem.operator = '='
-          }
-
-          if (!rulesFlag) break
-        }
-        if (!rulesFlag) break
-      }
-
-      // ------------------- 行为标签中的大数据标签规则校验 --------------------------
-      // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
-      // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
-      // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
-      const behaviorRulesLength = behaviorRules.length
-      let x
-      let y = 0
-      // 判断是否有未填写的项
-
-      for (x = 0; x < behaviorRulesLength; x++) {
-        for (y = 0; y < behaviorRules[x].rules.length; y++) {
-          const rulesItem = behaviorRules[x].rules[y]
-
-          if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
-            this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
-            rulesFlag = false
-            break
-          }
-          // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
-          const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
-          if (isTimeTagKong) {
-            if (!this.timeTagKongList.includes(rulesItem.tagName)) {
-              this.timeTagKongList.push(rulesItem.tagName)
-            }
-          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-            this.$message.error(
-              '请正确填写第' +
-                (x + 1) +
-                '行为标签块里面的第' +
-                (y + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          } else if (
-            rulesItem.tagType === 'time' &&
-            rulesItem.isDynamicTime === 3
-          ) {
-            // 二期之后的
-            if (rulesItem.version > 0) {
-              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
-              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
-              rulesItem.value = startDay + '~' + endDay
-            } else { // 一期
-              if (
-                this.checkNum(rulesItem.startDay) &&
-                this.checkNum(rulesItem.endDay)
-              ) {
-                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (x + 1) +
-                      '行为标签块里面的第' +
-                      (y + 1) +
-                      '行的天数值后面的值必须大于前面的'
-                  )
-                  rulesFlag = false
-                  break
-                }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (x + 1) +
-                    '行为标签块里面的第' +
-                    (y + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                rulesFlag = false
-                break
-              }
-            }
-          }
-        }
-      }
-      // if (!rulesFlag) break
-
-      // ------------------- 动态因子规则校验 --------------------------
-      for (i = 0; i < dynamicPolicyRulesLength; i++) {
-        for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-          const rulesItem = dynamicPolicyRules[i].rules[j]
-          if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-            this.$message.error(
-              '请正确填写第' +
-                (i + 1) +
-                '动态因子里面的第' +
-                (j + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          }
-          if (!rulesFlag) break
-        }
-        if (!rulesFlag) break
-      }
-      // if (!dynamicPolicyFlag) return
-      return rulesFlag
     },
 
     checkIfChildrenExist (data1, data2) {
@@ -822,7 +677,9 @@ export default {
       // if (this.crowd && this.crowd.isUsedAsTag === 1) {
       //   normalTags = normalTags.filter(item => item.dataSource !== 12)
       // }
+      // 设置标签中，加上了效果指标
       this.tags = [...this.circulationTagDataList, ...normalTags]
+      // 行为标签
       this.actionTags = actionTags
       this.specialTags = specialTags
       console.log('this.tags------------->', this.tags)
