@@ -310,6 +310,8 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
   // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
   // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
+  // 拥有行为标签规则
+  let hasBehaviorRule = false
   const behaviorRulesLength = behaviorRules.length
   let x
   let y = 0
@@ -318,6 +320,9 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   for (x = 0; x < behaviorRulesLength; x++) {
     for (y = 0; y < behaviorRules[x].rules.length; y++) {
       const rulesItem = behaviorRules[x].rules[y]
+      if (rulesItem.dataSource === 8) {
+        hasBehaviorRule = true
+      }
       // 需要验证时，才进行提示
       if (rulesItem.isOldversion && isNeedValidate) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
         Message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
@@ -388,6 +393,19 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         }
       }
     }
+  }
+
+  if (!hasBehaviorRule) {
+    MessageBox.confirm('大数据标签请在设置标签栏填写，是否允许移入设置标签栏?', '提示', {
+      confirmButtonText: '确定',
+      cancelButtonText: '取消',
+      type: 'warning'
+    }).then(() => {
+
+    }).catch(() => {
+
+    })
+    rulesFlag = false
   }
   // if (!rulesFlag) break
 
