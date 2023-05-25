@@ -33,14 +33,19 @@
                 v-text="viewType ? '流转视图': '列表视图'">
               </el-button>
             </div>
-
+            <div class="showAllOrMy">
+              <el-radio-group v-model="showAll" @change="handleShowAllChange">
+                <el-radio :label="true">全部</el-radio>
+                <el-radio :label="false">我的</el-radio>
+              </el-radio-group>
+            </div>
             <div class="search">
               <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select" @keyup.enter.native="getSceneList">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
               </el-input>
             </div>
 
-            <div class="sceneList-wrap">
+            <div class="sceneList-wrap" style="top: 115px">
               <!-- {{sceneList}} -->
               <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
                 <div v-if="sceneList.length === 0" class="no-data-wrap">
@@ -501,6 +506,7 @@ export default {
   },
   data () {
     return {
+      showAll: false,
       conditionEnum: {
         AND: '且',
         OR: '或'
@@ -714,6 +720,10 @@ export default {
     }
   },
   methods: {
+    handleShowAllChange () {
+
+    },
+
     changeViewAndSelectServicer (id) {
       this.viewType = !this.viewType
       this.selectServicer(id)
@@ -1468,5 +1478,9 @@ export default {
   font-size: 12px;
   bottom: -3px;
   color: #999;
+}
+.showAllOrMy {
+  margin: 0 auto 10px;
+  width: 69%;
 }
 </style>
