@@ -59,36 +59,571 @@
         <div class="top-line" ><span class="border-style">方案： {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}</span></div>
       </div>
     </div> -->
+    <!-- <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;"> -->
+    <!-- <div style="display: grid; grid-template-columns:2fr 250px; grid-template-rows: auto; gap: 16px;"> -->
+      <!-- <div style="display: flex; gap: 16px;"> -->
+        <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
+          <div style="display: flex;flex-direction: column; gap: 16px; flex: 1; margin-right: 255px;" >
+            <div class="detail-box">
+              <div class="detail-name" >
+                <span>
+                    {{ selectedServicer.receptionist }}
+                  </span>
+                  <span style="font-size: 14px; color: #666; margin-left: 20px">
+                    人群ID:
+                    {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
+                  </span>
+                </div>
 
-    <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
-      <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
-        <div style="display: grid; grid-template-columns:2fr 310px; grid-template-rows: auto; gap: 16px;">
-          <!-- <div class="servicer-img"></div> -->
-          <div
-            style="display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto;gap: 16px;"
-            :style="{'grid-template-columns': isShowDetailName ? '1fr' : '1fr' }"
-          >
-            <div
-              style="display: grid; grid-template-columns: auto 300px; grid-template-rows:1fr;gap: 16px;"
-            >
-              <div class="detail-box">
+              </div>
+              <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
+              <div v-if="selectedServicer.type !== 1" class="detail-box">
+                <div class="title2">入口条件</div>
+                <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+                <div v-if="entryList.length > 0" class="position-left">
+                  <!-- {{ checkList }} -->
+                  <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
+                  <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 15px">复制</el-button>
+                </div>
+                <div class="set-start">
+
+                  <div v-if="entryList.length === 0" class="no-data-wrap">
+                    <div class="noData"></div>
+                    <!-- 暂时木有内容呀～～ -->
+                  </div>
+
+                  <el-checkbox-group v-model="checkList" @change="checkListChange('entry')">
+                  <div v-for="entry in entryList" :key="entry.id" class="info-class">
+                    <el-checkbox :label="entry.id" :key="entry.id">
+                    </el-checkbox>
+                    <!-- <div class="item-id">{{ entry.id }}</div> -->
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and" v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0 && entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                        <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''" >
+                        {{ entry.link === 'OR' ? '或' : '且' }}
+                        </span>
+                      </div>
+                      <!-- {{entry.rulesJson}} -->
+                      <!-- {{ JSON.parse(entry.rulesJson).rules }} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <template v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
+                        <span class="border-title">普通标签</span>
+                        <div class="rule-string">
+                          <div>
+                            <ShowRule
+                              :rulesJson="JSON.parse(entry.rulesJson)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            >
+                            </ShowRule>
+                            <!-- <div
+                              v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
+                              :key="index"
+                              class="rule-detail"
+                            >
+                              <div v-if="index > 0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
+                              <div class="label-ground">(
+                                <div
+                                  v-for="(childItem,childItemIndex) in item.rules"
+                                  :key="childItem.tagId+childItemIndex"
+                                  class="label-item"
+                                >
+                                  <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                  <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
+
+                                  <template v-if="(childItem.dataSource === 20)">
+                                    <ShowFlowConditionRuleItem
+                                      :childItem="childItem"
+                                      :soureceSignList="soureceSignList"
+                                      >
+                                    </ShowFlowConditionRuleItem>
+                                  </template>
+
+                                  <template v-else>
+                                    <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                    <span class="in">
+                                      <span >{{ childItem.value }}</span>
+                                    </span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                                  </template>
+
+                                </div>)
+                              </div>
+                            </div> -->
+                          </div>
+                        </div>
+                      </template>
+
+                      <template  v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                        <span class="border-title">行为标签</span>
+                        <!-- {{entry.behaviorRulesJson}} -->
+                        <div class="rule-string bav-wrap">
+                          <template>
+                            <MultipleActionTagSelect
+                              ref="multipleActionTagSelect"
+                              :isView="true"
+                              :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
+                            ></MultipleActionTagSelect>
+                          </template>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
+                        <span class="border-title">流转指标</span>
+                        <div class="rule-string">
+                          <div>
+                            <!-- {{entry.flowCondition}} -->
+                            <ShowFlowConditionRule
+                              :flowCondition="JSON.parse(entry.flowCondition)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            ></ShowFlowConditionRule>
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                    </div>
+
+                    <div v-if="havePermissionsToUse" class="drop-class" >
+                      <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
+                        <span class="el-dropdown-link" >
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
+                            编辑
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
+                            删除
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                    </div>
+
+                  </div>
+                  </el-checkbox-group>
+
+                  <!-- 选择了接待员时 且 不是复用的 且 有权限 显示-->
+                  <div class="box-fotter addRule" v-if="havePermissionsToUse">
+                    <!-- <el-button>添加</el-button> -->
+                    <!-- <el-button type="text" icon="el-icon-plus" @click="createClient">新建入口条件</el-button> -->
+                    <el-button type="primary" icon="el-icon-plus" @click="createClient">新建入口条件</el-button>
+                  </div>
+                </div>
+              </div>
+
+              <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
+              <!-- 推荐绑定内容 -->
+              <div v-if="selectedServicer.type !== 1 &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
+                <div class="title2">内容推荐</div>
+                <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
+
+                  <div class="bav-wrap" style="overflow: hidden;">
+                    内容源：
+                    <el-select v-model="selectSourceCode" @change="getUptmRecommendResourceList" class="select-source-sty">
+                      <el-option
+                        v-for="item in sourceList"
+                        :label="item.sourceTitle"
+                        :value="item.sourceCode"
+                        :key="item.sourceCode">
+                      </el-option>
+                    </el-select>
+                  </div>
+
+                  <div v-for="(arr, key) in recommendResourceList" :key="key" class="recommend-list" >
+                    <span class="border-title" >{{ getKeyName(key) }}：</span>
+                    <!-- {{ arr }} -->
+                    <template v-if="arr && arr.length > 0">
+                      <span
+                        v-for="film in arr"
+                        :key="film.id"
+                        class="film-btn"
+                        title="双击复制"
+                        @dblclick="copyText(film.id + '-' + film.title)"
+                      >
+                        <!-- <el-popover
+                          placement="top"
+                          width="150px"
+                          trigger="manual"
+                          content="复制成功"
+                          :value="popoverVisible === film.id + '-' + film.title">
+                          <span slot="reference">{{ film.id }} - {{ film.title }}</span>
+                        </el-popover> -->
+                        <span>{{ film.id }} - {{ film.title }}</span>
+                        <div class="tip" v-if="popoverVisible === film.id + '-' + film.title">
+                          <div class="tip-trangle-bottom"></div>
+                          复制成功
+                        </div>
+                      </span>
+                    </template>
+                    <span v-else class="no-data-text">暂无推荐</span>
+                  </div>
+                  <!-- {{ recommendResourceList }} -->
+                </div>
+              </div>
+
+              <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
+              <div v-if="selectedServicer.type !== 1" class="detail-box">
+                <div class="title2">出口条件</div>
+                <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
+                <div v-if="exportList.length > 0" class="position-left">
+                  <!-- {{ exportCheckList }} -->
+                  <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
+                  <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 15px">复制</el-button>
+                </div>
+                <div class="set-end">
+                  <div v-if="exportList.length === 0" class="no-data-wrap">
+                    <div class="noData"></div>
+                    <!-- 暂时木有内容呀～～ -->
+                  </div>
+                  <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
+                  <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class" :id="exportItem.id"  ref="exportRef">
+                    <el-checkbox :label="exportItem.id" :key="exportItem.id" >
+                    </el-checkbox>
+                    <!-- <div class="item-id">{{ exportItem.id }}</div> -->
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and" v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0 && exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+                        <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
+                        {{ exportItem.link === 'OR' ? '或' : '且' }}
+                        </span>
+                      </div>
+                      <!-- {{exportItem.rulesJson}} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <template v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
+                        <span class="border-title">普通标签</span>
+                        <div class="rule-string" >
+                          <div>
+                            <ShowRule
+                              :rulesJson="JSON.parse(exportItem.rulesJson)"
+                              :soureceSignList="soureceSignList"
+                              :conditionEnum="conditionEnum"
+                            >
+                            </ShowRule>
+                            <!-- <div
+                              v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
+                              :key="index"
+                              class="rule-detail"
+                            >
+                              <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
+                              <div class="label-ground">(
+                                <div
+                                  v-for="(childItem,childItemIndex) in item.rules"
+                                  :key="childItem.tagId+childItemIndex"
+                                  class="label-item"
+                                >
+                                  <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                  <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
+
+                                  <template v-if="(childItem.dataSource === 20)">
+                                    <ShowFlowConditionRuleItem
+                                      :childItem="childItem"
+                                      :soureceSignList="soureceSignList"
+                                      >
+                                    </ShowFlowConditionRuleItem>
+                                  </template>
+
+                                  <template v-else>
+                                    <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                    <span class="in">
+                                      <span >{{ childItem.value }}</span>
+                                    </span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                                  </template>
+
+                                </div>)
+                              </div>
+                            </div> -->
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template  v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+
+                        <span class="border-title">行为标签</span>
+                        <!-- {{exportItem.behaviorRulesJson}} -->
+                        <div class="rule-string bav-wrap">
+                          <template>
+                            <MultipleActionTagSelect
+                              ref="multipleActionTagSelect"
+                              :isView="true"
+                              :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
+                            ></MultipleActionTagSelect>
+                          </template>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
+                        <span class="border-title">流转指标</span>
+                        <div class="rule-string">
+                          <div >
+                            <!-- {{exportItem.flowCondition}} -->
+                            <ShowFlowConditionRule
+                              :flowCondition="JSON.parse(exportItem.flowCondition)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            ></ShowFlowConditionRule>
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                    </div>
+
+                    <!-- 选择了转接待员 -->
+                    <div class="turn-servicer" v-if="exportItem.stopType === 1">
+                      转
+                      <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
+                    </div>
+                    <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
+                    <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse"  class="drop-class">
+                    <!-- <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class"> -->
+                      <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
+                        <span class="el-dropdown-link">
+                          <span>.</span>
+                          <span>.</span>
+                          <span>.</span>
+                        </span>
+                        <el-dropdown-menu slot="dropdown">
+                          <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
+                            编辑
+                          </el-dropdown-item>
+                          <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]" v-if="havePermissionsToUse">
+                            删除
+                          </el-dropdown-item>
+                        </el-dropdown-menu>
+                      </el-dropdown>
+                    </div>
+
+                    <div v-if="exportItem.stopType === 1 && !exportItem.nextId" style="color: red;">
+                      <i class="el-icon-warning"></i>
+                      <span style="font-size: 12px; margin-left: 5px">下一步不可为空</span>
+                    </div>
+
+                  </div>
+                  </el-checkbox-group>
+                  <div class="box-fotter addRule" v-if="havePermissionsToUse" >
+                    <!-- <el-button>添加</el-button> -->
+                    <el-button type="primary" icon="el-icon-plus" @click="createExport">新建出口条件</el-button>
+                  </div>
+                </div>
+              </div>
+
+          </div>
+        </el-scrollbar>
+
+        <div style="position: absolute; bottom: 0; top: 0; right: 0;">
+          <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
+            <div style="display: flex; flex-direction: column; gap: 16px; width:255px; padding: 0 20px 0 16px" >
+
+              <div class="detail-box" v-if="isShowDetailName" style="padding: 0 12px;">
+                <!-- <i @click="openShowDetailName" class="el-icon-arrow-up fold position-right"></i> -->
+                <div>
+                  <!-- <div class="detail-name" >
+                    <span>
+                      {{ selectedServicer.receptionist }}
+                    </span>
+                    <div class="detail-name-border"></div>
+
+                  </div> -->
+                  <div class="d-info" >
+                    <!-- 复用的接待员 -->
+                    <template v-if="isCopiedServicer">
+                      <div class="d-info-box">
+                        <div class="box-title">复用自</div>
+                        <el-button class="box-line" type="text" @click="redirctToScene(selectedServicer.refSceneId, selectedServicer.referenceId)" style="text-align: left; color: #66b1ff">{{ selectedServicer.refSceneName }} - {{ selectedServicer.receptionist }}</el-button>
+                      </div>
+                      <div class="d-info-box">
+                        <div class="box-title ">复用时间</div>
+                        <div class="box-line"><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
+                      </div>
+                      <div class="d-info-box">
+                        <div class="box-title">擅长(可选)</div>
+                        <div class="box-line" >{{ selectedServicer.skillName || '-'}}</div>
+                      </div>
+
+                    </template>
+
+                    <template v-else>
+                      <div class="d-info-box">
+                        <div class="box-title">创建人</div>
+                        <div class="box-line" ><span class="border-style">{{ selectedServicer.userName || '-'}}</span></div>
+                      </div>
+                      <div class="d-info-box">
+                        <div class="box-title ">创建时间</div>
+                        <div class="box-line " ><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
+                      </div>
+                      <div class="d-info-box">
+                        <div class="box-title">擅长(可选)</div>
+                        <div v-if="selectedServicer.id" class="box-line" >
+                          <el-select
+                            ref="selectObj"
+                            v-model="skillValue"
+                            placeholder="选择技能"
+                            @change="selectSkill"
+                            :popper-append-to-body="false"
+                            :disabled="!canUse"
+                            @visible-change="skillValueSelectVisibleChange"
+                          >
+                            <!-- @blur="addOption"
+                            @keyup.enter.native="addOption" -->
+                            <div class="options-wrap">
+
+                              <el-option
+                                v-for="item in skillOptions"
+                                :key="item.id"
+                                :label="item.name"
+                                :value="item.id">
+                              </el-option>
+                            </div>
+
+                            <div class="operate-wrap">
+                              <el-form ref="formInlineRef" :model="formInline" :rules="formInlineRule">
+                                <el-form-item prop="skillName">
+                                  <el-input
+                                    v-model="formInline.skillName"
+                                    placeholder="技能分类"
+                                    @keyup.enter.native="addOption"
+                                    clearable
+                                    >
+                                    <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
+                                  </el-input>
+                                </el-form-item>
+
+                              </el-form>
+                            </div>
+
+                            <div slot="empty" class="operate-wrap">
+                              <el-form ref="formInlineClearRef" :model="formInline" :rules="formInlineRule">
+                                <el-form-item prop="skillName">
+                                  <el-input
+                                    v-model="formInline.skillName"
+                                    placeholder="技能分类"
+                                    @keyup.enter.native="addOption"
+                                    clearable
+                                    >
+                                    <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
+                                  </el-input>
+                                </el-form-item>
+                              </el-form>
+                            </div>
+                          </el-select>
+                        </div>
+                        <div v-else class="box-line" >-</div>
+
+                      </div>
+                    </template>
+
+                    <div class="d-info-box">
+                      <div class="box-title">
+                        接待员类型
+                        <span v-if="isDoudi" class="tip-text">仅支持创建一个兜底</span>
+                      </div>
+                      <div class="box-line">
+                        <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
+                        <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
+                        <span class="border-style">
+                          <!-- isDoudi 代表为兜底接待员  -->
+                          {{ isDoudi ? '兜底接待员' : '普通接待员'}}
+                        </span>
+
+                      </div>
+                    </div>
+                    <div class="d-info-box" v-if="isDoudi">
+                      <div class="box-title">兜底方式</div>
+                      <div class="box-line">
+                        <el-radio-group v-model="radio2" @input="handleTypeChange">
+                          <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
+                          <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
+                        </el-radio-group>
+
+                        <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
+                        <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
+                      </div>
+                    </div>
+                    <div class="d-info-box" style="position: relative">
+                      <div class="box-title">用途描述</div>
+                      <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" style="top: 0" title="编辑我的任务" ></i>
+                      <div class="box-line">
+                        <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
+
+                        <div class="flex-content">
+                          <!-- 复用的接待员 -->
+                          <!-- 有权限的情况 -->
+                          <template v-if="havePermissionsToUse">
+                            <!-- 显示模式 -->
+                            <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
+                              <div>{{ target }}</div>
+                              <!-- <textarea name="description" v-model="target"></textarea> -->
+                            </div>
+                            <!-- <textarea> </textarea> -->
+                            <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
+                            <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                            <!-- 编辑模式 -->
+                            <el-input
+                              v-else
+                              ref="inputPriority"
+                              :autosize="{ minRows: 6}"
+                              type="textarea"
+                              placeholder="请输入内容"
+                              @blur="editStatuChange"
+                              v-model="target"
+                              maxlength="200"
+                              show-word-limit
+                              style="font-size: 14px; ">
+                            </el-input>
+                          </template>
+                          <!-- 没有权限的情况 -->
+                          <template v-else>
+                            {{ target }}
+                          </template>
+                        </div>
+                      </div>
+                    </div>
+
+                    <!-- <div class="d-info-box">
+                      <div class="box-title">业务范围</div>
+                      <div class="box-line" ><span class="border-style">方案： {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}</span></div>
+                    </div> -->
+                  </div>
+                  <!-- <div style="text-align: center;">业务范围</div> -->
+                  <!-- <div class="detail-business-type">
+                    方案：
+
+                    <div class="panel-footer"></div>
+
+                  </div> -->
+                </div>
+              </div>
+              <div v-else class="detail-name-brief" @click="openShowDetailName">
+                {{ selectedServicer.receptionist ? selectedServicer.receptionist.substring(0, 2) : '' }}
+              </div>
+
+              <!-- <div class="detail-box">
                 <div class="target">我的任务（可选）</div>
                 <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
-                <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
                 <div class="flex-content">
-                  <!-- 复用的接待员 -->
-                  <!-- 有权限的情况 -->
+                  复用的接待员
+                  有权限的情况
                   <template v-if="havePermissionsToUse">
-                    <!-- 显示模式 -->
+                    显示模式
                     <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
                       <div>{{ target }}</div>
-                      <!-- <textarea name="description" v-model="target"></textarea> -->
                     </div>
-                    <!-- <textarea> </textarea> -->
-                    <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
-                    <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-                    <!-- 编辑模式 -->
+                    编辑模式
                     <el-input
                       v-else
                       ref="inputPriority"
@@ -102,12 +637,12 @@
                       style="font-size: 14px; ">
                     </el-input>
                   </template>
-                  <!-- 没有权限的情况 -->
+                  没有权限的情况
                   <template v-else>
                     {{ target }}
                   </template>
                 </div>
-              </div>
+              </div> -->
               <div class="detail-box" id="servicer-map">
                 <div class="target">流转关系</div>
                 <ServicerMap
@@ -118,584 +653,85 @@
                   @selectServicer="(id) => $emit('selectServicer', id)"
                   >
                 </ServicerMap>
-                <el-empty v-else></el-empty>
-              </div>
-            </div>
-            <div class="detail-box">
-              <!-- targetKeyId: {{targetKeyId}}
-              <br/>
-              overview： {{overview}} -->
-              <div class="kpi-wrap">
-                  <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
-                <div>
-                  绩效目标（可选）
-                  <!-- <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
-                  <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
-                  <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span>
-                </div>
-                <!-- {{ canUse }} -->
-                <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i>
-                <div class="detail-kpi">
-                  <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
-                  <!-- <el-descriptions title="" column="2">
-                    <el-descriptions-item label="当前服务满意率">99889</el-descriptions-item>
-                    <el-descriptions-item label="接待用户数">5588</el-descriptions-item>
-                    <el-descriptions-item label="目标">苏州市</el-descriptions-item>
-                    <el-descriptions-item label="满意用户数">123 </el-descriptions-item>
-                  </el-descriptions> -->
-                  <div class="detail-kpi-table">
-                    <div v-if="indicatorsTypelabel">
-                      <span class="kpi-label" style="font-size: 16px;" v-if="indicatorsTypelabel">
-                        {{ indicatorsTypelabel }}
-                      </span>
-                      <span style="flex: 1; text-align: center;">
-                        <!-- {{ targetKeyId }} -->
-                        <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
-                        <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
-                      </span>
-                    </div>
-                    <div>
-                      <span class="kpi-label">目标</span>
-                      <span class="kpi-value">
-                        <!-- {{ targetValue }} -->
-                        <!-- {{ parseInt(this.targetValue) }} -->
-
-                          <span v-if="!isEditValue" @click="editTargetValue">
-                            <span>{{ targetValue }}</span>
-                            <i v-if="selectedServicer.id && canUse" class="el-icon-edit text-over"></i>
-                          </span>
-                          <el-input
-                            v-else
-                            ref="inputValue"
-                            placeholder="请输入"
-                            @blur="editTargetValueChange"
-                            v-model="targetValue"
-                            style="width: 100px">
-                          </el-input>
-
-                      </span>
-                    </div>
-                    <div>
-                      <span class="kpi-label">接待用户数</span>
-                      <span class="kpi-value">{{ overview.receptionUv || '-' }}</span>
-                    </div>
-
-                    <div>
-                      <span class="kpi-label">满意用户数</span>
-                      <span class="kpi-value">{{ overview.contentUv || '-' }}</span>
-                    </div>
-                  </div>
-
-                  <!-- <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index"> -->
-                    <!-- <div v-for="(chart, key) in rowObj" :key="key"> -->
-
-                  <div >
-                    <!-- {{ allChartData }} -->
-                    <div v-if="allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
-                      <!-- <el-empty description="暂无数据"></el-empty> -->
-                    <!-- <div v-else class="chart-empty"></div> -->
-                  </div>
-                    <!-- </div> -->
-                  <!-- </el-row> -->
-
-                  <!--  -->
-
-                  <div class="panel-footer"></div>
-                </div>
-              </div>
-            </div>
-          </div>
-          <div class="detail-box" v-if="isShowDetailName">
-            <!-- <el-button type="text" @click="openShowDetailName" style="position: absolute; right: 10px; top: 10px; z-index: 9;">收起</el-button > -->
-            <i @click="openShowDetailName" class="el-icon-arrow-up fold position-right"></i>
-            <div>
-              <div class="detail-name" >
-                <span>
-                  {{ selectedServicer.receptionist }}
-                </span>
-                <div class="detail-name-border"></div>
-
-              </div>
-              <div class="d-info" >
-                <div class="d-info-box">
-                  <div class="box-title">
-                    接待员类型
-                    <span v-if="isDoudi" class="tip-text">仅支持创建一个兜底</span>
-                  </div>
-                  <div class="box-line">
-                    <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
-                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
-                    <span class="border-style">
-                      <!-- isDoudi 代表为兜底接待员  -->
-                      {{ isDoudi ? '兜底接待员' : '普通接待员'}}
-                    </span>
-
-                  </div>
-                </div>
-                <div class="d-info-box" v-if="isDoudi">
-                  <div class="box-title">兜底方式</div>
-                  <div class="box-line">
-                    <el-radio-group v-model="radio2" @input="handleTypeChange">
-                      <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
-                      <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
-                    </el-radio-group>
-
-                    <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
-                    <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
-                  </div>
-                </div>
-                <!-- 复用的接待员 -->
-                <template v-if="isCopiedServicer">
-                  <div class="d-info-box">
-                    <div class="box-title">复用自</div>
-                    <el-button class="box-line" type="text" @click="redirctToScene(selectedServicer.refSceneId, selectedServicer.referenceId)" style="text-align: left; color: #66b1ff">{{ selectedServicer.refSceneName }} - {{ selectedServicer.receptionist }}</el-button>
-                  </div>
-                  <div class="d-info-box">
-                    <div class="box-title ">复用时间</div>
-                    <div class="box-line"><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
-                  </div>
-                  <div class="d-info-box">
-                    <div class="box-title">擅长(可选)</div>
-                    <div class="box-line" >{{ selectedServicer.skillName || '-'}}</div>
-                  </div>
-
-                </template>
-
-                <template v-else>
-                  <div class="d-info-box">
-                    <div class="box-title">创建人</div>
-                    <div class="box-line" ><span class="border-style">{{ selectedServicer.userName || '-'}}</span></div>
-                  </div>
-                  <div class="d-info-box">
-                    <div class="box-title ">创建时间</div>
-                    <div class="box-line " ><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
-                  </div>
-                  <div class="d-info-box">
-                    <div class="box-title">擅长(可选)</div>
-                    <div v-if="selectedServicer.id" class="box-line" >
-                      <el-select
-                        ref="selectObj"
-                        v-model="skillValue"
-                        placeholder="选择技能"
-                        @change="selectSkill"
-                        :popper-append-to-body="false"
-                        :disabled="!canUse"
-                        @visible-change="skillValueSelectVisibleChange"
-                      >
-                        <!-- @blur="addOption"
-                        @keyup.enter.native="addOption" -->
-                        <div class="options-wrap">
-
-                          <el-option
-                            v-for="item in skillOptions"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id">
-                          </el-option>
-                        </div>
-
-                        <div class="operate-wrap">
-                          <el-form ref="formInlineRef" :model="formInline" :rules="formInlineRule">
-                            <el-form-item prop="skillName">
-                              <el-input
-                                v-model="formInline.skillName"
-                                placeholder="技能分类"
-                                @keyup.enter.native="addOption"
-                                clearable
-                                >
-                                <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
-                              </el-input>
-                            </el-form-item>
-
-                          </el-form>
-                        </div>
-
-                        <div slot="empty" class="operate-wrap">
-                          <el-form ref="formInlineClearRef" :model="formInline" :rules="formInlineRule">
-                            <el-form-item prop="skillName">
-                              <el-input
-                                v-model="formInline.skillName"
-                                placeholder="技能分类"
-                                @keyup.enter.native="addOption"
-                                clearable
-                                >
-                                <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
-                              </el-input>
-                            </el-form-item>
-                          </el-form>
-                        </div>
-                      </el-select>
-                    </div>
-                    <div v-else class="box-line" >-</div>
-
-                  </div>
-                </template>
-                <div class="d-info-box">
-                  <div class="box-title">业务范围</div>
-                  <div class="box-line" ><span class="border-style">方案： {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}</span></div>
-                </div>
-              </div>
-              <!-- <div style="text-align: center;">业务范围</div> -->
-              <!-- <div class="detail-business-type">
-                方案：
-
-                <div class="panel-footer"></div>
-
-              </div> -->
-            </div>
-          </div>
-          <div v-else class="detail-name-brief" @click="openShowDetailName">
-            {{ selectedServicer.receptionist ? selectedServicer.receptionist.substring(0, 2) : '' }}
-          </div>
-        </div>
-
-        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
-        <div v-if="selectedServicer.type !== 1" class="detail-box">
-          <div class="title2">服务对象选择（可选）</div>
-          <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
-          <div v-if="entryList.length > 0" class="position-left">
-            <!-- {{ checkList }} -->
-            <el-checkbox :indeterminate="isIndeterminate" v-model="checkAll" @change="handleCheckAllChange">全选</el-checkbox>
-            <el-button :disabled="checkList.length === 0" type="text" @click="copyRules(entryList, 'entry')" style="margin-left: 15px">复制</el-button>
-          </div>
-          <div class="set-start">
-
-            <div v-if="entryList.length === 0" class="no-data-wrap">
-              <div class="noData"></div>
-              <!-- 暂时木有内容呀～～ -->
-            </div>
-
-            <el-checkbox-group v-model="checkList" @change="checkListChange('entry')">
-            <div v-for="entry in entryList" :key="entry.id" class="info-class">
-              <el-checkbox :label="entry.id" :key="entry.id">
-              </el-checkbox>
-              <!-- <div class="item-id">{{ entry.id }}</div> -->
-              <div class="border-line"  style="position: relative;">
-                <div class="outer-and" v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0 && entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
-                  <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''" >
-                  {{ entry.link === 'OR' ? '或' : '且' }}
-                  </span>
-                </div>
-                <!-- {{entry.rulesJson}} -->
-                <!-- {{ JSON.parse(entry.rulesJson).rules }} -->
-                <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                <template v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
-                  <span class="border-title">普通标签</span>
-                  <div class="rule-string">
-                    <div>
-                      <ShowRule
-                        :rulesJson="JSON.parse(entry.rulesJson)"
-                        :conditionEnum="conditionEnum"
-                        :soureceSignList="soureceSignList"
-                      >
-                      </ShowRule>
-                      <!-- <div
-                        v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
-                        :key="index"
-                        class="rule-detail"
-                      >
-                        <div v-if="index > 0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
-                        <div class="label-ground">(
-                          <div
-                            v-for="(childItem,childItemIndex) in item.rules"
-                            :key="childItem.tagId+childItemIndex"
-                            class="label-item"
-                          >
-                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                            <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
-
-                            <template v-if="(childItem.dataSource === 20)">
-                              <ShowFlowConditionRuleItem
-                                :childItem="childItem"
-                                :soureceSignList="soureceSignList"
-                                >
-                              </ShowFlowConditionRuleItem>
-                            </template>
-
-                            <template v-else>
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                            </template>
-
-                          </div>)
-                        </div>
-                      </div> -->
-                    </div>
-                  </div>
-                </template>
-
-                <template  v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
-                  <span class="border-title">行为标签</span>
-                  <!-- {{entry.behaviorRulesJson}} -->
-                  <div class="rule-string bav-wrap">
-                    <template>
-                      <MultipleActionTagSelect
-                        ref="multipleActionTagSelect"
-                        :isView="true"
-                        :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
-                      ></MultipleActionTagSelect>
-                    </template>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
-                  </div>
-                </template>
-
-                <template v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
-                  <span class="border-title">流转指标</span>
-                  <div class="rule-string">
-                    <div>
-                      <!-- {{entry.flowCondition}} -->
-                      <ShowFlowConditionRule
-                        :flowCondition="JSON.parse(entry.flowCondition)"
-                        :conditionEnum="conditionEnum"
-                        :soureceSignList="soureceSignList"
-                      ></ShowFlowConditionRule>
-
-                    </div>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
-                  </div>
-                </template>
-                <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                <span v-else>暂无数据</span>
               </div>
 
-              <div v-if="havePermissionsToUse" class="drop-class" >
-                <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                  <span class="el-dropdown-link" >
-                    <span>.</span>
-                    <span>.</span>
-                    <span>.</span>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
-                      编辑
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-
-            </div>
-            </el-checkbox-group>
-
-            <!-- 选择了接待员时 且 不是复用的 且 有权限 显示-->
-            <div class="box-fotter addRule" v-if="havePermissionsToUse">
-              <!-- <el-button>添加</el-button> -->
-              <!-- <el-button type="text" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button> -->
-              <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
-            </div>
-          </div>
-        </div>
-
-        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
-        <!-- 推荐绑定内容 -->
-        <div v-if="selectedServicer.type !== 1 &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
-          <div class="title2">推荐绑定内容</div>
-          <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
-
-            <div class="bav-wrap" style="overflow: hidden;">
-              内容源：
-              <el-select v-model="selectSourceCode" @change="getUptmRecommendResourceList" class="select-source-sty">
-                <el-option
-                  v-for="item in sourceList"
-                  :label="item.sourceTitle"
-                  :value="item.sourceCode"
-                  :key="item.sourceCode">
-                </el-option>
-              </el-select>
-            </div>
-
-            <div v-for="(arr, key) in recommendResourceList" :key="key" class="recommend-list" >
-              <span class="border-title" >{{ getKeyName(key) }}：</span>
-              <!-- {{ arr }} -->
-              <template v-if="arr && arr.length > 0">
-                <span
-                  v-for="film in arr"
-                  :key="film.id"
-                  class="film-btn"
-                  title="双击复制"
-                  @dblclick="copyText(film.id + '-' + film.title)"
-                >
-                  <!-- <el-popover
-                    placement="top"
-                    width="150px"
-                    trigger="manual"
-                    content="复制成功"
-                    :value="popoverVisible === film.id + '-' + film.title">
-                    <span slot="reference">{{ film.id }} - {{ film.title }}</span>
-                  </el-popover> -->
-                  <span>{{ film.id }} - {{ film.title }}</span>
-                  <div class="tip" v-if="popoverVisible === film.id + '-' + film.title">
-                    <div class="tip-trangle-bottom"></div>
-                    复制成功
+              <div class="detail-box">
+                <!-- targetKeyId: {{targetKeyId}}
+                <br/>
+                overview： {{overview}} -->
+                <div class="kpi-wrap">
+                    <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
+                  <div>
+                    绩效目标（可选）
+                    <!-- <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
+                    <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
+                    <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span>
                   </div>
-                </span>
-              </template>
-              <span v-else class="no-data-text">暂无推荐</span>
-            </div>
-            <!-- {{ recommendResourceList }} -->
-          </div>
-        </div>
+                  <!-- {{ canUse }} -->
+                  <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i>
+                  <div class="detail-kpi">
+                    <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
 
-        <!-- 当选择兜底接待员时，不展示服务对象选择、推荐绑定内容、服务终止条件 -->
-        <div v-if="selectedServicer.type !== 1" class="detail-box">
-          <div class="title2">服务终止条件（可选）</div>
-          <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
-          <div v-if="exportList.length > 0" class="position-left">
-            <!-- {{ exportCheckList }} -->
-            <el-checkbox :indeterminate="isIndeterminate2" v-model="checkAll2" @change="handleCheckAllChange2">全选</el-checkbox>
-            <el-button :disabled="exportCheckList.length === 0" type="text" @click="copyRules(exportList, 'export')" style="margin-left: 15px">复制</el-button>
-          </div>
-          <div class="set-end">
-            <div v-if="exportList.length === 0" class="no-data-wrap">
-              <div class="noData"></div>
-              <!-- 暂时木有内容呀～～ -->
-            </div>
-            <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
-            <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class" :id="exportItem.id"  ref="exportRef">
-              <el-checkbox :label="exportItem.id" :key="exportItem.id" >
-              </el-checkbox>
-              <!-- <div class="item-id">{{ exportItem.id }}</div> -->
-              <div class="border-line"  style="position: relative;">
-                <div class="outer-and" v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0 && exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
-                  <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
-                  {{ exportItem.link === 'OR' ? '或' : '且' }}
-                  </span>
-                </div>
-                <!-- {{exportItem.rulesJson}} -->
-                <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
-                <template v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
-                  <span class="border-title">普通标签</span>
-                  <div class="rule-string" >
-                    <div>
-                      <ShowRule
-                        :rulesJson="JSON.parse(exportItem.rulesJson)"
-                        :soureceSignList="soureceSignList"
-                        :conditionEnum="conditionEnum"
-                      >
-                      </ShowRule>
-                      <!-- <div
-                        v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
-                        :key="index"
-                        class="rule-detail"
-                      >
-                        <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
-                        <div class="label-ground">(
-                          <div
-                            v-for="(childItem,childItemIndex) in item.rules"
-                            :key="childItem.tagId+childItemIndex"
-                            class="label-item"
-                          >
-                            <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
-                            <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
+                    <!-- <div class="detail-kpi-table">
+                      <div v-if="indicatorsTypelabel">
+                        <span class="kpi-label" style="font-size: 16px;" v-if="indicatorsTypelabel">
+                          {{ indicatorsTypelabel }}
+                        </span>
+                        <span style="flex: 1; text-align: center;">
+                          <span class="kpi-value" v-if="targetKeyId === 'payRate'">{{ toPercent(overview[targetKeyId]) }}</span>
+                          <span class="kpi-value" v-else>{{ overview[targetKeyId] }}</span>
+                        </span>
+                      </div>
+                      <div>
+                        <span class="kpi-label">目标</span>
+                        <span class="kpi-value">
+                            <span v-if="!isEditValue" @click="editTargetValue">
+                              <span>{{ targetValue }}</span>
+                              <i v-if="selectedServicer.id && canUse" class="el-icon-edit text-over"></i>
+                            </span>
+                            <el-input
+                              v-else
+                              ref="inputValue"
+                              placeholder="请输入"
+                              @blur="editTargetValueChange"
+                              v-model="targetValue"
+                              style="width: 100px">
+                            </el-input>
 
-                            <template v-if="(childItem.dataSource === 20)">
-                              <ShowFlowConditionRuleItem
-                                :childItem="childItem"
-                                :soureceSignList="soureceSignList"
-                                >
-                              </ShowFlowConditionRuleItem>
-                            </template>
+                        </span>
+                      </div>
+                      <div>
+                        <span class="kpi-label">接待用户数</span>
+                        <span class="kpi-value">{{ overview.receptionUv || '-' }}</span>
+                      </div>
 
-                            <template v-else>
-                              <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
-                              <span class="in">
-                                <span >{{ childItem.value }}</span>
-                              </span>
-                              <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
-                            </template>
+                      <div>
+                        <span class="kpi-label">满意用户数</span>
+                        <span class="kpi-value">{{ overview.contentUv || '-' }}</span>
+                      </div>
+                    </div> -->
 
-                          </div>)
-                        </div>
-                      </div> -->
-
-                    </div>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
-                  </div>
-                </template>
-
-                <template  v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
-
-                  <span class="border-title">行为标签</span>
-                  <!-- {{exportItem.behaviorRulesJson}} -->
-                  <div class="rule-string bav-wrap">
-                    <template>
-                      <MultipleActionTagSelect
-                        ref="multipleActionTagSelect"
-                        :isView="true"
-                        :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
-                      ></MultipleActionTagSelect>
-                    </template>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
-                  </div>
-                </template>
-
-                <template v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
-                  <span class="border-title">流转指标</span>
-                  <div class="rule-string">
                     <div >
-                      <!-- {{exportItem.flowCondition}} -->
-                      <ShowFlowConditionRule
-                        :flowCondition="JSON.parse(exportItem.flowCondition)"
-                        :conditionEnum="conditionEnum"
-                        :soureceSignList="soureceSignList"
-                      ></ShowFlowConditionRule>
-
+                      <!-- {{ allChartData }} -->
+                      <div v-if="allChartData[targetKeyId] && allChartData[targetKeyId].series && allChartData[targetKeyId].series.length > 0" :ref="targetKeyId" :id="targetKeyId" class="chart-div"></div>
+                        <!-- <el-empty description="暂无数据"></el-empty> -->
+                      <!-- <div v-else class="chart-empty"></div> -->
                     </div>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
+                      <!-- </div> -->
+                    <!-- </el-row> -->
+
+                    <!--  -->
+
+                    <div class="panel-footer"></div>
                   </div>
-                </template>
-                <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                </div>
               </div>
-
-              <!-- 选择了转接待员 -->
-              <div class="turn-servicer" v-if="exportItem.stopType === 1">
-                转
-                <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
-              </div>
-              <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
-              <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse"  class="drop-class">
-              <!-- <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class"> -->
-                <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
-                  <span class="el-dropdown-link">
-                    <span>.</span>
-                    <span>.</span>
-                    <span>.</span>
-                  </span>
-                  <el-dropdown-menu slot="dropdown">
-                    <el-dropdown-item class="clearfix" :command="['editExport', exportItem]">
-                      编辑
-                    </el-dropdown-item>
-                    <el-dropdown-item class="clearfix" :command="['deleteExport', exportItem]" v-if="havePermissionsToUse">
-                      删除
-                    </el-dropdown-item>
-                  </el-dropdown-menu>
-                </el-dropdown>
-              </div>
-
-              <div v-if="exportItem.stopType === 1 && !exportItem.nextId" style="color: red;">
-                <i class="el-icon-warning"></i>
-                <span style="font-size: 12px; margin-left: 5px">下一步不可为空</span>
-              </div>
-
             </div>
-            </el-checkbox-group>
-            <div class="box-fotter addRule" v-if="havePermissionsToUse" >
-              <!-- <el-button>添加</el-button> -->
-              <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
-            </div>
-          </div>
+          </el-scrollbar>
         </div>
-
-      </div>
-    </el-scrollbar>
+      <!-- </div> -->
+    <!-- </el-scrollbar> -->
 
     <el-dialog
       :title="(editClientRow ? '编辑' : '新建')+ '服务对象选择'"
@@ -1548,8 +1584,10 @@ export default {
       const dialogRef = this.$refs.exportClientDialog
 
       const tagIds = dialogRef.checkedList.join(',')
-      // const rulesJson = JSON.stringify(dialogRef.rulesJson)
-      // const behaviorRulesJson = JSON.stringify(dialogRef.behaviorRulesJson)
+      // debugger
+      // const tagList = dialogRef.tags.map(item => item.tagId)
+      // const tagIds = tagList.join(',')
+
       const { rulesJson, behaviorRulesJson } = data
 
       const stopType = dialogRef.form.stopType // 处理操作
@@ -1587,7 +1625,7 @@ export default {
       })
     },
 
-    // 新建服务对象筛选
+    // 新建入口条件
     createClient () {
       this.editClientRow = undefined
       this.clientDialogVisible = true
@@ -1939,6 +1977,13 @@ export default {
         //   bottom: '3%',
         //   containLabel: false
         // },
+        grid: {
+          left: '2%',
+          right: '2%',
+          bottom: '10%',
+          containLabel: true,
+          borderWidth: '0'
+        },
         title: {
           text: title
           // text: 'Main Title',
