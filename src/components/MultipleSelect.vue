@@ -535,6 +535,30 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
+          <el-select
+            style="width: 180px"
+            v-model="selectValue"
+            multiple
+            filterable
+            remote
+            reserve-keyword
+            :collapse-tags="true"
+            placeholder="添加指标"
+            :remote-method="remoteMethod"
+            v-loadmore="{'methord': handelQiboLoadmore}"
+            @change="selectChange($event)"
+            :loading="loading">
+            <el-option
+              v-for="item in options"
+              :key="item.tagId"
+              :label="item.tagName"
+              :value="item.tagId">
+              <span
+                :class="dataSourceColorClassEnum[item.dataSource]"
+                >{{ item.tagName }}
+              </span>
+            </el-option>
+          </el-select>
 
           <!-- <i class="el-icon-top" style="font-size: 28px;"></i> -->
           <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
@@ -852,7 +876,7 @@
 
 <script>
 import RuleCom from '@/components/dynamicPeople/ruleComs/RuleCom.vue'
-import { dataSourceColorEnum } from '@/utils/tags.js'
+import { dataSourceColorEnum, dataSourceColorClassEnum } from '@/utils/tags.js'
 
 export default {
   components: {
@@ -860,6 +884,19 @@ export default {
   },
   data () {
     return {
+      // 添加指标
+      remoteMethodParams: {
+        pageNum: 1,
+        pageSize: 20,
+        s: '',
+        isStoryline: 1
+      },
+      totalPages: 0,
+      options: [],
+      selectValue: [],
+      list: [],
+      loading: false,
+
       showHitTip: true,
       tipVisible: false,
       cache: {},
@@ -915,6 +952,14 @@ export default {
       type: Array,
       default: () => []
     },
+    checkedList: {
+      type: Array,
+      default: () => []
+    },
+    allTagList: {
+      type: Array,
+      default: () => []
+    },
     specialTags: {
       type: Array,
       default: () => []
@@ -939,9 +984,18 @@ export default {
   computed: {
     dataSourceColorEnum () {
       return dataSourceColorEnum
+    },
+    dataSourceColorClassEnum () {
+      return dataSourceColorClassEnum
     }
   },
   watch: {
+    checkedList: {
+      handler (val) {
+        this.selectValue = val
+      },
+      immediate: true
+    },
     tags: {
       handler (val) {
         this.getTagAttrChild = {}
@@ -968,6 +1022,62 @@ export default {
     }
   },
   methods: {
+    // 选中指标
+    selectChange () {
+      const selectValues = this.selectValue
+
+      const allOptions = this.options.concat(this.allTagList)
+
+      const selectValueList = allOptions.filter(item => { return selectValues.includes(item.tagId) }) || []
+      // 去重
+      const uniqueArray = selectValueList.filter((item, index, array) => {
+        return array.findIndex(obj => obj.tagId === item.tagId) === index
+      })
+
+      this.$emit('emitTags', uniqueArray)
+    },
+    handelQiboLoadmore () {
+      if (this.remoteMethodParams.pageNum < this.totalPages) {
+        this.remoteMethodParams.pageNum++ // 滚动加载翻页
+        this.remoteMethod()
+      }
+    },
+    remoteMethod (query) {
+      console.log(this.remoteMethodParams)
+
+      // 是否是加载更多
+      const isLoadMore = query === undefined
+
+      // 重置
+      if (!isLoadMore) {
+        this.remoteMethodParams.pageNum = 1
+        this.filmModelTagOptions = []
+        this.remoteMethodParams.s = query
+      }
+
+      this.loading = true
+
+      const params = {
+        ...this.remoteMethodParams
+      }
+
+      this.$service.policyTagSeach(params).then(data => {
+        this.totalPages = data.pageInfo.pages // 总页数
+
+        const list = data.pageInfo.list.map(item => {
+          return {
+            ...item,
+            dataSource: item.tDataSource
+          }
+        })
+        this.options = !isLoadMore ? list : this.options.concat(list)
+
+        this.loading = false
+      }).catch(() => {
+        this.options = []
+        this.loading = false
+      })
+    },
     getChild (childItem) {
       const obj = this.tags.filter(item => item.tagId === childItem.tagId)
       return obj && obj.child ? obj.child : []
