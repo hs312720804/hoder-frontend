@@ -298,23 +298,33 @@
       </div>
 
       <template v-if="!viewType && isShowSceneChartData">
-        <div class="box" v-loading="getSceneFlowChartLoading">
+        <div class="box" v-loading="getSceneFlowChartLoading" style="padding-right: 20px;">
           <SceneMap
             :chartData="sceneChartData"
             :selectedScene="selectedScene"
             @selectServicer="changeViewAndSelectServicer"
             @showRuleDetail="item => editClientRow = item"
           ></SceneMap>
-          <div style="display: grid; grid-template-columns: 50px auto; margin-top: 0px;">
-            <!-- {{ editClientRow }} -->
+          <div style="display: grid; grid-template-columns: 50px auto" v-if="editClientRow.id">
+
             {{ editClientRow.id }}
-            <showAllRule
+            <showAndUpdateRule
               v-if="editClientRow.id"
-              :entry="editClientRow"
+              :ruleItem="editClientRow"
               :conditionEnum="conditionEnum"
               :soureceSignList="soureceSignList"
+              :servicer="servicer"
+              :havePermissionsToUse="havePermissionsToUse"
+              :isCopiedServicer="isCopiedServicer"
+              :canUse="sceneCanReuse"
+              :servicerListFilterSelect="servicerListFilterSelect"
+              :selectedScene="selectedScene"
+              :selectedServicer="{id: editClientRow.receptionistId}"
+              @updataExportList="updataExportList"
+              @updataEntryList="updataEntryList"
             >
-            </showAllRule>
+            </showAndUpdateRule>
+
           </div>
         </div>
       </template>
@@ -486,7 +496,7 @@ import OneDrop from './oneDrop/Index'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
 import SceneMap from './mapShow/sceneMap.vue'
-import showAllRule from '@/views/storyLine/com/showAllRule.vue'
+import showAndUpdateRule from '@/views/storyLine/com/showAndUpdateRule.vue'
 
 export default {
   components: {
@@ -496,7 +506,7 @@ export default {
     MultiAdd,
     OneDrop,
     SceneMap,
-    showAllRule
+    showAndUpdateRule
   },
 
   provide () {
@@ -663,6 +673,11 @@ export default {
     // 过滤掉当前选择接待员，获得其他接待员
     sceneListFilterSelect () {
       return this.sceneList.filter(item => item.id !== this.activeIndex)
+    },
+    havePermissionsToUse () {
+      // canUse - 该场景是否有权限
+      // isCopiedServicer - 是否为复用的接待员 true-是  false-否
+      return this.selectedServicer.id && !this.isCopiedServicer && this.sceneCanReuse
     }
   },
   watch: {
@@ -720,6 +735,21 @@ export default {
     }
   },
   methods: {
+    updataExportList () {
+      this.getExportListByReceptionistId()
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
+      this.getSceneFlowChart()
+      // this.editClientRow = {}
+    },
+    updataEntryList () {
+      this.getEntryListByReceptionistId()
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
+      this.getSceneFlowChart()
+      // this.editClientRow = {}
+    },
+
     handleShowAllChange () {
 
     },
@@ -744,6 +774,34 @@ export default {
         this.getSceneFlowChartLoading = false
         this.sceneChartData = res
         this.isShowSceneChartData = true
+
+        // 当流转视图中选中了入口或者出口，编辑之后需要在这里更新编辑后的数据
+        if (res.groupServicer.length > 0 && this.editClientRow.id) {
+          const groupServicer = res.groupServicer
+          let servicerList = []
+          groupServicer.forEach(item => {
+            if (item.child) {
+              servicerList = servicerList.concat(item.child)
+            } else {
+              servicerList.push(item)
+            }
+          })
+          if (servicerList.length > 0) {
+            const editClientRow = this.editClientRow
+            const servicer = servicerList.find(item => { return editClientRow.receptionistId === item.id })
+            const entryConditions = servicer.entryConditions || []
+            const exportConditions = servicer.exportConditions || []
+            const newEditClientRow = entryConditions.find(item => { return editClientRow.id === item.id })
+            const newEditClientRow2 = exportConditions.find(item => { return editClientRow.id === item.id })
+            if (newEditClientRow) {
+              this.editClientRow = { ...newEditClientRow, ruleType: 'entry' }
+            } else if (newEditClientRow2) {
+              this.editClientRow = { ...newEditClientRow2, ruleType: 'export' }
+            } else {
+              this.editClientRow = {}
+            }
+          }
+        }
       })
     },
     launchDetail (pid) {

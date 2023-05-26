@@ -11,7 +11,7 @@
           :key="eItem.id"
           :id="`${idPer}${eItem.id}`"
           class="w"
-          @dblclick="openDetail(eItem)"
+          @dblclick="openDetail({...eItem, ruleType: 'entry'})"
         >
           {{ eItem.id }}
         </span>
@@ -34,7 +34,7 @@
           :id="`${idPer}${eItem.id}`"
           class="w"
           :class="getClass(eItem.stopType)"
-          @dblclick="openDetail(eItem)"
+          @dblclick="openDetail({...eItem, ruleType: 'export'})"
         >
           {{ eItem.id }}
         </span>
@@ -43,33 +43,15 @@
       </div>
     </div>
 
-    <el-drawer title="详情" :visible.sync="drawer" :append-to-body="true">
-      <!-- <createClientDialog
-        ref="exportClientDialog"
-        :editRow="editExportRow"
-        type="export"
-        :servicerListFilterSelect="servicerListFilterSelect"
-        :options="options"
-      ></createClientDialog> -->
-      <showAllRule
-        :entry="editClientRow"
-        :conditionEnum="conditionEnum"
-        :soureceSignList="soureceSignList"
-      >
-      </showAllRule>
-    </el-drawer>
-
   </div>
 </template>
 <script>
 import { options } from '@/views/storyLine/utils'
-import showAllRule from '@/views/storyLine/com/showAllRule.vue'
 
 // console.log('lidao->', ForceDirected())
 export default {
   name: 's-com',
   components: {
-    showAllRule
   },
 
   props: {
@@ -122,13 +104,15 @@ export default {
       // alert(item.id)
     },
     getClass (type) {
-      const maps = {
-        4: 'red', // 不喜欢，切换
-        2: 'green', // 直接转化
-        1: 'yellow', // 继续种草
-        3: 'purple' // 继续观察
-      }
-      return maps[type]
+      // const maps = {
+      //   4: 'red', // 不喜欢，切换
+      //   2: 'green', // 直接转化
+      //   1: 'yellow', // 继续种草
+      //   3: 'purple' // 继续观察
+      // }
+      const obj = this.options.find(item => item.value === type)
+
+      return obj ? obj.color : ''
     }
   }
 }

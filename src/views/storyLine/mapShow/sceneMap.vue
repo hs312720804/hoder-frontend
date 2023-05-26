@@ -17,7 +17,11 @@
         <div class="circle enter"></div>
         <div class="legend-title">进入条件</div>
       </div>
-      <div class="legend-wrap-item">
+      <div class="legend-wrap-item" v-for="item in options" :key="item.value">
+        <div class="circle" :class="item.color"></div>
+        <div class="legend-title">{{ item.label }}</div>
+      </div>
+      <!-- <div class="legend-wrap-item">
         <div class="circle red"></div>
         <div class="legend-title">不喜欢，切换</div>
       </div>
@@ -32,7 +36,7 @@
       <div class="legend-wrap-item">
         <div class="circle purple"></div>
         <div class="legend-title">继续观察</div>
-      </div>
+      </div> -->
       <div class="legend-wrap-item">
         <div class="dashed-box"></div>
         <div class="legend-title">分组</div>
@@ -59,6 +63,7 @@ import { jsPlumb } from 'jsplumb'
 
 import JsplumbCom from './jsplumbCom/Index.vue'
 import { zoom } from './jsplumbCom/setMoveAndDrag'
+import { options } from '@/views/storyLine/utils'
 
 export default {
   name: 'crowdCirculationTrack',
@@ -83,7 +88,8 @@ export default {
         ['0_in_2', '5_in_8'],
         ['0_in_3111', '5_in_8']
         // ['0_in_31', '0_34in_4']
-      ]
+      ],
+      options: options
     }
   },
   watch: {

@@ -395,10 +395,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
     }
   }
 
-  if (!hasBehaviorRule) {
-    MessageBox.confirm('大数据标签请在设置标签栏填写，是否允许移入设置标签栏?', '提示', {
-      confirmButtonText: '确定',
-      cancelButtonText: '取消',
+  if (behaviorRules.length > 0 && !hasBehaviorRule) {
+    MessageBox.confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+      confirmButtonText: '确定移入',
+      cancelButtonText: '不保存',
       type: 'warning'
     }).then(() => {
 
