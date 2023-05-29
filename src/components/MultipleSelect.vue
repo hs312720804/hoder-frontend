@@ -887,7 +887,7 @@ export default {
       // 添加指标
       remoteMethodParams: {
         pageNum: 1,
-        pageSize: 20,
+        pageSize: 30,
         s: '',
         isStoryline: 1
       },
@@ -1214,6 +1214,10 @@ export default {
       })
     },
     fetchTagSuggestions (tagId) {
+      // 已经有的就不重新请求了
+      if (this.cache[tagId]) {
+        return
+      }
       this.$service
         // .getTagAttr({ tagId: tagId, pageSize: this.tagInitSize, pageNum: 1 })
         .getTagAttr({ tagId: tagId, pageNum: 1 })

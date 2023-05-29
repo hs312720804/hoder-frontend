@@ -19,7 +19,7 @@
       </div>
       <div class="legend-wrap-item" v-for="item in options" :key="item.value">
         <div class="circle" :class="item.color"></div>
-        <div class="legend-title">{{ item.label }}</div>
+        <div class="legend-title">{{ item.legendTitle }}</div>
       </div>
       <!-- <div class="legend-wrap-item">
         <div class="circle red"></div>

@@ -1,5 +1,5 @@
 import { MessageBox, Message } from 'element-ui'
-import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
+// import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
@@ -30,11 +30,13 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
       : true
 
     // 校验【普通标签】里面的【流转指标】
-    const valid3 = await new Promise((resolve, reject) => {
-      return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
-        resolve(valid)
+    const valid3 = _this.$refs.MultipleSelectRef
+      ? await new Promise((resolve, reject) => {
+        return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
+          resolve(valid)
+        })
       })
-    })
+      : true
 
     if (!valid1 || !valid2 || !valid3) return Promise.reject()
   }
@@ -49,8 +51,9 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   const behaviorRules = behaviorRulesJson.rules
 
   // 校验【普通标签】规则 (包括行为标签里面的大数据标签规则)
-  if (!validateForm(rules, behaviorRules, _this, isNeedValidate) && isNeedValidate) {
-    return Promise.reject()
+  const { rulesFlag, operateTpye } = validateForm(rules, behaviorRules, _this, isNeedValidate)
+  if (!rulesFlag && isNeedValidate) {
+    return Promise.reject(operateTpye)
   }
 
   // 添加 tagIds
@@ -109,7 +112,8 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   const data = {
     ...subAttr.returnDefaultData || undefined, // 一些默认返回数据
     rulesJson: JSON.stringify(ruleJson),
-    behaviorRulesJson: JSON.stringify(behaviorRulesJson)
+    behaviorRulesJson: JSON.stringify(behaviorRulesJson),
+    tagIds
   }
 
   // ----------------------- 校验【行为标签】： 收集需校验的ref   start-----------------------------
@@ -220,6 +224,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   const ruleLength = rules.length
   // const dynamicPolicyRulesLength = dynamicPolicyRules.length
   let rulesFlag = true
+  let operateTpye = false
 
   // ------------------- 普通标签规则校验 --------------------------
   for (i = 0; i < ruleLength; i++) {
@@ -247,7 +252,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
           } else { // 一期
             if (
               checkNumMostFour(rulesItem.startDay) &&
-              checkNumMostFour(rulesItem.endDay)
+                checkNumMostFour(rulesItem.endDay)
             ) {
               if (
                 parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
@@ -258,10 +263,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
                 if (isNeedValidate) {
                   Message.error(
                     '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的天数值后面的值必须大于前面的'
+                        (i + 1) +
+                        '设置标签块里面的第' +
+                        (j + 1) +
+                        '行的天数值后面的值必须大于前面的'
                   )
                   rulesFlag = false
                   break
@@ -272,10 +277,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
               if (isNeedValidate) {
                 Message.error(
                   '第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
+                      (i + 1) +
+                      '设置标签块里面的第' +
+                      (j + 1) +
+                      '行的值是大于等于0的整数且不能超过4位数'
                 )
                 rulesFlag = false
                 break
@@ -291,10 +296,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         if ('value' in rulesItem && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
           Message.error(
             '请正确填写第' +
-              (i + 1) +
-              '设置标签块里面的第' +
-              (j + 1) +
-              '行的值！'
+                (i + 1) +
+                '设置标签块里面的第' +
+                (j + 1) +
+                '行的值！'
           )
           rulesFlag = false
           break
@@ -339,16 +344,16 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
       } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
         Message.error(
           '请正确填写第' +
-            (x + 1) +
-            '行为标签块里面的第' +
-            (y + 1) +
-            '行的值！'
+              (x + 1) +
+              '行为标签块里面的第' +
+              (y + 1) +
+              '行的值！'
         )
         rulesFlag = false
         break
       } else if (
         rulesItem.tagType === 'time' &&
-        rulesItem.isDynamicTime === 3
+          rulesItem.isDynamicTime === 3
       ) {
         // 二期之后的
         if (rulesItem.version > 0) {
@@ -358,7 +363,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         } else { // 一期
           if (
             checkNum(rulesItem.startDay) &&
-            checkNum(rulesItem.endDay)
+              checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
@@ -367,10 +372,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
               if (isNeedValidate) {
                 Message.error(
                   '第' +
-                    (x + 1) +
-                    '行为标签块里面的第' +
-                    (y + 1) +
-                    '行的天数值后面的值必须大于前面的'
+                      (x + 1) +
+                      '行为标签块里面的第' +
+                      (y + 1) +
+                      '行的天数值后面的值必须大于前面的'
                 )
                 rulesFlag = false
                 break
@@ -381,10 +386,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
             if (isNeedValidate) {
               Message.error(
                 '第' +
-                  (x + 1) +
-                  '行为标签块里面的第' +
-                  (y + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
+                    (x + 1) +
+                    '行为标签块里面的第' +
+                    (y + 1) +
+                    '行的值是大于等于0的整数且不能超过4位数'
               )
               rulesFlag = false
               break
@@ -396,16 +401,17 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   }
 
   if (behaviorRules.length > 0 && !hasBehaviorRule) {
-    MessageBox.confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
-      confirmButtonText: '确定移入',
-      cancelButtonText: '不保存',
-      type: 'warning'
-    }).then(() => {
-
-    }).catch(() => {
-
-    })
+    // MessageBox.confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+    //   confirmButtonText: '确定移入',
+    //   cancelButtonText: '不保存',
+    //   type: 'warning'
+    // }).then(() => {
+    //   operateTpye = { moveOrClear: 'move' }
+    // }).catch(() => {
+    //   operateTpye = { moveOrClear: 'clear' }
+    // })
     rulesFlag = false
+    operateTpye = { openMoveOrClear: true }
   }
   // if (!rulesFlag) break
 
@@ -429,7 +435,94 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   //   if (!rulesFlag) break
   // }
   // if (!dynamicPolicyFlag) return
-  return rulesFlag
+  // console.log('1111111->', { rulesFlag, operateTpye })
+  // return rulesFlag
+  // console.log('rulesFlag', rulesFlag)
+  // console.log('operateTpye', operateTpye)
+  return { rulesFlag, operateTpye }
+}
+
+function checkNum (num) {
+  if (/(^\d+$)/.test(num)) {
+    return true
+  } else {
+    Message.error('该值为必填项，且必须是大于等于0整数')
+    return false
+  }
+}
+function ReorganizationData (data) { // 将数组变成层级关系
+  let rData = []
+  const len = data.length
+  // for (var i = len - 1; i > -1; i--) {
+  //   debugger
+  //   rData = data[i]
+  //   if (data[i - 1]) {
+  //     rData = this.checkIfChildrenExist(data[i - 1], rData)
+  //   }
+  // }
+  if (len > 1) {
+    for (let i = len - 1; i > -1; i--) {
+      rData = data[i]
+      if (data[i - 1]) {
+        rData = checkIfChildrenExist(data[i - 1], rData)
+      }
+    }
+  } else {
+    rData = data
+    if (data[0] && data[0].child && data[0].child.length > 1) {
+      rData[0].child = ReorganizationData(data[0].child)
+    }
+  }
+  return rData
+}
+
+function checkIfChildrenExist (data1, data2) {
+  if (data1.child == null || data1.child.length === 0) {
+    data1.child.push(data2)
+    return data1
+  }
+  // 递归
+  checkIfChildrenExist(data1.child[0], data2)
+}
+
+// 给 behaviorRulesJson 中的table 添加序号
+function putBehaviorRulesJsonTableIndex (val) {
+  if (val) {
+    let tableIndex = 0
+    const ruleList = val.rules
+    ruleList.forEach(rule => {
+      const ruleGroup = rule.rules
+      ruleGroup.forEach(item => {
+        tableIndex = tableIndex + 1
+        item.table = item.table.split('$')[0] + '$' + tableIndex
+        if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+      })
+    })
+  } else {
+    val = { link: 'AND', condition: 'OR', rules: [] }
+    // val = ''
+  }
+  return val
+}
+
+function getFormPromise (form) {
+  return new Promise(resolve => {
+    form.validate(res => {
+      resolve(res)
+    })
+  })
+}
+
+function checkNumMostFour (num, _this) {
+  const numInt = parseInt(num)
+  if (/(^\d+$)/.test(num) && numInt <= 9999) {
+    return true
+  } else {
+    Message.error(
+      '该值为必填项，且必须是大于等于0的整数且不能超过4位数'
+    )
+    return false
+  }
 }
 
 export { validateRule }

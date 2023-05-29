@@ -28,6 +28,7 @@
             <div v-if="tags.length > 0">
               <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
                 <MultipleSelect
+                  ref="MultipleSelectRef"
                   :tags="tags"
                   :rulesJson="rulesJson"
                 ></MultipleSelect>
@@ -213,7 +214,9 @@
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
-import { handleSave as saveFunc } from './crowdAddSaveFunc.js'
+// import { handleSave as saveFunc } from './crowdAddSaveFunc.js'
+import { validateRule } from '@/views/storyLine/validateRuleData.js'
+
 export default {
   components: {
     MultipleSelect,
@@ -736,12 +739,89 @@ export default {
       return '='
     },
 
-    handleSave () {
-      saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
-    },
+    async handleSave () {
+      // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
+      const _this = this
+      const form = JSON.parse(JSON.stringify(this.form))
+      const valid = await this.$refs.form.validate()
+      if (valid) {
+        if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
+          if (this.currentLaunchLimitCount > form.limitLaunchCount) {
+            this.$message.error('投放数量不能小于上一次设置的限制数量')
+            return
+          }
+        }
 
-    handleTabChangeSave () {
-      saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+        // 校验规则
+        const validPromise = validateRule(this, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson)
+
+        validPromise.then(data => {
+          const { rulesJson, behaviorRulesJson, tagIds } = data
+
+          const params = {
+            crowdName: form.name,
+            tagIds: tagIds.join(','),
+            rulesJson: rulesJson,
+            behaviorRulesJson: behaviorRulesJson,
+            dynamicPolicyJson: JSON.stringify(this.dynamicPolicyJson),
+            remark: form.remark,
+            policyId: form.policyId,
+            autoVersion: form.autoVersion,
+            isShowAutoVersion: form.isShowAutoVersion,
+            limitLaunch: form.limitLaunch,
+            limitLaunchCount: form.limitLaunch
+              ? form.limitLaunchCount
+              : undefined,
+            versionNum: 2,
+            blackFlag: form.blackFlag,
+            blacks: form.blacks
+            // crowdValidFrom: form.crowdExp[0],
+            // crowdValidTo: form.crowdExp[1],
+          }
+          this.fetchAddOrEdit(params)
+        }).catch(err => {
+          console.log('err-->', err)
+          if (err.openMoveOrClear) {
+            this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+              confirmButtonText: '确定移入',
+              cancelButtonText: '不保存',
+              type: 'warning'
+            }).then(() => {
+              this.moveToRule(_this)
+            }).catch(() => {
+              // 清空行为标签
+              this.clearBehaviorRulesJson(_this)
+            })
+          }
+        })
+      }
+    },
+    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // 移入
+    moveToRule (dialogRef) {
+      // const dialogRef = this.$refs.createClientDialog
+      // 将行为标签挪进设置标签栏
+      const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+      dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
+      const actionTags = dialogRef.actionTags
+      const cacheIds = []
+      actionTags.forEach(item => {
+        // 获取大数据标签
+        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+          cacheIds.push(item.tagId)
+        }
+      })
+      if (cacheIds.length > 0) {
+        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+      }
+      // 清空行为标签
+      this.clearBehaviorRulesJson()
+    },
+    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // 不移入 - 清空行为标签
+    clearBehaviorRulesJson (dialogRef) {
+      // const dialogRef = this.$refs.createClientDialog
+      dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
     },
 
     // 切换tab的时候手动触发保存，ref 调用

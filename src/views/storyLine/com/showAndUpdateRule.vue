@@ -105,7 +105,7 @@
   </template>
 
   <el-dialog
-    :title="(editClientRow ? '编辑' : '新建')+ '服务对象选择'"
+    :title="(editClientRow ? '编辑' : '新建')+ '入口条件'"
     :visible.sync="clientDialogVisible"
     width="1200px"
     v-if="clientDialogVisible"
@@ -119,7 +119,7 @@
   </el-dialog>
 
   <el-dialog
-    :title="(editExportRow ? '编辑' : '新建')+ '服务终止条件'"
+    :title="(editExportRow ? '编辑' : '新建')+ '出口条件'"
     :visible.sync="exportDialogVisible"
     width="1200px"
     v-if="exportDialogVisible"
@@ -138,7 +138,7 @@
   </el-dialog>
 
   <el-dialog
-    title="编辑复用服务终止条件"
+    title="编辑复用出口条件"
     :visible.sync="reuseExportDialogVisible"
     width="700px"
     v-if="reuseExportDialogVisible"
@@ -269,7 +269,7 @@ export default {
 
   },
   methods: {
-    // 编辑复用服务终止条件
+    // 编辑复用出口条件
     reuseExportRule () {
       // this.editExportRow = row
       // if (this.isCopiedServicer) {
@@ -307,7 +307,48 @@ export default {
 
       validPromise.then(data => {
         this.fetchAddOrEdit(data)
+      }).catch(err => {
+        console.log('err-->', err)
+        if (err.openMoveOrClear) {
+          this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+            confirmButtonText: '确定移入',
+            cancelButtonText: '不保存',
+            type: 'warning'
+          }).then(() => {
+            this.moveToRule(dialogRef)
+          }).catch(() => {
+            // 清空行为标签
+            this.clearBehaviorRulesJson(dialogRef)
+          })
+        }
       })
+    },
+    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // 移入
+    moveToRule (dialogRef) {
+      // const dialogRef = this.$refs.createClientDialog
+      // 将行为标签挪进设置标签栏
+      const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+      dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
+      const actionTags = dialogRef.actionTags
+      const cacheIds = []
+      actionTags.forEach(item => {
+        // 获取大数据标签
+        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+          cacheIds.push(item.tagId)
+        }
+      })
+      if (cacheIds.length > 0) {
+        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+      }
+      // 清空行为标签
+      this.clearBehaviorRulesJson()
+    },
+    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // 不移入 - 清空行为标签
+    clearBehaviorRulesJson (dialogRef) {
+      // const dialogRef = this.$refs.createClientDialog
+      dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
     },
     fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
@@ -368,6 +409,20 @@ export default {
 
       validPromise.then(data => {
         this.fetchAddOrEdit2(data)
+      }).catch(err => {
+        console.log('err-->', err)
+        if (err.openMoveOrClear) {
+          this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+            confirmButtonText: '确定移入',
+            cancelButtonText: '不保存',
+            type: 'warning'
+          }).then(() => {
+            this.moveToRule(dialogRef)
+          }).catch(() => {
+            // 清空行为标签
+            this.clearBehaviorRulesJson(dialogRef)
+          })
+        }
       })
     },
     // 新增、编辑出口条件

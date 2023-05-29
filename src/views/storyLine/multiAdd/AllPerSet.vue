@@ -67,7 +67,7 @@
 
         </el-form-item>
 
-        <el-form-item label="服务终止条件：" prop="export">
+        <el-form-item label="出口条件：" prop="export">
           <div v-for="(item, index) in ruleForm.exportConditions" :key="item.exportIndex ? (item.id + item.exportIndex) : item.id">
             <!-- {{ item.id}}--{{  item.exportIndex }} -->
             <template v-if="item.delFlag !== 2">
@@ -92,7 +92,7 @@
           </div>
 
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createExport(ruleForm)">新建服务终止条件</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createExport(ruleForm)">新建出口条件</el-button>
           </div>
 
         </el-form-item>
@@ -228,7 +228,7 @@ export default {
       // formItem.entryConditions.splice(index, 1)
       formItem.entryConditions[index].delFlag = 2
     },
-    // 新建服务终止条件：
+    // 新建出口条件：
     createExport (formItem) {
       formItem.exportConditions.push({
         // sceneId: 309,

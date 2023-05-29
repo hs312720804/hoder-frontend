@@ -33,9 +33,13 @@ function handleSave (_this, thisForm, thisRulesJson, thisBehaviorRulesJson, this
           return
         }
       }
-
-      if (!validateForm(rules, dynamicPolicyRules, behaviorRules, _this)) {
-        return
+      // 校验【普通标签】规则 (包括行为标签里面的大数据标签规则)
+      const { rulesFlag, operateTpye } = validateForm(rules, dynamicPolicyRules, behaviorRules, _this)
+      // if (!validateForm(rules, dynamicPolicyRules, behaviorRules, _this)) {
+      //   return
+      // }
+      if (!rulesFlag) {
+        return Promise.reject(operateTpye)
       }
 
       // 添加tagIds
@@ -495,4 +499,5 @@ function checkNumMostFour (num, _this) {
     return false
   }
 }
+
 export { handleSave, validateForm, ReorganizationData, checkIfChildrenExist, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum }

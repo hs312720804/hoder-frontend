@@ -43,7 +43,7 @@
           </el-input> -->
         </el-form-item>
         <!-- entryList: {{ entryList }} -->
-        <el-form-item label="服务对象选择：" prop="entry">
+        <el-form-item label="入口条件：" prop="entry">
           <div v-for="(item, index) in entryList" :key="index">
             <template v-if="item.delFlag !== 2">
               <div class="create-client-border">

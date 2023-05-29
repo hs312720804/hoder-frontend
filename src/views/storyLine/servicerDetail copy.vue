@@ -9,8 +9,8 @@
 
     <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
       【我的任务】、
-      【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
-      【服务终止条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【入口条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【出口条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
       【擅长】、
       接待员dropdown: 【重命名】、【复用】、【复制】
     -->
@@ -97,25 +97,99 @@
                     <el-checkbox :label="entry.id" :key="entry.id">
                     </el-checkbox>
                     <!-- <div class="item-id">{{ entry.id }}</div> -->
-                    <showAndUpdateRule
-                      v-if="entry.id"
-                      :ruleItem="{...entry, ruleType: 'entry'}"
-                      :conditionEnum="conditionEnum"
-                      :soureceSignList="soureceSignList"
-                      :servicer="servicer"
-                      :havePermissionsToUse="havePermissionsToUse"
-                      :isCopiedServicer="isCopiedServicer"
-                      :canUse="canUse"
-                      @selectServicer="(id) => $emit('selectServicer', id)"
-                      :servicerListFilterSelect="servicerListFilterSelect"
-                      :selectedScene="selectedScene"
-                      :selectedServicer="selectedServicer"
-                      @updataExportList="$emit('updataExportList'); getFlowChart()"
-                      @updataEntryList="$emit('updataEntryList')"
-                    >
-                    </showAndUpdateRule>
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and" v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0 && entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                        <span class="and-or" :class="entry.link === 'OR' ? 'OR': ''" >
+                        {{ entry.link === 'OR' ? '或' : '且' }}
+                        </span>
+                      </div>
+                      <!-- {{entry.rulesJson}} -->
+                      <!-- {{ JSON.parse(entry.rulesJson).rules }} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <template v-if="entry.rulesJson && JSON.parse(entry.rulesJson).rules.length > 0">
+                        <span class="border-title">普通标签</span>
+                        <div class="rule-string">
+                          <div>
+                            <ShowRule
+                              :rulesJson="JSON.parse(entry.rulesJson)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            >
+                            </ShowRule>
+                            <!-- <div
+                              v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
+                              :key="index"
+                              class="rule-detail"
+                            >
+                              <div v-if="index > 0" class="label-or-space">{{ conditionEnum[JSON.parse(entry.rulesJson).condition] }}</div>
+                              <div class="label-ground">(
+                                <div
+                                  v-for="(childItem,childItemIndex) in item.rules"
+                                  :key="childItem.tagId+childItemIndex"
+                                  class="label-item"
+                                >
+                                  <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                  <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
 
-                    <!-- <div v-if="havePermissionsToUse" class="drop-class" >
+                                  <template v-if="(childItem.dataSource === 20)">
+                                    <ShowFlowConditionRuleItem
+                                      :childItem="childItem"
+                                      :soureceSignList="soureceSignList"
+                                      >
+                                    </ShowFlowConditionRuleItem>
+                                  </template>
+
+                                  <template v-else>
+                                    <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                    <span class="in">
+                                      <span >{{ childItem.value }}</span>
+                                    </span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                                  </template>
+
+                                </div>)
+                              </div>
+                            </div> -->
+                          </div>
+                        </div>
+                      </template>
+
+                      <template  v-if="entry.behaviorRulesJson && JSON.parse(entry.behaviorRulesJson).rules.length > 0">
+                        <span class="border-title">行为标签</span>
+                        <!-- {{entry.behaviorRulesJson}} -->
+                        <div class="rule-string bav-wrap">
+                          <template>
+                            <MultipleActionTagSelect
+                              ref="multipleActionTagSelect"
+                              :isView="true"
+                              :behaviorRulesJson="JSON.parse(entry.behaviorRulesJson)"
+                            ></MultipleActionTagSelect>
+                          </template>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template v-if="entry.flowCondition && JSON.parse(entry.flowCondition).rules.length > 0">
+                        <span class="border-title">流转指标</span>
+                        <div class="rule-string">
+                          <div>
+                            <!-- {{entry.flowCondition}} -->
+                            <ShowFlowConditionRule
+                              :flowCondition="JSON.parse(entry.flowCondition)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            ></ShowFlowConditionRule>
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                    </div>
+
+                    <div v-if="havePermissionsToUse" class="drop-class" >
                       <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
                         <span class="el-dropdown-link" >
                           <span>.</span>
@@ -131,7 +205,7 @@
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
-                    </div> -->
+                    </div>
 
                   </div>
                   </el-checkbox-group>
@@ -214,31 +288,108 @@
                     <el-checkbox :label="exportItem.id" :key="exportItem.id" >
                     </el-checkbox>
                     <!-- <div class="item-id">{{ exportItem.id }}</div> -->
+                    <div class="border-line"  style="position: relative;">
+                      <div class="outer-and" v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0 && exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+                        <span class="and-or" :class="exportItem.link === 'OR' ? 'OR': ''">
+                        {{ exportItem.link === 'OR' ? '或' : '且' }}
+                        </span>
+                      </div>
+                      <!-- {{exportItem.rulesJson}} -->
+                      <!-- ( 有效混合源爱奇艺影视会员 = true 且 芯片型号 = 6A848,RTD2982DQ 且 存储 = 4G,8G ) -->
+                      <template v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
+                        <span class="border-title">普通标签</span>
+                        <div class="rule-string" >
+                          <div>
+                            <ShowRule
+                              :rulesJson="JSON.parse(exportItem.rulesJson)"
+                              :soureceSignList="soureceSignList"
+                              :conditionEnum="conditionEnum"
+                            >
+                            </ShowRule>
+                            <!-- <div
+                              v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
+                              :key="index"
+                              class="rule-detail"
+                            >
+                              <div v-if="index>0" class="label-or-space">{{ conditionEnum[JSON.parse(exportItem.rulesJson).condition] }}</div>
+                              <div class="label-ground">(
+                                <div
+                                  v-for="(childItem,childItemIndex) in item.rules"
+                                  :key="childItem.tagId+childItemIndex"
+                                  class="label-item"
+                                >
+                                  <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
+                                  <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
 
-                    <showAndUpdateRule
-                      v-if="exportItem.id"
-                      :ruleItem="{...exportItem, ruleType: 'export'}"
-                      :conditionEnum="conditionEnum"
-                      :soureceSignList="soureceSignList"
-                      :servicer="servicer"
-                      :havePermissionsToUse="havePermissionsToUse"
-                      :isCopiedServicer="isCopiedServicer"
-                      :canUse="canUse"
-                      @selectServicer="(id) => $emit('selectServicer', id)"
-                      :servicerListFilterSelect="servicerListFilterSelect"
-                      :selectedScene="selectedScene"
-                      :selectedServicer="selectedServicer"
-                      @updataExportList="$emit('updataExportList'); getFlowChart()"
-                      @updataEntryList="$emit('updataEntryList')"
-                    >
-                    </showAndUpdateRule>
+                                  <template v-if="(childItem.dataSource === 20)">
+                                    <ShowFlowConditionRuleItem
+                                      :childItem="childItem"
+                                      :soureceSignList="soureceSignList"
+                                      >
+                                    </ShowFlowConditionRuleItem>
+                                  </template>
 
-                    <!-- <div class="turn-servicer" v-if="exportItem.stopType === 1">
+                                  <template v-else>
+                                    <span class="sel">&nbsp;&nbsp;{{ childItem.operator }}&nbsp;&nbsp;</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 1">在当日之前</span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2 && childItem.dynamicTimeType == 2">在当日之后</span>
+                                    <span class="in">
+                                      <span >{{ childItem.value }}</span>
+                                    </span>
+                                    <span v-if="childItem.tagType === 'time' && childItem.isDynamicTime === 2">天</span>
+                                  </template>
+
+                                </div>)
+                              </div>
+                            </div> -->
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template  v-if="exportItem.behaviorRulesJson && JSON.parse(exportItem.behaviorRulesJson).rules.length > 0">
+
+                        <span class="border-title">行为标签</span>
+                        <!-- {{exportItem.behaviorRulesJson}} -->
+                        <div class="rule-string bav-wrap">
+                          <template>
+                            <MultipleActionTagSelect
+                              ref="multipleActionTagSelect"
+                              :isView="true"
+                              :behaviorRulesJson="JSON.parse(exportItem.behaviorRulesJson)"
+                            ></MultipleActionTagSelect>
+                          </template>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+
+                      <template v-if="exportItem.flowCondition && JSON.parse(exportItem.flowCondition).rules.length > 0">
+                        <span class="border-title">流转指标</span>
+                        <div class="rule-string">
+                          <div >
+                            <!-- {{exportItem.flowCondition}} -->
+                            <ShowFlowConditionRule
+                              :flowCondition="JSON.parse(exportItem.flowCondition)"
+                              :conditionEnum="conditionEnum"
+                              :soureceSignList="soureceSignList"
+                            ></ShowFlowConditionRule>
+
+                          </div>
+                          <!-- <div v-else class="no-data-text">暂无</div> -->
+                        </div>
+                      </template>
+                      <!-- <div>{{item.behaviorRulesJson}}</div> -->
+                    </div>
+
+                    <!-- 选择了转接待员 -->
+                    <div class="turn-servicer" v-if="exportItem.stopType === 1">
                       转
                       <el-button type="text" @click="redirctByNextId(exportItem.nextId)">{{ getServicerBynextId(exportItem.nextId).receptionist }} </el-button>
                     </div>
                     <div v-else class="turn-servicer">{{ getStopTypeName(exportItem.stopType)}}</div>
                     <div v-if="(!isCopiedServicer || exportItem.stopType === 1) && canUse"  class="drop-class">
+                    <!-- <div v-if="(!isCopiedServicer || exportItem.stopType === 1)" class="drop-class"> -->
                       <el-dropdown @command="handleCommandExport" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom">
                         <span class="el-dropdown-link">
                           <span>.</span>
@@ -259,7 +410,7 @@
                     <div v-if="exportItem.stopType === 1 && !exportItem.nextId" style="color: red;">
                       <i class="el-icon-warning"></i>
                       <span style="font-size: 12px; margin-left: 5px">下一步不可为空</span>
-                    </div> -->
+                    </div>
 
                   </div>
                   </el-checkbox-group>
@@ -582,20 +733,21 @@
       <!-- </div> -->
     <!-- </el-scrollbar> -->
 
-    <!-- <el-dialog
+    <el-dialog
       :title="(editClientRow ? '编辑' : '新建')+ '入口条件'"
       :visible.sync="clientDialogVisible"
       width="1200px"
       v-if="clientDialogVisible"
     >
+    <!-- {{ editClientRow }} -->
       <createClientDialog ref="createClientDialog" :editRow="editClientRow" :options="options"></createClientDialog>
       <span slot="footer" class="dialog-footer">
         <el-button @click="clientDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addOrEditEntryRule">确 定</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
 
-    <!-- <el-dialog
+    <el-dialog
       :title="(editExportRow ? '编辑' : '新建')+ '出口条件'"
       :visible.sync="exportDialogVisible"
       width="1200px"
@@ -612,9 +764,9 @@
         <el-button @click="exportDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="addOrEditExportRule">确 定</el-button>
       </span>
-    </el-dialog> -->
+    </el-dialog>
 
-    <!-- <el-dialog
+    <el-dialog
       title="编辑复用出口条件"
       :visible.sync="reuseExportDialogVisible"
       width="700px"
@@ -626,6 +778,7 @@
         ref="form"
         label-width="100px"
       >
+        <!-- 只有出口条件选择 -->
         <el-form-item label="处理操作" prop="stopType" class="inline-form-item">
           <el-select v-model="reuseForm.stopType" clearable @change="handleStopTypeChange" disabled>
             <el-option
@@ -638,6 +791,7 @@
           </el-select>
         </el-form-item>
 
+          <!-- 正确，下一步  选择同一场景下其他接待员 -->
         <el-form-item v-if="reuseForm.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -100px;">
           <el-select v-model="reuseForm.nextId" clearable placeholder="请选择流转接待员">
             <el-option
@@ -655,21 +809,7 @@
         <el-button @click="reuseExportDialogVisible = false">取 消</el-button>
         <el-button type="primary" @click="reuseExportRule">确 定</el-button>
       </span>
-    </el-dialog> -->
-    <!-- 新增入口条件、新增出口条件的弹窗 -->
-    <showAndUpdateRule
-      ref="showAddDialogRef"
-      mode="showAddDialog"
-      :conditionEnum="conditionEnum"
-      :soureceSignList="soureceSignList"
-      :servicer="servicer"
-      :servicerListFilterSelect="servicerListFilterSelect"
-      :selectedScene="selectedScene"
-      :selectedServicer="selectedServicer"
-      @updataExportList="$emit('updataExportList'); getFlowChart()"
-      @updataEntryList="$emit('updataEntryList')"
-      >
-    </showAndUpdateRule>
+    </el-dialog>
 
     <el-dialog
       title="编辑绩效目标"
@@ -695,31 +835,29 @@
 
 <script>
 // 校验规则
-// import { validateRule } from './validateRuleData.js'
+import { validateRule } from './validateRuleData.js'
 
-// import createClientDialog from './createClientDialog.vue'
-// import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
-// import ShowFlowConditionRule from './com/ShowFlowConditionRule.vue'
+import createClientDialog from './createClientDialog.vue'
+import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
+import ShowFlowConditionRule from './com/ShowFlowConditionRule.vue'
 // import ShowFlowConditionRuleItem from './com/ShowFlowConditionRuleItem.vue'
-// import ShowRule from './com/ShowRule.vue'
+import ShowRule from './com/ShowRule.vue'
 import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
 import { options } from './utils'
 
 import { removePendingRequest } from '@/services/cancelFetch'
 
 import ServicerMap from './mapShow/servicerMap.vue'
-import showAndUpdateRule from '@/views/storyLine/com/showAndUpdateRule.vue'
 
 export default {
   components: {
-    // createClientDialog,
-    // MultipleActionTagSelect,
-    // ShowFlowConditionRule,
+    createClientDialog,
+    MultipleActionTagSelect,
+    ShowFlowConditionRule,
     // ShowFlowConditionRuleItem,
     EditTargetKeyDialog,
     ServicerMap,
-    // ShowRule,
-    showAndUpdateRule
+    ShowRule
   },
 
   props: {
@@ -1070,28 +1208,28 @@ export default {
       this.isShowDetailName = !this.isShowDetailName
     },
     // 编辑复用出口条件
-    // reuseExportRule () {
-    //   // this.editExportRow = row
-    //   // if (this.isCopiedServicer) {
-    //   //   this.reuseForm.stopType = row.stopType
-    //   //   this.reuseForm.nextId = row.nextId || ''
-    //   console.log('reuseForm--->', this.reuseForm)
-    //   console.log('selectedServicer--->', this.selectedServicer)
-    //   console.log('editExportRow--->', this.editExportRow)
-    //   const parmas = {
-    //     nId: this.selectedServicer.id,
-    //     oId: this.selectedServicer.referenceId,
-    //     exportId: this.editExportRow.id,
-    //     ...this.reuseForm
-    //   }
-    //   this.$service.updateExport(parmas).then(res => {
-    //     // 刷新列表
-    //     this.$emit('updataExportList')
-    //     // 流转关系图
-    //     this.getFlowChart()
-    //     this.reuseExportDialogVisible = false
-    //   })
-    // },
+    reuseExportRule () {
+      // this.editExportRow = row
+      // if (this.isCopiedServicer) {
+      //   this.reuseForm.stopType = row.stopType
+      //   this.reuseForm.nextId = row.nextId || ''
+      console.log('reuseForm--->', this.reuseForm)
+      console.log('selectedServicer--->', this.selectedServicer)
+      console.log('editExportRow--->', this.editExportRow)
+      const parmas = {
+        nId: this.selectedServicer.id,
+        oId: this.selectedServicer.referenceId,
+        exportId: this.editExportRow.id,
+        ...this.reuseForm
+      }
+      this.$service.updateExport(parmas).then(res => {
+        // 刷新列表
+        this.$emit('updataExportList')
+        // 流转关系图
+        this.getFlowChart()
+        this.reuseExportDialogVisible = false
+      })
+    },
     handleStopTypeChange () {
       // 切换处理操作时，清空选择的流转接待员 ID
       this.form.nextId = ''
@@ -1269,13 +1407,15 @@ export default {
         })
       }
     },
-    // getStopTypeName (val) {
-    //   if (val === 2) {
-    //     return '已转化'
-    //   } else if (val === 4) {
-    //     return '不感兴趣'
-    //   }
-    // },
+    getStopTypeName (val) {
+      if (val === 2) {
+        return '直接转化'
+      } else if (val === 3) {
+        return '继续观察'
+      } else if (val === 4) {
+        return '不喜欢'
+      }
+    },
     getName (val, list) {
       const obj = list.find(item => item.indicatorsType === val)
       return obj ? obj.label : ''
@@ -1350,224 +1490,224 @@ export default {
       return str
     },
 
-    // redirctByNextId (id) {
-    //   const servicer = this.getServicerBynextId(id)
-    //   // 选择接待员
-    //   this.$emit('selectServicer', servicer.id)
-    //   // this.selectServicer(servicer.id)
-    // },
-    // // 根据crowdId 获取名称
-    // getServicerBynextId (id) {
-    //   const obj = this.servicer.find(item => item.crowdId === id)
-    //   return obj || {}
-    // },
+    redirctByNextId (id) {
+      const servicer = this.getServicerBynextId(id)
+      // 选择接待员
+      this.$emit('selectServicer', servicer.id)
+      // this.selectServicer(servicer.id)
+    },
+    // 根据crowdId 获取名称
+    getServicerBynextId (id) {
+      const obj = this.servicer.find(item => item.crowdId === id)
+      return obj || {}
+    },
     // 新增/编辑入口条件
-    // addOrEditEntryRule () {
-    //   const dialogRef = this.$refs.createClientDialog
-    //   // 普通标签规则
-    //   const rulesJson = dialogRef.rulesJson
-    //   // 行为标签规则
-    //   const behaviorRulesJson = dialogRef.behaviorRulesJson
-    //   // 流转条件规则
-    //   const flowCondition = dialogRef.flowCondition
+    addOrEditEntryRule () {
+      const dialogRef = this.$refs.createClientDialog
+      // 普通标签规则
+      const rulesJson = dialogRef.rulesJson
+      // 行为标签规则
+      const behaviorRulesJson = dialogRef.behaviorRulesJson
+      // 流转条件规则
+      const flowCondition = dialogRef.flowCondition
 
-    //   // 校验规则
-    //   const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+      // 校验规则
+      const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
 
-    //   validPromise.then(data => {
-    //     this.fetchAddOrEdit(data)
-    //   })
-    // },
-    // fetchAddOrEdit (data) {
-    //   const dialogRef = this.$refs.createClientDialog
+      validPromise.then(data => {
+        this.fetchAddOrEdit(data)
+      })
+    },
+    fetchAddOrEdit (data) {
+      const dialogRef = this.$refs.createClientDialog
 
-    //   const tagIds = dialogRef.checkedList.join(',')
-    //   const { rulesJson, behaviorRulesJson } = data
+      const tagIds = dialogRef.checkedList.join(',')
+      const { rulesJson, behaviorRulesJson } = data
 
-    //   const flowCondition = JSON.stringify(dialogRef.flowCondition)
+      const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
-    //   let params = {}
-    //   if (this.editClientRow) {
-    //     params = {
-    //       ...this.editClientRow,
-    //       sceneId: this.selectedScene.id,
-    //       policyId: this.selectedScene.policyId,
-    //       receptionistId: this.selectedServicer.id,
-    //       tagIds,
-    //       rulesJson,
-    //       behaviorRulesJson,
-    //       flowCondition, // 流转指标
-    //       delFlag: 1,
-    //       link: dialogRef.totalLink
-    //     }
-    //   } else {
-    //     params = {
-    //       sceneId: this.selectedScene.id,
-    //       policyId: this.selectedScene.policyId,
-    //       receptionistId: this.selectedServicer.id,
-    //       tagIds,
-    //       rulesJson,
-    //       behaviorRulesJson,
-    //       flowCondition, // 流转指标
-    //       delFlag: 1,
-    //       link: dialogRef.totalLink
-    //     }
-    //   }
-    //   this.$service.addEntry(params, '添加成功').then(res => {
-    //     // 刷新列表
-    //     this.$emit('updataEntryList')
-    //     // this.getEntryListByReceptionistId()
-    //     this.clientDialogVisible = false
-    //   })
-    // },
+      let params = {}
+      if (this.editClientRow) {
+        params = {
+          ...this.editClientRow,
+          sceneId: this.selectedScene.id,
+          policyId: this.selectedScene.policyId,
+          receptionistId: this.selectedServicer.id,
+          tagIds,
+          rulesJson,
+          behaviorRulesJson,
+          flowCondition, // 流转指标
+          delFlag: 1,
+          link: dialogRef.totalLink
+        }
+      } else {
+        params = {
+          sceneId: this.selectedScene.id,
+          policyId: this.selectedScene.policyId,
+          receptionistId: this.selectedServicer.id,
+          tagIds,
+          rulesJson,
+          behaviorRulesJson,
+          flowCondition, // 流转指标
+          delFlag: 1,
+          link: dialogRef.totalLink
+        }
+      }
+      this.$service.addEntry(params, '添加成功').then(res => {
+        // 刷新列表
+        this.$emit('updataEntryList')
+        // this.getEntryListByReceptionistId()
+        this.clientDialogVisible = false
+      })
+    },
     // 新增、编辑出口条件
-    // addOrEditExportRule () {
-    //   const dialogRef = this.$refs.exportClientDialog
-    //   // 普通标签规则
-    //   const rulesJson = dialogRef.rulesJson
-    //   // 行为标签规则
-    //   const behaviorRulesJson = dialogRef.behaviorRulesJson
-    //   // 流转条件规则
-    //   const flowCondition = dialogRef.flowCondition
+    addOrEditExportRule () {
+      const dialogRef = this.$refs.exportClientDialog
+      // 普通标签规则
+      const rulesJson = dialogRef.rulesJson
+      // 行为标签规则
+      const behaviorRulesJson = dialogRef.behaviorRulesJson
+      // 流转条件规则
+      const flowCondition = dialogRef.flowCondition
 
-    //   // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
+      // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit2, flowCondition)
 
-    //   // 校验规则
-    //   const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
+      // 校验规则
+      const validPromise = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition)
 
-    //   validPromise.then(data => {
-    //     this.fetchAddOrEdit2(data)
-    //   })
-    // },
+      validPromise.then(data => {
+        this.fetchAddOrEdit2(data)
+      })
+    },
     // 新增、编辑出口条件
-    // fetchAddOrEdit2 (data) {
-    //   const dialogRef = this.$refs.exportClientDialog
+    fetchAddOrEdit2 (data) {
+      const dialogRef = this.$refs.exportClientDialog
 
-    //   const tagIds = dialogRef.checkedList.join(',')
-    //   // debugger
-    //   // const tagList = dialogRef.tags.map(item => item.tagId)
-    //   // const tagIds = tagList.join(',')
+      const tagIds = dialogRef.checkedList.join(',')
+      // debugger
+      // const tagList = dialogRef.tags.map(item => item.tagId)
+      // const tagIds = tagList.join(',')
 
-    //   const { rulesJson, behaviorRulesJson } = data
+      const { rulesJson, behaviorRulesJson } = data
 
-    //   const stopType = dialogRef.form.stopType // 处理操作
-    //   const nextId = dialogRef.form.nextId // 流转接待员
+      const stopType = dialogRef.form.stopType // 处理操作
+      const nextId = dialogRef.form.nextId // 流转接待员
 
-    //   const flowCondition = JSON.stringify(dialogRef.flowCondition)
+      const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
-    //   // let params = {}
+      // let params = {}
 
-    //   let params = {
-    //     sceneId: this.selectedScene.id,
-    //     policyId: this.selectedScene.policyId,
-    //     receptionistId: this.selectedServicer.id,
-    //     tagIds,
-    //     rulesJson,
-    //     behaviorRulesJson,
-    //     flowCondition, // 流转指标
-    //     delFlag: 1,
-    //     link: dialogRef.totalLink,
-    //     stopType,
-    //     nextId
-    //   }
-    //   if (this.editExportRow) { // 编辑
-    //     const defaultData = { ...this.editExportRow }
-    //     params = Object.assign(defaultData, params)
-    //   }
+      let params = {
+        sceneId: this.selectedScene.id,
+        policyId: this.selectedScene.policyId,
+        receptionistId: this.selectedServicer.id,
+        tagIds,
+        rulesJson,
+        behaviorRulesJson,
+        flowCondition, // 流转指标
+        delFlag: 1,
+        link: dialogRef.totalLink,
+        stopType,
+        nextId
+      }
+      if (this.editExportRow) { // 编辑
+        const defaultData = { ...this.editExportRow }
+        params = Object.assign(defaultData, params)
+      }
 
-    //   this.$service.addExport(params, '添加成功').then(res => {
-    //     // 刷新列表
-    //     this.$emit('updataExportList')
-    //     // 刷新流转关系图
-    //     this.getFlowChart()
-    //     // this.getExportListByReceptionistId()
-    //     this.exportDialogVisible = false
-    //   })
-    // },
+      this.$service.addExport(params, '添加成功').then(res => {
+        // 刷新列表
+        this.$emit('updataExportList')
+        // 刷新流转关系图
+        this.getFlowChart()
+        // this.getExportListByReceptionistId()
+        this.exportDialogVisible = false
+      })
+    },
 
     // 新建入口条件
     createClient () {
-      this.$refs.showAddDialogRef.editClientRow = undefined
-      this.$refs.showAddDialogRef.clientDialogVisible = true
+      this.editClientRow = undefined
+      this.clientDialogVisible = true
     },
     createExport  () {
-      this.$refs.showAddDialogRef.editExportRow = undefined
-      this.$refs.showAddDialogRef.exportDialogVisible = true
+      this.editExportRow = undefined
+      this.exportDialogVisible = true
     },
-    // handleCommand (scope) {
-    //   const type = scope[0]
-    //   const row = scope[1]
-    //   if (type === 'editEntry') {
-    //     this.editEntry(row)
-    //   } else if (type === 'deleteEntry') {
-    //     this.deleteEntry(row)
-    //   }
-    // },
-    // // 编辑入口
-    // editEntry (row) {
-    //   this.editClientRow = row
-    //   this.clientDialogVisible = true
-    // },
-    // // 删入口
-    // deleteEntry (row) {
-    //   this.$confirm('此操作将永久删除该服务对象, 是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     this.$service.addEntry({ ...row, delFlag: 2 }, '删除成功').then(res => {
-    //       // 刷新列表
-    //       this.$emit('updataEntryList')
-    //       // this.getEntryListByReceptionistId()
-    //     })
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已取消删除'
-    //     })
-    //   })
-    // },
-    // handleCommandExport (scope) {
-    //   const type = scope[0]
-    //   const row = scope[1]
-    //   if (type === 'editExport') {
-    //     this.editExport(row)
-    //   } else if (type === 'deleteExport') {
-    //     this.deleteExport(row)
-    //   }
-    // },
-    // // 编辑出口
-    // editExport (row) {
-    //   this.editExportRow = row
-    //   if (this.isCopiedServicer) { // 编辑复用接待员的
-    //     this.reuseForm.stopType = row.stopType
-    //     this.reuseForm.nextId = row.nextId || ''
-    //     this.reuseExportDialogVisible = true
-    //   } else {
-    //     this.exportDialogVisible = true
-    //   }
-    // },
-    // // 删除出口
-    // deleteExport (row) {
-    //   this.$confirm('此操作将永久删除该终止条件, 是否继续?', '提示', {
-    //     confirmButtonText: '确定',
-    //     cancelButtonText: '取消',
-    //     type: 'warning'
-    //   }).then(() => {
-    //     this.$service.addExport({ ...row, delFlag: 2 }, '删除成功').then(res => {
-    //       // 刷新列表
-    //       this.$emit('updataExportList')
-    //       // 刷新流转关系图
-    //       this.getFlowChart()
-    //       // this.getExportListByReceptionistId()
-    //     })
-    //   }).catch(() => {
-    //     this.$message({
-    //       type: 'info',
-    //       message: '已取消删除'
-    //     })
-    //   })
-    // },
+    handleCommand (scope) {
+      const type = scope[0]
+      const row = scope[1]
+      if (type === 'editEntry') {
+        this.editEntry(row)
+      } else if (type === 'deleteEntry') {
+        this.deleteEntry(row)
+      }
+    },
+    // 编辑入口
+    editEntry (row) {
+      this.editClientRow = row
+      this.clientDialogVisible = true
+    },
+    // 删入口
+    deleteEntry (row) {
+      this.$confirm('此操作将永久删除该服务对象, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.addEntry({ ...row, delFlag: 2 }, '删除成功').then(res => {
+          // 刷新列表
+          this.$emit('updataEntryList')
+          // this.getEntryListByReceptionistId()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
+    handleCommandExport (scope) {
+      const type = scope[0]
+      const row = scope[1]
+      if (type === 'editExport') {
+        this.editExport(row)
+      } else if (type === 'deleteExport') {
+        this.deleteExport(row)
+      }
+    },
+    // 编辑出口
+    editExport (row) {
+      this.editExportRow = row
+      if (this.isCopiedServicer) { // 编辑复用接待员的
+        this.reuseForm.stopType = row.stopType
+        this.reuseForm.nextId = row.nextId || ''
+        this.reuseExportDialogVisible = true
+      } else {
+        this.exportDialogVisible = true
+      }
+    },
+    // 删除出口
+    deleteExport (row) {
+      this.$confirm('此操作将永久删除该终止条件, 是否继续?', '提示', {
+        confirmButtonText: '确定',
+        cancelButtonText: '取消',
+        type: 'warning'
+      }).then(() => {
+        this.$service.addExport({ ...row, delFlag: 2 }, '删除成功').then(res => {
+          // 刷新列表
+          this.$emit('updataExportList')
+          // 刷新流转关系图
+          this.getFlowChart()
+          // this.getExportListByReceptionistId()
+        })
+      }).catch(() => {
+        this.$message({
+          type: 'info',
+          message: '已取消删除'
+        })
+      })
+    },
     // 服务员选择技能
     async selectSkill (e) {
       // 先判断是否是选择了已有的ID

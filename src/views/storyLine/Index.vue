@@ -608,7 +608,7 @@ export default {
         ]
       },
       tipMsg: '下一步不可为空',
-      // tipMsg: '请完善当前接待员服务终止条件中的处理操作',
+      // tipMsg: '请完善当前接待员出口条件中的处理操作',
       copyType: '',
       copyForm: {
         id: '',
