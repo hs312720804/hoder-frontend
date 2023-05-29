@@ -3,7 +3,14 @@ import { MessageBox, Message } from 'element-ui'
 
 let timeTagKongList = []
 
+/** 哪些文件正在使用该方法：
+ *   - crowdAdd（新增编辑单个人群）
+ *   - showAndUpdateRule （新增编辑入口条件、出口条件）
+ *   - multiAdd/func.js （批量添加接待员）
+* /
+
 /** 校验普通标签、行为标签、流转规则 的统一封装方法
+ *
  * @param {Object} subAttr 附属属性
  *                 - returnDefaultData： 默认需要返回的数据
  *                 - isNeedValidate: 是否需要验证 true-是  false-否  默认为 true
@@ -110,10 +117,10 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   // ---------------------------- 行为标签的数据 进行重组  end--------------------------------
 
   const data = {
+    tagIds,
     ...subAttr.returnDefaultData || undefined, // 一些默认返回数据
     rulesJson: JSON.stringify(ruleJson),
-    behaviorRulesJson: JSON.stringify(behaviorRulesJson),
-    tagIds
+    behaviorRulesJson: JSON.stringify(behaviorRulesJson)
   }
 
   // ----------------------- 校验【行为标签】： 收集需校验的ref   start-----------------------------
