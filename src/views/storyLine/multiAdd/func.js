@@ -27,7 +27,9 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
           link: dialogRef.totalLink,
           tagIds: dialogRef.checkedList.join(','),
           delFlag: dialogRef.delFlag,
-          receptionistId: dialogRef.receptionistId
+          receptionistId: dialogRef.receptionistId,
+          autoVersion: dialogRef.form.autoVersion,
+          isShowAutoVersion: dialogRef.form.isShowAutoVersion
         }
 
         // 校验规则
@@ -49,7 +51,9 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
           nextId: dialogRef.form.nextId,
           tagIds: dialogRef.checkedList.join(','),
           delFlag: dialogRef.delFlag,
-          receptionistId: dialogRef.receptionistId
+          receptionistId: dialogRef.receptionistId,
+          autoVersion: dialogRef.form.autoVersion,
+          isShowAutoVersion: dialogRef.form.isShowAutoVersion
         }
         // 校验规则
         const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData })
@@ -85,8 +89,14 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
         //   this.dialogVisible2 = false
         //   Message.success('成功保存提交数据')
         // })
-      }).catch(() => {
-        Message.error('请完善条件')
+      }).catch((err) => {
+        console.log('err-->', err)
+        // reject(err)
+        if (err.openMoveOrClear) {
+          Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+        } else {
+          Message.error('请完善条件')
+        }
       })
     })
   })
@@ -168,7 +178,9 @@ function multiAddNextStepFn ({ commonSetRef }) {
             type: 'entry',
             link: dialogRef.totalLink,
             tagIds: dialogRef.checkedList.join(','), // 所选的标签
-            delFlag: 1
+            delFlag: 1,
+            autoVersion: dialogRef.form.autoVersion,
+            isShowAutoVersion: dialogRef.form.isShowAutoVersion
           }
 
           // 校验规则
@@ -201,7 +213,9 @@ function multiAddNextStepFn ({ commonSetRef }) {
             stopType: dialogRef.form.stopType,
             nextId: dialogRef.form.nextId,
             tagIds: dialogRef.checkedList.join(','), // 所选的标签
-            delFlag: 1
+            delFlag: 1,
+            autoVersion: dialogRef.form.autoVersion,
+            isShowAutoVersion: dialogRef.form.isShowAutoVersion
           }
           // 校验规则
           const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData, isNeedValidate: false })
@@ -244,8 +258,12 @@ function multiAddNextStepFn ({ commonSetRef }) {
           // Message.success('所有条件都已经通过')
           resolve({ allEntryArr, allExportArr, ruleFormData })
           // this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData })
-        }).catch(() => {
-          Message.error('请完善条件')
+        }).catch((err) => {
+          if (err.openMoveOrClear) {
+            Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+          } else {
+            Message.error('请完善条件')
+          }
         })
       }
     })
