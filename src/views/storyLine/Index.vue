@@ -491,8 +491,7 @@ import servicerDetail from './servicerDetail.vue'
 import { removePendingRequest } from '@/services/cancelFetch'
 import MultiAdd from './multiAdd/Index'
 import OneDrop from './oneDrop/Index'
-// 校验规则
-// import { validateRule } from './validateRuleData.js'
+
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
 import SceneMap from './mapShow/sceneMap.vue'

@@ -694,9 +694,6 @@
   </template>
 
 <script>
-// 校验规则
-// import { validateRule } from './validateRuleData.js'
-
 // import createClientDialog from './createClientDialog.vue'
 // import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
 // import ShowFlowConditionRule from './com/ShowFlowConditionRule.vue'
