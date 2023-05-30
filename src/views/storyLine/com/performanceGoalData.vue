@@ -27,20 +27,25 @@
 
           </el-dropdown-menu>
         </el-dropdown>
-
+        <!-- style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;" -->
         <div class="detail-kpi">
           <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
           <div v-for="(item, key) in rowObj" :key="key">
             <div v-show="item.isShow" style="position: relative">
-              <div class="unit-box" @click="enlargeChart(key)">
-
+              <div class="unit-box">
                 <div v-if="(item.title)">
                   <div
-                    v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)"
-                    :ref="key" :id="key" class="chart-div">
+                    v-if="allChartData[key] &&
+                      ((allChartData[key].series &&
+                      allChartData[key].series.length > 0) ||
+                      allChartData[key].data)"
+                    :ref="key"
+                    :id="key"
+                    class="chart-div"
+                    @click="enlargeChart(key)">
                   </div>
                   <div v-else>
-                    <el-empty description="暂无数据" :image-size="100"></el-empty>
+                    <el-empty description="暂无数据" :image-size="60"></el-empty>
                   </div>
                 </div>
               </div>
@@ -202,8 +207,15 @@ export default {
       immediate: true
     }
   },
-  created () {
 
+  mounted () {
+    // 图表自适应
+    window.addEventListener('resize', () => {
+      for (const key of Object.keys(this.allCharts)) {
+        const chart = this.allCharts[key]
+        chart.resize()
+      }
+    })
   },
   methods: {
     enlargeChart (key) {
@@ -637,5 +649,6 @@ export default {
 @import '../sty/common.styl'
 @import '../sty/dark.styl'
 @import '../sty/light.styl'
-
+.unit-box
+  margin-bottom 10px
 </style>
