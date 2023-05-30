@@ -190,7 +190,7 @@ import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexF
 import ShowRule from '@/views/storyLine/com/ShowRule.vue'
 import createClientDialog from '@/views/storyLine/createClientDialog.vue'
 import { options } from '@/views/storyLine/utils'
-import { validateRule } from '@/views/storyLine/validateRuleData.js'
+import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   components: {
@@ -315,46 +315,49 @@ export default {
             cancelButtonText: '不保存',
             type: 'warning'
           }).then(() => {
-            this.moveToRule(dialogRef)
+            moveToRule(dialogRef)
           }).catch(() => {
             // 清空行为标签
-            this.clearBehaviorRulesJson(dialogRef)
+            clearBehaviorRulesJson(dialogRef)
           })
         }
       })
     },
-    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // 移入
-    moveToRule (dialogRef) {
-      // const dialogRef = this.$refs.createClientDialog
-      // 将行为标签挪进设置标签栏
-      const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
-      dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
-      const actionTags = dialogRef.actionTags
-      const cacheIds = []
-      actionTags.forEach(item => {
-        // 获取大数据标签
-        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
-          cacheIds.push(item.tagId)
-        }
-      })
-      if (cacheIds.length > 0) {
-        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
-      }
-      // 清空行为标签
-      this.clearBehaviorRulesJson()
-    },
-    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // 不移入 - 清空行为标签
-    clearBehaviorRulesJson (dialogRef) {
-      // const dialogRef = this.$refs.createClientDialog
-      dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
-    },
+    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // // 移入
+    // moveToRule (dialogRef) {
+    //   // const dialogRef = this.$refs.createClientDialog
+    //   // 将行为标签挪进设置标签栏
+    //   const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+    //   dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
+    //   const actionTags = dialogRef.actionTags
+    //   const cacheIds = []
+    //   actionTags.forEach(item => {
+    //     // 获取大数据标签
+    //     if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+    //       cacheIds.push(item.tagId)
+    //     }
+    //   })
+    //   if (cacheIds.length > 0) {
+    //     cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+    //   }
+    //   // 清空行为标签
+    //   this.clearBehaviorRulesJson()
+    // },
+    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // // 不移入 - 清空行为标签
+    // clearBehaviorRulesJson (dialogRef) {
+    //   // const dialogRef = this.$refs.createClientDialog
+    //   dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
+    // },
     fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
 
       const tagIds = dialogRef.checkedList.join(',')
       const { rulesJson, behaviorRulesJson } = data
+
+      const autoVersion = dialogRef.form.autoVersion // 是否每日更新
+      const isShowAutoVersion = dialogRef.form.isShowAutoVersion // 是否显示每日更新
 
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
@@ -370,7 +373,9 @@ export default {
           behaviorRulesJson,
           flowCondition, // 流转指标
           delFlag: 1,
-          link: dialogRef.totalLink
+          link: dialogRef.totalLink,
+          autoVersion,
+          isShowAutoVersion
         }
       } else {
         params = {
@@ -382,7 +387,9 @@ export default {
           behaviorRulesJson,
           flowCondition, // 流转指标
           delFlag: 1,
-          link: dialogRef.totalLink
+          link: dialogRef.totalLink,
+          autoVersion,
+          isShowAutoVersion
         }
       }
       this.$service.addEntry(params, '添加成功').then(res => {
@@ -417,10 +424,10 @@ export default {
             cancelButtonText: '不保存',
             type: 'warning'
           }).then(() => {
-            this.moveToRule(dialogRef)
+            moveToRule(dialogRef)
           }).catch(() => {
             // 清空行为标签
-            this.clearBehaviorRulesJson(dialogRef)
+            clearBehaviorRulesJson(dialogRef)
           })
         }
       })
@@ -438,6 +445,8 @@ export default {
 
       const stopType = dialogRef.form.stopType // 处理操作
       const nextId = dialogRef.form.nextId // 流转接待员
+      const autoVersion = dialogRef.form.autoVersion // 是否每日更新
+      const isShowAutoVersion = dialogRef.form.isShowAutoVersion // 是否显示每日更新
 
       const flowCondition = JSON.stringify(dialogRef.flowCondition)
 
@@ -454,7 +463,9 @@ export default {
         delFlag: 1,
         link: dialogRef.totalLink,
         stopType,
-        nextId
+        nextId,
+        autoVersion,
+        isShowAutoVersion
       }
       if (this.editExportRow) { // 编辑
         const defaultData = { ...this.editExportRow }

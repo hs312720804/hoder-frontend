@@ -215,7 +215,7 @@
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
 // import { handleSave as saveFunc } from './crowdAddSaveFunc.js'
-import { validateRule } from '@/views/storyLine/validateRuleData.js'
+import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   components: {
@@ -787,42 +787,42 @@ export default {
               cancelButtonText: '不保存',
               type: 'warning'
             }).then(() => {
-              this.moveToRule(_this)
+              moveToRule(_this)
             }).catch(() => {
               // 清空行为标签
-              this.clearBehaviorRulesJson(_this)
+              clearBehaviorRulesJson(_this)
             })
           }
         })
       }
     },
-    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // 移入
-    moveToRule (dialogRef) {
-      // const dialogRef = this.$refs.createClientDialog
-      // 将行为标签挪进设置标签栏
-      const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
-      dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
-      const actionTags = dialogRef.actionTags
-      const cacheIds = []
-      actionTags.forEach(item => {
-        // 获取大数据标签
-        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
-          cacheIds.push(item.tagId)
-        }
-      })
-      if (cacheIds.length > 0) {
-        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
-      }
-      // 清空行为标签
-      this.clearBehaviorRulesJson()
-    },
-    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // 不移入 - 清空行为标签
-    clearBehaviorRulesJson (dialogRef) {
-      // const dialogRef = this.$refs.createClientDialog
-      dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
-    },
+    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // // 移入
+    // moveToRule (dialogRef) {
+    //   // const dialogRef = this.$refs.createClientDialog
+    //   // 将行为标签挪进设置标签栏
+    //   const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+    //   dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
+    //   const actionTags = dialogRef.actionTags
+    //   const cacheIds = []
+    //   actionTags.forEach(item => {
+    //     // 获取大数据标签
+    //     if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+    //       cacheIds.push(item.tagId)
+    //     }
+    //   })
+    //   if (cacheIds.length > 0) {
+    //     cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+    //   }
+    //   // 清空行为标签
+    //   this.clearBehaviorRulesJson()
+    // },
+    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // // 不移入 - 清空行为标签
+    // clearBehaviorRulesJson (dialogRef) {
+    //   // const dialogRef = this.$refs.createClientDialog
+    //   dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
+    // },
 
     // 切换tab的时候手动触发保存，ref 调用
     tabFetchAddOrEdit (data) {

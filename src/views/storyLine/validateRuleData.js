@@ -532,4 +532,38 @@ function checkNumMostFour (num, _this) {
   }
 }
 
-export { validateRule }
+// 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+// 移入
+
+/** 校验普通标签、行为标签、流转规则 的统一封装方法
+ * @param  dialogRef 设置普通标签、行为标签的组件的 ref
+ *
+ */
+function moveToRule (dialogRef) {
+  // const dialogRef = this.$refs.createClientDialog
+  // 将行为标签挪进设置标签栏
+  const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+  dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
+  const actionTags = dialogRef.actionTags
+  const cacheIds = []
+  actionTags.forEach(item => {
+    // 获取大数据标签
+    if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+      cacheIds.push(item.tagId)
+    }
+  })
+  if (cacheIds.length > 0) {
+    cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+  }
+  // 清空行为标签
+  clearBehaviorRulesJson()
+}
+
+// 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+// 不移入 - 清空行为标签
+function clearBehaviorRulesJson (dialogRef) {
+  // const dialogRef = this.$refs.createClientDialog
+  dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
+}
+
+export { validateRule, moveToRule, clearBehaviorRulesJson }
