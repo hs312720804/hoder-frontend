@@ -400,7 +400,7 @@
                     <div class="d-info-box" v-if="isDoudi">
                       <div class="box-title">兜底方式</div>
                       <div class="box-line">
-                        <el-radio-group v-model="radio2" @input="handleTypeChange">
+                        <el-radio-group v-model="radio2" @input="handleTypeChange" style="font-size: 12px">
                           <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
                           <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
                         </el-radio-group>

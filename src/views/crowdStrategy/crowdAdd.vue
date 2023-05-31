@@ -738,8 +738,15 @@ export default {
     getDefaultOperator () {
       return '='
     },
+    // handleSave () {
+    //   saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
+    // },
 
-    async handleSave () {
+    // handleTabChangeSave () {
+    //   saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+    // },
+
+    async handleSave (callback) {
       // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
       const _this = this
       const form = JSON.parse(JSON.stringify(this.form))
@@ -778,7 +785,12 @@ export default {
             // crowdValidFrom: form.crowdExp[0],
             // crowdValidTo: form.crowdExp[1],
           }
-          this.fetchAddOrEdit(params)
+
+          if (callback) {
+            callback(params)
+          } else {
+            this.fetchAddOrEdit(params)
+          }
         }).catch(err => {
           console.log('err-->', err)
           if (err.openMoveOrClear) {
@@ -824,7 +836,12 @@ export default {
     //   dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
     // },
 
-    // 切换tab的时候手动触发保存，ref 调用
+    // 勿删，使用 ref 调用
+    handleTabChangeSave () {
+      this.handleSave(this.tabFetchAddOrEdit)
+      // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+    },
+    // 勿删，切换tab的时候手动触发保存，ref 调用
     tabFetchAddOrEdit (data) {
       const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
 
