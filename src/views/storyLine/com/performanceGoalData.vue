@@ -120,7 +120,6 @@ export default {
       dialogVisible: false,
       selectTargetChartKey: '',
       editTargetKeyVisible: false,
-
       colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       rowObj: // 格式固定,请勿随意更改
         {
