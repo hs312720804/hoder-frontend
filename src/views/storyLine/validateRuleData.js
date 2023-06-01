@@ -539,7 +539,7 @@ function checkNumMostFour (num, _this) {
  * @param  dialogRef 设置普通标签、行为标签的组件的 ref
  *
  */
-// 将行为标签挪进设置标签栏
+// 单独在行为标签栏使用红色标签的规则，将行为标签挪进设置标签栏
 function moveToRule (dialogRef, type) {
   // const dialogRef = this.$refs.createClientDialog
   // 行为标签规则

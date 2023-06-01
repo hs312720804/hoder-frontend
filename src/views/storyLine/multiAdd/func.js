@@ -1,10 +1,13 @@
 import { Message } from 'element-ui'
 import { validateRule } from '../validateRuleData.js'
 
-// 批量创建接待员 - 确认
+// 配置单独属性 - 确认
+// 使用中的地方：
+// - 批量创建接待员
+// - 场景一键投放
 function confirmMultiAddServicerFn ({ allPerSetRef }) {
   // const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const ruleFormArr = allPerSetRef.$refs.ruleForm || []// 此时为一个数组，因为是循环出来的
     const createClientDialogRef = allPerSetRef.$refs.createClientDialogRef || []// 入口条件，是个数组
     const exportClientDialogRef = allPerSetRef.$refs.exportClientDialogRef || []// 出口条件，是个数组
@@ -90,10 +93,9 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
         //   Message.success('成功保存提交数据')
         // })
       }).catch((err) => {
-        console.log('err-->', err)
-        // reject(err)
-        if (err.openMoveOrClear) {
-          Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+        if (err && err.openMoveOrClear) {
+          // Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+          reject(err)
         } else {
           Message.error('请完善条件')
         }
@@ -143,7 +145,10 @@ function restoreData (allRuleForm, allEntryArr, allExportArr) {
   })
   return returnData
 }
-
+// 配置公共属性
+// 使用中的地方：
+// - 批量创建接待员
+// - 场景一键投放
 function multiAddNextStepFn ({ commonSetRef }) {
   return new Promise((resolve) => {
     // const commonSetRef = this.$refs.multiAddRef.$refs.commonSetRef
