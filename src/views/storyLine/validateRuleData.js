@@ -539,24 +539,51 @@ function checkNumMostFour (num, _this) {
  * @param  dialogRef 设置普通标签、行为标签的组件的 ref
  *
  */
-function moveToRule (dialogRef) {
+// 将行为标签挪进设置标签栏
+function moveToRule (dialogRef, type) {
   // const dialogRef = this.$refs.createClientDialog
-  // 将行为标签挪进设置标签栏
+  // 行为标签规则
   const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
-  dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
-  const actionTags = dialogRef.actionTags
-  const cacheIds = []
-  actionTags.forEach(item => {
-    // 获取大数据标签
-    if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
-      cacheIds.push(item.tagId)
+  // 普通标签规则
+  const rulesJsonRules = dialogRef.rulesJson.rules
+
+  // -------------- start -----------------
+  // 判断是否拥有行为标签规则
+  let hasBehaviorRule = false
+  let x
+  let y = 0
+  const behaviorRulesLength = behaviorRulesJsonRules.length
+  for (x = 0; x < behaviorRulesLength; x++) {
+    for (y = 0; y < behaviorRulesJsonRules[x].rules.length; y++) {
+      const rulesItem = behaviorRulesJsonRules[x].rules[y]
+      if (rulesItem.dataSource === 8) {
+        hasBehaviorRule = true
+      }
     }
-  })
-  if (cacheIds.length > 0) {
-    cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
   }
-  // 清空行为标签
-  clearBehaviorRulesJson()
+  // -------------- end -----------------
+  // 开始挪 & 删除 行为标签
+  if (behaviorRulesJsonRules.length > 0 && !hasBehaviorRule) {
+    if (type !== 'clear') {
+      // 如果在行为标签栏单独使用红色标签，挪入设置标签栏  ---start
+      dialogRef.rulesJson.rules = rulesJsonRules.concat(behaviorRulesJsonRules)
+
+      const actionTags = dialogRef.actionTags
+      const cacheIds = []
+      actionTags.forEach(item => {
+        // 获取大数据标签
+        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+          cacheIds.push(item.tagId)
+        }
+      })
+      if (cacheIds.length > 0) {
+        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+      }
+      // 如果在行为标签栏单独使用红色标签，挪入设置标签栏  ---end
+    }
+    // 清空行为标签
+    clearBehaviorRulesJson(dialogRef)
+  }
 }
 
 // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
