@@ -35,8 +35,8 @@
             </div>
             <div class="showAllOrMy">
               <el-radio-group v-model="showAll" @change="handleShowAllChange">
-                <el-radio :label="true">全部</el-radio>
-                <el-radio :label="false">我的</el-radio>
+                <el-radio :label="false">全部</el-radio>
+                <el-radio :label="true">我的</el-radio>
               </el-radio-group>
             </div>
             <div class="search">
@@ -65,7 +65,8 @@
                     </span>
                     <span class="item-index">{{ item.id }}</span>
                     <span class="use-status-styl">
-                      <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
+                      <span v-if="item.useStatus === '投放且已命中'" @click="launchDetail(item.policyId)" class="border-title">{{ item.useStatus }}</span>
+                      <span v-else-if="item.useStatus === '投放但未请求' || item.useStatus === '投放但未命中'" class="border-title">{{ item.useStatus }}</span>
                       <span v-else>未投放</span>
                     </span>
                     <el-dropdown
@@ -115,6 +116,7 @@
                           </el-dropdown-item>
 
                           <!-- 场景的 planId 为 null, 才展示按钮 -->
+                          <!-- planId 代表是动态人群过来的 -->
                           <!-- :disabled="servicer.length === 0" -->
                           <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
                             投放
@@ -131,8 +133,8 @@
                           <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
                             删除
                           </el-dropdown-item>
-                          <el-dropdown-item v-if="item.planId" :command="['report',item]">
-                          <!-- <el-dropdown-item :command="['report',item]"> -->
+                          <!-- <el-dropdown-item v-if="item.planId" :command="['report',item]"> -->
+                          <el-dropdown-item :command="['report',item]">
                             投放报告
                           </el-dropdown-item>
                           <el-dropdown-item :command="['detail',item]">
@@ -307,6 +309,7 @@
           ></SceneMap>
           <div style="display: grid; grid-template-columns: 50px auto" v-if="editClientRow.id">
 
+            <!-- {{ editClientRow }} -->
             {{ editClientRow.id }}
             <showAndUpdateRule
               v-if="editClientRow.id"
@@ -317,7 +320,7 @@
               :havePermissionsToUse="havePermissionsToUse"
               :isCopiedServicer="isCopiedServicer"
               :canUse="sceneCanReuse"
-              :servicerListFilterSelect="servicerListFilterSelect"
+              :servicerListFilterSelect="mapServicerListFilterSelect"
               :selectedScene="selectedScene"
               :selectedServicer="{id: editClientRow.receptionistId}"
               @updataExportList="updataExportList"
@@ -401,6 +404,8 @@
 
           <template v-else>
             <!-- <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button> -->
+
+            <!-- 批量添加接待员： 确定 -->
             <el-button  type="primary" @click="confirmMultiAddServicer">确 定</el-button>
           </template>
         </span>
@@ -496,6 +501,8 @@ import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.j
 
 import SceneMap from './mapShow/sceneMap.vue'
 import showAndUpdateRule from '@/views/storyLine/com/showAndUpdateRule.vue'
+
+import { moveToRule } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   components: {
@@ -669,6 +676,11 @@ export default {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
       return data
     },
+    // 流转视图 - 过滤掉除了当前选中 的其他接待员 （同一场景）
+    mapServicerListFilterSelect () {
+      const data = this.servicer.filter(item => item.id !== this.editClientRow.receptionistId)
+      return data
+    },
     // 过滤掉当前选择接待员，获得其他接待员
     sceneListFilterSelect () {
       return this.sceneList.filter(item => item.id !== this.activeIndex)
@@ -750,7 +762,7 @@ export default {
     },
 
     handleShowAllChange () {
-
+      this.getSceneList()
     },
 
     changeViewAndSelectServicer (id) {
@@ -833,6 +845,27 @@ export default {
           this.getServiceList('add')
           this.dialogVisible2 = false
         })
+      }).catch(err => {
+        if (err.openMoveOrClear) {
+          this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+            confirmButtonText: '确定移入',
+            cancelButtonText: '不保存',
+            type: 'warning'
+          }).then(() => {
+            console.log('allPerSetRef--->', allPerSetRef)
+            const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+            const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+            const arr = [...dialogRef1, ...dialogRef2]
+            arr.forEach(moveToRule)
+          }).catch(() => {
+            // 清空行为标签
+            console.log('allPerSetRef--->', allPerSetRef)
+            const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+            const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+            const arr = [...dialogRef1, ...dialogRef2]
+            arr.forEach(item => moveToRule(item, 'clear'))
+          })
+        }
       })
     },
 
@@ -1332,7 +1365,8 @@ export default {
       const parmas = {
         keywords: this.searchScene,
         pageNum: 1,
-        pageSize: 1000
+        pageSize: 1000,
+        my: this.showAll
       }
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
