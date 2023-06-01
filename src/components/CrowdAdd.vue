@@ -16,6 +16,7 @@
                 <el-form-item label="设置标签" required>
                   <!-- {{ crowd.rulesJson }} -->
                   <MultipleSelect
+                    ref="MultipleSelectRef"
                     :tags="tags"
                     :rulesJson="crowd.rulesJson"
                     :crowd="crowd"
@@ -114,6 +115,7 @@
                     <el-form-item label="设置标签" required>
                       <!-- {{ crowd.rulesJson }} -->
                       <MultipleSelect
+                        ref="MultipleSelectRef"
                         :tags="tags"
                         :rulesJson="crowd.rulesJson"
                         :crowd="crowd"
