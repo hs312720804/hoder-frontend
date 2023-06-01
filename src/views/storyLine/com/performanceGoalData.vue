@@ -24,36 +24,37 @@
             </el-dropdown-item>
             <!-- <el-dropdown-item>狮子头</el-dropdown-item>
                           <el-dropdown-item>螺蛳粉</el-dropdown-item> -->
-
           </el-dropdown-menu>
         </el-dropdown>
+
+        <div>
+          <span class="kpi-label">接待用户数</span>
+          <!-- {{ overview }} -->
+          <!-- <span class="kpi-value">{{ overview.receptionUv || '-' }}</span> -->
+        </div>
         <!-- style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;" -->
-        <div class="detail-kpi">
-          <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
-          <div v-for="(item, key) in rowObj" :key="key">
-            <div v-show="item.isShow" style="position: relative">
-              <div class="unit-box">
-                <div v-if="(item.title)">
-                  <div
-                    v-if="allChartData[key] &&
-                      ((allChartData[key].series &&
-                      allChartData[key].series.length > 0) ||
-                      allChartData[key].data)"
-                    :ref="key"
-                    :id="key"
-                    class="chart-div"
-                    @click="enlargeChart(key)">
-                  </div>
-                  <div v-else>
-                    <el-empty description="暂无数据" :image-size="60"></el-empty>
-                  </div>
+        <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
+        <div v-for="(item, key) in rowObj" :key="key">
+          <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
+            <div class="unit-box">
+              <div v-if="(item.title)">
+                <div
+                  v-if="allChartData[key] &&
+                    ((allChartData[key].series &&
+                    allChartData[key].series.length > 0) ||
+                    allChartData[key].data)"
+                  :ref="key"
+                  :id="key"
+                  class="chart-div"
+                  @click="enlargeChart(key)">
+                </div>
+                <div v-else>
+                  <el-empty description="暂无数据" :image-size="60"></el-empty>
                 </div>
               </div>
-              <i class="el-icon-close position-right el-icon-close-position-right" @click="handleCommand(key)" title="删除"></i>
             </div>
+            <i class="el-icon-close position-right el-icon-close-position-right" @click="handleCommand(key)" title="删除"></i>
           </div>
-
-          <div class="panel-footer"></div>
         </div>
 
       </div>
@@ -66,8 +67,9 @@
     <!-- targetKeyId--{{ selectTargetChartKey }} -->
       <div
         v-if="allChartData[selectTargetChartKey] &&
-        allChartData[selectTargetChartKey].series &&
-        allChartData[selectTargetChartKey].series.length > 0"
+        ((allChartData[selectTargetChartKey].series &&
+        allChartData[selectTargetChartKey].series.length > 0) ||
+        allChartData[selectTargetChartKey].data)"
         :ref="`big-${selectTargetChartKey}`"
         :id="`big-${selectTargetChartKey}`"
         style="height: 450px">
@@ -120,18 +122,19 @@ export default {
       dialogVisible: false,
       selectTargetChartKey: '',
       editTargetKeyVisible: false,
-      colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+      colorList: ['#FD9E06', '#5470c6', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+      // colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       rowObj: // 格式固定,请勿随意更改
         {
-          orderNum: { type: 'line', title: '内容 - 影片吸金订单量', targetKeyId: 6, span: 24, isShow: true },
-          orderRatio: { type: 'line', title: '内容 - 影片订单转化率', targetKeyId: 7, span: 24, isShow: true },
-          perOrder: { type: 'line', title: '内容 - 影片订单均价', targetKeyId: 8, span: 24, isShow: true },
-          avgPlayPrice: { type: 'line', title: '内容 - 影片播放均价', targetKeyId: 9, span: 24, isShow: true },
           payRate: { type: 'line', title: '会员 - 付费率', targetKeyId: 1, span: 24, isShow: true },
           payNum: { type: 'line', title: '会员 - 付费单数', targetKeyId: 2, span: 24, isShow: true },
           price: { type: 'line', title: '会员 - 付费金额', targetKeyId: 3, span: 24, isShow: true },
           arup: { type: 'line', title: '会员 - 客单价', targetKeyId: 4, span: 24, isShow: true },
-          payUv: { type: 'line', title: '会员 - 付费设备量', targetKeyId: 5, span: 24, isShow: true }
+          payUv: { type: 'line', title: '会员 - 付费设备量', targetKeyId: 5, span: 24, isShow: true },
+          orderNum: { type: 'line', title: '内容 - 影片吸金订单量', targetKeyId: 6, span: 24, isShow: true },
+          orderRatio: { type: 'line', title: '内容 - 影片订单转化率', targetKeyId: 7, span: 24, isShow: true },
+          perOrder: { type: 'line', title: '内容 - 影片订单均价', targetKeyId: 8, span: 24, isShow: true },
+          avgPlayPrice: { type: 'line', title: '内容 - 影片播放均价', targetKeyId: 9, span: 24, isShow: true }
         },
       allCharts: {}, // echart 实例
       allChartsOption: {}, // echart option
@@ -342,7 +345,8 @@ export default {
       const params = {
         // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
         dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-        crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
+        // crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
+        sceneId: this.selectedScene.id, // 所选场景 id
         isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       }
       // const params = {
@@ -376,7 +380,7 @@ export default {
       // key 是代表 ref 值
       for (const key in rowObj) {
         if (rowObj[key].type === 'line') {
-          this.showLine(this.allChartData[key], key)
+          this.showLine(this.allChartData[key].data, key)
         }
       }
 
@@ -416,7 +420,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
       const chartElement = document.getElementById(element)
-      console.log('chartElement---->', chartElement)
+      // console.log('chartElement---->', chartElement)
+      // console.log('yData---->', yData)
       if (!chartElement) return
 
       const echarts = require('echarts')
@@ -473,6 +478,7 @@ export default {
         //   containLabel: false
         // },
         grid: {
+          top: yData.length * 40 || 50,
           left: '2%',
           right: '2%',
           bottom: '10%',
@@ -499,7 +505,7 @@ export default {
             let str = parmas[0].name + '<br/>'
             // let str = ''
             for (const item of parmas) {
-              str = str + parmas[0].marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit
+              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
             }
             // return _this.cc_format_number(a.data)
             return str
@@ -511,7 +517,7 @@ export default {
             }
           }
         },
-        color: ['#37A2DA', '#00DDFF', '#37A2FF', '#FF0087', '#FFBF00'],
+        color: _this.colorList,
         legend: {
           // show: false,
           data: legend,
@@ -558,6 +564,7 @@ export default {
         },
         yAxis: [yAxisObj],
         series: yData.map(item => {
+          const crowdId = item.name.split('-')[1]
           return {
             ...item,
             // stack: 'Total',
@@ -567,39 +574,43 @@ export default {
             // },
             // showSymbol: false,
             label: {
-              show: true,
+              show: false,
               position: 'top',
               formatter: function (data) {
                 return `${data.value}${yunit}`
               },
-              color: '#000'
+              color: '#666'
             },
-            areaStyle: {
-              // opacity: 0.8,
-              // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              //   {
-              //     offset: 0,
-              //     color: 'rgb(0, 221, 255, 0.5)'
-              //   },
-              //   {
-              //     offset: 1,
-              //     color: 'rgba(77, 119, 255, 0)'
-              //   }
-              // ])
-              opacity: 0.8,
-              color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-                {
-                  offset: 0,
-                  color: 'rgb(0, 221, 255)'
-                },
-                {
-                  offset: 1,
-                  color: 'rgb(77, 119, 255)'
-                }
-              ])
-            },
+            // areaStyle: {
+            //   // opacity: 0.8,
+            //   // color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            //   //   {
+            //   //     offset: 0,
+            //   //     color: 'rgb(0, 221, 255, 0.5)'
+            //   //   },
+            //   //   {
+            //   //     offset: 1,
+            //   //     color: 'rgba(77, 119, 255, 0)'
+            //   //   }
+            //   // ])
+            //   opacity: 0.8,
+            //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+            //     {
+            //       offset: 0,
+            //       color: 'rgb(0, 221, 255)'
+            //     },
+            //     {
+            //       offset: 1,
+            //       color: 'rgb(77, 119, 255)'
+            //     }
+            //   ])
+            // },
             emphasis: {
               focus: 'series'
+            },
+            lineStyle: {
+              width: crowdId === '18700' ? 2 : 1,
+              type: crowdId === '18700' ? 'solid' : 'dashed'
             }
             // 目标
             // markLine: {
@@ -648,6 +659,16 @@ export default {
 @import '../sty/common.styl'
 @import '../sty/dark.styl'
 @import '../sty/light.styl'
-.unit-box
-  margin-bottom 10px
+.unit-box{
+  margin-top 10px
+  background none
+}
+.unit-box-wrap:hover{
+  .unit-box{
+    background #f2f4f6
+  }
+  .el-icon-close-position-right {
+    visibility: visible;
+  }
+}
 </style>

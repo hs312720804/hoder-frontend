@@ -1816,7 +1816,8 @@ export default {
       const params = {
         // 【动态分组ID】,如果不是通过动态人群创建的故事线，这个的dynamicRuleId传【场景id】
         dynamicRuleId: this.selectedScene.planId || this.selectedScene.id,
-        crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
+        // crowdId: this.selectedServicer.crowdId, // 接待员的人群 id
+        sceneId: this.selectedScene.id, // 所选场景 id
         isDelCache: 0 // 是否删除绩效目标缓存   0 否  1 是
       }
       // const params = {
