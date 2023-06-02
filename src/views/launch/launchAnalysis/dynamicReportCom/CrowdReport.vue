@@ -1600,7 +1600,7 @@ export default {
   }
 
   .chart-div{
-    height: 436px
+    height: 530px
   }
   .export-button
     display flex

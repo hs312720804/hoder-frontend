@@ -1,7 +1,58 @@
-export function drawTwoBarChart () {
+import Vue from 'vue'
+
+export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', yunit = '') {
+  const vm = new Vue()
   const echarts = require('echarts')
 
-  const xData = ['建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材', '电（热）能', '矿石', '其他']
+  const colorList = ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc']
+  const seriesData = yData.map(item => {
+    return {
+      ...item,
+      label: {
+        show: true,
+        // rotate: 90,
+        // position: item.xAxisIndex === 2 ? 'bottom' : 'top',
+        formatter: function (data) {
+          console.log('value----->', item)
+          // ${data.seriesName}
+          if (item.xAxisIndex === 2) {
+            return `${vm.cc_format_number(Number(data.value * 100).toFixed(2))}%`
+          } else {
+            return `${vm.cc_format_number(data.value)}`
+          }
+        },
+        color: '#000'
+      }
+    }
+  })
+  console.log('seriesData-------->', seriesData)
+  // 图例
+  const legendData = yData.map((key) => {
+    return key.name
+  })
+  const defaultYAxisOption = {
+    width: '50px',
+    triggerEvent: true,
+    scale: true,
+    axisLabel: {
+      // margin: 2,
+      interval: 'auto',
+      formatter: function (value) {
+        if (value >= 100000000) {
+          value = value / 100000000 + '亿' + yunit
+        } else if (value >= 10000000) {
+          value = value / 10000000 + '千万' + yunit
+        } else if (value >= 10000 && value < 10000000) {
+          value = value / 10000 + '万' + yunit
+        } else {
+          value = value + yunit
+        }
+        return value
+      }
+    }
+  }
+  // 11111111111111111111
+  // const xData = ['建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材', '电（热）能', '矿石', '其他']
   const lastYearData = [88, 59, 32, 15]
   const thisYearData = [99.45, 72.69, 53.46, 30.22]
   const timeLineData = [1]
@@ -18,11 +69,10 @@ export function drawTwoBarChart () {
     end: 'rgba(1, 231, 152,0.8)'
   }]
   // 基于准备好的dom，初始化echarts实例
-  const myLineChart = echarts.init(
-    document.getElementById('lineChart')
-  )
+
   // 指定图表的配置项和数据
   const option = {
+
     baseOption: {
       // backgroundColor: background,
       timeline: {
@@ -55,6 +105,9 @@ export function drawTwoBarChart () {
           width: '28%'
         }
       ],
+      legend: {
+        data: legendData
+      },
       axisPointer: {
         link: { xAxisIndex: 'all' }
       },
@@ -186,88 +239,15 @@ export function drawTwoBarChart () {
   }
   option.baseOption.timeline.data.push(timeLineData[0])
   option.options.push({
-    series: [
-      {
-        name: '2017',
-        type: 'bar',
-        itemStyle: {
-          normal: {
-            label: {
-              show: true, // 开启显示
-              position: 'left', // 在上方显示
-              textStyle: { // 数值样式
-                color: colors[0].borderColor,
-                fontSize: 12
-              }
-            },
-            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-              offset: 0,
-              color: colors[0].start
-            },
-            {
-              offset: 1,
-              color: colors[0].end
-            }
-            ]),
-            borderColor: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-              offset: 0,
-              color: colors[0].borderColor
-            },
-            {
-              offset: 1,
-              color: colors[0].end
-            }
-            ]),
-            borderWidth: 1
-          }
-        },
-        data: lastYearData,
-        animationEasing: 'elasticOut'
-      },
-      {
-        name: '2018',
-        type: 'bar',
-        // stack: "2",
-        // barWidth: 25,
-        xAxisIndex: 2,
-        yAxisIndex: 2,
-        itemStyle: {
-          normal: {
-            label: {
-              show: true, // 开启显示
-              position: 'right', // 在上方显示
-              textStyle: { // 数值样式
-                color: colors[1].borderColor,
-                fontSize: 12
-              }
-            },
-            color: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-              offset: 0,
-              color: colors[1].start
-            },
-            {
-              offset: 1,
-              color: colors[1].end
-            }
-            ]),
-            borderColor: new echarts.graphic.LinearGradient(0, 0, 1, 0, [{
-              offset: 0,
-              color: colors[1].start
-            },
-            {
-              offset: 1,
-              color: colors[1].borderColor
-            }
-            ]),
-            borderWidth: 1
-          }
-        },
-        data: thisYearData,
-        animationEasing: 'elasticOut'
-      }
-    ]
+    series: seriesData
   })
-  // 使用刚指定的配置项和数据显示图表。
-  myLineChart.setOption(option)
-  // return option
+
+  return option
+  // const echarts = require('echarts')
+
+  // // 基于准备好的dom，初始化echarts实例
+  // const myLineChart = echarts.init(
+  //   document.getElementById('lineChart')
+  // )
+  // myLineChart.setOption(option)
 }

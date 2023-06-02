@@ -11,8 +11,6 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
         // rotate: 90,
         position: item.xAxisIndex === 1 ? 'bottom' : 'top',
         formatter: function (data) {
-          console.log('value----->', item)
-          // ${data.seriesName}
           if (item.xAxisIndex === 1) {
             return `${vm.cc_format_number(Number(data.value * 100).toFixed(2))}%`
           } else {
@@ -51,61 +49,72 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
   const options = {
     color: colorList,
     tooltip: {
-      show: false,
-      // trigger: 'axis',
-      // axisPointer: {
-      //   animation: false
-      // }
-      trigger: 'axis',
+      // trigger: 'item',
       axisPointer: {
         type: 'cross'
+      },
+      trigger: 'axis',
+      formatter: function (parmas) {
+        console.log('parmas--->', parmas)
+        // let str = parmas[0].marker + parmas[0].name + '<br/>'
+        let str = parmas[0].name + '<br/>'
+
+        // if (item.axisIndex === 1) {
+        //   str = str + '购买金额' + '<br/>'
+        // } else {
+
+        // }
+        // str = str + '购买用户占比' + '<br/>'
+        let tip1 = title1 + '<br/>'
+        let tip2 = title2 + '<br/>'
+        parmas.forEach((item, index) => {
+          if (item.axisIndex === 0) {
+            tip1 = tip1 + item.marker + item.seriesName + '：' + vm.cc_format_number(item.value) + '<br/>'
+          } else {
+            tip2 = tip2 + item.marker + item.seriesName + '：' + vm.cc_format_number(Number(item.value * 100).toFixed(2)) + '%' + '<br/>'
+          }
+        })
+        str = str + tip1 + '<br/>' + tip2
+        // for (const item of parmas) {
+        // }
+        return str
       }
     },
-    // axisTick: {
-    //   inside: true
-    // },
     // tooltip: {
-    //   // trigger: 'item',
     //   trigger: 'axis',
-    //   formatter: function (parmas) {
-    //     console.log('parmas--->', parmas)
-    //     // let str = parmas[0].marker + parmas[0].name + '<br/>'
-    //     let str = parmas[0].name + '<br/>'
-
-    //     // if (item.axisIndex === 1) {
-    //     //   str = str + '购买金额' + '<br/>'
-    //     // } else {
-
-    //     // }
-    //     // str = str + '购买用户占比' + '<br/>'
-    //     parmas.forEach((item, index) => {
-    //       if (item.axisIndex === 0) {
-    //         if (index === 0) {
-    //           str = str + '<br/>' + title1 + '<br/>'
-    //         }
-    //         str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(item.value) + '<br/>'
-    //         // console.log('parmas[index + 1].axisIndex--->', parmas[index + 1])
-    //         if (parmas[index + 1] && parmas[index + 1].axisIndex === 1) {
-    //           str = str + '<br/>' + title2 + '<br/>'
-    //         }
-    //       } else {
-    //         // if (item.axisIndex === 1) {
-    //         //   str = '<br/>' + str + '购买用户占比' + '<br/>'
-    //         // }
-    //         str = str + item.marker + item.seriesName + '：' + vm.cc_format_number(Number(item.value * 100).toFixed(2)) + '%' + '<br/>'
-    //       }
-    //     })
-    //     // for (const item of parmas) {
-    //     // }
-    //     return str
+    //   axisPointer: {
+    //     type: 'cross'
     //   }
+
     // },
+    axisPointer: {
+      link: { xAxisIndex: 'all' }
+      // label: {
+      //   backgroundColor: '#777'
+      // }
+    },
     legend: {
       data: legendData
     },
-    axisPointer: {
-      link: { xAxisIndex: 'all' }
-    },
+    // axisPointer: {
+    //   link: { xAxisIndex: 'all' }
+    // },
+    dataZoom: [
+      {
+        show: true,
+        realtime: true,
+        start: 0,
+        end: 40,
+        xAxisIndex: [0, 1]
+      },
+      {
+        type: 'inside',
+        realtime: true,
+        start: 0,
+        end: 40,
+        xAxisIndex: [0, 1]
+      }
+    ],
     grid: [{
       left: 50,
       right: 50,
@@ -113,14 +122,47 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
     }, {
       left: 50,
       right: 50,
-      top: '55%',
+      top: '60%',
       height: '35%'
     }],
     xAxis: [
       {
         type: 'category',
         axisTick: { show: false },
-        data: xData
+        data: xData,
+        axisLabel: {
+          interval: 0,
+          margin: 7,
+          formatter: function (params) {
+            let newParamsName = '' // 拼接后的新字符串
+            const paramsNameNumber = params.length // 实际标签数
+            const provideNumber = 8 // 每行显示的字数
+            const rowNumber = Math.ceil(paramsNameNumber / provideNumber) // 如需换回，算出要显示的行数
+
+            if (paramsNameNumber > provideNumber) {
+              /** 循环每一行,p表示行 */
+
+              for (let i = 0; i < rowNumber; i++) {
+                let tempStr = '' // 每次截取的字符串
+                const start = i * provideNumber // 截取位置开始
+                const end = start + provideNumber // 截取位置结束
+
+                // 最后一行的需要单独处理
+
+                if (i == rowNumber - 1) {
+                  tempStr = params.substring(start, paramsNameNumber)
+                } else {
+                  tempStr = params.substring(start, end) + '\n'
+                }
+                newParamsName += tempStr
+              }
+            } else {
+              newParamsName = params
+            }
+
+            return newParamsName
+          }
+        }
       },
       {
         gridIndex: 1,
@@ -133,11 +175,13 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
     ],
     yAxis: [
       {
+        name: title1,
         type: 'value',
         axisTick: { show: false },
         ...defaultYAxisOption
       },
       {
+        name: title2,
         gridIndex: 1,
         type: 'value',
         axisTick: { show: false },
