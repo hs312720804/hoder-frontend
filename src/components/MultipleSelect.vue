@@ -535,7 +535,7 @@
             :type="dataSourceColorEnum[item.dataSource]"
             >{{ item.tagName }}
           </el-tag>
-          <el-select
+          <!-- <el-select
             style="width: 180px"
             v-model="selectValue"
             multiple
@@ -558,7 +558,7 @@
                 >{{ item.tagName }}
               </span>
             </el-option>
-          </el-select>
+          </el-select> -->
 
           <!-- <i class="el-icon-top" style="font-size: 28px;"></i> -->
           <div v-if="showHitTip" class="introjs-hint" style="font-size: 28px; position: absolute; bottom: -28px; left: 20px; color: #999">
@@ -885,17 +885,18 @@ export default {
   data () {
     return {
       // 添加指标
-      remoteMethodParams: {
-        pageNum: 1,
-        pageSize: 30,
-        s: '',
-        isStoryline: 1
-      },
-      totalPages: 0,
-      options: [],
-      selectValue: [],
-      list: [],
-      loading: false,
+      // remoteMethodParams: {
+      //   pageNum: 1,
+      //   pageSize: 30,
+      //   s: '',
+      //   isStoryline: 1
+      // },
+      // totalPages: 0,
+      // options: [],
+      // selectValue: [],
+      // list: [],
+      // loading: false,
+      // 添加指标 --- end
 
       showHitTip: true,
       tipVisible: false,
@@ -1023,61 +1024,61 @@ export default {
   },
   methods: {
     // 选中指标
-    selectChange () {
-      const selectValues = this.selectValue
+    // selectChange () {
+    //   const selectValues = this.selectValue
 
-      const allOptions = this.options.concat(this.allTagList)
+    //   const allOptions = this.options.concat(this.allTagList)
 
-      const selectValueList = allOptions.filter(item => { return selectValues.includes(item.tagId) }) || []
-      // 去重
-      const uniqueArray = selectValueList.filter((item, index, array) => {
-        return array.findIndex(obj => obj.tagId === item.tagId) === index
-      })
+    //   const selectValueList = allOptions.filter(item => { return selectValues.includes(item.tagId) }) || []
+    //   // 去重
+    //   const uniqueArray = selectValueList.filter((item, index, array) => {
+    //     return array.findIndex(obj => obj.tagId === item.tagId) === index
+    //   })
 
-      this.$emit('emitTags', uniqueArray)
-    },
-    handelQiboLoadmore () {
-      if (this.remoteMethodParams.pageNum < this.totalPages) {
-        this.remoteMethodParams.pageNum++ // 滚动加载翻页
-        this.remoteMethod()
-      }
-    },
-    remoteMethod (query) {
-      console.log(this.remoteMethodParams)
+    //   this.$emit('emitTags', uniqueArray)
+    // },
+    // handelQiboLoadmore () {
+    //   if (this.remoteMethodParams.pageNum < this.totalPages) {
+    //     this.remoteMethodParams.pageNum++ // 滚动加载翻页
+    //     this.remoteMethod()
+    //   }
+    // },
+    // remoteMethod (query) {
+    //   console.log(this.remoteMethodParams)
 
-      // 是否是加载更多
-      const isLoadMore = query === undefined
+    //   // 是否是加载更多
+    //   const isLoadMore = query === undefined
 
-      // 重置
-      if (!isLoadMore) {
-        this.remoteMethodParams.pageNum = 1
-        this.filmModelTagOptions = []
-        this.remoteMethodParams.s = query
-      }
+    //   // 重置
+    //   if (!isLoadMore) {
+    //     this.remoteMethodParams.pageNum = 1
+    //     this.filmModelTagOptions = []
+    //     this.remoteMethodParams.s = query
+    //   }
 
-      this.loading = true
+    //   this.loading = true
 
-      const params = {
-        ...this.remoteMethodParams
-      }
+    //   const params = {
+    //     ...this.remoteMethodParams
+    //   }
 
-      this.$service.policyTagSeach(params).then(data => {
-        this.totalPages = data.pageInfo.pages // 总页数
+    //   this.$service.policyTagSeach(params).then(data => {
+    //     this.totalPages = data.pageInfo.pages // 总页数
 
-        const list = data.pageInfo.list.map(item => {
-          return {
-            ...item,
-            dataSource: item.tDataSource
-          }
-        })
-        this.options = !isLoadMore ? list : this.options.concat(list)
+    //     const list = data.pageInfo.list.map(item => {
+    //       return {
+    //         ...item,
+    //         dataSource: item.tDataSource
+    //       }
+    //     })
+    //     this.options = !isLoadMore ? list : this.options.concat(list)
 
-        this.loading = false
-      }).catch(() => {
-        this.options = []
-        this.loading = false
-      })
-    },
+    //     this.loading = false
+    //   }).catch(() => {
+    //     this.options = []
+    //     this.loading = false
+    //   })
+    // },
     getChild (childItem) {
       const obj = this.tags.filter(item => item.tagId === childItem.tagId)
       return obj && obj.child ? obj.child : []
