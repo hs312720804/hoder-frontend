@@ -10,9 +10,12 @@
           <!-- <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span> -->
         </div>
         <!-- <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i> -->
-        <el-dropdown class="position-right" title="编辑绩效目标" @command="handleCommand" trigger="click" :hide-on-click="false">
+
+        <i class="el-icon-loading position-right" v-if="getGoalDataLoading" style="z-index: 99"></i>
+
+        <el-dropdown v-else class="position-right" title="编辑绩效目标" @command="handleCommand" trigger="click" :hide-on-click="false">
           <span class="el-dropdown-link">
-            <i class="el-icon-arrow-down el-icon--right"></i>
+            <i class="el-icon-plus"></i>
           </span>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item v-for="(item, key) in rowObj" :key="key" :command="key">
@@ -28,12 +31,14 @@
         </el-dropdown>
 
         <div>
-          <span class="kpi-label">接待用户数</span>
+          <!-- {{ selectedServicerId }} -->
           <!-- {{ overview }} -->
-          <!-- <span class="kpi-value">{{ overview.receptionUv || '-' }}</span> -->
+          <span class="reception-uv-span">
+            <span style="font-size: 12px">命中用户数：</span>
+            {{ selectedServicerOverView.receptionUv || '-' }}
+          </span>
         </div>
         <!-- style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;" -->
-        <i class="el-icon-loading load-place" v-if="getGoalDataLoading" style="z-index: 99"></i>
         <div v-for="(item, key) in rowObj" :key="key">
           <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
             <div class="unit-box">
@@ -119,6 +124,7 @@ export default {
 
   data () {
     return {
+      overview: {},
       dialogVisible: false,
       selectTargetChartKey: '',
       editTargetKeyVisible: false,
@@ -209,7 +215,20 @@ export default {
       immediate: true
     }
   },
-
+  computed: {
+    selectedServicerId () {
+      // 正式需要改过来
+      return '2655' || this.selectedServicer.id
+    },
+    selectedServicerOverView () {
+      console.log('11111->>>>', this.overview)
+      // return this.overview[0]
+      // 正式需要改过来
+      // const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === this.selectedServicerId) : undefined
+      const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === 855) : undefined
+      return selectedServicer || {}
+    }
+  },
   mounted () {
     // 图表自适应
     window.addEventListener('resize', () => {
@@ -609,8 +628,8 @@ export default {
               focus: 'series'
             },
             lineStyle: {
-              width: crowdId === '18700' ? 2 : 1,
-              type: crowdId === '18700' ? 'solid' : 'dashed'
+              width: crowdId === _this.selectedServicerId ? 2 : 1,
+              type: crowdId === _this.selectedServicerId ? 'solid' : 'dashed'
             }
             // 目标
             // markLine: {
@@ -659,16 +678,9 @@ export default {
 @import '../sty/common.styl'
 @import '../sty/dark.styl'
 @import '../sty/light.styl'
-.unit-box{
-  margin-top 10px
-  background none
-}
-.unit-box-wrap:hover{
-  .unit-box{
-    background #f2f4f6
-  }
-  .el-icon-close-position-right {
-    visibility: visible;
-  }
+.position-right {
+  position absolute
+  right: 2px
+  top: 2px
 }
 </style>
