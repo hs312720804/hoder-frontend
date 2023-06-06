@@ -478,9 +478,9 @@ export default {
           }
         }
       }
-      const markLineTargetValue = this.targetValue.includes('%') ? this.targetValue.replace('%', '') : this.targetValue
-      yAxisObj.max = Math.max(markLineTargetValue, ...yData[0].data)
-      yAxisObj.min = Math.min(markLineTargetValue, ...yData[0].data)
+      // const markLineTargetValue = this.targetValue.includes('%') ? this.targetValue.replace('%', '') : this.targetValue
+      // yAxisObj.max = Math.max(markLineTargetValue, ...yData[0].data)
+      // yAxisObj.min = Math.min(markLineTargetValue, ...yData[0].data)
       // let myChart = echarts.init(this.$refs[element])
       const option = {
         backgroundColor: '', // rgba设置透明度0.1
