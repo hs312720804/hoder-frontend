@@ -170,7 +170,7 @@
               </SetCirculationConditionsCom>
             </el-form-item> -->
           </div>
-
+<!-- {{ form.isShowAutoVersion }} --- {{ form.autoVersion }} -->
           <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新：" prop="autoVersion" >
             <el-radio-group v-model="form.autoVersion">
               <el-radio :label="false">否</el-radio>
@@ -235,12 +235,13 @@ export default {
         isStoryline: 1
       },
       totalPages: 0,
-      options: [],
+      searchOptions: [],
       checkedList: [],
       // selectValue: [],
       list: [],
       loading: false,
       // ----- 添加指标 end ----------
+      options: [],
       // options2: [],
       totalLink: 'OR',
       tagList: [],
@@ -576,7 +577,6 @@ export default {
       this.getTags()
     },
     handleTagChange (flag, item) {
-      console.log('flag--------->', flag)
       let arr = []
       // flag - true: 选中  false: 取消选中
       if (flag) {
@@ -782,6 +782,9 @@ export default {
       // 编辑数据
       const policyData = this.editRow
       this.totalLink = policyData.link // 总运算符
+
+      this.form.autoVersion = policyData.autoVersion || false
+      this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
       if (this.type === 'entry') { // 入口
         if (policyData.id) {
           this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {

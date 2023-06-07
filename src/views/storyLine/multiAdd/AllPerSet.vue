@@ -40,7 +40,7 @@
 
         <!-- {{ruleForm.entryConditions}} -->
 
-        <el-form-item label="服务对象选择：" prop="entry">
+        <el-form-item label="入口条件：" prop="entry">
           <div v-for="(item, index) in ruleForm.entryConditions" :key="item.entryIndex ? (item.id + item.entryIndex) : item.id">
             <!-- {{item.id + index}} -->
             <template v-if="item.delFlag !== 2">

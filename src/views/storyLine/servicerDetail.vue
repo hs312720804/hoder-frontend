@@ -9,8 +9,8 @@
     <!-- {{ allChartData }} -->
     <!-- 复用接待员（ isCopiedServicer: true ）不允许编辑：
       【我的任务】、
-      【服务对象选择】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
-      【服务终止条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【入口条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
+      【出口条件】：-新建，编辑、删除、粘贴 不可用；  -多选、复制可用
       【擅长】、
       接待员dropdown: 【重命名】、【复用】、【复制】
     -->
@@ -71,7 +71,8 @@
                   </span>
                   <span style="font-size: 14px; color: #666; margin-left: 20px">
                     人群ID:
-                    {{ selectedServicer.planId || '-' }} {{ selectedServicer.planName || '-' }}
+                    {{ selectedServicer.planId || '-' }}
+                    <!-- {{ selectedServicer.planName || '-' }} -->
                   </span>
                 </div>
 

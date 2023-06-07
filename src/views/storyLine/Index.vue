@@ -118,7 +118,7 @@
                           <!-- 场景的 planId 为 null, 才展示按钮 -->
                           <!-- planId 代表是动态人群过来的 -->
                           <!-- :disabled="servicer.length === 0" -->
-                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse || item.useStatus !== '未投放'">
                             投放
                           </el-dropdown-item>
                           <el-dropdown-item :command="['freshCache',item]">
@@ -522,7 +522,7 @@ export default {
   },
   data () {
     return {
-      showAll: false,
+      showAll: true,
       conditionEnum: {
         AND: '且',
         OR: '或'
