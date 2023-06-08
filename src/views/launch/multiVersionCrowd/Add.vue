@@ -275,7 +275,7 @@
                     >
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
                         <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
-                        <!-- <el-radio :label="3">行为人群</el-radio> -->
+                        <el-radio :label="3">行为人群</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
@@ -288,7 +288,6 @@
                   >
                   <!-- {{crowdForm.policyIds}} -->
                     <el-select
-                      filterable
                       v-model="crowdForm.policyIds"
                       :key="crowdForm.abTest"
                       :multiple="!crowdForm.abTest"
@@ -296,6 +295,11 @@
                       @change="getCrowd"
                       @remove-tag="removeTag"
                       :disabled="status!==undefined && (status === 2 || status === 3)"
+                      :loading="remoteLoading"
+                      filterable
+                      remote
+                      v-loadmore="{'methord': handePushListLoadmore}"
+                      :remote-method="remoteMethod"
                     >
                       <el-option
                         v-for="item in strategyPlatform"
@@ -651,6 +655,13 @@ export default {
       }
     }
     return {
+      remoteLoading: false,
+      totalPages: 0,
+      remoteMethodParams: {
+        pageNum: 1,
+        pageSize: 30,
+        keyword: ''
+      },
       // 表格当前页数据
       strategyPlatform: [],
       launchPlatform: [],
@@ -838,6 +849,42 @@ export default {
   },
 
   methods: {
+    handePushListLoadmore () {
+      if (this.remoteMethodParams.pageNum < this.totalPages) {
+        this.remoteMethodParams.pageNum++ // 滚动加载翻页
+        this.remoteMethod()
+      }
+    },
+    remoteMethod (query) {
+      console.log(this.remoteMethodParams)
+
+      // 是否是加载更多
+      const isLoadMore = query === undefined
+
+      // 下拉框搜索，需要重置
+      if (!isLoadMore) {
+        this.remoteMethodParams.pageNum = 1
+        this.strategyPlatform = []
+        this.remoteMethodParams.keyword = query
+      }
+
+      this.remoteLoading = true
+
+      const params = {
+        ...this.remoteMethodParams
+      }
+
+      this.$service.getPushList(params).then(res => {
+        // this.filmModelTagOptions = res.row
+        this.totalPages = res.pages // 总页数
+        this.strategyPlatform = !isLoadMore ? res.rows : this.strategyPlatform.concat(res.rows)
+
+        this.remoteLoading = false
+      }).catch(() => {
+        this.strategyPlatform = []
+        this.remoteLoading = false
+      })
+    },
     getPushPackageList () {
       const parmas = {
         pageNum: 0,
@@ -1172,6 +1219,10 @@ export default {
       this.$service.getEstimateType().then((data) => {
         this.estimateItems = data
       })
+      // 投放平台
+      this.$service.getPushPlatform().then((data) => {
+        this.launchPlatform = data || []
+      })
       if (model === 1) { // 新增自定义人群
         this.$service.addMultiVersionCrowd(this.model).then(data => {
           this.launchPlatform = data.biLists
@@ -1183,29 +1234,31 @@ export default {
           this.tagsList = data
         })
       } else { // 新增
-        if (this.showAllParent) {
-          this.$service.addMyMultiVersionCrowd(this.model).then(data => {
-            this.launchPlatform = data.biLists
-            this.strategyPlatform = data.policies
-            this.effectTimeList = data.efTime.map(item => {
-              return { label: item + '天', value: item }
-            })
-          })
-        } else {
-          this.$service.addMultiVersionCrowd(this.model).then(data => {
-            this.launchPlatform = data.biLists
-            this.strategyPlatform = data.policies
-            this.effectTimeList = data.efTime.map(item => {
-              return { label: item + '天', value: item }
-            })
-            if (data.tempCrowds) {
-              // 行为人群列表
-              // this.behaviorCrowdList = data.tempCrowds.filter(item => {
-              //     return item.isFxFullSql === 3
-              // })
-            }
-          })
-        }
+        // 获取 strategyPlatform
+        this.remoteMethod()
+        // if (this.showAllParent) {
+        //   this.$service.addMyMultiVersionCrowd(this.model).then(data => {
+        //     this.launchPlatform = data.biLists
+        //     this.strategyPlatform = data.policies
+        //     this.effectTimeList = data.efTime.map(item => {
+        //       return { label: item + '天', value: item }
+        //     })
+        //   })
+        // } else {
+        //   this.$service.addMultiVersionCrowd(this.model).then(data => {
+        //     this.launchPlatform = data.biLists
+        //     this.strategyPlatform = data.policies
+        //     this.effectTimeList = data.efTime.map(item => {
+        //       return { label: item + '天', value: item }
+        //     })
+        //     if (data.tempCrowds) {
+        //       // 行为人群列表
+        //       // this.behaviorCrowdList = data.tempCrowds.filter(item => {
+        //       //     return item.isFxFullSql === 3
+        //       // })
+        //     }
+        //   })
+        // }
       }
     },
     // 数组去重

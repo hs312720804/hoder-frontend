@@ -2435,8 +2435,8 @@ export default {
       const isDynamic = row.dynamicFlag === 1
 
       if (key === 'AB') {
-        // return !isAB && !isYunying && !isDynamic && !row.limitLaunch
-        return !isAB && !isYunying && !isDynamic
+        return !isAB && !isYunying && !isDynamic && !row.limitLaunch
+        // return !isAB && !isYunying && !isDynamic
       } else if (key === 'Yunying') {
         return !isAB && !isDynamic
       } else if (key === 'Dynamic') {
