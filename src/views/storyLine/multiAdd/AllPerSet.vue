@@ -62,7 +62,7 @@
             </template>
           </div>
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createClient(ruleForm)">新建服务对象筛选</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createClient(ruleForm)">新建入口条件</el-button>
           </div>
 
         </el-form-item>
@@ -208,7 +208,7 @@ export default {
         })
       })
     },
-    // 新建服务对象筛选
+    // 新建入口条件
     createClient (formItem) {
       formItem.entryConditions.push({
         // sceneId: 309,

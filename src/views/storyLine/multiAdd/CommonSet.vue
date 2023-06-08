@@ -72,7 +72,7 @@
             </template>
           </div>
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createClient">新建入口条件</el-button>
           </div>
 
         </el-form-item>
@@ -216,7 +216,7 @@ export default {
       })
       // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit, flowCondition)
     },
-    // 新建服务对象筛选
+    // 新建入口条件
     createClient () {
       this.entryList.push({
         id: '',
