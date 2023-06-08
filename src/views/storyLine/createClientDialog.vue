@@ -98,15 +98,15 @@
                 style="width: 180px"
                 v-model="checkedList"
                 multiple
+                placeholder="添加指标"
+                @change="selectChange($event)"
+                :loading="loading"
+                :collapse-tags="true"
                 filterable
                 remote
-                reserve-keyword
-                :collapse-tags="true"
-                placeholder="添加指标"
-                :remote-method="remoteMethod"
                 v-loadmore="{'methord': handelQiboLoadmore}"
-                @change="selectChange($event)"
-                :loading="loading">
+                :remote-method="remoteMethod"
+                >
                 <el-option
                   v-for="item in searchOptions"
                   :key="item.tagId"
@@ -465,8 +465,6 @@ export default {
       }
     },
     remoteMethod (query) {
-      console.log(this.remoteMethodParams)
-
       // 是否是加载更多
       const isLoadMore = query === undefined
 

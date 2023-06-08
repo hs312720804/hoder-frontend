@@ -286,7 +286,7 @@
                     prop="policyIds"
                     class="multipleSelect form-width"
                   >
-                  <!-- {{crowdForm.policyIds}} -->
+                  <!-- {{ crowdForm.policyIds }} -->
                     <el-select
                       v-model="crowdForm.policyIds"
                       :key="crowdForm.abTest"
@@ -856,8 +856,6 @@ export default {
       }
     },
     remoteMethod (query) {
-      console.log(this.remoteMethodParams)
-
       // 是否是加载更多
       const isLoadMore = query === undefined
 
