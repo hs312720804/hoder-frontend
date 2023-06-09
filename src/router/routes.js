@@ -62,6 +62,7 @@ import operationHelper from '@/views/operationHelper/Index'
 
 import labelSquare from '@/views/LabelSquare/Index'
 import crowdCompute from '@/views/crowdCompute/Index'
+import bitmap from '@/views/DevelopTools/bitmap'
 
 const children = [
   // {
@@ -482,6 +483,16 @@ const children = [
     meta: {
       tagId: 'ipManage',
       title: '接口服务器管理',
+      icon: 'el-icon-cc-close-circle'
+    }
+  },
+  {
+    name: 'bitmap',
+    path: '/bitmap',
+    component: bitmap,
+    meta: {
+      tagId: 'bitmap',
+      title: 'bitmap位文件分页查询',
       icon: 'el-icon-cc-close-circle'
     }
   },

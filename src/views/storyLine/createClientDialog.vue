@@ -241,7 +241,7 @@ export default {
       list: [],
       loading: false,
       // ----- 添加指标 end ----------
-      options: [],
+      // options: [],
       // options2: [],
       totalLink: 'OR',
       tagList: [],
@@ -780,7 +780,6 @@ export default {
       // 编辑数据
       const policyData = this.editRow
       this.totalLink = policyData.link // 总运算符
-
       this.form.autoVersion = policyData.autoVersion || false
       this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
       if (this.type === 'entry') { // 入口
