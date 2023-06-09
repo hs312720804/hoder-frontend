@@ -110,7 +110,6 @@
     width="1200px"
     v-if="clientDialogVisible"
   >
-  <!-- {{ editClientRow }} -->
     <createClientDialog ref="createClientDialog" :editRow="editClientRow" :options="options"></createClientDialog>
     <span slot="footer" class="dialog-footer">
       <el-button @click="clientDialogVisible = false">取 消</el-button>
@@ -182,6 +181,26 @@
     </span>
   </el-dialog>
 
+  <el-dialog
+    title="提示"
+    :visible.sync="openMoveOrClearDialogVisible"
+    width="420px"
+    append-to-body
+  >
+    <div style="display: flex;align-items: center; gap: 10px">
+      <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+      <span>
+        单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+      </span>
+    </div>
+    <span slot="footer" class="dialog-footer">
+      <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+      <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+      <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+      <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+    </span>
+  </el-dialog>
+
 </div>
 </template>
 
@@ -246,6 +265,8 @@ export default {
   },
   data () {
     return {
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined,
       options: options,
       editClientRow: {},
       editExportRow: {},
@@ -269,6 +290,17 @@ export default {
 
   },
   methods: {
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      // 清空行为标签
+      clearBehaviorRulesJson(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      moveToRule(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
     // 编辑复用出口条件
     reuseExportRule () {
       // this.editExportRow = row
@@ -310,46 +342,22 @@ export default {
       }).catch(err => {
         console.log('err-->', err)
         if (err.openMoveOrClear) {
-          this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
-            confirmButtonText: '确定移入',
-            cancelButtonText: '不保存',
-            type: 'warning'
-          }).then(() => {
-            moveToRule(dialogRef)
-          }).catch(() => {
-            // 清空行为标签
-            clearBehaviorRulesJson(dialogRef)
-          })
+          this.openMoveOrClearDialogVisible = true
+          this.openMoveOrClearDialogRef = dialogRef
+          // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+          //   confirmButtonText: '确定移入',
+          //   cancelButtonText: '不保存',
+          //   type: 'warning'
+          // }).then(() => {
+          //   moveToRule(dialogRef)
+          // }).catch(() => {
+          //   // 清空行为标签
+          //   clearBehaviorRulesJson(dialogRef)
+          // })
         }
       })
     },
-    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // // 移入
-    // moveToRule (dialogRef) {
-    //   // const dialogRef = this.$refs.createClientDialog
-    //   // 将行为标签挪进设置标签栏
-    //   const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
-    //   dialogRef.rulesJson.rules = dialogRef.rulesJson.rules.concat(behaviorRulesJsonRules)
-    //   const actionTags = dialogRef.actionTags
-    //   const cacheIds = []
-    //   actionTags.forEach(item => {
-    //     // 获取大数据标签
-    //     if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
-    //       cacheIds.push(item.tagId)
-    //     }
-    //   })
-    //   if (cacheIds.length > 0) {
-    //     cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
-    //   }
-    //   // 清空行为标签
-    //   this.clearBehaviorRulesJson()
-    // },
-    // // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
-    // // 不移入 - 清空行为标签
-    // clearBehaviorRulesJson (dialogRef) {
-    //   // const dialogRef = this.$refs.createClientDialog
-    //   dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
-    // },
+
     fetchAddOrEdit (data) {
       const dialogRef = this.$refs.createClientDialog
 
@@ -419,16 +427,18 @@ export default {
       }).catch(err => {
         console.log('err-->', err)
         if (err.openMoveOrClear) {
-          this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
-            confirmButtonText: '确定移入',
-            cancelButtonText: '不保存',
-            type: 'warning'
-          }).then(() => {
-            moveToRule(dialogRef)
-          }).catch(() => {
-            // 清空行为标签
-            clearBehaviorRulesJson(dialogRef)
-          })
+          this.openMoveOrClearDialogVisible = true
+          this.openMoveOrClearDialogRef = dialogRef
+          // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+          //   confirmButtonText: '确定移入',
+          //   cancelButtonText: '不保存',
+          //   type: 'warning'
+          // }).then(() => {
+          //   moveToRule(dialogRef)
+          // }).catch(() => {
+          //   // 清空行为标签
+          //   clearBehaviorRulesJson(dialogRef)
+          // })
         }
       })
     },
