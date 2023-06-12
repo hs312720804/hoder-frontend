@@ -99,7 +99,17 @@
   font-size 24px
   font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 100;
-  position relative
+  position relative;
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between
+  .detail-name-title {
+    display: inline-block;
+    max-width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 .detail-header-column {
   box-sizing border-box

@@ -66,15 +66,15 @@
           <div style="display: flex;flex-direction: column; gap: 16px; flex: 1; margin-right: 255px;" >
             <div class="detail-box">
               <div class="detail-name" >
-                <span>
-                    {{ selectedServicer.receptionist }}
-                  </span>
-                  <span style="font-size: 14px; color: #666; margin-left: 20px">
-                    人群ID:
-                    {{ selectedServicer.planId || '-' }}
-                    <!-- {{ selectedServicer.planName || '-' }} -->
-                  </span>
-                </div>
+                <span class="detail-name-title" :title="selectedServicer.receptionist">
+                  {{ selectedServicer.receptionist }}
+                </span>
+                <span style="font-size: 14px; color: #666; margin-left: 20px">
+                  人群ID:
+                  {{ selectedServicer.planId || '-' }}
+                  <!-- {{ selectedServicer.planName || '-' }} -->
+                </span>
+              </div>
 
               </div>
               <!-- 绩效目标 -->

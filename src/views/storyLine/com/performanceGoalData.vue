@@ -39,28 +39,31 @@
           </span>
         </div>
         <!-- style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;" -->
-        <div v-for="(item, key) in rowObj" :key="key">
-          <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
-            <div class="unit-box">
-              <div v-if="(item.title)">
-                <div
-                  v-if="allChartData[key] &&
-                    ((allChartData[key].series &&
-                    allChartData[key].series.length > 0) ||
-                    allChartData[key].data)"
-                  :ref="key"
-                  :id="key"
-                  class="chart-div"
-                  @click="enlargeChart(key)">
-                </div>
-                <div v-else>
-                  <el-empty description="暂无数据" :image-size="60"></el-empty>
+        <template v-if="selectedServicerOverView.id">
+          <div v-for="(item, key) in rowObj" :key="key">
+            <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
+              <div class="unit-box">
+                <div v-if="(item.title)">
+                  <div
+                    v-if="allChartData[key] &&
+                      ((allChartData[key].series &&
+                      allChartData[key].series.length > 0) ||
+                      allChartData[key].data)"
+                    :ref="key"
+                    :id="key"
+                    class="chart-div"
+                    @click="enlargeChart(key)">
+                  </div>
+                  <div v-else>
+                    <el-empty :description="`${item.title} 暂无数据`" :image-size="60"></el-empty>
+                  </div>
                 </div>
               </div>
+              <i class="el-icon-close position-right el-icon-close-position-right" @click="handleCommand(key)" title="删除"></i>
             </div>
-            <i class="el-icon-close position-right el-icon-close-position-right" @click="handleCommand(key)" title="删除"></i>
           </div>
-        </div>
+        </template>
+        <el-empty v-else description="暂无数据" :image-size="60"></el-empty>
 
       </div>
     </div>
@@ -203,29 +206,41 @@ export default {
   watch: {
     'selectedServicer.id': {
       handler (val) {
+        // 中断之前的请求，防止数据被之前接口数据所覆盖·
+        removePendingRequest({
+          method: 'get',
+          url: '/api/getPerformanceGoalData'
+        })
+        // 再次点击详情时中断之前的详情请求，防止数据被之前接口数据所覆盖·
+        removePendingRequest({
+          method: 'get',
+          url: '/api/receptionist/getReceptionistById'
+        })
         // 清空绩效图表
         this.allChartData = {}
+        // 重置数据
+        this.overview = {}
         for (const key of Object.keys(this.allCharts)) {
           const chart = this.allCharts[key]
           chart.clear()
         }
-        // 根据接待员 ID 获取绩效目标
-        this.getTargetById()
+        if (val) {
+          // 根据接待员 ID 获取绩效目标
+          this.getTargetById()
+        }
       },
       immediate: true
     }
   },
   computed: {
     selectedServicerId () {
-      // 正式需要改过来
-      return '2655' || this.selectedServicer.id
+      // return '2655' || this.selectedServicer.id // 假数据
+      return this.selectedServicer.id
     },
     selectedServicerOverView () {
-      console.log('11111->>>>', this.overview)
       // return this.overview[0]
-      // 正式需要改过来
-      // const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === this.selectedServicerId) : undefined
-      const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === 855) : undefined
+      // const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === 855) : undefined // 假数据
+      const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === this.selectedServicerId) : undefined
       return selectedServicer || {}
     }
   },
@@ -333,8 +348,8 @@ export default {
     // 根据接待员ID获取绩效目标
     getTargetById () {
       // 清空
-      this.indicatorsTypelabel = ''
-      this.targetKeyId = ''
+      // this.indicatorsTypelabel = ''
+      // this.targetKeyId = ''
 
       const parmas = {
         id: this.selectedServicer.id
@@ -342,23 +357,18 @@ export default {
       if (!parmas.id) return
 
       this.$service.getTargetById(parmas).then(res => {
-        for (const key in this.rowObj) {
-          if (this.rowObj[key].targetKeyId === res.indicatorsType) {
-            this.targetKeyId = key
-          }
-        }
-        this.indicatorsTypelabel = this.getName(res.indicatorsType, this.indicatorsOptions)
+        // for (const key in this.rowObj) {
+        //   if (this.rowObj[key].targetKeyId === res.indicatorsType) {
+        //     this.targetKeyId = key
+        //   }
+        // }
+        // this.indicatorsTypelabel = this.getName(res.indicatorsType, this.indicatorsOptions)
         // 曲线图
         this.getPerformanceGoalData()
       })
     },
     // 接待员绩效目标查询接口
     getPerformanceGoalData () {
-      // 中断之前的详情请求，防止数据被之前接口数据所覆盖·
-      removePendingRequest({
-        method: 'get',
-        url: '/api/getPerformanceGoalData'
-      })
       this.allChartData = {}
       this.overview = {}
       const params = {
@@ -382,11 +392,18 @@ export default {
       // }
       this.getGoalDataLoading = true
       this.$service.getPerformanceGoalData(params).then(res => {
-        // 待改
         if (res && res.data && res.data.overview) {
           const tableData = res.data || {}
           this.allChartData = tableData || {}
           this.overview = tableData.overview ? tableData.overview.data : {}
+          // 图表没有数据的就不展示了
+          for (const key in this.rowObj) {
+            if (tableData[key] && tableData[key].data && tableData[key].data.series && tableData[key].data.series.length > 0) {
+              this.rowObj[key].isShow = true
+            } else {
+              this.rowObj[key].isShow = false
+            }
+          }
           this.$nextTick(() => {
             this.drawChart()
           })
@@ -398,7 +415,7 @@ export default {
       const rowObj = this.rowObj
       // key 是代表 ref 值
       for (const key in rowObj) {
-        if (rowObj[key].type === 'line') {
+        if (rowObj[key].type === 'line' && this.allChartData[key] && this.allChartData[key].data) {
           this.showLine(this.allChartData[key].data, key)
         }
       }
