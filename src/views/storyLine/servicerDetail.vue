@@ -502,7 +502,7 @@
                   v-if="isShowServicerChartData && servicerChartData.nodes && servicerChartData.nodes.length > 0"
                   :chartData="servicerChartData"
                   :selectedServicerId="selectedServicer.id"
-                  style="margin: 0 -10px"
+                  style="margin: 0 -10px; user-select: none"
                   @selectServicer="(id) => $emit('selectServicer', id)"
                   >
                 </ServicerMap>
