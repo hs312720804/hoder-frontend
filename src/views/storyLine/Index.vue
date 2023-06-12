@@ -802,7 +802,6 @@ export default {
       }
       this.getSceneFlowChartLoading = true
       this.$service.sceneFlowChart(params).then(res => {
-        console.log('', 'res--->', res)
         this.getSceneFlowChartLoading = false
         this.sceneChartData = res
         this.isShowSceneChartData = true
