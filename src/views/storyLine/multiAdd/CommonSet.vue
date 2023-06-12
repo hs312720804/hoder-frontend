@@ -301,8 +301,8 @@ export default {
             appendName: detail.nameSuf
           }
 
-          this.entryList = detail.entry
-          this.exportList = detail.export
+          this.entryList = detail.entry || []
+          this.exportList = detail.export || []
         } else {
           // 初始化，默认展示一条入口条件 和 一条出口条件
           this.createClient()

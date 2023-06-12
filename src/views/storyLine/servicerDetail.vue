@@ -395,21 +395,17 @@
                           <!-- isDoudi 代表为兜底接待员  -->
                           {{ isDoudi ? '兜底接待员' : '普通接待员'}}
                         </span>
-
-                      </div>
-                    </div>
-                    <div class="d-info-box" v-if="isDoudi">
-                      <div class="box-title">兜底方式</div>
-                      <div class="box-line">
-                        <el-radio-group v-model="radio2" @input="handleTypeChange" style="font-size: 12px">
+                        <el-radio-group v-model="radio2" @input="handleTypeChange" class="doudi-type-radio" >
                           <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
                           <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
                         </el-radio-group>
-
-                        <!-- <el-radio v-model="radio1" label="1" style="margin: 3px 0">普通接待员</el-radio>
-                        <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
                       </div>
                     </div>
+                    <!-- <div class="d-info-box" v-if="isDoudi">
+                      <div class="box-title">兜底方式</div>
+                      <div class="box-line">
+                      </div>
+                    </div> -->
                     <div class="d-info-box" style="position: relative">
                       <div class="box-title">用途描述</div>
                       <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" style="top: 0" title="编辑我的任务" ></i>
@@ -1241,5 +1237,10 @@ export default {
 @import './sty/common.styl'
 @import './sty/dark.styl'
 @import './sty/light.styl'
-
+.doudi-type-radio {
+  margin-top: 10px;
+  ::v-deep .el-radio__label {
+    font-size: 12px !important;
+  }
+}
 </style>

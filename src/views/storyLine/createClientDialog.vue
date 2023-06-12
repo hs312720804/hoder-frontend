@@ -117,6 +117,17 @@
                     >{{ item.tagName }}
                   </span>
                 </el-option>
+
+                <el-option
+                  v-for="item in tagList"
+                  :key="item.tagId"
+                  :label="item.tagName"
+                  :value="item.tagId">
+                  <span
+                    :class="dataSourceColorClassEnum[item.dataSource]"
+                    >{{ item.tagName }}
+                  </span>
+                </el-option>
               </el-select>
           </el-form-item>
 
@@ -782,9 +793,16 @@ export default {
       this.totalLink = policyData.link // 总运算符
       this.form.autoVersion = policyData.autoVersion || false
       this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
+      const tagIds = policyData.tagIds
+
       if (this.type === 'entry') { // 入口
         if (policyData.id) {
           this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else if (tagIds && tagIds !== '') {
+          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
             this.tagList = data || []
             this.sortTag()
           })
@@ -797,6 +815,11 @@ export default {
         this.form.nextId = policyData.nextId
         if (policyData.id) {
           this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else if (tagIds && tagIds !== '') {
+          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
             this.tagList = data || []
             this.sortTag()
           })
