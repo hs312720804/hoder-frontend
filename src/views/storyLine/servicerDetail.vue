@@ -65,7 +65,7 @@
         <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
           <div style="display: flex;flex-direction: column; gap: 16px; flex: 1; margin-right: 255px;" >
             <div class="detail-box">
-              <div class="detail-name" >
+              <div class="detail-name">
                 <span class="detail-name-title" :title="selectedServicer.receptionist">
                   {{ selectedServicer.receptionist }}
                 </span>
