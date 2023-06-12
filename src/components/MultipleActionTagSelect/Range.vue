@@ -249,9 +249,9 @@ export default {
     getPickerOptions (tagCode) {
       if (tagCode === 'BAV0003') { // 【购买行为】
         // return this.pickerOptions720  // 可选两年内的周期
-        return this.pickerOptionsDayinRange(720, 720) // 可选在 【过去2年 + 未来30天】 的周期内，最大跨度 【720天】；
+        return this.pickerOptionsDayinRange(3650, 3650) // 可选在 【过去 10 年 + 未来30天】 的周期内，最大跨度 【3650天】；
       } else if (tagCode === 'BAV0008') { // 【起播行为】
-        return this.pickerOptionsDayinRange(90, 180) // 可选在 【过去6个月 + 未来30天】 的周期内，最大跨度【90天】；
+        return this.pickerOptionsDayinRange(90, 180) // 可选在 【过去 6 个月 + 未来30天】 的周期内，最大跨度【90天】；
       } else if (tagCode === 'BAV0013' || tagCode === 'BAV0014' || tagCode === 'BAV0015') { // 【续费包签约状态】 、【连续包签约-续费-解约次数】、【下单未支付】
         return this.pickerOptionsDayinRange20211226(30) // 数据最早时间：【2021-12-26】，数据最晚时间：【未来30天】，最大跨度：【30天】；
       } else { // 其他
@@ -324,7 +324,7 @@ export default {
     },
     getMaxDay (tagCode) { // 动态周期
       if (tagCode === 'BAV0003') { // 【购买行为】
-        return 720
+        return 3650
       } else if (tagCode === 'BAV0008' || tagCode === 'BAV0013') { // 【起播行为】 || 【续费包签约状态】
         return 90
       } else if (tagCode === 'BAV0014') { // 【连续包签约-续费-解约次数】
