@@ -2,7 +2,7 @@
 <div>
   <div class="title">bitmap 位文件分页查询</div>
   <el-form :model="form" ref="form" :rules="rules" :inline="true">
-    <!-- crowdId: 12045 -->
+    <!-- crowdName: dmp_crowd_114453_2023060601 -->
       <el-form-item label="人群名称：" prop="crowdName">
           <el-input v-model="form.crowdName" clearable @keydown.enter.native="handleSearch"></el-input>
       </el-form-item>
@@ -68,7 +68,8 @@ export default {
       },
       form: {
         mac: '',
-        crowdName: 'dmp_crowd_114453_2023060601'
+        // crowdName: 'dmp_crowd_114453_2023060601'
+        crowdName: ''
       },
       pagination: {
         pageSize: 10,
