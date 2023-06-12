@@ -152,9 +152,9 @@ function restoreData (allRuleForm, allEntryArr, allExportArr) {
 function multiAddNextStepFn ({ commonSetRef }) {
   return new Promise((resolve) => {
     // const commonSetRef = this.$refs.multiAddRef.$refs.commonSetRef
-    const ruleForm = commonSetRef.$refs.ruleForm
-    const createClientDialogRef = commonSetRef.$refs.createClientDialogRef // 入口条件，是个数组
-    const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
+    const ruleForm = commonSetRef.$refs.ruleForm || []
+    const createClientDialogRef = commonSetRef.$refs.createClientDialogRef || [] // 入口条件，是个数组
+    const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef || [] // 出口条件，是个数组
     const ruleFormData = commonSetRef.ruleForm
     console.log('333ruleForm--->', commonSetRef)
 
