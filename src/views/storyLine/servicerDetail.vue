@@ -393,9 +393,9 @@
                         <el-radio v-model="radio1" label="2">兜底接待员</el-radio> -->
                         <span class="border-style">
                           <!-- isDoudi 代表为兜底接待员  -->
-                          {{ isDoudi ? '兜底接待员' : '普通接待员'}}
+                          {{ isDoudi ? '兜底接待员' : '普通接待员' }}
                         </span>
-                        <el-radio-group v-model="radio2" @input="handleTypeChange" class="doudi-type-radio" >
+                        <el-radio-group v-if="isDoudi" v-model="radio2" @input="handleTypeChange" class="doudi-type-radio" >
                           <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
                           <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
                         </el-radio-group>
