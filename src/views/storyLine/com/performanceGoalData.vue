@@ -409,6 +409,8 @@ export default {
           })
         }
         this.getGoalDataLoading = false
+      }).catch(() => {
+        this.getGoalDataLoading = false
       })
     },
     drawChart () {
