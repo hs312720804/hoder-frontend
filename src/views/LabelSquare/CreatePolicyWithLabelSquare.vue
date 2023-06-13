@@ -75,6 +75,17 @@
           @get-table-selected="handleGetTableSelectedData">
         </custom-tag>
       </el-tab-pane>
+      <el-tab-pane label="人群标签" name="crowdLabel">
+        <CrowdLabel
+          :show-selection="showSelection"
+          :currentSelectTag="tagList"
+          :checkList="tempCheckList"
+          :crowdType=2
+          @get-table-selected="handleGetTableSelectedData"
+          @change-checkList="handleCheckListChange"
+        >
+        </CrowdLabel>
+      </el-tab-pane>
 
     </el-tabs>
 
@@ -116,6 +127,7 @@ import { mapGetters } from 'vuex'
 import BigDataTag from './bigDataTag/Index.vue'
 import ThirdPartyTag from './thirdTag/Index.vue'
 import CustomTag from './customTag/Index.vue'
+import CrowdLabel from './crowdLabel/Index.vue'
 import { dataSourceColorEnum } from '@/utils/tags.js'
 import MyTopMax30 from './MyTopMax30'
 import tagList from './coms/TagList'
@@ -128,7 +140,8 @@ export default {
     ThirdPartyTag,
     CustomTag,
     MyTopMax30,
-    tagList
+    tagList,
+    CrowdLabel
   },
   props: ['recordId', 'initTagList', 'policyId'],
   computed: {
@@ -469,7 +482,6 @@ export default {
   created () {
     this.fetchCheckListData()
     this.fetchTempCheckListData()
-
     if (this.recordId) {
       this.getPolicyDetail()
       this.tagList = this.initTagList
