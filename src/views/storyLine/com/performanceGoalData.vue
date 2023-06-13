@@ -39,20 +39,21 @@
           </span>
         </div>
         <!-- style="display: grid; grid-template-columns: 1fr 1fr; grid-gap: 10px;" -->
-        <template v-if="selectedServicerOverView.id">
+        <!-- <template v-if="selectedServicerOverView.id"> -->
           <div v-for="(item, key) in rowObj" :key="key">
             <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
               <div class="unit-box">
                 <div v-if="(item.title)">
                   <div
                     v-if="allChartData[key] &&
-                      ((allChartData[key].series &&
-                      allChartData[key].series.length > 0) ||
-                      allChartData[key].data)"
+                      allChartData[key].data &&
+                      allChartData[key].data.series &&
+                      allChartData[key].data.series.length > 0"
                     :ref="key"
                     :id="key"
                     class="chart-div"
-                    @click="enlargeChart(key)">
+                    @click="enlargeChart(key)"
+                    :style="{height: getHeight(allChartData[key])}">
                   </div>
                   <div v-else>
                     <el-empty :description="`${item.title} 暂无数据`" :image-size="60"></el-empty>
@@ -62,8 +63,8 @@
               <i class="el-icon-close position-right el-icon-close-position-right" @click="handleCommand(key)" title="删除"></i>
             </div>
           </div>
-        </template>
-        <el-empty v-else description="暂无数据" :image-size="60"></el-empty>
+        <!-- </template> -->
+        <!-- <el-empty v-else description="暂无数据" :image-size="60"></el-empty> -->
 
       </div>
     </div>
@@ -131,7 +132,7 @@ export default {
       dialogVisible: false,
       selectTargetChartKey: '',
       editTargetKeyVisible: false,
-      colorList: ['#FD9E06', '#5470c6', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
+      colorList: ['#FD9E06', '#5470c6', '#6395f9', '#35c493', '#ef6567', '#f9c956', '#91cd77', '#75bedc'],
       // colorList: ['#0078ff', '#00ffcc', '#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       rowObj: // 格式固定,请勿随意更改
         {
@@ -235,12 +236,17 @@ export default {
   computed: {
     selectedServicerId () {
       // return '2655' || this.selectedServicer.id // 假数据
-      return this.selectedServicer.id
+      return Number(this.selectedServicer.id)
     },
     selectedServicerOverView () {
       // return this.overview[0]
       // const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === 855) : undefined // 假数据
-      const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => item.id === this.selectedServicerId) : undefined
+      // console.log('this.selectedServicer', this.selectedServicer)
+      // console.log('this.overview', this.overview)
+
+      const crowdId = Number(this.selectedServicer.crowdId)
+
+      const selectedServicer = this.overview && this.overview.length > 0 ? this.overview.find(item => Number(item.crowdId) === crowdId) : undefined
       return selectedServicer || {}
     }
   },
@@ -254,6 +260,15 @@ export default {
     })
   },
   methods: {
+    getHeight (currentChartData) {
+      const chartData = currentChartData.data
+
+      if (chartData && (chartData.series && chartData.series.length > 2)) {
+        return chartData.series.length * 60 + 'px'
+      } else {
+        return '230px'
+      }
+    },
     enlargeChart (key) {
       const echarts = require('echarts')
       this.dialogVisible = true
@@ -516,7 +531,7 @@ export default {
         //   containLabel: false
         // },
         grid: {
-          top: yData.length * 40 || 50,
+          top: yData.length > 2 ? yData.length * 30 : 50,
           left: '2%',
           right: '2%',
           bottom: '10%',
@@ -602,7 +617,7 @@ export default {
         },
         yAxis: [yAxisObj],
         series: yData.map(item => {
-          const crowdId = item.name.split('-')[1]
+          const crowdId = Number(item.name.split('-')[1])
           return {
             ...item,
             // stack: 'Total',
@@ -647,7 +662,7 @@ export default {
               focus: 'series'
             },
             lineStyle: {
-              width: crowdId === _this.selectedServicerId ? 2 : 1,
+              width: crowdId === _this.selectedServicerId ? 3 : 1,
               type: crowdId === _this.selectedServicerId ? 'solid' : 'dashed'
             }
             // 目标
