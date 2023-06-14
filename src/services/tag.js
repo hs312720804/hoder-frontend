@@ -99,7 +99,7 @@ export function getTvEpisodes (params) {
 export function getAppointmentInfo (params) {
   return this.fetch({
     method: 'get',
-    url: `/api/auto/getAppointmentInfo`,
+    url: '/api/auto/getAppointmentInfo',
     params
   })
 }
@@ -108,7 +108,7 @@ export function getAppointmentInfo (params) {
 export function manualLaunch (params) {
   return this.fetch({
     method: 'get',
-    url: `/api/multiVersionCrowd/manualLaunch`,
+    url: '/api/multiVersionCrowd/manualLaunch',
     params
   })
 }
@@ -117,7 +117,7 @@ export function manualLaunch (params) {
 export function getManualLaunchList (params) {
   return this.fetch({
     method: 'get',
-    url: `/api/multiVersionCrowd/manualLaunchList`,
+    url: '/api/multiVersionCrowd/manualLaunchList',
     params
   })
 }
@@ -180,6 +180,14 @@ export function getTopic (params) {
   return this.fetch({
     method: 'get',
     url: '/api/auto/getTopic',
+    params
+  })
+}
+// 行为标签 - 综合起播 搜专辑名或id、搜搜歌手名、搜搜歌曲名或id
+export function getMusicInfo (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/auto/getMusicInfo',
     params
   })
 }

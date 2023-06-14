@@ -2899,7 +2899,7 @@
           class="flex-row child"
         >
           <!-- 第二级  item.childCheckedVal[0]-->
-          <span class="flex-row">
+          <span class="flex-row" v-if="item.mapName">
             <el-select
               v-model="item.childCheckedVal[0]"
               style="width: 100px"
@@ -3096,8 +3096,103 @@
             </el-select>
           </span>
 
+          <span v-if="childItem.bav.value === '音乐'" class="flex-row">
+            <el-select
+              v-model="item.childCheckedVal[3]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="请输入专辑名或id"
+              no-data-text='暂无结果'
+              clearable
+              :remote-method="(query) => { GetMusic(query, 4) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 2,
+                selectPropKeyValue: 'name',
+                reverseSelectAttr: true
+              })"
+            >
+              <el-option
+                v-for="video in albumOptions4"
+                :key="video.name"
+                :label="video.name"
+                :value="video.value">
+              </el-option>
+              <!-- 编辑回显 选项 -->
+              <el-option
+                v-if="albumOptions4.length === 0 && item.childCheckedVal[3]"
+                :label="getMatchName(item.childCheckedVal[3], item.child)"
+                :value="item.childCheckedVal[3]">
+              </el-option>
+            </el-select>
+
+            <el-select
+              v-model="item.childCheckedVal[4]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="搜歌手名"
+              no-data-text='暂无结果'
+              clearable
+              :remote-method="(query) => { GetMusic(query, 2) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 3,
+                selectPropKeyValue: 'name',
+                reverseSelectAttr: true
+              })"
+            >
+              <el-option
+                v-for="video in albumOptions2"
+                :key="video.name"
+                :label="video.name"
+                :value="video.value">
+              </el-option>
+              <!-- 编辑回显 选项 -->
+              <el-option
+                v-if="albumOptions2.length === 0 && item.childCheckedVal[4]"
+                :label="getMatchName(item.childCheckedVal[4], item.child)"
+                :value="item.childCheckedVal[4]">
+              </el-option>
+            </el-select>
+
+            <el-select
+              v-model="item.childCheckedVal[5]"
+              style="width: 150px;"
+              filterable
+              remote
+              placeholder="搜歌曲名或id"
+              no-data-text='暂无结果'
+              clearable
+              :remote-method="(query) => { GetMusic(query, 1) }"
+              :loading="loading2"
+              @change="handelChildBehavirSelectChange({
+                childItem: item,
+                level: 4,
+                selectPropKeyValue: 'name',
+                reverseSelectAttr: true
+              })"
+            >
+              <el-option
+                v-for="video in albumOptions1"
+                :key="video.name"
+                :label="video.name"
+                :value="video.value">
+              </el-option>
+              <!-- 编辑回显 选项 -->
+              <el-option
+                v-if="albumOptions1.length === 0 && item.childCheckedVal[5]"
+                :label="getMatchName(item.childCheckedVal[5], item.child)"
+                :value="item.childCheckedVal[5]">
+              </el-option>
+            </el-select>
+          </span>
+
           <!------ 查询影片+搜索集数  item.childCheckedVal[1] ------->
-          <span v-if="childItem.bav.value !== 'K歌'" class="flex-row">
+          <span v-else-if="childItem.bav.value !== 'K歌'" class="flex-row">
             <!-- 第 3 级  搜索片子 -->
             <!-- 【短视频】业务的查询影片要放在【选择博主】 后面 -->
             <!-- 【教育】业务的查询影片要放在 【选择 VIP】 后面 -->
