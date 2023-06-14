@@ -2,7 +2,7 @@
   <div class="content detail">
     <!-- {{ selectedServicer }} -->
     <!-- {{selectedScene}} -->
-    <!-- canUse：{{canUse}}
+    <!-- canUse：{{ canUse }}
     <br/>
 
     havePermissionsToUse: {{ havePermissionsToUse}} -->

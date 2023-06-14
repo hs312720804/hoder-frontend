@@ -66,7 +66,7 @@
                     <span class="item-index">{{ item.id }}</span>
                     <span class="use-status-styl">
                       <span v-if="item.useStatus === '投放且已命中'" @click="launchDetail(item.policyId)" class="border-title">{{ item.useStatus }}</span>
-                      <span v-else-if="item.useStatus === '投放但未请求' || item.useStatus === '投放但未命中'" class="border-title">{{ item.useStatus }}</span>
+                      <span v-else-if="item.useStatus === '投放但未请求' || item.useStatus === '投放但未命中'" class="border-title yellow-title">{{ item.useStatus }}</span>
                       <span v-else>未投放</span>
                     </span>
                     <el-dropdown
