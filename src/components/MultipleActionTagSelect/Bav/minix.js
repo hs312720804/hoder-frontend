@@ -477,7 +477,7 @@ export default {
 
           list = list.map(obj => {
             return {
-              name: `${obj.name}(${obj.id})`,
+              name: categoryId === 2 ? `${obj.name}` : `${obj.name}(${obj.id})`,
               value: obj.id,
               field: obj.tableField,
               type: 'string'
