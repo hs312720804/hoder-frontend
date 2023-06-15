@@ -239,7 +239,16 @@ export default {
       }
 
       this.$service.getTagGroupTreeList(filter).then((data) => {
-        this.dataList = data.pageInfo.list
+        const list = data.pageInfo.list
+        this.dataList = []
+        if (list.length > 0) {
+          this.dataList = list.map(item => {
+            return {
+              ...item,
+              dataSource: item.dataSource === 12 ? 12.2 : item.dataSource
+            }
+          })
+        }
         this.dataSourceEnum = data.lableDataSourceEnum
         this.typeEnum = data.tagsTypeEnum
         this.loading = false
