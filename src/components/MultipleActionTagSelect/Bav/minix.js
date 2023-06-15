@@ -476,20 +476,11 @@ export default {
           let list = res.rows || []
 
           list = list.map(obj => {
-            if (categoryId === 1) {
-              return {
-                name: `${obj.title}(${obj.id})`,
-                value: obj.id,
-                field: obj.tableField,
-                type: 'string'
-              }
-            } else {
-              return {
-                name: `${obj.title}(${obj.id})`,
-                value: obj.id,
-                field: obj.tableField,
-                type: 'string'
-              }
+            return {
+              name: `${obj.name}(${obj.id})`,
+              value: obj.id,
+              field: obj.tableField,
+              type: 'string'
             }
           })
           this[`albumOptions${categoryId}`] = list
