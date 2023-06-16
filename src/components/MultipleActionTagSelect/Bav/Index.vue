@@ -627,7 +627,7 @@
 
           <div
             v-for="(item, index) in childItem.bav.behaviorValue"
-            :key="item.value"
+            :key="'behaviorValue2' + index"
             class="flex-column"
           >
               <!-- @change="handelBehavirSelectChange(false, 1, moDefaultChild, 'selectKey', true)" -->
@@ -3102,7 +3102,7 @@
               style="width: 150px;"
               filterable
               remote
-              placeholder="请输入专辑名或id"
+              placeholder="请输入专辑名"
               no-data-text='暂无结果'
               clearable
               :remote-method="(query) => { GetMusic(query, 4) }"
@@ -3164,7 +3164,7 @@
               style="width: 150px;"
               filterable
               remote
-              placeholder="搜歌曲名或id"
+              placeholder="搜歌曲名"
               no-data-text='暂无结果'
               clearable
               :remote-method="(query) => { GetMusic(query, 1) }"

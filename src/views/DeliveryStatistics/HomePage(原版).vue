@@ -162,7 +162,7 @@
                     </div>
                 </el-col>
             </el-row>
-            <!-- <el-row :gutter="20" class="unit-row">
+            <el-row :gutter="20" class="unit-row">
                 <el-col :span="24">
                     <div class="unit-box">
                         <div class="unit-header clearfix">曝光用户分布及行为特征</div>
@@ -181,8 +181,8 @@
                         </div>
                     </div>
                 </el-col>
-            </el-row> -->
-            <!-- <el-row :gutter="20" class="unit-row">
+            </el-row>
+            <el-row :gutter="20" class="unit-row">
                 <el-col :span="12">
                     <div class="unit-box">
                         <div class="unit-header clearfix">省份分布</div>
@@ -205,7 +205,7 @@
                         </div>
                     </div>
                 </el-col>
-            </el-row> -->
+            </el-row>
             <el-row :gutter="20" class="unit-row">
                 <el-col :span="12">
                     <div class="unit-box">
@@ -227,7 +227,7 @@
                         </div>
                     </div>
                 </el-col>
-                <!-- <el-col :span="12">
+                <el-col :span="12">
                     <div class="unit-box">
                         <div class="unit-header clearfix">末次付费的会员产品包情况
                             <div class="member-select">
@@ -246,9 +246,9 @@
                             <div class="main" ref="lastPayProduct" style="height:320px"></div>
                         </div>
                     </div>
-                </el-col> -->
+                </el-col>
             </el-row>
-            <!-- <el-row :gutter="20" class="unit-row">
+            <el-row :gutter="20" class="unit-row">
                 <el-col :span="8">
                     <div class="unit-box">
                         <div class="unit-header clearfix">设备活跃情况</div>
@@ -285,7 +285,7 @@
                         </div>
                     </div>
                 </el-col>
-            </el-row> -->
+            </el-row>
 
         </div>
         <el-dialog
@@ -378,10 +378,10 @@ export default {
       // 防止第一次加载页面重复调用接口
       if (oldVal.length !== 0) {
         if (this.setDataInMonth(val[0], val[1])) {
-          // this.getCrowdSextotal(this.time0[0], this.time0[1])
-          // this.getCrowdAgetotal(this.time0[0], this.time0[1])
-          // this.getCrowdDevicetotal(this.time0[0], this.time0[1])
-          // this.getCrowdProvincetotal(this.time0[0], this.time0[1])
+          this.getCrowdSextotal(this.time0[0], this.time0[1])
+          this.getCrowdAgetotal(this.time0[0], this.time0[1])
+          this.getCrowdDevicetotal(this.time0[0], this.time0[1])
+          this.getCrowdProvincetotal(this.time0[0], this.time0[1])
           this.getAllCrowdTotal(this.time0[0], this.time0[1])
           this.setUseSceneCircle(this.time0[0], this.time0[1])
           this.getAllTagTotal(this.time0[0], this.time0[1])
@@ -404,13 +404,13 @@ export default {
         }
       }
     },
-    memberListType: function () {
+    'memberListType': function () {
       this.getUserDistribution(this.time0[0], this.time0[1])
     },
-    memberListByPay: function () {
+    'memberListByPay': function () {
       this.getLastPayProduct(this.time0[0], this.time0[1])
     },
-    dateData: function () {
+    'dateData': function () {
       this.getBroadcastRate(this.time0[0], this.time0[1])
     }
   },
@@ -429,8 +429,8 @@ export default {
     // 通用单线性参数设置
     setLineEchart (element, title, xData, yData) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -479,8 +479,8 @@ export default {
     // 通用圆饼图
     setCircleEcharts (element, title, legend, data, circleType) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -530,8 +530,8 @@ export default {
     // 通用嵌套环形图
     setCircleDoubleEcharts (element, title, legend, dataTotal, dataChild) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -640,8 +640,8 @@ export default {
     // 通用雷达图
     setRadarEcharts (element, title, legend, data, insideChildData) {
       // const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -709,8 +709,8 @@ export default {
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -760,8 +760,8 @@ export default {
     // 通用柱状图参数设置
     setBarEchart (element, title, xData, yData) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
@@ -855,8 +855,8 @@ export default {
     },
     setMapEcharts (element, title, data) {
       const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
+      let echarts = require('echarts')
+      let myChart = echarts.init(this.$refs[element])
       // 中国地图
       myChart.setOption({
         title: {
@@ -920,9 +920,9 @@ export default {
     },
     formatDate (d) {
       const time = new Date(d)
-      const y = time.getFullYear() // 年份
-      const m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
-      const r = time.getDate().toString().padStart(2, '0') // 日子
+      let y = time.getFullYear() // 年份
+      let m = (time.getMonth() + 1).toString().padStart(2, '0') // 月份
+      let r = time.getDate().toString().padStart(2, '0') // 日子
       return `${y}-${m}-${r}`
     },
     setDataInMonth (startDate, endDate) {
@@ -944,9 +944,9 @@ export default {
           return { value: key.count, name: data.names[index] }
         })
         this.setCircleEcharts('useScene', '', data.names, dataObject, 'all')
-        const chartRowsData = []
+        let chartRowsData = []
         data.data.forEach((item, index) => {
-          chartRowsData.push({ word: data.names[index], count: item.count })
+          chartRowsData.push({ 'word': data.names[index], 'count': item.count })
         })
         this.chartData.rows = chartRowsData
       })
@@ -960,7 +960,7 @@ export default {
     //  标签覆盖情况雷达图
     getAllTagRadar (beginTime, endTime) {
       this.$service.getTagUseRadarEcharts({ beginTime, endTime }).then((data) => {
-        const names = []
+        let names = []
         data.data.forEach(item => {
           names.push(item.name)
         })
@@ -1015,7 +1015,7 @@ export default {
     // 用户分布情况
     getUserDistribution (beginTime, endTime) {
       this.$service.getUseDistributionEcharts({ beginTime, endTime, category: this.memberListType }).then(data => {
-        const dataTotal = []; const childData = []
+        let dataTotal = [], childData = []
         data.series[0].forEach(item => {
           childData.push({ value: item.count, name: item.name })
         })
@@ -1037,8 +1037,8 @@ export default {
     },
     // 对象转成数组
     objectToArray (obj) {
-      const arr = []
-      for (const i in obj) {
+      let arr = []
+      for (let i in obj) {
         arr.push({ value: i, label: obj[i] })
       }
       return arr
@@ -1112,10 +1112,10 @@ export default {
     }
   },
   mounted () {
-    // this.getCrowdSextotal(this.startDate, this.endDate)
-    // this.getCrowdAgetotal(this.startDate, this.endDate)
-    // this.getCrowdDevicetotal(this.startDate, this.endDate)
-    // this.getCrowdProvincetotal(this.startDate, this.endDate)
+    this.getCrowdSextotal(this.startDate, this.endDate)
+    this.getCrowdAgetotal(this.startDate, this.endDate)
+    this.getCrowdDevicetotal(this.startDate, this.endDate)
+    this.getCrowdProvincetotal(this.startDate, this.endDate)
     this.getAllCrowdTotal(this.startDate, this.endDate)
     this.setUseSceneCircle(this.startDate, this.endDate)
     this.getAllTagTotal(this.startDate, this.endDate)
@@ -1133,7 +1133,7 @@ export default {
 
     // 图表自适应
     window.addEventListener('resize', () => {
-      for (const key of Object.keys(this.allCharts)) {
+      for (var key of Object.keys(this.allCharts)) {
         const chart = this.allCharts[key]
         chart.resize()
       }

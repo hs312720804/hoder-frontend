@@ -87,6 +87,12 @@
               <!-- 当选择兜底接待员时，不展示入口条件、推荐绑定内容、出口条件 -->
               <div v-if="selectedServicer.type !== 1" class="detail-box">
                 <div class="title2">入口条件</div>
+                <el-checkbox
+                  class="reverse-check"
+                  v-model="aaaaaa"
+                >
+                  test
+                </el-checkbox>
                 <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
                 <div v-if="entryList.length > 0" class="position-left">
                   <!-- {{ checkList }} -->
@@ -100,50 +106,53 @@
                     <!-- 暂时木有内容呀～～ -->
                   </div>
 
-                  <div v-for="entry in entryList" :key="entry.id" class="info-class">
-                    <el-checkbox-group v-model="checkList" @change="checkListChange('entry')">
+                  <div v-for="(entry, index) in entryList" :key="entry.id + 'div' + index" class="info-class">
+                    <el-checkbox-group v-model="checkList" @change="checkListChange('entry')" >
                       <el-checkbox :label="entry.id" :key="entry.id">
                       </el-checkbox>
                     </el-checkbox-group>
 
-                    <!-- <div class="item-id">{{ entry.id }}</div> -->
-                    <showAndUpdateRule
-                      v-if="entry.id"
-                      :ruleItem="{...entry, ruleType: 'entry'}"
-                      :conditionEnum="conditionEnum"
-                      :soureceSignList="soureceSignList"
-                      :servicer="servicer"
-                      :havePermissionsToUse="havePermissionsToUse"
-                      :isCopiedServicer="isCopiedServicer"
-                      :canUse="canUse"
-                      @selectServicer="(id) => $emit('selectServicer', id)"
-                      :servicerListFilterSelect="servicerListFilterSelect"
-                      :selectedScene="selectedScene"
-                      :selectedServicer="selectedServicer"
-                      @updataExportList="$emit('updataExportList'); getFlowChart()"
-                      @updataEntryList="$emit('updataEntryList')"
-                    >
-                    </showAndUpdateRule>
+                      <showAndUpdateRule
+                        :key="entry.id + index"
+                        v-if="entry.id"
+                        :ruleItem="{...entry, ruleType: 'entry'}"
+                        :conditionEnum="conditionEnum"
+                        :soureceSignList="soureceSignList"
+                        :servicer="servicer"
+                        :havePermissionsToUse="havePermissionsToUse"
+                        :isCopiedServicer="isCopiedServicer"
+                        :canUse="canUse"
+                        @selectServicer="(id) => $emit('selectServicer', id)"
+                        :servicerListFilterSelect="servicerListFilterSelect"
+                        :selectedScene="selectedScene"
+                        :selectedServicer="selectedServicer"
+                        @updataExportList="$emit('updataExportList'); getFlowChart()"
+                        @updataEntryList="$emit('updataEntryList')"
+                        @editEntry="editEntry"
+                        @editExport="editExport"
+                      >
+                      </showAndUpdateRule>
+                      <!-- <div class="item-id">{{ entry.id }}</div> -->
 
-                    <!-- <div v-if="havePermissionsToUse" class="drop-class" >
-                      <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
-                        <span class="el-dropdown-link" >
-                          <span>.</span>
-                          <span>.</span>
-                          <span>.</span>
-                        </span>
-                        <el-dropdown-menu slot="dropdown">
-                          <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
-                            编辑
-                          </el-dropdown-item>
-                          <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
-                            删除
-                          </el-dropdown-item>
-                        </el-dropdown-menu>
-                      </el-dropdown>
-                    </div> -->
+                      <!-- <div v-if="havePermissionsToUse" class="drop-class" >
+                        <el-dropdown @command="handleCommand" trigger="hover" class="el-dropdown" :hide-on-click="false" placement="bottom" >
+                          <span class="el-dropdown-link" >
+                            <span>.</span>
+                            <span>.</span>
+                            <span>.</span>
+                          </span>
+                          <el-dropdown-menu slot="dropdown">
+                            <el-dropdown-item class="clearfix" :command="['editEntry', entry]">
+                              编辑
+                            </el-dropdown-item>
+                            <el-dropdown-item class="clearfix" :command="['deleteEntry', entry]">
+                              删除
+                            </el-dropdown-item>
+                          </el-dropdown-menu>
+                        </el-dropdown>
+                      </div> -->
 
-                  </div>
+                    </div>
 
                   <!-- 选择了接待员时 且 不是复用的 且 有权限 显示-->
                   <div class="box-fotter addRule" v-if="havePermissionsToUse">
@@ -218,11 +227,10 @@
                     <div class="noData"></div>
                     <!-- 暂时木有内容呀～～ -->
                   </div>
+                  <!-- <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')"> -->
                   <div v-for="exportItem in exportList" :key="exportItem.id" class="info-class" :id="exportItem.id"  ref="exportRef">
-                    <el-checkbox-group v-model="exportCheckList" @change="checkListChange('export')">
-                      <el-checkbox :label="exportItem.id" :key="exportItem.id" >
-                      </el-checkbox>
-                    </el-checkbox-group>
+                    <el-checkbox :label="exportItem.id" :key="exportItem.id" >
+                    </el-checkbox>
                     <!-- <div class="item-id">{{ exportItem.id }}</div> -->
 
                     <showAndUpdateRule
@@ -240,6 +248,8 @@
                       :selectedServicer="selectedServicer"
                       @updataExportList="$emit('updataExportList'); getFlowChart()"
                       @updataEntryList="$emit('updataEntryList')"
+                      @editEntry="editEntry"
+                      @editExport="editExport"
                     >
                     </showAndUpdateRule>
 
@@ -272,6 +282,7 @@
                     </div> -->
 
                   </div>
+                  <!-- </el-checkbox-group> -->
                   <div class="box-fotter addRule" v-if="havePermissionsToUse" >
                     <!-- <el-button>添加</el-button> -->
                     <el-button type="primary" icon="el-icon-plus" @click="createExport">新建出口条件</el-button>
@@ -790,6 +801,7 @@ export default {
   },
   data () {
     return {
+      aaaaaa: true,
       isShowServicerChartData: true,
       servicerChartData: {},
       options: options,
@@ -1149,6 +1161,23 @@ export default {
     createExport  () {
       this.$refs.showAddDialogRef.editExportRow = undefined
       this.$refs.showAddDialogRef.exportDialogVisible = true
+    },
+    // 新建入口条件
+    editEntry (row) {
+      this.$refs.showAddDialogRef.editClientRow = row
+      this.$refs.showAddDialogRef.clientDialogVisible = true
+    },
+    editExport (row) {
+      const dialogRef = this.$refs.showAddDialogRef
+
+      dialogRef.editExportRow = row
+      if (this.isCopiedServicer) { // 编辑复用接待员的
+        dialogRef.reuseForm.stopType = row.stopType
+        dialogRef.reuseForm.nextId = row.nextId || ''
+        dialogRef.reuseExportDialogVisible = true
+      } else {
+        dialogRef.exportDialogVisible = true
+      }
     },
 
     // 服务员选择技能
