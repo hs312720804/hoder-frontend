@@ -21,6 +21,13 @@ module.exports = {
     headers: {
       'Access-Control-Allow-Origin': '*'
     },
+    client: {
+      overlay: {
+        errors: false,
+        warnings: false,
+        runtimeErrors: false
+      }
+    },
     proxy: {
       // '/api': {
       //   target: 'http://' + BACKEND,
