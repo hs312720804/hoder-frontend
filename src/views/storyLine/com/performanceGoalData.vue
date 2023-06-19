@@ -44,6 +44,7 @@
             <div v-show="item.isShow" class="unit-box-wrap" style="position: relative">
               <div class="unit-box">
                 <div v-if="(item.title)">
+                  <div class="chart-title">各接待员{{ item.title.split('-')[1] }} 对比</div>
                   <div
                     v-if="allChartData[key] &&
                       allChartData[key].data &&
@@ -56,7 +57,8 @@
                     :style="{height: getHeight(allChartData[key])}">
                   </div>
                   <div v-else>
-                    <el-empty :description="`${item.title} 暂无数据`" :image-size="60"></el-empty>
+                    <!-- <el-empty :description="`${item.title} 暂无数据`" :image-size="60"></el-empty> -->
+                    <el-empty :description="`暂无数据`" :image-size="60"></el-empty>
                   </div>
                 </div>
               </div>
@@ -716,5 +718,16 @@ export default {
   position absolute
   right: 2px
   top: 2px
+}
+.el-icon-close-position-right {
+  padding: 3px;
+  border-radius 50%
+  right: 1px;
+  top: 10px;
+  visibility hidden
+}
+
+::v-deep .el-empty__description p {
+  font-size 12px
 }
 </style>

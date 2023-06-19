@@ -1603,7 +1603,7 @@ export default {
 .use-status-styl {
   position: absolute;
   z-index: 99;
-  right: 2px;
+  right: 8px;
   font-size: 12px;
   bottom: -3px;
   color: #999;
