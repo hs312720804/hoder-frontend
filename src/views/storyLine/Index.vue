@@ -335,7 +335,7 @@
       <el-dialog
         title="一键投放"
         :visible.sync="dialogVisible"
-        width="95%"
+        width="1457px"
       >
         <!-- <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef" @submit.native.prevent>
           <el-form-item label="场景名：" label-width="90px" prop="name">

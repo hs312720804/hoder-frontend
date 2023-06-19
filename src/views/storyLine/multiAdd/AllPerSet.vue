@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div>
+  <div style="width: 1150px">
     <div v-for="(ruleForm, index) in allRuleForm" :key="ruleForm.id">
       <!-- {{ allRuleForm }} -->
       <!-- {{ activeItem }} -->
