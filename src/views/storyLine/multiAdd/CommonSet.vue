@@ -43,7 +43,7 @@
           </el-input> -->
         </el-form-item>
         <!-- entryList: {{ entryList }} -->
-        <el-form-item label="服务对象选择：" prop="entry">
+        <el-form-item label="入口条件：" prop="entry">
           <div v-for="(item, index) in entryList" :key="index">
             <template v-if="item.delFlag !== 2">
               <div class="create-client-border">
@@ -72,12 +72,12 @@
             </template>
           </div>
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createClient">新建服务对象筛选</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createClient">新建入口条件</el-button>
           </div>
 
         </el-form-item>
 
-        <el-form-item label="服务终止条件：" prop="export">
+        <el-form-item label="出口条件：" prop="export">
 
           <div v-for="(item, index) in exportList" :key="index">
             <template v-if="item.delFlag !== 2">
@@ -96,7 +96,7 @@
           </div>
 
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createExport">新建服务终止条件</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createExport">新建出口条件</el-button>
           </div>
 
         </el-form-item>
@@ -201,7 +201,6 @@ export default {
   },
   methods: {
     aaa () {
-      debugger
       console.log('this--->', this)
       const dialogRefArr = this.$refs.createClientDialogRef
 
@@ -216,7 +215,7 @@ export default {
       })
       // saveFunc(dialogRef, rulesJson, behaviorRulesJson, this.fetchAddOrEdit, flowCondition)
     },
-    // 新建服务对象筛选
+    // 新建入口条件
     createClient () {
       this.entryList.push({
         id: '',
@@ -233,7 +232,7 @@ export default {
       // this.entryList.splice(index, 1)
       this.entryList[index].delFlag = 2
     },
-    // 新建服务终止条件：
+    // 新建出口条件：
     createExport () {
       this.exportList.push({
         id: '',
@@ -301,8 +300,8 @@ export default {
             appendName: detail.nameSuf
           }
 
-          this.entryList = detail.entry
-          this.exportList = detail.export
+          this.entryList = detail.entry || []
+          this.exportList = detail.export || []
         } else {
           // 初始化，默认展示一条入口条件 和 一条出口条件
           this.createClient()

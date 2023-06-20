@@ -97,6 +97,25 @@
       <el-button type="primary" @click="oneDropNextStep">下一步</el-button>
     </template>
   </div>
+  <el-dialog
+    title="提示"
+    :visible.sync="openMoveOrClearDialogVisible"
+    width="420px"
+    append-to-body
+  >
+    <div style="display: flex;align-items: center; gap: 10px">
+      <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+      <span>
+        单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+      </span>
+    </div>
+    <span slot="footer" class="dialog-footer">
+      <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+      <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+      <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+      <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+    </span>
+  </el-dialog>
 </div>
 </template>
 <script>
@@ -106,6 +125,7 @@ import OneByOneAdd from './OneByOneAdd.vue'
 import LaunchToBusiness from '@/views/launch/StrategyPutIn.vue'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from '../multiAdd/func.js'
 import { Loading } from 'element-ui'
+import { moveToRule } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   components: {
@@ -116,6 +136,8 @@ export default {
   },
   data () {
     return {
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined,
       receptionistList: [],
       sceneId: '',
       activeStep: 0,
@@ -348,7 +370,7 @@ export default {
       })
     },
 
-    // 4： 统一配置  - 跳过保存
+    // 4：配置单独属性  - 跳过保存
     batchListSkip () {
       const allPerSetRef = this.$refs.allPerSetRef
       const p = confirmMultiAddServicerFn({ allPerSetRef })
@@ -367,9 +389,50 @@ export default {
           // 关闭弹窗
           this.$emit('closeDialog')
         })
+      }).catch(err => {
+        if (err.openMoveOrClear) {
+          this.openMoveOrClear(allPerSetRef)
+        }
       })
     },
-    // 4： 统一配置  - 下一步
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      // 清空行为标签
+      this.openMoveOrClearDialogRef.forEach(item => moveToRule(item, 'clear'))
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      this.openMoveOrClearDialogRef.forEach(moveToRule)
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 单独使用红色标签时，是否允许移入设置标签栏
+    openMoveOrClear (allPerSetRef) {
+      const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+      const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+      const arr = [...dialogRef1, ...dialogRef2]
+      this.openMoveOrClearDialogVisible = true
+      this.openMoveOrClearDialogRef = arr
+      // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+      //   confirmButtonText: '确定移入',
+      //   cancelButtonText: '不保存',
+      //   type: 'warning'
+      // }).then(() => {
+      //   // console.log('allPerSetRef--->', allPerSetRef)
+      //   const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+      //   const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+      //   const arr = [...dialogRef1, ...dialogRef2]
+      //   arr.forEach(moveToRule)
+      // }).catch(() => {
+      //   // 清空行为标签
+      //   // console.log('allPerSetRef--->', allPerSetRef)
+      //   const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+      //   const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+      //   const arr = [...dialogRef1, ...dialogRef2]
+      //   arr.forEach(item => moveToRule(item, 'clear'))
+      // })
+    },
+    // 4： 配置单独属性  - 下一步
     batchListNext () {
       const allPerSetRef = this.$refs.allPerSetRef
       const p = confirmMultiAddServicerFn({ allPerSetRef })
@@ -385,6 +448,10 @@ export default {
         this.$service.batchListNext(parmas).then(res => {
           this.addActiveStep()
         })
+      }).catch(err => {
+        if (err.openMoveOrClear) {
+          this.openMoveOrClear(allPerSetRef)
+        }
       })
     },
     // 3： 批量创建 - 跳过保存

@@ -1,7 +1,7 @@
 <template>
   <div>
     <!-- {{tagList}} -->
-    <el-form :model="addForm" ref="addForm" label-width="100px" @submit.native.prevent>
+    <!-- <el-form :model="addForm" ref="addForm" label-width="150px" @submit.native.prevent>
       <el-form-item label="添加标签：" prop="conditionTagIds" class="add-tag-form-item" :style="{ height: collapseAddTagsFlag ? '270px' : '0px' }">
         <div class="strategy-search">
           <el-input
@@ -50,10 +50,6 @@
           {{item.tagName}}
         </el-tag>
 
-        <!-- <i
-          class="add-tag-icon el-icon-circle-plus-outline el-icon-circle-plus"
-          @click="collapseAddTags()">
-        </i> -->
         <el-button
           class="add-tag-icon"
           icon="el-icon-search"
@@ -64,8 +60,8 @@
         </el-button>
 
       </el-form-item>
-    </el-form>
-    <div class="add">
+
+    </el-form> -->
 
       <!-- 新增标签 -->
 
@@ -74,106 +70,154 @@
       <br/>
       {{checkedList}} -->
 
-      <!--新增编辑界面-->
-      <el-row :gutter="40">
-        <el-col :span="24">
-          <el-form
-            :model="form"
-            :rules="formRules"
-            ref="form"
-            label-width="130px"
-          >
-          <!-- 只有出口条件选择 -->
-            <el-form-item label="处理操作" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
-              <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
+    <!--新增编辑界面-->
+    <el-row :gutter="40">
+      <el-col :span="24">
+        <el-form
+          :model="form"
+          :rules="formRules"
+          ref="form"
+          label-width="130px"
+        >
+
+          <!-- <el-form-item label="人群名称" prop="name">
+            <el-input
+              size="small"
+              v-model="form.name"
+              placeholder="投放名称"
+              :maxlength="50"
+            ></el-input>
+          </el-form-item> -->
+          <!-- tags---{{tags}} -->
+          <!-- <br/> -->
+          <!-- <br/> -->
+          <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
+          <!-- rulesJson --- {{ rulesJson }} -->
+          <el-form-item label="满足以下条件：" >
+            <el-select
+                style="width: 180px"
+                v-model="checkedList"
+                multiple
+                placeholder="添加指标"
+                @change="selectChange($event)"
+                :loading="loading"
+                :collapse-tags="true"
+                filterable
+                remote
+                v-loadmore="{'methord': handelQiboLoadmore}"
+                :remote-method="remoteMethod"
+                >
                 <el-option
-                  v-for="item in options"
-                  :label="item.label"
-                  :value="item.value"
-                  :key="item.value">
-                  {{ item.label }}
+                  v-for="item in searchOptions"
+                  :key="item.tagId"
+                  :label="item.tagName"
+                  :value="item.tagId">
+                  <span
+                    :class="dataSourceColorClassEnum[item.dataSource]"
+                    >{{ item.tagName }}
+                  </span>
+                </el-option>
+
+                <el-option
+                  v-for="item in tagList"
+                  :key="item.tagId"
+                  :label="item.tagName"
+                  :value="item.tagId">
+                  <span
+                    :class="dataSourceColorClassEnum[item.dataSource]"
+                    >{{ item.tagName }}
+                  </span>
                 </el-option>
               </el-select>
-            </el-form-item>
+          </el-form-item>
 
-              <!-- 正确，下一步  选择同一场景下其他接待员 -->
-            <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
-              <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
-                <el-option
-                  v-for="item in servicerListFilterSelect"
-                  :label="item.receptionist"
-                  :value="item.crowdId"
-                  :key="item.crowdId">
-                  {{ item.receptionist }}
-                </el-option>
-              </el-select>
-            </el-form-item>
-            <!-- <el-form-item label="人群名称" prop="name">
-              <el-input
-                size="small"
-                v-model="form.name"
-                placeholder="投放名称"
-                :maxlength="50"
-              ></el-input>
-            </el-form-item> -->
-            <!-- tags---{{tags}} -->
-            <!-- <br/> -->
-            <!-- <br/> -->
-            <!-- tags---[ { "thirdPartyApiId": "", "tagId": "4439", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010121", "tagName": "购物APK版本", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] }, { "thirdPartyApiId": "", "tagId": "8303", "tagType": "string", "thirdPartyCode": "", "inputType": null, "tagKey": "T010125", "tagName": "芯片型号", "dataSource": 2, "initValue": "0", "thirdPartyField": "", "child": [] } ] -->
-            <!-- rulesJson --- {{ rulesJson }} -->
-
-            <div style="position: relative">
-              <!-- 且、或 切换 -->
-              <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
-              <!-- <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)"> -->
-              <div class="outer-and" v-if="tags.length > 0 && actionTags.length > 0  && hasBehaviorTag">
-                <el-button
-                  type="danger"
-                  @click="handleConditionChange()"
-                  round
-                  :key="'condition'"
-                >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
-              </div>
-
-              <div v-if="tags.length > 0">
-                <el-form-item label="设置标签" class="multipleSelect" >
-                  <MultipleSelect
-                    ref="MultipleSelectRef"
-                    :tags="tags"
-                    :rulesJson="rulesJson"
-                  ></MultipleSelect>
-                </el-form-item>
-              </div>
-
-              <el-form-item label="行为标签" v-if="actionTags.length > 0 && hasBehaviorTag">
-                <!-- {{behaviorRulesJson}} -->
-                <MultipleActionTagSelect
-                  ref="multipleActionTagSelect"
-                  :actionTags="actionTags"
-                  :behaviorRulesJson="behaviorRulesJson"
-                ></MultipleActionTagSelect>
-                  <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
-              </el-form-item>
-
-              <!-- <el-form-item label="动态因子" v-if="specialTags.length > 0">
-                <MultipleSelect
-                  :specialTags="specialTags"
-                  :dynamicPolicyJson="dynamicPolicyJson"
-                ></MultipleSelect>
-              </el-form-item> -->
-
-              <!-- <el-form-item label="流转条件" v-if="editRow">
-                <SetCirculationConditionsCom
-                  ref="setCirculationRef"
-                  :storyLineCirculationRulesJson.sync="flowCondition">
-                </SetCirculationConditionsCom>
-              </el-form-item> -->
+          <!-- 设置条件 -->
+          <div class="add" style="position: relative">
+            <!-- 且、或 切换 -->
+            <!-- <div class="outer-and" v-if="(tags.length > 0 &&  actionTags.length > 0 && hasBehaviorTag) || (tags.length > 0 &&  specialTags.length > 0) || (actionTags.length > 0  && hasBehaviorTag &&  specialTags.length > 0)"> -->
+            <!-- <div class="outer-and" v-if="(tags.length > 0) || (actionTags.length > 0  && hasBehaviorTag)"> -->
+            <div class="outer-and" v-if="tags.length > 0 && actionTags.length > 0  && hasBehaviorTag">
+              <el-button
+                type="danger"
+                @click="handleConditionChange()"
+                round
+                :key="'condition'"
+              >{{ totalLink === 'OR' ? '或' : '且' }} </el-button>
             </div>
-          </el-form>
-        </el-col>
-      </el-row>
+            <div v-if="tags.length > 0">
+              <el-form-item label="设置标签：" class="multipleSelect" >
+                <MultipleSelect
+                  ref="MultipleSelectRef"
+                  :tags="tags"
+                  :checkedList="checkedList"
+                  :allTagList="tagList"
+                  :rulesJson="rulesJson"
+                  @emitTags="emitTags"
+                ></MultipleSelect>
+              </el-form-item>
+            </div>
 
-    </div>
+            <el-form-item label="行为标签：" v-if="actionTags.length > 0 && hasBehaviorTag">
+              <!-- {{behaviorRulesJson}} -->
+              <MultipleActionTagSelect
+                ref="multipleActionTagSelect"
+                :actionTags="actionTags"
+                :behaviorRulesJson="behaviorRulesJson"
+              ></MultipleActionTagSelect>
+                <!-- @hasMoveBehaviorTagRule="hasMoveBehaviorTagRule" -->
+            </el-form-item>
+
+            <!-- <el-form-item label="动态因子" v-if="specialTags.length > 0">
+              <MultipleSelect
+                :specialTags="specialTags"
+                :dynamicPolicyJson="dynamicPolicyJson"
+              ></MultipleSelect>
+            </el-form-item> -->
+
+            <!-- <el-form-item label="流转条件" v-if="editRow">
+              <SetCirculationConditionsCom
+                ref="setCirculationRef"
+                :storyLineCirculationRulesJson.sync="flowCondition">
+              </SetCirculationConditionsCom>
+            </el-form-item> -->
+          </div>
+<!-- {{ form.isShowAutoVersion }} --- {{ form.autoVersion }} -->
+          <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新：" prop="autoVersion" >
+            <el-radio-group v-model="form.autoVersion">
+              <el-radio :label="false">否</el-radio>
+              <el-radio :label="true">是</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <!-- 只有出口条件选择 -->
+          <el-form-item label="则视为：" v-if="type !== 'entry'" prop="stopType" class="inline-form-item">
+            <el-select v-model="form.stopType" clearable @change="handleStopTypeChange">
+              <el-option
+                v-for="item in options"
+                :label="item.label"
+                :value="item.value"
+                :key="item.value">
+                {{ item.label }}
+              </el-option>
+            </el-select>
+
+          </el-form-item>
+          <!-- 正确，下一步  选择同一场景下其他接待员 -->
+          <el-form-item v-if="type !== 'entry' && form.stopType === 1" prop="nextId" class="inline-form-item" style="margin-left: -130px;">
+            <el-select v-model="form.nextId" clearable placeholder="请选择流转接待员">
+              <el-option
+                v-for="item in servicerListFilterSelect"
+                :label="item.receptionist"
+                :value="item.crowdId"
+                :key="item.crowdId">
+                {{ item.receptionist }}
+              </el-option>
+            </el-select>
+          </el-form-item>
+        </el-form>
+      </el-col>
+    </el-row>
+
   </div>
 </template>
 <script>
@@ -194,7 +238,21 @@ export default {
   },
   data () {
     return {
-
+      // ----- 添加指标 ------
+      remoteMethodParams: {
+        pageNum: 1,
+        pageSize: 30,
+        s: '',
+        isStoryline: 1
+      },
+      totalPages: 0,
+      searchOptions: [],
+      checkedList: [],
+      // selectValue: [],
+      list: [],
+      loading: false,
+      // ----- 添加指标 end ----------
+      // options: [],
       // options2: [],
       totalLink: 'OR',
       tagList: [],
@@ -215,7 +273,6 @@ export default {
       //   11: 'success',
       //   12: 'gray'
       // },
-      checkedList: [],
       searchValue: '',
       selectTagInitPageSize: 500,
       selectTagTagsListTotal: 0,
@@ -251,7 +308,9 @@ export default {
       priority: '',
       form: {
         stopType: '',
-        nextId: ''
+        nextId: '',
+        autoVersion: false,
+        isShowAutoVersion: false
       },
       formRules: {
         stopType: [{ required: true, message: '请选择', trigger: 'change' }],
@@ -298,12 +357,12 @@ export default {
     }
   },
   watch: {
-    // behaviorRulesJson: {
-    //   handler () {
-    //     this.hasMoveBehaviorTagRule()
-    //   },
-    //   deep: true
-    // }
+    behaviorRulesJson: {
+      handler () {
+        this.hasMoveBehaviorTagRule()
+      },
+      deep: true
+    },
     tagList: {
       handler (val) {
         console.log('watch:tagList')
@@ -396,6 +455,85 @@ export default {
     }
   },
   methods: {
+    // 选中指标
+    selectChange () {
+      const selectValues = this.checkedList
+
+      const allOptions = this.searchOptions.concat(this.tagList)
+
+      const selectValueList = allOptions.filter(item => { return selectValues.includes(item.tagId) }) || []
+      // 去重
+      const uniqueArray = selectValueList.filter((item, index, array) => {
+        return array.findIndex(obj => obj.tagId === item.tagId) === index
+      })
+
+      this.tagList = uniqueArray
+    },
+    handelQiboLoadmore () {
+      if (this.remoteMethodParams.pageNum < this.totalPages) {
+        this.remoteMethodParams.pageNum++ // 滚动加载翻页
+        this.remoteMethod()
+      }
+    },
+    remoteMethod (query) {
+      // 是否是加载更多
+      const isLoadMore = query === undefined
+
+      // 重置
+      if (!isLoadMore) {
+        this.remoteMethodParams.pageNum = 1
+        this.filmModelTagOptions = []
+        this.remoteMethodParams.s = query
+      }
+
+      this.loading = true
+
+      const params = {
+        ...this.remoteMethodParams
+      }
+
+      this.$service.policyTagSeach(params).then(data => {
+        this.totalPages = data.pageInfo.pages // 总页数
+
+        const list = data.pageInfo.list.map(item => {
+          return {
+            ...item,
+            dataSource: item.tDataSource
+          }
+        })
+        this.searchOptions = !isLoadMore ? list : this.searchOptions.concat(list)
+
+        this.loading = false
+      }).catch(() => {
+        this.searchOptions = []
+        this.loading = false
+      })
+    },
+    emitTags (data) {
+      this.tagList = data
+    },
+    // 判断是否展示 “是否每日更新” 单选框
+    // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
+    hasMoveBehaviorTagRule () {
+      const crowd = this.form
+      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
+
+      let hasBehaviorRule = false // 是否有行为标签
+      if (behaviorRules.length > 0) {
+        hasBehaviorRule = true
+      }
+
+      if (hasBehaviorRule) { // 展示勾选“是否每日更新”
+        // 当有 isShowAutoVersion 并且 为  false 的时候，初始默认选择是。否则不限制选择
+        if (crowd.isShowAutoVersion !== undefined && !crowd.isShowAutoVersion) {
+          crowd.autoVersion = true
+        }
+        crowd.isShowAutoVersion = true
+      } else {
+        crowd.isShowAutoVersion = false
+        crowd.autoVersion = false
+      }
+    },
     // 获取流转标签
     async getCirculationTag () {
       await this.$service.getRuleIndicators().then(res => {
@@ -448,7 +586,6 @@ export default {
       this.getTags()
     },
     handleTagChange (flag, item) {
-      console.log('flag--------->', flag)
       let arr = []
       // flag - true: 选中  false: 取消选中
       if (flag) {
@@ -508,188 +645,6 @@ export default {
           resolve(res)
         })
       })
-    },
-
-    validateForm (rules, dynamicPolicyRules, behaviorRules = []) {
-      this.timeTagKongList = []
-      // 判断设置标签里是否有未填写的项
-      let i
-      let j = 0
-      const ruleLength = rules.length
-      const dynamicPolicyRulesLength = dynamicPolicyRules.length
-      let rulesFlag = true
-
-      // ------------------- 普通标签规则校验 --------------------------
-      for (i = 0; i < ruleLength; i++) {
-        for (j = 0; j < rules[i].rules.length; j++) {
-          const rulesItem = rules[i].rules[j]
-
-          // 多选的值，保存的时候需要转成字符串 2222
-          if (rulesItem.tagType === 'string' && rulesItem.operator !== 'null') {
-            rulesItem.value = rulesItem.value.join(',')
-          }
-          // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
-          const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
-          if (isTimeTagKong) {
-            if (!this.timeTagKongList.includes(rulesItem.tagName)) {
-              this.timeTagKongList.push(rulesItem.tagName)
-            }
-          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-            this.$message.error(
-              '请正确填写第' +
-                (i + 1) +
-                '设置标签块里面的第' +
-                (j + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          } else if (rulesItem.tagType === 'time' && rulesItem.isDynamicTime === 3) {
-            // 二期之后的
-            if (rulesItem.version > 0) {
-              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
-              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
-              rulesItem.value = startDay + '~' + endDay
-            } else { // 一期
-              if (
-                this.checkNumMostFour(rulesItem.startDay) &&
-                this.checkNumMostFour(rulesItem.endDay)
-              ) {
-                if (
-                  parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
-                ) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的天数值后面的值必须大于前面的'
-                  )
-                  rulesFlag = false
-                  break
-                }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                rulesFlag = false
-                break
-              }
-            }
-          } else if (rulesItem.tagType === 'string' && rulesItem.operator === 'null') {
-            rulesItem.operator = '='
-          }
-
-          if (!rulesFlag) break
-        }
-        if (!rulesFlag) break
-      }
-
-      // ------------------- 行为标签中的大数据标签规则校验 --------------------------
-      // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
-      // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
-      // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
-      const behaviorRulesLength = behaviorRules.length
-      let x
-      let y = 0
-      // 判断是否有未填写的项
-
-      for (x = 0; x < behaviorRulesLength; x++) {
-        for (y = 0; y < behaviorRules[x].rules.length; y++) {
-          const rulesItem = behaviorRules[x].rules[y]
-
-          if (rulesItem.isOldversion) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
-            this.$message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
-            rulesFlag = false
-            break
-          }
-          // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
-          const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
-          if (isTimeTagKong) {
-            if (!this.timeTagKongList.includes(rulesItem.tagName)) {
-              this.timeTagKongList.push(rulesItem.tagName)
-            }
-          } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0)) {
-            this.$message.error(
-              '请正确填写第' +
-                (x + 1) +
-                '行为标签块里面的第' +
-                (y + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          } else if (
-            rulesItem.tagType === 'time' &&
-            rulesItem.isDynamicTime === 3
-          ) {
-            // 二期之后的
-            if (rulesItem.version > 0) {
-              const startDay = rulesItem.startDay ? rulesItem.startDay : '@'
-              const endDay = rulesItem.endDay ? rulesItem.endDay : '@'
-              rulesItem.value = startDay + '~' + endDay
-            } else { // 一期
-              if (
-                this.checkNum(rulesItem.startDay) &&
-                this.checkNum(rulesItem.endDay)
-              ) {
-                if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
-                  rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
-                } else {
-                  this.$message.error(
-                    '第' +
-                      (x + 1) +
-                      '行为标签块里面的第' +
-                      (y + 1) +
-                      '行的天数值后面的值必须大于前面的'
-                  )
-                  rulesFlag = false
-                  break
-                }
-              } else {
-                this.$message.error(
-                  '第' +
-                    (x + 1) +
-                    '行为标签块里面的第' +
-                    (y + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
-                )
-                rulesFlag = false
-                break
-              }
-            }
-          }
-        }
-      }
-      // if (!rulesFlag) break
-
-      // ------------------- 动态因子规则校验 --------------------------
-      for (i = 0; i < dynamicPolicyRulesLength; i++) {
-        for (j = 0; j < dynamicPolicyRules[i].rules.length; j++) {
-          const rulesItem = dynamicPolicyRules[i].rules[j]
-          if (rulesItem.value === '' || rulesItem.dynamic.version === '') {
-            this.$message.error(
-              '请正确填写第' +
-                (i + 1) +
-                '动态因子里面的第' +
-                (j + 1) +
-                '行的值！'
-            )
-            rulesFlag = false
-            break
-          }
-          if (!rulesFlag) break
-        }
-        if (!rulesFlag) break
-      }
-      // if (!dynamicPolicyFlag) return
-      return rulesFlag
     },
 
     checkIfChildrenExist (data1, data2) {
@@ -822,7 +777,9 @@ export default {
       // if (this.crowd && this.crowd.isUsedAsTag === 1) {
       //   normalTags = normalTags.filter(item => item.dataSource !== 12)
       // }
+      // 设置标签中，加上了效果指标
       this.tags = [...this.circulationTagDataList, ...normalTags]
+      // 行为标签
       this.actionTags = actionTags
       this.specialTags = specialTags
       console.log('this.tags------------->', this.tags)
@@ -834,9 +791,18 @@ export default {
       // 编辑数据
       const policyData = this.editRow
       this.totalLink = policyData.link // 总运算符
+      this.form.autoVersion = policyData.autoVersion || false
+      this.form.isShowAutoVersion = policyData.isShowAutoVersion || false
+      const tagIds = policyData.tagIds
+
       if (this.type === 'entry') { // 入口
         if (policyData.id) {
           this.$service.getTagsByEntryId({ entryId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else if (tagIds && tagIds !== '') {
+          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
             this.tagList = data || []
             this.sortTag()
           })
@@ -849,6 +815,11 @@ export default {
         this.form.nextId = policyData.nextId
         if (policyData.id) {
           this.$service.getTagsByExportId({ exportId: policyData.id }).then(data => {
+            this.tagList = data || []
+            this.sortTag()
+          })
+        } else if (tagIds && tagIds !== '') {
+          this.$service.getTagAttrsByTagIds({ tagIds }).then(data => {
             this.tagList = data || []
             this.sortTag()
           })
@@ -1063,9 +1034,10 @@ export default {
 <style lang="stylus" scoped>
 .add {
   border: 1px solid #ebeef5;
-  padding: 20px;
+  padding: 20px 0
   border-radius: 4px;
   background: #ebebeb47;
+  margin-bottom: 18px
 }
 
 .title {

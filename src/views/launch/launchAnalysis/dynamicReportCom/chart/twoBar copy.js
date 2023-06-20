@@ -1,7 +1,7 @@
 export function drawTwoBarChart () {
   const echarts = require('echarts')
 
-  const xData = ['建筑石用材', '电（热）能', '矿石', '其他']
+  const xData = ['建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材建筑石用材', '电（热）能', '矿石', '其他']
   const lastYearData = [88, 59, 32, 15]
   const thisYearData = [99.45, 72.69, 53.46, 30.22]
   const timeLineData = [1]
@@ -16,8 +16,7 @@ export function drawTwoBarChart () {
     borderColor: 'rgba(1, 231, 152,1)',
     start: 'rgba(1, 231, 152,0.1)',
     end: 'rgba(1, 231, 152,0.8)'
-  }
-  ]
+  }]
   // 基于准备好的dom，初始化echarts实例
   const myLineChart = echarts.init(
     document.getElementById('lineChart')
@@ -270,4 +269,5 @@ export function drawTwoBarChart () {
   })
   // 使用刚指定的配置项和数据显示图表。
   myLineChart.setOption(option)
+  // return option
 }

@@ -216,7 +216,8 @@ export default {
         '/hitQuery': 'hitQuery',
         '/storyLine': 'storyLine',
         '/operationHelper': 'operationHelper',
-        '/crowdCompute': 'crowdCompute'
+        '/crowdCompute': 'crowdCompute',
+        '/bitmap': 'bitmap'
       },
       activeName: 'first',
       updateMessage: [],

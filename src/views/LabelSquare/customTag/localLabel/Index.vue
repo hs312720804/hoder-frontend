@@ -91,7 +91,8 @@ export default {
       // debugger
       if (this.addOrEditStatus === 'add') {
         this.$service.addLocalCrowd(formData, '保存成功').then(() => {
-          this.$root.$emit('local-label-list-refresh')
+          // this.$root.$emit('local-label-list-refresh')
+          this.$root.$emit('custom-tag-list-refresh')
           this.handleCloseAddForm()
         }).catch(err => {
           // 不符合要求的Mac在上传框里提示
@@ -99,7 +100,8 @@ export default {
         })
       } else {
         this.$service.updateLocalCrowd({ formData, id: this.localCrowdId }, '编辑成功').then(() => {
-          this.$root.$emit('local-label-list-refresh')
+          // this.$root.$emit('local-label-list-refresh')
+          this.$root.$emit('custom-tag-list-refresh')
           this.handleCloseAddForm()
         })
       }
@@ -119,6 +121,7 @@ export default {
     handleRefreshList () {
       this.showList = true
       this.refreshFlag = true
+      this.$root.$emit('custom-tag-list-refresh')
     },
     handleCloseAddForm () {
       this.showAdd2 = false

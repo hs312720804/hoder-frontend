@@ -16,6 +16,7 @@
                 <el-form-item label="设置标签" required>
                   <!-- {{ crowd.rulesJson }} -->
                   <MultipleSelect
+                    ref="MultipleSelectRef"
                     :tags="tags"
                     :rulesJson="crowd.rulesJson"
                     :crowd="crowd"
@@ -114,6 +115,7 @@
                     <el-form-item label="设置标签" required>
                       <!-- {{ crowd.rulesJson }} -->
                       <MultipleSelect
+                        ref="MultipleSelectRef"
                         :tags="tags"
                         :rulesJson="crowd.rulesJson"
                         :crowd="crowd"
@@ -474,9 +476,9 @@ export default {
     // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
     hasMoveBehaviorTagRule () {
       this.inputValue.forEach((crowd) => {
-        const behaviorRules = crowd.behaviorRulesJson.rules
-        let hasBehaviorRule = false
+        let hasBehaviorRule = false // 是否有行为标签
 
+        const behaviorRules = crowd.behaviorRulesJson ? crowd.behaviorRulesJson.rules : []
         if (behaviorRules.length > 0) {
           hasBehaviorRule = true
         }

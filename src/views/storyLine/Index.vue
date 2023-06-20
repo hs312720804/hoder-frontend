@@ -33,14 +33,19 @@
                 v-text="viewType ? '流转视图': '列表视图'">
               </el-button>
             </div>
-
+            <div class="showAllOrMy">
+              <el-radio-group v-model="showAll" @change="handleShowAllChange">
+                <el-radio :label="false">全部</el-radio>
+                <el-radio :label="true">我的</el-radio>
+              </el-radio-group>
+            </div>
             <div class="search">
               <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select" @keyup.enter.native="getSceneList">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
               </el-input>
             </div>
 
-            <div class="sceneList-wrap">
+            <div class="sceneList-wrap" style="top: 115px">
               <!-- {{sceneList}} -->
               <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
                 <div v-if="sceneList.length === 0" class="no-data-wrap">
@@ -60,7 +65,8 @@
                     </span>
                     <span class="item-index">{{ item.id }}</span>
                     <span class="use-status-styl">
-                      <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
+                      <span v-if="item.useStatus === '投放且已命中'" @click="launchDetail(item.policyId)" class="border-title">{{ item.useStatus }}</span>
+                      <span v-else-if="item.useStatus === '投放但未请求' || item.useStatus === '投放但未命中'" class="border-title yellow-title">{{ item.useStatus }}</span>
                       <span v-else>未投放</span>
                     </span>
                     <el-dropdown
@@ -110,8 +116,9 @@
                           </el-dropdown-item>
 
                           <!-- 场景的 planId 为 null, 才展示按钮 -->
+                          <!-- planId 代表是动态人群过来的 -->
                           <!-- :disabled="servicer.length === 0" -->
-                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse || item.useStatus !== '未投放'">
                             投放
                           </el-dropdown-item>
                           <el-dropdown-item :command="['freshCache',item]">
@@ -126,8 +133,8 @@
                           <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
                             删除
                           </el-dropdown-item>
-                          <el-dropdown-item v-if="item.planId" :command="['report',item]">
-                          <!-- <el-dropdown-item :command="['report',item]"> -->
+                          <!-- <el-dropdown-item v-if="item.planId" :command="['report',item]"> -->
+                          <el-dropdown-item :command="['report',item]">
                             投放报告
                           </el-dropdown-item>
                           <el-dropdown-item :command="['detail',item]">
@@ -293,23 +300,34 @@
       </div>
 
       <template v-if="!viewType && isShowSceneChartData">
-        <div class="box" v-loading="getSceneFlowChartLoading">
+        <div class="box" v-loading="getSceneFlowChartLoading" style="padding-right: 20px;">
           <SceneMap
             :chartData="sceneChartData"
             :selectedScene="selectedScene"
             @selectServicer="changeViewAndSelectServicer"
             @showRuleDetail="item => editClientRow = item"
           ></SceneMap>
-          <div style="display: grid; grid-template-columns: 50px auto; margin-top: 0px;">
+          <div style="display: grid; grid-template-columns: 50px auto" v-if="editClientRow.id">
+
             <!-- {{ editClientRow }} -->
             {{ editClientRow.id }}
-            <showAllRule
+            <showAndUpdateRule
               v-if="editClientRow.id"
-              :entry="editClientRow"
+              :ruleItem="editClientRow"
               :conditionEnum="conditionEnum"
               :soureceSignList="soureceSignList"
+              :servicer="servicer"
+              :havePermissionsToUse="havePermissionsToUse"
+              :isCopiedServicer="isCopiedServicer"
+              :canUse="sceneCanReuse"
+              :servicerListFilterSelect="mapServicerListFilterSelect"
+              :selectedScene="selectedScene"
+              :selectedServicer="{id: editClientRow.receptionistId}"
+              @updataExportList="updataExportList"
+              @updataEntryList="updataEntryList"
             >
-            </showAllRule>
+            </showAndUpdateRule>
+
           </div>
         </div>
       </template>
@@ -317,7 +335,7 @@
       <el-dialog
         title="一键投放"
         :visible.sync="dialogVisible"
-        width="95%"
+        width="1457px"
       >
         <!-- <el-form :model="formScene" :rules="formSceneRules" ref="formSceneRef" @submit.native.prevent>
           <el-form-item label="场景名：" label-width="90px" prop="name">
@@ -386,6 +404,8 @@
 
           <template v-else>
             <!-- <el-button @click="multiAddStep= multiAddStep - 1">上一步</el-button> -->
+
+            <!-- 批量添加接待员： 确定 -->
             <el-button  type="primary" @click="confirmMultiAddServicer">确 定</el-button>
           </template>
         </span>
@@ -466,6 +486,25 @@
         <!-- <el-input type="textarea" v-model="configTextarea" :rows="8" :readonly="true"></el-input> -->
       </el-dialog>
    </div>
+   <el-dialog
+      title="提示"
+      :visible.sync="openMoveOrClearDialogVisible"
+      width="420px"
+      append-to-body
+    >
+      <div style="display: flex;align-items: center; gap: 10px">
+        <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+        <span>
+          单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+        </span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+        <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+        <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+        <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 
@@ -476,12 +515,13 @@ import servicerDetail from './servicerDetail.vue'
 import { removePendingRequest } from '@/services/cancelFetch'
 import MultiAdd from './multiAdd/Index'
 import OneDrop from './oneDrop/Index'
-// 校验规则
-// import { validateRule } from './validateRuleData.js'
+
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
 import SceneMap from './mapShow/sceneMap.vue'
-import showAllRule from '@/views/storyLine/com/showAllRule.vue'
+import showAndUpdateRule from '@/views/storyLine/com/showAndUpdateRule.vue'
+
+import { moveToRule } from '@/views/storyLine/validateRuleData.js'
 
 export default {
   components: {
@@ -491,7 +531,7 @@ export default {
     MultiAdd,
     OneDrop,
     SceneMap,
-    showAllRule
+    showAndUpdateRule
   },
 
   provide () {
@@ -501,6 +541,9 @@ export default {
   },
   data () {
     return {
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined,
+      showAll: true,
       conditionEnum: {
         AND: '且',
         OR: '或'
@@ -592,7 +635,7 @@ export default {
         ]
       },
       tipMsg: '下一步不可为空',
-      // tipMsg: '请完善当前接待员服务终止条件中的处理操作',
+      // tipMsg: '请完善当前接待员出口条件中的处理操作',
       copyType: '',
       copyForm: {
         id: '',
@@ -654,9 +697,19 @@ export default {
       const data = this.servicer.filter(item => item.id !== this.activeIndex2Id)
       return data
     },
+    // 流转视图 - 过滤掉除了当前选中 的其他接待员 （同一场景）
+    mapServicerListFilterSelect () {
+      const data = this.servicer.filter(item => item.id !== this.editClientRow.receptionistId)
+      return data
+    },
     // 过滤掉当前选择接待员，获得其他接待员
     sceneListFilterSelect () {
       return this.sceneList.filter(item => item.id !== this.activeIndex)
+    },
+    havePermissionsToUse () {
+      // canUse - 该场景是否有权限
+      // isCopiedServicer - 是否为复用的接待员 true-是  false-否
+      return this.selectedServicer.id && !this.isCopiedServicer && this.sceneCanReuse
     }
   },
   watch: {
@@ -714,6 +767,25 @@ export default {
     }
   },
   methods: {
+    updataExportList () {
+      this.getExportListByReceptionistId()
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
+      this.getSceneFlowChart()
+      // this.editClientRow = {}
+    },
+    updataEntryList () {
+      this.getEntryListByReceptionistId()
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
+      this.getSceneFlowChart()
+      // this.editClientRow = {}
+    },
+
+    handleShowAllChange () {
+      this.getSceneList()
+    },
+
     changeViewAndSelectServicer (id) {
       this.viewType = !this.viewType
       this.selectServicer(id)
@@ -730,10 +802,37 @@ export default {
       }
       this.getSceneFlowChartLoading = true
       this.$service.sceneFlowChart(params).then(res => {
-        console.log('', 'res--->', res)
         this.getSceneFlowChartLoading = false
         this.sceneChartData = res
         this.isShowSceneChartData = true
+
+        // 当流转视图中选中了入口或者出口，编辑之后需要在这里更新编辑后的数据
+        if (res.groupServicer.length > 0 && this.editClientRow.id) {
+          const groupServicer = res.groupServicer
+          let servicerList = []
+          groupServicer.forEach(item => {
+            if (item.child) {
+              servicerList = servicerList.concat(item.child)
+            } else {
+              servicerList.push(item)
+            }
+          })
+          if (servicerList.length > 0) {
+            const editClientRow = this.editClientRow
+            const servicer = servicerList.find(item => { return editClientRow.receptionistId === item.id })
+            const entryConditions = servicer.entryConditions || []
+            const exportConditions = servicer.exportConditions || []
+            const newEditClientRow = entryConditions.find(item => { return editClientRow.id === item.id })
+            const newEditClientRow2 = exportConditions.find(item => { return editClientRow.id === item.id })
+            if (newEditClientRow) {
+              this.editClientRow = { ...newEditClientRow, ruleType: 'entry' }
+            } else if (newEditClientRow2) {
+              this.editClientRow = { ...newEditClientRow2, ruleType: 'export' }
+            } else {
+              this.editClientRow = {}
+            }
+          }
+        }
       })
     },
     launchDetail (pid) {
@@ -747,6 +846,17 @@ export default {
     },
     closeAddSceneDialog () {
       this.dialogVisible = false
+    },
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      // 清空行为标签
+      this.openMoveOrClearDialogRef.forEach(item => moveToRule(item, 'clear'))
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      this.openMoveOrClearDialogRef.forEach(moveToRule)
+      this.openMoveOrClearDialogVisible = false
     },
     confirmMultiAddServicer () {
       const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
@@ -766,6 +876,34 @@ export default {
           this.getServiceList('add')
           this.dialogVisible2 = false
         })
+      }).catch(err => {
+        if (err.openMoveOrClear) {
+          console.log('allPerSetRef--->', allPerSetRef)
+          const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+          const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+          const arr = [...dialogRef1, ...dialogRef2]
+          this.openMoveOrClearDialogVisible = true
+          this.openMoveOrClearDialogRef = arr
+
+          // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+          //   confirmButtonText: '确定移入',
+          //   cancelButtonText: '不保存',
+          //   type: 'warning'
+          // }).then(() => {
+          //   console.log('allPerSetRef--->', allPerSetRef)
+          //   const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+          //   const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+          //   const arr = [...dialogRef1, ...dialogRef2]
+          //   arr.forEach(moveToRule)
+          // }).catch(() => {
+          //   // 清空行为标签
+          //   console.log('allPerSetRef--->', allPerSetRef)
+          //   const dialogRef1 = allPerSetRef.$refs && allPerSetRef.$refs.createClientDialogRef ? allPerSetRef.$refs.createClientDialogRef : []
+          //   const dialogRef2 = allPerSetRef.$refs && allPerSetRef.$refs.exportClientDialogRef ? allPerSetRef.$refs.exportClientDialogRef : []
+          //   const arr = [...dialogRef1, ...dialogRef2]
+          //   arr.forEach(item => moveToRule(item, 'clear'))
+          // })
+        }
       })
     },
 
@@ -1267,7 +1405,8 @@ export default {
       const parmas = {
         keywords: this.searchScene,
         pageNum: 1,
-        pageSize: 1000
+        pageSize: 1000,
+        my: this.showAll
       }
       this.sceneList = []
       this.$service.getSceneList(parmas).then(res => {
@@ -1466,9 +1605,13 @@ export default {
 .use-status-styl {
   position: absolute;
   z-index: 99;
-  right: 2px;
+  right: 8px;
   font-size: 12px;
   bottom: -3px;
   color: #999;
+}
+.showAllOrMy {
+  margin: 0 auto 10px;
+  width: 69%;
 }
 </style>

@@ -28,6 +28,7 @@
             <div v-if="tags.length > 0">
               <el-form-item label="设置标签" class="multipleSelect" prop="tagIds">
                 <MultipleSelect
+                  ref="MultipleSelectRef"
                   :tags="tags"
                   :rulesJson="rulesJson"
                 ></MultipleSelect>
@@ -161,7 +162,7 @@
     </el-row>
     <div slot="footer" class="footer">
       <el-button @click="cancelAdd">返回</el-button>
-      <el-button type="primary" @click="handleSave">保存</el-button>
+      <el-button type="primary" @click="handleSave()">保存</el-button>
     </div>
     <el-dialog
       title="显示更多标签"
@@ -208,12 +209,35 @@
         <el-button type="primary" @click="handleCheckboxOk">确 定</el-button>
       </span>
     </el-dialog>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="openMoveOrClearDialogVisible"
+      width="420px"
+      append-to-body
+    >
+      <div style="display: flex;align-items: center; gap: 10px">
+        <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+        <span>
+          单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+        </span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+        <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+        <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+        <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+      </span>
+    </el-dialog>
+
   </div>
 </template>
 <script>
 import MultipleSelect from '@/components/MultipleSelect.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/Index.vue'
-import { handleSave as saveFunc } from './crowdAddSaveFunc.js'
+// import { handleSave as saveFunc } from './crowdAddSaveFunc.js'
+import { validateRule, moveToRule, clearBehaviorRulesJson } from '@/views/storyLine/validateRuleData.js'
+
 export default {
   components: {
     MultipleSelect,
@@ -231,6 +255,8 @@ export default {
       }
     }
     return {
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined,
       // attrs: [[${attrs}]] || {},
       versionNum: 2,
       cache: {},
@@ -397,7 +423,7 @@ export default {
     // 判断条件： 是否设置行为标签规则，只要设置了行为标签规则就显示,默认值为 ‘是’,反之隐藏；
     hasMoveBehaviorTagRule () {
       const crowd = this.form
-      const behaviorRules = this.behaviorRulesJson.rules
+      const behaviorRules = this.behaviorRulesJson ? this.behaviorRulesJson.rules : []
 
       let hasBehaviorRule = false // 是否有行为标签
       if (behaviorRules.length > 0) {
@@ -735,16 +761,95 @@ export default {
     getDefaultOperator () {
       return '='
     },
+    // handleSave () {
+    //   saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
+    // },
 
-    handleSave () {
-      saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
+    // handleTabChangeSave () {
+    //   saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+    // },
+
+    async handleSave (callback) {
+      // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
+      const _this = this
+      const form = JSON.parse(JSON.stringify(this.form))
+      const valid = await this.$refs.form.validate()
+      if (valid) {
+        if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
+          if (this.currentLaunchLimitCount > form.limitLaunchCount) {
+            this.$message.error('投放数量不能小于上一次设置的限制数量')
+            return
+          }
+        }
+
+        // 校验规则
+        const validPromise = validateRule(this, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson)
+
+        validPromise.then(data => {
+          const { rulesJson, behaviorRulesJson, tagIds } = data
+
+          const params = {
+            crowdName: form.name,
+            tagIds: tagIds.join(','),
+            rulesJson: rulesJson,
+            behaviorRulesJson: behaviorRulesJson,
+            dynamicPolicyJson: JSON.stringify(this.dynamicPolicyJson),
+            remark: form.remark,
+            policyId: form.policyId,
+            autoVersion: form.autoVersion,
+            isShowAutoVersion: form.isShowAutoVersion,
+            limitLaunch: form.limitLaunch,
+            limitLaunchCount: form.limitLaunch
+              ? form.limitLaunchCount
+              : undefined,
+            versionNum: 2,
+            blackFlag: form.blackFlag,
+            blacks: form.blacks
+            // crowdValidFrom: form.crowdExp[0],
+            // crowdValidTo: form.crowdExp[1],
+          }
+
+          if (callback) {
+            callback(params)
+          } else {
+            this.fetchAddOrEdit(params)
+          }
+        }).catch(err => {
+          console.log('err-->', err)
+          if (err.openMoveOrClear) {
+            this.openMoveOrClearDialogVisible = true
+            this.openMoveOrClearDialogRef = _this
+            // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+            //   confirmButtonText: '确定移入',
+            //   cancelButtonText: '不保存',
+            //   type: 'warning'
+            // }).then(() => {
+            //   moveToRule(_this)
+            // }).catch(() => {
+            //   // 清空行为标签
+            //   clearBehaviorRulesJson(_this)
+            // })
+          }
+        })
+      }
+    },
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      clearBehaviorRulesJson(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      moveToRule(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
     },
 
+    // 勿删，使用 ref 调用
     handleTabChangeSave () {
-      saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
+      this.handleSave(this.tabFetchAddOrEdit)
+      // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.tabFetchAddOrEdit)
     },
-
-    // 切换tab的时候手动触发保存，ref 调用
+    // 勿删，切换tab的时候手动触发保存，ref 调用
     tabFetchAddOrEdit (data) {
       const tipMessage = this.isDynamicPeople ? '操作成功' : `操作成功，${this.crowdId != null ? '修改人群条件会影响该策略下所有人群的交叉，请点击“估算”重新估算其他人群的圈定数据' : '新增一个人群会影响该策略下人群优先级和交叉，请点击“估算”重新估算其他人群的圈定数据'}`
 

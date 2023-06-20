@@ -141,8 +141,6 @@ export default {
 
       // 获取所有图表数据
       this.$service.getEffect(params).then(res => {
-        console.log('res--->', res)
-
         this.allChartData = {}
 
         for (const key in res) {

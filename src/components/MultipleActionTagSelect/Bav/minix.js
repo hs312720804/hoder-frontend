@@ -140,8 +140,11 @@ export default {
       topicOptions: [],
       videoOptions: [],
       appointmentInfo: [],
-      musicList: [],
-      singerList: []
+      musicList: [], // K歌
+      singerList: [], // K歌
+      albumOptions1: [], // 音乐 搜歌曲
+      albumOptions2: [], // 音乐 搜歌手
+      albumOptions4: [] // 音乐 搜专辑
     }
   },
   computed: {
@@ -453,6 +456,40 @@ export default {
         })
       } else {
         this.videoOptions = []
+      }
+    },
+    // 搜索音乐
+    GetMusic (keywords, categoryId = '') {
+      // categoryId : 1  歌曲  2 歌手 4 专辑
+      const params = {
+        keywords,
+        page: 1,
+        pageSize: 200,
+        categoryId
+      }
+
+      if (keywords !== '') {
+        this.loading2 = true
+
+        this.$service.getMusicInfo(params).then(res => {
+          this.loading2 = false
+          let list = res.rows || []
+
+          list = list.map(obj => {
+            return {
+              name: categoryId === 2 ? `${obj.name}` : `${obj.name}(${obj.id})`,
+              value: obj.id,
+              field: obj.tableField,
+              type: 'string'
+            }
+          })
+          this[`albumOptions${categoryId}`] = list
+          // console.log('this.followOptions===>', this.albumOptions)
+        }).catch(() => {
+          this.loading2 = false
+        })
+      } else {
+        this[`albumOptions${categoryId}`] = []
       }
     },
 
@@ -1529,10 +1566,20 @@ export default {
             attrlist = dict[extra.listMapName]
           } else if (level === 1) {
             attrlist = dict.business_type
+          } else if (level === 2) {
+            return this.albumOptions4 // 音乐 搜专辑
           } else if (level === 3) {
-            return this.videoOptions // 视频
+            if (childItem.bav.value === '音乐') {
+              return this.albumOptions2 // 音乐 搜歌手
+            } else {
+              return this.videoOptions // 视频
+            }
           } else if (level === 4) {
-            return this.qiBoCollectionOptions // 集数
+            if (childItem.bav.value === '音乐') {
+              return this.albumOptions1 // 音乐 搜歌曲
+            } else {
+              return this.qiBoCollectionOptions // 集数
+            }
           } else if (level === 5) {
             if (childItem.bav.value === '影视') {
               attrlist = dict.mv_is_vip

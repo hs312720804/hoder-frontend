@@ -40,6 +40,26 @@
         <el-button type="primary" @click="handleSave(1)">下一步</el-button>
       </el-form-item>
     </el-form>
+
+    <el-dialog
+      title="提示"
+      :visible.sync="openMoveOrClearDialogVisible"
+      width="420px"
+      append-to-body
+    >
+      <div style="display: flex;align-items: center; gap: 10px">
+        <i class="el-icon-warning" style="color: #e6a23c; font-size: 24px"></i>
+        <span>
+          单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?
+        </span>
+      </div>
+      <span slot="footer" class="dialog-footer">
+        <!-- <el-button @click="clearBehaviorRulesJson(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">不保存</el-button>
+        <el-button type="primary" @click="moveToRule(openMoveOrClearDialogRef); openMoveOrCleardialogVisible = false">确定移入</el-button> -->
+        <el-button @click="handleClearBehaviorRulesJson">不保存</el-button>
+        <el-button type="primary" @click="handleMoveToRule">确定移入</el-button>
+      </span>
+    </el-dialog>
   </div>
 </template>
 <script>
@@ -54,6 +74,8 @@ export default {
   },
   data: function () {
     return {
+      openMoveOrClearDialogVisible: false,
+      openMoveOrClearDialogRef: undefined,
       activeName: 0,
       form: {
         // purpose: undefined,
@@ -129,6 +151,9 @@ export default {
     validateForm (rulesJson) {
       this.timeTagKongList = []
       let flag = true
+      // 判断是否有单独在行为标签栏使用红色标签的规则
+      let operateTpye = false
+
       for (let index = 0; index < rulesJson.length; index++) {
         if (!rulesJson[index].crowdName) {
           this.$message.error('第' + (index + 1) + '人群的人群名称不能为空')
@@ -229,6 +254,9 @@ export default {
         const behaviorRulesJsonData = rulesJson[index].behaviorRulesJson
         const behaviorRules = behaviorRulesJsonData.rules
         const behaviorRulesLength = behaviorRules.length
+        // 拥有行为标签规则
+        let hasBehaviorRule = false
+
         let x
         let y = 0
         // 判断是否有未填写的项
@@ -236,7 +264,9 @@ export default {
         for (x = 0; x < behaviorRulesLength; x++) {
           for (y = 0; y < behaviorRules[x].rules.length; y++) {
             const rulesItem = behaviorRules[x].rules[y]
-
+            if (rulesItem.dataSource === 8) {
+              hasBehaviorRule = true
+            }
             // 如果是 time 类型的标签， 并且 dateAreaType 为 0，那么 value 可以为空
             const isTimeTagKong = rulesItem.tagType === 'time' && rulesItem.dateAreaType === 0
             if (isTimeTagKong) {
@@ -302,8 +332,12 @@ export default {
           }
           if (!flag) break
         }
+        if (behaviorRules.length > 0 && !hasBehaviorRule) {
+          flag = false
+          operateTpye = { openMoveOrClear: true }
+        }
       }
-      return flag
+      return { flag, operateTpye }
     },
 
     // 给 behaviorRulesJson 中的table 添加序号
@@ -333,7 +367,73 @@ export default {
         })
       })
     },
+    moveToRule (rulesJson, type) {
+      const dialogRef = this.$refs.CrowdAdd
+      const actionTags = dialogRef.actionTags
+      const cacheIds = []
+      actionTags.forEach(item => {
+        // 获取大数据标签
+        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+          cacheIds.push(item.tagId)
+        }
+      })
+      for (let index = 0; index < rulesJson.length; index++) {
+        const behaviorRulesJsonData = rulesJson[index].behaviorRulesJson
+        const behaviorRules = behaviorRulesJsonData.rules
+        const behaviorRulesLength = behaviorRules.length
+        // 拥有行为标签规则
+        let hasBehaviorRule = false
+        let x
+        let y = 0
+        // 判断是否有未填写的项
 
+        for (x = 0; x < behaviorRulesLength; x++) {
+          for (y = 0; y < behaviorRules[x].rules.length; y++) {
+            const rulesItem = behaviorRules[x].rules[y]
+            if (rulesItem.dataSource === 8) {
+              hasBehaviorRule = true
+            }
+          }
+        }
+        if (behaviorRules.length > 0 && !hasBehaviorRule) {
+          // 红色标签都放在行为标签栏中
+          // 就需要特殊处理
+
+          if (type !== 'clear') {
+            // 将行为标签挪进设置标签栏
+            const rulesJson1 = rulesJson[index].rulesJson
+            rulesJson1.rules = rulesJson1.rules.concat(behaviorRules)
+
+            // 重新获取下拉框的选项， 因为是不同的组件------------
+            if (cacheIds.length > 0) {
+              this.$nextTick(() => {
+                cacheIds.forEach(dialogRef.$refs.MultipleSelectRef[index].fetchTagSuggestions)
+              })
+            }
+            // 获取下拉框的选项-end-----------
+          }
+
+          // 清空行为标签
+          this.clearBehaviorRulesJson(rulesJson, index)
+        }
+      }
+    },
+    // 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+    // 不移入 - 清空行为标签
+    clearBehaviorRulesJson (rulesJson, index) {
+      // const dialogRef = this.$refs.createClientDialog
+      rulesJson[index].behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
+    },
+    // 不保存
+    handleClearBehaviorRulesJson () {
+      this.moveToRule(this.openMoveOrClearDialogRef, 'clear')
+      this.openMoveOrClearDialogVisible = false
+    },
+    // 确定移入
+    handleMoveToRule () {
+      this.moveToRule(this.openMoveOrClearDialogRef)
+      this.openMoveOrClearDialogVisible = false
+    },
     handleSave (mode) {
       const form = JSON.parse(JSON.stringify(this.form))
       // if (form.purpose === undefined || form.purpose === '') {
@@ -343,7 +443,23 @@ export default {
 
       this.$refs.form.validate(valid => {
         if (valid) {
-          if (!this.validateForm(form.rulesJson)) {
+          const { flag, operateTpye } = this.validateForm(form.rulesJson)
+
+          if (!flag) {
+            if (operateTpye.openMoveOrClear) {
+              this.openMoveOrClearDialogVisible = true
+              this.openMoveOrClearDialogRef = this.form.rulesJson
+              // this.$confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+              //   confirmButtonText: '确定移入',
+              //   cancelButtonText: '不保存',
+              //   type: 'warning'
+              // }).then(() => {
+              //   this.moveToRule(this.form.rulesJson)
+              // }).catch(() => {
+              //   // 清空行为标签
+              //   this.moveToRule(this.form.rulesJson, 'clear')
+              // })
+            }
             return
           }
 

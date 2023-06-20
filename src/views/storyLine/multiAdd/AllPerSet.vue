@@ -27,7 +27,7 @@
     </div>
   </div>
 
-  <div>
+  <div style="width: 1150px">
     <div v-for="(ruleForm, index) in allRuleForm" :key="ruleForm.id">
       <!-- {{ allRuleForm }} -->
       <!-- {{ activeItem }} -->
@@ -40,7 +40,7 @@
 
         <!-- {{ruleForm.entryConditions}} -->
 
-        <el-form-item label="服务对象选择：" prop="entry">
+        <el-form-item label="入口条件：" prop="entry">
           <div v-for="(item, index) in ruleForm.entryConditions" :key="item.entryIndex ? (item.id + item.entryIndex) : item.id">
             <!-- {{item.id + index}} -->
             <template v-if="item.delFlag !== 2">
@@ -62,12 +62,12 @@
             </template>
           </div>
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createClient(ruleForm)">新建服务对象筛选</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createClient(ruleForm)">新建入口条件</el-button>
           </div>
 
         </el-form-item>
 
-        <el-form-item label="服务终止条件：" prop="export">
+        <el-form-item label="出口条件：" prop="export">
           <div v-for="(item, index) in ruleForm.exportConditions" :key="item.exportIndex ? (item.id + item.exportIndex) : item.id">
             <!-- {{ item.id}}--{{  item.exportIndex }} -->
             <template v-if="item.delFlag !== 2">
@@ -92,7 +92,7 @@
           </div>
 
           <div class="box-fotter addRule">
-            <el-button type="primary" icon="el-icon-plus" @click="createExport(ruleForm)">新建服务终止条件</el-button>
+            <el-button type="primary" icon="el-icon-plus" @click="createExport(ruleForm)">新建出口条件</el-button>
           </div>
 
         </el-form-item>
@@ -208,7 +208,7 @@ export default {
         })
       })
     },
-    // 新建服务对象筛选
+    // 新建入口条件
     createClient (formItem) {
       formItem.entryConditions.push({
         // sceneId: 309,
@@ -228,7 +228,7 @@ export default {
       // formItem.entryConditions.splice(index, 1)
       formItem.entryConditions[index].delFlag = 2
     },
-    // 新建服务终止条件：
+    // 新建出口条件：
     createExport (formItem) {
       formItem.exportConditions.push({
         // sceneId: 309,

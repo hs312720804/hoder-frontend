@@ -1,9 +1,16 @@
 import { MessageBox, Message } from 'element-ui'
-import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
+// import { ReorganizationData, putBehaviorRulesJsonTableIndex, getFormPromise, checkNumMostFour, checkNum } from '@/views/crowdStrategy/crowdAddSaveFunc.js'
 
 let timeTagKongList = []
 
+/** 哪些文件正在使用该方法：
+ *   - crowdAdd（新增编辑单个人群）
+ *   - showAndUpdateRule （新增编辑入口条件、出口条件）
+ *   - multiAdd/func.js （批量添加接待员）
+* /
+
 /** 校验普通标签、行为标签、流转规则 的统一封装方法
+ *
  * @param {Object} subAttr 附属属性
  *                 - returnDefaultData： 默认需要返回的数据
  *                 - isNeedValidate: 是否需要验证 true-是  false-否  默认为 true
@@ -30,11 +37,13 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
       : true
 
     // 校验【普通标签】里面的【流转指标】
-    const valid3 = await new Promise((resolve, reject) => {
-      return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
-        resolve(valid)
+    const valid3 = _this.$refs.MultipleSelectRef
+      ? await new Promise((resolve, reject) => {
+        return _this.$refs.MultipleSelectRef.$refs.ruleForm.validate((valid) => {
+          resolve(valid)
+        })
       })
-    })
+      : true
 
     if (!valid1 || !valid2 || !valid3) return Promise.reject()
   }
@@ -49,8 +58,9 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   const behaviorRules = behaviorRulesJson.rules
 
   // 校验【普通标签】规则 (包括行为标签里面的大数据标签规则)
-  if (!validateForm(rules, behaviorRules, _this, isNeedValidate) && isNeedValidate) {
-    return Promise.reject()
+  const { rulesFlag, operateTpye } = validateForm(rules, behaviorRules, _this, isNeedValidate)
+  if (!rulesFlag && isNeedValidate) {
+    return Promise.reject(operateTpye)
   }
 
   // 添加 tagIds
@@ -107,6 +117,7 @@ async function validateRule (_this, thisRulesJson, thisBehaviorRulesJson, flowCo
   // ---------------------------- 行为标签的数据 进行重组  end--------------------------------
 
   const data = {
+    tagIds,
     ...subAttr.returnDefaultData || undefined, // 一些默认返回数据
     rulesJson: JSON.stringify(ruleJson),
     behaviorRulesJson: JSON.stringify(behaviorRulesJson)
@@ -220,6 +231,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   const ruleLength = rules.length
   // const dynamicPolicyRulesLength = dynamicPolicyRules.length
   let rulesFlag = true
+  let operateTpye = false
 
   // ------------------- 普通标签规则校验 --------------------------
   for (i = 0; i < ruleLength; i++) {
@@ -247,7 +259,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
           } else { // 一期
             if (
               checkNumMostFour(rulesItem.startDay) &&
-              checkNumMostFour(rulesItem.endDay)
+                checkNumMostFour(rulesItem.endDay)
             ) {
               if (
                 parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)
@@ -258,10 +270,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
                 if (isNeedValidate) {
                   Message.error(
                     '第' +
-                      (i + 1) +
-                      '设置标签块里面的第' +
-                      (j + 1) +
-                      '行的天数值后面的值必须大于前面的'
+                        (i + 1) +
+                        '设置标签块里面的第' +
+                        (j + 1) +
+                        '行的天数值后面的值必须大于前面的'
                   )
                   rulesFlag = false
                   break
@@ -272,10 +284,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
               if (isNeedValidate) {
                 Message.error(
                   '第' +
-                    (i + 1) +
-                    '设置标签块里面的第' +
-                    (j + 1) +
-                    '行的值是大于等于0的整数且不能超过4位数'
+                      (i + 1) +
+                      '设置标签块里面的第' +
+                      (j + 1) +
+                      '行的值是大于等于0的整数且不能超过4位数'
                 )
                 rulesFlag = false
                 break
@@ -291,10 +303,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         if ('value' in rulesItem && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
           Message.error(
             '请正确填写第' +
-              (i + 1) +
-              '设置标签块里面的第' +
-              (j + 1) +
-              '行的值！'
+                (i + 1) +
+                '设置标签块里面的第' +
+                (j + 1) +
+                '行的值！'
           )
           rulesFlag = false
           break
@@ -310,6 +322,8 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   // ------------------- 行为标签中的【起播活跃】行为标签规则校验 兼容性处理--------------------------
   // const behaviorRulesJsonData = JSON.parse(JSON.stringify(rulesJson[index].behaviorRulesJson))
   // const behaviorRules = JSON.parse(JSON.stringify(behaviorRulesJsonData.rules))
+  // 拥有行为标签规则
+  let hasBehaviorRule = false
   const behaviorRulesLength = behaviorRules.length
   let x
   let y = 0
@@ -318,6 +332,9 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   for (x = 0; x < behaviorRulesLength; x++) {
     for (y = 0; y < behaviorRules[x].rules.length; y++) {
       const rulesItem = behaviorRules[x].rules[y]
+      if (rulesItem.dataSource === 8) {
+        hasBehaviorRule = true
+      }
       // 需要验证时，才进行提示
       if (rulesItem.isOldversion && isNeedValidate) { // 行为标签中的【起播活跃】行为标签规则校验 兼容性处理
         Message.error('【起播活跃 - BAV0011】组件升级，若要编辑请删除后重新创建')
@@ -334,16 +351,16 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
       } else if (rulesItem.value && (rulesItem.value === '' || rulesItem.value.length === 0) && isNeedValidate) {
         Message.error(
           '请正确填写第' +
-            (x + 1) +
-            '行为标签块里面的第' +
-            (y + 1) +
-            '行的值！'
+              (x + 1) +
+              '行为标签块里面的第' +
+              (y + 1) +
+              '行的值！'
         )
         rulesFlag = false
         break
       } else if (
         rulesItem.tagType === 'time' &&
-        rulesItem.isDynamicTime === 3
+          rulesItem.isDynamicTime === 3
       ) {
         // 二期之后的
         if (rulesItem.version > 0) {
@@ -353,7 +370,7 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         } else { // 一期
           if (
             checkNum(rulesItem.startDay) &&
-            checkNum(rulesItem.endDay)
+              checkNum(rulesItem.endDay)
           ) {
             if (parseInt(rulesItem.startDay) < parseInt(rulesItem.endDay)) {
               rulesItem.value = rulesItem.startDay + '-' + rulesItem.endDay
@@ -362,10 +379,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
               if (isNeedValidate) {
                 Message.error(
                   '第' +
-                    (x + 1) +
-                    '行为标签块里面的第' +
-                    (y + 1) +
-                    '行的天数值后面的值必须大于前面的'
+                      (x + 1) +
+                      '行为标签块里面的第' +
+                      (y + 1) +
+                      '行的天数值后面的值必须大于前面的'
                 )
                 rulesFlag = false
                 break
@@ -376,10 +393,10 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
             if (isNeedValidate) {
               Message.error(
                 '第' +
-                  (x + 1) +
-                  '行为标签块里面的第' +
-                  (y + 1) +
-                  '行的值是大于等于0的整数且不能超过4位数'
+                    (x + 1) +
+                    '行为标签块里面的第' +
+                    (y + 1) +
+                    '行的值是大于等于0的整数且不能超过4位数'
               )
               rulesFlag = false
               break
@@ -388,6 +405,20 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
         }
       }
     }
+  }
+
+  if (behaviorRules.length > 0 && !hasBehaviorRule) {
+    // MessageBox.confirm('单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏?', '提示', {
+    //   confirmButtonText: '确定移入',
+    //   cancelButtonText: '不保存',
+    //   type: 'warning'
+    // }).then(() => {
+    //   operateTpye = { moveOrClear: 'move' }
+    // }).catch(() => {
+    //   operateTpye = { moveOrClear: 'clear' }
+    // })
+    rulesFlag = false
+    operateTpye = { openMoveOrClear: true }
   }
   // if (!rulesFlag) break
 
@@ -411,7 +442,155 @@ function validateForm (rules, behaviorRules = [], _this, isNeedValidate) {
   //   if (!rulesFlag) break
   // }
   // if (!dynamicPolicyFlag) return
-  return rulesFlag
+  // console.log('1111111->', { rulesFlag, operateTpye })
+  // return rulesFlag
+  // console.log('rulesFlag', rulesFlag)
+  // console.log('operateTpye', operateTpye)
+  return { rulesFlag, operateTpye }
 }
 
-export { validateRule }
+function checkNum (num) {
+  if (/(^\d+$)/.test(num)) {
+    return true
+  } else {
+    Message.error('该值为必填项，且必须是大于等于0整数')
+    return false
+  }
+}
+function ReorganizationData (data) { // 将数组变成层级关系
+  let rData = []
+  const len = data.length
+  // for (var i = len - 1; i > -1; i--) {
+  //   debugger
+  //   rData = data[i]
+  //   if (data[i - 1]) {
+  //     rData = this.checkIfChildrenExist(data[i - 1], rData)
+  //   }
+  // }
+  if (len > 1) {
+    for (let i = len - 1; i > -1; i--) {
+      rData = data[i]
+      if (data[i - 1]) {
+        rData = checkIfChildrenExist(data[i - 1], rData)
+      }
+    }
+  } else {
+    rData = data
+    if (data[0] && data[0].child && data[0].child.length > 1) {
+      rData[0].child = ReorganizationData(data[0].child)
+    }
+  }
+  return rData
+}
+
+function checkIfChildrenExist (data1, data2) {
+  if (data1.child == null || data1.child.length === 0) {
+    data1.child.push(data2)
+    return data1
+  }
+  // 递归
+  checkIfChildrenExist(data1.child[0], data2)
+}
+
+// 给 behaviorRulesJson 中的table 添加序号
+function putBehaviorRulesJsonTableIndex (val) {
+  if (val) {
+    let tableIndex = 0
+    const ruleList = val.rules
+    ruleList.forEach(rule => {
+      const ruleGroup = rule.rules
+      ruleGroup.forEach(item => {
+        tableIndex = tableIndex + 1
+        item.table = item.table.split('$')[0] + '$' + tableIndex
+        if (item.bav) item.bav.table = item.bav.table.split('$')[0] + '$' + tableIndex
+      })
+    })
+  } else {
+    val = { link: 'AND', condition: 'OR', rules: [] }
+    // val = ''
+  }
+  return val
+}
+
+function getFormPromise (form) {
+  return new Promise(resolve => {
+    form.validate(res => {
+      resolve(res)
+    })
+  })
+}
+
+function checkNumMostFour (num, _this) {
+  const numInt = parseInt(num)
+  if (/(^\d+$)/.test(num) && numInt <= 9999) {
+    return true
+  } else {
+    Message.error(
+      '该值为必填项，且必须是大于等于0的整数且不能超过4位数'
+    )
+    return false
+  }
+}
+
+// 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+// 移入
+
+/** 校验普通标签、行为标签、流转规则 的统一封装方法
+ * @param  dialogRef 设置普通标签、行为标签的组件的 ref
+ *
+ */
+// 单独在行为标签栏使用红色标签的规则，将行为标签挪进设置标签栏
+function moveToRule (dialogRef, type) {
+  // const dialogRef = this.$refs.createClientDialog
+  // 行为标签规则
+  const behaviorRulesJsonRules = dialogRef.behaviorRulesJson.rules || []
+  // 普通标签规则
+  const rulesJsonRules = dialogRef.rulesJson.rules
+
+  // -------------- start -----------------
+  // 判断是否拥有行为标签规则
+  let hasBehaviorRule = false
+  let x
+  let y = 0
+  const behaviorRulesLength = behaviorRulesJsonRules.length
+  for (x = 0; x < behaviorRulesLength; x++) {
+    for (y = 0; y < behaviorRulesJsonRules[x].rules.length; y++) {
+      const rulesItem = behaviorRulesJsonRules[x].rules[y]
+      if (rulesItem.dataSource === 8) {
+        hasBehaviorRule = true
+      }
+    }
+  }
+  // -------------- end -----------------
+  // 开始挪 & 删除 行为标签
+  if (behaviorRulesJsonRules.length > 0 && !hasBehaviorRule) {
+    if (type !== 'clear') {
+      // 如果在行为标签栏单独使用红色标签，挪入设置标签栏  ---start
+      dialogRef.rulesJson.rules = rulesJsonRules.concat(behaviorRulesJsonRules)
+
+      const actionTags = dialogRef.actionTags
+      const cacheIds = []
+      actionTags.forEach(item => {
+        // 获取大数据标签
+        if ((item.dataSource !== 8) && (item.tagType === 'string' || item.tagType === 'collect')) {
+          cacheIds.push(item.tagId)
+        }
+      })
+      if (cacheIds.length > 0) {
+        cacheIds.forEach(dialogRef.$refs.MultipleSelectRef.fetchTagSuggestions)
+      }
+      // 如果在行为标签栏单独使用红色标签，挪入设置标签栏  ---end
+    }
+    // 清空行为标签
+    clearBehaviorRulesJson(dialogRef)
+  }
+}
+
+// 单独使用红色标签时，请在设置标签栏填写。是否允许移入设置标签栏
+// 不移入 - 清空行为标签
+function clearBehaviorRulesJson (dialogRef) {
+  // const dialogRef = this.$refs.createClientDialog
+  dialogRef.behaviorRulesJson = { link: 'AND', condition: 'OR', rules: [] }
+}
+
+export { validateRule, moveToRule, clearBehaviorRulesJson }

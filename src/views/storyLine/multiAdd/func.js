@@ -1,10 +1,13 @@
 import { Message } from 'element-ui'
 import { validateRule } from '../validateRuleData.js'
 
-// 批量创建接待员 - 确认
+// 配置单独属性 - 确认
+// 使用中的地方：
+// - 批量创建接待员
+// - 场景一键投放
 function confirmMultiAddServicerFn ({ allPerSetRef }) {
   // const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
-  return new Promise((resolve) => {
+  return new Promise((resolve, reject) => {
     const ruleFormArr = allPerSetRef.$refs.ruleForm || []// 此时为一个数组，因为是循环出来的
     const createClientDialogRef = allPerSetRef.$refs.createClientDialogRef || []// 入口条件，是个数组
     const exportClientDialogRef = allPerSetRef.$refs.exportClientDialogRef || []// 出口条件，是个数组
@@ -27,7 +30,9 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
           link: dialogRef.totalLink,
           tagIds: dialogRef.checkedList.join(','),
           delFlag: dialogRef.delFlag,
-          receptionistId: dialogRef.receptionistId
+          receptionistId: dialogRef.receptionistId,
+          autoVersion: dialogRef.form.autoVersion,
+          isShowAutoVersion: dialogRef.form.isShowAutoVersion
         }
 
         // 校验规则
@@ -49,7 +54,9 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
           nextId: dialogRef.form.nextId,
           tagIds: dialogRef.checkedList.join(','),
           delFlag: dialogRef.delFlag,
-          receptionistId: dialogRef.receptionistId
+          receptionistId: dialogRef.receptionistId,
+          autoVersion: dialogRef.form.autoVersion,
+          isShowAutoVersion: dialogRef.form.isShowAutoVersion
         }
         // 校验规则
         const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData })
@@ -85,8 +92,13 @@ function confirmMultiAddServicerFn ({ allPerSetRef }) {
         //   this.dialogVisible2 = false
         //   Message.success('成功保存提交数据')
         // })
-      }).catch(() => {
-        Message.error('请完善条件')
+      }).catch((err) => {
+        if (err && err.openMoveOrClear) {
+          // Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+          reject(err)
+        } else {
+          Message.error('请完善条件')
+        }
       })
     })
   })
@@ -133,13 +145,16 @@ function restoreData (allRuleForm, allEntryArr, allExportArr) {
   })
   return returnData
 }
-
+// 配置公共属性
+// 使用中的地方：
+// - 批量创建接待员
+// - 场景一键投放
 function multiAddNextStepFn ({ commonSetRef }) {
   return new Promise((resolve) => {
     // const commonSetRef = this.$refs.multiAddRef.$refs.commonSetRef
-    const ruleForm = commonSetRef.$refs.ruleForm
-    const createClientDialogRef = commonSetRef.$refs.createClientDialogRef // 入口条件，是个数组
-    const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef // 出口条件，是个数组
+    const ruleForm = commonSetRef.$refs.ruleForm || []
+    const createClientDialogRef = commonSetRef.$refs.createClientDialogRef || [] // 入口条件，是个数组
+    const exportClientDialogRef = commonSetRef.$refs.exportClientDialogRef || [] // 出口条件，是个数组
     const ruleFormData = commonSetRef.ruleForm
     console.log('333ruleForm--->', commonSetRef)
 
@@ -168,7 +183,9 @@ function multiAddNextStepFn ({ commonSetRef }) {
             type: 'entry',
             link: dialogRef.totalLink,
             tagIds: dialogRef.checkedList.join(','), // 所选的标签
-            delFlag: 1
+            delFlag: 1,
+            autoVersion: dialogRef.form.autoVersion,
+            isShowAutoVersion: dialogRef.form.isShowAutoVersion
           }
 
           // 校验规则
@@ -201,7 +218,9 @@ function multiAddNextStepFn ({ commonSetRef }) {
             stopType: dialogRef.form.stopType,
             nextId: dialogRef.form.nextId,
             tagIds: dialogRef.checkedList.join(','), // 所选的标签
-            delFlag: 1
+            delFlag: 1,
+            autoVersion: dialogRef.form.autoVersion,
+            isShowAutoVersion: dialogRef.form.isShowAutoVersion
           }
           // 校验规则
           const p = validateRule(dialogRef, rulesJson, behaviorRulesJson, flowCondition, { returnDefaultData, isNeedValidate: false })
@@ -244,8 +263,12 @@ function multiAddNextStepFn ({ commonSetRef }) {
           // Message.success('所有条件都已经通过')
           resolve({ allEntryArr, allExportArr, ruleFormData })
           // this.batchSaveFirst({ allEntryArr, allExportArr, ruleFormData })
-        }).catch(() => {
-          Message.error('请完善条件')
+        }).catch((err) => {
+          if (err.openMoveOrClear) {
+            Message.error('单独使用红色标签时，请在设置标签栏填写。请检查后重新提交')
+          } else {
+            Message.error('请完善条件')
+          }
         })
       }
     })

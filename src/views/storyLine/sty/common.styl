@@ -11,7 +11,7 @@
   display: grid;
   grid-template-columns: 200px 200px minmax(0, 1fr);
   grid-template-rows: 100%;
-  grid-gap: 20px;
+  grid-gap: 16px;
   height 100%
   // margin: -20px;
   // padding: 5px;
@@ -28,7 +28,7 @@
   overflow auto
   box-sizing: border-box;
   position relative
-  border-radius: 10px;
+  border-radius: 8px;
 }
 .icon
   font-size 16px
@@ -105,7 +105,17 @@
   font-size 24px
   font-family: "open sans", "Helvetica Neue", Helvetica, Arial, sans-serif;
   font-weight: 100;
-  position relative
+  position relative;
+  align-items: baseline;
+  display: flex;
+  justify-content: space-between
+  .detail-name-title {
+    display: inline-block;
+    max-width: 80%;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    overflow: hidden;
+  }
 }
 .detail-header-column {
   box-sizing border-box
@@ -173,7 +183,7 @@
 }
 .flex-content
   display flex
-  margin 10px 0
+  // margin 10px 0
   align-items: center;
 
 .text-over
@@ -265,6 +275,9 @@
   color: #67c23a;
   font-size: 12px;
   line-height: 20px;
+  margin-right: 6px
+.yellow-title
+ color: #e9ca23
 .outer-and {
   margin-left: 70px;
   position: absolute;
@@ -363,14 +376,14 @@
 }
 
 .chart-div{
-  height: 130px
+  height: 230px
 }
-.load-place {
-  position absolute
-  right 10px
-  top 10px
-  font-size 18px
-}
+// .load-place {
+//   position absolute
+//   right 10px
+//   top 10px
+//   font-size 18px
+// }
 .recommend-list {
   padding: 10px 0;
 }
@@ -453,3 +466,66 @@
   font-weight: 500;
   margin-left: 0;
 }
+.checkedKpi {
+  color: #409EFF
+}
+.seizeSeat{
+  width: 13px;
+  height 13px;
+  margin-right: 5px
+  display inline-block
+}
+.el-icon-close-position-right {
+  padding: 3px;
+  border-radius 50%
+  right: -16px;
+  top: -7px;
+  visibility hidden
+  &:hover {
+    background #F56C6C
+    color: #000
+  }
+}
+
+.unit-box{
+  margin-top 10px
+  background none
+}
+.unit-box-wrap:hover{
+  .unit-box{
+    background #f2f4f6
+  }
+  .el-icon-close-position-right {
+    visibility: visible;
+  }
+}
+.chart-title {
+  border-bottom: 1px solid #e7eaec;
+  line-height: 40px;
+  padding: 0 8px;
+  font-size: 12px;
+  font-weight: 400;
+}
+.reception-uv-span {
+  // background: #6e6e6e;
+  // background: #3ac2c2;
+  // background: #2ba471;
+  // color: #fff;
+  // display: block;
+  // margin: 12px 0;
+  // padding: 0 3px;
+  // font-size: 14px;
+  // font-weight 400;
+  // border-radius 3px
+
+  background: #2ba471;
+  color: #fff;
+  display: block;
+  margin: 12px 0;
+  padding: 0 8px;
+  font-size: 14px;
+  font-weight: 400;
+  border-radius: 3px;
+  line-height 34px
+}
+

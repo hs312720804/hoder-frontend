@@ -8,6 +8,7 @@ export const dataSourceColorEnum = {
   8: 'warningCyan',
   11: 'success',
   12: 'gray',
+  12.2: 'gray',
   13: 'pink'
 }
 
@@ -21,5 +22,6 @@ export const dataSourceColorClassEnum = {
   8: 'checkbox--cyan',
   11: 'success',
   12: 'gray',
+  12.2: 'gray',
   13: 'checkbox--pink'
 }

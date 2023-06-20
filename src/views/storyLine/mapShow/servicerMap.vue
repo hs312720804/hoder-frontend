@@ -142,10 +142,9 @@ export default {
   },
   methods: {
     init () {
-      const width = 280
+      const width = 220
       // const width = document.getElementById('servicer-map').offsetWidth
-      console.log('width--->', width)
-      const height = document.getElementById('graph-container').scrollHeight || 300
+      const height = document.getElementById('graph-container').scrollHeight || 200
       // const height = 300
       // const height = this.list.length < 20 ? 800 : this.list.length / 15 * 250
       // const height = this.len < 20 ? 400 : this.len / 15 * 250
@@ -286,7 +285,6 @@ export default {
           }
         })
       }
-      console.log('this.chartData=-===============>', cloneData)
       const data = cloneData
 
       if (data && data.nodes.length > 0) {

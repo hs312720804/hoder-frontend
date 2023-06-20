@@ -39,3 +39,11 @@ export function exportHitDataToTmpCrowd (params) {
     isJSON: true
   })
 }
+export function pageQueryCrowdTag (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/bitmap/pageQueryCrowdTag',
+    params,
+    isJSON: true
+  })
+}
