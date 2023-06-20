@@ -50,14 +50,7 @@ export function getTempCrowd (params) {
     params
   })
 }
-// 临时人群计算
-export function calculateTempCrowd (params) {
-  return this.fetch({
-    method: 'get',
-    url: '/api/tempCrowd/calculate',
-    params
-  })
-}
+
 // 获取标签树类型新接口
 export function getNewTreeList (params) {
   return this.fetch({

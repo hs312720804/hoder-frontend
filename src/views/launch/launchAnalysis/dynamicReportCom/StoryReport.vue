@@ -65,10 +65,36 @@
         ></c-table>
       </div>
 
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <div id='a4' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            每日效果明细（reportDayDetail）
+            每日效果明细（everyDayDetail）
             <!-- <span>共 0 个</span> -->
           </div>
         </div>
@@ -82,7 +108,7 @@
       <div id='a5' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
-            累计效果明细（reportSum）
+            累计效果明细（totalDetail）
             <span>目的：针对累计数据情况，查看各组动态人群转化效果 </span>
           </div>
         </div>
@@ -106,6 +132,32 @@
           :header="allTableData.crowdIncomeDetail.header"
         ></c-table>
       </div>
+
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
 
       <div id='a7' class="table-wrap">
         <div class="title-layout">
@@ -139,6 +191,8 @@
 
 <script>
 import DynamicTable from '../dynamicTable/Index.vue'
+import { crowdData } from './crowdData2.js'
+import { setBarEchart } from './chart/bar.js'
 // import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
 
 export default {
@@ -265,36 +319,42 @@ export default {
         params = { crowdId: this.crowdId }
       }
       this.$service.getContentDynamicCrowdReport(params).then(res => {
+      // const res = crowdData
+
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
         this.setTableData(getAllData)
-        // // 折线图数据
-        // const vipPlay = this.getChartData(res.everyDayDetail.data, 'payRate')
-        // const vipPlayTrend = this.getChartData(res.everyDayDetail.data, 'arup')
-
-        // console.log('aaa---->', vipPlay)
-        // this.allChartData = {
-        //   vipPlay,
-        //   vipPlayTrend
-        // }
-
-        // this.$nextTick(() => {
-        //   this.drawChart()
-        // })
+        // 图表
+        this.setChartData(res)
       })
+    },
+    setChartData (res) {
+      // 柱状图数据
+      const ctr = this.getChartData2(res.crowdIncomeDetail.data, 'ctr')
+      const clickPlayRate = this.getChartData2(res.crowdIncomeDetail.data, 'clickPlayRate')
+      const payRate = this.getChartData2(res.crowdIncomeDetail.data, 'payRate')
+      // 折线图数据
+      const everyDayDetailCtr = this.getChartData(res.everyDayDetail.data, 'ctr')
+      const everyDayDetailClickPlayRate = this.getChartData(res.everyDayDetail.data, 'clickPlayRate')
 
-      // this.$service.getDynamicCrowdReportB({ crowdId: this.crowdId }).then(res => {
-      //   // this.getAllData = res
+      // console.log('vipPlay---->', vipPlay)
+      // console.log('vipPlayTrend---->', vipPlayTrend)
+      // console.log('reportGroupSumArup---->', reportGroupSumArup)
+      // console.log('reportGroupSumPriceTotal---->', reportGroupSumPriceTotal)
 
-      //   this.setTableData(res)
-      // })
-      //
+      this.allChartData = {
+        ctr,
+        clickPlayRate,
+        payRate,
+        everyDayDetailCtr,
+        everyDayDetailClickPlayRate
+      }
 
-      // // 表头配置项
-
-      // console.log('reObj====', this.tableData)
-      // console.log('tableConfig====', this.tableConfig)
+      this.$nextTick(() => {
+        this.drawChart(this.rowObj)
+        this.drawChart(this.rowObj2)
+      })
     },
     formatData (res) {
       const result = JSON.parse(JSON.stringify(res))
@@ -356,7 +416,8 @@ export default {
         title: '',
         xunit: ''
       }
-      if (key === 'payRate') { // 支付率，数据转为百分比
+      const seriesNameKey = 'dynamicName'
+      if (key === 'payRate' || key === 'ctr' || key === 'clickPlayRate') { // 支付率/ctr，数据转为百分比
         reObj.yunit = '%'
       }
       reObj.series = chartData.reduce((result, current, index) => {
@@ -364,12 +425,12 @@ export default {
         const oneDateData = current.data
         oneDateData.forEach(dayObj => {
           const valueNum = dayObj[key]
-          const flag = result.find(i => i.name === dayObj.planName)
+          const flag = result.find(i => i.name === dayObj[seriesNameKey])
           if (flag) {
             flag.value.push(valueNum)
           } else {
             result.push({
-              name: dayObj.planName,
+              name: dayObj[seriesNameKey],
               value: [valueNum]
             })
           }
@@ -380,17 +441,58 @@ export default {
 
       return reObj
     },
+    getChartData2 (chartData, key) {
+      const reObj = {
+        xaxis: [],
+        yunit: '',
+        series: [],
+        title: '',
+        xunit: ''
+      }
+      if (key === 'payRate' || key === 'ctr') { // 支付率/ctr，数据转为百分比
+        reObj.yunit = '%'
+      }
+      // const
+      chartData.forEach((item, index) => {
+        reObj.xaxis.push(`${item.dynamicName}-${item.crowdId}`)
+        const valueNum = item[key]
+        reObj.series.push(valueNum)
+      })
+
+      // return result
+      // })
+
+      return reObj
+    },
     // echart 图表渲染
-    drawChart () {
-      const rowObj2 = this.rowObj2
-      rowObj2.forEach(item => {
+    drawChart (rowObj) {
+      rowObj.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
           if (item[key].type === 'line') {
             this.showLine(this.allChartData[key], key)
+          } else if (item[key].type === 'bar') {
+            this.showBar(this.allChartData[key], key)
           }
         }
       })
+    },
+    //  柱状图
+    showBar (data, chartID) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        if (data.yunit === '%') {
+          data.series = data.series.map(v => Number(v * 100).toFixed(2))
+        }
+        const element = chartID
+        // console.log('23333=========>', data)
+        const chartElement = document.getElementById(element)
+        if (!chartElement) return
+        const options = setBarEchart('', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
+        const echarts = require('echarts')
+        const myChart = echarts.init(chartElement)
+        myChart.setOption(options, true)
+        this.allCharts[element] = myChart
+      }
     },
     //  折线图
     showLine (data, chartID) {
@@ -509,7 +611,7 @@ export default {
             // let str = parmas[0].marker + parmas[0].name + '<br/>'
             let str = parmas[0].name + '<br/>'
             for (const item of parmas) {
-              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + '<br/>'
+              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
             }
             // return _this.cc_format_number(a.data)
             return str
@@ -1016,10 +1118,17 @@ export default {
 
       getAllData: [],
       allChartData: {},
+      rowObj: [
+        {
+          ctr: { type: 'bar', title: '分组内各子人群（接待员）CTR对比', span: 8 },
+          clickPlayRate: { type: 'bar', title: '分组内各子人群（接待员）点击起播率对比', span: 8 },
+          payRate: { type: 'bar', title: '分组内各子人群（接待员）起播付费率对比', span: 8 }
+        }
+      ],
       rowObj2: [
         {
-          vipPlay: { type: 'line', title: '每组动态人群每日曝光支付率数据', span: 12 },
-          vipPlayTrend: { type: 'line', title: '每组动态人群每日曝光客单价数据', span: 12 }
+          everyDayDetailCtr: { type: 'line', title: '各分组每日CTR趋势', span: 12 },
+          everyDayDetailClickPlayRate: { type: 'line', title: '各分组每日点击起播率', span: 12 }
         }
       ],
       allCharts: {},

@@ -366,7 +366,7 @@ export function getEstimatedUserTypeData (data) {
     method: 'get',
     url: '/api/map/esCrdStsMapUserCgy/' + data.id,
     params: {
-      'category': data.category
+      category: data.category
     }
   })
 }
@@ -383,7 +383,7 @@ export function getEstimatedPayData (data) {
     method: 'get',
     url: '/api/map/esCrdStsMapPayPct/' + data.id,
     params: {
-      'category': data.category
+      category: data.category
     }
   })
 }
@@ -1031,6 +1031,23 @@ export function getSourceSign (params) {
   return this.fetch({
     method: 'get',
     url: '/api/dynamic2/getSourceSign',
+    params
+  })
+}
+// 接待员流转关系图
+export function receptionistFlowChart (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/receptionist/flowChart',
+    params
+  })
+}
+
+// 场景流转视图
+export function sceneFlowChart (params) {
+  return this.fetch({
+    method: 'get',
+    url: '/api/scene/flowChart',
     params
   })
 }

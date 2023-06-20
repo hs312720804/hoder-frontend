@@ -1,5 +1,7 @@
 <template>
   <div class="total-wrap" :class="styleType ? 'dark' : 'light'">
+
+    <!-- 绝对定位元素 -->
     <div v-if="isCopiedServicer" class="copied-servicer-tip">如需修改，请跳转到被复用的接待员处编辑</div>
     <!-- {{groupServicer}} -->
     <!-- <div style="color: red; position: absolute; z-index: 999">
@@ -7,7 +9,9 @@
       【{{selectedScene.id}}】
     </div> -->
     <!-- {{ selectedScene }} -->
-    <div class='row-wrap' :style="{'grid-template-columns': isShowDetailName ? '200px 200px minmax(0, 1fr)': '32px 200px minmax(0, 1fr)'}">
+    <div class='row-wrap'
+      :style="{'grid-template-columns': viewType ? '200px 200px minmax(0, 1fr)': '200px minmax(0, 1fr)'}"
+    >
       <el-button v-if="$route.params.sceneId === selectedScene.id" type="primary" @click="returnCrowd" style="position: absolute; right: 34px; top: 35px; z-index: 9">
         继续编辑
       </el-button>
@@ -19,7 +23,17 @@
       <div class="box" v-if="isShowDetailName" style="position: relative">
         <!-- <i class="el-icon-arrow-left arrow-close" @click="openShowDetailName" ></i> -->
         <div class="content">
-            <div class="title">场景</div>
+            <div class="title">
+              场景
+              <el-button
+                type="text"
+                style="position: absolute; right: 14px; top: 6px;"
+                size="mini"
+                @click="changeView"
+                v-text="viewType ? '流转视图': '列表视图'">
+              </el-button>
+            </div>
+
             <div class="search">
               <el-input placeholder="场景名/创建人" v-model="searchScene" class="input-with-select" @keyup.enter.native="getSceneList">
                 <el-button slot="append" icon="el-icon-search" @click="getSceneList"></el-button>
@@ -37,91 +51,97 @@
                   :key="item.id"
                   @click="selectScene(item.id)"
                   :class="{active: activeIndex === item.id, 'gray-row': item.putway === 2}"
-                  class="lists-item">
-                  <!-- <i class="icon el-icon-video-camera-solid"></i> -->
-                  <i class="icon el-icon-monitor"></i>
-                  <span class="item-content">
-                    {{ item.sceneName }}
-                  </span>
-                  <span class="item-index">{{ item.id }}</span>
-                  <span class="use-status-styl">
-                    <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
-                    <span v-else>未投放</span>
-                  </span>
-                  <el-dropdown
-                    trigger="hover"
-                    class="el-dropdown"
-                    :hide-on-click="false"
-                    placement="bottom"
-                    @command="handleSceneCommand"
-                    @visible-change="e => sceneVisibleChange(e, item.id)"
                   >
-                    <span class="el-dropdown-link">
-                      . . .
+                  <!-- <i class="icon el-icon-video-camera-solid"></i> -->
+                  <div class="lists-item">
+                    <i class="icon el-icon-monitor"></i>
+                    <span class="item-content">
+                      {{ item.sceneName }}
                     </span>
-                    <el-dropdown-menu slot="dropdown">
-                      <div
-                        v-if="sceneDropDownLoading"
-                        v-loading="sceneDropDownLoading"
-                        element-loading-spinner="el-icon-loading"
-                        element-loading-background="rgba(0, 0, 0, 0.8)">
-                      </div>
-                      <!--
-                          sceneDropDownCanUse - 有权限
-                            - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
-                        -->
-                      <template v-else>
-                        <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!sceneDropDownCanUse">
-                          <el-popover placement="top" trigger="click" ref="pop" >
-                            <div slot="reference">重命名</div>
-                            <div style="display: flex">
-                              <el-input
-                                class="re-name-input"
-                                type="text"
-                                placeholder="请输入内容"
-                                v-model="rename"
-                                maxlength="50"
-                                show-word-limit
-                                clearable
-                                style="width: 250px"
-                              >
-                              </el-input>
+                    <span class="item-index">{{ item.id }}</span>
+                    <span class="use-status-styl">
+                      <span v-if="item.useStatus === '投放中'" @click="launchDetail(item.policyId)" class="border-title">投放中</span>
+                      <span v-else>未投放</span>
+                    </span>
+                    <el-dropdown
+                      trigger="hover"
+                      class="el-dropdown"
+                      :hide-on-click="false"
+                      placement="bottom"
+                      @command="handleSceneCommand"
+                      @visible-change="e => sceneVisibleChange(e, item.id)"
+                    >
+                      <span class="el-dropdown-link">
+                        . . .
+                      </span>
+                      <el-dropdown-menu slot="dropdown">
+                        <div
+                          v-if="sceneDropDownLoading"
+                          v-loading="sceneDropDownLoading"
+                          element-loading-spinner="el-icon-loading"
+                          element-loading-background="rgba(0, 0, 0, 0.8)">
+                        </div>
+                        <!--
+                            sceneDropDownCanUse - 有权限
+                              - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
+                          -->
+                        <template v-else>
+                          <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!sceneDropDownCanUse">
+                            <el-popover placement="top" trigger="click" ref="pop" >
+                              <div slot="reference">重命名</div>
+                              <div style="display: flex">
+                                <el-input
+                                  class="re-name-input"
+                                  type="text"
+                                  placeholder="请输入内容"
+                                  v-model="rename"
+                                  maxlength="50"
+                                  show-word-limit
+                                  clearable
+                                  style="width: 250px"
+                                >
+                                </el-input>
 
-                              <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
-                              <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
-                            </div>
-                          </el-popover>
+                                <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                                <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                              </div>
+                            </el-popover>
 
-                        </el-dropdown-item>
+                          </el-dropdown-item>
 
-                        <!-- 场景的 planId 为 null, 才展示按钮 -->
-                        <!-- :disabled="servicer.length === 0" -->
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse">
-                          投放
-                        </el-dropdown-item>
-                        <el-dropdown-item :command="['freshCache',item]">
-                          <span v-if="item.status === 1">未同步</span>
-                          <span v-if="item.status === 2">已同步</span>
-                        </el-dropdown-item>
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
-                          <!-- putway : 1 - 上架中； 2 - 下架中 -->
-                          {{ item.putway === 1 ? '下架' : '上架' }}
-                        </el-dropdown-item>
+                          <!-- 场景的 planId 为 null, 才展示按钮 -->
+                          <!-- :disabled="servicer.length === 0" -->
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse ||item.useStatus === '投放中'">
+                            投放
+                          </el-dropdown-item>
+                          <el-dropdown-item :command="['freshCache',item]">
+                            <span v-if="item.status === 1">未同步</span>
+                            <span v-if="item.status === 2">已同步</span>
+                          </el-dropdown-item>
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
+                            <!-- putway : 1 - 上架中； 2 - 下架中 -->
+                            {{ item.putway === 1 ? '下架' : '上架' }}
+                          </el-dropdown-item>
 
-                        <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
-                          删除
-                        </el-dropdown-item>
-                        <el-dropdown-item v-if="item.planId" :command="['report',item]">
-                        <!-- <el-dropdown-item :command="['report',item]"> -->
-                          投放报告
-                        </el-dropdown-item>
-                        <el-dropdown-item :command="['detail',item]">
-                          查看配置
-                        </el-dropdown-item>
-                      </template>
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
+                            删除
+                          </el-dropdown-item>
+                          <el-dropdown-item v-if="item.planId" :command="['report',item]">
+                          <!-- <el-dropdown-item :command="['report',item]"> -->
+                            投放报告
+                          </el-dropdown-item>
+                          <el-dropdown-item :command="['detail',item]">
+                            查看配置
+                          </el-dropdown-item>
+                        </template>
 
-                    </el-dropdown-menu>
-                  </el-dropdown>
+                      </el-dropdown-menu>
+                    </el-dropdown>
+                  </div>
+                  <div v-if="selectedScene.id === item.id && selectedScene.startTime" style="font-size: 12px; padding: 0 10px 4px; color: #666;">
+                    有效期：{{ selectedScene.startTime }}
+                    <span style="margin-left: 39px"> ~{{ selectedScene.endTime }}</span>
+                  </div>
                 </div>
               </el-scrollbar>
             </div>
@@ -131,13 +151,13 @@
             </div>
         </div>
       </div>
-      <div v-else style="position: relative">
+      <!-- <div v-else style="position: relative">
         <el-button plain @click="openShowDetailName">场景 <br/>
           <i class="el-icon-arrow-right " ></i>
         </el-button>
-      </div>
+      </div> -->
 
-      <div class="box">
+      <div v-show="viewType" class="box" >
         <!-- <div class="title" v-if="!isShowDetailName">选择场景：{{ selectedScene.sceneName }}</div> -->
         <div class="content" >
           <el-scrollbar style="height:100%" wrap-style="overflow-x: hidden;">
@@ -252,7 +272,7 @@
           </el-scrollbar>
         </div>
       </div>
-      <div class="box">
+      <div v-show="viewType" class="box">
         <!-- 接待员详情 -->
         <servicerDetail
           ref="servicerDetailRef"
@@ -271,6 +291,29 @@
           @editReceptionist="editReceptionist"
         ></servicerDetail>
       </div>
+
+      <template v-if="!viewType && isShowSceneChartData">
+        <div class="box" v-loading="getSceneFlowChartLoading">
+          <SceneMap
+            :chartData="sceneChartData"
+            :selectedScene="selectedScene"
+            @selectServicer="changeViewAndSelectServicer"
+            @showRuleDetail="item => editClientRow = item"
+          ></SceneMap>
+          <div style="display: grid; grid-template-columns: 50px auto; margin-top: 0px;">
+            <!-- {{ editClientRow }} -->
+            {{ editClientRow.id }}
+            <showAllRule
+              v-if="editClientRow.id"
+              :entry="editClientRow"
+              :conditionEnum="conditionEnum"
+              :soureceSignList="soureceSignList"
+            >
+            </showAllRule>
+          </div>
+        </div>
+      </template>
+
       <el-dialog
         title="一键投放"
         :visible.sync="dialogVisible"
@@ -352,6 +395,7 @@
         <LaunchToBusiness
           :recordId="tempPolicyAndCrowd.policyId"
           :tempPolicyAndCrowd="tempPolicyAndCrowd"
+          :fromStoryline="true"
           @closeDialog="handleCloseDialog"
           @refreshList="getSceneList"
         ></LaunchToBusiness>
@@ -436,13 +480,18 @@ import OneDrop from './oneDrop/Index'
 // import { validateRule } from './validateRuleData.js'
 import { confirmMultiAddServicerFn, multiAddNextStepFn } from './multiAdd/func.js'
 
+import SceneMap from './mapShow/sceneMap.vue'
+import showAllRule from '@/views/storyLine/com/showAllRule.vue'
+
 export default {
   components: {
     LaunchToBusiness,
     drag,
     servicerDetail,
     MultiAdd,
-    OneDrop
+    OneDrop,
+    SceneMap,
+    showAllRule
   },
 
   provide () {
@@ -452,6 +501,15 @@ export default {
   },
   data () {
     return {
+      conditionEnum: {
+        AND: '且',
+        OR: '或'
+      },
+      soureceSignList: [],
+      getSceneFlowChartLoading: false,
+      isShowSceneChartData: true,
+      sceneChartData: {},
+      viewType: true,
       sceneCanReuse: false, // 当前场景是否有权限
       // canUse: false, // 下拉框的接待员是否有权限操作
       sceneDropDownLoading: true,
@@ -609,12 +667,19 @@ export default {
         // }
       },
       immediate: true
+    },
+    'selectedScene.id' () {
+      this.editClientRow = {}
     }
   },
   created () {
     // this.getSceneList()
 
     this.getPolicyList()
+
+    this.$service.getSourceSign().then(res => {
+      this.soureceSignList = res
+    })
   },
   mounted () {
     window.addEventListener('visibilitychange', this.handleVisiable)
@@ -649,6 +714,28 @@ export default {
     }
   },
   methods: {
+    changeViewAndSelectServicer (id) {
+      this.viewType = !this.viewType
+      this.selectServicer(id)
+    },
+    changeView () {
+      this.viewType = !this.viewType
+      // 查看拓扑图, 卸载页面，获取数据后重新加载
+      this.isShowSceneChartData = false
+      this.getSceneFlowChart()
+    },
+    getSceneFlowChart () {
+      const params = {
+        id: this.selectedScene.id
+      }
+      this.getSceneFlowChartLoading = true
+      this.$service.sceneFlowChart(params).then(res => {
+        console.log('', 'res--->', res)
+        this.getSceneFlowChartLoading = false
+        this.sceneChartData = res
+        this.isShowSceneChartData = true
+      })
+    },
     launchDetail (pid) {
       this.showLaunch = true
       this.$service.policyUseInBi({ policyId: pid }).then((data) => {
@@ -737,9 +824,9 @@ export default {
         })
       }
     },
-    openShowDetailName () {
-      this.isShowDetailName = !this.isShowDetailName
-    },
+    // openShowDetailName () {
+    //   this.isShowDetailName = !this.isShowDetailName
+    // },
     seeDevDetail (row) {
       this.showConfiguration = true
       this.detailPagination.currentId = row.policyId
@@ -1110,6 +1197,10 @@ export default {
         await this.getSceneCanReuse()
 
         this.getServiceList('list', selectServicerId)
+
+        // 查看拓扑图, 卸载页面，获取数据后重新加载
+        this.isShowSceneChartData = false
+        this.getSceneFlowChart()
       } else {
         alert(this.tipMsg)
       }
@@ -1121,8 +1212,8 @@ export default {
       // 当没有权限时，不需要要校验
       if (bool || !this.havePermissionsToCheck) {
         // 跳转
-        this.activeIndex2Id = id
-        const obj = this.servicer.find(item => item.id === id)
+        this.activeIndex2Id = Number(id)
+        const obj = this.servicer.find(item => Number(item.id) === Number(id))
         this.selectedServicer = obj || {}
 
         // 入口列表

@@ -50,7 +50,7 @@
 
 
   .target-img {
-    background: url(../../assets/img/target.png) right center;
+    background: url('~@/assets/img/target.png') right center;
     background-size: 100%;
   }
 
@@ -105,7 +105,7 @@
     
   }
   .box-line{
-    white-space: nowrap;
+    // white-space: nowrap;
     letter-spacing: 0;
     // line-height: 1.5;
     // margin-top: -9px;
@@ -200,7 +200,7 @@
     border:1px solid rgb(24, 144, 255)
     color: rgb(24, 144, 255)
     width: fit-content;
-    height: 28px;
+    // height: 28px;
     line-height: 28px
     padding 0 7px
   }
@@ -221,15 +221,7 @@
     vertical-align: bottom;
     font-family: monospace;
   }
-  .flex-content{
-    display: grid;
-    grid-template-columns: 78px 65%;
-    font-size: 14px;
-    height: 150px;
-    // margin-bottom: 50px;
-    align-items: flex-start
-    word-break break-all
-  }
+  
   .target-info {
     background-image: linear-gradient(120deg, #fff 45%, #f5f5f5);
     border: 1px solid rgba(209,209,214,0.63);
@@ -243,7 +235,9 @@
     overflow-wrap: break-word;
     // max-width 550px;
     word-break: break-all;
+    // min-height: auto;
   }
+  
   // .aaa {
   //   width 100%
   //   writing-mode: horizontal-tb !important;
@@ -273,17 +267,18 @@
   //   border-image: initial;
   //   padding: 2px;
   // }
-  
-  .flex-content {
+  .flex-content{
     display: grid;
-    // grid-template-columns: 65%;
-    grid-template-columns: auto;
+    // grid-template-columns: 78px 65%;
     font-size: 14px;
     height: 150px;
-    // margin-bottom: 50px;
     align-items: flex-start
+    word-break break-all
+    grid-template-columns: auto;
+    font-size: 14px;
     margin-bottom 0
   }
+  
   
   .d-info {
     color: #909399;
@@ -305,12 +300,8 @@
       padding: 15px 8px
     }
   }
-  .flex-content {
-    height: auto
-  }
-  .target-info {
-    min-height: auto;
-  }
+  
+  
   .detail-box {
     transition: all .25s linear
   }
@@ -358,7 +349,6 @@
     border none
   }
   .box-line {
-    white-space: nowrap;
     letter-spacing: 0;
     color: #6e6e73;
     font-size: 14px;

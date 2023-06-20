@@ -36,7 +36,7 @@ export function removePendingRequest ({ method, url }) {
     cancelTokenList.forEach(cancel => {
       // 给个标志，中断请求
       cancel()
-      console.log('中断请求', cancel)
+      // console.log('中断请求', cancel)
     })
     pendingRequest.delete(requestKey)
   }

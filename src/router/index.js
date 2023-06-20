@@ -14,7 +14,6 @@ function beforeEach (to, from, next) {
 
   const app = this.app
   app.$isLoggedIn().then(() => {
-    debugger
     // next(to.name !== 'login'
     //   ? undefined
     //   : { path: '/' }
@@ -25,7 +24,6 @@ function beforeEach (to, from, next) {
       next()
     }
   }).catch(() => {
-    debugger
     // catch 中 从别的页面跳转至登录页，被认为是 token 失效
     if (from.path !== '/' && from.name !== 'login' && to.name === 'login' && !to.params.logout) {
       // 提示权限过期

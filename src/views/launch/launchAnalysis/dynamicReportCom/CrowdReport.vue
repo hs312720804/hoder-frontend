@@ -40,6 +40,11 @@
         <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
         <el-button type="success" @click="handleDownload">导出数据</el-button>
       </div>
+      <!-- <span style="font-size: 12px; color: gray; float: right;">
+        投后报告解释：<br/>
+        内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/>
+        产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
+      </span> -->
 
       <div id='a1' class="table-wrap">
         <div class="title-layout">
@@ -82,7 +87,7 @@
           </div>
 
         </div>
-        <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+        <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj" :key="index">
           <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
             <div class="unit-box">
               <!-- {{allChartData[key]}} -->
@@ -149,6 +154,57 @@
         ></dynamic-table>
       </div>
 
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj2" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+      <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj3" :key="index">
+        <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
+          <div class="unit-box">
+            <!-- {{allChartData[key]}} -->
+            <!-- <div class="unit-header clearfix"><span v-if="(allChartData && allChartData[key] && allChartData[key].title) || chart.title">{{ allChartData[key].title || chart.title }}</span></div> -->
+            <div class="unit-header clearfix">
+              <span v-if="(allChartData && allChartData[key] && allChartData[key].title)">
+                {{ allChartData[key].title }}
+              </span>
+              <span v-else>
+                {{chart.title}}
+              </span>
+
+            </div>
+
+            <div class="unit-content" v-if="chart.title">
+                <!-- {{ allChartData[key] && allChartData[key].series }} -->
+              <div v-if="allChartData[key] && ((allChartData[key].series && allChartData[key].series.length > 0) || allChartData[key].data)" :ref="key" :id="key" class="chart-div"></div>
+              <div v-else class="chart-div">
+                <el-empty description="暂无数据"></el-empty>
+              </div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
+
       <div id='a7' class="table-wrap">
         <div class="title-layout">
           <div class="per-index-title">
@@ -187,6 +243,9 @@
 <script>
 import DynamicTable from '../dynamicTable/Index.vue'
 import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
+import { crowdData } from './crowdData.js'
+import { setBarEchart } from './chart/bar.js'
+import { drawTwoBarChart } from './chart/twoBar.js'
 
 export default {
   components: {
@@ -217,7 +276,6 @@ export default {
   },
   mounted () {
     this.high() // 锚点侧边栏
-
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
@@ -322,26 +380,18 @@ export default {
       } else {
         params = { crowdId: this.crowdId }
       }
+
       this.$service.getDynamicCrowdReportA(params).then(res => {
+        // const res = crowdData
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
         this.setTableData(getAllData)
-        // 折线图数据
-        const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
-        const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
 
-        console.log('res.reportDayDetail.data------->', getAllData.reportDayDetail.data)
-        console.log('aaa---->', vipPlay)
-        this.allChartData = {
-          vipPlay,
-          vipPlayTrend
-        }
-
-        this.$nextTick(() => {
-          this.drawChart()
-        })
+        // 图表
+        this.setChartData(res)
       })
+
       let params2 = {}
       if (this.pageType === 'story') {
         params2 = { sceneId: this.crowdId }
@@ -359,6 +409,36 @@ export default {
 
       // console.log('reObj====', this.tableData)
       // console.log('tableConfig====', this.tableConfig)
+    },
+    setChartData (res) {
+      // 折线图数据
+      const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
+      const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
+      const reportGroupSumArup = this.getChartData2(res.reportGroupSum.data, 'arup')
+      const reportGroupSumPriceTotal = this.getChartData2(res.reportGroupSum.data, 'priceTotal')
+      const reportGroupSumPayRate = this.getChartData2(res.reportGroupSum.data, 'payRate')
+      const reportGroupSumTwoWay = this.getChartData3(res.reportGroupSum.data)
+
+      // console.log('vipPlay---->', vipPlay)
+      // console.log('vipPlayTrend---->', vipPlayTrend)
+      // console.log('reportGroupSumArup---->', reportGroupSumArup)
+      // console.log('reportGroupSumPriceTotal---->', reportGroupSumPriceTotal)
+      // console.log('reportGroupSumTwoWay---->', reportGroupSumTwoWay)
+
+      this.allChartData = {
+        vipPlay,
+        vipPlayTrend,
+        reportGroupSumArup, // /客单价
+        reportGroupSumPriceTotal, // 总营收
+        reportGroupSumPayRate,
+        reportGroupSumTwoWay
+      }
+
+      this.$nextTick(() => {
+        this.drawChart(this.rowObj)
+        this.drawChart(this.rowObj2)
+        this.drawChart(this.rowObj3)
+      })
     },
     formatData (res) {
       const result = JSON.parse(JSON.stringify(res))
@@ -492,17 +572,149 @@ export default {
 
       return reObj
     },
+    getChartData2 (chartData, key) {
+      const reObj = {
+        xaxis: [],
+        yunit: '',
+        series: [],
+        title: '',
+        xunit: ''
+      }
+      if (key === 'payRate') { // 支付率，数据转为百分比
+        reObj.yunit = '%'
+      }
+      // const
+      chartData.forEach((item, index) => {
+        reObj.xaxis.push(`${item.dynamicName}-${item.crowdId}`)
+        const valueNum = item[key]
+        reObj.series.push(valueNum)
+      })
+
+      // return result
+      // })
+
+      return reObj
+    },
+    getChartData3 (chartData) {
+      const reObj = {
+        xaxis: [],
+        yunit: '',
+        series: [],
+        title: '',
+        xunit: ''
+      }
+      // const seriesKey1 = ['liaoxubaoyuePayPrice', 'putongbaoyuePayPrice', 'liaoxubaojiPayPrice', 'baojiPayPrice', 'bannianPayPrice', 'baonianPayPrice']
+      // const seriesKey2 = ['liaoxubaoyuePayMacRate', 'putongbaoyuePayMacRate', 'liaoxubaojiPayMacRate', 'baojiPayMacRate', 'bannianPayMacRate', 'baonianPayMacRate']
+      const seriesKey1 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'payPrice').children
+      const seriesKey2 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'userRate').children
+
+      // console.log('seriesKey1--->', seriesKey1)
+      // console.log('seriesKey2--->', seriesKey2)
+      // console.log('chartData--->', chartData)
+
+      const seriesKey1Map = []
+      const seriesKey2Map = []
+
+      chartData.forEach((item, index) => {
+        reObj.xaxis.push(`${item.dynamicName}-${item.crowdId}`)
+
+        seriesKey1.forEach(propItem => {
+          const key = propItem.prop
+          const valueNum = item[key]
+          const obj = {
+            key,
+            name: propItem.label,
+            data: [valueNum],
+            type: 'bar'
+
+          }
+          const filerItem = seriesKey1Map.find(m => m.key === key)
+          if (filerItem) {
+            filerItem.data.push(valueNum)
+          } else {
+            seriesKey1Map.push(obj)
+          }
+        })
+        seriesKey2.forEach(propItem => {
+          const key = propItem.prop
+          const valueNum = item[key]
+          const obj = {
+            key,
+            name: propItem.label,
+            data: [valueNum],
+            xAxisIndex: 1,
+            yAxisIndex: 1,
+            type: 'bar',
+            yunit: '%'
+
+          }
+          const filerItem = seriesKey2Map.find(m => m.key === key)
+          if (filerItem) {
+            filerItem.data.push(valueNum)
+          } else {
+            seriesKey2Map.push(obj)
+          }
+        })
+      })
+
+      // console.log('seriesKey1Map------->', seriesKey1Map)
+      // console.log('seriesKey2Map------->', seriesKey2Map)
+
+      reObj.series = [...seriesKey1Map, ...seriesKey2Map]
+
+      // console.log('reObj------->', reObj)
+
+      return reObj
+    },
     // echart 图表渲染
-    drawChart () {
-      const rowObj2 = this.rowObj2
-      rowObj2.forEach(item => {
+    drawChart (rowObj) {
+      rowObj.forEach(item => {
         // key 是代表 ref 值
         for (const key in item) {
           if (item[key].type === 'line') {
             this.showLine(this.allChartData[key], key)
+          } else if (item[key].type === 'bar') {
+            this.showBar(this.allChartData[key], key)
+          } else if (item[key].type === 'twoBar') {
+            this.showTwoBar(this.allChartData[key], key) // 双向柱状图
           }
         }
       })
+    },
+    //  双向柱状图
+    showTwoBar (data, chartID) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        // if (data.yunit === '%') {
+        //   data.series = data.series.map(v => Number(v * 100).toFixed(2))
+        // }
+        const element = chartID
+        // console.log('23333=========>', data)
+        const chartElement = document.getElementById(element)
+        if (!chartElement) return
+
+        const options = drawTwoBarChart({ title1: '购买金额', title2: '购买用户占比' }, data.xaxis, data.series, data.xunit, data.yunit)
+        const echarts = require('echarts')
+        const myChart = echarts.init(chartElement)
+        myChart.setOption(options, true)
+        this.allCharts[element] = myChart
+      }
+    },
+    //  柱状图
+    showBar (data, chartID) {
+      if (data && data.xaxis && data.xaxis.length > 0) {
+        if (data.yunit === '%') {
+          data.series = data.series.map(v => Number(v * 100).toFixed(2))
+        }
+        const element = chartID
+        // console.log('23333=========>', data)
+        const chartElement = document.getElementById(element)
+        if (!chartElement) return
+        const options = setBarEchart('', data.xaxis, data.series, data.xunit, data.yunit, data.dataaxis)
+        const echarts = require('echarts')
+        const myChart = echarts.init(chartElement)
+        myChart.setOption(options, true)
+        this.allCharts[element] = myChart
+      }
     },
     //  折线图
     showLine (data, chartID) {
@@ -521,26 +733,6 @@ export default {
             return { name: key.name, data: key.value, type: 'line' }
           }
         })
-        // if (data.series2) {
-        //   hasY2 = true
-        //   const series2 = data.series2 || []
-        //   const legendData2 = series2.map((key) => {
-        //     return key.name
-        //   })
-        //   const linesData2 = series2.map((key) => {
-        //     if (data.yunit === '%') {
-        //       const arr = key.value.map(v => v * 100)
-        //       return { name: key.name, data: arr, type: 'line', yAxisIndex: 1 }
-        //     } else {
-        //       return { name: key.name, data: key.value, type: 'line', yAxisIndex: 1 }
-        //     }
-        //   })
-        //   legendData = legendData.concat(legendData2)
-        //   linesData = linesData.concat(linesData2)
-        //   console.log('legendData===', legendData)
-        //   console.log('linesData===', linesData)
-        // }
-
         this.setLinesEchart(chartID, '', data.xaxis, linesData, legendData, data.xunit, data.yunit, hasY2)
       }
     },
@@ -576,10 +768,6 @@ export default {
     },
     // 通用多线性参数设置
     setLinesEchart (element, title, xData, yData, legend, xunit = '', yunit = '', hasY2 = false, yAxisObjName1 = '', yAxisObjName2 = '') {
-      // console.log('yData--------->', yData)
-      // console.log('setBarEchart======111>>>', this.$refs)
-      // console.log('setBarEchart======111>>>', element)
-      // console.log('setBarEchart======111>>>', this.$refs[element])
       const echarts = require('echarts')
       const _this = this
       const yAxisObj = {
@@ -623,7 +811,7 @@ export default {
             // let str = parmas[0].marker + parmas[0].name + '<br/>'
             let str = parmas[0].name + '<br/>'
             for (const item of parmas) {
-              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + '<br/>'
+              str = str + item.marker + item.seriesName + ': ' + _this.cc_format_number(item.value) + yunit + '<br/>'
             }
             // return _this.cc_format_number(a.data)
             return str
@@ -1063,7 +1251,7 @@ export default {
 
           }, {
             label: '产品包购买金额',
-            prop: 'priceTotal',
+            prop: 'payPrice',
             children: [{
               label: '连续包月',
               prop: 'liaoxubaoyuePayPrice'
@@ -1092,7 +1280,7 @@ export default {
 
           }, {
             label: '产品包购买用户数占比（用户产品包购买偏好）',
-            prop: 'priceTotal',
+            prop: 'userRate',
             children: [{
               label: '连续包月',
               prop: 'liaoxubaoyuePayMacRate'
@@ -1338,10 +1526,22 @@ export default {
       // ],
       getAllData: [],
       allChartData: {},
-      rowObj2: [
+      rowObj: [
         {
           vipPlay: { type: 'line', title: '每组动态人群每日曝光支付率数据', span: 12 },
           vipPlayTrend: { type: 'line', title: '每组动态人群每日曝光客单价数据', span: 12 }
+        }
+      ],
+      rowObj2: [
+        {
+          reportGroupSumArup: { type: 'bar', title: '分组内各子人群（接待员）客单价', span: 8 },
+          reportGroupSumPriceTotal: { type: 'bar', title: '分组内各子人群（接待员）总营收', span: 8 },
+          reportGroupSumPayRate: { type: 'bar', title: '分组内各子人群（接待员）付费率', span: 8 }
+        }
+      ],
+      rowObj3: [
+        {
+          reportGroupSumTwoWay: { type: 'twoBar', title: '分组内各子人群（接待员）购买金额、购买用户占比', span: 24 }
         }
       ],
       allCharts: {},

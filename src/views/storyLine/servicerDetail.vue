@@ -62,50 +62,65 @@
 
     <el-scrollbar style="height: 100%" wrap-style="overflow-x: hidden;">
       <div style="display: flex; flex-flow: column nowrap; justify-content: flex-start; gap: 16px;">
-        <div style="display: grid; grid-template-columns:2fr auto; grid-template-rows: auto; gap: 16px;">
+        <div style="display: grid; grid-template-columns:2fr 310px; grid-template-rows: auto; gap: 16px;">
           <!-- <div class="servicer-img"></div> -->
           <div
             style="display: grid; grid-template-columns: 1fr; grid-template-rows: auto auto;gap: 16px;"
             :style="{'grid-template-columns': isShowDetailName ? '1fr' : '1fr' }"
           >
-            <div class="detail-box">
-              <div class="target">我的任务（可选）</div>
-              <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
-              <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
+            <div
+              style="display: grid; grid-template-columns: auto 300px; grid-template-rows:1fr;gap: 16px;"
+            >
+              <div class="detail-box">
+                <div class="target">我的任务（可选）</div>
+                <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" title="编辑我的任务" ></i>
+                <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
 
-              <div class="flex-content">
-                <!-- 复用的接待员 -->
-                <!-- 有权限的情况 -->
-                <template v-if="havePermissionsToUse">
-                  <!-- 显示模式 -->
-                  <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
-                    <div>{{ target }}</div>
-                    <!-- <textarea name="description" v-model="target"></textarea> -->
-                  </div>
-                  <!-- <textarea> </textarea> -->
-                  <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
-                  <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
-                  <!-- 编辑模式 -->
-                  <el-input
-                    v-else
-                    ref="inputPriority"
-                    :autosize="{ minRows: 6}"
-                    type="textarea"
-                    placeholder="请输入内容"
-                    @blur="editStatuChange"
-                    v-model="target"
-                    maxlength="200"
-                    show-word-limit
-                    style="font-size: 14px; ">
-                  </el-input>
-                </template>
-                <!-- 没有权限的情况 -->
-                <template v-else>
-                  {{ target }}
-                </template>
+                <div class="flex-content">
+                  <!-- 复用的接待员 -->
+                  <!-- 有权限的情况 -->
+                  <template v-if="havePermissionsToUse">
+                    <!-- 显示模式 -->
+                    <div v-if="!isEdit" @click="editTarget" class="target-text target-info">
+                      <div>{{ target }}</div>
+                      <!-- <textarea name="description" v-model="target"></textarea> -->
+                    </div>
+                    <!-- <textarea> </textarea> -->
+                    <!-- <span v-if="selectedServicer.id" class="text-over"></span> -->
+                    <!-- <el-input v-else type="text" ref="inputPriority" size="small" @blur="editStatuChange" v-model="target"></el-input> -->
+                    <!-- 编辑模式 -->
+                    <el-input
+                      v-else
+                      ref="inputPriority"
+                      :autosize="{ minRows: 6}"
+                      type="textarea"
+                      placeholder="请输入内容"
+                      @blur="editStatuChange"
+                      v-model="target"
+                      maxlength="200"
+                      show-word-limit
+                      style="font-size: 14px; ">
+                    </el-input>
+                  </template>
+                  <!-- 没有权限的情况 -->
+                  <template v-else>
+                    {{ target }}
+                  </template>
+                </div>
+              </div>
+              <div class="detail-box" id="servicer-map">
+                <div class="target">流转关系</div>
+                <ServicerMap
+                  v-if="isShowServicerChartData && servicerChartData.nodes && servicerChartData.nodes.length > 0"
+                  :chartData="servicerChartData"
+                  :selectedServicerId="selectedServicer.id"
+                  style="margin: 0 -10px"
+                  @selectServicer="(id) => $emit('selectServicer', id)"
+                  >
+                </ServicerMap>
+                <el-empty v-else></el-empty>
               </div>
             </div>
-
             <div class="detail-box">
               <!-- targetKeyId: {{targetKeyId}}
               <br/>
@@ -194,7 +209,7 @@
             <!-- <el-button type="text" @click="openShowDetailName" style="position: absolute; right: 10px; top: 10px; z-index: 9;">收起</el-button > -->
             <i @click="openShowDetailName" class="el-icon-arrow-up fold position-right"></i>
             <div>
-              <div class="detail-name" style="height: 25px">
+              <div class="detail-name" >
                 <span>
                   {{ selectedServicer.receptionist }}
                 </span>
@@ -368,7 +383,13 @@
                   <span class="border-title">普通标签</span>
                   <div class="rule-string">
                     <div>
-                      <div
+                      <ShowRule
+                        :rulesJson="JSON.parse(entry.rulesJson)"
+                        :conditionEnum="conditionEnum"
+                        :soureceSignList="soureceSignList"
+                      >
+                      </ShowRule>
+                      <!-- <div
                         v-for="(item, index) in JSON.parse(entry.rulesJson).rules"
                         :key="index"
                         class="rule-detail"
@@ -380,11 +401,9 @@
                             :key="childItem.tagId+childItemIndex"
                             class="label-item"
                           >
-                          <!-- {{childItem}} -->
                             <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                             <span class="txt">{{ childItem.categoryName ||  childItem.tagName }}</span>
 
-                            <!-- 流转标签 -->
                             <template v-if="(childItem.dataSource === 20)">
                               <ShowFlowConditionRuleItem
                                 :childItem="childItem"
@@ -405,9 +424,8 @@
 
                           </div>)
                         </div>
-                      </div>
+                      </div> -->
                     </div>
-                    <!-- <div v-else class="no-data-text">暂无</div> -->
                   </div>
                 </template>
 
@@ -554,8 +572,14 @@
                 <template v-if="exportItem.rulesJson && JSON.parse(exportItem.rulesJson).rules.length > 0">
                   <span class="border-title">普通标签</span>
                   <div class="rule-string" >
-                    <div >
-                      <div
+                    <div>
+                      <ShowRule
+                        :rulesJson="JSON.parse(exportItem.rulesJson)"
+                        :soureceSignList="soureceSignList"
+                        :conditionEnum="conditionEnum"
+                      >
+                      </ShowRule>
+                      <!-- <div
                         v-for="(item, index) in JSON.parse(exportItem.rulesJson).rules"
                         :key="index"
                         class="rule-detail"
@@ -567,11 +591,9 @@
                             :key="childItem.tagId+childItemIndex"
                             class="label-item"
                           >
-                          <!-- {{childItem}} -->
                             <div v-if="childItemIndex>0" class="label-or-space">{{ conditionEnum[item.condition] }}</div>
                             <span class="txt">{{ childItem.categoryName || childItem.tagName}}</span>
 
-                            <!-- 流转标签 -->
                             <template v-if="(childItem.dataSource === 20)">
                               <ShowFlowConditionRuleItem
                                 :childItem="childItem"
@@ -592,7 +614,8 @@
 
                           </div>)
                         </div>
-                      </div>
+                      </div> -->
+
                     </div>
                     <!-- <div v-else class="no-data-text">暂无</div> -->
                   </div>
@@ -780,21 +803,27 @@ import { validateRule } from './validateRuleData.js'
 
 import createClientDialog from './createClientDialog.vue'
 import MultipleActionTagSelect from '@/components/MultipleActionTagSelect/IndexForStoryLine.vue'
-import ShowFlowConditionRule from './ShowFlowConditionRule.vue'
-import ShowFlowConditionRuleItem from './ShowFlowConditionRuleItem.vue'
+import ShowFlowConditionRule from './com/ShowFlowConditionRule.vue'
+// import ShowFlowConditionRuleItem from './com/ShowFlowConditionRuleItem.vue'
+import ShowRule from './com/ShowRule.vue'
 import EditTargetKeyDialog from './EditTargetKeyDialog.vue'
 import { options } from './utils'
 
 import { removePendingRequest } from '@/services/cancelFetch'
+
+import ServicerMap from './mapShow/servicerMap.vue'
 
 export default {
   components: {
     createClientDialog,
     MultipleActionTagSelect,
     ShowFlowConditionRule,
-    ShowFlowConditionRuleItem,
-    EditTargetKeyDialog
+    // ShowFlowConditionRuleItem,
+    EditTargetKeyDialog,
+    ServicerMap,
+    ShowRule
   },
+
   props: {
     servicer: {
       type: Array,
@@ -888,6 +917,9 @@ export default {
         // 根据接待员 ID 获取绩效目标
         this.getTargetById()
 
+        // 流转关系图
+        this.getFlowChart()
+
         // // 判断是否有权限  现在不需要了，直接用场景的权限就可以了
         // this.getCanReuse()
         // const obj = this.targetKeyList.find(item => {
@@ -908,6 +940,14 @@ export default {
         this.getSkillListBySceneId()
       }
     }
+    // 'selectedServicer.id': {
+    //   handler () {
+    //     // this.isShowServicerChartData = false
+    //     // this.$nextTick(() => {
+    //     //   this.isShowServicerChartData = true
+    //     // })
+    //   }
+    // }
   },
   computed: {
     isDoudi () {
@@ -939,6 +979,8 @@ export default {
   },
   data () {
     return {
+      isShowServicerChartData: true,
+      servicerChartData: {},
       options: options,
       // radio1: '1',
       radio2: 0,
@@ -1089,6 +1131,18 @@ export default {
   },
 
   methods: {
+    getFlowChart () {
+      this.isShowServicerChartData = false
+      const params = {
+        id: this.selectedServicer.id // 接待员ID
+      }
+      this.$service.receptionistFlowChart(params).then(res => {
+        this.servicerChartData = res
+        this.$nextTick(() => {
+          this.isShowServicerChartData = true
+        })
+      })
+    },
     skillValueSelectVisibleChange () {
       const ref = this.$refs.formInlineClearRef || this.$refs.formInlineRef
       console.log('ref--->', ref)
@@ -1117,6 +1171,7 @@ export default {
     openShowDetailName () {
       this.isShowDetailName = !this.isShowDetailName
     },
+    // 编辑复用服务终止条件
     reuseExportRule () {
       // this.editExportRow = row
       // if (this.isCopiedServicer) {
@@ -1134,6 +1189,8 @@ export default {
       this.$service.updateExport(parmas).then(res => {
         // 刷新列表
         this.$emit('updataExportList')
+        // 流转关系图
+        this.getFlowChart()
         this.reuseExportDialogVisible = false
       })
     },
@@ -1486,6 +1543,7 @@ export default {
         this.fetchAddOrEdit2(data)
       })
     },
+    // 新增、编辑出口条件
     fetchAddOrEdit2 (data) {
       const dialogRef = this.$refs.exportClientDialog
 
@@ -1522,6 +1580,8 @@ export default {
       this.$service.addExport(params, '添加成功').then(res => {
         // 刷新列表
         this.$emit('updataExportList')
+        // 刷新流转关系图
+        this.getFlowChart()
         // this.getExportListByReceptionistId()
         this.exportDialogVisible = false
       })
@@ -1599,6 +1659,8 @@ export default {
         this.$service.addExport({ ...row, delFlag: 2 }, '删除成功').then(res => {
           // 刷新列表
           this.$emit('updataExportList')
+          // 刷新流转关系图
+          this.getFlowChart()
           // this.getExportListByReceptionistId()
         })
       }).catch(() => {

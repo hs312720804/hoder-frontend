@@ -51,14 +51,24 @@
       <div class="header-right">
         <!-- form search -->
         <div class="search-input">
-          <el-input
+          <!-- <el-input
                   v-model="searchForm.crowdName"
                   style="width: 350px"
                   placeholder="请输入人群名称"
                   :clearable='true'
                   @keyup.enter.native="handleSearch"
           ></el-input>
-          <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i>
+          <i class="el-icon-cc-search icon-fixed" @click="handleSearch"></i> -->
+
+          <el-input
+            v-model="searchForm.crowdName"
+            style="width: 350px"
+            placeholder="请输入人群名称"
+            :clearable='true'
+            @keyup.enter.native="handleSearch"
+          >
+            <el-button slot="append" icon="el-icon-search" @click="handleSearch"></el-button>
+          </el-input>
         </div>
         <!-- 普通人群 - 新增 -->
         <div v-if="smart">
@@ -437,12 +447,12 @@
       @sort-change="handleSortChange"
     >
       <!-- :default-sort="{prop: 'priority', order: 'descending'}" -->
-      <el-table-column v-if="showByPassColumn" label="分流占比">
+      <el-table-column v-if="showByPassColumn" label="分流占比" width="120px">
         <template slot-scope="scope">
           <div>{{scope.row.bypassName}}</div>
           <div v-if="scope.row.bypassName !== '未分组'">
-            <div>分流id:{{scope.row.bypassId}}</div>
-            <div>{{scope.row.ratio}}%</div>
+            <div>分流id：{{ scope.row.bypassId }}</div>
+            <div>占比：{{ scope.row.ratio }}%</div>
             <div>
               <el-button type="text" @click="handleEditBypass">编辑</el-button>
               <el-button type="text" @click="handleDeleteBypass(scope.row)">删除</el-button>
@@ -1553,19 +1563,45 @@
     </el-dialog>
 
     <!--命中监控-->
-    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="930px">
+    <el-dialog title="命中监控" :visible.sync="showHitDialog" width="955px">
       <div class="title">
         添加监控：
       </div>
       <el-form :model="hitForm" :rules="hitRules" ref="hitForm" :inline="true">
         <el-form-item label="监控时间：" prop="alertTime">
           <el-date-picker
+            style="width: 135px"
             v-model="hitForm.alertTime"
-            type="datetime"
-            placeholder="选择监控时间"
-            value-format="yyyy-MM-dd HH:mm:ss"
-  >
+            type="date"
+            placeholder="选择日期"
+            :picker-options="pickerOptions"
+            value-format="yyyy-MM-dd"
+            >
           </el-date-picker>
+
+          <!-- {{hitForm.alertTime}} - {{value}} -->
+
+          <!-- <el-time-select
+            v-model="alertTimeValue"
+            :picker-options="{
+              start: '00:00',
+              step: '00:15',
+              end: '23:45'
+            }"
+            placeholder="选择时间"
+            style="width: 115px"
+          >
+          </el-time-select> -->
+          <a-time-picker
+            style="width: 105px"
+            v-model="alertTimeValue"
+            format="HH:mm"
+            valueFormat="HH:mm"
+            placeholder="选择时间"
+            :getPopupContainer="(triggerNode) => triggerNode.parentNode"
+            :minute-step="15"
+            @change="onChange">
+          </a-time-picker>
         </el-form-item>
 
         <el-form-item label="如果命中设备量(去重)：" prop="compareType">
@@ -1584,7 +1620,7 @@
 
         </el-form-item>
         <el-form-item>
-          <el-button type="primary" @click="handlOpenHit">确定</el-button>
+          <el-button type="primary" @click="handlOpenHit">添加</el-button>
         </el-form-item>
       </el-form>
 
@@ -1600,7 +1636,7 @@
       ></c-table>
 
       <span slot="footer" class="dialog-footer">
-        <el-button @click="showHitDialog=false">取 消</el-button>
+        <el-button type="primary" @click="showHitDialog=false">确定</el-button>
       </span>
     </el-dialog>
 
@@ -1641,6 +1677,7 @@ export default {
       }
     }
     return {
+      alertTimeValue: '12:00',
       queryCrowdHitAlertListTable: {
         props: {},
         header: [
@@ -1703,14 +1740,20 @@ export default {
       hitForm: {
         alertTime: '',
         hitSize: 0,
-        compareType: '='
+        compareType: '<'
       },
       hitRules: {
         hitSize: [
           { required: true, message: '请输入命中设备量', trigger: 'blur' },
           { required: true, trigger: 'blur', validator: checkFinanceCode } // 自定义正则
         ],
-        alertTime: [{ type: 'string', required: true, message: '请选择监控时间', trigger: 'change' }]
+        alertTime: [{ required: true, message: '请选择监控时间', trigger: 'change' }]
+      },
+      pickerOptions: {
+        disabledDate (time) {
+          // // 设置可选时间为今天或今天之后的日期
+          return time.getTime() < Date.now() - 24 * 60 * 60 * 1000
+        }
       },
       analysisTableData: [],
       showFlowLinkAnalysisDialog: false,
@@ -2067,6 +2110,10 @@ export default {
     // }
   },
   methods: {
+    onChange (time) {
+      console.log(time)
+      this.alertTimeValue = time
+    },
     handleDeleteHitAlert ({ row }) {
       console.log('row--->', row)
       const params = { id: row.id }
@@ -2102,8 +2149,8 @@ export default {
         const params = {
           ...this.hitForm,
           crowdId: this.currentTag.crowdId,
-          // alertTime: '2023-03-12 20:00:00',
-          hitSize: Number(this.hitForm.hitSize)
+          hitSize: Number(this.hitForm.hitSize),
+          alertTime: `${this.hitForm.alertTime} ${this.alertTimeValue}`
           // compareType: '>'
         }
         this.$service.addCrowdHitAlert(params, '添加成功').then(res => {
@@ -2810,8 +2857,8 @@ export default {
         this.abStatusEnum = data.ABStatus
         this.launchStatusEnum = data.launchStatus
         this.crowdValidEnum = data.crowdValidEnum
-        // this.showByPassColumn = data.bypass === 1
-        this.showByPassColumn = data.policy.smart
+        this.showByPassColumn = data.bypass === 1 // 是否分流
+        // this.showByPassColumn = data.policy.smart
         // if (loadType !== 'sort') {
         //   this.initExpandCrowd = []
         //   if (this.tableData.length > 0) {
@@ -2819,7 +2866,7 @@ export default {
         //   }
         // }
         // 再插入一项
-        this.tableMerge[0] = this.tableMerge[0] + 1
+        // this.tableMerge[0] = this.tableMerge[0] + 1
       })
     },
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
@@ -4576,5 +4623,8 @@ fieldset>div
 }
 ::v-deep .green {
   color: #67C23A
+}
+::v-deep .ant-time-picker-panel-combobox {
+  display: flex !important
 }
 </style>
