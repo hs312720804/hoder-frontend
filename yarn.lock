@@ -39,6 +39,37 @@
   "resolved" "https://registry.npmjs.org/@ant-design/icons/-/icons-2.1.1.tgz"
   "version" "2.1.1"
 
+"@antv/g-webgpu-core@^0.7.2":
+  "integrity" "sha512-xUMmop7f3Rs34zFYKXLqHhDR1CQTeDl/7vI7Sn3X/73BqJc3X3HIIRvm83Fg2CjVACaOzw4WeLRXNaOCp9fz9w=="
+  "resolved" "https://registry.npmjs.org/@antv/g-webgpu-core/-/g-webgpu-core-0.7.2.tgz"
+  "version" "0.7.2"
+  dependencies:
+    "eventemitter3" "^4.0.0"
+    "gl-matrix" "^3.1.0"
+    "lodash" "^4.17.15"
+    "probe.gl" "^3.1.1"
+
+"@antv/g-webgpu-engine@^0.7.2":
+  "integrity" "sha512-lx8Y93IW2cnJvdoDRKyMmTdYqSC1pOmF0nyG3PGGyA0NI9vBYVgO0KTF6hkyWjdTWVq7XDZyf/h8CJridLh3lg=="
+  "resolved" "https://registry.npmjs.org/@antv/g-webgpu-engine/-/g-webgpu-engine-0.7.2.tgz"
+  "version" "0.7.2"
+  dependencies:
+    "@antv/g-webgpu-core" "^0.7.2"
+    "gl-matrix" "^3.1.0"
+    "lodash" "^4.17.15"
+    "regl" "^1.3.11"
+
+"@antv/g-webgpu@0.7.2":
+  "integrity" "sha512-kw+oYGsdvj5qeUfy5DPb/jztZBV+2fmqBd3Vv8NlKatfBmv8AirYX/CCW74AUSdWm99rEiLyxFB1VdRZ6b/wnQ=="
+  "resolved" "https://registry.npmjs.org/@antv/g-webgpu/-/g-webgpu-0.7.2.tgz"
+  "version" "0.7.2"
+  dependencies:
+    "@antv/g-webgpu-core" "^0.7.2"
+    "@antv/g-webgpu-engine" "^0.7.2"
+    "gl-matrix" "^3.1.0"
+    "gl-vec2" "^1.3.0"
+    "lodash" "^4.17.15"
+
 "@antv/g@~3.4.6":
   "integrity" "sha512-pKy/L1SyRBsXuujdkggqrdBA0/ciAgHiArYBdIJsxHRxCneUP01wGwHdGfDayh2+S0gcSBHynjhoEahsaZaLkw=="
   "resolved" "https://registry.npmjs.org/@antv/g/-/g-3.4.10.tgz"
@@ -71,12 +102,30 @@
   "resolved" "https://registry.npmjs.org/@antv/gl-matrix/-/gl-matrix-2.7.1.tgz"
   "version" "2.7.1"
 
+"@antv/graphlib@^1.0.0":
+  "integrity" "sha512-hhJOMThec51nU4Fe5p/viLlNIL71uDEgYFzKPajWjr2715SFG1HAgiP6AVylIeqBcAZ04u3Lw7usjl/TuI5RuQ=="
+  "resolved" "https://registry.npmjs.org/@antv/graphlib/-/graphlib-1.2.0.tgz"
+  "version" "1.2.0"
+
 "@antv/hierarchy@~0.6.1":
   "integrity" "sha512-RJVhEMCuu4vj+Dt25lXIiNdd7jaqm/fqWGYikiELha4S5tnzdJoTUaUvvpfWlxLx4B0RsS9XRwBs1bOKN71TKg=="
   "resolved" "https://registry.npmjs.org/@antv/hierarchy/-/hierarchy-0.6.11.tgz"
   "version" "0.6.11"
   dependencies:
     "@antv/util" "^2.0.7"
+
+"@antv/layout@^0.3.23":
+  "integrity" "sha512-F/CyfQuc1WSgCVemX0jA3pE3XuDRbDJmMueY1cL8WgL6nhdzm3/jg5UPamwbBVnhLk+rzNUDYdEIyX+RJbpcMA=="
+  "resolved" "https://registry.npmjs.org/@antv/layout/-/layout-0.3.23.tgz"
+  "version" "0.3.23"
+  dependencies:
+    "@antv/g-webgpu" "0.7.2"
+    "@antv/graphlib" "^1.0.0"
+    "@antv/util" "^3.3.2"
+    "d3-force" "^2.1.1"
+    "d3-quadtree" "^2.0.0"
+    "dagre-compound" "^0.0.11"
+    "ml-matrix" "^6.5.0"
 
 "@antv/util@^2.0.7":
   "integrity" "sha512-o6I9hi5CIUvLGDhth0RxNSFDRwXeywmt6ExR4+RmVAzIi48ps6HUy+svxOCayvrPBN37uE6TAc2KDofRo0nK9Q=="
@@ -85,6 +134,15 @@
   dependencies:
     "csstype" "^3.0.8"
     "tslib" "^2.0.3"
+
+"@antv/util@^3.3.2":
+  "integrity" "sha512-uvyQxEOugdJs/FVlpz/+8pKxn70z8jEVydPqv+LI62cpIF7YDjVnMfNIsoMqwEoTzPUJ9TJalyLqZhT5rYez0w=="
+  "resolved" "https://registry.npmjs.org/@antv/util/-/util-3.3.2.tgz"
+  "version" "3.3.2"
+  dependencies:
+    "fast-deep-equal" "^3.1.3"
+    "gl-matrix" "^3.3.0"
+    "tslib" "^2.3.1"
 
 "@antv/util@~1.3.1":
   "integrity" "sha512-cbUta0hIJrKEaW3eKoGarz3Ita+9qUPF2YzTj8A6wds/nNiy20G26ztIWHU+5ThLc13B1n5Ik52LbaCaeg9enA=="
@@ -1284,6 +1342,28 @@
   "integrity" "sha512-a5Sab1C4/icpTZVzZc5Ghpz88yQtGOyNqYXcZgOssB2uuAr+wF/MvN6bgtW32q7HHrvBki+BsZ0OuNv6EV3K9g=="
   "resolved" "https://registry.npmjs.org/@polka/url/-/url-1.0.0-next.21.tgz"
   "version" "1.0.0-next.21"
+
+"@probe.gl/env@3.6.0":
+  "integrity" "sha512-4tTZYUg/8BICC3Yyb9rOeoKeijKbZHRXBEKObrfPmX4sQmYB15ZOUpoVBhAyJkOYVAM8EkPci6Uw5dLCwx2BEQ=="
+  "resolved" "https://registry.npmjs.org/@probe.gl/env/-/env-3.6.0.tgz"
+  "version" "3.6.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+
+"@probe.gl/log@3.6.0":
+  "integrity" "sha512-hjpyenpEvOdowgZ1qMeCJxfRD4JkKdlXz0RC14m42Un62NtOT+GpWyKA4LssT0+xyLULCByRAtG2fzZorpIAcA=="
+  "resolved" "https://registry.npmjs.org/@probe.gl/log/-/log-3.6.0.tgz"
+  "version" "3.6.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@probe.gl/env" "3.6.0"
+
+"@probe.gl/stats@3.6.0":
+  "integrity" "sha512-JdALQXB44OP4kUBN/UrQgzbJe4qokbVF4Y8lkIA8iVCFnjVowWIgkD/z/0QO65yELT54tTrtepw1jScjKB+rhQ=="
+  "resolved" "https://registry.npmjs.org/@probe.gl/stats/-/stats-3.6.0.tgz"
+  "version" "3.6.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
 
 "@sideway/address@^4.1.3":
   "integrity" "sha512-7vwq+rOHVWjyXxVlR76Agnvhy8I9rpzjosTESvmhNeXOXdZZB15Fl+TI9x1SiHZH5Jv2wTGduSxFDIaq0m3DUw=="
@@ -4092,7 +4172,7 @@
   dependencies:
     "d3-dsv" "1"
 
-"d3-force@^2.0.1":
+"d3-force@^2.0.1", "d3-force@^2.1.1":
   "integrity" "sha512-nAuHEzBqMvpFVMf9OX75d00OxvOXdxY+xECIXjW6Gv8BRrXu6gAWbv/9XKrvfJ5i5DCokDW7RYE50LRoK092ew=="
   "resolved" "https://registry.npmjs.org/d3-force/-/d3-force-2.1.1.tgz"
   "version" "2.1.1"
@@ -4144,6 +4224,11 @@
   "integrity" "sha512-k+RF7WvI08PC8reEoXa/w2nSg5AUMTi+peBD9cmFc+0ixHfbs4QmxxkarVal1IkVkgxVuk9JSHhJURHiyHKAuQ=="
   "resolved" "https://registry.npmjs.org/d3-polygon/-/d3-polygon-1.0.6.tgz"
   "version" "1.0.6"
+
+"d3-quadtree@^2.0.0":
+  "integrity" "sha512-b0Ed2t1UUalJpc3qXzKi+cPGxeXRr4KU9YSlocN74aTzp6R/Ud43t79yLLqxHRWZfsvWXmbDWPpoENK1K539xw=="
+  "resolved" "https://registry.npmjs.org/d3-quadtree/-/d3-quadtree-2.0.0.tgz"
+  "version" "2.0.0"
 
 "d3-quadtree@1", "d3-quadtree@1 - 2":
   "integrity" "sha512-RKPAeXnkC59IDGD0Wu5mANy0Q2V28L+fNe65pOCXVdVuTJS3WPKaJlFHer32Rbh9gIo9qMuJXio8ra4+YmIymA=="
@@ -4277,7 +4362,12 @@
     "d3-voronoi" "1"
     "d3-zoom" "1"
 
-"dagre@^0.8.4":
+"dagre-compound@^0.0.11":
+  "integrity" "sha512-UrSgRP9LtOZCYb9e5doolZXpc7xayyszgyOs7uakTK4n4KsLegLVTRRtq01GpQd/iZjYw5fWMapx9ed+c80MAQ=="
+  "resolved" "https://registry.npmjs.org/dagre-compound/-/dagre-compound-0.0.11.tgz"
+  "version" "0.0.11"
+
+"dagre@^0.8.4", "dagre@^0.8.5":
   "integrity" "sha512-/aTqmnRta7x7MCCpExk7HQL2O4owCT2h8NT//9I1OQ9vt29Pa0BzSAkR5lwFUcQ7491yVi/3CXU9jQ5o0Mn2Sw=="
   "resolved" "https://registry.npmjs.org/dagre/-/dagre-0.8.5.tgz"
   "version" "0.8.5"
@@ -5901,6 +5991,16 @@
     "colors" "*"
     "events" "*"
 
+"gl-matrix@^3.1.0", "gl-matrix@^3.3.0":
+  "integrity" "sha512-wcCp8vu8FT22BnvKVPjXa/ICBWRq/zjFfdofZy1WSpQZpphblv12/bOQLBC1rMM7SGOFS9ltVmKOHil5+Ml7gA=="
+  "resolved" "https://registry.npmjs.org/gl-matrix/-/gl-matrix-3.4.3.tgz"
+  "version" "3.4.3"
+
+"gl-vec2@^1.3.0":
+  "integrity" "sha512-YiqaAuNsheWmUV0Sa8k94kBB0D6RWjwZztyO+trEYS8KzJ6OQB/4686gdrf59wld4hHFIvaxynO3nRxpk1Ij/A=="
+  "resolved" "https://registry.npmjs.org/gl-vec2/-/gl-vec2-1.3.0.tgz"
+  "version" "1.3.0"
+
 "glob-parent@^3.1.0":
   "integrity" "sha512-E8Ak/2+dZY6fnzlR7+ueWvhsH1SjHr4jjss4YS/h4py44jY9MhK/VFdaZJAWDz6BbL21KeteKxFSFpq8OS5gVA=="
   "resolved" "https://registry.npmjs.org/glob-parent/-/glob-parent-3.1.0.tgz"
@@ -6594,6 +6694,11 @@
   "version" "1.0.0"
   dependencies:
     "kind-of" "^6.0.0"
+
+"is-any-array@^2.0.0":
+  "integrity" "sha512-UtilS7hLRu++wb/WBAw9bNuP1Eg04Ivn1vERJck8zJthEvXCBEBpGR/33u/xLKWEQf95803oalHrVDptcAvFdQ=="
+  "resolved" "https://registry.npmjs.org/is-any-array/-/is-any-array-2.0.1.tgz"
+  "version" "2.0.1"
 
 "is-arguments@^1.0.4":
   "integrity" "sha512-8Q7EARjzEnKpt/PCD7e1cgUS0a6X8u5tdSiMqXhojOdoV9TsMsiO+9VLC5vAmO8N7/GmXn7yjR8qnA6bVAEzfA=="
@@ -7937,6 +8042,37 @@
   "resolved" "https://registry.npmjs.org/mkdirp/-/mkdirp-1.0.4.tgz"
   "version" "1.0.4"
 
+"ml-array-max@^1.2.4":
+  "integrity" "sha512-BlEeg80jI0tW6WaPyGxf5Sa4sqvcyY6lbSn5Vcv44lp1I2GR6AWojfUvLnGTNsIXrZ8uqWmo8VcG1WpkI2ONMQ=="
+  "resolved" "https://registry.npmjs.org/ml-array-max/-/ml-array-max-1.2.4.tgz"
+  "version" "1.2.4"
+  dependencies:
+    "is-any-array" "^2.0.0"
+
+"ml-array-min@^1.2.3":
+  "integrity" "sha512-VcZ5f3VZ1iihtrGvgfh/q0XlMobG6GQ8FsNyQXD3T+IlstDv85g8kfV0xUG1QPRO/t21aukaJowDzMTc7j5V6Q=="
+  "resolved" "https://registry.npmjs.org/ml-array-min/-/ml-array-min-1.2.3.tgz"
+  "version" "1.2.3"
+  dependencies:
+    "is-any-array" "^2.0.0"
+
+"ml-array-rescale@^1.3.7":
+  "integrity" "sha512-48NGChTouvEo9KBctDfHC3udWnQKNKEWN0ziELvY3KG25GR5cA8K8wNVzracsqSW1QEkAXjTNx+ycgAv06/1mQ=="
+  "resolved" "https://registry.npmjs.org/ml-array-rescale/-/ml-array-rescale-1.3.7.tgz"
+  "version" "1.3.7"
+  dependencies:
+    "is-any-array" "^2.0.0"
+    "ml-array-max" "^1.2.4"
+    "ml-array-min" "^1.2.3"
+
+"ml-matrix@^6.5.0":
+  "integrity" "sha512-rUyEhfNPzqFsltYwvjNeYQXlYEaVea3KgzcJKJteQUj2WVAGFx9fLNRjtMR9mg2B6bd5buxlmkZmxM4hmO+SKg=="
+  "resolved" "https://registry.npmjs.org/ml-matrix/-/ml-matrix-6.10.4.tgz"
+  "version" "6.10.4"
+  dependencies:
+    "is-any-array" "^2.0.0"
+    "ml-array-rescale" "^1.3.7"
+
 "moment@^2.21.0", "moment@^2.28.0", "moment@^2.29.1":
   "integrity" "sha512-5LC9SOxjSc2HF6vO2CyuTDNivEdoz2IvyJJGj6X8DJ0eFyfszE0QiEd+iXmBvUP3WHxSjFH/vIsA0EN00cgr8w=="
   "resolved" "https://registry.npmjs.org/moment/-/moment-2.29.4.tgz"
@@ -9168,6 +9304,16 @@
     "lodash" "^4.17.20"
     "renderkid" "^2.0.4"
 
+"probe.gl@^3.1.1":
+  "integrity" "sha512-19JydJWI7+DtR4feV+pu4Mn1I5TAc0xojuxVgZdXIyfmTLfUaFnk4OloWK1bKbPtkgGKLr2lnbnCXmpZEcEp9g=="
+  "resolved" "https://registry.npmjs.org/probe.gl/-/probe.gl-3.6.0.tgz"
+  "version" "3.6.0"
+  dependencies:
+    "@babel/runtime" "^7.0.0"
+    "@probe.gl/env" "3.6.0"
+    "@probe.gl/log" "3.6.0"
+    "@probe.gl/stats" "3.6.0"
+
 "process-nextick-args@~2.0.0":
   "integrity" "sha512-3ouUOpQhtgrbOa17J7+uxOTpITYWaGP7/AhoR3+A+/1e9skrzelGi/dXzEYyvbxubEF6Wn2ypscTKiKJFFn1ag=="
   "resolved" "https://registry.npmjs.org/process-nextick-args/-/process-nextick-args-2.0.1.tgz"
@@ -9525,6 +9671,11 @@
   "version" "0.9.1"
   dependencies:
     "jsesc" "~0.5.0"
+
+"regl@^1.3.11":
+  "integrity" "sha512-bEAtp/qrtKucxXSJkD4ebopFZYP0q1+3Vb2WECWv/T8yQEgKxDxJ7ztO285tAMaYZVR6mM1GgI6CCn8FROtL1w=="
+  "resolved" "https://registry.npmjs.org/regl/-/regl-1.7.0.tgz"
+  "version" "1.7.0"
 
 "relateurl@0.2.x":
   "integrity" "sha512-G08Dxvm4iDN3MLM0EsP62EDV9IuhXPR6blNz6Utcp7zyV3tr4HVNINt6MpaRWbxoOHT3Q7YN2P+jaHX8vUbgog=="
@@ -11038,7 +11189,7 @@
     "minimist" "^1.2.6"
     "strip-bom" "^3.0.0"
 
-"tslib@^2.0.3", "tslib@^2.1.0":
+"tslib@^2.0.3", "tslib@^2.1.0", "tslib@^2.3.1":
   "integrity" "sha512-336iVw3rtn2BUK7ORdIAHTyxHGRIHVReokCR3XjbckJMK7ms8FysBfhLR8IXnAgy7T0PTPNBWKiH514FOW/WSg=="
   "resolved" "https://registry.npmjs.org/tslib/-/tslib-2.5.0.tgz"
   "version" "2.5.0"
