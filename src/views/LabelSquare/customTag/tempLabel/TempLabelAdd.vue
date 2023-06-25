@@ -116,8 +116,33 @@
               <el-checkbox-group v-model="crowdDefineForm.calType" aria-required="true" :disabled="
                 status !== undefined && (status === 2 || status === 3)
               ">
-                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index">{{ item
-                }}</el-checkbox>
+                <el-checkbox
+                  v-for="(item, index) in estimateItems"
+                  :value="index"
+                  :label="index"
+                  :key="index"
+                  @change="estimateValueChange(index)">
+                  {{ item }}
+                  <el-popover
+                    v-if="index === '0'"
+                    placement="top"
+                    trigger="hover"
+                    style="margin-left: 2px; "
+                  >
+                    当勾选了手机号、酷开openId、微信openId时，设备默认勾选
+                    <span slot="reference" class="priority-tip">?</span>
+                  </el-popover>
+                  <el-popover
+                    v-if="index === '5'"
+                    placement="top"
+                    trigger="hover"
+                    style="margin-left: 2px; "
+                  >
+                    pushId 与其他数据类型互斥
+                    <span slot="reference" class="priority-tip">?</span>
+                  </el-popover>
+                </el-checkbox>
+
               </el-checkbox-group>
             </el-form-item>
           </el-form>
@@ -300,6 +325,28 @@ export default {
     }
   },
   methods: {
+    // 选项之间互斥
+    estimateValueChange (val) {
+      const arr1 = ['0', '1', '2', '3']
+      const arr2 = ['5']
+
+      // arr1 与 arr2 选中值互斥
+      if (arr1.includes(val)) {
+        const vals = this.crowdDefineForm.calType
+        const index = vals.findIndex(item => item === '5')
+
+        if (index > -1) {
+          this.crowdDefineForm.calType.splice(index, 1)
+        }
+      } else {
+        this.crowdDefineForm.calType = arr2
+      }
+
+      // 选择了 ['1', '2', '3'] ，必须勾选 '0'
+      if (['1', '2', '3'].includes(val)) {
+        this.crowdDefineForm.calType = [...new Set(['0', ...this.crowdDefineForm.calType])]
+      }
+    },
     callback () {
       this.$emit('changeStatus', true)
     },

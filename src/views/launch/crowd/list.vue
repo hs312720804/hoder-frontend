@@ -128,7 +128,28 @@
     <el-dialog :visible.sync="showEstimate">
       <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
       <el-checkbox-group v-model="estimateValue" aria-required="true">
-        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index">{{item}}</el-checkbox>
+        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+          {{item}}
+          <el-popover
+            v-if="index === '0'"
+            placement="top"
+            trigger="hover"
+            style="margin-left: 2px; "
+          >
+            当勾选了手机号、酷开openId、微信openId时，设备默认勾选
+            <span slot="reference" class="priority-tip">?</span>
+          </el-popover>
+          <el-popover
+            v-if="index === '5'"
+            placement="top"
+            trigger="hover"
+            style="margin-left: 2px; "
+          >
+            pushId 与其他数据类型互斥
+            <span slot="reference" class="priority-tip">?</span>
+          </el-popover>
+        </el-checkbox>
+
       </el-checkbox-group>
       <div v-show='showError' class="error-msg">请至少选择一个要投放的人群</div>
       <span slot="footer" class="dialog-footer">
@@ -175,6 +196,28 @@ export default {
     this.loadData()
   },
   methods: {
+    // 选项之间互斥
+    estimateValueChange (val) {
+      const arr1 = ['0', '1', '2', '3']
+      const arr2 = ['5']
+
+      // arr1 与 arr2 选中值互斥
+      if (arr1.includes(val)) {
+        const vals = this.estimateValue
+        const index = vals.findIndex(item => item === '5')
+
+        if (index > -1) {
+          this.estimateValue.splice(index, 1)
+        }
+      } else {
+        this.estimateValue = arr2
+      }
+
+      // 选择了 ['1', '2', '3'] ，必须勾选 '0'
+      if (['1', '2', '3'].includes(val)) {
+        this.estimateValue = [...new Set(['0', ...this.estimateValue])]
+      }
+    },
     callback () {
       this.loadData()
     },

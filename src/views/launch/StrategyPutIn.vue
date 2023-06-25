@@ -236,9 +236,31 @@
                         }"
                     ></el-time-picker>
                 </el-form-item>
-                <el-form-item label="数据类型">
+                <el-form-item label="数据类型" prop="calType">
                     <el-checkbox-group v-model="crowdForm.calType" :disabled="crowdForm.crowdType === 3">
-                        <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{item}}</el-checkbox>
+                      <!-- <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" :disabled="index==0">{{ item }}</el-checkbox> -->
+                      <el-checkbox v-for="(item,index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                        {{ item }}
+                        <el-popover
+                          v-if="index === '0'"
+                          placement="top"
+                          trigger="hover"
+                          style="margin-left: 2px; "
+                        >
+                          当勾选了手机号、酷开openId、微信openId时，设备默认勾选
+                          <span slot="reference" class="priority-tip">?</span>
+                        </el-popover>
+                        <el-popover
+                          v-if="index === '5'"
+                          placement="top"
+                          trigger="hover"
+                          style="margin-left: 2px; "
+                        >
+                          pushId 与其他数据类型互斥
+                          <span slot="reference" class="priority-tip">?</span>
+                        </el-popover>
+                      </el-checkbox>
+
                     </el-checkbox-group>
                 </el-form-item>
                 <div v-if="crowdForm.crowdType === 3" class="tip">Tips: 行为人群当前仅支持push设备类型</div>
@@ -306,6 +328,9 @@ export default {
         ],
         packageName: [
           { required: true, message: '请选择投放应用', trigger: 'blur' }
+        ],
+        calType: [
+          { type: 'array', required: true, message: '请至少选择一个数据类型', trigger: 'change' }
         ]
       },
       Platforms: [],
@@ -326,6 +351,28 @@ export default {
     }
   },
   methods: {
+    // 选项之间互斥
+    estimateValueChange (val) {
+      const arr1 = ['0', '1', '2', '3']
+      const arr2 = ['5']
+
+      // arr1 与 arr2 选中值互斥
+      if (arr1.includes(val)) {
+        const vals = this.crowdForm.calType
+        const index = vals.findIndex(item => item === '5')
+
+        if (index > -1) {
+          this.crowdForm.calType.splice(index, 1)
+        }
+      } else {
+        this.crowdForm.calType = arr2
+      }
+
+      // 选择了 ['1', '2', '3'] ，必须勾选 '0'
+      if (['1', '2', '3'].includes(val)) {
+        this.crowdForm.calType = [...new Set(['0', ...this.crowdForm.calType])]
+      }
+    },
     getPushPackageList () {
       const parmas = {
         pageNum: 0,
