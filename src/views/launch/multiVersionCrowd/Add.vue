@@ -574,16 +574,27 @@
             <el-dialog :visible.sync="showEstimate">
               <div class="choose-tip">请选择下列需要估算的字段，勾选保存后将估算该字段的人群数量</div>
               <el-checkbox-group v-model="estimateValue" :disabled="accountDefine" aria-required="true">
-                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">{{item}}</el-checkbox>
-
-                <el-popover
-                  placement="top"
-                  trigger="hover"
-                  style="margin-left: 2px; "
-                >
-                  pushId 与其他数据类型互斥
-                  <span slot="reference" class="priority-tip">?</span>
-                </el-popover>
+                <el-checkbox v-for="(item, index) in estimateItems" :value="index" :label="index" :key="index" @change="estimateValueChange(index)">
+                  {{item}}
+                  <el-popover
+                    v-if="index === '0'"
+                    placement="top"
+                    trigger="hover"
+                    style="margin-left: 2px; "
+                  >
+                    当勾选了手机号、酷开openId、微信openId时，设备默认勾选
+                    <span slot="reference" class="priority-tip">?</span>
+                  </el-popover>
+                  <el-popover
+                    v-if="index === '5'"
+                    placement="top"
+                    trigger="hover"
+                    style="margin-left: 2px; "
+                  >
+                    pushId 与其他数据类型互斥
+                    <span slot="reference" class="priority-tip">?</span>
+                  </el-popover>
+                </el-checkbox>
 
               </el-checkbox-group>
               <span slot="footer" class="dialog-footer">
@@ -1435,6 +1446,11 @@ export default {
         }
       } else {
         this.estimateValue = arr2
+      }
+
+      // 选择了 ['1', '2', '3'] ，必须勾选 '0'
+      if (['1', '2', '3'].includes(val)) {
+        this.estimateValue = ['0', ...this.estimateValue]
       }
     },
 
