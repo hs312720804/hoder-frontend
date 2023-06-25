@@ -370,7 +370,7 @@ export default {
 
       // 选择了 ['1', '2', '3'] ，必须勾选 '0'
       if (['1', '2', '3'].includes(val)) {
-        this.crowdForm.calType = ['0', ...this.crowdForm.calType]
+        this.crowdForm.calType = [...new Set(['0', ...this.crowdForm.calType])]
       }
     },
     getPushPackageList () {

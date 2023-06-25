@@ -438,7 +438,7 @@ export default {
 
       // 选择了 ['1', '2', '3'] ，必须勾选 '0'
       if (['1', '2', '3'].includes(val)) {
-        this.crowdDefineForm.calType = ['0', ...this.crowdDefineForm.calType]
+        this.crowdDefineForm.calType = [...new Set(['0', ...this.crowdDefineForm.calType])]
       }
     },
     callback () {

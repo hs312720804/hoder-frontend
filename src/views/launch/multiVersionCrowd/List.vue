@@ -858,7 +858,7 @@ export default {
 
       // 选择了 ['1', '2', '3'] ，必须勾选 '0'
       if (['1', '2', '3'].includes(val)) {
-        this.estimateValue = ['0', ...this.estimateValue]
+        this.estimateValue = [...new Set(['0', ...this.estimateValue])]
       }
     },
     // 计算
