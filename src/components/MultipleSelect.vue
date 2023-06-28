@@ -47,7 +47,8 @@
             <template v-if="(childItem.dataSource === 20)">
               <span class="txt">{{ childItem.tagName }}</span>
 
-              <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n"></RuleCom>
+              <RuleCom class="rule-wrap" :childItem="childItem" :index="index" :n="n" :stopType="stopType"></RuleCom>
+
               <span class="i" @click="handleRemoveRule(item, childItem)">
                 <i class="icon iconfont el-icon-cc-delete"></i>
               </span>
@@ -980,6 +981,10 @@ export default {
     crowd: {
       type: Object,
       default: () => {}
+    },
+    stopType: { // 故事线 - 出口 - 选择则视为（就是下一跳...）
+      type: [Number, String],
+      default: undefined
     }
   },
   computed: {

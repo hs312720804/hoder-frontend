@@ -152,6 +152,7 @@
                   :checkedList="checkedList"
                   :allTagList="tagList"
                   :rulesJson="rulesJson"
+                  :stopType="form.stopType"
                   @emitTags="emitTags"
                 ></MultipleSelect>
               </el-form-item>
@@ -181,7 +182,7 @@
               </SetCirculationConditionsCom>
             </el-form-item> -->
           </div>
-<!-- {{ form.isShowAutoVersion }} --- {{ form.autoVersion }} -->
+          <!-- {{ form.isShowAutoVersion }} --- {{ form.autoVersion }} -->
           <el-form-item v-if="form.isShowAutoVersion" label="是否每日更新：" prop="autoVersion" >
             <el-radio-group v-model="form.autoVersion">
               <el-radio :label="false">否</el-radio>

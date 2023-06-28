@@ -17,7 +17,8 @@
       :key="n + 'input'"
       v-model="childItem.value"
       placeholder="请输入"
-      :min="0">
+      :min="0"
+      :class="{ 'recommended-value': childItem.value === recommendedValue }">
     </el-input-number>
   </span>
 </template>
@@ -38,6 +39,10 @@ export default {
     n: {
       type: Number,
       default: 0
+    },
+    recommendedValue: { // 推荐值
+      type: Number,
+      default: undefined
     }
   },
   data () {
@@ -54,5 +59,22 @@ export default {
 </script>
 
 <style lang='stylus' scoped>
+.recommended-value  {
+  width: 160px
+  ::v-deep .el-input__inner {
+    padding-left: 0;
+  }
+  ::v-deep .el-input {
+    &:after {
+      content: '（推荐值）'
+      position: absolute;
+      white-space: nowrap;
+      left: 62px;
+      font-size: 12px;
+      color: #999;
+      line-height: 32px;
+    }
+  }
+}
 
 </style>
