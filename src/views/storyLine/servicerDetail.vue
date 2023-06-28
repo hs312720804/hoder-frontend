@@ -371,7 +371,7 @@
                                     placeholder="技能分类"
                                     @keyup.enter.native="addOption"
                                     clearable
-                                    >
+                                  >
                                     <el-button slot="append" type="primary" @click="addOption" icon="el-icon-plus"></el-button>
                                   </el-input>
                                 </el-form-item>
@@ -397,8 +397,28 @@
                           {{ isDoudi ? '兜底接待员' : '普通接待员' }}
                         </span>
                         <el-radio-group v-if="isDoudi" v-model="radio2" @input="handleTypeChange" class="doudi-type-radio" >
-                          <div><el-radio :label="0" style="margin: 3px 0">无合适接待员直接走兜底</el-radio></div>
-                          <div><el-radio :label="1">无合适接待员则先随机完再兜底</el-radio></div>
+                          <div>
+                            <el-radio :label="0">直接兜底</el-radio>
+                            <!-- <el-popover
+                              placement="top"
+                              trigger="hover"
+                              class="popover-button"
+                            >
+                              <div>如果没有匹配的接待员，则直接流转到该兜底接待员</div>
+                              <i class="el-icon-question el-icon-question-tip" slot="reference"></i>
+                            </el-popover> -->
+                            <el-tooltip class="item" effect="dark" content="如果没有匹配的接待员，则直接流转到该兜底接待员" placement="top-start">
+                              <i class="el-icon-question el-icon-question-tip"></i>
+                            </el-tooltip>
+                          </div>
+
+                          <div>
+                            <el-radio :label="1">先随机再兜底</el-radio>
+                            <el-tooltip class="item" effect="dark" content="如果没有匹配的接待员，则先在全部接待员中随机流转一圈后再流转到该兜底接待员" placement="top-start">
+                              <i class="el-icon-question el-icon-question-tip"></i>
+                            </el-tooltip>
+
+                          </div>
                         </el-radio-group>
                       </div>
                     </div>
@@ -1239,9 +1259,12 @@ export default {
 @import './sty/dark.styl'
 @import './sty/light.styl'
 .doudi-type-radio {
-  margin-top: 10px;
+  margin-top: 10px
   ::v-deep .el-radio__label {
     font-size: 12px !important;
+  }
+  ::v-deep .el-radio {
+    margin 3px
   }
 }
 </style>

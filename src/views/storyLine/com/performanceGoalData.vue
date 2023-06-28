@@ -5,8 +5,6 @@
         <!-- <el-button type="text" icon="el-icon-plus" @click="editTargetKey">编辑绩效目标</el-button> -->
         <div>
           效果指标
-          <!-- <el-radio v-model="radio1" label="1" style="margin-right: 15px">仅当前接待员</el-radio>
-                        <el-radio v-model="radio1" label="2">按分组统计</el-radio> -->
           <!-- <span class="tip-text">当接待员属于分组时，展示分组的绩效目标</span> -->
         </div>
         <!-- <i v-if="selectedServicer.id && canUse" @click="editTargetKey" class="el-icon-edit position-right" title="编辑绩效目标" ></i> -->
@@ -29,6 +27,23 @@
                           <el-dropdown-item>螺蛳粉</el-dropdown-item> -->
           </el-dropdown-menu>
         </el-dropdown>
+
+        <div class="kpi-wrap-radio">
+          <span>
+            <el-radio v-model="radio1" :label="1" >每天</el-radio>
+            <el-tooltip class="item" effect="dark" content="每天仅当天的指标" placement="top-start">
+              <i class="el-icon-question el-icon-question-tip"></i>
+            </el-tooltip>
+          </span>
+
+          <span>
+            <el-radio v-model="radio1" :label="2">按分组统计</el-radio>
+            <el-tooltip class="item" effect="dark" content="投放开始到当天的统计指标" placement="top-start">
+              <i class="el-icon-question el-icon-question-tip"></i>
+            </el-tooltip>
+
+          </span>
+        </div>
 
         <div>
           <!-- {{ selectedServicerId }} -->
@@ -130,6 +145,7 @@ export default {
 
   data () {
     return {
+      radio1: 1,
       overview: {},
       dialogVisible: false,
       selectTargetChartKey: '',
@@ -729,5 +745,17 @@ export default {
 
 ::v-deep .el-empty__description p {
   font-size 12px
+}
+.kpi-wrap-radio {
+  display flex
+  justify-content: flex-end
+  margin-top: 10px
+  white-space nowrap
+  ::v-deep .el-radio {
+    margin-right 2px
+  }
+  span + span {
+    margin-left: 15px
+  }
 }
 </style>
