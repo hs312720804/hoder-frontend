@@ -88,7 +88,7 @@
                           element-loading-background="rgba(0, 0, 0, 0.8)">
                         </div>
                         <!--
-                            sceneDropDownCanUse - 有权限
+                            cacheSceneDropDownCanUse[item.id] - 有权限
                               - 没有权限： 【重命名】、【下架】、【投放】、【删除】 置灰
                           -->
                         <template v-else>
@@ -115,28 +115,61 @@
 
                           </el-dropdown-item>
 
+                          <!-- <el-tooltip class="item" effect="dark" content="仅创建人、上级才可重命名" placement="top-start" >
+                            <span class="wrapper el-button">
+                              <i class="el-icon-question el-icon-question-tip"></i>
+
+                              <el-dropdown-item class="clearfix" :key="item.id" :command="['rename', item]" :disabled="!cacheSceneDropDownCanUse[item.id]">
+                                <el-popover placement="top" trigger="click" ref="pop" >
+                                  <div slot="reference">
+                                    重命名
+                                  </div>
+                                  <div style="display: flex">
+                                    <el-input
+                                      class="re-name-input"
+                                      type="text"
+                                      placeholder="请输入内容"
+                                      v-model="rename"
+                                      maxlength="50"
+                                      show-word-limit
+                                      clearable
+                                      style="width: 250px"
+                                    >
+                                    </el-input>
+
+                                    <el-button size="mini" type="text" @click="handelClosePop()" style="margin-left: 10px">取消</el-button>
+                                    <el-button type="primary" size="mini" @click="handelRename(item)">确定</el-button>
+                                  </div>
+                                </el-popover>
+                              </el-dropdown-item>
+                            </span>
+                          </el-tooltip> -->
+
                           <!-- 场景的 planId 为 null, 才展示按钮 -->
                           <!-- planId 代表是动态人群过来的 -->
                           <!-- :disabled="servicer.length === 0" -->
-                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!sceneDropDownCanUse || item.useStatus !== '未投放'">
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['putIn', item]" :disabled="!cacheSceneDropDownCanUse[item.id] || item.useStatus !== '未投放'">
                             投放
                           </el-dropdown-item>
                           <el-dropdown-item :command="['freshCache',item]">
                             <span v-if="item.status === 1">未同步</span>
                             <span v-if="item.status === 2">已同步</span>
                           </el-dropdown-item>
-                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!sceneDropDownCanUse">
+
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['offSet', item]" :disabled="!cacheSceneDropDownCanUse[item.id]">
                             <!-- putway : 1 - 上架中； 2 - 下架中 -->
                             {{ item.putway === 1 ? '下架' : '上架' }}
                           </el-dropdown-item>
 
-                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!sceneDropDownCanUse">
+                          <el-dropdown-item v-if="!item.planId" class="clearfix" :command="['deleteScene', item]" :disabled="!cacheSceneDropDownCanUse[item.id]">
                             删除
                           </el-dropdown-item>
+
                           <!-- <el-dropdown-item v-if="item.planId" :command="['report',item]"> -->
                           <el-dropdown-item :command="['report',item]">
                             投放报告
                           </el-dropdown-item>
+
                           <el-dropdown-item :command="['detail',item]">
                             查看配置
                           </el-dropdown-item>
@@ -541,6 +574,7 @@ export default {
   },
   data () {
     return {
+      cacheSceneDropDownCanUse: {}, // 存放各个场景是否有权限
       openMoveOrClearDialogVisible: false,
       openMoveOrClearDialogRef: undefined,
       showAll: true,
@@ -950,15 +984,52 @@ export default {
     //     })
     //   }
     // },
+
+    // 判断当前所选场景是否有权限
+    getSceneCanReuse () {
+      const selectedSceneId = this.selectedScene.id
+      // 如果之前已经查过了，就不用重复调用接口了
+      if (this.cacheSceneDropDownCanUse[selectedSceneId] !== undefined) {
+        this.sceneCanReuse = this.cacheSceneDropDownCanUse[selectedSceneId]
+        return
+      }
+
+      // 再次点击详情时中断之前的请求，防止数据被之前接口数据所覆盖·
+      removePendingRequest({
+        method: 'get',
+        url: '/api/scene/getAccess'
+      })
+
+      this.sceneCanReuse = false
+      if (selectedSceneId) {
+        const params = {
+          id: selectedSceneId
+        }
+        return this.$service.getSceneCanReuse(params).then(res => {
+          this.sceneCanReuse = res || false
+          this.cacheSceneDropDownCanUse[selectedSceneId] = res || false
+        })
+      }
+    },
     sceneVisibleChange (val, id) {
       if (val && id) {
         this.sceneDropDownLoading = true
+        console.log('this.cacheSceneDropDownCanUse-->', this.cacheSceneDropDownCanUse)
+
+        // 如果之前已经查过了，就不用重复调用接口了
+        if (this.cacheSceneDropDownCanUse[id] !== undefined) {
+          this.sceneDropDownLoading = false
+          return
+        }
+
         const params = {
           id
         }
         this.$service.getSceneCanReuse(params).then(res => {
           this.sceneDropDownLoading = false
-          this.sceneDropDownCanUse = res || false
+          // this.sceneDropDownCanUse = res || false
+
+          this.cacheSceneDropDownCanUse[id] = res || false
         })
       }
     },
@@ -1433,24 +1504,7 @@ export default {
         // this.getServiceList()
       })
     },
-    // 判断当前所选场景是否有权限
-    getSceneCanReuse () {
-      // 再次点击详情时中断之前的请求，防止数据被之前接口数据所覆盖·
-      removePendingRequest({
-        method: 'get',
-        url: '/api/scene/getAccess'
-      })
 
-      this.sceneCanReuse = false
-      if (this.selectedScene.id) {
-        const params = {
-          id: this.selectedScene.id
-        }
-        return this.$service.getSceneCanReuse(params).then(res => {
-          this.sceneCanReuse = res || false
-        })
-      }
-    },
     handelRename (item) {
       if (!this.rename) {
         return this.$message.error('请输入名称')
@@ -1611,5 +1665,13 @@ export default {
 .showAllOrMy {
   margin: 0 auto 10px;
   width: 69%;
+}
+.wrapper.el-button {
+  display: inline-block;
+  padding: 0;
+  margin: 0;
+  width: 100%;
+  text-align: left !important;
+  border: none;
 }
 </style>
