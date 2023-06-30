@@ -86,7 +86,16 @@
               </performanceGoalData>
               <!-- 当选择兜底接待员时，不展示入口条件、推荐绑定内容、出口条件 -->
               <div v-if="selectedServicer.type !== 1" class="detail-box">
-                <div class="title2">入口条件</div>
+                <div class="title2">
+                  入口条件
+                  <tooltip
+                    v-if="!havePermissionsToUse"
+                    :disabled="false"
+                    :content="!canUse ? '仅创建人、上级才可编辑入口条件' : '复用接待员不支持修改入口条件'"
+                    type="icon">
+                  </tooltip>
+
+                </div>
                 <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('entry')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
                 <div v-if="entryList.length > 0" class="position-left">
                   <!-- {{ checkList }} -->
@@ -157,12 +166,20 @@
               <!-- 当选择兜底接待员时，不展示入口条件、推荐绑定内容、出口条件 -->
               <!-- 推荐绑定内容 -->
               <div v-if="selectedServicer.type !== 1 &&entryList && entryList.length > 0 && tagCodeList.length > 0"  class="detail-box">
-                <div class="title2">内容推荐</div>
+                <div class="title2">
+                  内容推荐
+                  <tooltip
+                    v-if="!havePermissionsToUse"
+                    :disabled="false"
+                    :content="!canUse ? '仅创建人、上级才可编辑内容推荐' : '复用接待员不支持修改内容推荐'"
+                    type="icon">
+                  </tooltip>
+                </div>
                 <div class="border-line info-class" style="display: block" v-loading="recommendLoading">
 
                   <div class="bav-wrap" style="overflow: hidden;">
                     内容源：
-                    <el-select v-model="selectSourceCode" @change="getUptmRecommendResourceList" class="select-source-sty">
+                    <el-select v-model="selectSourceCode" :disabled="!havePermissionsToUse" @change="getUptmRecommendResourceList" class="select-source-sty">
                       <el-option
                         v-for="item in sourceList"
                         :label="item.sourceTitle"
@@ -206,7 +223,15 @@
 
               <!-- 当选择兜底接待员时，不展示入口条件、推荐绑定内容、出口条件 -->
               <div v-if="selectedServicer.type !== 1" class="detail-box">
-                <div class="title2">出口条件</div>
+                <div class="title2">
+                  出口条件
+                  <tooltip
+                    v-if="!havePermissionsToUse"
+                    :disabled="false"
+                    :content="!canUse ? '仅创建人、上级才可编辑出口条件' : '复用接待员不支持修改出口条件'"
+                    type="icon">
+                  </tooltip>
+                </div>
                 <el-button v-if="havePermissionsToUse" type="text" @click="pasteRules('export')" class="position-right" icon="el-icon-document-copy">粘贴条件</el-button>
                 <div v-if="exportList.length > 0" class="position-left">
                   <!-- {{ exportCheckList }} -->
@@ -308,7 +333,17 @@
                         <div class="box-line"><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
                       </div>
                       <div class="d-info-box">
-                        <div class="box-title">擅长(可选)</div>
+                        <div class="box-title">
+                          擅长(可选)
+
+                          <tooltip
+                            v-if="!havePermissionsToUse"
+                            :disabled="false"
+                            :content="!canUse ? '仅创建人、上级才可编辑擅长' : '复用接待员不支持修改擅长'"
+                            type="icon">
+                          </tooltip>
+
+                        </div>
                         <div class="box-line" >{{ selectedServicer.skillName || '-'}}</div>
                       </div>
 
@@ -324,7 +359,16 @@
                         <div class="box-line " ><span class="border-style">{{ selectedServicer.createTime || '-'}}</span></div>
                       </div>
                       <div class="d-info-box">
-                        <div class="box-title">擅长(可选)</div>
+                        <div class="box-title">
+                          擅长(可选)
+
+                          <tooltip
+                            v-if="!canUse"
+                            :disabled="false"
+                            content="仅创建人、上级才可编辑擅长"
+                            type="icon">
+                          </tooltip>
+                        </div>
                         <div v-if="selectedServicer.id" class="box-line" >
                           <el-select
                             ref="selectObj"
@@ -422,13 +466,18 @@
                         </el-radio-group>
                       </div>
                     </div>
-                    <!-- <div class="d-info-box" v-if="isDoudi">
-                      <div class="box-title">兜底方式</div>
-                      <div class="box-line">
-                      </div>
-                    </div> -->
                     <div class="d-info-box" style="position: relative">
-                      <div class="box-title">用途描述</div>
+                      <div class="box-title">
+                        用途描述
+                        <!-- 无权限时进行提示 -->
+                        <tooltip
+                          v-if="!havePermissionsToUse"
+                          :content="!canUse ? '仅创建人、上级才可编辑': '复用接待员不支持修改'"
+                          :disabled="false"
+                          type="icon">
+                        </tooltip>
+                      </div>
+
                       <i v-if="!isEdit && havePermissionsToUse" @click="editTarget"  class="el-icon-edit position-right" style="top: 0" title="编辑我的任务" ></i>
                       <div class="box-line">
                         <!-- <div>请输入接待员的目标<i class="el-icon-edit"></i></div> -->
@@ -645,6 +694,7 @@ import { options } from './utils'
 import ServicerMap from './mapShow/servicerMap.vue'
 import showAndUpdateRule from '@/views/storyLine/com/showAndUpdateRule.vue'
 import performanceGoalData from '@/views/storyLine/com/performanceGoalData.vue'
+import tooltip from '@/views/storyLine/com/tooltip.vue'
 
 export default {
   components: {
@@ -655,7 +705,8 @@ export default {
     // ShowRule,
     ServicerMap,
     showAndUpdateRule,
-    performanceGoalData
+    performanceGoalData,
+    tooltip
   },
 
   props: {
