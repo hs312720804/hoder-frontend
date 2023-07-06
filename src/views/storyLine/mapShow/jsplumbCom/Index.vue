@@ -17,7 +17,7 @@
         top: positionObj[`${idPer}${index}`].y + 'px'}"
       :id="idPer + index"
     >
-      <div v-if="group.groupId" class="group-container">
+      <div v-if="group.groupId" class="group-container" :style="{ width: group.child.length === 1  ? '150px': '425px' }">
         <div v-for="item in group.child" :key="item.id">
           <!-- {{ item.receptionist }} -->
           <!-- {{ item.id }} -->
@@ -209,7 +209,7 @@ export default {
         // rankdir: 'LR',
         // align: 'UL',
         nodesepFunc: () => 50,
-        ranksepFunc: () => 50,
+        ranksepFunc: () => 70,
         controlPoints: true,
         sortByCombo: false
       })
