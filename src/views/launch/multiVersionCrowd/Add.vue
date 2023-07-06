@@ -236,7 +236,7 @@
                     </el-checkbox>
                 </el-form-item>
 
-                <!-- 只有当选择了【消息楚触达】才显示【投放应用】 -->
+                <!-- 只有当选择了【消息触达】才显示【投放应用】 -->
                 <el-form-item v-if="crowdForm.biIds.includes('7')" label="投放应用" class="multipleSelect form-width" prop="packageName">
                   <el-select
                     v-model="crowdForm.packageName"
@@ -261,8 +261,8 @@
                 <!--</el-form-item>-->
                 <!-- {{ crowdForm.crowdType }} -->
 
-                <!-- 普通人群 、 行为人群 可以选择是否投放子人群 -->
-                <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3">
+                <!-- 【普通人群】 、 【行为人群】 、【设备投放】 可以选择是否投放子人群 -->
+                <el-form-item label="是否投放子人群" class="form-width" v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 3 || crowdForm.crowdType === 4">
                     <el-radio-group v-model="crowdForm.abTest" @change="handleAbTestChange" :disabled="status!==undefined && (status === 2 || status === 3)">
                         <el-radio :label="false">否</el-radio>
                         <el-radio :label="true">是</el-radio>
@@ -276,6 +276,7 @@
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
                         <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
+                        <el-radio :label="4">设备投放</el-radio>
                     </el-radio-group>
                 </el-form-item>
 
@@ -502,6 +503,60 @@
                       </el-select>
                   </el-form-item>
                 </template>
+
+                <!-- 选择设备投放 -->
+                <template v-if="crowdForm.crowdType === 4">
+                  <el-form-item
+                    label="选择策略"
+                    prop="policyIds"
+                    class="multipleSelect form-width"
+                  >
+                  <!-- {{ crowdForm.policyIds }} -->
+                    <el-select
+                      v-model="crowdForm.policyIds"
+                      :key="crowdForm.abTest + 4"
+                      :multiple="!crowdForm.abTest"
+                      placeholder="请选择策略"
+                      @change="getCrowd"
+                      @remove-tag="removeTag"
+                      :disabled="status!==undefined && (status === 2 || status === 3)"
+                      :loading="bitmapRemoteLoading"
+                      filterable
+                      remote
+                      v-loadmore="{'methord': handeBitmapPushPolicyListLoadmore}"
+                      :remote-method="bitmapRemoteMethod"
+                    >
+                      <el-option
+                        v-for="item in bitmapPushPolicyList"
+                        :key="item.policyId+''"
+                        :label="item.policyName"
+                        :value="item.policyId+''"
+                      >{{ item.policyName }}
+                      </el-option>
+                    </el-select>
+                  </el-form-item>
+
+                  <el-form-item
+                      label="选择人群"
+                      prop="policyCrowdIds"
+                  >
+
+                      <el-form-item v-for="(v,index) in crowdData" :label="crowdForm.abTest ? v.Pid: v.policyName" :key="v.policyId+'_'+index">
+                        <el-checkbox-group v-model="crowdForm.policyCrowdIds" :disabled="status!==undefined && (status === 2 || status === 3)">
+                            <el-checkbox
+                              v-for="item in v.childs"
+                              :label="item.policyId+'_'+item.crowdId"
+                              :key="item.crowdId+''"
+                              :disabled="item.canLaunch === false"
+                            >
+                            {{ item.crowdName }}
+                            </el-checkbox>
+                        </el-checkbox-group>
+                      </el-form-item>
+
+                  </el-form-item>
+                </template>
+
                 <!--<el-form-item label="数据有效期" prop="expiryDay" class="form-width">-->
                     <!--<el-select-->
                             <!--v-model="crowdForm.expiryDay"-->
@@ -543,7 +598,8 @@
             </el-form>
             <div slot="footer" class="footer">
               <el-button @click="cancelAdd">返回</el-button>
-              <el-button type="primary" @click="addSubmit">保存</el-button>
+              <!-- 只有【设备投放】 不显示【保存】按钮 -->
+              <el-button v-if="crowdForm.crowdType !== 4" type="primary" @click="addSubmit">保存</el-button>
               <!-- 需要投放提示 -->
               <!-- <el-button
                       v-if="!(status!==undefined && (status === 2 || status === 3))"
@@ -676,6 +732,7 @@ export default {
       }
     }
     return {
+      // 人群类型为【普通人群】的 策略列表参数
       remoteLoading: false,
       totalPages: 0,
       remoteMethodParams: {
@@ -683,9 +740,20 @@ export default {
         pageSize: 30,
         keyword: ''
       },
-      // 表格当前页数据
       strategyPlatform: [],
-      launchPlatform: [],
+      // -------人群类型为【普通人群】的 策略列表参数 end-------
+      // 人群类型为【设备投放】的 策略列表
+      bitmapRemoteLoading: false,
+      bitmapTotalPages: 0,
+      bitmapMethodParams: {
+        pageNum: 1,
+        pageSize: 30,
+        keyword: ''
+      },
+      bitmapPushPolicyList: [],
+      // --------人群类型为【设备投放】的 策略列表 - end------
+
+      launchPlatform: [], // 投放平台
       getStrategyCrowds: [],
       title: '',
       basicLineErrorText: '',
@@ -904,6 +972,42 @@ export default {
         this.remoteLoading = false
       })
     },
+
+    handeBitmapPushPolicyListLoadmore () {
+      if (this.bitmapMethodParams.pageNum < this.bitmapTotalPages) {
+        this.bitmapMethodParams.pageNum++ // 滚动加载翻页
+        this.bitmapRemoteMethod()
+      }
+    },
+
+    bitmapRemoteMethod (query) {
+      // 是否是加载更多
+      const isLoadMore = query === undefined
+
+      // 下拉框搜索，需要重置
+      if (!isLoadMore) {
+        this.bitmapMethodParams.pageNum = 1
+        this.bitmapPushPolicyList = []
+        this.bitmapMethodParams.policyName = query
+      }
+
+      this.bitmapRemoteLoading = true
+
+      const params = {
+        ...this.bitmapMethodParams
+      }
+
+      this.$service.getBitmapPushPolicyList(params).then(res => {
+        this.bitmapTotalPages = res.pages // 总页数
+        this.bitmapPushPolicyList = !isLoadMore ? res.rows : this.bitmapPushPolicyList.concat(res.rows)
+
+        this.bitmapRemoteLoading = false
+      }).catch(() => {
+        this.bitmapPushPolicyList = []
+        this.bitmapRemoteLoading = false
+      })
+    },
+
     getPushPackageList () {
       const parmas = {
         pageNum: 0,
@@ -949,7 +1053,7 @@ export default {
         if (v.split('_')[0] != policyId) { return v }
       })
     },
-    // 普通人群 - 获取选择的策略下的人群
+    // 【普通人群】、【设备投放】 - 获取选择的策略下的人群
     getCrowd () {
       let policyId = null
       if (this.crowdForm.abTest) {
@@ -957,25 +1061,29 @@ export default {
       } else {
         policyId = this.crowdForm.policyIds.join(',')
       }
-      return this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
-        .then(data => {
-          if (this.crowdForm.abTest) {
-            // 重置
-            this.crowdForm.policyCrowdIds = [] // 选择人群
-            this.crowdForm.crowdId = '' // 大人群ID
+      // this.crowdForm.crowdType === 0 代表【普通人群】
 
-            const newDataForm = []
-            const pid = Object.keys(data[0].childs)
-            pid.forEach((item) => {
-              newDataForm.push({ Pid: item, childs: data[0].childs[item] })
-            })
-            console.log('newDataForm====', newDataForm)
-            this.crowdData = newDataForm
-          } else {
-            this.crowdData = data
-          }
-        })
-        .catch(() => {})
+      const fetchMethod = this.crowdForm.crowdType === 0
+        ? this.$service.getStrategyCrowds({ policyIds: policyId, abTest: this.crowdForm.abTest })
+        : this.$service.getBitmapPushCrowdList({ policyIds: policyId, abTest: this.crowdForm.abTest })
+
+      return fetchMethod.then(data => {
+        if (this.crowdForm.abTest) {
+          // 重置
+          this.crowdForm.policyCrowdIds = [] // 选择人群
+          this.crowdForm.crowdId = '' // 大人群ID
+
+          const newDataForm = []
+          const pid = Object.keys(data[0].childs)
+          pid.forEach((item) => {
+            newDataForm.push({ Pid: item, childs: data[0].childs[item] })
+          })
+
+          this.crowdData = newDataForm
+        } else {
+          this.crowdData = data
+        }
+      })
     },
 
     // 行为人群 - 获取选择的策略下的人群
@@ -1253,8 +1361,12 @@ export default {
           this.tagsList = data
         })
       } else { // 新增
-        // 获取 strategyPlatform
+        // 获取人群类型为【普通人群】的 策略列表
         this.remoteMethod()
+
+        // 获取人群类型为【设备投放】的 策略列表
+        this.bitmapRemoteMethod()
+
         // if (this.showAllParent) {
         //   this.$service.addMyMultiVersionCrowd(this.model).then(data => {
         //     this.launchPlatform = data.biLists
@@ -1403,11 +1515,15 @@ export default {
 
     // 直接投放，没有投放提示
     launchDirectly () {
-      console.log('this.crowdForm==>', this.crowdForm)
       // 先进行保存校验
       this.$refs.crowdForm.validate(valid => {
         if (valid) {
-          this.showEstimatePop()
+          // <!-- 【设备投放】 是直接调用特殊的投放方法 -->
+          if (this.crowdForm.crowdType === 4) {
+            this.handleEstimateBitmapPush()
+          } else {
+            this.showEstimatePop()
+          }
         } else {
           return false
         }
@@ -1453,56 +1569,79 @@ export default {
         this.estimateValue = [...new Set(['0', ...this.estimateValue])]
       }
     },
+    // 选择了【设备投放】radio, 的投放方法
+    async handleEstimateBitmapPush () {
+      const valid = await this.$refs.crowdForm.validate
 
-    handleEstimate (calTypes) {
+      if (valid) {
+        // 获取接口所需参数
+        const crowdForm = this.reParamsData(this.crowdForm)
+        // 编辑
+        if (this.editLaunchCrowdId != null && this.editLaunchCrowdId !== undefined) {
+          // this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
+          //   this.currentLaunchId = this.editLaunchCrowdId
+          //   this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+          //     this.showEstimate = false
+          //     this.callback()
+          //   })
+          // })
+        } else {
+          // 新增
+          this.$service.bitmapPush(crowdForm, '新增成功').then((data) => {
+            // this.currentLaunchId = data.launchCrowdId
+            this.callback()
+          })
+        }
+      }
+    },
+    async handleEstimate (calTypes) {
       if (calTypes.length === 0) {
         this.$message.error('请至少选择一个要投放的人群')
         return
       }
+
       const calIdType = calTypes.map((item) => item).join(',')
 
-      this.$refs.crowdForm.validate(valid => {
-        if (valid) {
-          // 获取接口所需参数
-          const crowdForm = this.reParamsData(this.crowdForm)
+      const valid = await this.$refs.crowdForm.validate
 
-          if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
-            this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
-              this.currentLaunchId = this.editLaunchCrowdId
-              this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
-                // 行为人群需要 lua 一下
-                // if (crowdForm.crowdType === 3) {
-                //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
-                //         this.showEstimate = false
-                //         this.callback()
-                //     })
-                // } else {
-                this.showEstimate = false
-                this.callback()
-                // }
-              })
+      if (valid) {
+        // 获取接口所需参数
+        const crowdForm = this.reParamsData(this.crowdForm)
+
+        if (this.editLaunchCrowdId != null && this.editLaunchCrowdId != undefined) {
+          this.$service.saveEditMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '编辑成功').then(() => {
+            this.currentLaunchId = this.editLaunchCrowdId
+            this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+              // 行为人群需要 lua 一下
+              // if (crowdForm.crowdType === 3) {
+              //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+              //         this.showEstimate = false
+              //         this.callback()
+              //     })
+              // } else {
+              this.showEstimate = false
+              this.callback()
+              // }
             })
-          } else {
-            this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
-              this.currentLaunchId = data.launchCrowdId
-              this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
-                // 行为人群需要 lua 一下
-                // if (crowdForm.crowdType === 3) {
-                //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
-                //         this.showEstimate = false
-                //         this.callback()
-                //     })
-                // } else {
-                this.showEstimate = false
-                this.callback()
-                // }
-              })
-            })
-          }
+          })
         } else {
-          return false
+          this.$service.saveAddMultiVersionCrowd({ model: crowdForm.crowdType, data: crowdForm }, '新增成功').then((data) => {
+            this.currentLaunchId = data.launchCrowdId
+            this.$service.LaunchMultiVersionCrowd({ launchCrowdId: this.currentLaunchId, calIdType: calIdType }, '投放成功').then(() => {
+              // 行为人群需要 lua 一下
+              // if (crowdForm.crowdType === 3) {
+              //     this.$service.freshCache({policyId: crowdForm.policyIds}).then(() => {
+              //         this.showEstimate = false
+              //         this.callback()
+              //     })
+              // } else {
+              this.showEstimate = false
+              this.callback()
+              // }
+            })
+          })
         }
-      })
+      }
     },
     async setEdit () {
       // 编辑
