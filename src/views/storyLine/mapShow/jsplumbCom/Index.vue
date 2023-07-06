@@ -141,39 +141,6 @@ export default {
     setMoveAndDrag('#wrap', '#canvas')
   },
   methods: {
-    // 1、创建 jsPlumb 实例
-    // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
-    // 3、创建所有节点连接
-    initJsPlumb () {
-      const _this = this
-      jsPlumb.ready(() => {
-      // 1、创建 jsPlumb 实例
-        this.j = (window.j = jsPlumb.getInstance(this.setJsplumbObj))
-        const j = this.j
-
-        j.registerConnectionType('basic', {
-          anchor: 'Continuous',
-          connector: 'StateMachine'
-        })
-
-        j.batch(() => {
-          const windows = jsPlumb.getSelector('.flowchart-demo .window')
-          // 可拖动
-          for (let i = 0; i < windows.length; i++) {
-            _this.initNode(windows[i], j)
-          }
-
-        // j.repaintEverything()
-        })
-        // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
-        this.adjust()
-        this.$nextTick(() => {
-        // 3、创建所有节点连接
-          this.createConnections(this.relations)
-        })
-      })
-    // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
-    },
     // 通过 @antv/layout 获取元素节点
     getLocationByAntvLayout () {
       const IndexRelationsForDagreLayout = this.getParentIndexRelations(this.relations)
@@ -218,6 +185,41 @@ export default {
       console.log('333333333333333dagreModel--->', dagreModel)
       this.dagreModel = dagreModel
     },
+    // 1、创建 jsPlumb 实例
+    // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
+    // 3、创建所有节点连接
+    initJsPlumb () {
+      const _this = this
+      jsPlumb.ready(() => {
+      // 1、创建 jsPlumb 实例
+        this.j = (window.j = jsPlumb.getInstance(this.setJsplumbObj))
+        const j = this.j
+
+        j.registerConnectionType('basic', {
+          anchor: 'Continuous',
+          connector: 'StateMachine'
+        })
+
+        j.batch(() => {
+          const windows = jsPlumb.getSelector('.flowchart-demo .window')
+          // 可拖动
+          for (let i = 0; i < windows.length; i++) {
+            _this.initNode(windows[i], j)
+          }
+
+        // j.repaintEverything()
+        })
+        // 2、将元素的位置信息统一保存在一个对象里，将元素设为绝对定位元素
+        this.adjust()
+
+        this.$nextTick(() => {
+        // 3、创建所有节点连接
+          this.createConnections(this.relations)
+        })
+      })
+    // j.draggable(jsPlumb.getSelector('.flowchart-demo .window'))
+    },
+
     // getLeftTop (id, type) {
     //   this.$nextTick(() => {
 
