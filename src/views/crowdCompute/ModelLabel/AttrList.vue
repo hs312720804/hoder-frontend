@@ -331,15 +331,15 @@ export default {
           {
             label: '临时人群同步日期',
             prop: 'update_time'
-          },
-          {
-            label: '版本是否删除',
-            render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
-            }
           }
+          // {
+          //   label: '版本是否删除',
+          //   render: (h, params) => {
+          //     return h('div', {}, [
+          //       h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+          //     ])
+          //   }
+          // }
         ],
         data: []
       }
@@ -427,11 +427,11 @@ export default {
       // 当select长度为0，则是取消全选，否则是全选
       const data = this.itemList
       if (select.length === 0) {
-        for (var i = 0; i < data.length; i++) {
+        for (let i = 0; i < data.length; i++) {
           this.$emit('table-selected', data[i], 'del')
         }
       } else {
-        for (var j = 0; j < data.length; j++) {
+        for (let j = 0; j < data.length; j++) {
           this.$emit('table-selected', data[j], 'add')
         }
       }
@@ -467,10 +467,10 @@ export default {
       this.initParams()
       this.launchCrowdId = null // 编辑时的标签id
       this.dialogVisible = true
-      this.$refs['attrFormRef'] && this.$refs['attrFormRef'].resetFields()
+      this.$refs.attrFormRef && this.$refs.attrFormRef.resetFields()
     },
     handleAddOrEdit () {
-      this.$refs['attrFormRef'].validate((valid) => {
+      this.$refs.attrFormRef.validate((valid) => {
         if (valid) {
           if (this.launchCrowdId) { // 编辑
             const params = {
@@ -502,7 +502,7 @@ export default {
           this.attrForm.crowdSql = data.crowdSql
           this.dialogVisible = true
           this.$nextTick(() => {
-            this.$refs['attrFormRef'].clearValidate()
+            this.$refs.attrFormRef.clearValidate()
           })
         })
     },

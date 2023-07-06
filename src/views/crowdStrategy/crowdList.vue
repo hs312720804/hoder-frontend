@@ -1979,15 +1979,15 @@ export default {
           {
             label: '临时人群同步日期',
             prop: 'update_time'
-          },
-          {
-            label: '版本是否删除',
-            render: (h, params) => {
-              return h('div', {}, [
-                h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
-              ])
-            }
           }
+          // {
+          //   label: '版本是否删除',
+          //   render: (h, params) => {
+          //     return h('div', {}, [
+          //       h('span', {}, params.row.del_flag === 1 ? '否' : '是') // 1 否  2 是
+          //     ])
+          //   }
+          // }
         ],
         data: []
       },
