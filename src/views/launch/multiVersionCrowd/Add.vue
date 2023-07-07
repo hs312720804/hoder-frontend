@@ -276,7 +276,13 @@
                         <el-radio :label="0">普通人群</el-radio> <!-- false -->
                         <el-radio :label="1">临时标签/本地标签</el-radio><!-- true -->
                         <el-radio :label="3">行为人群</el-radio>
-                        <el-radio :label="4">设备投放</el-radio>
+                        <el-radio :label="4">
+                          混合标签投放
+                          <el-tooltip class="item" effect="dark" content="只有使用了行为标签/本地标签/临时标签/设备标签的人群，才可进行混合标签投放" placement="top-start">
+                            <i class="el-icon-question el-icon-question-tip"></i>
+                          </el-tooltip>
+
+                        </el-radio>
                     </el-radio-group>
                 </el-form-item>
 
