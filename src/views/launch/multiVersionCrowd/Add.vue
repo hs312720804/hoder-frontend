@@ -578,7 +578,7 @@
                     <!--</el-select>-->
                 <!--</el-form-item>-->
                 <el-form-item
-                  v-if="crowdForm.crowdType === 0"
+                  v-if="crowdForm.crowdType === 0 || crowdForm.crowdType === 4"
                   label="每天是否更新"
                   prop="autoVersion"
                   class="form-width"
@@ -591,7 +591,7 @@
                     <el-option label="否" :value="0"></el-option>
                   </el-select>
                 </el-form-item>
-                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && crowdForm.crowdType === 0" class="form-width">
+                <el-form-item label="每天更新时间点" prop="autoLaunchTime" v-if="crowdForm.autoVersion === 1 && (crowdForm.crowdType === 0 || crowdForm.crowdType === 4)" class="form-width">
                   <el-time-picker
                     v-model="crowdForm.autoLaunchTime"
                     value-format="HH:mm:ss"
