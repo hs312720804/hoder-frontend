@@ -40,10 +40,10 @@
                         <div class="unit-header clearfix">人群应用场景分布</div>
                         <div class="unit-content">
                             <el-row :gutter="20">
-                                <el-col :span="12">
+                                <el-col :span="8">
                                     <ve-wordcloud :data="chartData" :settings="chartSettings" :extend="setWordCloudExtend()" height="300px"></ve-wordcloud>
                                 </el-col>
-                                <el-col :span="12">
+                                <el-col :span="16">
                                     <div class="main" ref="useScene"></div>
                                 </el-col>
                             </el-row>
@@ -1158,7 +1158,12 @@ export default {
 </style>
 <style lang="stylus" scoped>
     .launch-statistics
-        overflow hidden
+      // overflow hidden
+      // height: 100%;
+      margin: -20px;
+      padding: 20px;
+      position: relative;
+      background: #eee;
     .title
         font-size 20px
         margin-left 20px
@@ -1187,33 +1192,37 @@ export default {
         width 20%
         text-align center
         margin 30px 0
-        font-size 12px
-        color #aaa
+        font-size 14px
+        color #000
         &:first-child
             width 40%
             border-right 1px solid #eee
             .crowd-all-item--number
-                font-size 30px
-                margin-bottom 0
+                font-size 24px
+                // margin-bottom 0
+
         .crowd-all-item--number
             color #000
             font-weight bold
             font-size 16px
             margin-bottom 10px
+            font-size: 24px;
+            color: #1ab394;
     .home-page-recommend
         height 300px
     .home-page-recommend-item
         width 50%
         text-align center
         margin-top 50px
-        font-size 12px
-        color #aaa
+        font-size 14px
+        color #000
         float left
         .home-page-recommend-item--number
-            color #000
-            font-weight bold
-            font-size 16px
-            margin-bottom 10px
+          color #1ab394
+          font-weight bold
+          font-size 24px
+          margin-bottom 10px
+
     .tag-all-item-container
         display flex
         align-items center
@@ -1356,4 +1365,7 @@ export default {
         justify-content space-between
         padding-bottom 20px
         // border-bottom 1px dashed #ccc
+    .unit-box {
+      background-color: #fff;
+    }
 </style>
