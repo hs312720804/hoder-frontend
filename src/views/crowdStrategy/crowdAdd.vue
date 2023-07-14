@@ -773,6 +773,16 @@ export default {
       // saveFunc(this, this.form, this.rulesJson, this.behaviorRulesJson, this.dynamicPolicyJson, this.limitLaunchDisabled, this.currentLaunchLimitCount, this.fetchAddOrEdit)
       const _this = this
       const form = JSON.parse(JSON.stringify(this.form))
+
+      // 黑名单
+      if (form.blackFlag === 1) {
+        const list = form.blackList.map(item => {
+          return item.value
+        })
+
+        form.blacks = list.join(',')
+      }
+
       const valid = await this.$refs.form.validate()
       if (valid) {
         if (this.limitLaunchDisabled && this.currentLaunchLimitCount) {
