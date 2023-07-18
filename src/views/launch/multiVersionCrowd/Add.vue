@@ -994,7 +994,7 @@ export default {
       if (!isLoadMore) {
         this.bitmapMethodParams.pageNum = 1
         this.bitmapPushPolicyList = []
-        this.bitmapMethodParams.policyName = query
+        this.bitmapMethodParams.keyword = query
       }
 
       this.bitmapRemoteLoading = true
