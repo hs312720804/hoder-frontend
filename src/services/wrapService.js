@@ -3,13 +3,35 @@ import router from '@/router'
 import Vue from 'vue'
 
 function filterContentFromMessage (message) {
+  let returnmessage = false
   // your code
-
-  // 待完善
-  // 下面的 "SQL 异常", 是根据【筛选规则】匹配得出的
+  const keyValue = {
+    NullPointException: '空指针异常',
+    ArrayIndexOutOfBoundsException: '数组越界异常',
+    ClassCastException: '强制类型转换异常',
+    NumberFormatException: '数字格式化异常',
+    InputMismatchException: '输入类型不匹配异常',
+    ArithmeticException: '算数运算符异常',
+    IndexOutOfBoundsException: '索引越界异常',
+    SQLException: 'SQL异常',
+    OutOfMemoryError: '内存溢出异常',
+    IOException: 'IO异常',
+    FileNotFoundException: '找不到文件异常',
+    Other: '其他异常信息'
+  }
+  // 根据【筛选规则】匹配得出的
+  for (const key in keyValue) {
+    if (message.includes(key)) {
+      returnmessage = keyValue[key]
+      break
+    }
+  }
   // 能匹配，就返回匹配结果，否则返回 false
-  return 'SQL 异常'
+  return returnmessage
 }
+const a = filterContentFromMessage(',,,SQLException,,,NullPointException')
+console.log('aaa--->', a)
+
 function onMessage (options) {
   const { message } = options
 
@@ -25,7 +47,7 @@ function onMessage (options) {
     if (message.length > 100) {
       content = '/xxx 异常'
       // 【查看】按钮
-      // 显示条件： 无法匹配规则 并且 超过100字
+      // 显示条件: 无法匹配规则 并且 超过100字
       hasOpen = true
     } else {
       content = message
