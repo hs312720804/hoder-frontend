@@ -449,10 +449,10 @@ export default {
         const obj = {}
         const dataObj = this.allRadioChartData.accumulateView
         for (const key in dataObj) {
-          const key2 = key.slice(5)
-          const key3 = key2.replace(key2[0], key2[0].toLowerCase()) // 首字母小写
-          console.log('key2--->', key2)
-          obj[key3] = dataObj[key]
+          // const key2 = key.slice(5)
+          // const key3 = key2.replace(key2[0], key2[0].toLowerCase()) // 首字母小写
+          // console.log('key2--->', key2)
+          obj[key] = dataObj[key]
         }
 
         // 测试数据
