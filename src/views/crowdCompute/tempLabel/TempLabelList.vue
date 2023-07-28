@@ -103,7 +103,7 @@
             {{ cc_format_number(scope.row.history.totalWxOpenid) }}
           </template>
         </el-table-column>
-        <el-table-column label="总体耗时">
+        <el-table-column label="总体耗时（min）">
           <template slot-scope="scope">
             {{ scope.row.spentTotalTime }}
           </template>
