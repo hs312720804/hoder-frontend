@@ -140,6 +140,7 @@
           </div>
         </div>
         <c-table
+          :props="allTableData.crowdIncomeDetail.props"
           :data="allTableData.crowdIncomeDetail.data"
           :header="allTableData.crowdIncomeDetail.header"
         ></c-table>
@@ -180,6 +181,7 @@
 
         </div>
         <c-table
+          :props="allTableData.linkIncomeDetail.props"
           :header="allTableData.linkIncomeDetail.header"
           :data="allTableData.linkIncomeDetail.data"
         ></c-table>
@@ -192,6 +194,7 @@
           </div>
         </div>
         <c-table
+          :props="allTableData.top10FilmAnalyze.props"
           :header="allTableData.top10FilmAnalyze.header"
           :data="allTableData.top10FilmAnalyze.data"
         ></c-table>
@@ -213,6 +216,13 @@ export default {
   },
   created () {
     console.log('val ---> created', this.$route.query.crowdId)
+    // 表格设置最大高度，超过则滚动
+    for (const key in this.allTableData) {
+      this.allTableData[key].props = {
+        maxHeight: 400,
+        stripe: true
+      }
+    }
   },
   watch: {
     $route: {

@@ -3,7 +3,7 @@
     <!-- tableData==={{ tableData }}
     <hr/>
     tableHeader==={{ tableHeader }} -->
-    <el-table :data="tableData">
+    <el-table :data="tableData" max-height="450" :stripe="true">
       <template v-for="item in tableHeader">
         <table-column
           v-if="item.children && item.children.length"

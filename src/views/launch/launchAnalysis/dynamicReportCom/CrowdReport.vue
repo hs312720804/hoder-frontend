@@ -33,31 +33,30 @@
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
-        <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
-          <el-radio :label="0">产品包</el-radio>
-          <el-radio :label="1">
-            内容运营
-            <el-popover
-              placement="top"
-              width="400"
-              trigger="hover"
-             >
-              投后报告解释：<br/><br/>
-              内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/><br/>
-              产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
-              <span slot="reference" class="priority-tip">?</span>
-            </el-popover>
-          </el-radio>
-        </el-radio-group>
-        <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
-        <a :href="downloadUrl" download ref="download_Url"></a>
-        <el-button type="success" @click="handleDownload">导出数据</el-button>
+        <span>Tips: 当前投放周期较长，仅展示最近60天的数据</span>
+
+        <span>
+          <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
+            <el-radio :label="0">产品包</el-radio>
+            <el-radio :label="1">
+              内容运营
+              <el-popover
+                placement="top"
+                width="400"
+                trigger="hover"
+               >
+                投后报告解释：<br/><br/>
+                内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/><br/>
+                产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
+                <span slot="reference" class="priority-tip">?</span>
+              </el-popover>
+            </el-radio>
+          </el-radio-group>
+          <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleDownload">导出数据</el-button>
+        </span>
       </div>
-      <!-- <span style="font-size: 12px; color: gray; float: right;">
-        投后报告解释：<br/>
-        内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/>
-        产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
-      </span> -->
 
       <div id='a1' class="table-wrap">
         <div class="title-layout">
@@ -265,8 +264,13 @@ export default {
     DynamicTable
   },
   created () {
-    console.log('val ---> created', this.$route.query.crowdId)
-
+    // 表格设置最大高度，超过则滚动
+    for (const key in this.allTableData) {
+      this.allTableData[key].props = {
+        maxHeight: 400,
+        stripe: true
+      }
+    }
     // this.initData()
   },
   watch: {
@@ -390,7 +394,7 @@ export default {
       }
 
       this.$service.getDynamicCrowdReportA(params).then(res => {
-        // const res = crowdData
+      // const res = crowdData
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -422,9 +426,13 @@ export default {
       // 折线图数据
       const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
       const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
+
+      // 柱状图数据
       const reportGroupSumArup = this.getChartData2(res.reportGroupSum.data, 'arup')
       const reportGroupSumPriceTotal = this.getChartData2(res.reportGroupSum.data, 'priceTotal')
       const reportGroupSumPayRate = this.getChartData2(res.reportGroupSum.data, 'payRate')
+
+      // 双向柱状图
       const reportGroupSumTwoWay = this.getChartData3(res.reportGroupSum.data)
 
       // console.log('vipPlay---->', vipPlay)
@@ -1604,5 +1612,5 @@ export default {
   }
   .export-button
     display flex
-    justify-content flex-end
+    justify-content space-between
 </style>
