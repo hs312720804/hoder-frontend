@@ -1494,7 +1494,7 @@ export default {
       })
       this.getServicerLoading = true
       this.$service.getReceptionistList(parmas).then(res => {
-        this.servicer = res.data || []
+        this.servicer = res ? res.data : []
         this.selectedServicer = {}
         this.entryList = []
         this.exportList = []
