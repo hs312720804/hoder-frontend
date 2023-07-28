@@ -2,6 +2,7 @@ import Vue from 'vue'
 import Router from 'vue-router'
 import routes from './routes'
 import { Notification } from 'element-ui'
+import utils from '@/services/utils'
 
 Vue.use(Router)
 function beforeEach (to, from, next) {
@@ -26,11 +27,14 @@ function beforeEach (to, from, next) {
   }).catch(() => {
     // catch 中 从别的页面跳转至登录页，被认为是 token 失效
     if (from.path !== '/' && from.name !== 'login' && to.name === 'login' && !to.params.logout) {
+      // // 先关闭所有的实例
+      // Notification.closeAll()
+
       // 提示权限过期
-      Notification.error({
+      // - resetNotification: 避免重复提示信息
+      utils.resetNotification.error({
         title: '提示',
         message: '登录超时，请重新登录'
-        // duration: 0
       })
     }
     if (to.name === 'login') {

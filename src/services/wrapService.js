@@ -1,7 +1,7 @@
 import { Message, Notification, MessageBox } from 'element-ui'
 import router from '@/router'
 import Vue from 'vue'
-import onMessage from './utils'
+import utils from './utils'
 
 function wrapService (service) {
   const $service = {
@@ -23,18 +23,18 @@ function wrapService (service) {
           })
           .catch((error) => { // 错误处理
             if (error && error.code && error.code === '2000') { // 业务错误
-              Message({
-                type: 'error',
-                message: error.message
-              })
+              // Message({
+              //   type: 'error',
+              //   message: error.message
+              // })
 
               // const msg = 'NullPointException##################'
               // const msg = '操作失败'
               // const msg = '操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败'
-              // onMessage({
-              //   message: error.message,
-              //   apiUrl: `${key}`
-              // })
+              utils.onMessage({
+                message: error.message,
+                apiUrl: `${key}`
+              })
 
               return Promise.reject(error)
             } else { // 网络错误
@@ -51,7 +51,8 @@ function wrapService (service) {
                 message = null
               }
               if (message) {
-                Notification.error({
+                // 避免重复错误提示
+                utils.resetNotification.error({
                   message: message
                 })
               }
