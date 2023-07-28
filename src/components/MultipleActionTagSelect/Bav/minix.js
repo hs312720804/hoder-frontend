@@ -696,6 +696,16 @@ export default {
     },
 
     getDefaultChildObj () {
+      if (this.childItem.tagCode === 'BAV0013' || this.childItem.tagCode === 'BAV0014') {
+        this.defaultChildObj.perCountValue = {
+          name: '',
+          value: '',
+          field: '',
+          operator: '=',
+          type: '',
+          multipleSelect: false
+        }
+      }
       return JSON.parse(JSON.stringify(this.defaultChildObj))
     },
 
@@ -902,18 +912,19 @@ export default {
       const reverseSelect = reverseSelectAttr ? this.childItem.bav.reverseSelect : false // 反选
 
       vals.forEach(val => {
-        if (!val) return
+        // 【购买行为】BAV0003 中有的选项的 value 为空，因此这里不拦截【购买行为】
+        if (!val && this.childItem.tagCode !== 'BAV0003') return
         let obj = {}
         let lastNumberObj = {}
         if (this.childItem.tagCode === 'BAV0013' || this.childItem.tagCode === 'BAV0014') {
           // 【续费包签约状态 - BAV0013】、【连续包签约-续费-解约次数 - BAV0014】 最后一级不给默认 value
           lastNumberObj = [
             {
-              name: '',
+              name: '产品包ID',
               value: '',
-              field: '',
+              field: 'product_id',
               operator: '=',
-              type: '',
+              type: 'string',
               multipleSelect: false
             }
           ]

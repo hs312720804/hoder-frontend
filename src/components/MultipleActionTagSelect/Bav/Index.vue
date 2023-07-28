@@ -495,7 +495,7 @@
                               :key="'typeInputValue' + index2"
                               class="flex-column"
                             >
-                              <!-- 第5级 -->
+                              <!-- 第5级 选择任意产品包-->
                               <span class="flex-row">
                                 <span class="w100">{{ item4.name }}</span>
                                 <el-select
@@ -819,6 +819,9 @@
             <span class="w100">{{ item.name }}</span>
             <!-- perCountValue 是后期新增的字段，因此需要兼容之前的数据
                  v-else 里面就是旧版本的数据格式
+
+                 - perCountValue 的作用是为了后期新增下拉框或输入框，
+                 - perCountValue 里面存储的是次数、天数的数据。
             -->
             <template v-if="item.perCountValue">
 
@@ -3392,7 +3395,6 @@
                   childItem: item,
                   level: 2,
                   hasChild: true,
-                  extra: {levelOneValue: item.value}
                 })"
               >
                 <template v-for="item in getBehaviorAttrList(2)">
@@ -3435,14 +3437,72 @@
                   </el-select>
                   -->
                   <!-- {{ item2 }} -->
-                  <template v-if="childItem.tagCode === 'BAV0013'">
-                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_days : []" :childItem="childItem"></Type>
+
+                  <!-- perCountValue 是后期新增的字段，因此需要兼容之前的数据
+                        v-else 里面就是旧版本的数据格式
+
+                        - perCountValue 的作用是为了后期新增下拉框或输入框，
+                        - perCountValue 里面存储的是次数、天数的数据。
+                  -->
+
+                  <!-- 根据 item2.child[0].field === 'product_id' 来判断是否为新版
+                        - 如果是新版 就用新版的交互：增加了一个输入搜索框，次数天数组件 中数据来源是 perCountValue
+                        - 如果是旧版： 就没有输入搜索框，只有一个次数天数组件
+                  -->
+                  <!-- {{ item2.child[0].field }} -->
+
+                  <template v-if="item2.child[0].field === 'product_id'">
+                    <span
+                      v-for="(item3, index2) in item2.child"
+                      :key="'typeInputValue' + index2"
+                      class="flex-row"
+                    >
+                      <span class="flex-column">
+                        <div class="flex-row">
+                          <!-- <Bav0012 v-if="!!item2.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012> -->
+                          <el-select
+                            v-model="item3.value"
+                            style="width: 150px"
+                            filterable
+                            remote
+                            placeholder="请输入产品包ID"
+                            clearable
+                            :remote-method="(query) => {  GouMaiRemoteMethod(query, '') }"
+                            :loading="loading">
+                            <el-option
+                              v-for="(op, index) in gouMaiPackageIdOptions"
+                              :key="'package' + op.vipId + index"
+                              :label="op.vipId"
+                              :value="op.vipId">
+                            </el-option>
+                          </el-select>
+
+                          <!-- 次数、天数 -->
+                          <!-- <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []"  :childItem="childItem"></Type> -->
+                          <template v-if="childItem.tagCode === 'BAV0013'">
+                            <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_days : []" :childItem="childItem"></Type>
+                          </template>
+                          <template v-else-if="childItem.tagCode === 'BAV0014'">
+                            <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_type : []" :childItem="childItem"></Type>
+                          </template>
+                          <template v-else-if="childItem.tagCode === 'BAV0015'">
+                            <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.perCountValue" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                          </template>
+                        </div>
+                      </span>
+                    </span>
                   </template>
-                  <template v-else-if="childItem.tagCode === 'BAV0014'">
-                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_type : []" :childItem="childItem"></Type>
-                  </template>
-                  <template v-else-if="childItem.tagCode === 'BAV0015'">
-                    <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+
+                  <template v-else>
+                    <template v-if="childItem.tagCode === 'BAV0013'">
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_days : []" :childItem="childItem"></Type>
+                    </template>
+                    <template v-else-if="childItem.tagCode === 'BAV0014'">
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.keep_type : []" :childItem="childItem"></Type>
+                    </template>
+                    <template v-else-if="childItem.tagCode === 'BAV0015'">
+                      <Type v-if="!childItem.bav.reverseSelect" ref="typeRef" :item3="item2.child[0]" :options="bavAttrList && bavAttrList.dict ? bavAttrList.dict.attrType : []" :childItem="childItem"></Type>
+                    </template>
                   </template>
 
                 </div>
@@ -3633,8 +3693,8 @@
 
       </span>
 
-      <!-- 111111111111111111111111111 -->
-      <!-- <div>{{ childItem }}</div> -->
+      <!-- 111111111111111111111111111
+      <div>{{ childItem }}</div> -->
     </div>
   </el-form>
 </template>
