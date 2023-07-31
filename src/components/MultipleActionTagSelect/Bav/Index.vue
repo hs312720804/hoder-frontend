@@ -495,9 +495,29 @@
                               :key="'typeInputValue' + index2"
                               class="flex-column"
                             >
-                              <!-- 第5级 选择任意产品包-->
+                              <!-- 第5级 选择任意产品包等-->
                               <span class="flex-row">
-                                <span class="w100">{{ item4.name }}</span>
+                                <span class="w115 bav03-hover">
+                                  {{ item4.name }}
+                                  <span class="bav03-hover-show-item">
+                                    <!-- add -->
+                                    <el-button
+                                      v-if="item4.name === '任意产品包'"
+                                      type="text"
+                                      icon="el-icon-circle-plus"
+                                      @click="addBAV0003ChildItem(item4, index2, item3.child)"
+                                      style="font-size: 14px;"
+                                    ></el-button>
+                                    <!-- delete -->
+                                    <el-button
+                                      v-if="item4.name === '任意产品包'"
+                                      type="text"
+                                      icon="el-icon-delete"
+                                      @click="cutBAV0003ChildItem(index2, item3.child)"
+                                      style="font-size: 14px; color: #F56C6C"
+                                    ></el-button>
+                                  </span>
+                                </span>
                                 <el-select
                                   v-model="item4.childCheckedVal"
                                   style="width: 150px"
@@ -509,11 +529,11 @@
                                     level: 5
                                   })"
                                 >
-                                  <template v-for="attrChildItem in getBehaviorAttrList(5)">
+                                  <template v-for="(attrChildItem, index3) in getBehaviorAttrList(5)">
                                     <el-option
                                       :value="attrChildItem.value"
                                       :label="attrChildItem.name"
-                                      :key="attrChildItem.value"
+                                      :key="'attrChildItem' + index3"
                                     >
                                     </el-option>
                                   </template>
