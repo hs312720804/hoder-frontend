@@ -246,11 +246,36 @@
                         {{ chart.title }}
                       </span>
 
+                      <!-- {{ key }} -->
+                      <!-- 各卡种下单趋势 -->
+                      <el-radio-group v-model="radioType"
+                        v-if="key === 'orderPopulationTrendOfEachCard' || key === 'orderNumTrendOfEachCard'"
+                        class="radio-type"
+                      >
+                        <el-radio :label="0">下单人数</el-radio>
+                        <el-radio :label="1">下单次数</el-radio>
+                      </el-radio-group>
+
+                      <!-- 各卡种付费趋势 -->
+                      <el-radio-group v-model="radioType2"
+                        v-if="key === 'payPopulationTrendOfEachCard' || key === 'payAmountTrendOfEachCard'"
+                        class="radio-type">
+                        <el-radio :label="0">付费人数</el-radio>
+                        <el-radio :label="1">付费次数</el-radio>
+                      </el-radio-group>
+
                     </div>
 
                     <div class="unit-content" v-if="show && chart.title">
                       <!-- {{ allChartData[key] && allChartData[key].series }} -->
-                      <div v-if="allChartData[key] && allChartData[key].series && allChartData[key].series.length > 0" :ref="key" :id="key" class="chart-div"></div>
+                      <div
+                        v-if="allChartData[key]
+                          && allChartData[key].series
+                          && allChartData[key].series.length > 0"
+                        :ref="key"
+                        :id="key"
+                        class="chart-div">
+                      </div>
                       <div v-else class="chart-div">
                         <el-empty description="暂无数据"></el-empty>
                       </div>
@@ -342,6 +367,8 @@ export default {
   components: {},
   data () {
     return {
+      radioType: 0,
+      radioType2: 0,
       visible: false,
       statusMap: {
         0: '分析中',
@@ -408,8 +435,10 @@ export default {
           pathPkgPay: { type: 'bar', title: '影视VIP付费路径人数及占比', span: 8 }
         },
         {
-          empty1: { span: 8 },
-          empty2: { span: 8 },
+          orderPopulationTrendOfEachCard: { type: 'line', title: '影视VIP各卡总下单趋势', span: 8 },
+          payPopulationTrendOfEachCard: { type: 'line', title: '影视VIP各卡总付费趋势', span: 8 },
+          // orderNumTrendOfEachCard: { type: 'line', title: '影视VIP各卡总下单趋势', span: 8 },
+          // payAmountTrendOfEachCard: { type: 'line', title: '影视VIP各卡总付费趋势', span: 8 },
           productTypePkgPay: { type: 'bar', title: '影视VIP付费产品包分类人数及占比', span: 8 }
         }
       ],
@@ -470,6 +499,28 @@ export default {
 
         this.checkAll2 = cityOptions2.every(item => val.indexOf(item) > -1)
         this.isIndeterminate2 = cityOptions2.some(item => val.indexOf(item) > -1) && !this.checkAll2
+      }
+    },
+    // 各卡种下单趋势，切换radio
+    radioType: {
+      handler (val) {
+        const key = val === 0 ? 'orderPopulationTrendOfEachCard' : 'orderNumTrendOfEachCard'
+        this.showLine(this.allChartData[key], 'orderPopulationTrendOfEachCard')
+        this.$nextTick(() => {
+          const chart = this.allCharts[key]
+          chart.resize()
+        })
+      }
+    },
+    // 各卡种付费趋势，切换radio
+    radioType2: {
+      handler (val) {
+        const key = val === 0 ? 'payPopulationTrendOfEachCard' : 'payAmountTrendOfEachCard'
+        this.showLine(this.allChartData[key], 'payPopulationTrendOfEachCard')
+        this.$nextTick(() => {
+          const chart = this.allCharts[key]
+          chart.resize()
+        })
       }
     }
   },
@@ -738,6 +789,8 @@ export default {
     fetchAllData (sourceName) {
       this.loading = true
       const originParams = this.formInline
+      this.radioType = 0 // 重置
+      this.radioType2 = 0 // 重置
       const params = {
         crowdId: originParams.crowdId,
         sourceNameList: originParams.sourceNameList.join(','),
@@ -746,6 +799,14 @@ export default {
         isDelCache: originParams.isDelCache,
         sourceName: sourceName || '' // 点击柱状图查询单个业务数据
       }
+      // const params = {
+      //   crowdId: 10013,
+      //   sourceNameList: '优酷影视VIP,芒果全屏VIP,亲子VIP',
+      //   startDate: '2023-06-20',
+      //   endDate: '2023-06-25',
+      //   isDelCache: originParams.isDelCache,
+      //   sourceName: sourceName || '' // 点击柱状图查询单个业务数据
+      // }
       // 获取所有图表数据
       this.$service.rightsInterestsOutcome(params).then(res => {
         // this.allData = res || {}
@@ -1394,5 +1455,9 @@ export default {
   font-size: 12px;
   color: #C0C4CC;
   font-weight 400
+}
+.radio-type {
+  float: right;
+  margin-top: 22px;
 }
 </style>
