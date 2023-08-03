@@ -108,10 +108,11 @@ export default {
         defaultEdge: {
           // shape: 'polyline',
           style: {
-            radius: 20,
-            offset: 30,
+            // radius: 50,
+            // offset: 50,
             endArrow: true,
-            stroke: '#F6BD16'
+            stroke: '#F6BD16',
+            lineWidth: 2
           }
         },
         modes: {
