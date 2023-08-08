@@ -727,10 +727,17 @@ export default {
     // 设置初始化展示数据
     setDefaultData () {
       // 默认展示的数据参数
+      // this.formInline = {
+      //   crowdId: '18321',
+      //   sourceNameList: ['家庭影院VIP'],
+      //   timeRange: ['2023-04-25', '2023-04-30'],
+      //   isDelCache: 0
+      // }
+
       this.formInline = {
-        crowdId: '18321',
-        sourceNameList: ['家庭影院VIP'],
-        timeRange: ['2023-04-25', '2023-04-30'],
+        crowdId: '20101',
+        sourceNameList: ['优酷影视VIP'],
+        timeRange: ['2023-08-03', '2023-08-08'],
         isDelCache: 0
       }
       this.$nextTick(() => {
@@ -758,9 +765,9 @@ export default {
           } else {
             this.endTime = this.$moment().format('YYYY-MM-DD')
           }
-          if (this.startTime && this.endTime) {
-            this.formInline.timeRange = [this.startTime, this.endTime]
-          }
+          // if (this.startTime && this.endTime) {
+          //   this.formInline.timeRange = [this.startTime, this.endTime]
+          // }
           resolve(res)
         }).catch((err) => {
           reject(err)
