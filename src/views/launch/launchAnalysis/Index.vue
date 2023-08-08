@@ -746,7 +746,7 @@ export default {
         this.$service.crowdEdit({ crowdId }).then(res => {
           const crowdInfo = res.policyCrowds
           this.crowdName = crowdInfo.crowdName
-          this.startTime = crowdInfo.launchTime || '' // 投放日期 就是可选最小时间
+          this.startTime = res.launchTime || '' // 投放日期 就是可选最小时间
 
           // 下架
           const isOffShelf = crowdInfo.putway === 0 // 【1：上架， 0：下架】
