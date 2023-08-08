@@ -15,6 +15,7 @@
           :key="item.id"
           :label="item.label"
           :prop="item.prop"
+          :sortable="item.sortable"
         >
        </el-table-column>
       </template>
