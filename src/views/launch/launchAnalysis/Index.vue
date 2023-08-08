@@ -3,7 +3,7 @@
   <!-- {{ formInline }} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
     <el-form-item label="人群ID:" prop="crowdId">
-      <el-input v-model="formInline.crowdId" @change="searchCrowd" placeholder="请输入" clearable></el-input>
+      <el-input v-model="formInline.crowdId" @change="getCrowdInfo" placeholder="请输入" clearable></el-input>
     </el-form-item>
     <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
       {{ crowdName }}
@@ -738,7 +738,7 @@ export default {
       })
     },
 
-    searchCrowd () {
+    getCrowdInfo () {
       const crowdId = this.formInline.crowdId
       this.startTime = ''
       this.endTime = ''
@@ -820,7 +820,7 @@ export default {
 
       // 先查询人群是否存在，若存在，再去分
       try {
-        await this.searchCrowd()
+        await this.getCrowdInfo()
         this.fetchAllData(sourceName)
       } catch {
         this.loading = false
