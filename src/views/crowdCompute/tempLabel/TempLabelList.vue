@@ -58,32 +58,34 @@
             <!-- {{ scope.row.history.status }} -->
             <div v-if="scope.row.history.status">
               <!-- 状态为计算中，显示进度 -->
-              <div v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
+              <template v-if="scope.row.history.status >=20 && scope.row.history.status < 30">
                 {{ scope.row.history.process }}
-              </div>
-              <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
+              </template>
+              <template v-else-if="(launchStatusEnum[scope.row.history.status]).code === 3">
                 计算完成
-              </div>
-              <div v-else-if="scope.row.history.status === 41">
+              </template>
+              <template v-else-if="scope.row.history.status === 41">
                 结果为0
-              </div>
-              <!-- 新增计算中时是否是人群派对中 -->
-              <div
+              </template>
+              <!-- 新增计算中时是否是人群排队中 -->
+              <template
                 v-else-if="((launchStatusEnum[scope.row.history.status]).code === 2 && (launchStatusEnum[scope.row.history.status]).childrenCode === 23)">
                 {{ (launchStatusEnum[scope.row.history.status]).childrenName }}
-              </div>
-              <div
+              </template>
+              <template
                 v-else-if="(launchStatusEnum[scope.row.history.status]).code === 1 || (launchStatusEnum[scope.row.history.status]).code === 4 || (launchStatusEnum[scope.row.history.status]).code === 7">
                 <span v-if="crowdType === 4">计算</span>
                 <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-              </div>
-              <div v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
+              </template>
+              <span v-else-if="(launchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                 计算失败
                 <!-- ，<el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
-              </div>
-              <div v-else>
+              </span>
+              <template v-else>
                 {{ (launchStatusEnum[scope.row.history.status]).name }}
-              </div>
+              </template>
+
+              <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
             </div>
           </template>
         </el-table-column>
@@ -218,6 +220,7 @@
 </template>
 
 <script>
+import TipPopover from '../components/tipPopover.vue'
 
 export default {
   name: 'TempLabel',
@@ -290,7 +293,6 @@ export default {
           //             }
           //         )]
           //         )
-
           //     }
           // },
           {
@@ -359,11 +361,9 @@ export default {
       this.selectedRow = row
       this.getDataMonitor()
     },
-
     getDataMonitor () {
       this.handleGetMonitorTableList()
     },
-
     handleGetMonitorTableList () {
       const monitorRangeTime = this.monitorRangeTime || []
       const startDate = monitorRangeTime[0] || ''
@@ -383,7 +383,6 @@ export default {
         }
       })
     },
-
     // 每页显示数据量变更, 如每页显示10条变成每页显示20时,val=20
     handleMonitorSizeChange (val) {
       this.monitorOutForm.pageSize = val
@@ -391,13 +390,11 @@ export default {
       this.monitorOutForm.pageNum = 1
       this.handleGetMonitorTableList()
     },
-
     // 页码变更, 如第1页变成第2页时,val=2
     handleMonitorCurrentChange (val) {
       this.monitorOutForm.pageNum = val
       this.handleGetMonitorTableList()
     },
-
     fetchData () {
       // eslint-disable-next-line no-debugger
       const filter = {
@@ -453,11 +450,9 @@ export default {
       console.log('status', status)
       if (status === 1) {
         // this.$service.downloadMacFile({ launchCrowdId }).then(res => {
-
         // })
         // 下载文件
         this.launchedExportUrl = '/api/macExport/downloadMacFile?launchCrowdId=' + launchCrowdId
-
         this.$nextTick(() => {
           this.$refs.launchedDownLoad.click()
         })
@@ -579,7 +574,8 @@ export default {
     handleCheckListChange (val) {
       this.$emit('change-checkList', val)
     }
-  }
+  },
+  components: { TipPopover }
 }
 </script>
 

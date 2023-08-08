@@ -1225,25 +1225,28 @@
             <el-table-column label="状态" width="150">
               <template slot-scope="scope">
                   <div v-if="scope.row.history.status">
-                      <div v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
+                      <template v-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 3">
                           计算完成
-                      </div>
+                      </template>
                       <!-- 新增计算中时是否是人群派对中 -->
-                      <div v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
+                      <template v-else-if="((independentLaunchStatusEnum[scope.row.history.status]).code === 2 && (independentLaunchStatusEnum[scope.row.history.status]).childrenCode === 23)">
                           {{ (independentLaunchStatusEnum[scope.row.history.status]).childrenName }}
-                      </div>
-                      <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
+                      </template>
+                      <template v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 1 || (independentLaunchStatusEnum[scope.row.history.status]).code === 4 || (independentLaunchStatusEnum[scope.row.history.status]).code === 7"
                       >
                           <span v-if="crowdType === 4">计算</span>
                           <el-button type="text" v-else @click="calculate(scope.row)">计算</el-button>
-                      </div>
+                      </template>
                       <div v-else-if="(independentLaunchStatusEnum[scope.row.history.status]).code === 5" style="color: red">
                           计算失败
                           <!-- <el-button type="text" @click="calculate(scope.row)">重试</el-button> -->
                       </div>
-                      <div v-else>
+                      <template v-else>
                           {{ (independentLaunchStatusEnum[scope.row.history.status]).name }}
-                      </div>
+                      </template>
+
+                      <TipPopover :launchStatusEnum="launchStatusEnum" :status="scope.row.history.status"></TipPopover>
+
                   </div>
               </template>
           </el-table-column>
@@ -1660,6 +1663,7 @@ import numOrTextEdit from '../../components/EditNumOrText'
 import viewEffectDialog from '../launch/viewEffectDialog'
 import LinkAnalysis from './LinkAnalysis/Index'
 import { dataSourceColorEnum } from '@/utils/tags.js'
+import TipPopover from '@/views/crowdCompute/components/tipPopover.vue'
 
 export default {
   components: {
@@ -1669,7 +1673,8 @@ export default {
     CommitHistoryDialog,
     numOrTextEdit,
     viewEffectDialog,
-    LinkAnalysis
+    LinkAnalysis,
+    TipPopover
   },
   data () {
     const checkFinanceCode = (rule, value, callback) => {
