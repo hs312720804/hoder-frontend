@@ -3,7 +3,7 @@
   <!-- {{ formInline }} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
     <el-form-item label="人群ID:" prop="crowdId">
-      <el-input v-model="formInline.crowdId" placeholder="请输入" clearable></el-input>
+      <el-input v-model="formInline.crowdId" @change="searchCrowd" placeholder="请输入" clearable></el-input>
     </el-form-item>
     <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
       {{ crowdName }}
@@ -17,6 +17,7 @@
           start-placeholder="开始日期"
           end-placeholder="结束日期"
           value-format="yyyy-MM-dd"
+          :picker-options="getPickerOptions"
         >
       </el-date-picker>
           <!-- :picker-options="pickerOptions" -->
@@ -367,6 +368,8 @@ export default {
   components: {},
   data () {
     return {
+      startTime: '',
+      endTime: '',
       radioType: 0,
       radioType2: 0,
       visible: false,
@@ -487,6 +490,17 @@ export default {
 
     // 历史搜索记录
     this.handleGetRightsInterestsSearchRecord()
+  },
+  computed: {
+    getPickerOptions () {
+      return {
+        disabledDate: (time) => {
+          const minTime = +new Date(this.startTime)
+          const maxTime = +new Date(this.endTime)
+          return time.getTime() > maxTime || time.getTime() < minTime
+        }
+      }
+    }
   },
   watch: {
     'formInline.sourceNameList': {
@@ -724,6 +738,35 @@ export default {
       })
     },
 
+    searchCrowd () {
+      const crowdId = this.formInline.crowdId
+      this.startTime = ''
+      this.endTime = ''
+      return new Promise((resolve, reject) => {
+        this.$service.crowdEdit({ crowdId }).then(res => {
+          const crowdInfo = res.policyCrowds
+          this.crowdName = crowdInfo.crowdName
+          this.startTime = crowdInfo.launchTime || '' // 投放日期 就是可选最小时间
+
+          // 下架
+          const isOffShelf = crowdInfo.putway === 0 // 【1：上架， 0：下架】
+          // 删除
+          const isDelete = crowdInfo.delFlag === 2 // 【 1: 正常,  2：删除】
+
+          if (isOffShelf || isDelete) {
+            this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')
+          } else {
+            this.endTime = this.$moment().format('YYYY-MM-DD')
+          }
+          if (this.startTime && this.endTime) {
+            this.formInline.timeRange = [this.startTime, this.endTime]
+          }
+          resolve(res)
+        }).catch((err) => {
+          reject(err)
+        })
+      })
+    },
     // 点击分析 或者 点击柱状图 触发
     onSubmit (sourceName) {
       // console.log('submit!')
@@ -754,7 +797,7 @@ export default {
     },
 
     // 手动点击分析调用 或者 点击历史记录分析调用
-    initChart (sourceName) {
+    async initChart (sourceName) {
       // this.allChartData = {}
       this.crowdName = ''
       // 销毁定时器
@@ -775,14 +818,13 @@ export default {
       //   sourceName: sourceName || ''
       // }
 
-      // 先查询人群是否存在，若存在，再去分析
-      this.$service.crowdEdit({ crowdId: this.formInline.crowdId }).then(res => {
-        this.crowdName = res.policyCrowds.crowdName
-
+      // 先查询人群是否存在，若存在，再去分
+      try {
+        await this.searchCrowd()
         this.fetchAllData(sourceName)
-      }).catch(e => {
+      } catch {
         this.loading = false
-      })
+      }
     },
 
     // 查询图表数据
