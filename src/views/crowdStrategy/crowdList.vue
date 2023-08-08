@@ -1607,7 +1607,7 @@
 
         <el-form-item label="如果命中设备量(去重)：" prop="compareType">
 
-          <el-select v-model="hitForm.compareType" style="width: 105px">
+          <el-select v-model="hitForm.compareType" style="width: 75px">
             <el-option value="="></el-option>
             <el-option value=">="></el-option>
             <el-option value="<="></el-option>
@@ -1615,7 +1615,14 @@
             <el-option value="<"></el-option>
           </el-select>
           <el-form-item label="" prop="hitSize">
-            <el-input v-model="hitForm.hitSize" placeholder="请输入" clearable style="width: 105px; margin: 0 10px"></el-input>
+            <el-input-number
+              v-model="hitForm.hitSize"
+              placeholder="请输入"
+              clearable
+              min="0"
+              max="1000000"
+              style="width: 142px; margin: 0 10px">
+            </el-input-number>
             则告警到飞书
           </el-form-item>
 
@@ -3262,7 +3269,7 @@ export default {
           break
         case 'dynamicReport':
           // 动态实验报告
-          this.goToDynamicCrowdReport(this.currentCid, row.crowdName)
+          this.goToDynamicCrowdReport(this.currentCid, row.crowdName, row.launchTime)
           break
         case 'nomalyMonitoring':
           // 流转异常监控
@@ -3273,8 +3280,8 @@ export default {
           break
       }
     },
-    goToDynamicCrowdReport (crowdId, crowdName) {
-      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName } })
+    goToDynamicCrowdReport (crowdId, crowdName, launchTime) {
+      this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, launchTime } })
     },
     goToNomalyMonitoring (crowdId, crowdName) {
       this.$router.push({ path: '/dynamicReport', query: { crowdId, crowdName, error: true } })
