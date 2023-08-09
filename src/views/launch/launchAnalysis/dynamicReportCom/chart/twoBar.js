@@ -26,7 +26,6 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
     return key.name
   })
   const defaultYAxisOption = {
-    width: '50px',
     triggerEvent: true,
     scale: true,
     axisLabel: {
@@ -116,11 +115,11 @@ export function drawTwoBarChart ({ title1, title2 }, xData, yData, xunit = '', y
       }
     ],
     grid: [{
-      left: 50,
+      left: 60,
       right: 50,
       height: '35%'
     }, {
-      left: 50,
+      left: 60,
       right: 50,
       top: '60%',
       height: '35%'

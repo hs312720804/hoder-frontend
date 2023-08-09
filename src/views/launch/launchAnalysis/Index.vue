@@ -262,7 +262,7 @@
                         v-if="key === 'payPopulationTrendOfEachCard' || key === 'payAmountTrendOfEachCard'"
                         class="radio-type">
                         <el-radio :label="0">付费人数</el-radio>
-                        <el-radio :label="1">付费次数</el-radio>
+                        <el-radio :label="1">付费金额</el-radio>
                       </el-radio-group>
 
                     </div>
