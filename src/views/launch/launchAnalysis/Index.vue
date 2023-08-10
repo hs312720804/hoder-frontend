@@ -3,7 +3,7 @@
   <!-- {{ formInline }} -->
   <el-form :inline="true" :model="formInline" :rules="rules" class="demo-form-inline" ref="ruleForm">
     <el-form-item label="人群ID:" prop="crowdId">
-      <el-input v-model="formInline.crowdId" @change="getCrowdInfo" placeholder="请输入" clearable></el-input>
+      <el-input v-model="formInline.crowdId" @change="handleChange" placeholder="请输入" clearable></el-input>
     </el-form-item>
     <el-form-item v-if="crowdName" label="人群名:" style="margin: 0 50px 0 20px">
       {{ crowdName }}
@@ -744,11 +744,15 @@ export default {
         this.onSubmit()
       })
     },
-
-    getCrowdInfo () {
+    handleChange () {
+      this.formInline.timeRange = []
+      this.getCrowdInfo('setTime')
+    },
+    getCrowdInfo (type) {
       const crowdId = this.formInline.crowdId
       this.startTime = ''
       this.endTime = ''
+      this.crowdName = ''
       return new Promise((resolve, reject) => {
         this.$service.crowdEdit({ crowdId }).then(res => {
           const crowdInfo = res.policyCrowds
@@ -765,9 +769,10 @@ export default {
           } else {
             this.endTime = this.$moment().format('YYYY-MM-DD')
           }
-          // if (this.startTime && this.endTime) {
-          //   this.formInline.timeRange = [this.startTime, this.endTime]
-          // }
+          // 如果是 crowdID change 的时候调用的，就设置分析周期
+          if (this.startTime && this.endTime && type) {
+            this.formInline.timeRange = [this.startTime, this.endTime]
+          }
           resolve(res)
         }).catch((err) => {
           reject(err)
