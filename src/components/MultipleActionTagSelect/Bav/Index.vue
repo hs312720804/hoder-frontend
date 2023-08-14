@@ -2925,6 +2925,7 @@
           <span class="flex-row" v-if="item.mapName">
             <el-select
               v-model="item.childCheckedVal[0]"
+              clearable
               style="width: 100px"
               name="oxve"
               class="input-inline"
@@ -3370,7 +3371,7 @@
         </span>
       </span>
 
-      <!-- 应用活跃 -->
+      <!-- 【续费包签约状态 - BAV0013 】 【连续包签约-续费-解约次数 - BAV0014】 【下单未支付 - BAV0015】-->
       <span class="flex-column" v-else-if="childItem.tagCode === 'BAV0013' || childItem.tagCode === 'BAV0014' || childItem.tagCode === 'BAV0015'">
         <!-- 第一级 -->
         <el-form-item prop="bav.value">
@@ -3480,7 +3481,9 @@
                       <span class="flex-column">
                         <div class="flex-row">
                           <!-- <Bav0012 v-if="!!item2.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012> -->
+                          <!-- 续费包签约状态 - BAV0013 只有该标签展示下面的下拉框 -->
                           <el-select
+                            v-if="childItem.tagCode === 'BAV0013'"
                             v-model="item3.value"
                             style="width: 150px"
                             filterable
