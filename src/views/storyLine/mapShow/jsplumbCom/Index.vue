@@ -224,7 +224,6 @@ export default {
     //   this.$nextTick(() => {
 
     //   })
-    //   console.log('22222222222222----------------->', this.dagreModel)
     //   const nodes = this.dagreModel.nodes
     //   const obj = nodes.find(item => item.id === id)
     //   return type === 'left' ? obj.x + 'px' : obj.y + 'px'
