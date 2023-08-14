@@ -938,6 +938,7 @@ export default {
       this.openMoveOrClearDialogRef.forEach(moveToRule)
       this.openMoveOrClearDialogVisible = false
     },
+    // 批量添加接待员： 确定
     confirmMultiAddServicer () {
       const allPerSetRef = this.$refs.multiAddRef.$refs.allPerSetRef
       const p = confirmMultiAddServicerFn({ allPerSetRef })
