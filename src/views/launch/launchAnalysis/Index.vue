@@ -760,9 +760,9 @@ export default {
           this.startTime = res.launchTime || '' // 投放日期 就是可选最小时间
 
           // 下架
-          const isOffShelf = crowdInfo.putway === 0 // 【1：上架， 0：下架】
+          const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
           // 删除
-          const isDelete = crowdInfo.delFlag === 2 // 【 1: 正常,  2：删除】
+          const isDelete = crowdInfo.delFlag === 2 //  【 1: 正常， 2：删除】
 
           if (isOffShelf || isDelete) {
             this.endTime = this.$moment(crowdInfo.updateTime).format('YYYY-MM-DD')

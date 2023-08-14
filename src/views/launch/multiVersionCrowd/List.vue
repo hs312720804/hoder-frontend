@@ -745,7 +745,7 @@ export default {
             prop: 'cur_version'
           },
           {
-            label: '临时人群es index',
+            label: '人群位文件名称',
             prop: 'es_index'
           },
           {

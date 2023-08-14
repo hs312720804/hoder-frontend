@@ -324,7 +324,7 @@ export default {
             prop: 'total_user'
           },
           {
-            label: '临时人群es index',
+            label: '人群位文件名称',
             prop: 'es_index'
           },
           {
