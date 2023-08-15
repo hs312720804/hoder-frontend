@@ -414,16 +414,16 @@ export default {
         params = { crowdId: this.crowdId }
       }
 
-      // this.$service.getDynamicCrowdReportA(params).then(res => {
-      const res = crowdData
-      const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
+      this.$service.getDynamicCrowdReportA(params).then(res => {
+      // const res = crowdData
+        const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
-      // 表格
-      this.setTableData(getAllData)
+        // 表格
+        this.setTableData(getAllData)
 
-      // 图表
-      this.setChartData(res)
-      // })
+        // 图表
+        this.setChartData(res)
+      })
 
       let params2 = {}
       if (this.pageType === 'story') {
