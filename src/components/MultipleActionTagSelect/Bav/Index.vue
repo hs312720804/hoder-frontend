@@ -3483,7 +3483,7 @@
                           <!-- <Bav0012 v-if="!!item2.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012> -->
                           <!-- 续费包签约状态 - BAV0013 只有该标签展示下面的下拉框 -->
                           <el-select
-                            v-if="childItem.tagCode === 'BAV0013'"
+                            v-if="childItem.tagCode === 'BAV0013' || childItem.tagCode === 'BAV0014'"
                             v-model="item3.value"
                             style="width: 150px"
                             filterable
