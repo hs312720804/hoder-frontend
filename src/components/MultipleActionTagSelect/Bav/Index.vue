@@ -3481,7 +3481,9 @@
                       <span class="flex-column">
                         <div class="flex-row">
                           <!-- <Bav0012 v-if="!!item2.mapName" :aaa="{child: childItem.bav.behaviorValue}"></Bav0012> -->
-                          <!-- 续费包签约状态 - BAV0013 只有该标签展示下面的下拉框 -->
+                          <!-- 续费包签约状态 - BAV0013 、
+                            连续包签约-续费-解约次数 - BAV0013
+                            只有该标签展示下面的下拉框 -->
                           <el-select
                             v-if="childItem.tagCode === 'BAV0013' || childItem.tagCode === 'BAV0014'"
                             v-model="item3.value"
