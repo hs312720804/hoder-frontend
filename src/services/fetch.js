@@ -95,7 +95,7 @@ export default function fetch ({
       } else if (codeFormat === 400001 || codeFormat === 9999) {
         location.href = location.origin + location.pathname + '#/login'
       } else {
-        console.log('errData==>', data)
+        // console.log('errData==>', data)
         if ((data.status && data.status == '401') || (data.statusText && data.statusText == 'No Transport')) {
           console.log('401==>', data)
           const currentUrl = window.location.href
@@ -109,7 +109,7 @@ export default function fetch ({
       }
     })
     .catch(err => {
-      console.log('errData==>', err)
+      // console.log('errData==>', err)
       // Error: Network Error
       NProgress.done()
       // 异常时，跳转至登录页

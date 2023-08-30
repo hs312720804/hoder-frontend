@@ -33,31 +33,35 @@
       <div class="title"> {{ crowdName }} - 动态实验报告</div>
 
       <div class="export-button">
-        <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
-          <el-radio :label="0">产品包</el-radio>
-          <el-radio :label="1">
-            内容运营
-            <el-popover
-              placement="top"
-              width="400"
-              trigger="hover"
-             >
-              投后报告解释：<br/><br/>
-              内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/><br/>
-              产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
-              <span slot="reference" class="priority-tip">?</span>
-            </el-popover>
-          </el-radio>
-        </el-radio-group>
-        <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
-        <a :href="downloadUrl" download ref="download_Url"></a>
-        <el-button type="success" @click="handleDownload">导出数据</el-button>
+        <span>
+          <!-- 已投放 且 投放时间距今超过60天，才显示 -->
+          <template v-if="isShow">
+            Tips: 当前投放周期较长，仅展示最近60天的数据
+          </template>
+        </span>
+
+        <span>
+          <el-radio-group v-model="pageRadio" @change="handleRadioChange" style="margin-right: 80px; margin-top: 10px;">
+            <el-radio :label="0">产品包</el-radio>
+            <el-radio :label="1">
+              内容运营
+              <el-popover
+                placement="top"
+                width="400"
+                trigger="hover"
+               >
+                投后报告解释：<br/><br/>
+                内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/><br/>
+                产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
+                <span slot="reference" class="priority-tip">?</span>
+              </el-popover>
+            </el-radio>
+          </el-radio-group>
+          <el-button type="info" @click="handleBackToCrowdList" style="margin-right: 10px;">返回人群列表</el-button>
+          <a :href="downloadUrl" download ref="download_Url"></a>
+          <el-button type="success" @click="handleDownload">导出数据</el-button>
+        </span>
       </div>
-      <!-- <span style="font-size: 12px; color: gray; float: right;">
-        投后报告解释：<br/>
-        内容运营：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的板块id或资源位id进行统计。<br/>
-        产品包：根据动态人群或故事运营配置的条件（动态流转标签，非行为标签和大数据标签）中的产品包权益进行统计或根据人群在影视订单平台中绑定的产品包权益进行统计。<br/>
-      </span> -->
 
       <div id='a1' class="table-wrap">
         <div class="title-layout">
@@ -192,6 +196,7 @@
           </div>
         </el-col>
       </el-row>
+
       <el-row :gutter="20" class="unit-row" v-for="(row, index) in rowObj3" :key="index">
         <el-col :span="chart.span" v-for="(chart, key) in row" :key="key">
           <div class="unit-box">
@@ -256,7 +261,7 @@
 <script>
 import DynamicTable from '../dynamicTable/Index.vue'
 import AutoHighLightAnchor from '../dynamicTable/autoHighLightAnchor.js'
-import { crowdData } from './crowdData.js'
+import { crowdData } from './crowdData3.js'
 import { setBarEchart } from './chart/bar.js'
 import { drawTwoBarChart } from './chart/twoBar.js'
 
@@ -265,8 +270,13 @@ export default {
     DynamicTable
   },
   created () {
-    console.log('val ---> created', this.$route.query.crowdId)
-
+    // 表格设置最大高度，超过则滚动
+    for (const key in this.allTableData) {
+      this.allTableData[key].props = {
+        maxHeight: 400,
+        stripe: true
+      }
+    }
     // this.initData()
   },
   watch: {
@@ -276,6 +286,21 @@ export default {
         // this.crowdId = 12461
         this.crowdName = this.$route.query.crowdName || ''
         this.pageType = this.$route.query.type || ''
+        const launchTime = this.$route.query.launchTime || ''
+
+        // 获取当前时间
+        const m1 = this.$moment()
+        // 获取需要对比的时间
+        const m2 = this.$moment(launchTime)
+        // 计算相差多少天 day可以是second minute
+        const day = m1.diff(m2, 'day')
+
+        if (day > 60 && !!launchTime) {
+          this.isShow = true
+        } else {
+          this.isShow = false
+        }
+
         if (this.crowdId !== '') {
           this.initData()
           this.$nextTick(() => {
@@ -390,7 +415,7 @@ export default {
       }
 
       this.$service.getDynamicCrowdReportA(params).then(res => {
-        // const res = crowdData
+      // const res = crowdData
         const getAllData = this.formatData(res) // 格式化一些数据： 千分位、百分比
 
         // 表格
@@ -422,10 +447,16 @@ export default {
       // 折线图数据
       const vipPlay = this.getChartData(res.reportDayDetail.data, 'payRate')
       const vipPlayTrend = this.getChartData(res.reportDayDetail.data, 'arup')
+
+      // 柱状图数据
       const reportGroupSumArup = this.getChartData2(res.reportGroupSum.data, 'arup')
       const reportGroupSumPriceTotal = this.getChartData2(res.reportGroupSum.data, 'priceTotal')
       const reportGroupSumPayRate = this.getChartData2(res.reportGroupSum.data, 'payRate')
-      const reportGroupSumTwoWay = this.getChartData3(res.reportGroupSum.data)
+
+      // 双向柱状图
+      const reportGroupSumTwoWay = this.getChartData3(res.reportGroupSum.data, { key1: 'payPrice', key2: 'payPriceRate', title1: '购买金额', title2: '各卡种购买金额占比' })
+      const reportGroupSumTwoWay2 = this.getChartData3(res.reportGroupSum.data, { key1: 'payUser', key2: 'payMacRate', title1: '购买用户数', title2: '购买用户数占比' })
+      const reportGroupSumTwoWay3 = this.getChartData3(res.reportGroupSum.data, { key1: 'payNum', key2: 'payNumRate', title1: '购买用户数', title2: '购买用户数占比' })
 
       // console.log('vipPlay---->', vipPlay)
       // console.log('vipPlayTrend---->', vipPlayTrend)
@@ -439,7 +470,9 @@ export default {
         reportGroupSumArup, // /客单价
         reportGroupSumPriceTotal, // 总营收
         reportGroupSumPayRate,
-        reportGroupSumTwoWay
+        reportGroupSumTwoWay,
+        reportGroupSumTwoWay2,
+        reportGroupSumTwoWay3
       }
 
       this.$nextTick(() => {
@@ -603,7 +636,7 @@ export default {
 
       return reObj
     },
-    getChartData3 (chartData) {
+    getChartData3 (chartData, { key1: barKey1, key2: barKey2, title1, title2 }) {
       const reObj = {
         xaxis: [],
         yunit: '',
@@ -611,10 +644,62 @@ export default {
         title: '',
         xunit: ''
       }
+
+      const arr = [
+        {
+          label: '产品包购买金额占比',
+          prop: 'payPriceRate',
+          children: [{
+            label: '连续包月',
+            prop: 'liaoxubaoyuePayPriceRate'
+          }, {
+            label: '包月',
+            prop: 'putongbaoyuePayPriceRate'
+          }, {
+            label: '连续包季',
+            prop: 'liaoxubaojiPayPriceRate'
+          }, {
+            label: '包季',
+            prop: 'baojiPayPriceRate'
+          }, {
+            label: '半年',
+            prop: 'bannianPayPriceRate'
+          }, {
+            label: '包年',
+            prop: 'baonianPayPriceRate'
+          }]
+
+        },
+        {
+          label: '购买单数占比',
+          prop: 'payNumRate',
+          children: [{
+            label: '连续包月',
+            prop: 'liaoxubaoyuePayNumRate'
+          }, {
+            label: '包月',
+            prop: 'putongbaoyuePayNumRate'
+          }, {
+            label: '连续包季',
+            prop: 'liaoxubaojiPayNumRate'
+          }, {
+            label: '包季',
+            prop: 'baojiPayNumRate'
+          }, {
+            label: '半年',
+            prop: 'bannianPayNumRate'
+          }, {
+            label: '包年',
+            prop: 'baonianPayNumRate'
+          }]
+
+        }
+      ]
+      const tableData = this.allTableData.reportGroupSum.tableConfig
       // const seriesKey1 = ['liaoxubaoyuePayPrice', 'putongbaoyuePayPrice', 'liaoxubaojiPayPrice', 'baojiPayPrice', 'bannianPayPrice', 'baonianPayPrice']
       // const seriesKey2 = ['liaoxubaoyuePayMacRate', 'putongbaoyuePayMacRate', 'liaoxubaojiPayMacRate', 'baojiPayMacRate', 'bannianPayMacRate', 'baonianPayMacRate']
-      const seriesKey1 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'payPrice').children
-      const seriesKey2 = this.allTableData.reportGroupSum.tableConfig.find(item => item.prop === 'userRate').children
+      const seriesKey1 = [...tableData, ...arr].find(item => item.prop === barKey1).children
+      const seriesKey2 = [...tableData, ...arr].find(item => item.prop === barKey2).children
 
       // console.log('seriesKey1--->', seriesKey1)
       // console.log('seriesKey2--->', seriesKey2)
@@ -669,7 +754,8 @@ export default {
       // console.log('seriesKey2Map------->', seriesKey2Map)
 
       reObj.series = [...seriesKey1Map, ...seriesKey2Map]
-
+      reObj.title1 = title1
+      reObj.title2 = title2
       // console.log('reObj------->', reObj)
 
       return reObj
@@ -684,13 +770,15 @@ export default {
           } else if (item[key].type === 'bar') {
             this.showBar(this.allChartData[key], key)
           } else if (item[key].type === 'twoBar') {
-            this.showTwoBar(this.allChartData[key], key) // 双向柱状图
+            const title1 = this.allChartData[key].title1 || ''
+            const title2 = this.allChartData[key].title2 || ''
+            this.showTwoBar(this.allChartData[key], key, title1, title2) // 双向柱状图
           }
         }
       })
     },
     //  双向柱状图
-    showTwoBar (data, chartID) {
+    showTwoBar (data, chartID, title1, title2) {
       if (data && data.xaxis && data.xaxis.length > 0) {
         // if (data.yunit === '%') {
         //   data.series = data.series.map(v => Number(v * 100).toFixed(2))
@@ -700,7 +788,7 @@ export default {
         const chartElement = document.getElementById(element)
         if (!chartElement) return
 
-        const options = drawTwoBarChart({ title1: '购买金额', title2: '购买用户占比' }, data.xaxis, data.series, data.xunit, data.yunit)
+        const options = drawTwoBarChart({ title1, title2 }, data.xaxis, data.series, data.xunit, data.yunit)
         const echarts = require('echarts')
         const myChart = echarts.init(chartElement)
         myChart.setOption(options, true)
@@ -903,6 +991,7 @@ export default {
   },
   data () {
     return {
+      isShow: false,
       pageType: '',
       pageRadio: 0,
       downloadUrl: undefined,
@@ -1177,7 +1266,8 @@ export default {
             {
               id: 1,
               label: '上线天数',
-              prop: 'day'
+              prop: 'day',
+              sortable: true
             },
             {
               id: 2,
@@ -1285,10 +1375,9 @@ export default {
               prop: 'baonianPayPrice'
 
             }]
-
           }, {
             label: '产品包购买用户数占比（用户产品包购买偏好）',
-            prop: 'userRate',
+            prop: 'payMacRate',
             children: [{
               label: '连续包月',
               prop: 'liaoxubaoyuePayMacRate'
@@ -1313,6 +1402,51 @@ export default {
               label: '包年',
               prop: 'baonianPayMacRate'
 
+            }]
+
+          }, {
+            label: '产品包购买用户数（用户产品包购买偏好）',
+            prop: 'payUser',
+            children: [{
+              label: '连续包月',
+              prop: 'liaoxubaoyuePayMac'
+            }, {
+              label: '包月',
+              prop: 'putongbaoyuePayMac'
+            }, {
+              label: '连续包季',
+              prop: 'liaoxubaojiPayMac'
+            }, {
+              label: '包季',
+              prop: 'baojiPayMac'
+            }, {
+              label: '半年',
+              prop: 'bannianPayMac'
+            }, {
+              label: '包年',
+              prop: 'baonianPayMac'
+            }]
+          }, {
+            label: '产品包购买单数（用户产品包购买偏好）',
+            prop: 'payNum',
+            children: [{
+              label: '连续包月',
+              prop: 'liaoxubaoyuePayNum'
+            }, {
+              label: '包月',
+              prop: 'putongbaoyuePayNum'
+            }, {
+              label: '连续包季',
+              prop: 'liaoxubaojiPayNum'
+            }, {
+              label: '包季',
+              prop: 'baojiPayNum'
+            }, {
+              label: '半年',
+              prop: 'bannianPayNum'
+            }, {
+              label: '包年',
+              prop: 'baonianPayNum'
             }]
 
           }],
@@ -1548,9 +1682,9 @@ export default {
         }
       ],
       rowObj3: [
-        {
-          reportGroupSumTwoWay: { type: 'twoBar', title: '分组内各子人群（接待员）购买金额、购买用户占比', span: 24 }
-        }
+        { reportGroupSumTwoWay: { type: 'twoBar', title: '分组内各子人群（接待员）购买金额及占比', span: 24 } },
+        { reportGroupSumTwoWay2: { type: 'twoBar', title: '分组内各子人群（接待员）购买用户数及占比', span: 24 } },
+        { reportGroupSumTwoWay3: { type: 'twoBar', title: '分组内各子人群（接待员）购买单数及占比', span: 24 } }
       ],
       allCharts: {},
       colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
@@ -1604,5 +1738,5 @@ export default {
   }
   .export-button
     display flex
-    justify-content flex-end
+    justify-content space-between
 </style>

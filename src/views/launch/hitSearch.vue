@@ -59,7 +59,7 @@
                 <div>
                     命中情况：
                     总条数： {{this.pagination.total}}
-                    <el-button type="text" @click="exportToTempLabel" class="export-to-temp">导出为临时标签</el-button>
+                    <el-button type="text" @click="exportToTempLabel" class="export-to-temp">导出为本地标签</el-button>
                 </div>
                 <div class="result">
                     <div v-for="(item,index) in list" :key="index" class="result-item">

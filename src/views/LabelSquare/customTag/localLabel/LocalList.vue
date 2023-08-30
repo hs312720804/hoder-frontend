@@ -69,7 +69,7 @@
             {{ scope.row.history.version }}
           </template>
         </el-table-column>
-        <el-table-column label="操作" width="200" v-if="!showSelection" fixed="right">
+        <el-table-column label="操作" width="250" v-if="!showSelection" fixed="right">
           <template slot-scope="scope">
             <el-button-group>
               <!--<el-button-->
@@ -96,6 +96,11 @@
               </el-button>
               <el-button type="text" @click="launchShence(scope.row)">
                 神策分析
+              </el-button>
+
+              <a :href="launchedExportUrl" download ref="launchedDownLoad"></a>
+              <el-button type="text" @click="handleExport(scope.row)">
+                异常导出
               </el-button>
               <!--<el-button-->
               <!--type="text"-->
@@ -166,6 +171,7 @@ export default {
   },
   data () {
     return {
+      launchedExportUrl: undefined,
       tableData: [],
       filter: {},
       launchName: undefined,
@@ -196,6 +202,23 @@ export default {
     }
   },
   methods: {
+    async handleExport (row) {
+      const launchCrowdId = row.launchCrowdId
+      console.log('launchCrowdId', launchCrowdId)
+      // 0   文件生成中   1  文件已经生成
+      const status = await this.$service.checkErrorMacFileIsExist({ launchCrowdId }).then(res => {
+        this.$message.info(res.msg)
+        return res.status || 0
+      })
+      console.log('status', status)
+      if (status === 1) {
+        // 下载文件
+        this.launchedExportUrl = '/api/tempCrowd/downloadErrorMacFile?launchCrowdId=' + launchCrowdId
+        this.$nextTick(() => {
+          this.$refs.launchedDownLoad.click()
+        })
+      }
+    },
     launchShence (row) {
       const launchCrowdId = row.launchCrowdId
       console.log('launchCrowdId', launchCrowdId)

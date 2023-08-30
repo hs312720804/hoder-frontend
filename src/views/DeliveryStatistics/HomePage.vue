@@ -56,12 +56,18 @@
                     <div class="unit-box">
                         <div class="unit-header clearfix">主页推荐位分人群情况</div>
                         <div class="unit-content">
-                            <div class="home-page-recommend">
-                                <div class="home-page-recommend-item" v-for="(item,index) in homePageRecommendation" :key="index">
-                                    <div class="home-page-recommend-item--number">{{cc_format_number(item.value)}}</div>
-                                    <div>{{item.name}}</div>
-                                </div>
-                            </div>
+                          <!-- <div class="crowd-all-item-container">
+                              <div class="crowd-all-item" v-for="(item,index) in homePageRecommendation" :key="index">
+                                  <div class="crowd-all-item--number">{{item.value}}</div>
+                                  <div>{{item.name}}</div>
+                              </div>
+                          </div> -->
+                          <div class="home-page-recommend">
+                              <div class="home-page-recommend-item" v-for="(item,index) in homePageRecommendation" :key="index">
+                                  <div class="home-page-recommend-item--number">{{cc_format_number(item.value)}}</div>
+                                  <div>{{item.name}}</div>
+                              </div>
+                          </div>
                         </div>
                     </div>
                 </el-col>
@@ -85,20 +91,20 @@
                 <el-col :span="12">
                     <div class="unit-box">
                         <div class="unit-header clearfix">标签覆盖情况</div>
-                        <div class="unit-content">
+                        <div class="unit-content set-short-height" >
                             <div class="tag-all-item-container">
                                 <div class="tag-all-item" v-for="(item,index) in tagAllData" :key="index">
                                     <div class="tag-all-item--number">{{cc_format_number(item.count)}}</div>
-                                    <div>{{item.name}}</div>
+                                    <div >{{item.name}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
                     <div class="unit-box margin-top20">
                         <div class="unit-header clearfix">标签使用情况</div>
-                        <div class="unit-content">
+                        <div class="unit-content set-short-height" >
                             <div class="tag-all-item-container">
-                                <div class="tag-all-item" v-for="(item,index) in tagUseData" :key="index">
+                                <div class="tag-all-item" style="width: 50%" v-for="(item,index) in tagUseData" :key="index">
                                     <div v-if="item.name === '标签使用率'" class="tag-all-item--number">{{item.value}}</div>
                                     <div v-else class="tag-all-item--number">{{cc_format_number(item.value)}}</div>
                                     <div>{{item.name}}</div>
@@ -110,7 +116,7 @@
                 <el-col :span="12">
                     <div class="unit-box">
                         <div class="unit-header clearfix">标签场景覆盖情况</div>
-                        <div class="unit-content">
+                        <div class="unit-content set-higher-height" >
                             <div ref="tagRadar" style="height:407px"></div>
                         </div>
                     </div>
@@ -121,20 +127,20 @@
                 <el-col :span="12">
                     <div class="unit-box">
                         <div class="unit-header clearfix">业务投放情况</div>
-                        <div class="unit-content">
-                            <div class="launch-all-item-container">
-                                <div class="launch-all-item" v-for="(item,index) in launchData" :key="index">
-                                    <div class="launch-all-item--number">{{cc_format_number(item.count)}}</div>
+                        <div class="unit-content set-short-height">
+                            <div class="tag-all-item-container">
+                                <div class="tag-all-item" v-for="(item,index) in launchData" :key="index">
+                                    <div class="tag-all-item--number">{{cc_format_number(item.count)}}</div>
                                     <div>{{item.name}}</div>
                                 </div>
                             </div>
                         </div>
                     </div>
-                    <el-row :gutter="20" class="unit-row margin-top20">
+                    <el-row :gutter="20" class="unit-row margin-top20" style="margin-bottom: 0;">
                         <el-col :span="8">
                             <div class="unit-box">
                                 <div class="unit-header clearfix">业务人群使用情况</div>
-                                <div class="unit-content">
+                                <div class="unit-content" style="height: 270px">
                                     <div class="business-use-text">
                                         <div class="number">{{cc_format_number(businessUseCrowdData.count)}}</div>
                                         <div class="name">{{businessUseCrowdData.name}}</div>
@@ -145,7 +151,7 @@
                         <el-col :span="16">
                             <div class="unit-box">
                                 <div class="unit-header clearfix">人群对应业务分布情况</div>
-                                <div class="unit-content">
+                                <div class="unit-content" style="height: 270px">
                                     <div ref="businessUseCrowd" style="height:250px"></div>
                                 </div>
                             </div>
@@ -157,7 +163,7 @@
                     <div class="unit-box">
                         <div class="unit-header clearfix">业务使用全流程趋势图（总调用、下发、曝光、点击）</div>
                         <div class="unit-content">
-                            <div ref="businessUseTendency" style="height: 436px"></div>
+                            <div ref="businessUseTendency" style="height: 270px"></div>
                         </div>
                     </div>
                 </el-col>
@@ -223,7 +229,7 @@
                             </div>
                         </div>
                         <div class="unit-content">
-                            <div class="main" ref="userDistribution" style="height: 320px"></div>
+                            <div class="main" ref="userDistribution" style="height: 270px"></div>
                         </div>
                     </div>
                 </el-col>
@@ -311,6 +317,9 @@ export default {
   },
   data () {
     return {
+      // colorList: ['#4962FC', '#4B7CF3', '#dd3ee5', '#12e78c', '#fe8104', '#01C2F9', '#FD9E06'],
+      colorList: ['#5470C6', '#91CC75', '#FAC858', '#EE6666', '#7ED3F4', '#40B27D', '#FC8452', '#A969C6'],
+      // colorList: ['#6395f9', '#35c493', '#FD9E06', '#5470c6', '#91cd77', '#ef6567', '#f9c956', '#75bedc'],
       crowdAllData: [],
       // 默认时间
       startDate: '',
@@ -439,11 +448,18 @@ export default {
         //     trigger: 'axis'
         // },
         tooltip: {
-          trigger: 'item',
-          formatter: function (a) {
-            return _this.cc_format_number(a.data)
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
           }
+          // formatter: function (a) {
+          //   return _this.cc_format_number(a.data)
+          // }
         },
+        color: _this.colorList,
         xAxis: {
           type: 'category',
           data: xData,
@@ -459,13 +475,16 @@ export default {
           },
           scale: true,
           axisLabel: {
-            margin: 2,
+            // margin: 2,
             formatter: function (value) {
-              if (value >= 10000 && value < 10000000) {
-                value = value / 10000 + '万'
+              if (value >= 100000000) {
+                value = value / 100000000 + '亿'
               } else if (value >= 10000000) {
                 value = value / 10000000 + '千万'
-              } return value
+              } else if (value >= 10000 && value < 10000000) {
+                value = value / 10000 + '万'
+              }
+              return value
             }
           }
         },
@@ -478,6 +497,7 @@ export default {
     },
     // 通用圆饼图
     setCircleEcharts (element, title, legend, data, circleType) {
+      console.log('legend------->', legend)
       const _this = this
       const echarts = require('echarts')
       const myChart = echarts.init(this.$refs[element])
@@ -497,6 +517,8 @@ export default {
           data: legend,
           type: 'scroll'
         },
+        color: _this.colorList,
+
         series: [
           {
             name: '',
@@ -543,6 +565,7 @@ export default {
           }
           // formatter: "{a} <br/> {b}: {c} ({d}%)"
         },
+        color: _this.colorList,
         // tooltip: {
         //     trigger: 'item',
         //     // formatter: "{a} <br/>{b}: {c} ({d}%)"
@@ -639,13 +662,14 @@ export default {
     },
     // 通用雷达图
     setRadarEcharts (element, title, legend, data, insideChildData) {
-      // const _this = this
+      const _this = this
       const echarts = require('echarts')
       const myChart = echarts.init(this.$refs[element])
       myChart.setOption({
         title: {
           text: title
         },
+        color: _this.colorList,
         // 可能不需要tooltip
         tooltip: {
           trigger: 'item'
@@ -719,10 +743,16 @@ export default {
         //     trigger: 'axis'
         // },
         tooltip: {
-          trigger: 'item',
-          formatter: function (a) {
-            return _this.cc_format_number(a.data)
+          trigger: 'axis',
+          axisPointer: {
+            type: 'cross',
+            crossStyle: {
+              color: '#999'
+            }
           }
+          // formatter: function (a) {
+          //   return _this.cc_format_number(a.data)
+          // }
           // formatter: "{a} <br/> {b}: {c} ({d}%)"
         },
         legend: {
@@ -809,115 +839,115 @@ export default {
       })
       this.allCharts[element] = myChart
     },
-    // 人群画像性别
-    getCrowdSextotal (startTime, endTime) {
-      this.$service.get_crowd_sex_total({ startDate: startTime, endDate: endTime }).then((data) => {
-        const dataObject = data.data.map((key, index) => {
-          return { value: key.count, name: data.names[index] }
-        })
-        this.setCircleEcharts('circleSex', '性别分析', data.names, dataObject)
-      })
-    },
+    // // 人群画像性别
+    // getCrowdSextotal (startTime, endTime) {
+    //   this.$service.get_crowd_sex_total({ startDate: startTime, endDate: endTime }).then((data) => {
+    //     const dataObject = data.data.map((key, index) => {
+    //       return { value: key.count, name: data.names[index] }
+    //     })
+    //     this.setCircleEcharts('circleSex', '性别分析', data.names, dataObject)
+    //   })
+    // },
     // 人群年龄分布
-    getCrowdAgetotal (startTime, endTime) {
-      this.$service.get_crowd_age_total({ startDate: startTime, endDate: endTime }).then((data) => {
-        const dataObject = data.data.map((key, index) => {
-          return { value: key.count, name: data.names[index] }
-        })
-        this.setCircleEcharts('circleAge', '年龄分布', data.names, dataObject)
-      })
-    },
+    // getCrowdAgetotal (startTime, endTime) {
+    //   this.$service.get_crowd_age_total({ startDate: startTime, endDate: endTime }).then((data) => {
+    //     const dataObject = data.data.map((key, index) => {
+    //       return { value: key.count, name: data.names[index] }
+    //     })
+    //     this.setCircleEcharts('circleAge', '年龄分布', data.names, dataObject)
+    //   })
+    // },
     // 产品等级分布
-    getCrowdDevicetotal (startTime, endTime) {
-      this.$service.get_device_level_total({ startDate: startTime, endDate: endTime }).then((data) => {
-        const dataObject = data.data.map((key, index) => {
-          return { value: key.count, name: data.names[index] }
-        })
-        this.setCircleEcharts('circleDevice', '产品等级分类', data.names, dataObject)
-      })
-    },
+    // getCrowdDevicetotal (startTime, endTime) {
+    //   this.$service.get_device_level_total({ startDate: startTime, endDate: endTime }).then((data) => {
+    //     const dataObject = data.data.map((key, index) => {
+    //       return { value: key.count, name: data.names[index] }
+    //     })
+    //     this.setCircleEcharts('circleDevice', '产品等级分类', data.names, dataObject)
+    //   })
+    // },
     // 省份分布
-    getCrowdProvincetotal (startTime, endTime) {
-      this.$service.get_crowd_province_total({ startDate: startTime, endDate: endTime }).then((data) => {
-        const newData = data.topCity.date.map((key, index) => {
-          return { value: key.count, name: key.name, seq: index + 1, percent: key.percent }
-        })
-        const newProvinceData = data.province.date.map((key) => {
-          // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
-          return { value: key.count, name: key.name }
-        })
-        this.setMapEcharts('main', '', newProvinceData)
-        this.cityData = data.cityPercent
-        // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
-        this.table.data = newData
-        this.pagination.total = data.topCity.date.length
-      })
-    },
-    setMapEcharts (element, title, data) {
-      const _this = this
-      const echarts = require('echarts')
-      const myChart = echarts.init(this.$refs[element])
-      // 中国地图
-      myChart.setOption({
-        title: {
-          text: title,
-          // subtext: '纯属虚构',
-          left: 'center'
-        },
-        tooltip: {
-          trigger: 'item',
-          formatter: function (a) {
-            return a.data.name + ':' + _this.cc_format_number(a.data.value)
-          }
-        },
-        // tooltip : {
-        //     trigger: 'item',
-        //     formatter: '{b}<br/>{c}'
-        // },
-        // legend: {
-        //     orient: 'vertical',
-        //     left: 'left',
-        //     data:['创维','酷开']
-        // },
-        visualMap: {
-          min: 0,
-          max: 1000000,
-          left: 'left',
-          top: 'bottom',
-          text: ['高', '低'], // 文本，默认为数值文本
-          calculable: true
-        },
-        // toolbox: {
-        //     show: true,
-        //     orient : 'vertical',
-        //     left: 'right',
-        //     top: 'center',
-        //     feature : {
-        //         mark : {show: true},
-        //         dataView : {show: true, readOnly: false},
-        //         restore : {show: true},
-        //         saveAsImage : {show: true}
-        //     }
-        // },
-        series: [
-          {
-            name: '省份分布',
-            type: 'map',
-            mapType: 'china',
-            roam: false,
-            label: {
-              normal: {
-                show: false
-              },
-              emphasis: {
-                show: true
-              }
-            },
-            data: data
-          }
-        ]
-      })
-    },
+    // getCrowdProvincetotal (startTime, endTime) {
+    //   this.$service.get_crowd_province_total({ startDate: startTime, endDate: endTime }).then((data) => {
+    //     const newData = data.topCity.date.map((key, index) => {
+    //       return { value: key.count, name: key.name, seq: index + 1, percent: key.percent }
+    //     })
+    //     const newProvinceData = data.province.date.map((key) => {
+    //       // return {value: parseFloat(key.percent.replace("%","")), name: key.name}
+    //       return { value: key.count, name: key.name }
+    //     })
+    //     this.setMapEcharts('main', '', newProvinceData)
+    //     this.cityData = data.cityPercent
+    //     // let arr = Object.keys(data.cityPercent).map((key) => { return { value: parseInt(key), label:data[key]}})
+    //     this.table.data = newData
+    //     this.pagination.total = data.topCity.date.length
+    //   })
+    // },
+    // setMapEcharts (element, title, data) {
+    //   const _this = this
+    //   const echarts = require('echarts')
+    //   const myChart = echarts.init(this.$refs[element])
+    //   // 中国地图
+    //   myChart.setOption({
+    //     title: {
+    //       text: title,
+    //       // subtext: '纯属虚构',
+    //       left: 'center'
+    //     },
+    //     tooltip: {
+    //       trigger: 'item',
+    //       formatter: function (a) {
+    //         return a.data.name + ':' + _this.cc_format_number(a.data.value)
+    //       }
+    //     },
+    //     // tooltip : {
+    //     //     trigger: 'item',
+    //     //     formatter: '{b}<br/>{c}'
+    //     // },
+    //     // legend: {
+    //     //     orient: 'vertical',
+    //     //     left: 'left',
+    //     //     data:['创维','酷开']
+    //     // },
+    //     visualMap: {
+    //       min: 0,
+    //       max: 1000000,
+    //       left: 'left',
+    //       top: 'bottom',
+    //       text: ['高', '低'], // 文本，默认为数值文本
+    //       calculable: true
+    //     },
+    //     // toolbox: {
+    //     //     show: true,
+    //     //     orient : 'vertical',
+    //     //     left: 'right',
+    //     //     top: 'center',
+    //     //     feature : {
+    //     //         mark : {show: true},
+    //     //         dataView : {show: true, readOnly: false},
+    //     //         restore : {show: true},
+    //     //         saveAsImage : {show: true}
+    //     //     }
+    //     // },
+    //     series: [
+    //       {
+    //         name: '省份分布',
+    //         type: 'map',
+    //         mapType: 'china',
+    //         roam: false,
+    //         label: {
+    //           normal: {
+    //             show: false
+    //           },
+    //           emphasis: {
+    //             show: true
+    //           }
+    //         },
+    //         data: data
+    //       }
+    //     ]
+    //   })
+    // },
     formatDate (d) {
       const time = new Date(d)
       const y = time.getFullYear() // 年份
@@ -1158,7 +1188,12 @@ export default {
 </style>
 <style lang="stylus" scoped>
     .launch-statistics
-        overflow hidden
+      // overflow hidden
+      // height: 100%;
+      margin: -20px;
+      padding: 20px;
+      position: relative;
+      background: #eee;
     .title
         font-size 20px
         margin-left 20px
@@ -1187,54 +1222,58 @@ export default {
         width 20%
         text-align center
         margin 30px 0
-        font-size 12px
-        color #aaa
+        font-size 14px
+        color #000
         &:first-child
             width 40%
             border-right 1px solid #eee
             .crowd-all-item--number
-                font-size 30px
-                margin-bottom 0
+                font-size 24px
+                // margin-bottom 0
+
         .crowd-all-item--number
             color #000
             font-weight bold
             font-size 16px
             margin-bottom 10px
+            font-size: 24px;
+            color: #1ab394;
     .home-page-recommend
         height 300px
     .home-page-recommend-item
         width 50%
         text-align center
         margin-top 50px
-        font-size 12px
-        color #aaa
+        font-size 14px
+        color #000
         float left
         .home-page-recommend-item--number
-            color #000
-            font-weight bold
-            font-size 16px
-            margin-bottom 10px
+          color #1ab394
+          font-weight bold
+          font-size 24px
+          margin-bottom 10px
+
     .tag-all-item-container
         display flex
         align-items center
         justify-content center
-        height 150px
+        height 100%
     .tag-all-item
         width 25%
         text-align center
-        margin 30px 0
-        font-size 12px
-        color #aaa
+        // margin 10px 0
+        font-size 14px
+        color #000
         &:first-child
             width 50%
             border-right 1px solid #eee
             .crowd-all-item--number
                 margin-bottom 0
         .tag-all-item--number
-            color #000
-            font-weight bold
-            font-size 16px
-            margin-bottom 10px
+          color #1ab394
+          font-weight bold
+          font-size 24px
+          margin-bottom 10px
     .launch-all-item-container
         display flex
         align-items center
@@ -1266,9 +1305,11 @@ export default {
         &:after
             clear: both
     .main
-        width 90%
-        height 240px
-        padding 30px
+        width 100%
+        height 280px
+        margin: 0
+        padding 0
+        // padding 30px
     /*.date-picker*/
         /*text-align center*/
     .circle-echarts
@@ -1331,13 +1372,14 @@ export default {
     .business-use-text .number
         padding-top 100px
     .number
-        color #000
-        font-weight bold
-        font-size 16px
-        margin-bottom 10px
+      color: #1ab394;
+      font-weight: bold;
+      font-size: 24px;
+      margin-bottom: 10px;
     .name
-        font-size 12px
-        color #aaa
+      text-align: center;
+      font-size: 14px;
+      color: #000;
     .member-select
         // display flex
         // align-items center
@@ -1356,4 +1398,16 @@ export default {
         justify-content space-between
         padding-bottom 20px
         // border-bottom 1px dashed #ccc
+    .unit-box {
+      background-color: #fff;
+    }
+    .unit-content {
+      height 320px
+    }
+    .set-short-height {
+      height 178px
+    }
+    .set-higher-height {
+      height: 430px
+    }
 </style>

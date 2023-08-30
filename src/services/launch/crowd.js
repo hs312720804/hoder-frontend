@@ -215,6 +215,34 @@ export function getPushList (params) {
     params
   })
 }
+// 获取基于 bitmap push 投放的 策略列表
+export function getBitmapPushPolicyList (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/bitmap/getBitmapPushPolicyList',
+    params
+  })
+}
+
+// 获取基于 bitmap push 投放的 人群列表
+export function getBitmapPushCrowdList (params) {
+  return this.fetch({
+    method: 'GET',
+    url: '/api/bitmap/getBitmapPushCrowdList',
+    params
+  })
+}
+
+// 新增 bitmap push 投放
+export function bitmapPush (data) {
+  return this.fetch({
+    method: 'post',
+    url: '/api/bitmap/bitmapPush/0',
+    data,
+    isJSON: true
+  })
+}
+
 export function getPushPlatform (params) {
   return this.fetch({
     method: 'GET',

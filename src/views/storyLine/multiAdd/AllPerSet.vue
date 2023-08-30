@@ -199,6 +199,20 @@ export default {
         type: 'warning'
       }).then(() => {
         this.allRuleForm[index].delFlag = 2
+        // 删除出入口条件，否则会走验证必填，导致报错
+        this.allRuleForm[index].entryConditions = this.allRuleForm[index].entryConditions.map(item => {
+          return {
+            ...item,
+            delFlag: 2
+          }
+        })
+        this.allRuleForm[index].exportConditions = this.allRuleForm[index].exportConditions.map(item => {
+          return {
+            ...item,
+            delFlag: 2
+          }
+        })
+
         const oneItem = this.allRuleForm.find(item => item.delFlag !== 2 && !item.hidden)
         this.activeId = oneItem.id || 0
 

@@ -222,7 +222,6 @@ export default {
         if (this.crowdId !== '') {
           // 初始化数据
           this.initData()
-          console.log('2222222222222->>', this.allTableData)
           this.$nextTick(() => {
             console.log('val--->', document.querySelector('.el-main'))
             document.querySelector('.el-main').scrollTop = 0

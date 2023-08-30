@@ -3,7 +3,7 @@
   <div class="title">bitmap 位文件分页查询</div>
   <el-form :model="form" ref="form" :rules="rules" :inline="true">
     <!-- crowdName: dmp_crowd_114453_2023060601 -->
-      <el-form-item label="人群名称：" prop="crowdName">
+      <el-form-item label="人群位文件名称：" prop="crowdName">
           <el-input v-model="form.crowdName" clearable @keydown.enter.native="handleSearch"></el-input>
       </el-form-item>
           <!-- <el-form-item label="设备信息：" prop="mac"> -->
@@ -80,7 +80,7 @@ export default {
       dateList: [],
       rules: {
         // mac: {required: true, message: '请输入mac', trigger: 'blur'},
-        crowdName: { required: true, message: '请输入人群名称', trigger: 'blur' }
+        crowdName: { required: true, message: '请输入', trigger: 'blur' }
       },
       pickerOptions: {
         disabledDate: (time) => {

@@ -1,6 +1,7 @@
-import { Message, Notification } from 'element-ui'
+import { Message, Notification, MessageBox } from 'element-ui'
 import router from '@/router'
 import Vue from 'vue'
+import utils from './utils'
 
 function wrapService (service) {
   const $service = {
@@ -22,10 +23,19 @@ function wrapService (service) {
           })
           .catch((error) => { // 错误处理
             if (error && error.code && error.code === '2000') { // 业务错误
-              Message({
-                type: 'error',
-                message: error.message
+              // Message({
+              //   type: 'error',
+              //   message: error.message
+              // })
+
+              // const msg = 'NullPointException##################'
+              // const msg = '操作失败'
+              // const msg = '操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败操作失败操作失失失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操作失败操操作失败操作失败操作失败'
+              utils.onMessage({
+                message: error.message,
+                apiUrl: `${key}`
               })
+
               return Promise.reject(error)
             } else { // 网络错误
               let message = error.message
@@ -36,11 +46,13 @@ function wrapService (service) {
               console.log('errormessage--->', message)
 
               if (tokenFailure) {
+                // 此处不需要提醒，因为在路由守卫中会提示
                 // message = '登录超时，请重新登录'
                 message = null
               }
               if (message) {
-                Notification.error({
+                // 避免重复错误提示
+                utils.resetNotification.error({
                   message: message
                 })
               }

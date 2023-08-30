@@ -9,6 +9,7 @@
       <el-select
         v-if="!!item.mapName"
         v-model="item.childCheckedVal[0]"
+        clearable
         style="width: 100px"
         name="oxve"
         class="input-inline"
