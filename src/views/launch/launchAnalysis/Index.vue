@@ -495,7 +495,7 @@ export default {
     getPickerOptions () {
       return {
         disabledDate: (time) => {
-          const minTime = +new Date(this.startTime)
+          const minTime = +new Date(this.startTime) - 24 * 3600 * 1000
           const maxTime = +new Date(this.endTime)
           return time.getTime() > maxTime || time.getTime() < minTime
         }
@@ -757,7 +757,7 @@ export default {
         this.$service.crowdEdit({ crowdId }).then(res => {
           const crowdInfo = res.policyCrowds
           this.crowdName = crowdInfo.crowdName
-          this.startTime = res.launchTime || '' // 投放日期 就是可选最小时间
+          this.startTime = crowdInfo.createTime || '' // 创建日期 就是可选最小时间
 
           // 下架
           const isOffShelf = crowdInfo.putway === 0 // 【 1：上架， 0：下架】
