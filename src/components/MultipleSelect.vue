@@ -72,7 +72,7 @@
                 >
                   <el-option
                     v-for="item in getTagAttrChild[childItem.tagId]"
-                    :key="item.attrId"
+                    :key="item.attrValue"
                     :value="item.attrValue"
                     :label="item.attrName">
                   </el-option>
@@ -368,7 +368,7 @@
                       >
                         <el-option
                           v-for="item in cache[childItem.tagId].list"
-                          :key="index + item.attrValue + item.attrId"
+                          :key="index + item.attrValue"
                           :label="item.attrName"
                           :value="item.attrValue"
                         ></el-option>
@@ -756,7 +756,7 @@
                   >
                     <el-option
                       v-for="item in cache[childItem.tagId].list"
-                      :key="index + item.attrValue + item.attrId"
+                      :key="index + item.attrValue"
                       :label="item.attrName"
                       :value="item.attrValue"
                     ></el-option>
