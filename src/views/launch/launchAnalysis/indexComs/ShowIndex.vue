@@ -3,30 +3,31 @@
   <div class="sticky-bar">
     <template v-if="Object.keys(allCrowdData).length > 1">
       <div
-        v-for="(item, key) in allCrowdData"
+        v-for="(item, key) in Object.values(allCrowdData)"
         :key="key"
         class="sticky-bar-item"
+        :class="Object.keys(allCrowdData).length > 1 ? `d${key}-sticky-bar-item` : ''"
       >
-        {{ key }}- {{ item.crowdName }}
+        {{ item.crowdId }}- {{ item.crowdName }}
       </div>
     </template>
   </div>
 
     <div class="show-index-panel">
       <showData
-        v-for="(item, key) in allCrowdData" :key="key"
+        v-for="(item, key) in Object.values(allCrowdData)" :key="key"
         ref="domShowData"
         :crowdId="key"
         :pageStatus="item.status"
         :overview="item.overview ? item.overview.data : {}"
         :allChartData="item"
-        :class="key%2 === 0 ? 'd-color': 's-color'"
+        :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
       >
       </showData>
     </div>
 
-    <el-tabs v-model="activeName" type="card">
+    <el-tabs v-model="activeName" type="card" style="margin-top: 25px">
       <el-tab-pane label="内容型" name="one">
       </el-tab-pane>
       <el-tab-pane label="付费型" name="two">
@@ -35,13 +36,13 @@
 
     <div class="show-index-panel">
       <showChart
-        v-for="(item, key) in allCrowdData" :key="key"
+        v-for="(item, key) in Object.values(allCrowdData)" :key="key"
         :activeName="activeName"
         :crowdId="key"
         :pageStatus="item.status"
         :overview="item.overview ? item.overview.data : {}"
         :allChartData="item"
-        :class="key%2 === 0 ? 'd-color': 's-color'"
+        :class="Object.keys(allCrowdData).length > 1 ? `d${key}-color` : ''"
         :isSingShowPanel="Object.keys(allCrowdData).length === 1"
       >
       </showChart>
@@ -85,23 +86,18 @@ export default {
   },
 
   mounted () {
+    // chart5
+    // 图表自适应
+    // window.addEventListener('resize', () => {
+    // this.activeName = this.activeName === 'one' ? 'two' : 'one'
+    // })
   }
 
 }
 </script>
 <style lang='stylus' scoped>
 @import url('~@/assets/overview.styl')
-.d-color {
-  .ibox{
-    background #83c7f724 !important
-  }
-}
 
-.s-color {
-  .ibox{
-    background #c9e1bd1c !important;
-  }
-}
 .sticky-bar {
   display: flex;
   column-gap: 10px;
@@ -126,6 +122,8 @@ export default {
 .show-index-panel {
   display: flex;
   column-gap: 10px;
+  width: 100%
+  // overflow: auto;
 }
 .d-color {
   // background red

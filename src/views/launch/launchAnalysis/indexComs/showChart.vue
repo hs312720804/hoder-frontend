@@ -7,7 +7,7 @@
     <!-- <el-tabs v-model="activeName" type="card" @tab-click="handleClick"> -->
       <!-- <el-tab-pane label="内容型" name="one"> -->
         <!-- 柱状图、折线图 -->
-        <div class="launch-statistics" v-show="activeName === 'one'">
+        <div class="launch-statistics" v-show="activeName === 'one' && showChart">
             <!-- <template v-if="show"> -->
           <!-- <div class="unit-row" v-for="(row, index) in rowObj2" :key="index"> -->
             <div v-for="(chart, key) in rowObj2" :key="key">
@@ -46,7 +46,7 @@
       <!-- <el-tab-pane label="付费型" name="two">
       </el-tab-pane> -->
         <!-- 柱状图、折线图 -->
-        <div class="launch-statistics launch-statistics2" v-show="activeName === 'two'">
+        <div class="launch-statistics launch-statistics2" v-show="activeName === 'two' && showChart">
           <!-- <div class="unit-row" v-for="(row, index) in rowObj" :key="index"> -->
             <div v-for="(chart, key) in rowObj" :key="key">
               <div class="unit-box" >
@@ -139,6 +139,7 @@ export default {
   },
   data () {
     return {
+      showChart: true,
       startTime: '',
       endTime: '',
       radioType: 0,
@@ -221,12 +222,17 @@ export default {
     // chart5
     // 图表自适应
     window.addEventListener('resize', () => {
-      console.log('resizeresizeresizeresize')
+      // this.activeName = this.activeName === 'one' ? 'two' : 'one'
+      // this.showChart = false
+      // console.log('resizeresizeresizeresize')
       this.$nextTick(() => {
-        for (const key of Object.keys(this.allCharts)) {
-          const chart = this.allCharts[key]
-          chart.resize()
-        }
+        // this.showChart = true
+        this.$nextTick(() => {
+          for (const key of Object.keys(this.allCharts)) {
+            const chart = this.allCharts[key]
+            chart.resize()
+          }
+        })
       })
     })
 
@@ -1150,10 +1156,14 @@ export default {
 //   min-height: 36px;
 //   background red
 // }
+
 .show-data {
   position: relative;
   bottom: 0
   flex: 1
+  // width: 50%;
+  // min-width: 50%;
+  // max-width: 50%;
   // border: 2px solid #3974f6;
 }
 .chart-div {

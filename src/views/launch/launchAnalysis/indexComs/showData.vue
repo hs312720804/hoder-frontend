@@ -322,6 +322,8 @@ export default {
   position: relative;
   bottom: 0
   flex: 1
+  width: 100%;
+  // overflow: auto;
   // border: 2px solid #3974f6;
 }
 // .ibox {
@@ -404,7 +406,9 @@ export default {
   .chart-wrap {
     flex: 0.8 0 550px;
   }
-
+  .chart-1 {
+    width: 550px
+  }
 }
 
 </style>

@@ -28,8 +28,8 @@
       <el-button
         v-if="formInline.crowdIds.length > 1"
         type="text"
-        icon="el-icon-remove-outline"
-        style="color: red"
+        icon="el-icon-delete"
+        class="delete-crowd-id"
         @click="cutContrastCrowd(formInline.crowdIds, index)"
       >
       </el-button>
@@ -690,7 +690,7 @@ export default {
         }
 
         // 测试数据
-        // for (let i = 0; i < 3; i++) {
+        // for (let i = 0; i < 5; i++) {
         //   this.allCrowdData[`2010${i}`] = allRes[20101]
         // }
 
@@ -808,6 +808,12 @@ export default {
 .radio-type {
   float: right;
   margin-top: 22px;
+}
+.delete-crowd-id {
+  color: #F56C6C;
+  // font-size: 16px;
+  margin-left: 6px;
+
 }
 
 </style>
